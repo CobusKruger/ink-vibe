@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/cobus/Development/ink-lovable rev-parse --abbrev-ref HEAD)",
+      "Bash(git -C /Users/cobus/Development/ink-lovable status --short)",
+      "Bash(git -C /Users/cobus/Development/ink-lovable pull --ff-only)"
+    ]
+  }
+}

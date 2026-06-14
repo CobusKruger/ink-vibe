@@ -1,0 +1,17 @@
+page_slug,source_mock,wp_target,template_or_pattern,blocks,data_source,afrikaans_checks,responsive_notes,status
+tuisblad,ink-lovable/src/pages/Index.tsx (+ components/home/*),front-page,template+patterns,cover;query-loop;columns,featured_streams,yes,desktop-mobile parity,reference-ready
+lees-verhaal,ink-lovable/src/pages/ReadStory.tsx (+ components/reading/*),single-verhaal,template+patterns,group;prose-body;critique-panel,verhaal,yes,reading column width,reference-ready
+lees-gedig,ink-lovable/src/components/reading/PoetryReader.tsx,single-gedig,template+patterns,group;poetry-body;line-resonance;critique-panel,gedig,yes,line-break layout,reference-ready
+opleiding,ink-lovable/src/pages/Library.tsx (layout reference only),page-opleiding,template+patterns,group;query-loop;accordion,opleiding_artikel,yes,stacked sections,layout-reference
+biblioteek,ink-lovable/src/pages/Library.tsx (layout reference — gaps noted),page-biblioteek,template+patterns,group;query-loop;date-archive;author-filter;pagination,biblioteek_item,yes,image crop parity,partial-reference
+uitdagings-single,ink-lovable/src/pages/Challenge.tsx,single-uitdaging,template+patterns,group;resources;submission-list,uitdaging,yes,date readability,reference-ready
+uitdagings-list,partial in ink-lovable/src/components/home/ChallengeSection.tsx,page-uitdagings,template+patterns,group;query-loop;countdown,uitdaging,yes,date readability,partial-reference
+skryf,ink-lovable/src/pages/Write.tsx,page-skryf,template+patterns,group;content-type-selector;challenge-link,post submission,yes,form layout,reference-ready
+skrywerprofiel,ink-lovable/src/pages/Writer.tsx,single-skrywer,template+patterns,group;cover;works-grid;accomplishments,user+posts,yes,cover image crop,reference-ready
+my-profiel,ink-lovable/src/pages/Profile.tsx,page-my-profiel,template+patterns,tabs;works-list;reading-list;following;activity-feed;notifications;membership,user data,yes,tab reflow,reference-ready
+ontdek,ink-lovable/src/pages/Browse.tsx,page-ontdek,template+patterns,tabs;query-loop;filters;sort,posts+users,yes,tab reflow,reference-ready
+gemeenskap,ink-lovable/src/pages/Community.tsx,page-gemeenskap,template+patterns,group;media-text;cta,page content,yes,section stacking,reference-ready
+lidmaatskap,MISSING_IN_CURRENT_LOVABLE_REPO,page-lidmaatskap,template+patterns,pricing-table;buttons;faq,woocommerce memberships,yes,cta order,assembly-only
+oor-ink,partial in ink-lovable/src/components/home/SponsorsSection.tsx,page-oor-ink,template+patterns,group;media-text;logos,page content + borg,yes,logo scaling,assembly-only
+kontak,MISSING_IN_CURRENT_LOVABLE_REPO,page-kontak,template+patterns,group;form;map,page content,yes,form layout,assembly-only
+auth,MISSING_IN_CURRENT_LOVABLE_REPO,login|register|forgot-password,template+patterns,group;form;button,wp auth,yes,single column,assembly-only

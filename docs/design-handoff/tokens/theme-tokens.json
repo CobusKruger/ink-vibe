@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "project": "INK",
+    "source": "Lovable repo (DESIGN_TOKENS.md + src/index.css + tailwind.config.ts)",
+    "lastUpdated": "2026-06-02",
+    "notes": "Values normalized from the attached ink-lovable repository. Validate Afrikaans naming and dark mode strategy before final theme.json generation."
+  },
+  "color": {
+    "primary": "#EA4015",
+    "primaryLight": "#EF6842",
+    "secondary": "#EDE9E0",
+    "accent": "#4D8066",
+    "accentLight": "#5C9979",
+    "surface": "#F8F6F2",
+    "surfaceAlt": "#FDFCFA",
+    "text": "#1A1D21",
+    "mutedText": "#6B7280",
+    "success": "#4D8066",
+    "warning": "#D4A418",
+    "danger": "#EF4444",
+    "border": "#E8E4DC",
+    "highlight": "#FFE066",
+    "highlightForeground": "#1A1D21",
+    "goldMuted": "#C9B88A"
+  },
+  "typography": {
+    "fontFamily": {
+      "display": "Lora, Georgia, serif",
+      "heading": "Lora, Georgia, serif",
+      "body": "Inter, system-ui, sans-serif",
+      "ui": "Inter, system-ui, sans-serif"
+    },
+    "fontSize": {
+      "xs": "0.75rem",
+      "sm": "0.875rem",
+      "md": "1rem",
+      "lg": "1.125rem",
+      "xl": "1.25rem",
+      "2xl": "1.5rem",
+      "3xl": "2rem"
+    },
+    "lineHeight": {
+      "tight": "1.2",
+      "normal": "1.5",
+      "relaxed": "1.7"
+    },
+    "fontWeight": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    }
+  },
+  "spacing": {
+    "4": "0.25rem",
+    "8": "0.5rem",
+    "12": "0.75rem",
+    "16": "1rem",
+    "24": "1.5rem",
+    "32": "2rem",
+    "48": "3rem",
+    "64": "4rem",
+    "80": "5rem",
+    "96": "6rem"
+  },
+  "layout": {
+    "contentSize": "768px",
+    "wideSize": "1400px"
+  },
+  "radius": {
+    "sm": "4px",
+    "md": "6px",
+    "lg": "8px",
+    "xl": "12px",
+    "2xl": "16px",
+    "full": "9999px"
+  },
+  "shadow": {
+    "sm": "0 2px 12px -2px hsl(220 20% 12% / 0.06)",
+    "md": "0 4px 20px -4px hsl(220 20% 12% / 0.08)",
+    "lg": "0 12px 40px -8px hsl(220 20% 12% / 0.12)"
+  },
+  "modes": {
+    "dark": {
+      "surface": "#171C1F",
+      "surfaceAlt": "#1A1D21",
+      "text": "#EAE7DF",
+      "primary": "#EE5830",
+      "accent": "#6AA88A",
+      "border": "#2A3035"
+    }
+  }
+}

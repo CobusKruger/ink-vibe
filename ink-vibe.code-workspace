@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../Local Sites/ink-staging"
+		},
+		{
+			"path": "../ink-lovable"
+		}
+	],
+	"settings": {
+		"chat.tools.terminal.autoApprove": {
+			"/^python3 - <<'PY'\nimport re\nfrom pathlib import Path\nsql = Path\\('/Users/cobus/Local Sites/ink-staging/app/sql/local\\.sql'\\)\\.read_text\\(errors='ignore'\\)\n\nfor term in \\['brons', 'silwer', 'goud', 'vlak', 'tier', 'badge', 'rank'\\]:\n    # Look only in usermeta or options tables context\n    hits = \\[\\(m\\.start\\(\\), sql\\[max\\(0,m\\.start\\(\\)-120\\):m\\.start\\(\\)\\+200\\]\\) for m in re\\.finditer\\(rf'\\\\b\\{term\\}\\\\b', sql, re\\.IGNORECASE\\)\\]\n    # Filter to hits that appear near usermeta or options table inserts\n    relevant = \\[\\(pos, ctx\\) for pos, ctx in hits if 'usermeta' in ctx or 'options' in ctx or 'wpjj_user' in ctx\\]\n    if relevant:\n        print\\(f'### \\{term\\} \\(\\{len\\(relevant\\)\\} relevant hits\\)'\\)\n        for pos, ctx in relevant\\[:2\\]:\n            print\\(ctx\\.replace\\('\\\\n',' '\\)\\[:300\\]\\)\n        print\\(\\)\nPY$/": {
+				"approve": true,
+				"matchCommandLine": true
+			}
+		}
+	}
+}
