@@ -3,9 +3,9 @@ Theme Name: INK Foundation
 Theme URI: https://ink.example.com
 Author: INK
 Description: Foundation block theme slice for token baseline, header/footer patterns, and front-page proof.
-Requires at least: 6.6
-Tested up to: 6.6
-Requires PHP: 8.1
+Requires at least: 7.0
+Tested up to: 7.0
+Requires PHP: 8.3
 Version: 0.1.0
 Text Domain: ink-foundation
 */

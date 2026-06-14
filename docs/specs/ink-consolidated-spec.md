@@ -17,6 +17,7 @@ This is the single authoritative specification for the INK rebuild. It is struct
 - **Section 10** = plugin stack and integration points.
 - **Section 11–13** = migration constraints, Afrikaans-first, and non-functional requirements.
 - **Section 14** = open decisions to resolve before/during build.
+- **Section 15** = epic map (build/dependency order) handing off to the feature list.
 
 The companion document **`ink-feature-list.md`** breaks the product into epics and features for story decomposition.
 
@@ -103,7 +104,7 @@ create account → choose reader or writer intent (`ink_writer_intent`) → comp
 | CMS / platform | WordPress (existing install, brownfield) | Deployed to the existing site; existing database retained. |
 | Presentation | **Custom block theme** (FSE) | `theme.json` design tokens; templates, template-parts, patterns, block styles. |
 | Business logic | **`ink-core` custom plugin** | CPTs, taxonomies, user meta, tiers, submission, challenge logic, sponsor rotation, follow graph, reading engagement, REST endpoints, admin tools. |
-| Community primitives | BuddyPress (scoped) | Profiles, directory, notifications, messaging. Friend Connections **off** (follow replaces it — see §10/§14). |
+| Community primitives | BuddyPress (scoped) | Profiles, directory, notifications. Private messaging **deferred — off at launch** (§14.7). Friend Connections **off** (follow replaces it — see §10/§14). |
 | Commerce / access | WooCommerce + WooCommerce Memberships | Memberships only; three fixed-term products. |
 | Payments | WooCommerce PayFast Gateway | ZAR; South African processor. New: front-end purchase flow. |
 | PDF display | Real3D Flipbook | InkPols issues. |
@@ -111,7 +112,7 @@ create account → choose reader or writer intent (`ink_writer_intent`) → comp
 | Redirects | Redirection | Mandatory migration redirect layer. |
 | Security (layered) | Cloudflare (edge + login rule) · staff 2FA · Patchstack (CVE alerts) · host malware scanning | Origin locked to Cloudflare. Loginizer retired; no WordFence. See §14.16. |
 | Hosting / caching | NameHero (LiteSpeed Web Server) · LiteSpeed Cache · Cloudflare edge cache | Host behind Cloudflare; origin locked. See §14.9. |
-| Translation tooling | Loco Translate | In-admin `.po`/`.mo` editing for surviving plugins. Human-authored only. |
+| Translation tooling | Loco Translate | `.po`/`.mo` authoring for surviving plugins — **staging only, not on production** (§14.13); committed `.mo` ships with releases. Human-authored only. |
 | Moderation | Report Content (or custom) | Logged report path; verify Afrikaans translatability or replace with `ink-core` form. |
 
 **Design-system source values** (from `design-handoff/tokens/theme-tokens.json`): serif **Lora** (display/heading) + sans **Inter** (body/UI); palette terracotta `#EA4015` (primary), cream `#EDE9E0` (secondary), sage `#4D8066` (accent), highlight `#FFE066`, plus muted gold and dark-mode tokens. Spacing scale 4–96; content width 768px, wide 1400px; radius and shadow scales defined; dark mode tokens present.
@@ -133,7 +134,7 @@ create account → choose reader or writer intent (`ink_writer_intent`) → comp
 | Code ID | UI label (Afrikaans) | Purpose |
 |---|---|---|
 | `gedig` | Gedig | Published poems. |
-| `storie` | Storie | Short stories / prose. Code ID aligned to the UI term (was `verhaal`); update `afrikaans-terms.md` accordingly. |
+| `storie` | Storie | Short stories / prose. Code ID aligned to the UI term (was `verhaal`); `afrikaans-terms.md` updated accordingly (terminology reconciliation, 2026-06-14). |
 | `artikel` | Artikel | Opinion pieces, essays. |
 | `skryfwerk` | Skryfwerk | Catch-all bucket for unclassified migrated content. |
 | `biblioteek_item` | Biblioteekitem | Curated library content, winning entries. |
@@ -157,7 +158,7 @@ Tier promotion history stored in a second meta key or a custom log table for aud
 | Slug | Applies to | Purpose |
 |---|---|---|
 | `genre` | bydraes (`gedig`/`storie`/`artikel`) | Genre/form classification; **shared** with training for automatic surfacing. |
-| `vaardigheid` | `opleiding_artikel` | Skill area (Digkuns, Prosa, Taalgids, Algemene wenke); shared with bydraes for cross-surfacing. |
+| `vaardigheid` | `opleiding_artikel` | Skill area — canonical seed terms (per `ui-copy-translations.md`): Begin hier, Skryfkuns, Digkuns, Prosa, Stylfigure, Redigeer en hersien, Stem en styl. (The `afrikaans-terms.md` list is illustrative only.) Shared with bydraes for cross-surfacing. |
 | `uitdagingsronde` | inskrywings & wenwerk | Links entries/winners to a challenge round. |
 | `skrywervlak` | where applicable | Tier as a taxonomy term where needed for query/segmentation. |
 
@@ -169,7 +170,7 @@ The site uses a **one-way follow** model (follower/following counts), per the Lo
 - BuddyPress **Friend Connections off**; follow is **implemented in `ink-core`** (no clean, maintained native BuddyPress follow; a trivial relationship model gives full control and Afrikaans copy alignment).
 - A **following-feed** (new publications by followed writers) is a custom `ink-core` feature, surfaced as the profile "activity" tab.
 - `afrikaans-terms.md` reconciled 2026-06-14: follow vocabulary added (`Volg` / `Volg tans` / `volgeling`, plural `volgelinge`), friendship terms replaced, and the follow-avoidance rule dropped. (`ui-copy-translations.md` "Volgers" also corrected to "volgelinge".)
-- Migration: existing BuddyPress friendships may be converted to mutual follow records (each friendship → two follows) or dropped — see §11.
+- Migration: existing BuddyPress friendships are **converted** to mutual follow records (each friendship → two follows), per §14.10 — see §11.
 
 ---
 
@@ -278,9 +279,9 @@ A: design-system compliance (tokens only). B: layout consistency (mock intent or
 | **Real3D Flipbook** (reactivate) | PDF viewer for `inkpols_uitgawe`. Verify existing file paths/config pre-launch. |
 | **Rank Math** (replaces Yoast) | Sitemaps, meta, native CPT schema for `gedig`/`storie`/`artikel`, breadcrumbs (all free-tier). Adopted from the start. *Per-post* Yoast enrichment is negligible (owner's first-hand assessment: only a few InkPols OG images); global Yoast *config* is not carried forward by design (§11). This **overrides** `plugin-transition-guide.md`'s "keep Yoast through migration, evaluate Rank Math after launch" recommendation — a deliberate 2026-06-14 decision (§14.11). The Rank Math importer runs regardless as a safety net for any residual Yoast data; verify the InkPols images, then deactivate Yoast. SEO baseline comes from templated defaults + schema, **not** per-post manual backfill. |
 | **Redirection** | Migration redirect layer (301s for moved content). 404 logging. |
-| **Patchstack** (new) | Vulnerability/CVE alerts for installed plugins/themes; pairs with the staging-gated update routine (§13; `ink-feature-list.md` Epic 17.7). Lightweight — alerts, not a heavy WAF. |
+| **Patchstack** (new) | Vulnerability/CVE alerts for installed plugins/themes; pairs with the staging-gated update routine (§13; `ink-feature-list.md` Epic 18.7). Lightweight — alerts, not a heavy WAF. |
 | **Staff 2FA plugin** (new) | Two-factor auth for `editor`/`administrator` accounts (or Cloudflare Access on `/wp-admin`). |
-| **Loco Translate** (authoring tool — not a runtime dependency) | Translates the **residual user-facing strings of surviving third-party plugins only** — chiefly BuddyPress and the WooCommerce/Memberships/PayFast stack (plus Loginizer/Report Content/CF7 if kept). The custom theme and `ink-core` are Afrikaans-native and need no translation files — this is a sharp reduction from the old site's site-wide rescue role. Author Afrikaans `.po/.mo`, **commit them to version control** (theme or a `languages` mu-plugin); WordPress loads them from `wp-content/languages/` without Loco active, so it need not run on production (§14.13). Prefer complete community language packs where they exist; manual translation for premium plugins (e.g. Memberships). Human-authored only. |
+| **Loco Translate** (authoring tool — **staging only, never installed on production** §14.13) | Translates the **residual user-facing strings of surviving third-party plugins only** — chiefly BuddyPress and the WooCommerce/Memberships/PayFast stack (plus Report Content/CF7 if kept). The custom theme and `ink-core` are Afrikaans-native and need no translation files — this is a sharp reduction from the old site's site-wide rescue role. Author Afrikaans `.po/.mo` **on staging**, **commit them to version control** (theme or a `languages` mu-plugin); **production loads them from `wp-content/languages/` without Loco installed** — the committed bundle is the production safety net. New strings from ungated core/host-forced updates are caught by the automated English-leak detection (§13), then authored on staging, committed, and redeployed — **not hand-edited on production**. Prefer complete community language packs where they exist; manual translation for premium plugins (e.g. Memberships). Human-authored only. |
 | **Report Content** (review) | Logged moderation report path. Verify Afrikaans translatability; else replace with `ink-core` report form. |
 | **Contact Form 7** (review) | Contact/enquiry on Oor INK. Evaluate Fluent Forms or small `ink-core` form at build time. |
 | **Comments Plus** (consolidate later) | Enforces global comment disable now; replace with two `ink-core` filters post-migration. |
@@ -308,7 +309,7 @@ The new site **reuses the existing database** (cloned). Migration is mapped in d
 - **Subscriptions migrate automatically** with the DB clone (WooCommerce Memberships already live). Verify active memberships, plan IDs, access rules, and expiry/suspension on the new host. **No import script.** Continuity here is *why* WooCommerce Memberships and PayFast are retained rather than replaced.
 - **Writer tiers** import from the external spreadsheet (CSV → `ink_writer_tier`, joined on email). Missing/ambiguous → default `brons` + flag; spreadsheet writers without accounts → manual follow-up.
 - **Posts → CPTs:** scripted reclassification by existing content-type category (old-site categories `Gedig`/`Verhaal`/`Artikel` → CPTs `gedig`/`storie`/`artikel`); `/biblioteek/` and `/opleiding/` sub-paths → respective CPTs; unclassifiable → `skryfwerk` automatically. **Do not hand-classify the `skryfwerk` bucket at volume** (`migration-plan.md`) — it is a holding bucket that preserves and keeps content searchable without per-post editorial effort. Several thousand posts.
-- **Old-site CPT renames:** the legacy `inkpols` CPT → `inkpols_uitgawe`; the legacy `monthly_challenge` CPT (a near-empty placeholder on the old site) is **superseded** by the category-derived `uitdaging` records (§14.6) — migrate any real data it holds into `uitdaging`, otherwise drop it. (The old `verhaal`→`storie` rename is covered in §6.2.)
+- **Old-site CPT disposition:** two old-site CPTs need handling on migration. (a) The legacy `inkpols` CPT is **renamed** to the new `inkpols_uitgawe` CPT (records moved, loose month/year meta re-expressed as structured fields — see InkPols bullet below). (b) The legacy `monthly_challenge` CPT (a near-empty placeholder on the old site) is **not** the source of truth for challenge history and is **not** migrated 1:1. `uitdaging` is itself a CPT (§6.2); the migration **builds its records from the challenge-round categories on existing posts** (§14.6), not from `monthly_challenge`. Fold any real data the old `monthly_challenge` records happen to hold into the matching `uitdaging` record, otherwise drop them. (The old `verhaal`→`storie` rename is covered in §6.2.)
 - **Redirects are mandatory.** Generate 301s during CPT migration (record old permalink before reassignment). **Keep `/biblioteek/` and `/opleiding/` prefixes** to preserve high-value archive URLs and cut redirect volume.
 - **InkPols:** low volume; migrate back catalogue to `inkpols_uitgawe` with structured meta (date, volume, cover, PDF, teaser); retain PDFs in media.
 - **Challenges:** migrate historical challenges structurally in the once-off DB update (§14.6) — challenge categories on existing posts → `uitdagingsronde` terms + an `uitdaging` record per round; new challenges use the CPT from launch. Historical rounds carry full brief/deadline only where that data exists in old content.
@@ -326,7 +327,7 @@ The new site **reuses the existing database** (cloned). Migration is mapped in d
 - **Locale mechanism:** site locale `af` (so front-end plugin strings pull Afrikaans language packs / committed `.mo`); **staff accounts (editor/administrator) use English admin language** via the per-user WordPress language setting, enforced for those roles in `ink-core`. Front-end output stays Afrikaans regardless of a staff user's admin language. All custom strings use proper i18n functions.
 - **Admin language split:** WP-core and third-party plugin admin chrome = English (§14.14); **all `ink-core` admin surfaces = Afrikaans** (§14.15) — CPT/taxonomy labels and custom admin screens (tier promotion, sponsor scheduling, challenge/winner admin, reports). Mechanism: `ink-core` authors these in Afrikaans as the source language and ships no English `.mo`, so gettext returns the Afrikaans source even under a staff member's English admin locale. The intended result is Afrikaans INK domain terms inside English WP chrome.
 - `afrikaans-terms.md` is the glossary source of truth (subject to the follow reconciliation in §14). Code IDs and UI labels follow it; a new concept is added to the guide **before** it appears in code or UI.
-- Plugins screened for translation quality before adoption. The custom theme and `ink-core` are Afrikaans-native (no translation files needed). Only the **residual user-facing strings of surviving third-party plugins** (mainly BuddyPress + WooCommerce/Memberships/PayFast) need an authored Afrikaans pass: use Loco Translate as the authoring tool and **version-control the resulting `.po/.mo`**; prefer community language packs where complete (w.org-hosted plugins), translate premium plugins manually. **No AI-generated Afrikaans.**
+- Plugins screened for translation quality before adoption. The custom theme and `ink-core` are Afrikaans-native (no translation files needed). Only the **residual user-facing strings of surviving third-party plugins** (mainly BuddyPress + WooCommerce/Memberships/PayFast) need an authored Afrikaans pass: use Loco Translate as the authoring tool **on staging** and **version-control the resulting `.po/.mo`** (production loads them without Loco installed — §14.13); prefer community language packs where complete (w.org-hosted plugins), translate premium plugins manually. **No AI-generated Afrikaans.**
 - No English UI leakage (Quality Gate D).
 - **Where third-party strings still surface despite owning the templates:** owning the UI = owning chrome, layout, and static labels — **not** strings plugins generate at runtime or send out of band. Leak vectors to test/translate: (1) error/validation/status messages (payment declines, "membership expired", login throttling); (2) dynamically composed text inside plugin functions (BuddyPress notification sentences, WooCommerce order/membership phrasing); (3) **transactional emails** (Woo order/renewal/expiry, BP notifications, password reset) — often not a template we rebuild; (4) **plugin JavaScript** strings (e.g. Real3D viewer controls) — need the plugin's JS `.json` translations, separate from `.mo`; (5) out-of-band outputs (REST/AJAX payloads, redirect-notice query args, feeds). Replacing a plugin with an Afrikaans-native `ink-core` surface removes its string surface entirely; what is irreducible is the kept *logic* of BuddyPress + the WooCommerce/Memberships/PayFast stack.
 - Afrikaans casing convention: sentence case for headings ("Begin skryf", not "Begin Skryf").
@@ -336,11 +337,11 @@ The new site **reuses the existing database** (cloned). Migration is mapped in d
 ## 13. Non-functional requirements
 
 - **SEO / indexability:** preserve archive URLs, 301 integrity, sitemaps, CPT schema. Content architecture precedes visual redesign.
-- **Security:** login protection (Loginizer or edge), no dev/diagnostic/migration tools on production, moderation/report path.
+- **Security:** edge (Cloudflare) login protection — Loginizer retired (§14.16); no dev/diagnostic/migration tools on production; moderation/report path.
 - **Performance:** caching layer appropriate to host; avoid plugin sprawl and heavy front-end JS where a pattern suffices.
 - **Accessibility & readability:** Afrikaans readability prioritised over decorative type; reading templates text-legible first (768px content width).
 - **Maintainability:** Site Editor stability for non-technical staff; block locking on critical structure; design tokens enforced.
-- **Update governance & i18n resilience:** WordPress core and plugins update on a partly **uncontrollable** cadence (security/minor core releases and host-forced updates cannot always be gated), and updates can introduce new English strings. Posture: (1) gate *major* plugin/core updates through staging where possible, running a regression pass on custom template overrides **and** a translation refresh; (2) rely on auto-delivered **community language packs** for well-covered code — WP core's Afrikaans (`af`) coverage is strong and self-updates, as do popular w.org plugins — so these rarely leak; (3) the genuine exposure is **premium/niche plugins with no language packs** (WooCommerce Memberships, PayFast gateway, Real3D, Report Content), whose committed `.mo` is the only defence and must be re-checked after their updates; (4) because not every update can be gated, keep a **production-side detection + fix path** for untranslated strings and **reconcile any production fixes back into version control**. No-English-leakage is a standing operational requirement, not a one-time build gate.
+- **Update governance & i18n resilience:** WordPress core and plugins update on a partly **uncontrollable** cadence (security/minor core releases and host-forced updates cannot always be gated), and updates can introduce new English strings. Posture: (1) gate *major* plugin/core updates through staging where possible, running a regression pass on custom template overrides **and** a translation refresh; (2) rely on auto-delivered **community language packs** for well-covered code — WP core's Afrikaans (`af`) coverage is strong and self-updates, as do popular w.org plugins — so these rarely leak; (3) the genuine exposure is **premium/niche plugins with no language packs** (WooCommerce Memberships, PayFast gateway, Real3D, Report Content), whose committed `.mo` is the only defence and must be re-checked after their updates; (4) because not every update can be gated, run **production-side detection** for untranslated strings (the automated English-leak scan); fixes are then authored on staging, committed to version control, and redeployed — **Loco is not installed on production** (§14.13). No-English-leakage is a standing operational requirement, not a one-time build gate.
 - **Testing & QA strategy (to make the staging gate affordable)** *[Decided 2026-06-14 via planning discussion — see §14.17; not in the original planning corpus]*: Test *your own seams, not the plugins themselves* — confirm `ink-core` logic and the theme↔plugin integration points survive an update, don't re-test BuddyPress/WooCommerce. Test pyramid: **many unit tests** for `ink-core` rules (tier promotion, submission-entitlement gate, sponsor scheduling, follow graph) with WP mocked (**Brain Monkey / WP_Mock**, via **Pest** or PHPUnit); **fewer integration tests** booting real WP+DB (**`wp-env`** + WP test library, or **wp-browser/Codeception**) for the seams that matter (*active membership ⇒ can submit*, *expired ⇒ denied*, *tier write ⇒ meta+log*); a **thin E2E layer** (**Playwright** + `@wordpress/e2e-test-utils-playwright`) for critical journeys only (register → choose intent → buy membership via PayFast **sandbox** → submit → publish → read/react → renewal/expiry). Run unit+integration in CI per change; run the E2E smoke suite automatically on the staging deploy so the update gate is mostly automated. **Risk-based depth:** smoke-only for minor/security updates, full regression for major version bumps. Add an automated **English-leak check** (crawl key front-end pages + scan for English / `wp i18n` untranslated counts) to satisfy the detection requirement above cheaply. Concentrate the suite in `ink-core` (highly unit-testable); cover the block theme via E2E/visual checks rather than unit tests.
 - **Editorial low-friction:** automatic surfacing via shared taxonomy; no mandatory per-item manual linking.
 
@@ -362,32 +363,33 @@ The new site **reuses the existing database** (cloned). Migration is mapped in d
 | 10 | Friendship→follow migration | **Resolved 2026-06-14: convert.** Each existing BuddyPress friendship → two follow records (A→B and B→A). | Migration script generates mutual follows from the BuddyPress friendship table. |
 | 11 | SEO plugin | **Resolved 2026-06-14: Rank Math from the start** (no meaningful Yoast data — only a few InkPols OG images). | Import limited Yoast data via Rank Math importer; verify InkPols images; deactivate Yoast. No per-post backfill. |
 | 12 | Loco Translate role | **Resolved 2026-06-14: authoring tool only**, scoped to residual third-party plugin strings; theme/`ink-core` are Afrikaans-native. | Author + version-control `.po/.mo`. |
-| 13 | Loco active on production? | **Resolved 2026-06-14: yes** — keep Loco as a production translation safety net (core/host-forced updates can't always be gated, so a prod string-fix path is the realistic default). | Configure Loco to save translations to a non-overwritten, ideally version-controlled location; **reconcile any production fixes back into the repo**; pair with detection (§13) for new untranslated strings. Authoring role still primary on staging; theme/`ink-core` remain Afrikaans-native. |
+| 13 | Loco active on production? | **Resolved: no — Loco is a staging/authoring tool only, never installed on production** (consistent with §13 production hygiene). Production loads the committed `.mo` from `wp-content/languages/` without Loco present; the committed bundle is the safety net. | Author translations on staging; **commit `.po/.mo` to version control** and ship them with releases. New strings from ungated core/host-forced updates: the automated English-leak detection (§13) flags them, then they are authored on staging, committed, and redeployed — **not hand-edited on production**. Theme/`ink-core` remain Afrikaans-native. |
 | 14 | Admin interface language | **Resolved 2026-06-14: WordPress admin stays English.** Afrikaans-first applies to the front end + user-facing emails only. Rationale: poor WP/plugin Afrikaans admin translations; support/doc findability for staff. | Site locale `af`; staff roles (editor/administrator) forced to English admin language via the per-user WP language setting in `ink-core`. Removes admin chrome from the translation scope entirely. |
 | 15 | `ink-core` own admin labels | **Resolved 2026-06-14: Afrikaans.** All `ink-core`-registered CPT/taxonomy labels and custom admin UI (tier promotion, sponsor scheduling, challenge/winner admin, reports) stay Afrikaans per `afrikaans-terms.md` — English would confuse editors working with INK domain concepts. WP-core + third-party plugin admin chrome stays English (§14.14). | `ink-core` authors its admin-facing strings in Afrikaans as the source language and ships **no English translation**, so gettext returns the Afrikaans source even under a staff member's English admin locale. Intended result: Afrikaans INK domain terms within English WP chrome. |
-| 16 | Security stack (layered) | **Resolved 2026-06-14:** Cloudflare (edge + login rule) + staff 2FA + **Patchstack** (CVE alerts) + disciplined staging-gated updates (§13; `ink-feature-list.md` Epic 17.7) + host-level malware scanning (**provided by the host**, confirmed 2026-06-14). **No WordFence** — host scanning + Patchstack cover the gap without the overhead. **Patchstack is a new addition** (not in the original corpus). | Login brute-force handled by the Cloudflare rule → **Loginizer retired** (requires the origin locked to Cloudflare — §14.9). Add a lightweight staff-2FA plugin or Cloudflare Access on `/wp-admin`. PayFast off-site → low PCI scope. |
-| 17 | Testing & QA strategy | **Resolved 2026-06-14 via planning discussion** (not in the original planning corpus). Pest/PHPUnit + Brain Monkey/WP_Mock unit tests for `ink-core` rules, `wp-env`/wp-browser integration tests for the theme↔plugin seams, a thin Playwright E2E layer for critical journeys, plus an automated English-leak crawl. Risk-based depth (smoke for minor/security updates, full regression for majors). | Rationale: make the staging update-gate (§13, §14.13) affordable by automating regression. Build the suite into CI per change; run E2E smoke on staging deploys. Detailed in §13 + `ink-feature-list.md` Epic 17.8. |
+| 16 | Security stack (layered) | **Resolved 2026-06-14:** Cloudflare (edge + login rule) + staff 2FA + **Patchstack** (CVE alerts) + disciplined staging-gated updates (§13; `ink-feature-list.md` Epic 18.7) + host-level malware scanning (**provided by the host**, confirmed 2026-06-14). **No WordFence** — host scanning + Patchstack cover the gap without the overhead. **Patchstack is a new addition** (not in the original corpus). | Login brute-force handled by the Cloudflare rule → **Loginizer retired** (requires the origin locked to Cloudflare — §14.9). Add a lightweight staff-2FA plugin or Cloudflare Access on `/wp-admin`. PayFast off-site → low PCI scope. |
+| 17 | Testing & QA strategy | **Resolved 2026-06-14 via planning discussion** (not in the original planning corpus). Pest/PHPUnit + Brain Monkey/WP_Mock unit tests for `ink-core` rules, `wp-env`/wp-browser integration tests for the theme↔plugin seams, a thin Playwright E2E layer for critical journeys, plus an automated English-leak crawl. Risk-based depth (smoke for minor/security updates, full regression for majors). | Rationale: make the staging update-gate (§13, §14.13) affordable by automating regression. Build the suite into CI per change; run E2E smoke on staging deploys. Detailed in §13 + `ink-feature-list.md` Epic 18.8. |
 
 ---
 
 ## 15. Epic map
 
-The build decomposes into the following epics (detailed in `ink-feature-list.md`):
+The build decomposes into the following epics (detailed in `ink-feature-list.md`), listed in **build/dependency order** — earlier epics are prerequisites for later ones, which is how BMAD shards and sequences work. Cross-cutting concerns (Afrikaans-first, testing) are handled by foundational slices in Epic 1 plus standing acceptance criteria, not by their (high-numbered) execution epics:
 
-1. Foundation — block theme + tokens + `ink-core` scaffold
+1. Foundation — block theme + tokens + `ink-core` scaffold + **locale `af` / i18n scaffolding & admin-language mechanism** (Afrikaans-first is foundational, established here — Principle 3 / §12) + **test harness scaffold** (so `ink-core` rules ship test-first — §14.17)
 2. Content models & taxonomy
-3. Membership, access & payment (PayFast)
-4. Writer tiers
-5. Submission workflow
-6. Reading & engagement
-7. Discovery (Ontdek)
-8. Community & social (follow, profiles, messaging, notifications)
-9. Library (Biblioteek)
-10. Training (Opleiding)
-11. Challenges (Uitdagings) & winners
-12. InkPols
-13. Sponsors (Borge)
-14. Organisation pages & contact
-15. Migration & redirects
-16. Afrikaans-first & localisation
-17. SEO, security & performance
+3. Accounts, registration & auth — auth flows, reader/writer-intent capture, onboarding lifecycle (**foundational**: accounts precede membership/submission/community — §4)
+4. Membership, access & payment (PayFast)
+5. Writer tiers
+6. Submission workflow
+7. Reading & engagement
+8. Discovery (Ontdek)
+9. Community & social (follow, profiles, messaging, notifications)
+10. Library (Biblioteek)
+11. Training (Opleiding)
+12. Challenges (Uitdagings) & winners
+13. InkPols
+14. Sponsors (Borge)
+15. Organisation pages & contact
+16. Migration & redirects
+17. Afrikaans-first & localisation (**execution + QA**: copy application, residual-plugin translation, leak gate — foundational enablers are in Epic 1; the principle is also cross-cutting, see Gate D)
+18. SEO, security & performance (incl. **full test-suite buildout** — the harness *scaffold* is in Epic 1; this extends it to the full pyramid)
