@@ -457,7 +457,7 @@ Keep the existing plugin only as a bridge if needed. The better long-term soluti
 
 ### Decision
 
-Option B — custom front-end submission flow in `ink-core`. No Youzify bridge needed; the requirements are modest enough that a custom form is straightforward. Introduce three custom post types to distinguish content: `gedig`, `verhaal`, and `artikel`. The editor needs plain text with basic formatting only — no full rich-text editor. Supported extras: optional featured image and optional audio or video attachment.
+Option B — custom front-end submission flow in `ink-core`. No Youzify bridge needed; the requirements are modest enough that a custom form is straightforward. Introduce three custom post types to distinguish content: `gedig`, `storie`, and `artikel`. The editor needs plain text with basic formatting only — no full rich-text editor. Supported extras: optional featured image and optional audio or video attachment.
 
 **On the Youzify bridge question:** the short-term option was flagged in case timeline pressure made it necessary. Given the modest submission requirements, building a clean custom form from the start avoids the translation friction and is the better long-term choice.
 

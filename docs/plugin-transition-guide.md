@@ -254,7 +254,7 @@ Payment is currently collected manually via EFT, with the site owner activating 
 
 **Why:** Yoast provides XML sitemaps, meta management, structured data, and on-page SEO controls. Archive preservation and search indexability are must-preserve requirements (site-structure-audit). Yoast has years of SEO configuration data already in the database.
 
-**2026 reality check:** Yoast v27.8 has 10M+ active installs and is updated continuously. However, Rank Math (4M+ installs, free tier) is now the developer-preferred alternative. Rank Math's free tier includes native schema for custom post types, breadcrumbs, and local SEO — all of which are premium-only in Yoast. For a CPT-heavy literary platform, Rank Math handles schema for `gedig`, `verhaal`, and `artikel` post types more cleanly out of the box, without needing premium extensions.
+**2026 reality check:** Yoast v27.8 has 10M+ active installs and is updated continuously. However, Rank Math (4M+ installs, free tier) is now the developer-preferred alternative. Rank Math's free tier includes native schema for custom post types, breadcrumbs, and local SEO — all of which are premium-only in Yoast. For a CPT-heavy literary platform, Rank Math handles schema for `gedig`, `storie`, and `artikel` post types more cleanly out of the box, without needing premium extensions.
 
 **Recommendation:** Keep Yoast through the migration. Switching SEO plugins mid-migration risks losing historical data and introduces unnecessary risk at the point where redirect integrity is most critical. After launch, at the first content audit, evaluate a migration to Rank Math. Yoast provides a built-in import/export tool and Rank Math can import Yoast data cleanly.
 
@@ -308,7 +308,7 @@ Payment is currently collected manually via EFT, with the site owner activating 
 
 **Migration note:** The existing `functions.php` code that filters edit links to redirect to `/plaas-nuwe-publikasie?action=edit&post_id=...` was added specifically to support Youzify Frontend Submission. When this plugin is retired, that filter must also be removed from `functions.php` or, if it was migrated to `ink-core`, from `ink-core` itself.
 
-**New post types to support:** The custom form in `ink-core` will serve three content types — `gedig` (poem), `verhaal` (story), and `artikel` (article) — each with appropriate field sets and validation.
+**New post types to support:** The custom form in `ink-core` will serve three content types — `gedig` (poem), `storie` (story), and `artikel` (article) — each with appropriate field sets and validation.
 
 ---
 

@@ -178,7 +178,7 @@ Use for: Lees, Opleiding, Biblioteek, Uitdagings lists.
 - Main readable body column
 - Related items block
 
-Use for: gedig, verhaal, artikel, hulpbronartikel, biblioteekitem.
+Use for: gedig, storie, artikel, hulpbronartikel, biblioteekitem.
 
 ### Archetype D: Community utility page
 

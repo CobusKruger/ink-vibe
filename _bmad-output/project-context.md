@@ -39,7 +39,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 ### Language-Specific Rules (PHP 8.3 / WordPress)
 
 - **Prefix everything** `ink_` / `Ink\` — functions, hooks, options, meta keys, CPT/taxonomy IDs, and the `ink-core` namespace. No unprefixed globals.
-- **Model fixed value sets as `enum`s** in `ink-core`: writer tier (`brons`/`silwer`/`goud`), writer intent (`leser`/`skrywer`), response type (`lof`/`insig`/`voorstel`), reaction (`hartjie`/`duim_op`/`wow`). The string is the persisted DB value; never duplicate these literals across the codebase.
+- **Model fixed value sets as `enum`s** in `ink-core`: writer tier (`brons`/`silwer`/`goud`), response type (`lof`/`insig`/`voorstel`), reaction (`hartjie`/`duim_op`/`wow`). The string is the persisted DB value; never duplicate these literals across the codebase.
 - **All output is escaped at the point of output** (`esc_html`, `esc_attr`, `esc_url`, `wp_kses_post`); **all input is sanitised and capability-checked**; nonces on every state-changing form/AJAX/REST call. No raw `$_POST`/`$_GET`.
 - **Never write raw SQL with interpolation** — `$wpdb->prepare()` always. Custom tables (e.g. follow graph, tier-promotion log) declared via `dbDelta()` with the `$wpdb->prefix`.
 - **i18n on every user-facing string** with the correct text domain (`ink-core` / `ink-foundation`). Afrikaans is the source text; English is the fallback, not the reverse. See the Afrikaans-first rules below.
@@ -51,7 +51,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 - **Three-layer separation is non-negotiable.** Presentation → theme; INK business rules & content models → `ink-core`; commodity capabilities → vetted platform plugins. **No business logic in the theme** (no tier/challenge/submission/follow logic in templates or `functions.php`).
 - **THE conflation rule:** *subscription status* (active WooCommerce Membership) controls **submission entitlement**; *writer tier* (`ink_writer_tier`: brons/silwer/goud) controls **competition pools**. These are separate concepts — never gate one on the other. A paid Brons subscriber ≠ a Brons writer with an expired subscription.
-- **CPTs & taxonomies are registered in `ink-core`, in Afrikaans.** CPTs: `gedig`, `storie`, `artikel`, `skryfwerk`, `biblioteek_item`, `opleiding_artikel`, `uitdaging`, `inkpols_uitgawe`, `borg`. Taxonomies: `genre`, `vaardigheid`, `uitdagingsronde`, `skrywervlak`. Use these exact code IDs — they are migration-load-bearing (old `verhaal`→`storie`, `inkpols`→`inkpols_uitgawe`).
+- **CPTs & taxonomies are registered in `ink-core`, in Afrikaans.** CPTs: `gedig`, `storie`, `artikel`, `skryfwerk`, `biblioteek_item`, `opleiding_artikel`, `uitdaging`, `inkpols_uitgawe`, `borg`. Taxonomies: `genre`, `vaardigheid`, `uitdagingsrondte`, `ster_gradering`. Use these exact code IDs — they are migration-load-bearing (old `verhaal`→`storie`, `inkpols`→`inkpols_uitgawe`).
 - **Shared-taxonomy surfacing, not manual linking.** Training and contributions share `genre`/`vaardigheid` terms so resources surface automatically. Never build a feature that needs per-item manual editorial linking (Principle 8 — it gets ignored under workload).
 - **Follow is custom in `ink-core`** (asymmetric, one-way). BuddyPress Friend Connections are OFF. Don't reach for a BuddyPress follow add-on.
 - **Reading engagement lives in `ink-core`**, not WP comments — WP comments are disabled site-wide. Structured responses (`Gemeenskapsreaksies`: Lof/Insig/Voorstel), line highlights + reactions, suggested reads, reading list, ratings & reviews, pinned works.
@@ -65,7 +65,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **Test pyramid:**
   - *Many unit tests* — `ink-core` rules with WP mocked (Brain Monkey / WP_Mock, via Pest or PHPUnit): tier promotion, submission-entitlement gate, sponsor scheduling, follow graph.
   - *Fewer integration tests* — real WP+DB (wp-env + WP test library, or wp-browser/Codeception) for the seams that matter: *active membership ⇒ can submit*, *expired ⇒ denied*, *tier write ⇒ meta + log*.
-  - *Thin E2E layer* — Playwright + `@wordpress/e2e-test-utils-playwright` for critical journeys only: register → choose intent → buy membership via **PayFast sandbox** → submit → publish → read/react → renewal/expiry.
+  - *Thin E2E layer* — Playwright + `@wordpress/e2e-test-utils-playwright` for critical journeys only: register → buy membership via **PayFast sandbox** → submit → publish → read/react → renewal/expiry.
 - **`ink-core` rules ship test-first** — the test-harness scaffold is foundational (Epic 1), not deferred.
 - **Risk-based depth:** smoke-only for minor/security updates; full regression for major version bumps.
 - **English-leak check is an automated test**, not a manual pass: crawl key front-end pages + scan `wp i18n` untranslated counts. It is a *standing* gate (re-runs after ungated core/plugin updates), not a one-time build check.

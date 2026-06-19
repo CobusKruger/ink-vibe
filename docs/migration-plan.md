@@ -6,7 +6,7 @@ This document outlines what is involved in migrating the existing INK site data 
 
 The new site introduces several structural differences from the current one:
 
-- custom post types for stories (`verhaal`), poems (`gedig`), articles (`artikel`), and a catch-all `skryfwerk` type for unclassified content replacing the flat post model
+- custom post types for stories (`storie`), poems (`gedig`), articles (`artikel`), and a catch-all `skryfwerk` type for unclassified content replacing the flat post model
 - a dedicated custom post type for InkPols issues
 - a dedicated custom post type for challenges and competition results
 - a sponsor content type
@@ -49,7 +49,7 @@ Writers already self-classify their work by assigning categories when they post.
 
 **Mapping approach:**
 
-- Posts with a recognised content-type category → map to the corresponding CPT (`gedig`, `verhaal`, `artikel`).
+- Posts with a recognised content-type category → map to the corresponding CPT (`gedig`, `storie`, `artikel`).
 - Posts under `/biblioteek/` sub-paths → map to `biblioteek_item` CPT.
 - Posts under `/opleiding/` sub-paths → map to `opleiding_artikel` CPT.
 - Posts with no recognisable content-type category → assign to a catch-all CPT: `skryfwerk`. Do not attempt to classify these by hand if the volume is high.
@@ -98,7 +98,7 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 
 - BuddyPress extended profile fields may not map cleanly to the new profile model. Review which profile fields are worth keeping and which are noise.
 - User roles may need resetting. Current roles likely include subscriber and potentially custom roles added by BuddyPress or Youzify.
-- After import, assign correct base role for each user: reader or writer.
+- After import, assign a single member base role to each user — **no reader/writer distinction** (the signup intent gate was removed; any member can publish once subscribed — PRD FR-2). Drop legacy Youzify/BuddyPress custom roles.
 
 **Manual vs scripted:** role reassignment and profile field cleanup can be scripted once the field mapping is confirmed.
 
@@ -119,7 +119,7 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 **Edge cases:**
 
 - Writers in the spreadsheet who do not have a WordPress account yet: flag for manual follow-up.
-- Writers with ambiguous or missing tier data: default to `bronze` and flag for review.
+- Writers with ambiguous or missing tier data: default to `brons` (lowercase, canonical) and flag for review.
 - Promotion history: if the spreadsheet contains promotion history, store it in a second meta key or a custom log table.
 
 ---
@@ -138,7 +138,7 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 
 - Confirm all active memberships are still active after the database is moved to the new environment.
 - Confirm that membership plan IDs and access rules survive the migration without remapping (they should, as the WooCommerce product and plan structure is part of the cloned database).
-- Confirm that expiry and suspension logic continues to fire correctly on the new host.
+- **Manually verify**, before cutover, each active membership's state, plan ID, and expiry date (PRD MR-5). Cutover-boundary cases and expiry-cron/timezone reconciliation on the new host are tracked as a migration-build item (PRD §16 OQ-18) — not assumed to "just fire".
 
 **Manual vs scripted:** verification only; no data import needed.
 
@@ -152,7 +152,7 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 
 **Current state:** all content is standard WordPress posts, mostly in categories like `biblioteek` and `opleiding`, or uncategorised.
 
-**Target state:** three custom post types — `gedig`, `verhaal`, `artikel` — plus library and training CPTs.
+**Target state:** three custom post types — `gedig`, `storie`, `artikel` — plus library and training CPTs.
 
 **Approach:**
 
@@ -266,7 +266,7 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 **Approach:**
 
 - Activity stream: migrate if the new site uses BuddyPress activity. The volume can be trimmed by discarding activity older than a threshold (e.g. 2 years) unless there is a reason to preserve it.
-- Friendships: migrate using BuddyPress's own data tables, which survive a database clone.
+- Friendships → follow: BuddyPress Friend Connections are **off** in the new site, so the cloned friend tables are **not** the live store. **Read** them and **transform** — convert each **confirmed** friendship into **two** one-way `volg` records (A→B and B→A), dedup duplicates, and skip edges to non-imported/flagged accounts; pending friend requests are not converted (PRD MR-8).
 - Private messages: migrate with the database clone.
 - Notifications: do not migrate; let them regenerate naturally.
 
@@ -306,7 +306,7 @@ What to preserve: any deeply linked nav items that readers may have bookmarked. 
 
 - site URL and name
 - confirmed Afrikaans locale setting
-- Yoast SEO settings that reflect intentional configuration
+- (SEO is **not** carried from Yoast — it is configured fresh in **Rank Math**; Yoast is retired per PRD §9 / NFR-4)
 - any legitimate plugin settings worth keeping
 
 Avoid importing options from deactivated plugins, theme frameworks, or the old BuddyPress/Youzify configuration unless explicitly reviewed.
@@ -323,7 +323,7 @@ Any post or page that moves to a new URL needs a redirect from the old URL. Give
 
 | Old pattern | Likely new pattern | Volume |
 |---|---|---|
-| `/[slug]/` (flat post) | `/gedig/[slug]/` or `/verhaal/[slug]/` etc. | Very high |
+| `/[slug]/` (flat post) | `/gedig/[slug]/` or `/storie/[slug]/` etc. | Very high |
 | `/biblioteek/[slug]/` | `/biblioteek/[slug]/` (may stay) | High |
 | `/opleiding/[slug]/` | `/opleiding/[slug]/` (may stay) | Medium |
 | `/biblioteek/projek-wenners/[tier]/[slug]/` | new library URL | Medium |
@@ -367,12 +367,11 @@ Run in this sequence to minimise risk and dependency failures.
 
 - User role reassignment after import
 - Tier usermeta import from CSV
-- Subscription record creation from CSV
 - Post reclassification to CPT based on category mapping (unclassifiable posts fall through to `skryfwerk` automatically)
 - Library and training post migration based on URL path
 - Redirect rule generation during CPT migration
 - Taxonomy term remapping
-- BuddyPress activity and friendship table migration (database operation)
+- BuddyPress activity migration (database operation); **friendship→follow is a scripted transform, not a raw table clone** (read confirmed friendships → write two `volg` records — PRD MR-8)
 
 ### Must be done manually or needs editorial judgement
 

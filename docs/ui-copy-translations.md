@@ -8,6 +8,8 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 - Verwys na die toepaslike bladsy/komponent bo elke afdeling.
 - Wanneer jy tevrede is, kan die goedgekeurde tekste na `afrikaans-terms.md` verplaas word.
 
+> **Belangrik — die Engels is generiese plekhouerteks.** Die Engelse kolom kom uit die Lovable-mockup en is bloot generiese voorbeeldteks. Die Afrikaans mag (en behoort dikwels) in betekenis af te wyk — dit is 100% gepas en doelbewus vir die INK-konteks. Spesifieke Afrikaanse vertalings moet **nooit** deur 'n letterlike/masjien- (KI-) vertaling van die Engels vervang word nie. Behandel die Afrikaans as die bron van waarheid, nie die Engels nie.
+
 ---
 
 ## Navigasie (`Header.tsx`, `Footer.tsx`)
@@ -17,7 +19,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Engels | Afrikaans | Notas |
 |---|---|---|
 | Home | Tuis | |
-| Browse | Ontdek | Of "Blaai" — "Ontdek" voel meer uitnodigend |
+| Browse | Ontdek | Bevestig: "Ontdek" (verkies bo "Blaai" — meer uitnodigend) |
 | Library | Opleiding | Gebruik die amptelike seksienaam |
 | Challenges | Uitdagings | |
 | Community | Gemeenskap | |
@@ -28,7 +30,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| A sanctuary for writers and readers, fostering meaningful literary connections since 2018. | 'n Tuiste vir skrywers en lesers, wat sinvolle literêre bande smee sedert 2018. | INK se werklike stigtingsjaar moet hier gebruik word |
+| A sanctuary for writers and readers, fostering meaningful literary connections since 2018. | 'n Tuiste vir skrywers en lesers, wat sinvolle literêre bande smee sedert 2018. | Stigtingsjaar (2018) word nog met die stigter bevestig — nie 'n blokkeerder nie; behou 2018 voorlopig |
 | **Explore** | **Ontdek** | Voettekstkopie |
 | Latest Stories | Jongste bydraes | |
 | Poetry Collection | Gedigversameling | |
@@ -44,7 +46,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Donate | Skenk | |
 | Volunteer | Word 'n vrywilliger | |
 | About Us | Meer oor INK | |
-| © 2024 Inkwell Community. A 501(c)(3) nonprofit organization. | © [jaar] INK. 'n Niewinsgerigte gemeenskapsorganisasie. | Regsbesonderhede vir INK moet bevestig word |
+| © 2024 Inkwell Community. A 501(c)(3) nonprofit organization. | © 2026 INK. 'n Niewinsgerigte gemeenskapsorganisasie. | Bevestig: generiese beskrywing sonder regsbesonderhede; jaar = 2026 |
 | Made with ♥ for writers everywhere | Gemaak met ♥ vir skrywers oral | |
 
 ---
@@ -74,12 +76,13 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | January Challenge | Januarie-uitdaging | Dinamiese maandnaam |
 | Ends Jan 31 | Sluit 31 Jan | |
 | 234 Entries | 18 gedigte · 12 stories · 4 artikels | Breek af per inhoudssoort; skuif nulwaardes weg. "Inskrywings" bly vir die knoppie en reëlsykolom |
-| Submit Your Entry | Dien jou inskrywing in | Of "Plaas jou bydrae" — sien notas |
-| December Winner | Desember-wenner | Dinamiese maandnaam |
+| Submit Your Entry | Skryf in | Bevestig: "Skryf in" (gidskonsekwent — sien Deel 2 van terminologiegids) |
+| December Winner | Desember-wenner | Dinamiese maandnaam (2de/3de plek — "wenner") |
+| December Overall Winner | Desember algehele wenner | Dinamiese maandnaam (1ste plek — "algehele wenner", glossaarterm) |
 | 3rd Challenge Win | 3de wen | |
 | Read Full Story | Lees die volledige storie | |
 
-> **Noot oor "Submit Your Entry":** Die terminologiegids stel "plaas" voor as die algemene aksie. "Dien in" is meer formeel en geskik vir 'n kompetisie-konteks. Opsies: **"Plaas jou bydrae"** (informeel, gids-getrou) of **"Dien jou inskrywing in"** (formeel, kompetisie-toon). Bevestig voorkeur.
+> **Besluit oor "Submit Your Entry":** Gebruik **"Skryf in"**. Die terminologiegids (Deel 2) definieer die aksie om aan 'n uitdaging deel te neem as "Skryf in", met die ingediende stuk 'n "inskrywing" en die bevestigingsboodskap "Jou inskrywing is ontvang." ("Indien" staan op die vermy-lys in Deel 4; "plaas" is die algemene plaas-aksie, maar vir uitdagings is "Skryf in" die spesifieke term.)
 
 ### Uitgesoekte werke (`FeaturedWorks.tsx`)
 
@@ -222,7 +225,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| Submit Your Entry | Dien jou inskrywing in | Sien noot hieronder |
+| Submit Your Entry | Skryf in | Gidskonsekwent — sien Deel 2 van terminologiegids en noot by Uitdagingafdeling |
 | Read Entries | Lees inskrywings | |
 | Start Writing | Begin skryf | |
 | Browse other challenges | Ontdek ander uitdagings | |
@@ -364,7 +367,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Every story begins with a single word. Start yours here. | Elke storie begin met 'n enkele woord. Begin joune hier. | Ondersteunende teks |
 | Poem | Gedig | Inhoudsoorttipe |
 | Express emotions through verse, rhythm, and imagery. | Druk emosies uit deur vers, ritme en beelding. | |
-| Short Story | Verhaal | |
+| Short Story | Storie | Gidsterm "storie" (badge en raam-etiket gebruik reeds "Storie"; "verhaal" is afgeskaf) |
 | Craft a narrative with characters, plot, and meaning. | Skep 'n vertelling met karakters, intrige en betekenis. | |
 | Article | Artikel | |
 | Share an essay, reflection, or piece of journalism. | Deel 'n essay, besinning of joernalistieke stuk. | |
@@ -442,6 +445,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Insight *(badge)* | Insig | |
 | Praise *(badge)* | Lof | |
 | Suggestion *(badge)* | Voorstel | |
+| Moderator feedback *(label)* | Terugvoer van die moderator | Beoordelaar/moderator se terugvoer op 'n inskrywing; glossaarterm (R2). Verskyn slegs as die skrywer dit op My Profiel aanskakel |
 
 ---
 
@@ -511,7 +515,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Engels | Afrikaans | Notas |
 |---|---|---|
 | Inkwell Member | INK-lid | Kaart-opskrif |
-| Active subscription | Aktiewe intekening | |
+| Active subscription | Aktiewe lidmaatskap | "lidmaatskap" — sien Deel 3 van terminologiegids (G1, 2026-06-20); "intekening" is afgeskaf |
 | Status | Status | Etiket |
 | Active | Aktief | Waarde |
 | Renews | Hernu | Etiket |
@@ -526,6 +530,34 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | / [N]mo | / [N] mnd | Prys-suffix |
 | Your support keeps Inkwell ad-free and independent. | Jou ondersteuning hou INK advertensievry en onafhanklik. | |
 | Renew for [N] month(s) | Hernu vir [N] maand(e) | Knoppie |
+
+### Gradering-blad (My Profiel — privaat)
+
+*(Scope-increase 2026-06-20, G1/R3. Gradering-subteks verskyn slegs op My Profiel, nie op die openbare Skrywerprofiel nie.)*
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| [N] top-3 results needed to reach Silver | [N] top 3 uitslae nodig om Silwer te bereik | Gradering-bevorderingsubteks; glossaarterm (Deel 1, Skrywersvlakke) |
+| [N] top-3 results needed to reach Gold | [N] top 3 uitslae nodig om Goud te bereik | Gradering-bevorderingsubteks; glossaarterm |
+| Master *(tier label)* | Meester | Hoogste Gradering, slegs handmatig toegeken; handelsmerk-rooi-oranje. Glossaarterm (R3) |
+
+### Lidmaatskap-lewensiklus e-pos (scope-increase 2026-06-20)
+
+*(Nuwe transaksionele e-pos. Afrikaanse onderwerpe/snippette nog nie in die glossaar nie — wag op menslike kopie.)*
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Thank-you email (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Dankie-e-pos ná aansluiting/betaling; menslike kopie nodig |
+| 1-month expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 maand voor verval; menslike kopie nodig |
+| 1-week expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 week voor verval; menslike kopie nodig |
+
+### Outomatiese plasing-bevestigingskennisgewings (R7 — gerandomiseerde lys)
+
+*(Gerandomiseerde aanmoedigingsboodskappe ná 'n bydrae geplaas is. Menslike kopie nodig — moenie KI-vertaal nie.)*
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Auto post-receipt message (randomized variant 1…N) | [NEEDS HUMAN AFRIKAANS] | R7-lys; elke variant deur 'n mens geskryf |
 
 ### Wysig-profiel-dialoog
 

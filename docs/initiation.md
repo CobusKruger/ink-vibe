@@ -84,7 +84,7 @@ These decisions were settled during planning and should be treated as fixed cons
 | Code ID | UI label (Afrikaans) | Purpose |
 |---|---|---|
 | `gedig` | Gedig | Published poems by members |
-| `verhaal` | Verhaal | Short stories and prose |
+| `storie` | Storie | Short stories and prose (canonical; renamed from legacy `verhaal`) |
 | `artikel` | Artikel | Opinion pieces, essays |
 | `skryfwerk` | Skryfwerk | Catch-all bucket for unclassified migrated content |
 | `biblioteek_item` | Biblioteekitem | Curated library content, winning entries |

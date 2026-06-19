@@ -30,6 +30,8 @@ Die reël is eenvoudig: **kies een term per konsep en hou by daardie term.**
 | Iemand wat werk indien | **skrywer** | `writer` | Nie "outeur", nie "gebruiker" nie. |
 | 'n Nuwe lid wat nog nie gepubliseer het nie | **nuwe lid** | — | |
 | Admin/personeel | **redakteur** | `editor` / `admin` | WordPress-rolle: `editor` vir redaksionele personeel, `administrator` vir tegniese beheer. |
+| Die openbare profiel van 'n skrywer (vir ander sigbaar) | **Skrywerprofiel** | `single-skrywer` | **Eienaarsbesluit 2026-06-20 (G1/C6):** "Skrywerprofiel" is die **openbare** profiel. Let op spelling: Skrywer**profiel** (nie "Skrywersprofiel" nie). |
+| Die lid se eie private profiel (slegs vir die lid sigbaar) | **My Profiel** | `page-my-profiel` | Die **private** profiel. Hier verskyn private data soos leesgetalle en die "wins nodig"-subteks. |
 
 ---
 
@@ -38,11 +40,10 @@ Die reël is eenvoudig: **kies een term per konsep en hou by daardie term.**
 | Konsep | UI-term (Afrikaans) | Kode-ID / sleutel | Notas |
 |---|---|---|---|
 | Die aanmeldproses | **registreer** | — | |
-| Aanmeldskedule / toegangsreëls | **lidmaatskap** | `membership` | Die stelsel se toegangsbeheer is "lidmaatskap". |
-| Maandelikse/termynbetaling vir publiseerregte | **intekening** | `subscription` | "Intekening" is spesifiek vir betaalde toegang. Moenie "lidmaatskap" en "intekening" afwisselend gebruik nie — "lidmaatskap" is die bredere toegangstoestand, "intekening" is die finansiële ooreenkoms. |
-| Die prys en tydsduur van 'n intekening | **intekenplan** | `membership_plan` | |
-| Iemand met 'n aktiewe betaalde intekening | **intekenlid** | — | |
-| Iemand met 'n gratis geregistreerde rekening | **gratis lid** | — | |
+| Die lid se toegangstoestand (gratis of betaald) | **lidmaatskap** | `membership` | **Eienaarsbesluit 2026-06-20 (G1):** "lidmaatskap" is nou die enigste term vir die membership/subscription-konsep. Die vorige onderskeid tussen "lidmaatskap" en "intekening" is laat vaar — gebruik **nie** meer "intekening" nie. Die gratis/betaald-onderskeid word deur "gratis lid" / "betaalde lid" uitgedruk. |
+| Die prys en tydsduur van 'n lidmaatskap | **aansluitingsopsie** | `membership_plan` | Drie vaste termyne: 1 maand / 6 maande / 12 maande. |
+| Iemand met 'n aktiewe betaalde lidmaatskap | **betaalde lid** | — | **Eienaarsbesluit 2026-06-20 (G1):** vervang "intekenlid". Mag werk plaas en alle opleidingstof gebruik. |
+| Iemand met 'n gratis geregistreerde rekening | **gratis lid** | — | Het 'n rekening; mag lees, reageer, volg en 'n leeslys hou. Mag **nie** werk plaas of opleidingstof gebruik nie. |
 
 ---
 
@@ -50,12 +51,14 @@ Die reël is eenvoudig: **kies een term per konsep en hou by daardie term.**
 
 | Konsep | UI-term (Afrikaans) | Kode-ID / sleutel | Notas |
 |---|---|---|---|
-| Die verderingsstelsel vir skrywers | **skrywervlak** | `writer_tier` | Moenie "tier" in die UI gebruik nie. |
+| Die vorderingstelsel vir skrywers | **Gradering** | `writer_tier` | **Eienaarsbesluit 2026-06-20 (G1):** "Gradering" is die primêre UI-term vir die skrywer se vlak. "ster gradering" bly aanvaarbaar as langer vorm. Moenie "tier" in die UI gebruik nie. |
 | Vlak 1 | **Brons** | `brons` | Hoofletters in UI. Kleinletters in kode. |
 | Vlak 2 | **Silwer** | `silwer` | |
 | Vlak 3 | **Goud** | `goud` | |
-| Bevorder na 'n hoër vlak | **bevorder** | — | "Jy is na Silwer bevorder." |
-| Historiese vlakrekord | **vlakgeskiedenis** | `tier_history` | |
+| Vlak 4 (slegs handmatig) | **Meester** | `meester` | **Eienaarsbesluit 2026-06-20 (R3):** hoogste Gradering, slegs handmatig deur 'n redakteur toegeken (nooit outomaties bevorder nie). Vertoon in die handelsmerk-rooi-oranje (`primary #EA4015`), nie die gold/silwer/brons-kleure nie. |
+| Bevorder na 'n hoër vlak | **bevorder** | — | "Jy is na Silwer bevorder." Outomaties na 5 Brons-wins (→ Silwer) en 15 Silwer-wins (→ Goud); Meester slegs handmatig. |
+| 'n Top-3-plasing wat tel vir bevordering | **wins / top-3-uitslag** | `ink_tier_win_count` | Subteks op My Profiel: bv. "4 top 3 uitslae nodig om Silwer te bereik". |
+| Historiese vlakrekord | **graderingsgeskiedenis** | `tier_history` | |
 
 ---
 
@@ -105,9 +108,14 @@ Die reël is eenvoudig: **kies een term per konsep en hou by daardie term.**
 | Die maandelikse kompetisie | **uitdaging** | post_type: `uitdaging` | Moenie "kompetisie", "projek" of "challenge" gebruik nie. |
 | Die tema of opdrag van 'n uitdaging | **tema** | `challenge_theme` | |
 | Die sluitingsdatum | **sluitingsdatum** | `challenge_deadline` | |
-| 'n Inskrywing vir 'n uitdaging | **inskrywing** | `challenge_entry` | |
+| 'n Inskrywing vir 'n uitdaging | **inskrywing** | `challenge_entry` | Meervoud: "inskrywings" ("1 inskrywing" / "4 inskrywings"). |
+| Die volgnommer van 'n inskrywing (per tipe, per uitdaging) | **EntryID** | `entry_number` | **R1/R2:** interne/admin-konsep. Per-tipe volgorde (Gedigte, Stories, Artikels apart), toegeken by kollasie en gestoor om uitslae later te pas. Nie noodwendig lid-blootgestel nie; 'n Afrikaanse UI-etiket word deur 'n mens geskryf indien ooit nodig. |
+| 'n Inskrywing wat 2de of 3de geplaas het | **wenner** | — | Banier: "[Maand] wenner" (bv. "Desember wenner"), met kleur/ikoon vir Goud/Silwer/Brons. |
+| 'n Inskrywing wat 1ste geplaas het | **algehele wenner** | — | Banier: "[Maand] algehele wenner". Kry meer prominente plasing in die voer as gewone wenners. |
+| Geen wenner in 'n kategorie/gradering nie | **Geen** | — | Soos in die beoordelaars se uitslae aangedui. |
+| Die beoordelaar/moderator se terugvoer op 'n inskrywing | **Terugvoer van die moderator** | `ink_moderator_terugvoer` | **R2:** gestoor as 'n gestruktureerde reaksie (custom `comment_type`), nie 'n oop WP-kommentaar nie. Vertoon op die werk slegs as die skrywer dit op My Profiel aanskakel. |
 | Die aankondiging van 'n uitdaging | **uitdagingaankondiging** | — | |
-| Die aankondiging van wenners | **wenneraankondiging** | — | |
+| Die aankondiging van wenners | **wenneraankondiging** | — | Outomaties gegenereer uit 'n vormbriefsjabloon; verskyn in 'n uitgeligte posisie op die tuisblad. |
 | Die resultate van 'n uitdaging | **uitdaginguitslae** | — | |
 
 ---
@@ -131,7 +139,8 @@ Die reël is eenvoudig: **kies een term per konsep en hou by daardie term.**
 | Iemand wat 'n skrywer volg | **volgeling** | — | Meervoud: "volgelinge". **Nie** "volger" nie. |
 | Die aksie om 'n skrywer te volg | **Volg** | — | Wisselknoppie wys "Volg tans" sodra jy volg. |
 | Die aktiwiteitsvoer van 'n lid | **aktiwiteitsvoer** | `activity` | Moenie "stroom" of "feed" gebruik nie. |
-| 'n Reaksie op 'n bydrae | **reaksie** | `reaction` | Dek hartjie, duim op, en "wow". Moenie "like" gebruik nie. |
+| 'n Reaksie op 'n bydrae | **reaksie** | `reaction` | Dek hartjie, duim op, en "wow". Moenie "like" gebruik nie. Meervoud: "reaksies". Telwoord gebruik enkel-/meervoud: "1 hartjie" / "342 hartjies". |
+| 'n Gestruktureerde reaksie op 'n bydrae (die enigste terugvoerpad) | **Gemeenskapsreaksie** | `gemeenskapsreaksie` | Meervoud: "Gemeenskapsreaksies". Tipes: **lof** (`lof`), **insig** (`insig`), **voorstel** (`voorstel`). Vervang WP-kommentaar (sitewyd afgeskakel). |
 | 'n Hooglignering van 'n reël in 'n bydrae | **hooglignering** | `highlight` | Die aksie: "Merk hierdie reël." |
 | Kommentaar op 'n bydrae | **kommentaar** | `comment` | Meervoud: "kommentaar" (dieselfde). |
 | 'n Berig aan 'n lid | **boodskap** | `message` | Meervoud: "boodskappe". |
@@ -156,6 +165,7 @@ Hierdie woorde en frases verskyn as knoppies, skakels en toestandsboodskappe. Ge
 
 | Aksie | UI-term |
 |---|---|
+| bydraes en skrywers verken / deurblaai (nav + Browse-bladsy) | **Ontdek** |
 | 'n nuwe bydrae skep | **Plaas nuwe werk** |
 | 'n bestaande bydrae wysig | **Redigeer** |
 | 'n bydrae verwyder | **Verwyder** |
@@ -165,7 +175,7 @@ Hierdie woorde en frases verskyn as knoppies, skakels en toestandsboodskappe. Ge
 | kommentaar laat | **Laat kommentaar** |
 | reageer op 'n bydrae | **Reageer** |
 | 'n reël merk/hoogsig | **Merk hierdie reël** |
-| inteken vir 'n plan | **Inteken** |
+| aansluit by 'n betaalde lidmaatskap / 'n plan koop | **Inteken** *(⚠️ hersien — Eienaarsbesluit 2026-06-20 G1 het die selfstandige naamwoord "intekening" laat vaar; bevestig of die aksie-knoppie "Inteken" bly en of 'n lidmaatskap-gebaseerde bewoording verkies word. Geen AI-vertaling — mens moet bevestig.)* |
 | rekening skep | **Registreer** |
 | aanmeld | **Meld aan** |
 | afmeld | **Meld af** |
@@ -182,11 +192,13 @@ Hierdie woorde en frases verskyn as knoppies, skakels en toestandsboodskappe. Ge
 | Konsep gestoor | "Konsep gestoor." |
 | Begin volg | "Jy volg nou [naam]." |
 | Inskrywing ontvang | "Jou inskrywing is ontvang." |
-| Intekeningbevestiging | "Jou intekening is aktief. Jy kan nou werk plaas." |
-| Intekening verval | "Jou intekening het verval. Inteken weer om werk te plaas." |
-| Vlak-bevordering | "Baie geluk! Jy is na Silwer bevorder." |
-| Toegang geweier (nie ingeteken nie) | "Jy moet aangemeld wees om kommentaar te lewer." |
-| Toegang geweier (intekening nodig) | "Slegs intekenlede kan werk plaas. Sien intekenopsies." |
+| Lidmaatskapbevestiging | "Jou lidmaatskap is aktief. Jy kan nou werk plaas." |
+| Lidmaatskap verval | "Jou lidmaatskap het verval. Hernu om werk te plaas." |
+| Lidmaatskap verval binnekort (herinnering) | "Jou lidmaatskap verval binnekort." |
+| Betaling misluk of gekanselleer | "Jou betaling het misluk of is gekanselleer." |
+| Gradering-bevordering | "Baie geluk! Jy is na Silwer bevorder." |
+| Toegang geweier (nie aangemeld nie) | "Jy moet aangemeld wees om te reageer." |
+| Toegang geweier (betaalde lidmaatskap nodig) | "Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies." |
 
 ---
 
@@ -200,7 +212,9 @@ Hierdie woorde en frases moet **nie** gebruik word in enige gebruikerblootgestel
 | story | storie |
 | artikel (as versamelnaam) | bydrae |
 | submit | plaas |
-| tier | vlak |
+| tier | Gradering |
+| intekening / intekenaar / intekenlid | lidmaatskap / betaalde lid (Eienaarsbesluit 2026-06-20, G1) |
+| Skrywersprofiel (met 's) | Skrywerprofiel (openbaar) of My Profiel (privaat) |
 | badge | — (gebruik nie hierdie konsep nie) |
 | feed | aktiwiteitsvoer |
 | like | reaksie |
@@ -214,6 +228,7 @@ Hierdie woorde en frases moet **nie** gebruik word in enige gebruikerblootgestel
 | issue (vir InkPols) | uitgawe |
 | reading list | leeslys |
 | sponsor (Engels) | borg |
+| browse / Blaai (as nav/verken-aksie) | Ontdek |
 
 ---
 
@@ -238,16 +253,28 @@ Gebruik Afrikaanse slugs waar dit die inhoudsmodel beskryf:
 
 Gebruik die `ink_` voorvoegsel:
 
-- `ink_writer_tier`
+- `ink_writer_tier` (enum: `brons` / `silwer` / `goud` / `meester`)
 - `ink_tier_promoted_at`
-- `ink_writer_intent` (leser of skrywer)
+- `ink_tier_win_count` (top-3-wins tot volgende Gradering; herstel na 0 by bevordering)
+
+### Enum-waardes (`ink-core` Kernel)
+
+- `Tier`: `Brons` / `Silwer` / `Goud` / `Meester` (Meester slegs handmatig)
+
+### Custom comment types
+
+- `ink_moderator_terugvoer` ("Terugvoer van die moderator" — programmaties geskryf, nie 'n oop WP-kommentaar nie)
 
 ### Taxonomy slugs
 
 - `vaardigheid` (vir opleidingsartikels)
 - `genre` (vir bydraes)
-- `uitdagingsronde` (vir inskrywings en wenwerk)
-- `skrywervlak` (waar van toepassing as 'n taksonomieterm)
+- `uitdagingsrondte` (vir inskrywings en wenwerk)
+- `ster_gradering` (waar van toepassing as 'n taksonomieterm)
+
+### Uitdaging-inskrywing velde (custom-tabel `ink_entries`)
+
+- `entry_type` + `entry_number` (die EntryID; per-tipe volgorde, toegeken by kollasie)
 
 ---
 

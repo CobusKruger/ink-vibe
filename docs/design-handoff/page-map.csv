@@ -1,6 +1,6 @@
 page_slug,source_mock,wp_target,template_or_pattern,blocks,data_source,afrikaans_checks,responsive_notes,status
 tuisblad,ink-lovable/src/pages/Index.tsx (+ components/home/*),front-page,template+patterns,cover;query-loop;columns,featured_streams,yes,desktop-mobile parity,reference-ready
-lees-verhaal,ink-lovable/src/pages/ReadStory.tsx (+ components/reading/*),single-verhaal,template+patterns,group;prose-body;critique-panel,verhaal,yes,reading column width,reference-ready
+lees-storie,ink-lovable/src/pages/ReadStory.tsx (+ components/reading/*),single-storie,template+patterns,group;prose-body;critique-panel,storie,yes,reading column width,reference-ready
 lees-gedig,ink-lovable/src/components/reading/PoetryReader.tsx,single-gedig,template+patterns,group;poetry-body;line-resonance;critique-panel,gedig,yes,line-break layout,reference-ready
 opleiding,ink-lovable/src/pages/Library.tsx (layout reference only),page-opleiding,template+patterns,group;query-loop;accordion,opleiding_artikel,yes,stacked sections,layout-reference
 biblioteek,ink-lovable/src/pages/Library.tsx (layout reference — gaps noted),page-biblioteek,template+patterns,group;query-loop;date-archive;author-filter;pagination,biblioteek_item,yes,image crop parity,partial-reference

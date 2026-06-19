@@ -1,0 +1,2387 @@
+Delivered-To: cobus@krugerfamily.co.za
+Received: by 2002:a05:6358:541c:b0:29e:bd6b:5b19 with SMTP id u28csp2121109rwe;
+        Thu, 18 Jun 2026 11:57:29 -0700 (PDT)
+X-Received: by 2002:a2e:be21:0:b0:38e:cab9:3637 with SMTP id 38308e7fff4ca-3998a2847a4mr2175111fa.18.1781809049697;
+        Thu, 18 Jun 2026 11:57:29 -0700 (PDT)
+ARC-Seal: i=2; a=rsa-sha256; t=1781809049; cv=pass;
+        d=google.com; s=arc-20240605;
+        b=AnDa3rEQ63vwdkS9/3v1MidfCLMErl8RX0qmf37Xx6/u9aS1LQ1wL/rFC2WrimkjhS
+         gYKVWFOTqGirsrJXyKQ5HAMOB/Ahq0GPd5+pcAE+a0axdcPNGh5/6ZXx3NL/WQ5kj+Yv
+         3JhoGkRJKEVInF3ntKGNhRnW+naUYbxrYYvw4sY+WluFoAcNIAmPGwieuDHM+cubT4WP
+         pT/3jCQD80S063vGdW8Z1q4qQE+0JQ7Fa7LFpkhweKeRLyV69FSq8WZ0+J+Lhezjtc5/
+         iFZ1N8t5Y5npD3/zug57vb0qez6FFObZtzw16DvE7Nu65VQh5GVmWIpyPzZpfHA37GfA
+         fGDQ==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=to:subject:message-id:date:from:references:in-reply-to:mime-version
+         :dkim-signature;
+        bh=y7EHX2Vxz4Je4juH6MzD+pTVjBIqquvwgaSJV6KVLhk=;
+        fh=samKoAPwirAdf1lHnTwSvnfBX6Z995chvJqFZHAT6qg=;
+        b=GgpVUXF9VuG7yGXeGWysJUCCO1jZedcf9qSDrFS6FxTk3Kqbuzf1GuMwc+TS+mPGa8
+         7NjLE7U/hKzMeCnJI6FlbI/B7Ih/jAQ+4tLHin31jvX4tv0DKgoOgR1UfVkGnpxpOAg8
+         L5DYxY97L+cEbbkvzWwvyCmovmWNlzKRt8JYtij5Dv1NYVSA1qo9Bb52M/3K5V/k6lXy
+         0C6d/HWx/oSThxBwqFie1bXU+AfOpqgikzKhNc9kwVSQWZn0Iasyw16D0FSikYtCNQht
+         dluZ90Sa5kfgwe1urWQpgzetIZOmfcLEA+8Awbz/IuMzAXtMDqjED8WYOtr04mZa7g2y
+         Y08Q==;
+        dara=google.com
+ARC-Authentication-Results: i=2; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20251104 header.b=akAA7d5g;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of anzebez@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=anzebez@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;
+       dara=neutral header.i=@krugerfamily.co.za
+Return-Path: <anzebez@gmail.com>
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id 38308e7fff4ca-3998bf11248sor3141fa.8.2026.06.18.11.57.29
+        for <cobus@krugerfamily.co.za>
+        (Google Transport Security);
+        Thu, 18 Jun 2026 11:57:29 -0700 (PDT)
+Received-SPF: pass (google.com: domain of anzebez@gmail.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20251104 header.b=akAA7d5g;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of anzebez@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=anzebez@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;
+       dara=neutral header.i=@krugerfamily.co.za
+ARC-Seal: i=1; a=rsa-sha256; t=1781809049; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Zq4oP85loaPVTYmSgB08e9RS6cxiRCZDqylGxdjRpY6cHJ5urulrW7ZFuTEo8twZDj
+         LGjYGAyYIqFehl0WUz9TF8B4Xwif8hzsVr3dy7aPA3HRfY21btjpzk+skKUEFyhlean4
+         rys+GeLrDk0Lv7sc/a8lLSRcAwYQ3uwopJzWA7/XTdp8o3aYLSnx0SFp6OwjOzFFcCKV
+         TNL1I7zAfet4mmzJOk81m+zIHNLQfnizvV4Pgd+aCW2eouA4FCIpG6Eau8nxq2fsep9k
+         8xcMixiFzayHew5V6HnPGEklP6eWIkvmkqL8pfnBkFmFuLYGgn6tjWsq7uk+6uxdkz61
+         qFjw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=to:subject:message-id:date:from:references:in-reply-to:mime-version
+         :dkim-signature;
+        bh=y7EHX2Vxz4Je4juH6MzD+pTVjBIqquvwgaSJV6KVLhk=;
+        fh=samKoAPwirAdf1lHnTwSvnfBX6Z995chvJqFZHAT6qg=;
+        b=DQrBx0f0aY5DF0gt8+YR3wUIF/ucGdiXSqwMty0yIFws8bS2Jhc2H2uPY84s4uv8a7
+         5M8jqD6q18/X/sr9blCoKjKCx4N66YTKPSMDjBFqjoIfahNJzxe+uozxonmd7hmqi1mN
+         K2O49JSnBK/s4rtZEdz0LoMvPl6a/FzFMJWGw6523P/3hgoyThxpIzHKWToORW2T+ziC
+         a2PBwLqEI1DUFF3upG0FI8mF81bh+N+bNvUSAdWKIr8/Df89yWB3s2Vy1XnjKRLLYTqb
+         lX1MWkvFuBxtvdzNqSOKnsGbVsJf9aui3CjRcMDdzsSeABd7eFEsTe9tk15SYcB4nIR4
+         w6kA==;
+        darn=krugerfamily.co.za
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781809049; x=1782413849; darn=krugerfamily.co.za;
+        h=to:subject:message-id:date:from:references:in-reply-to:mime-version
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=y7EHX2Vxz4Je4juH6MzD+pTVjBIqquvwgaSJV6KVLhk=;
+        b=akAA7d5gL8QFNEnpyOyE2SFz7sBjwnEODsVj3YVFKdBP6dY2rOQt3TxsxyL+JvFQ7/
+         v3LKzCvZVU1pSor+uffFlCr8pmJR1kWXXv87nVyLHANTtS3slcM96ReAi97QLGyVn079
+         Fle+d8v6lNvbhFgDvYXIm0IMsV47bO8h3rZrst72rMqnGyLgRVl+CzxUw6n8A7VaJt7z
+         cYhBq/q+PBfSDqDK86r9iDRMIBM60qcDvWGL5ZH7SP0cTCnUnSrivTlG3tCSz33FYbNB
+         Fo86DjsFqJQh+rMyPYsl6bkTXrrMIn3xaQgfNDJeKl/3F+v97QJV5f0mFW32j0+a4yjB
+         47kQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781809049; x=1782413849;
+        h=to:subject:message-id:date:from:references:in-reply-to:mime-version
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=y7EHX2Vxz4Je4juH6MzD+pTVjBIqquvwgaSJV6KVLhk=;
+        b=VX+F/UBAWHlKiUsXeA8pAdLqzwmU4lb4FfJfWXv/fMLnqJlTTvtFDP9LuGnQLJCa0/
+         MAEi2sJwrUgn9ga0MnUQKQF1JLe92kmGXQN5yW8kQZA5I3Bb+c1+LZZk26oDtpeu8+SC
+         mA1YU8RNzvm/dtDqXvOO2A+hbg3DVZeZ6XhupBC/fiQYyomSRcpoPLMeyG8/Cli8Zh7W
+         w4yV1AIcIOrcEiVfodeik8d4djbMQtu9q30H/A7NHkTcWEwNYt7sd2fnurnYyI5sfbDc
+         SerfhDbmzlqPj1M0A670I5sjyhtf9Wk1983p0wYaBJ5hJaIAaCFyntGNl9r6PZXg1XB3
+         JtLQ==
+X-Gm-Message-State: AOJu0YzvMUSoNIev1pcAJXaCLAzt5eopQFRkKqJMhKIFsEQYoMOejEZt
+	GkPVeYnDF05LlzF9lD2KmpLhWWHUAd0WfwOs5kHDohjBeKzWd9SQzpg28sRVQrTnFmgV6WhtXSj
+	4sMgXrI6iUEbnMiERYfrebP550BlFX1rD5JQl
+X-Gm-Gg: AfdE7cl7kzJVdV/eawqrXtkerTlu0I2x9qVqGLMvnc7LWcypp+q9DMYmWTs9s3wuAyJ
+	Wy7e2tqaPvqIs8ybOL7k0e6DZN4XzdcGlZljcirIphYeVRK3oY5niyS83Bxq95+XZIUwz1n7Uoc
+	SqBCoHaVR9yD0vKrKsy+5+ECT9INry38/S85b+Yk/LmyEmrv1+UomPbqRPMLvCna1SN5lECXqI7
+	unYujGth9SwEjCTnWbbOgQBTIsKU8hGqcb2XyGlKYbpzO0eYa+N8gjJpY55hAnF8xOV9nw3WvAR
+	t29vIGjPMzSuq7mJoS4GTH2qBlXajdJ0i7/2hnkR6acP8SqA2fp2KTPk26r9YbCX27KS
+X-Received: by 2002:a05:651c:31ce:b0:393:e571:277a with SMTP id
+ 38308e7fff4ca-3998a11590cmr2569061fa.9.1781809047542; Thu, 18 Jun 2026
+ 11:57:27 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:a05:6022:b1c2:10b0:104:c1c5:5310 with HTTP; Thu, 18 Jun 2026
+ 11:57:24 -0700 (PDT)
+In-Reply-To: <CACt75hkE7L0bLx_x3LfYKLxfeRHxeiDbe8BKz4YVfi7KLJ5t7Q@mail.gmail.com>
+References: <CACt75hkE7L0bLx_x3LfYKLxfeRHxeiDbe8BKz4YVfi7KLJ5t7Q@mail.gmail.com>
+From: Anze Bezuidenhout <anzebez@gmail.com>
+Date: Thu, 18 Jun 2026 20:57:24 +0200
+X-Gm-Features: AVVi8Ce7PLipVg2FOHY98WpF9z01DFNm5kc6p9h-RTSIylBC8D_pHrwjOhn735w
+Message-ID: <CACt75h=gU0p6N=XCYV30XegR3g1kKJ80N1Hj9JKdRX0nmVOuCQ@mail.gmail.com>
+Subject: Fwd: INK Mei projek inskrywings
+To: Cobus Kruger <cobus@krugerfamily.co.za>
+Content-Type: multipart/alternative; boundary="000000000000561dec06548bbf41"
+
+--000000000000561dec06548bbf41
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Beste INKers
+
+
+
+Na julle in April met 'n "swaar" tema gekonfronteer is, bring Mei
+verligting.
+
+Hierdie maand is daar GEEN voorskrifte en re=C3=ABls om aan die projek deel=
+ te
+neem nie.
+
+
+
+In welke genre jy deelneem, is jy ongebonde aan voorskriftelikheid. Dit
+skep die geleentheid vir jou om dit wat reeds lank geoormerk is vir
+publikasie, die lig te laat sien.
+
+
+
+Bederf ons met jou glinster, verstom ons met jou kreatiwiteit en oorweldig
+ons (in die beste sin van die woord) met jou skeppende vermo=C3=AB.
+
+
+
+Innoverende mense skryf in Afrikaans.
+
+
+
+Skryfgroete
+
+Projekbestuurder.
+
+
+
+**ONTHOU SLEGS 2 INSKRYWINGS BY GEDIGTE EN VERHALE AFDELING EN 3
+INSKRYWINGS BY DIE PROSA AFDELING PER LID ASB. ELKE LID MOET OOK ASB SY
+STERGRADERING VIR ONS DEURGEE AAN DIE BOKANT VAN SY/HAAR GEDIG PUBLIKASIES
+ASOOK DIE WOORDETAL VAN JOU PROSA EN VERHAAL PUBLIKASIES. LET OOK ASB
+DAAROP OM JOU NAAM ONDER AAN JOU PLASING TE SIT ASB.*
+
+
+
+*GEDIGTE:*
+
+*BRONS:*
+
+*1.Kompas na geluk (Nuwe lid)*
+
+Roetes van hoop het ek geloop,
+
+berge van geloof het ek geklim.
+
+Riviere van vrees het ek ingeswem=E2=80=94
+
+die stroom kon ek oorwin.
+
+Geluk was nooit aan die anderkant nie;
+
+dit was die verkeerde kaart.
+
+Geluk was al die tyd net hier by my.
+
+Nooit sal ek weer my eie menswees vermy nie.
+
+
+
+
+
+*3.More is dalk =E2=80=99n sprokie*
+
+M=C3=B4re is dalk =E2=80=99n sprokie
+
+Deur: Ryno du Plessis
+
+Donker grotte van kommer, dwaal die mens.
+
+Lewe vir net een wens.
+
+Gee die lewe oor; daar is niks wat die hart meer bekoor.
+
+Jouself verloor tussen gister se drake; daar is geen meer bate.
+
+Verlede verby, hede wag vir jou en my.
+
+M=C3=B4re is dalk =E2=80=99n sprokie=E2=80=94 sou jy klou aan die wens van =
+glorie?
+
+
+
+
+*7.Waar gaan tyd heen*
+
+Koekies in die spens,Sondae sou ons gaan swem.
+
+Paadjies bou onder dIe boom
+kan ek goed onthou.
+
+Groot geword; heel gesond
+Kinders Van gister
+stap al met hul,eie krose rond.
+
+Tyd het ver geloop,
+sy diep spore gelos.
+
+Vel nou sag, hare min.
+O=C3=AB half dof -wonder ek soms
+Het die lewe my nou hier gelos?
+
+
+
+
+*12.Die stoep*
+
+Op hi=C3=A9rdie stoep
+strek ek v=C3=A9r agteroor
+en rus my kop teen die verslete houtbank
+met oulap se lappieskombers oor.
+
+Hier lag ek di=C3=A9p uit my maag
+en ek kerf heel repe dik geelvetbiltong
+en ek voer die honde
+wat hulle lui hier voor my vellies tuismaak.
+
+Hier lees ek ure lank
+ten einde die nasmaak van nostalgie
+krummel-vir-krummel
+in skywe koel melktert en lang glase gemmerbier
+oor die horison verdwyn.
+
+Op hierdie stoep
+kou ek oopmond
+en ek rook sterk pyptabak en luister stil
+na waar die padda in die vleiland sy mater soek
+
+en hier kan ek huil
+en hier kan ek bid.
+Op hierdie stoep
+sal ek immer kan sit=E2=80=A6
+
+
+
+
+
+
+*13.Gedig van =E2=80=99n ou staaltjie*
+
+Gedig van ou staaltjie
+wat eindig met dankie
+arm man wat vra vir skoene
+by iemand sonder voete
+
+Trane wat loop oor wange
+met diep wetende verlange
+God ons Redder is in beheer
+vyand kan hom nie keer
+
+Sien mense wat net meer ontvang
+visie om meer bymekaar te maak
+glad nie eers bietjie bang
+wat maak Al die opgaar saak?
+
+Eendag is ons aardse tyd verby
+dan skokkend wil bely
+moes Meer medemens help, gee
+armes en die in nood
+
+Tyd gaan te vinnig verby
+vir jou en vir my
+kan ons lewens storie
+eindig met die woorde dankie!
+
+
+
+
+
+
+*14.Oue Duitsland*
+
+Tussen die stegies staan jy in die grou.
+
+Stukkende hande het jou steen-vir-steen gebou.
+
+Vandat die son sy lig laat skyn
+
+totdat die maan in die skemerte kwyn.
+
+
+
+Vandag vier ons =E2=80=98n groot dag Middeleeuse gebou!
+
+Jy is vandag =E2=80=98n hele seshonderd jaar oud!
+
+Jou fondasie is diep en dit hou jou sterk
+
+en elke steen het sy eie plek!
+
+
+
+Was dit maar so met die mens se bestaan
+
+Sou dit met ons almal ook beter gaan=E2=80=A6
+
+
+
+Wat =E2=80=98n wonder om te aanskou=E2=80=A6
+
+Ou Duitsland=E2=80=A6ek kom terug na jou!
+
+
+
+
+
+
+*16.Vir pa*
+
+My knie=C3=AB is laag gebuig vandag
+
+want in my hart groei woorde sag
+
+Mag U hom vashou waar hy nou is
+
+en mag U vrede sy hart vanaand sus
+
+
+
+Mag sy dag se sorge van sy rug afgly
+
+en mag dit re=C3=ABn waar sy skape wei.
+
+Stuur die engelekoor om saam met hom te sing
+
+en mag waar hy loop net voorspoed bring!
+
+
+
+Mag hy daai ou vellies onder sy bed instoot
+
+en kaalvoet oor die grasperk loop.
+
+Mag sy ore doof bly vir die bure se twis
+
+en sy hart vry bly van die duiwel se lus.
+
+
+
+Laat hom hoor wat U in die nanag fluister
+
+En laat hom nie vrees vir sy oudag se duister
+
+Mag hy steeds lig loop in sy strate van goud
+
+En mag hy jonk voel=E2=80=A6al is hy hoe oud=E2=80=A6
+
+
+
+Want hy laat my sterk voel
+
+Al is ek hoe swak
+
+Hy laat my lag
+
+Na =E2=80=98n moeilike dag!
+
+
+
+Hy is my pa, my vriend
+
+my trots!
+
+Here mag U sy hande nooit los!
+
+
+
+*SILWER:*
+
+
+
+*2.ervaar jou droom*
+
+*uit die grys van donker wolke*
+
+*uit mis wat kom oor die see*
+
+*oor die stof van my duine=C3=AA*
+
+*waar meeue skril skreeu*
+
+*klink die klanke van golwe*
+
+*oor ons mooie baai*
+
+*ek sal dankie s=C3=AA, ek sal bid*
+
+*ek sal opstaan, eksal aangaan*
+
+*alles net om bly te wees*
+
+
+*in my gedagtes versonke*
+
+*verdwaal in my drome*
+
+*oor tye ver in die verlede*
+
+*skryf ek uit my hart*
+
+*oor die wil en we=C3=AB*
+
+*van geheel my volk*
+
+*onder verdrukking*
+
+*wat staande bly en aanhou stry*
+
+*waarlik nog in eie reg en kultuur*
+
+*ons kindwees geborge*
+
+
+
+*in die dagbreek van ons somer*
+
+*na die bitter nag van smarte*
+
+*breek daar sonstrale van ons jeug*
+
+*deur die duister mag se donker*
+
+*klink daar nuwe klanke*
+
+*versprei oor lande en grense*
+
+*klink ons stem helder op*
+
+*dra ons woorde en werke*
+
+*die vaandel van ons Here*
+
+
+
+*deur die mis wat rus oor wit grafstene*
+
+*breek die lied weereens helder op*
+
+*staan op, staan op vir Jesus*
+
+*op Sy almag vas vertrouend*
+
+*een hand op Sy Woord*
+
+*een hand aan die ploegstert*
+
+*breek ons liefde deur die braakland*
+
+*van =E2=80=99n w=C3=AAreld koud en vyandig*
+
+*saai ons lig en vrede*
+
+
+
+
+
+
+
+
+
+*4.taan*
+
+*wanneer sonstrale tanend ondergaan*
+
+*wolkies in vliese verward versprei*
+
+*voor vlietende suid-ooster woede*
+
+*sneeu wit op kaapse berge rus*
+
+*bokmakierie se roep angstig*
+
+*en senutergend raak*
+
+*knie=C3=AB nie meer*
+
+*sag wil buig*
+
+*raak gesigte*
+
+*baie skaars op*
+
+*wit strande van*
+
+*my mooiste baai*
+
+*raak gedagtes drome*
+
+*wat telkens terugkeer*
+
+*na verlede se mooi*
+
+*al taan die wete*
+
+*in trane van*
+
+*vergete*
+
+
+
+
+
+
+
+*9.Soos najaardou*
+
+Haar spookasempienk gewaad
+vertoon sag by haar spierwit kroon,
+waardig, maar tog vriendelik
+groet sy elkeen by die kerk se deur.
+
+In haar lilapers roomysrok
+geskep met kromgetrekte hande
+is sy =E2=80=98n Barbie-uitrusting-legende,
+=E2=80=98n aantrekkingskrag vir oud en jonk.
+
+In =E2=80=98n appelgroen gestileerde pakkie
+vertoon sy klein en tog kordaat,
+maar sy groei nog daagliks
+soos wysheid wat stil ontkiem.
+
+In =E2=80=98n wolklose hemelblou getooi
+dra sy haar kroon as Koningskind,
+sy hou aan glinster
+soos najaarsdou.
+
+
+
+
+*10.Graf met siellose asem*
+
+Hulle dra dit soos =E2=80=99n kroon,
+daardie woord: *tronk*.
+Laat dit blink klink,
+soos =E2=80=99n medalje
+wat teen =E2=80=98n borskas wink.
+
+
+
+Generaals van oorlo=C3=AB
+sonder oorwinnings.
+
+
+
+Binne is daar net
+
+=E2=80=99n plastiekbak met
+
+pap wat afkoel,
+
+bruin brood wat aan
+
+die verhemelte kleef,
+en =E2=80=99n dun streep soet
+as die dag genadig is.
+
+
+
+Die dae rol soos klippe
+van oggend tot aand
+teen dieselfde muur.
+
+
+
+=E2=80=99n Dun matras, koue sement,
+
+komberse wat beweeg
+met klein, onsigbare kieme.
+
+Water val uit =E2=80=99n roesmond.
+Tyd word =E2=80=99n lang gang
+sonder vensters.
+
+Jy leer hoe lank =E2=80=99n minuut
+
+kan rek wanneer niemand
+
+jou roep nie.
+
+
+
+Buite beweeg die stad.
+Treine gly deur stasies.
+Kinders ruil skoennommers.
+Bome verloor hul blare.
+
+Binne bly alles sielloos.
+
+
+
+Wanneer die hek oopgaan
+is die lig nie =E2=80=98n sege nie =E2=80=93
+net helder.
+Te helder vir o=C3=AB
+wat gewoond geraak het
+aan die skemer.
+
+
+
+Jy stap uit met ink onder
+
+jou vel en stories wat swaar
+
+l=C3=AA, maar die w=C3=AAreld
+het nie vir jou gewag nie.
+
+
+
+Daar is geen kroon nie.
+Geen medalje nie.
+
+Net =E2=80=99n graf met
+
+=E2=80=98n siellose asem daarin.
+
+
+
+
+
+*17.Kardiomiopatie*
+
+hulle s=C3=AA ek het =E2=80=99n hartsiekte
+kardiomiopatie
+my hartspier is verswak s=C3=AA hulle
+maar niemand vra wat my hart moeg gemaak het nie
+niemand vra van jou nie
+
+***
+
+want ek weet wanneer dit begin het
+nie op =E2=80=99n monitor nie, nie in =E2=80=99n verslag nie
+maar daardie oggend toe jy vir my ges=C3=AA het jy=E2=80=99s moeg
+moeg vir baklei moeg vir probeer
+moeg vir ons
+
+***
+
+en toe het jy weggeraak bietjie vir bietjie
+jy=E2=80=99t my nie gelos in een slag nie
+jy=E2=80=99t my gelos in dae wat korter geword het
+in stilte op Whatsapp
+in skouers wat nie meer draai as ek huil nie
+in o=C3=AB wat wegkyk toe ek wou terugklim in jou hart
+
+***
+
+ek het aanhou gee
+aanhou hoop
+aanhou klop
+maar iets het begin verander in my bors
+
+***
+
+nie net emosioneel nie fisies
+die klop het anders gevoel
+nie meer soos liefde nie
+meer soos verlies wat bly
+
+***
+
+hulle s=C3=AA dis =E2=80=99n toestand van die hart
+ek s=C3=AA dis jy
+
+jy het gekom my hart gevul
+en toe stil stil begin leegmaak
+tot daar niks oor was nie behalwe
+=E2=80=99n hart wat klop sonder sin
+
+***
+
+ek sou wou s=C3=AA ek haat jou
+maar ek doen nie
+ek mis jou nog steeds
+selfs hier waar ek moet leer om sonder jou te leef
+en met =E2=80=99n hart wat nie meer weet hoe om lief te h=C3=AA nie
+
+
+
+
+
+*GOUD:*
+
+
+
+*5.Inversie-mooi*
+
+Duisend gisters het verby gegaan;
+steeds herroep ek haar naam.
+Inversie-mooi haar lewe geplooi;
+tydmaat die dood se mooi.
+
+Alleen agter gelaat, het sy my lewe;
+ontrustendheid eensaamheid my gegewe.
+Waarom Heer, hierdie seer?
+Lentes, somers, herfs, winters;
+verby gegaan =E2=80=99n duisend gisters.
+
+
+
+
+--=20
+Anze Bezuidenhout
+Eienaar: INK skryf in Afrikaans
+www.ink.org.za
+Sel: 0826480284
+anze@ink.org.za  EN skryfafrikaans@ink.org.za
+
+--000000000000561dec06548bbf41
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<br><br><div dir=3D"ltr"><div><p style=3D"margin:0cm;line-height:normal;fon=
+t-size:12pt;font-family:Aptos,sans-serif"><span style=3D"font-family:&quot;=
+Times New Roman&quot;,serif">Beste
+INKers</span></p>
+
+<p style=3D"margin:0cm;line-height:normal;font-size:12pt;font-family:Aptos,=
+sans-serif"><span style=3D"font-family:&quot;Times New Roman&quot;,serif">=
+=C2=A0</span></p>
+
+<p style=3D"margin:0cm;line-height:normal;font-size:12pt;font-family:Aptos,=
+sans-serif"><span style=3D"font-family:&quot;Times New Roman&quot;,serif">N=
+a julle in
+April met &#39;n &quot;swaar&quot; tema gekonfronteer is, bring Mei verligt=
+ing.</span></p>
+
+<p style=3D"margin:0cm;line-height:normal;font-size:12pt;font-family:Aptos,=
+sans-serif"><span style=3D"font-family:&quot;Times New Roman&quot;,serif">H=
+ierdie
+maand is daar GEEN voorskrifte en re=C3=ABls om aan die projek deel te neem=
+ nie.</span></p>
+
+<p style=3D"margin:0cm;line-height:normal;font-size:12pt;font-family:Aptos,=
+sans-serif"><span style=3D"font-family:&quot;Times New Roman&quot;,serif">=
+=C2=A0</span></p>
+
+<p style=3D"margin:0cm;line-height:normal;font-size:12pt;font-family:Aptos,=
+sans-serif"><span style=3D"font-family:&quot;Times New Roman&quot;,serif">I=
+n welke
+genre jy deelneem, is jy ongebonde aan voorskriftelikheid. Dit skep die
+geleentheid vir jou om dit wat reeds lank geoormerk is vir publikasie, die =
+lig
+te laat sien.</span></p>
+
+<p style=3D"margin:0cm;line-height:normal;font-size:12pt;font-family:Aptos,=
+sans-serif"><span style=3D"font-family:&quot;Times New Roman&quot;,serif">=
+=C2=A0</span></p>
+
+<p style=3D"margin:0cm;line-height:normal;font-size:12pt;font-family:Aptos,=
+sans-serif"><span style=3D"font-family:&quot;Times New Roman&quot;,serif">B=
+ederf ons
+met jou glinster, verstom ons met jou kreatiwiteit en oorweldig ons (in die
+beste sin van die woord) met jou skeppende vermo=C3=AB.</span></p>
+
+<p style=3D"margin:0cm;line-height:normal;font-size:12pt;font-family:Aptos,=
+sans-serif"><span style=3D"font-family:&quot;Times New Roman&quot;,serif">=
+=C2=A0</span></p>
+
+<p style=3D"margin:0cm;line-height:normal;font-size:12pt;font-family:Aptos,=
+sans-serif"><span style=3D"font-family:&quot;Times New Roman&quot;,serif">I=
+nnoverende
+mense skryf in Afrikaans.</span></p>
+
+<p style=3D"margin:0cm;line-height:normal;font-size:12pt;font-family:Aptos,=
+sans-serif"><span style=3D"font-family:&quot;Times New Roman&quot;,serif">=
+=C2=A0</span></p>
+
+<p style=3D"margin:0cm;line-height:normal;font-size:12pt;font-family:Aptos,=
+sans-serif"><span style=3D"font-family:&quot;Times New Roman&quot;,serif">S=
+kryfgroete=C2=A0</span></p>
+
+<p style=3D"margin:0cm;line-height:normal;font-size:12pt;font-family:Aptos,=
+sans-serif"><span style=3D"font-family:&quot;Times New Roman&quot;,serif">P=
+rojekbestuurder.</span></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif">=C2=A0</p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b>*ONTHOU SLEGS 2 INSKRYWINGS BY GEDIGTE EN VERHALE
+AFDELING EN 3 INSKRYWINGS BY DIE PROSA AFDELING PER LID ASB. ELKE LID MOET =
+OOK
+ASB SY STERGRADERING VIR ONS DEURGEE AAN DIE BOKANT VAN SY/HAAR GEDIG PUBLI=
+KASIES
+ASOOK DIE WOORDETAL VAN JOU PROSA EN VERHAAL PUBLIKASIES. LET OOK ASB DAARO=
+P OM
+JOU NAAM ONDER AAN JOU PLASING TE SIT ASB.</b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><span lang=3D"EN-US">=C2=A0</span></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">GEDIGTE:</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">BRONS:</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">1.Kompas
+na geluk (Nuwe lid)</span></b></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Roetes van hoo=
+p het
+ek geloop,</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">berge van gelo=
+of het
+ek geklim.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Riviere van vr=
+ees het
+ek ingeswem=E2=80=94</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">die stroom kon=
+ ek
+oorwin.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Geluk was nooi=
+t aan
+die anderkant nie;</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">dit was die ve=
+rkeerde
+kaart.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Geluk was al d=
+ie tyd
+net hier by my.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Nooit sal ek w=
+eer my
+eie menswees vermy nie.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">3.More
+is dalk =E2=80=99n sprokie</span></b></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">M=C3=B4re is d=
+alk =E2=80=99n
+sprokie</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Deur: Ryno du =
+Plessis</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Donker grotte =
+van
+kommer, dwaal die mens.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Lewe vir net e=
+en
+wens.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Gee die lewe o=
+or;
+daar is niks wat die hart meer bekoor.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Jouself verloo=
+r
+tussen gister se drake; daar is geen meer bate.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Verlede verby,=
+ hede
+wag vir jou en my.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">M=C3=B4re is d=
+alk =E2=80=99n
+sprokie=E2=80=94 sou jy klou aan die wens van glorie?</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><br></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">7.Waar
+gaan tyd heen</span></b></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Koekies in die
+spens,Sondae sou ons gaan swem.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Paadjies bou o=
+nder
+dIe boom<br>
+kan ek goed onthou.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Groot geword; =
+heel
+gesond<br>
+Kinders Van gister<br>
+stap al met hul,eie krose rond.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Tyd het ver ge=
+loop,<br>
+sy diep spore gelos.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Vel nou sag, h=
+are
+min.<br>
+O=C3=AB half dof -wonder ek soms<br>
+Het die lewe my nou hier gelos?</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><br></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">12.Die
+stoep</span></b></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Op hi=C3=A9rdi=
+e stoep<br>
+strek ek v=C3=A9r agteroor<br>
+en rus my kop teen die verslete houtbank<br>
+met oulap se lappieskombers oor.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Hier lag ek di=
+=C3=A9p uit
+my maag<br>
+en ek kerf heel repe dik geelvetbiltong<br>
+en ek voer die honde<br>
+wat hulle lui hier voor my vellies tuismaak.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Hier lees ek u=
+re lank<br>
+ten einde die nasmaak van nostalgie<br>
+krummel-vir-krummel<br>
+in skywe koel melktert en lang glase gemmerbier<br>
+oor die horison verdwyn.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Op hierdie sto=
+ep<br>
+kou ek oopmond<br>
+en ek rook sterk pyptabak en luister stil<br>
+na waar die padda in die vleiland sy mater soek</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">en hier kan ek=
+ huil<br>
+en hier kan ek bid.<br>
+Op hierdie stoep<br>
+sal ek immer kan sit=E2=80=A6</span></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><br></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">13.Gedig
+van =E2=80=99n ou staaltjie</span></b></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Gedig van ou
+staaltjie<br>
+wat eindig met dankie<br>
+arm man wat vra vir skoene<br>
+by iemand sonder voete</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Trane wat loop=
+ oor
+wange<br>
+met diep wetende verlange<br>
+God ons Redder is in beheer<br>
+vyand kan hom nie keer</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Sien mense wat=
+ net
+meer ontvang<br>
+visie om meer bymekaar te maak<br>
+glad nie eers bietjie bang<br>
+wat maak Al die opgaar saak?</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Eendag is ons =
+aardse
+tyd verby<br>
+dan skokkend wil bely<br>
+moes Meer medemens help, gee<br>
+armes en die in nood</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Tyd gaan te vi=
+nnig
+verby<br>
+vir jou en vir my<br>
+kan ons lewens storie<br>
+eindig met die woorde dankie!</span></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><br></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">14.Oue
+Duitsland</span></b></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Tussen die ste=
+gies
+staan jy in die grou.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Stukkende hand=
+e het
+jou steen-vir-steen gebou.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Vandat die son=
+ sy lig
+laat skyn</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">totdat die maa=
+n in
+die skemerte kwyn.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Vandag vier on=
+s =E2=80=98n
+groot dag Middeleeuse gebou!</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Jy is vandag =
+=E2=80=98n hele
+seshonderd jaar oud!</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Jou fondasie i=
+s diep
+en dit hou jou sterk</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">en elke steen =
+het sy
+eie plek!</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Was dit maar s=
+o met
+die mens se bestaan</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Sou dit met on=
+s almal
+ook beter gaan=E2=80=A6</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Wat =E2=80=98n=
+ wonder om te
+aanskou=E2=80=A6</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Ou Duitsland=
+=E2=80=A6ek kom
+terug na jou!</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><br></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">16.Vir
+pa</span></b></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">My knie=C3=AB =
+is laag
+gebuig vandag</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">want in my har=
+t groei
+woorde sag</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Mag U hom vash=
+ou waar
+hy nou is</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">en mag U vrede=
+ sy
+hart vanaand sus</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Mag sy dag se =
+sorge
+van sy rug afgly</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">en mag dit re=
+=C3=ABn waar
+sy skape wei.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Stuur die enge=
+lekoor
+om saam met hom te sing</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">en mag waar hy=
+ loop
+net voorspoed bring!</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Mag hy daai ou
+vellies onder sy bed instoot</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">en kaalvoet oo=
+r die
+grasperk loop.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Mag sy ore doo=
+f bly
+vir die bure se twis</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">en sy hart vry=
+ bly
+van die duiwel se lus.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Laat hom hoor =
+wat U
+in die nanag fluister</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">En laat hom ni=
+e vrees
+vir sy oudag se duister</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Mag hy steeds =
+lig
+loop in sy strate van goud</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">En mag hy jonk
+voel=E2=80=A6al is hy hoe oud=E2=80=A6</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Want hy laat m=
+y sterk
+voel</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Al is ek hoe s=
+wak</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Hy laat my lag=
+</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Na =E2=80=98n =
+moeilike dag!</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Hy is my pa, m=
+y
+vriend</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">my trots!</spa=
+n></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Here mag U sy =
+hande
+nooit los!</span></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b>SILWER:</b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">2.ervaar
+jou droom</span></b></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">uit die grys
+van donker wolke</span></strong><span style=3D"font-size:10.5pt;font-family=
+:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">uit mis wat
+kom oor die see</span></strong><span style=3D"font-size:10.5pt;font-family:=
+Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">oor die stof
+van my duine=C3=AA</span></strong><span style=3D"font-size:10.5pt;font-fami=
+ly:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">waar meeue
+skril skreeu</span></strong><span style=3D"font-size:10.5pt;font-family:Bar=
+low;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">klink die
+klanke van golwe</span></strong><span style=3D"font-size:10.5pt;font-family=
+:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">oor ons
+mooie baai</span></strong><span style=3D"font-size:10.5pt;font-family:Barlo=
+w;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">ek sal
+dankie s=C3=AA, ek sal bid</span></strong><span style=3D"font-size:10.5pt;f=
+ont-family:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">ek sal
+opstaan, eksal aangaan</span></strong><span style=3D"font-size:10.5pt;font-=
+family:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">alles net om
+bly te wees</span></strong><span style=3D"font-size:10.5pt;font-family:Barl=
+ow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><i><span style=3D"fo=
+nt-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt windowt=
+ext;padding:0cm"><br>
+</span></i><strong><span style=3D"font-size:10.5pt;font-family:Barlow;color=
+:rgb(112,115,122);border:1pt windowtext;padding:0cm;font-weight:normal">in =
+my gedagtes versonke</span></strong><span style=3D"font-size:10.5pt;font-fa=
+mily:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">verdwaal in
+my drome</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow;=
+color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">oor tye ver
+in die verlede</span></strong><span style=3D"font-size:10.5pt;font-family:B=
+arlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">skryf ek uit
+my hart</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow;c=
+olor:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">oor die wil
+en we=C3=AB</span></strong><span style=3D"font-size:10.5pt;font-family:Barl=
+ow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">van geheel
+my volk</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow;c=
+olor:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">onder
+verdrukking</span></strong><span style=3D"font-size:10.5pt;font-family:Barl=
+ow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">wat staande
+bly en aanhou stry</span></strong><span style=3D"font-size:10.5pt;font-fami=
+ly:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">waarlik nog
+in eie reg en kultuur</span></strong><span style=3D"font-size:10.5pt;font-f=
+amily:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">ons kindwees
+geborge</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow;c=
+olor:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">in die
+dagbreek van ons somer</span></strong><span style=3D"font-size:10.5pt;font-=
+family:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">na die
+bitter nag van smarte</span></strong><span style=3D"font-size:10.5pt;font-f=
+amily:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">breek daar
+sonstrale van ons jeug</span></strong><span style=3D"font-size:10.5pt;font-=
+family:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">deur die
+duister mag se donker</span></strong><span style=3D"font-size:10.5pt;font-f=
+amily:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">klink daar
+nuwe klanke</span></strong><span style=3D"font-size:10.5pt;font-family:Barl=
+ow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">versprei oor
+lande en grense</span></strong><span style=3D"font-size:10.5pt;font-family:=
+Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">klink ons
+stem helder op</span></strong><span style=3D"font-size:10.5pt;font-family:B=
+arlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">dra ons
+woorde en werke</span></strong><span style=3D"font-size:10.5pt;font-family:=
+Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">die vaandel
+van ons Here</span></strong><span style=3D"font-size:10.5pt;font-family:Bar=
+low;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">deur die mis
+wat rus oor wit grafstene</span></strong><span style=3D"font-size:10.5pt;fo=
+nt-family:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">breek die
+lied weereens helder op</span></strong><span style=3D"font-size:10.5pt;font=
+-family:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">staan op,
+staan op vir Jesus</span></strong><span style=3D"font-size:10.5pt;font-fami=
+ly:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">op Sy almag
+vas vertrouend</span></strong><span style=3D"font-size:10.5pt;font-family:B=
+arlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">een hand op
+Sy Woord</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow;=
+color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">een hand aan
+die ploegstert</span></strong><span style=3D"font-size:10.5pt;font-family:B=
+arlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">breek ons
+liefde deur die braakland</span></strong><span style=3D"font-size:10.5pt;fo=
+nt-family:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">van =E2=80=99n
+w=C3=AAreld koud en vyandig</span></strong><span style=3D"font-size:10.5pt;=
+font-family:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">saai ons lig
+en vrede</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow;=
+color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">=C2=A0</span></strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><b style=3D"font-fam=
+ily:Aptos,sans-serif;font-size:12pt"><span lang=3D"EN-US">=C2=A0</span></b>=
+</p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">4.taan</span></b></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">wanneer
+sonstrale tanend ondergaan</span></strong><span style=3D"font-size:10.5pt;f=
+ont-family:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">wolkies in
+vliese verward versprei</span></strong><span style=3D"font-size:10.5pt;font=
+-family:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">voor
+vlietende suid-ooster woede</span></strong><span style=3D"font-size:10.5pt;=
+font-family:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">sneeu wit op
+kaapse berge rus</span></strong><span style=3D"font-size:10.5pt;font-family=
+:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">bokmakierie
+se roep angstig</span></strong><span style=3D"font-size:10.5pt;font-family:=
+Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">en
+senutergend raak</span></strong><span style=3D"font-size:10.5pt;font-family=
+:Barlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">knie=C3=AB nie
+meer</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow;colo=
+r:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">sag wil buig</span></strong><span=
+ style=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)"></spa=
+n></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">raak gesigte</span></strong><span=
+ style=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)"></spa=
+n></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">baie skaars
+op</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow;color:=
+rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">wit strande
+van</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow;color=
+:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">my mooiste
+baai</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow;colo=
+r:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">raak
+gedagtes drome</span></strong><span style=3D"font-size:10.5pt;font-family:B=
+arlow;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">wat telkens
+terugkeer</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow=
+;color:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">na verlede
+se mooi</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow;c=
+olor:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">al taan die
+wete</span></strong><span style=3D"font-size:10.5pt;font-family:Barlow;colo=
+r:rgb(112,115,122)"></span></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">in trane van</span></strong><span=
+ style=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)"></spa=
+n></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><strong><span style=
+=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122);border:1pt w=
+indowtext;padding:0cm;font-weight:normal">vergete</span></strong><span styl=
+e=3D"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)"></span></p=
+>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D"font-=
+family:Aptos,sans-serif;font-size:12pt">=C2=A0</span></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">9.Soos
+najaardou</span></b></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Haar spookasem=
+pienk
+gewaad<br>
+vertoon sag by haar spierwit kroon,<br>
+waardig, maar tog vriendelik<br>
+groet sy elkeen by die kerk se deur.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">In haar lilape=
+rs
+roomysrok<br>
+geskep met kromgetrekte hande<br>
+is sy =E2=80=98n Barbie-uitrusting-legende,<br>
+=E2=80=98n aantrekkingskrag vir oud en jonk.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">In =E2=80=98n =
+appelgroen
+gestileerde pakkie<br>
+vertoon sy klein en tog kordaat,<br>
+maar sy groei nog daagliks<br>
+soos wysheid wat stil ontkiem.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">In =E2=80=98n =
+wolklose
+hemelblou getooi<br>
+dra sy haar kroon as Koningskind,<br>
+sy hou aan glinster<br>
+soos najaarsdou.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><br></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif">=C2=A0</p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">10.Graf
+met siellose asem</span></b></p>
+
+<p style=3D"margin:0cm;line-height:18pt;background-image:initial;background=
+-position:initial;background-repeat:initial;vertical-align:baseline;font-si=
+ze:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D"font-=
+size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Hulle dra dit soos =
+=E2=80=99n
+kroon,<br>
+daardie woord:=C2=A0<strong><span style=3D"border:1pt windowtext;padding:0c=
+m">tronk</span></strong>.<br>
+Laat dit blink klink,<br>
+soos =E2=80=99n medalje<br>
+wat teen =E2=80=98n borskas wink.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Generaals van =
+oorlo=C3=AB<br>
+sonder oorwinnings.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Binne is daar =
+net</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=E2=80=99n pla=
+stiekbak met</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">pap wat afkoel=
+,</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">bruin brood wa=
+t aan</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">die verhemelte=
+ kleef,<br>
+en =E2=80=99n dun streep soet<br>
+as die dag genadig is.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Die dae rol so=
+os
+klippe<br>
+van oggend tot aand<br>
+teen dieselfde muur.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=E2=80=99n Dun=
+ matras, koue
+sement,</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">komberse wat b=
+eweeg<br>
+met klein, onsigbare kieme.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Water val uit =
+=E2=80=99n
+roesmond.<br>
+Tyd word =E2=80=99n lang gang<br>
+sonder vensters.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Jy leer hoe la=
+nk =E2=80=99n
+minuut</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">kan rek wannee=
+r
+niemand</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">jou roep nie.<=
+/span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Buite beweeg d=
+ie
+stad.<br>
+Treine gly deur stasies.<br>
+Kinders ruil skoennommers.<br>
+Bome verloor hul blare.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Binne bly alle=
+s
+sielloos.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Wanneer die he=
+k
+oopgaan<br>
+is die lig nie =E2=80=98n sege nie =E2=80=93<br>
+net helder.<br>
+Te helder vir o=C3=AB<br>
+wat gewoond geraak het<br>
+aan die skemer.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Jy stap uit me=
+t ink
+onder</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">jou vel en sto=
+ries
+wat swaar</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">l=C3=AA, maar =
+die w=C3=AAreld<br>
+het nie vir jou gewag nie.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=C2=A0</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Daar is geen k=
+roon
+nie.<br>
+Geen medalje nie.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Net =E2=80=99n=
+ graf met</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">=E2=80=98n sie=
+llose asem
+daarin.</span></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b style=3D"font-size:12pt"><span lang=3D"EN-US">=C2=A0</=
+span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">17.Kardiomiopatie</span></b></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">hulle s=C3=AA =
+ek het =E2=80=99n
+hartsiekte<br>
+kardiomiopatie<br>
+my hartspier is verswak s=C3=AA hulle<br>
+maar niemand vra wat my hart moeg gemaak het nie<br>
+niemand vra van jou nie</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">***</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">want ek weet w=
+anneer
+dit begin het<br>
+nie op =E2=80=99n monitor nie, nie in =E2=80=99n verslag nie<br>
+maar daardie oggend toe jy vir my ges=C3=AA het jy=E2=80=99s moeg<br>
+moeg vir baklei moeg vir probeer<br>
+moeg vir ons</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">***</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">en toe het jy
+weggeraak bietjie vir bietjie<br>
+jy=E2=80=99t my nie gelos in een slag nie<br>
+jy=E2=80=99t my gelos in dae wat korter geword het<br>
+in stilte op Whatsapp<br>
+in skouers wat nie meer draai as ek huil nie<br>
+in o=C3=AB wat wegkyk toe ek wou terugklim in jou hart</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">***</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">ek het aanhou =
+gee<br>
+aanhou hoop<br>
+aanhou klop<br>
+maar iets het begin verander in my bors</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">***</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">nie net emosio=
+neel
+nie fisies<br>
+die klop het anders gevoel<br>
+nie meer soos liefde nie<br>
+meer soos verlies wat bly</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">***</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">hulle s=C3=AA =
+dis =E2=80=99n
+toestand van die hart<br>
+ek s=C3=AA dis jy</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">jy het gekom m=
+y hart
+gevul<br>
+en toe stil stil begin leegmaak<br>
+tot daar niks oor was nie behalwe<br>
+=E2=80=99n hart wat klop sonder sin</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">***</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">ek sou wou s=
+=C3=AA ek haat
+jou<br>
+maar ek doen nie<br>
+ek mis jou nog steeds<br>
+selfs hier waar ek moet leer om sonder jou te leef<br>
+en met =E2=80=99n hart wat nie meer weet hoe om lief te h=C3=AA nie</span><=
+/p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-family:Aptos,sans-serif;font-size:12pt">=C2=A0</span></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif">=C2=A0</p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b>GOUD:</b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">=C2=A0</span></b></p>
+
+<p style=3D"margin:0cm 0cm 8pt;line-height:115%;font-size:12pt;font-family:=
+Aptos,sans-serif"><b><span lang=3D"EN-US">5.Inversie-mooi</span></b></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Duisend gister=
+s het
+verby gegaan;<br>
+steeds herroep ek haar naam.<br>
+Inversie-mooi haar lewe geplooi;<br>
+tydmaat die dood se mooi.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><span style=3D=
+"font-size:10.5pt;font-family:Barlow;color:rgb(112,115,122)">Alleen agter g=
+elaat,
+het sy my lewe;<br>
+ontrustendheid eensaamheid my gegewe.<br>
+Waarom Heer, hierdie seer?<br>
+Lentes, somers, herfs, winters;<br>
+verby gegaan =E2=80=99n duisend gisters.</span></p>
+
+<p style=3D"margin:7.5pt 0cm;line-height:18pt;background-image:initial;back=
+ground-position:initial;background-repeat:initial;vertical-align:baseline;f=
+ont-size:12pt;font-family:&quot;Times New Roman&quot;,serif"></p></div></di=
+v><br><br><br>-- <br><div dir=3D"ltr"><div dir=3D"ltr">Anze Bezuidenhout<di=
+v>Eienaar: INK skryf in Afrikaans</div><div><a href=3D"http://www.ink.org.z=
+a" target=3D"_blank">www.ink.org.za</a></div><div>Sel: 0826480284</div><div=
+><a href=3D"mailto:anze@ink.org.za" target=3D"_blank">anze@ink.org.za</a>=
+=C2=A0 EN=C2=A0<a href=3D"mailto:skryfafrikaans@ink.org.za" target=3D"_blan=
+k">skryfafrikaans@ink.org.za</a></div></div></div><br>
+
+--000000000000561dec06548bbf41--

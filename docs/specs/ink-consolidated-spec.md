@@ -1,6 +1,6 @@
 # INK — Consolidated Build Specification
 
-> **Status:** Consolidated for spec-framework ingestion · **Date:** 2026-06-14
+> **Status:** Consolidated for spec-framework ingestion · **Date:** 2026-06-14 · **Amended:** 2026-06-20 (Sprint Change Proposal — administrative burden-reduction scope increase: R1–R9 + G1; see `_bmad-output/planning-artifacts/sprint-change-proposal-2026-06-20.md`)
 > **Generated from:** [`spec-consolidation-brief.md`](./spec-consolidation-brief.md) — the originating brief and its four scope rules. Validate this deliverable against it.
 > **Scope:** The *new* INK website only. Old-site detail is included only where it is a binding constraint on the new build (database reuse, plugin continuity, migration). All retrospective narrative about the old site is out of scope.
 > **Source documents synthesised:** `instructions.md`, `initiation.md`, `implementation-options.md`, `site-structure-audit.md`, `migration-plan.md`, `plugin-transition-guide.md`, `afrikaans-terms.md`, `ui-copy-translations.md`, `lovable-block-theme-playbook.md`, `design-handoff-workflow.md`, `mockup-readiness-assessment.md`, `design-handoff/*` (tokens, page-map, agent-brief, repo analysis).
@@ -65,7 +65,7 @@ These are fixed constraints. Treat any deviation as requiring an explicit decisi
 - Reading engagement: contextual prompts, line highlighting with simple reactions, suggested next reads, structured community responses.
 - **Reader ratings & reviews**, **pinned/selected works**, and a **following-feed** (confirmed 2026-06-14 — see §14).
 - Structured content models for library, training, challenges, InkPols, sponsors.
-- Writer-tier system (Brons/Silwer/Goud) as first-class data.
+- Writer Gradering system (Brons/Silwer/Goud/Meester) as first-class data, with automatic top-3-win promotion (Brons→Silwer→Goud) and manual-only Meester.
 - Full migration of existing data and a redirect layer.
 
 ### Out of scope
@@ -85,15 +85,17 @@ These are fixed constraints. Treat any deviation as requiring an explicit decisi
 |---|---|---|
 | Visitor | besoeker | Read public writing; no account. |
 | Free member | gratis lid | Read, react, comment/respond, access library & training, build a reading list, follow writers. |
-| Subscriber (paid) | intekenaar | All free-member rights **plus** the right to publish work (submission entitlement). |
-| Writer | skrywer | A member who publishes; carries a writer tier (Brons/Silwer/Goud). |
-| Editor / staff | redakteur | WordPress `editor` role: editorial admin, challenge & winner administration, tier promotion, sponsor management, moderation. |
+| Paid member | betaalde lid | All free-member rights **plus** the right to publish work (submission entitlement). The membership (`lidmaatskap`) concept is uniformly **lidmaatskap**; the prior `intekenaar`/`intekening`/`intekenlid` vocabulary is retired (G1, 2026-06-20). |
+| Writer | skrywer | A member who publishes; carries a Gradering (Brons/Silwer/Goud/Meester). |
+| Editor / staff | redakteur | WordPress `editor` role: editorial admin, challenge & winner administration, Gradering promotion, sponsor management, moderation. |
 | Administrator | administrator | Technical control. |
 
-**Critical rule:** *subscription status* (active WooCommerce Membership) controls **submission entitlement**. *Writer tier* (`ink_writer_tier`) is a **separate** concept controlling Brons/Silwer/Goud competition pools. These must never be conflated in data or code. A paid subscriber at Brons tier is not the same as a Brons writer with an expired subscription.
+**Critical rule:** *lidmaatskap status* (active WooCommerce Membership — internal code IDs `membership`/`subscription` may remain) controls **submission entitlement**. *Gradering* (`ink_writer_tier`) is a **separate** concept controlling Brons/Silwer/Goud/Meester competition pools. These must never be conflated in data or code — submission entitlement is never gated on Gradering, and Gradering is never gated on lidmaatskap. A betaalde lid at Brons is not the same as a Brons writer with an expired lidmaatskap.
+
+> **UI vocabulary (G1, 2026-06-20):** user-facing copy uses **lidmaatskap** (membership), **betaalde lid** (paid) / **gratis lid** (free), and **Gradering** (the writer tier; "ster gradering" acceptable as the long form). Never "tier" or "intekening" in the UI. Code IDs may remain English/internal.
 
 ### Registration lifecycle (confirmed)
-create account → choose reader or writer intent (`ink_writer_intent`) → complete profile → if writer, explain tiers and subscription requirement → prompt first social action after signup.
+create account → complete profile → prompt first social action after signup. (No reader/writer intent choice at signup; any member can publish once they hold an active lidmaatskap.)
 
 ---
 
@@ -113,7 +115,7 @@ create account → choose reader or writer intent (`ink_writer_intent`) → comp
 | Security (layered) | Cloudflare (edge + login rule) · staff 2FA · Patchstack (CVE alerts) · host malware scanning | Origin locked to Cloudflare. Loginizer retired; no WordFence. See §14.16. |
 | Hosting / caching | NameHero (LiteSpeed Web Server) · LiteSpeed Cache · Cloudflare edge cache | Host behind Cloudflare; origin locked. See §14.9. |
 | Translation tooling | Loco Translate | `.po`/`.mo` authoring for surviving plugins — **staging only, not on production** (§14.13); committed `.mo` ships with releases. Human-authored only. |
-| Moderation | Report Content (or custom) | Logged report path; verify Afrikaans translatability or replace with `ink-core` form. |
+| Moderation | custom `ink-core` form | Logged report path via a **custom `ink-core` report form** (resolved 2026-06-15, PRD OQ-4 — no third-party Report Content). |
 
 **Design-system source values** (from `design-handoff/tokens/theme-tokens.json`): serif **Lora** (display/heading) + sans **Inter** (body/UI); palette terracotta `#EA4015` (primary), cream `#EDE9E0` (secondary), sage `#4D8066` (accent), highlight `#FFE066`, plus muted gold and dark-mode tokens. Spacing scale 4–96; content width 768px, wide 1400px; radius and shadow scales defined; dark mode tokens present.
 
@@ -137,7 +139,7 @@ create account → choose reader or writer intent (`ink_writer_intent`) → comp
 | `storie` | Storie | Short stories / prose. Code ID aligned to the UI term (was `verhaal`); `afrikaans-terms.md` updated accordingly (terminology reconciliation, 2026-06-14). |
 | `artikel` | Artikel | Opinion pieces, essays. |
 | `skryfwerk` | Skryfwerk | Catch-all bucket for unclassified migrated content. |
-| `biblioteek_item` | Biblioteekitem | Curated library content, winning entries. |
+| `biblioteek_item` | Biblioteekitem | Curated library content, winning entries. **R4 (stub):** winning entries update the writer's Biblioteek; detail deferred with the broader biblioteek analysis (§9.4). |
 | `opleiding_artikel` | Hulpbronartikel | Training / resource content. |
 | `uitdaging` | Uitdaging | Monthly challenge (theme, deadline, results). |
 | `inkpols_uitgawe` | Uitgawe | InkPols magazine issues (PDF-based). |
@@ -147,11 +149,22 @@ create account → choose reader or writer intent (`ink_writer_intent`) → comp
 
 | Meta key | Purpose |
 |---|---|
-| `ink_writer_tier` | Current tier: `brons` / `silwer` / `goud`. |
+| `ink_writer_tier` | Current Gradering: `brons` / `silwer` / `goud` / `meester`. `meester` is **manual-only** (never auto-promoted; rendered in the brand red-orange `primary #EA4015`, distinct from `danger`). |
 | `ink_tier_promoted_at` | Date of most recent promotion. |
-| `ink_writer_intent` | `leser` (reader) or `skrywer` (writer). |
+| `ink_tier_win_count` | Count of top-3 wins toward the next Gradering; **reset to 0 on promotion** (R3). |
 
-Tier promotion history stored in a second meta key or a custom log table for auditability.
+Tier-change history (promotion **or** corrective demotion — any-direction set; PRD FR-12) stored in a second meta key or a custom log table for auditability, with actor / date / reason / from→to tier.
+
+#### 6.3.1 Gradering auto-promotion algorithm [R3, decision 2026-06-20]
+
+The promotion engine lives in `Ink\Tiers` (never reads Entitlement — the conflation rule in §4 holds).
+
+- A **win** = any **top-3 placement** (algehele wenner or wenner) in **any entry type** at the writer's *current* Gradering. Multiple placements each count — including multiple placements within one category in a single round.
+- Thresholds: **Brons → Silwer at 5 wins**; **Silwer → Goud at 15 wins**. On promotion, `ink_tier_win_count` resets to **0** and counting begins again at the new Gradering.
+- **Meester is manual-only** — never reached by the win counter; it has no threshold. Manual promotion *and* corrective demotion by staff remain available at every level (PRD FR-12).
+- Promotion fires a **templated congratulation email** (simple form-letter text with a name-merge greeting — see §10.1 / the Notifications surface).
+- The private-profile "wins needed" subtext (e.g. "4 top-3-uitslae nodig om Silwer te bereik") is surfaced on **My Profiel** (private), reusing `ink_tier_win_count`. It is never shown on the public Skrywerprofiel.
+- Auto-promotion is triggered as the final step of results ingestion (§6.5 / R2), consuming that round's placement records.
 
 ### 6.4 Taxonomies
 
@@ -159,8 +172,8 @@ Tier promotion history stored in a second meta key or a custom log table for aud
 |---|---|---|
 | `genre` | bydraes (`gedig`/`storie`/`artikel`) | Genre/form classification; **shared** with training for automatic surfacing. |
 | `vaardigheid` | `opleiding_artikel` | Skill area — canonical seed terms (per `ui-copy-translations.md`): Begin hier, Skryfkuns, Digkuns, Prosa, Stylfigure, Redigeer en hersien, Stem en styl. (The `afrikaans-terms.md` list is illustrative only.) Shared with bydraes for cross-surfacing. |
-| `uitdagingsronde` | inskrywings & wenwerk | Links entries/winners to a challenge round. |
-| `skrywervlak` | where applicable | Tier as a taxonomy term where needed for query/segmentation. |
+| `uitdagingsrondte` | inskrywings & wenwerk | Links entries/winners to a challenge round. |
+| `ster_gradering` | where applicable | Gradering as a taxonomy term where needed for query/segmentation. |
 
 **Surfacing rule:** training and contributions share `genre`/`vaardigheid` terms so relevant resources appear automatically — **no per-article manual linking** (it would be ignored under workload).
 
@@ -172,11 +185,22 @@ The site uses a **one-way follow** model (follower/following counts), per the Lo
 - `afrikaans-terms.md` reconciled 2026-06-14: follow vocabulary added (`Volg` / `Volg tans` / `volgeling`, plural `volgelinge`), friendship terms replaced, and the follow-avoidance rule dropped. (`ui-copy-translations.md` "Volgers" also corrected to "volgelinge".)
 - Migration: existing BuddyPress friendships are **converted** to mutual follow records (each friendship → two follows), per §14.10 — see §11.
 
+### 6.6 Challenge adjudication automation **[Epic 12 extension; R1/R2, 2026-06-20]**
+
+This is the editorial-automation pillar that replaces the owner's manual challenge-results workflow. Build order is the hard chain **R1 → R2 → R3** (the EntryID data-model change is the linchpin and must land first).
+
+- **EntryID (`entry_type` + `entry_number` on the `ink_entries` custom table).** A per-type sequence (Gedigte, Stories, Artikels counted separately) within a challenge round, **assigned at collation time** (not at entry time). Stored so pasted results can be matched back to the originating entry. An Afrikaans UI label ("inskrywingsnommer") is authored only if it is ever member-exposed.
+- **Judge-email collation tool (R1):** auto-collates a round's entries into an anonymized judge email, assigning and storing each EntryID at collation.
+- **Results ingestion + coverage report (R2):** results and commentary are **pasted as plain text** by the editor (explicitly **NO `.docx` parser** — paste-only, eliminating the PhpWord/untrusted-ZIP/XXE attack surface). The tool matches pasted results against stored EntryIDs and produces a **coverage report** (which entries did/did not receive a result). R2's final step triggers the R3 promotion calc (§6.3.1).
+- **Winners-announcement post:** auto-generated from a **simple form-letter template** (name-merge greeting only, not a rich-template engine), placed in a **featured home slot**, containing an entry index with links to the winning works.
+- **Moderator feedback** is stored as the custom structured `comment_type = ink_moderator_terugvoer` ("Terugvoer van die moderator"), never an open WP comment — see §7.
+- **Winner banner + featured-feed ordering:** placement flags drive a per-rank banner and feed order — **algehele wenner (1st)** is ordered before **wenner (2nd–3rd)**. Pair colour with text/icon (no colour-only rank encoding). Brons/Silwer/Goud colour tokens defined in the design handoff; Meester uses brand `primary #EA4015`.
+
 ---
 
 ## 7. Reading & engagement model (confirmed decisions)
 
-- **WordPress comments are disabled site-wide.** The reading surface uses a custom **structured community response** system ("Gemeenskapsreaksies") with response types **Lof / Insig / Voorstel** (Praise / Insight / Suggestion).
+- **WordPress comments are disabled site-wide** — with **one programmatic exception**: moderator feedback is stored as a custom structured response (`comment_type = ink_moderator_terugvoer`, "Terugvoer van die moderator"), written programmatically via `wp_insert_comment`, **never as an open WP comment**. It is visible on a work only when the writer enables it on **My Profiel** (private). The reading surface otherwise uses a custom **structured community response** system ("Gemeenskapsreaksies") with response types **Lof / Insig / Voorstel** (Praise / Insight / Suggestion).
 - **Line highlighting** with simple **reactions** (`reaksie`: hartjie / duim op / wow) — discoverable but unobtrusive. Highlighting is **encouragement, not critique**. **No** public passage annotation.
 - **Contextual prompts** after each piece; **suggested next reads** (by tone, form, topic, or tier).
 - **Reader ratings & reviews** on writer profiles **[confirmed 2026-06-14]** — aggregate reader rating + written reviews.
@@ -195,12 +219,12 @@ Top-level navigation (Afrikaans):
 | **Ontdek** | The reading/discovery hub: browse, filter, sort, search published writing and writers (absorbs the former separate "Lees" section). | Tabs: **bydraes** (`gedig`/`storie`/`artikel` — filter by type, sort, date/archive browse) + **skrywers** (genre filter, sort: Meeste gelees, Nuwe stemme). Single-piece reading happens on the detail pages (Archetype C). |
 | **Opleiding** | Structured resource hub for writing craft. | `opleiding_artikel` with `vaardigheid` taxonomy + faceted search. |
 | **Biblioteek** | Curated collection: winners, reference, document-style resources. | `biblioteek_item` with date browsing, pagination, author filter. |
-| **Uitdagings** | Monthly challenges: rules, results, per-tier winners. | `uitdaging` list + single. |
+| **Uitdagings** | Monthly challenges: rules, results, per-tier placements (1st–3rd). | `uitdaging` list + single. |
 | **Gemeenskap** | Visitor conversion / marketing page (community features live on profiles). | Value props, principles, how-it-works, CTAs. |
-| **Lidmaatskap** | Registration, plans, benefits, automated payment, renewal. | WooCommerce Memberships purchase flow. |
+| **Lidmaatskap** | Registration, plans, benefits, automated payment, renewal. Terms are 1mo / 6mo / 12mo (no 3-month product). | WooCommerce Memberships purchase flow. |
 | **Oor INK** | Mission, contact, sponsors, organisation pages. | Static + `borg` content. |
 
-**Member surfaces:** My Profiel (oorsig, bydraes, vriende→volg, kennisgewings, lidmaatskap, plus the following-feed activity tab), Skrywerprofiel (public), Skryf (submission), auth flows (registreer / meld aan / wagwoord-herstel).
+**Member surfaces:** **My Profiel = the PRIVATE profile** (oorsig, bydraes, vriende→volg, kennisgewings, lidmaatskap, the following-feed activity tab, plus private-only data: Gradering "wins needed" subtext and read counts), **Skrywerprofiel = the PUBLIC writer profile** (shown to others; note the spelling — Skrywer**profiel**, not "Skrywersprofiel"), Skryf (submission), auth flows (registreer / meld aan / wagwoord-herstel).
 
 > **On "Lees":** the planning IA's "Lees" section and the mockup's "Ontdek" section were the same browse/search surface under two names. **Resolved 2026-06-14: merged into a single top-level section, "Ontdek".** "Lees" survives only as the reading *action* (the "Begin lees" verb and the single-piece reading/detail pages `lees-storie`, `lees-gedig`), not as a nav section. Curated/featured reading is handled by the Tuisblad.
 
@@ -249,7 +273,7 @@ Per-page WordPress targets are in `design-handoff/page-map.csv`. Mockup readines
 
 | Readiness | Pages |
 |---|---|
-| Reference-ready | Tuisblad, Lees (storie), **Lees (gedig)**, Uitdagings (single), Skryf, Skrywerprofiel, Ontdek, Gemeenskap, My Profiel |
+| Reference-ready | Tuisblad, Lees (storie), **Lees (gedig)**, Uitdagings (single), Skryf, Skrywerprofiel (public), Ontdek, Gemeenskap, My Profiel (private) |
 | Partial / layout-reference | Biblioteek (gaps: date browsing, pagination, author filter), Opleiding (uses Library layout), Uitdagings (list) |
 | Design-missing | — none remaining (gedig layout designed 2026-06-14, `PoetryReader.tsx`) |
 | Assembly-only (no new design) | Lidmaatskap, Oor INK, Kontak, Auth flows, Uitdagings list (Archetype B) |
@@ -274,18 +298,20 @@ A: design-system compliance (tokens only). B: layout consistency (mock intent or
 |---|---|
 | **BuddyPress (scoped)** | Member Profiles (xprofile), Member Directory, Notifications **on**. Private Messaging **deferred** — off at launch, revisit later (§14.7). Friend Connections, site-wide Activity, Groups, Blogs **off**. Treated as a data/API layer; UI is custom block-theme templates via BP template hooks. Tier rendered in custom profile template. |
 | **WooCommerce** | Memberships only. Suppress general-store UI (cart/catalog/checkout beyond membership purchase). Three fixed-term products: R60/1mo, R300/6mo, R600/12mo. |
-| **WooCommerce Memberships** | Subscription tracking + access enforcement (expiry/suspension). **Active membership = submission entitlement.** Already in active use; data carries across with DB clone. |
-| **WooCommerce PayFast Gateway** | Front-end ZAR payment for membership purchase (**new** flow). Auto-renew deferred — verify PayFast recurring support before enabling. |
+| **WooCommerce Memberships** | Lidmaatskap tracking + access enforcement (expiry/suspension). **Active lidmaatskap = submission entitlement.** Already in active use; data carries across with DB clone. **Lifecycle automation (R5, launch):** thank-you email on every activation; expiry-warning emails — **1-month-prior** (longer terms) + **1-week-prior** — via Action Scheduler sweeps; per-term (1mo / 6mo / 12mo) on/off toggle + simple form-letter config. **Post-launch:** recurring payment, the recurring-renewal-warning email variant, and the recurring-renewal discount (§14.5 amendment). |
+| **WooCommerce PayFast Gateway** | Front-end ZAR payment for lidmaatskap purchase (**new** flow). **Auto-activation on PayFast success triggers a thank-you email (R5).** Auto-renew deferred post-launch — verify PayFast recurring support before enabling (§14.8). |
 | **Real3D Flipbook** (reactivate) | PDF viewer for `inkpols_uitgawe`. Verify existing file paths/config pre-launch. |
 | **Rank Math** (replaces Yoast) | Sitemaps, meta, native CPT schema for `gedig`/`storie`/`artikel`, breadcrumbs (all free-tier). Adopted from the start. *Per-post* Yoast enrichment is negligible (owner's first-hand assessment: only a few InkPols OG images); global Yoast *config* is not carried forward by design (§11). This **overrides** `plugin-transition-guide.md`'s "keep Yoast through migration, evaluate Rank Math after launch" recommendation — a deliberate 2026-06-14 decision (§14.11). The Rank Math importer runs regardless as a safety net for any residual Yoast data; verify the InkPols images, then deactivate Yoast. SEO baseline comes from templated defaults + schema, **not** per-post manual backfill. |
 | **Redirection** | Migration redirect layer (301s for moved content). 404 logging. |
 | **Patchstack** (new) | Vulnerability/CVE alerts for installed plugins/themes; pairs with the staging-gated update routine (§13; `ink-feature-list.md` Epic 18.7). Lightweight — alerts, not a heavy WAF. |
 | **Staff 2FA plugin** (new) | Two-factor auth for `editor`/`administrator` accounts (or Cloudflare Access on `/wp-admin`). |
-| **Loco Translate** (authoring tool — **staging only, never installed on production** §14.13) | Translates the **residual user-facing strings of surviving third-party plugins only** — chiefly BuddyPress and the WooCommerce/Memberships/PayFast stack (plus Report Content/CF7 if kept). The custom theme and `ink-core` are Afrikaans-native and need no translation files — this is a sharp reduction from the old site's site-wide rescue role. Author Afrikaans `.po/.mo` **on staging**, **commit them to version control** (theme or a `languages` mu-plugin); **production loads them from `wp-content/languages/` without Loco installed** — the committed bundle is the production safety net. New strings from ungated core/host-forced updates are caught by the automated English-leak detection (§13), then authored on staging, committed, and redeployed — **not hand-edited on production**. Prefer complete community language packs where they exist; manual translation for premium plugins (e.g. Memberships). Human-authored only. |
-| **Report Content** (review) | Logged moderation report path. Verify Afrikaans translatability; else replace with `ink-core` report form. |
-| **Contact Form 7** (review) | Contact/enquiry on Oor INK. Evaluate Fluent Forms or small `ink-core` form at build time. |
-| **Comments Plus** (consolidate later) | Enforces global comment disable now; replace with two `ink-core` filters post-migration. |
+| **Loco Translate** (authoring tool — **staging only, never installed on production** §14.13) | Translates the **residual user-facing strings of surviving third-party plugins only** — chiefly BuddyPress and the WooCommerce/Memberships/PayFast stack. The custom theme and `ink-core` are Afrikaans-native and need no translation files — this is a sharp reduction from the old site's site-wide rescue role. Author Afrikaans `.po/.mo` **on staging**, **commit them to version control** (theme or a `languages` mu-plugin); **production loads them from `wp-content/languages/` without Loco installed** — the committed bundle is the production safety net. New strings from ungated core/host-forced updates are caught by the automated English-leak detection (§13), then authored on staging, committed, and redeployed — **not hand-edited on production**. Prefer complete community language packs where they exist; manual translation for premium plugins (e.g. Memberships). Human-authored only. |
+| **Custom `ink-core` report form** | Logged moderation report path (resolved 2026-06-15, PRD OQ-4 — replaces the evaluated Report Content plugin; Afrikaans-native). |
+| **Custom `ink-core` contact form** | Contact/enquiry on Oor INK (resolved 2026-06-15, PRD OQ-8 — no CF7 / Fluent Forms). |
+| **Comments Plus** (consolidate later) | Enforces global comment disable now; replace with two `ink-core` filters post-migration. The site-wide disable has **one programmatic exception** — the `ink_moderator_terugvoer` structured comment type (§6.6 / §7), written via `wp_insert_comment`; no native WP comments are re-enabled. |
 | **LiteSpeed Cache** (reactivate) | Server-side full-page + object caching. NameHero runs LiteSpeed Web Server, so this is the native caching layer (confirm plan tier runs LSWS). Complements Cloudflare edge caching — Cloudflare for static/edge, LiteSpeed for dynamic/logged-in pages. |
+| **Analytics provider** (new — R8) | **None selected today.** Select an analytics provider (launch). Read counts surface on **My Profiel** (private) reusing the already-denormalized `_ink_read_count`. POPIA posture (OQ-3) sharpens with this addition. |
+| **Social login + anti-spam** (new — R6) | Social login at registration plus an **optional, off-by-default manual-approval backstop** (a possible "pending approval" account state). Preceded by an **anti-spam research spike**. Implemented via vetted platform plugins through hooks, not `ink-core`. |
 
 ### 10.2 Retire (replaced or unneeded)
 Youzify & Youzify Frontend Submission (→ custom `ink-core` submission + custom BP profile templates), WPBakery / JoinUp Core / Qode Framework (old theme stack; grep & clean `[vc_*]` shortcodes first), CBX User Online, Classic Widgets, Ultimate Social Media Icons (→ theme footer pattern), WooCommerce Legacy REST API, WPCustom Category Image (→ native term meta; reassign 11 images), WPS Bidouille, LocoAI, Document Embedder, PDF Embedder, Maintenance, String Locator, **Yoast SEO** (→ replaced by Rank Math; import the few InkPols OG images first, then deactivate), **Loginizer** (→ login brute-force handled by the Cloudflare edge rule; retire once Cloudflare is in front with a locked origin — §14.9), **Invite Anyone** (→ BuddyPress Groups off, so it has no function — §14.7).
@@ -298,7 +324,7 @@ Code Snippets (migrate business-rule snippets → `ink-core`, then remove), Simp
 - **Invite Anyone** → **retired** — BuddyPress Groups off (§14.7); see §10.2.
 
 ### 10.5 `ink-core` ownership (moved out of theme/snippets)
-CPTs, taxonomies, writer-tier logic + admin UI + promotion log, submission permissions & front-end form, challenge rules & winner records, sponsor rotation/scheduling, InkPols data model, **follow graph + following-feed**, reading engagement (highlights, reactions, structured responses, prompts, suggested reads, reading list), **reader ratings & reviews**, **pinned works**, comment-disable filters, custom REST endpoints and admin tools.
+CPTs, taxonomies, **Gradering logic + admin UI + promotion log + auto-promotion engine (§6.3.1)**, submission permissions & front-end form, challenge rules & winner records, **challenge adjudication automation (EntryID, judge-email collation, paste-text results ingestion + coverage report, winners-post generation, winner banner + featured ordering — §6.6)**, **`ink_moderator_terugvoer` structured comment type + writer display toggle**, sponsor rotation/scheduling, InkPols data model, **follow graph + following-feed**, reading engagement (highlights, reactions, structured responses, prompts, suggested reads, reading list), **reader ratings & reviews**, **pinned works**, comment-disable filters, **a lightweight form-letter / notification capability** (stored form-letter text + name-merge greeting, per-event on/off toggles, randomized message list — consumed by the congratulation email, lifecycle/receipt emails, and winners post), custom REST endpoints and admin tools.
 
 ---
 
@@ -307,12 +333,12 @@ CPTs, taxonomies, writer-tier logic + admin UI + promotion log, submission permi
 The new site **reuses the existing database** (cloned). Migration is mapped in detail in `migration-plan.md`; the binding constraints for the build:
 
 - **Subscriptions migrate automatically** with the DB clone (WooCommerce Memberships already live). Verify active memberships, plan IDs, access rules, and expiry/suspension on the new host. **No import script.** Continuity here is *why* WooCommerce Memberships and PayFast are retained rather than replaced.
-- **Writer tiers** import from the external spreadsheet (CSV → `ink_writer_tier`, joined on email). Missing/ambiguous → default `brons` + flag; spreadsheet writers without accounts → manual follow-up.
+- **Writer Gradering** imports from the external spreadsheet (CSV → `ink_writer_tier`, joined on email). Missing/ambiguous → default `brons` + flag; spreadsheet writers without accounts → manual follow-up. (`meester` is never imported by default — it is manual-only.)
 - **Posts → CPTs:** scripted reclassification by existing content-type category (old-site categories `Gedig`/`Verhaal`/`Artikel` → CPTs `gedig`/`storie`/`artikel`); `/biblioteek/` and `/opleiding/` sub-paths → respective CPTs; unclassifiable → `skryfwerk` automatically. **Do not hand-classify the `skryfwerk` bucket at volume** (`migration-plan.md`) — it is a holding bucket that preserves and keeps content searchable without per-post editorial effort. Several thousand posts.
 - **Old-site CPT disposition:** two old-site CPTs need handling on migration. (a) The legacy `inkpols` CPT is **renamed** to the new `inkpols_uitgawe` CPT (records moved, loose month/year meta re-expressed as structured fields — see InkPols bullet below). (b) The legacy `monthly_challenge` CPT (a near-empty placeholder on the old site) is **not** the source of truth for challenge history and is **not** migrated 1:1. `uitdaging` is itself a CPT (§6.2); the migration **builds its records from the challenge-round categories on existing posts** (§14.6), not from `monthly_challenge`. Fold any real data the old `monthly_challenge` records happen to hold into the matching `uitdaging` record, otherwise drop them. (The old `verhaal`→`storie` rename is covered in §6.2.)
 - **Redirects are mandatory.** Generate 301s during CPT migration (record old permalink before reassignment). **Keep `/biblioteek/` and `/opleiding/` prefixes** to preserve high-value archive URLs and cut redirect volume.
 - **InkPols:** low volume; migrate back catalogue to `inkpols_uitgawe` with structured meta (date, volume, cover, PDF, teaser); retain PDFs in media.
-- **Challenges:** migrate historical challenges structurally in the once-off DB update (§14.6) — challenge categories on existing posts → `uitdagingsronde` terms + an `uitdaging` record per round; new challenges use the CPT from launch. Historical rounds carry full brief/deadline only where that data exists in old content.
+- **Challenges:** migrate historical challenges structurally in the once-off DB update (§14.6) — challenge categories on existing posts → `uitdagingsrondte` terms + an `uitdaging` record per round; new challenges use the CPT from launch. Historical rounds carry full brief/deadline only where that data exists in old content.
 - **Sponsors:** manual entry into `borg`.
 - **Media:** `wp-content/uploads/` migrates as-is; verify audio/video playback and InkPols PDFs.
 - **BuddyPress data:** profiles survive the DB clone; **friendships → follow:** convert each friendship into two mutual follow records (§14.10, §6.5); messaging is deferred (§14.7) so message data is not needed at launch; trim site-wide activity (off anyway); don't migrate notifications.
@@ -341,8 +367,8 @@ The new site **reuses the existing database** (cloned). Migration is mapped in d
 - **Performance:** caching layer appropriate to host; avoid plugin sprawl and heavy front-end JS where a pattern suffices.
 - **Accessibility & readability:** Afrikaans readability prioritised over decorative type; reading templates text-legible first (768px content width).
 - **Maintainability:** Site Editor stability for non-technical staff; block locking on critical structure; design tokens enforced.
-- **Update governance & i18n resilience:** WordPress core and plugins update on a partly **uncontrollable** cadence (security/minor core releases and host-forced updates cannot always be gated), and updates can introduce new English strings. Posture: (1) gate *major* plugin/core updates through staging where possible, running a regression pass on custom template overrides **and** a translation refresh; (2) rely on auto-delivered **community language packs** for well-covered code — WP core's Afrikaans (`af`) coverage is strong and self-updates, as do popular w.org plugins — so these rarely leak; (3) the genuine exposure is **premium/niche plugins with no language packs** (WooCommerce Memberships, PayFast gateway, Real3D, Report Content), whose committed `.mo` is the only defence and must be re-checked after their updates; (4) because not every update can be gated, run **production-side detection** for untranslated strings (the automated English-leak scan); fixes are then authored on staging, committed to version control, and redeployed — **Loco is not installed on production** (§14.13). No-English-leakage is a standing operational requirement, not a one-time build gate.
-- **Testing & QA strategy (to make the staging gate affordable)** *[Decided 2026-06-14 via planning discussion — see §14.17; not in the original planning corpus]*: Test *your own seams, not the plugins themselves* — confirm `ink-core` logic and the theme↔plugin integration points survive an update, don't re-test BuddyPress/WooCommerce. Test pyramid: **many unit tests** for `ink-core` rules (tier promotion, submission-entitlement gate, sponsor scheduling, follow graph) with WP mocked (**Brain Monkey / WP_Mock**, via **Pest** or PHPUnit); **fewer integration tests** booting real WP+DB (**`wp-env`** + WP test library, or **wp-browser/Codeception**) for the seams that matter (*active membership ⇒ can submit*, *expired ⇒ denied*, *tier write ⇒ meta+log*); a **thin E2E layer** (**Playwright** + `@wordpress/e2e-test-utils-playwright`) for critical journeys only (register → choose intent → buy membership via PayFast **sandbox** → submit → publish → read/react → renewal/expiry). Run unit+integration in CI per change; run the E2E smoke suite automatically on the staging deploy so the update gate is mostly automated. **Risk-based depth:** smoke-only for minor/security updates, full regression for major version bumps. Add an automated **English-leak check** (crawl key front-end pages + scan for English / `wp i18n` untranslated counts) to satisfy the detection requirement above cheaply. Concentrate the suite in `ink-core` (highly unit-testable); cover the block theme via E2E/visual checks rather than unit tests.
+- **Update governance & i18n resilience:** WordPress core and plugins update on a partly **uncontrollable** cadence (security/minor core releases and host-forced updates cannot always be gated), and updates can introduce new English strings. Posture: (1) gate *major* plugin/core updates through staging where possible, running a regression pass on custom template overrides **and** a translation refresh; (2) rely on auto-delivered **community language packs** for well-covered code — WP core's Afrikaans (`af`) coverage is strong and self-updates, as do popular w.org plugins — so these rarely leak; (3) the genuine exposure is **premium/niche plugins with no language packs** (WooCommerce Memberships, PayFast gateway, Real3D), whose committed `.mo` is the only defence and must be re-checked after their updates; (4) because not every update can be gated, run **production-side detection** for untranslated strings (the automated English-leak scan); fixes are then authored on staging, committed to version control, and redeployed — **Loco is not installed on production** (§14.13). No-English-leakage is a standing operational requirement, not a one-time build gate.
+- **Testing & QA strategy (to make the staging gate affordable)** *[Decided 2026-06-14 via planning discussion — see §14.17; not in the original planning corpus]*: Test *your own seams, not the plugins themselves* — confirm `ink-core` logic and the theme↔plugin integration points survive an update, don't re-test BuddyPress/WooCommerce. Test pyramid: **many unit tests** for `ink-core` rules (tier promotion, submission-entitlement gate, sponsor scheduling, follow graph) with WP mocked (**Brain Monkey / WP_Mock**, via **Pest** or PHPUnit); **fewer integration tests** booting real WP+DB (**`wp-env`** + WP test library, or **wp-browser/Codeception**) for the seams that matter (*active membership ⇒ can submit*, *expired ⇒ denied*, *tier write ⇒ meta+log*); a **thin E2E layer** (**Playwright** + `@wordpress/e2e-test-utils-playwright`) for critical journeys only (register → buy membership via PayFast **sandbox** → submit → publish → read/react → renewal/expiry). Run unit+integration in CI per change; run the E2E smoke suite automatically on the staging deploy so the update gate is mostly automated. **Risk-based depth:** smoke-only for minor/security updates, full regression for major version bumps. Add an automated **English-leak check** (crawl key front-end pages + scan for English / `wp i18n` untranslated counts) to satisfy the detection requirement above cheaply. Concentrate the suite in `ink-core` (highly unit-testable); cover the block theme via E2E/visual checks rather than unit tests.
 - **Editorial low-friction:** automatic surfacing via shared taxonomy; no mandatory per-item manual linking.
 
 ---
@@ -355,10 +381,10 @@ The new site **reuses the existing database** (cloned). Migration is mapped in d
 | 2 | Mockup-only features | **Resolved 2026-06-14: include** reader ratings & reviews, pinned/selected works, following-feed (= new works by followed writers). | Model in `ink-core`. |
 | 3 | Challenge cadence | **Resolved 2026-06-14: monthly.** (Mockup "weekly/January" was placeholder.) | Build monthly. |
 | 4 | Org content placeholders | **Resolved 2026-06-14: use clearly-marked placeholders for now;** actual founding year + SA nonprofit status to be confirmed at a future date. | Build with obvious placeholders (e.g. `[stigtingsjaar]`, `[regstatus]`). Do **not** ship the US "501(c)(3)" wording. **Pre-launch content gate:** confirm real values before go-live. |
-| 5 | Membership renewal savings copy | **Resolved 2026-06-14: no discount model.** Show prices only (R60/R300/R600); the mockup's "Save 12%/25%" is dropped. | Remove all savings/discount framing from the plan and renewal UI. |
-| 6 | Historical challenge scope | **Resolved 2026-06-14: migrate historical challenges structurally via a once-off DB update.** Existing posts already encode content type *and* challenge round as categories. | Migration: content-type categories → CPTs; challenge categories → `uitdagingsronde` terms (preserve each piece's linkage) + an `uitdaging` record per historical round. Round identity + linked entries always recoverable; full brief/deadline only where old data exists. |
+| 5 | Membership renewal savings copy | **Resolved 2026-06-14: no discount model.** Show prices only (R60/R300/R600); the mockup's "Save 12%/25%" is dropped. **AMENDED 2026-06-20 (R5 / owner decision):** a *genuine recurring-renewal discount* is **permitted** — but with **no vanity "%-off" framing**. Effective **post-launch**, when recurring billing ships (§14.8). The launch position (no discount on fixed-term products) is unchanged. | Remove all vanity savings framing from the fixed-term plan/renewal UI. When recurring ships, a real recurring-renewal discount may be offered. |
+| 6 | Historical challenge scope | **Resolved 2026-06-14: migrate historical challenges structurally via a once-off DB update.** Existing posts already encode content type *and* challenge round as categories. | Migration: content-type categories → CPTs; challenge categories → `uitdagingsrondte` terms (preserve each piece's linkage) + an `uitdaging` record per historical round. Round identity + linked entries always recoverable; full brief/deadline only where old data exists. |
 | 7 | BuddyPress Groups & messaging | **Resolved 2026-06-14.** Groups: **OFF** → Invite Anyone **retired**. Messaging: **not in scope for initial launch** (revisit later). | Groups + Private Messaging components off at launch; Invite Anyone retired. |
-| 8 | PayFast recurring billing | **Resolved 2026-06-14: deferred until after launch** — not a current feature, so nothing is removed. Launch uses fixed-term products. | When pursued later, verify PayFast recurring support + extension compatibility before enabling auto-renew. |
+| 8 | PayFast recurring billing | **Resolved 2026-06-14: deferred until after launch** — not a current feature, so nothing is removed. Launch uses fixed-term products. **UNCHANGED 2026-06-20:** recurring billing remains deferred post-launch (confirmed; the R5 lifecycle work ships auto-activation + lifecycle emails + per-term config only). | When pursued later, verify PayFast recurring support + extension compatibility before enabling auto-renew. |
 | 9 | Hosting / CDN | **Resolved 2026-06-14: host = NameHero** (LiteSpeed Web Server) behind Cloudflare. Origin must be locked to Cloudflare-only traffic. Host provides malware scanning (§14.16). | **LiteSpeed Cache adopted** as the server-side caching layer (confirm plan tier runs LSWS — Turbo Cloud and above do) + Cloudflare edge caching. |
 | 10 | Friendship→follow migration | **Resolved 2026-06-14: convert.** Each existing BuddyPress friendship → two follow records (A→B and B→A). | Migration script generates mutual follows from the BuddyPress friendship table. |
 | 11 | SEO plugin | **Resolved 2026-06-14: Rank Math from the start** (no meaningful Yoast data — only a few InkPols OG images). | Import limited Yoast data via Rank Math importer; verify InkPols images; deactivate Yoast. No per-post backfill. |
@@ -368,6 +394,12 @@ The new site **reuses the existing database** (cloned). Migration is mapped in d
 | 15 | `ink-core` own admin labels | **Resolved 2026-06-14: Afrikaans.** All `ink-core`-registered CPT/taxonomy labels and custom admin UI (tier promotion, sponsor scheduling, challenge/winner admin, reports) stay Afrikaans per `afrikaans-terms.md` — English would confuse editors working with INK domain concepts. WP-core + third-party plugin admin chrome stays English (§14.14). | `ink-core` authors its admin-facing strings in Afrikaans as the source language and ships **no English translation**, so gettext returns the Afrikaans source even under a staff member's English admin locale. Intended result: Afrikaans INK domain terms within English WP chrome. |
 | 16 | Security stack (layered) | **Resolved 2026-06-14:** Cloudflare (edge + login rule) + staff 2FA + **Patchstack** (CVE alerts) + disciplined staging-gated updates (§13; `ink-feature-list.md` Epic 18.7) + host-level malware scanning (**provided by the host**, confirmed 2026-06-14). **No WordFence** — host scanning + Patchstack cover the gap without the overhead. **Patchstack is a new addition** (not in the original corpus). | Login brute-force handled by the Cloudflare rule → **Loginizer retired** (requires the origin locked to Cloudflare — §14.9). Add a lightweight staff-2FA plugin or Cloudflare Access on `/wp-admin`. PayFast off-site → low PCI scope. |
 | 17 | Testing & QA strategy | **Resolved 2026-06-14 via planning discussion** (not in the original planning corpus). Pest/PHPUnit + Brain Monkey/WP_Mock unit tests for `ink-core` rules, `wp-env`/wp-browser integration tests for the theme↔plugin seams, a thin Playwright E2E layer for critical journeys, plus an automated English-leak crawl. Risk-based depth (smoke for minor/security updates, full regression for majors). | Rationale: make the staging update-gate (§13, §14.13) affordable by automating regression. Build the suite into CI per change; run E2E smoke on staging deploys. Detailed in §13 + `ink-feature-list.md` Epic 18.8. |
+| 18 | Gradering auto-promotion priority | **NEW 2026-06-20 (R3):** tier auto-promotion **moved P2 → P0** — the promotion rules are now defined (§6.3.1: top-3-win counting; Brons→Silwer at 5, Silwer→Goud at 15; reset on promotion; manual-only Meester). Supersedes the earlier deferral (PRD §14.2) that was waiting on these rules. | Build the `Ink\Tiers` promotion engine at launch; triggered as the final step of R2 results ingestion. |
+| 19 | Editorial-automation pillar (R1/R2) | **NEW 2026-06-20:** challenge adjudication automation is a **P0 launch pillar** (§6.6) — EntryID at collation, judge-email collation (R1), **paste-text** results ingestion + coverage report (R2, **no `.docx` parser**), winners-announcement post, moderator-feedback comment type, winner banner + featured ordering (algehele wenner before wenner). Hard build chain R1→R2→R3; EntryID is the linchpin. | Add the new epic / Epic 12 extension; resequence per the dependency chain. |
+| 20 | Terminology refinements (G1) | **NEW 2026-06-20 (G1):** membership concept uniformly **lidmaatskap** (`intekening`/`intekenaar`/`intekenlid` retired); paid = **betaalde lid**, free = **gratis lid**; tier UI term = **Gradering** (never "tier"); **Skrywerprofiel = public**, **My Profiel = private** (fix "Skrywersprofiel" spelling drift). New nouns: EntryID, algehele wenner / wenner, Terugvoer van die moderator, Meester. | Propagate across **all** docs; `afrikaans-terms.md` is the source of truth. Conflation rule (lidmaatskap ⟂ Gradering) preserved. |
+| 21 | Analytics provider + read counts (R8) | **NEW 2026-06-20:** select an analytics provider (currently **none**, launch); surface read counts on **My Profiel** (verb-less count + `_n()` plurals) reusing `_ink_read_count`. Sharpens POPIA (OQ-3). | §10.1 analytics row; My Profiel read-count surface. |
+| 22 | Account approval & anti-spam (R6) | **NEW 2026-06-20:** social login + an **optional, off-by-default manual-approval backstop** + an **anti-spam research spike**, under accounts/security. | Vetted platform plugins via hooks (not `ink-core`); spike precedes the social-login + approval-backstop build. |
+| 23 | Annual competition (R9) | **NEW 2026-06-20: P2 (deferred).** Annual competition management — **reuses the R1/R2/R3 machinery** on an annual cadence. | Post-launch; no net-new machinery beyond the challenge-adjudication / promotion engine. |
 
 ---
 
@@ -377,19 +409,21 @@ The build decomposes into the following epics (detailed in `ink-feature-list.md`
 
 1. Foundation — block theme + tokens + `ink-core` scaffold + **locale `af` / i18n scaffolding & admin-language mechanism** (Afrikaans-first is foundational, established here — Principle 3 / §12) + **test harness scaffold** (so `ink-core` rules ship test-first — §14.17)
 2. Content models & taxonomy
-3. Accounts, registration & auth — auth flows, reader/writer-intent capture, onboarding lifecycle (**foundational**: accounts precede membership/submission/community — §4)
+3. Accounts, registration & auth — auth flows and onboarding lifecycle (**foundational**: accounts precede membership/submission/community — §4)
 4. Membership, access & payment (PayFast)
-5. Writer tiers
+5. Writer Gradering (Brons/Silwer/Goud + manual-only Meester; auto-promotion engine §6.3.1; congratulation email)
 6. Submission workflow
 7. Reading & engagement
 8. Discovery (Ontdek)
 9. Community & social (follow, profiles, messaging, notifications)
 10. Library (Biblioteek)
 11. Training (Opleiding)
-12. Challenges (Uitdagings) & winners
+12. Challenges (Uitdagings) & winners — incl. **challenge adjudication automation** (EntryID, judge-email collation R1, paste-text results ingestion + coverage report R2, winners post, winner banner + featured ordering — §6.6)
 13. InkPols
 14. Sponsors (Borge)
 15. Organisation pages & contact
 16. Migration & redirects
 17. Afrikaans-first & localisation (**execution + QA**: copy application, residual-plugin translation, leak gate — foundational enablers are in Epic 1; the principle is also cross-cutting, see Gate D)
-18. SEO, security & performance (incl. **full test-suite buildout** — the harness *scaffold* is in Epic 1; this extends it to the full pyramid)
+18. SEO, security & performance (incl. **full test-suite buildout** — the harness *scaffold* is in Epic 1; this extends it to the full pyramid; plus **R8 analytics provider** and the **R6 registration anti-spam** spike + social-login / optional approval backstop)
+
+A **P2 (deferred)** annual competition (R9) reuses the Epic 12 / Epic 5 machinery on an annual cadence (§14 row 23).

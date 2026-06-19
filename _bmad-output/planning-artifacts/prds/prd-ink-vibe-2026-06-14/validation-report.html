@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PRD Validation: INK</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --surface: #ffffff;
+    --border: #e7e5e4;
+    --text: #1c1917;
+    --muted: #78716c;
+
+    --verdict-strong: #16a34a;
+    --verdict-adequate: #65a30d;
+    --verdict-thin: #d97706;
+    --verdict-broken: #dc2626;
+
+    --sev-low: #64748b;
+    --sev-medium: #ca8a04;
+    --sev-high: #ea580c;
+    --sev-critical: #dc2626;
+
+    --grade-exc: #16a34a;
+    --grade-good: #65a30d;
+    --grade-fair: #d97706;
+    --grade-poor: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  header.report-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .title .subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .grade {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: white;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  .grade-excellent { background: var(--grade-exc); }
+  .grade-good { background: var(--grade-good); }
+  .grade-fair { background: var(--grade-fair); }
+  .grade-poor { background: var(--grade-poor); }
+
+  .synthesis {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--muted);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    font-size: 15.5px;
+  }
+  .synthesis p { margin: 0 0 10px; }
+  .synthesis p:last-child { margin-bottom: 0; }
+
+  .dimension-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .dim-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .dim-card .dim-name { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .dim-card .dim-verdict { font-size: 14px; font-weight: 600; }
+
+  section.dimension, section.reviewer-section { margin-bottom: 14px; }
+  section.dimension details, section.reviewer-section details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  section summary {
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  section summary::-webkit-details-marker { display: none; }
+  section summary::before {
+    content: "▸";
+    display: inline-block;
+    color: var(--muted);
+    transition: transform 0.15s ease;
+  }
+  section details[open] summary::before { transform: rotate(90deg); }
+  section summary h2 {
+    display: inline;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    flex: 1;
+  }
+  .verdict-pill {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: white;
+  }
+  .verdict-strong { background: var(--verdict-strong); }
+  .verdict-adequate { background: var(--verdict-adequate); }
+  .verdict-thin { background: var(--verdict-thin); }
+  .verdict-broken { background: var(--verdict-broken); }
+
+  .dim-body { padding: 4px 20px 18px; }
+  .dim-judgment { color: var(--text); font-size: 14.5px; }
+  .dim-judgment p { margin: 0 0 10px; }
+
+  .findings-list { padding: 0 20px 4px; }
+  article.finding {
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+  }
+  article.finding:first-child { border-top: none; }
+  article.finding header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .badge {
+    font-size: 10.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .badge-sev-low { background: rgba(100, 116, 139, 0.12); color: var(--sev-low); }
+  .badge-sev-medium { background: rgba(202, 138, 4, 0.14); color: var(--sev-medium); }
+  .badge-sev-high { background: rgba(234, 88, 12, 0.14); color: var(--sev-high); }
+  .badge-sev-critical { background: rgba(220, 38, 38, 0.14); color: var(--sev-critical); }
+  .finding-title { margin: 0; font-size: 15px; font-weight: 500; flex: 1; min-width: 200px; }
+  .finding-location { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; color: var(--muted); }
+  .finding-note, .finding-fix { margin-top: 6px; font-size: 14px; }
+  .finding-fix strong { color: var(--muted); font-weight: 500; }
+
+  .reviewer-source {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  .mechanical {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 24px;
+    font-size: 14px;
+  }
+  .mechanical h3 { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .mechanical ul { margin: 0; padding-left: 20px; }
+  .mechanical li { margin-bottom: 4px; color: var(--text); }
+
+  footer.report-footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  footer .meta { display: flex; gap: 24px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="report-header">
+      <div class="title">
+        <h1>INK — Validation Report</h1>
+        <div class="subtitle">_bmad-output/planning-artifacts/prds/prd-ink-vibe-2026-06-14/prd.md</div>
+      </div>
+      <div class="grade grade-fair">Fair</div>
+    </header>
+
+    <div class="synthesis">
+      <p>This is a strong, unusually disciplined brownfield PRD: a real thesis (developmental wedge, "resonance over reach"), a load-bearing conflation rule enforced from glossary through FRs to tests, honest and triaged scope, and counter-metrics that guard the thesis rather than decorate it. All seven rubric dimensions land <strong>strong or adequate</strong> — no broken dimensions, and the rubric lens surfaced no critical findings.</p>
+      <p>Two additional reviewers materially shift the picture. Between them they surface <strong>six critical build-readiness gaps</strong> the quality lens did not weight: (1) the primary success metrics measure <em>activity</em> (visits, feedback presence, participation) rather than the <em>developmental</em> thesis the Vision stakes everything on; (2) the migration's entitlement lifecycle "rides the DB clone" and is <em>verified, not time-tested</em> across the expiry/suspension dimension that is the real post-launch failure mode; (3) reclassifying thousands of legacy posts has no accuracy bar and a <code>skryfwerk</code> holding bucket with no exit policy, while SM-1's "100% survive" passes even if the public library is gutted; and (4) POPIA member-deletion fan-out across the relational graph (follows, reading lists, reactions, ratings, winner records, audit log) is undefined, with a self-contradictory "anonymised/attributed" authorship rule and no orphaned-author mechanism. None of these invalidate the design — but they should be resolved before greenlighting Phase 3, which is why the actionable grade is <strong>Fair</strong> rather than the near-Excellent the rubric alone would suggest.</p>
+      <p>Two cross-document defects also need fixing before downstream extraction: a <strong>duplicate FR-58 ID</strong> with a dangling auto-renew reference, and an <strong>addendum that still encodes the abandoned "choose intent" signup step</strong> that FR-2/OQ-15 explicitly killed.</p>
+    </div>
+
+    <div class="dimension-summary">
+      <div class="dim-card"><div class="dim-name">Decision-readiness</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+      <div class="dim-card"><div class="dim-name">Substance over theater</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+      <div class="dim-card"><div class="dim-name">Strategic coherence</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+      <div class="dim-card"><div class="dim-name">Done-ness clarity</div><div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div></div>
+      <div class="dim-card"><div class="dim-name">Scope honesty</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+      <div class="dim-card"><div class="dim-name">Downstream usability</div><div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div></div>
+      <div class="dim-card"><div class="dim-name">Shape fit</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+    </div>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>Decision-readiness</h2><span class="verdict-pill verdict-strong">strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment">
+          <p>Decisions are stated as decisions and dated, not buried. "Why now" (§1) names the actual lever honestly (PayFast installed-yet-unused) and explicitly declines a launch date. Trade-offs are surfaced with what was given up (§10 risk 2 reclassification; §14.2 auto-renew deferral flagged as "emotionally load-bearing"). <code>[NOTE FOR PM]</code> callouts land at genuine tensions (POPIA §8, moderation SLA/owner §8, deletion-vs-attribution §11). Open Questions carry owners and ✅/⏸️/⬜ status; the §16 triage (8 resolved / 6 deferred / 1 open) is exactly what a decision-maker needs.</p>
+          <p>Soft spot: a few OQs resolve tersely and hide the reasoning a future reader would want (e.g. OQ-14 keeps English meta key <code>ink_writer_tier</code> — the English-key-in-Afrikaans-system trade-off is named but not weighed). Minor.</p>
+        </div></div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>Substance over theater</h2><span class="verdict-pill verdict-strong">strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment">
+          <p>Very little furniture. JTBD (§2.1) are jobs, not persona padding, each mapping to shipped FRs. The Vision (§1) is product-specific (the "literary <em>tuiste</em>, developmental wedge" framing breaks if swapped into another PRD). NFRs carry product-specific thresholds (NFR-1 English-leak gate; NFR-9 test pyramid + seams). Counter-metrics (SM-C1–C3) are the strongest anti-theater signal — they tell the build <em>not</em> to optimize notification volume or raw reaction counts.</p>
+        </div></div>
+        <div class="findings-list">
+          <article class="finding">
+            <header><span class="badge badge-sev-low">low</span><h3 class="finding-title">Non-Users section borders on negative-persona theater</h3><span class="finding-location">§2.2</span></header>
+            <div class="finding-note">Four "non-users" largely restate Non-Goals (§13). Harmless but earns little.</div>
+            <div class="finding-fix"><strong>Fix:</strong> leave as-is or fold into §13; not worth churn.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>Strategic coherence</h2><span class="verdict-pill verdict-strong">strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment">
+          <p>The PRD has a clear thesis and the features serve it. The thesis is stated three reinforcing ways (developmental wedge §1; "resonance over reach" §1/§6; "engagement serves reading" §4.5). Prioritization follows the thesis and operational pain — P0 anchors on migration preservation + the payment/entitlement gap + the conflation guardrail. SM-4 measures <em>quality of return</em> (≥6×/month vs legacy ~3×) not DAU/MAU, and is counterbalanced by SM-C1. <em>(See adversarial C-1: while SM-4 is engagement-quality, no primary metric measures craft progression — the thesis's core claim.)</em></p>
+        </div></div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details open>
+        <summary><h2>Done-ness clarity</h2><span class="verdict-pill verdict-adequate">adequate</span></summary>
+        <div class="dim-body"><div class="dim-judgment">
+          <p>The core is excellent; the periphery is soft. Strong, testable FRs: FR-6 ("if and only if active Membership"), FR-13 ("no code path mutates <code>ink_writer_tier</code> … verified by unit test"), FR-19 (expired Goud denied publishing), FR-11 (missing tier → <code>brons</code> + flag, never guessed). But several FRs lean on unbounded adjectives — exactly where story creation will struggle.</p>
+        </div></div>
+        <div class="findings-list">
+          <article class="finding">
+            <header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Reading-template FRs specify legibility by adjective, not bound</h3><span class="finding-location">§4.5, FR-24/FR-25</span></header>
+            <div class="finding-note">FR-24 gives one number (~768px) but "optimised for Afrikaans legibility" is otherwise untestable. FR-25's concrete behaviours (stanza-aware, line breaks, Roman numerals, per-line resonance) are fine.</div>
+            <div class="finding-fix"><strong>Fix:</strong> reduce FR-24 to verifiable consequences (width, no comments, single template per CPT); move "legibility" to §6 as tone.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">Sponsor placement is adjective-bound ("subtly")</h3><span class="finding-location">§4.12, FR-58</span></header>
+            <div class="finding-note">"Placed subtly" is not testable; "one on homepage / none on content pages" is.</div>
+            <div class="finding-fix"><strong>Fix:</strong> drop "subtly" as a criterion; keep the count/placement rules.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">Editorial-effort FRs assert "low/no manual linking" without a check</h3><span class="finding-location">FR-55, §12 guardrail</span></header>
+            <div class="finding-note">"Auto-surfaces with no manual linking" has no stated verification, unlike the conflation rule.</div>
+            <div class="finding-fix"><strong>Fix:</strong> add an assertable consequence — cross-surfacing driven solely by shared <code>genre</code>/<code>vaardigheid</code> terms; item with no shared term surfaces nothing.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">FR-9 / FR-44 list strings but not states/triggers fully</h3><span class="finding-location">§4.2, §4.7</span></header>
+            <div class="finding-note">FR-44 enumerates notification types without saying which are P0 or when each fires.</div>
+            <div class="finding-fix"><strong>Fix:</strong> table the trigger → notification mapping; low effort, high downstream value.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-low">low</span><h3 class="finding-title">"first-response SLA" referenced but never bounded</h3><span class="finding-location">§8</span></header>
+            <div class="finding-note">Deliberately deferred to OQ-4; acceptable, but no FR can be marked done against it until set.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>Scope honesty</h2><span class="verdict-pill verdict-strong">strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment">
+          <p>Omissions are explicit and worked, not inferred. §13 Non-Goals does real work (no feed, marketplace, LMS, inline annotation, WP comments, symmetric friendship, AI-Afrikaans, admin-chrome translation) and distinguishes deferred-from-non-goal. <code>[ASSUMPTION]</code> tags sit on genuine inferences and every one round-trips into §17 + an owning OQ. Open-items density is appropriate to launch stakes — bounded and triaged, nothing P0 left open. This is the model the rubric wants.</p>
+        </div></div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details open>
+        <summary><h2>Downstream usability</h2><span class="verdict-pill verdict-adequate">adequate</span></summary>
+        <div class="dim-body"><div class="dim-judgment">
+          <p>Good on glossary discipline (§3 terms used verbatim across FRs/UJs/SMs; UJs each named — Marlie, Pieter, Thandi, Elsa, Johan), but holed by two ID/contradiction defects that will propagate into architecture and story workflows.</p>
+        </div></div>
+        <div class="findings-list">
+          <article class="finding">
+            <header><span class="badge badge-sev-high">high</span><h3 class="finding-title">FR-58 is a duplicate ID; the "FR-58, §14" auto-renew reference is dangling</h3><span class="finding-location">§4.2 Notes, §4.12, §14.2</span></header>
+            <div class="finding-note">§4.2 says auto-renew "is deferred (FR-58, §14)", but FR-58 (§4.12) is the Sponsor model, and there is no FR-58 in §14. Deferred auto-renew has no FR of its own. A downstream agent resolving "FR-58" lands on Sponsors.</div>
+            <div class="finding-fix"><strong>Fix:</strong> give deferred auto-renew its own reserved FR number and update both references, or cite §14.2 + OQ-9 only and drop the FR-58 token.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Addendum contradicts FR-2 (no signup intent) in two places</h3><span class="finding-location">addendum §C, §G, §A</span></header>
+            <div class="finding-note">§G's E2E journey reads "register → choose intent → buy", and §A models an <code>intent</code> enum — but FR-2/OQ-15 explicitly removed the intent gate. The addendum feeds architecture/UX; an agent will scaffold an intent step/enum that must not exist.</div>
+            <div class="finding-fix"><strong>Fix:</strong> delete "choose intent" from §G and remove <code>intent</code> from the §A enum; align with FR-2.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-low">low</span><h3 class="finding-title">FR-50 priority label is inconsistent in form</h3><span class="finding-location">§4.8</span></header>
+            <div class="finding-note">Written "(P0 for admin, FL 11.6)" while every other FR uses a bare P0/P1/P2; a strict parser may miss it.</div>
+            <div class="finding-fix"><strong>Fix:</strong> normalize to "(P0, FL 11.6)" and note admin-only scope in the consequence.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-low">low</span><h3 class="finding-title">A few "see §8/§11" cross-refs vaguer than the glossary-term style</h3><span class="finding-location">FR-42, §4.2 NFR note</span></header>
+            <div class="finding-note">Mostly fine (stable section numbers), but §4.2's "(see §8/§11)" is vaguer than the PRD's usual term-based cross-refs. Minor.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>Shape fit</h2><span class="verdict-pill verdict-strong">strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment">
+          <p>The shape matches the product. A consumer/community platform feeding a downstream chain → named-protagonist UJs are load-bearing and present (§2.3), including a brownfield-specific UJ-6 ("Migration day — Johan notices nothing broke"). Brownfield obligations met: concrete legacy references (Youzify, BuddyPress friendships → one-way <code>volg</code>, <code>verhaal</code>→<code>storie</code>), retired-plugin "must not reactivate" list (§9), new-vs-existing behaviour distinguished. Nothing over- or under-formalized. The PRD/addendum what-vs-how split is correct for an AI-build audience.</p>
+        </div></div>
+      </details>
+    </section>
+
+    <section class="reviewer-section">
+      <details>
+        <summary><h2>Adversarial review</h2><span class="reviewer-source">review-adversarial-general.md</span></summary>
+        <div class="dim-body"><div class="dim-judgment">
+          <p><strong>Verdict: conditional greenlight.</strong> Vocabulary/layering/conflation-rule discipline is genuinely build-ready, but the PRD measures its <em>developmental</em> thesis with <em>activity</em> metrics, hides the riskiest migration work behind unverified "ride the clone" assumptions, and bundles a ~109-story P0+P1 scope onto a solo builder with no launch date. Build the foundation + migration spike first; do not commit the full P0+P1 surface as one scope.</p>
+        </div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-critical">critical</span><h3 class="finding-title">C-1 · Success metrics measure activity, not the stated thesis</h3><span class="finding-location">§1; §15 SM-4/SM-6/SM-7</span></header><div class="finding-note">The Vision stakes everything on writers <em>getting better</em>; no SM measures it. SM-4 (visits), SM-6 (feedback presence), SM-7 (participation) are all activity proxies — the product can "succeed" while every writer's craft stagnates.</div><div class="finding-fix"><strong>Fix:</strong> add ≥1 primary SM that operationalizes craft growth (e.g. % of writers who publish a revised follow-up after receiving voorstel/insig, or a periodic editorial-judged quality sample).</div></article>
+          <article class="finding"><header><span class="badge badge-sev-critical">critical</span><h3 class="finding-title">C-2 · Migration's load-bearing requirements are "verify," not "build"; the riskiest data path is untested by design</h3><span class="finding-location">§10 MR-5; §15 SM-1; addendum E</span></header><div class="finding-note">Subscriptions "ride the DB clone, no import script" and are only "verified." No time-mocked test proves a migrated subscription auto-suspends on its real expiry date weeks after cutover. The thing most likely to silently break (wrongful suspension / revenue leak in week 3) has the weakest verification.</div><div class="finding-fix"><strong>Fix:</strong> add a time-mocked entitlement-lifecycle acceptance test (active → near-expiry → expired → suspended → renewed) against migrated records in NFR-9, plus a rollback/reconciliation plan.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-critical">critical</span><h3 class="finding-title">C-3 · Reclassification of "several thousand" posts has no success bar; fallback bucket has no exit</h3><span class="finding-location">§10 MR-6, Risk 2; §3/§4.9 skryfwerk</span></header><div class="finding-note">"Bounded" manual pass is undefined; no misclassification threshold; <code>skryfwerk</code> has no drain policy. SM-1's "100% survive" passes even if 30% of the library lands in an invisible bucket — "survive" and "correctly typed" are conflated.</div><div class="finding-fix"><strong>Fix:</strong> promote a measurable classification target to an SM (≤X% in <code>skryfwerk</code> at cutover; named owner + timeline to drain); define "bounded".</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">H-1 · "Zero English leakage" is a standing absolute over dependencies the PRD can't translate</h3><span class="finding-location">§7 NFR-1; §15 SM-2; addendum D</span></header><div class="finding-note">SM-2 demands zero "and stays at zero after ungated updates" — but admits irreducible exposure (premium plugins, composed sentences, JS strings). It's a metric you can only fail later.</div><div class="finding-fix"><strong>Fix:</strong> restate as launch gate (zero on enumerated surfaces) + regression SLA (new leak → remediated within N days); accept the non-zero window.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">H-2 · Custom forms quietly expanded scope into spam/security/POPIA territory with no requirements</h3><span class="finding-location">FR-61; §8; OQ-4/OQ-8</span></header><div class="finding-note">Custom <code>ink-core</code> Contact + report forms were chosen "to avoid a dependency," but specify zero spam protection, rate-limiting, deliverability/SMTP, or abuse handling. The report form feeds a moderation flow whose SLA/owner is still deferred.</div><div class="finding-fix"><strong>Fix:</strong> add FRs for spam mitigation, rate-limiting, deliverability, validation; block the report form behind a defined moderation SLA/owner before ship.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">H-3 · Scope exceeds stated resourcing; "no launch date" removes the only forcing function</h3><span class="finding-location">§14 MVP; §0; §1</span></header><div class="finding-note">Launch = P0+P1 (~50 of 62 FRs, all 11 MR, all 9 NFRs, 17 epics / ~109 stories), resourced by one builder + agents, no deadline. That's an open-ended program, not an MVP.</div><div class="finding-fix"><strong>Fix:</strong> define a genuine first release around the §1 wedge (migration + payment + Afrikaans + read), demote most P1 to a sequenced second release; set a date or a scope cap.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">H-4 · Friendship→follow conversion contradicts itself</h3><span class="finding-location">UJ-6; §3 volg; §10 MR-8; addendum E</span></header><div class="finding-note">UJ-6/§1/§3 say relationships become "one-way," but MR-8 creates two reciprocal follow records (faithful symmetry). The data migration contradicts the narrative; they produce different day-one follower counts and feeds.</div><div class="finding-fix"><strong>Fix:</strong> pick one. If preserving mutual (MR-8), fix UJ-6 and §1/§3 framing; if reframing one-way, fix MR-8.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">H-5 · Several "testable consequences" are not testable; "done" undefined for key gates</h3><span class="finding-location">FR-1, FR-4, NFR-6, FR-18, FR-13</span></header><div class="finding-note">"No English string" (against what dictionary/allowlist?); "easily configurable," "stability," "low effort" (unmeasurable); FR-18 "basic formatting" undefined for a poetry platform; FR-13 "verified by unit test" overclaims (a test can't prove the absence of all mutating paths).</div><div class="finding-fix"><strong>Fix:</strong> convert adjectives to thresholds/capability lists; define the leak-scan detection method + allowlist; enumerate editor marks incl. poetry line/stanza handling.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">M-1 · POPIA/retention/visibility deferred, but dependent P0/P1 features ship at launch</h3><span class="finding-location">§8, §11, OQ-3; FR-1/FR-40/FR-42</span></header><div class="finding-note">FR-1 (consent capture, P0) and FR-40/FR-42 (public profiles/reviews, P1) can't be built correctly before the OQ-3 lawful-basis/visibility decisions. POPIA is a <em>design</em> gate, not just a content gate.</div><div class="finding-fix"><strong>Fix:</strong> require the OQ-3 session before FR-1/FR-40/FR-42 are built, not just before go-live.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">M-2 · User Journeys used as FR justification are admittedly assumed/unvalidated</h3><span class="finding-location">§2.3; OQ-11; §17</span></header><div class="finding-note">FRs cite "Realizes UJ-n" as traceability, but the UJs are <code>[ASSUMPTION]</code> pending founder validation — the traceability chain rests on unvalidated beats.</div><div class="finding-fix"><strong>Fix:</strong> validate UJs (OQ-11) before treating "Realizes UJ-n" as confidence; or soften the traceability claim.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">M-3 · "100% preservation as launch blocker" is an absolute that will force a bad cutover call</h3><span class="finding-location">§15 SM-1</span></header><div class="finding-note">On a years-old plugin-tangled site, some legacy data is already corrupt/orphaned. A literal 100%-or-block bar either blocks indefinitely on pre-existing rot or gets quietly waived.</div><div class="finding-fix"><strong>Fix:</strong> "100% of <em>valid</em> records; pre-existing broken data enumerated and accepted in a reconciliation log."</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">M-4 · PayFast "installed yet unused" understates the central new integration's risk</h3><span class="finding-location">§1; FR-5; OQ-9</span></header><div class="finding-note">"Installed" ≠ "working." Never-processed IPN/ITN callbacks, return-URL activation, and signature/sandbox-vs-live config are the most fragile seam — and the §1 thesis rests on it.</div><div class="finding-fix"><strong>Fix:</strong> treat PayFast activation as a de-risking spike; keep sandbox E2E (FR-5/NFR-9) but acknowledge the unproven seam.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">M-5 · "No auto-renew at launch" collides with the automation premise</h3><span class="finding-location">FR-4; §14.2; §1</span></header><div class="finding-note">The "why now" is automation, yet every member must manually re-purchase at expiry — reintroducing the manual-action leak. Automates activation, not continuity.</div><div class="finding-fix"><strong>Fix:</strong> at minimum add expiry-reminder notifications (FR-44 currently omits "your intekening expires soon").</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">M-6 · The Afrikaans-leak scan mechanism misses its hardest cases</h3><span class="finding-location">NFR-1, NFR-8; addendum D</span></header><div class="finding-note"><code>wp i18n</code> + page crawl can't see plugin JS <code>.json</code>, runtime-composed sentences, REST/AJAX/feed output, logged-in-only states, or email — exactly the vectors addendum D flags as in-scope.</div><div class="finding-fix"><strong>Fix:</strong> extend coverage to email + JS + composed strings, or narrow SM-2's claim to what the gate actually inspects.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">L-1 · Addendum E2E test contradicts the headline registration decision</h3><span class="finding-location">addendum G; FR-2; OQ-15</span></header><div class="finding-note">"register → choose intent → buy" + an <code>intent</code> enum encode a decision the PRD reversed (duplicate of the rubric Downstream high finding).</div><div class="finding-fix"><strong>Fix:</strong> strike "choose intent" + remove the enum.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">L-2 · FR-50 priority notation is ambiguous</h3><span class="finding-location">FR-50; §14.1</span></header><div class="finding-note">"(P0 for admin)" vs §14.1's flat P0 — unclear whether public winner display is launch-critical.</div><div class="finding-fix"><strong>Fix:</strong> resolve to one priority or split admin-record (P0) from public-surface (later).</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">L-3 · Real3D Flipbook PDF dependency has an unaddressed perf/a11y tension</h3><span class="finding-location">FR-57; NFR-3, NFR-5</span></header><div class="finding-note">A JS flipbook of full-issue PDFs conflicts with "avoid heavy front-end JS" + legibility/accessibility, and is niche-premium leak/update risk.</div><div class="finding-fix"><strong>Fix:</strong> acknowledge the tradeoff; define a minimum mobile/a11y fallback (e.g. direct PDF link).</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">L-4 · "No discount framing" conflicts with the 1/6/12-month plan economics</h3><span class="finding-location">FR-4</span></header><div class="finding-note">R300/6mo and R600/12mo are per-month discounts vs R60/mo; forbidding "Save 12%/25%" framing removes the explanation, not the discount.</div><div class="finding-fix"><strong>Fix:</strong> tone choice — accept, or allow a neutral per-month note.</div></article>
+        </div>
+      </details>
+    </section>
+
+    <section class="reviewer-section">
+      <details>
+        <summary><h2>Edge-case hunter</h2><span class="reviewer-source">review-edge-case-hunter.md</span></summary>
+        <div class="dim-body"><div class="dim-judgment">
+          <p><strong>Verdict:</strong> strong on the conflation rule and entitlement/tier state separation, but a systemic blind spot around <strong>deletion/lifecycle fan-out across the relational graph</strong> and <strong>unhappy-path/boundary handling</strong>. 24 unhandled edge cases; none invalidate the design, but the 3 critical ones block downstream build.</p>
+        </div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-critical">critical</span><h3 class="finding-title">EC-C1 · POPIA member-deletion fan-out undefined across the graph</h3><span class="finding-location">§11, §8; FR-12/29/38/42/48/50</span></header><div class="finding-note">Only "anonymise the bydrae" is specified. Behaviour for volg edges, leeslys, reaksies, ratings (aggregate shift), challenge winner records, and graderingsgeskiedenis (audit log) on deletion is silent.</div><div class="finding-fix"><strong>Fix:</strong> define per-relation deletion behaviour (cascade/anonymise/retain) before building deletion.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-critical">critical</span><h3 class="finding-title">EC-C2 · "Anonymised/attributed" authorship is self-contradictory; mechanism undefined</h3><span class="finding-location">§11; OQ-3</span></header><div class="finding-note">Mutually exclusive outcomes; no sentinel-author entity, no display fallback, no Afrikaans label for an orphaned author. Ontdek author filters / Skrywerprofiel / pinned works behaviour undefined.</div><div class="finding-fix"><strong>Fix:</strong> resolve OQ-3 to one outcome and specify the sentinel-author/display mechanism.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-critical">critical</span><h3 class="finding-title">EC-C3 · Migrated subscription with active-but-expiring state at cutover boundary</h3><span class="finding-location">MR-5, FR-6, UJ-6; addendum E/H</span></header><div class="finding-note">No handling for expiry inside the clone→DNS freeze window, stale-active from cron/timezone drift (over-grant), or non-binary Woo states (pending/on-hold/cancelled) that FR-6's active⇄expired model has no slot for.</div><div class="finding-fix"><strong>Fix:</strong> define a post-cutover entitlement reconciliation for boundary-dated and non-binary states (pairs with adversarial C-2).</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">EC-H1 · Subscription expiry mid-action (draft saved subscribed, published after lapse)</h3><span class="finding-location">FR-6, FR-19, FR-23</span></header><div class="finding-note">When the gate is evaluated for a long-lived draft, and what happens to an in-flight publish at the moment of lapse, is unspecified (draft should persist; show Afrikaans denial at publish click).</div><div class="finding-fix"><strong>Fix:</strong> specify gate-at-publish-time + draft preservation + denial UX.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">EC-H2 · Challenge deadline boundary, late entries, post-deadline edits</h3><span class="finding-location">FR-22, FR-46/47/48</span></header><div class="finding-note">Deadline inclusivity, timezone anchor (SAST?), whether a linked entry can be edited after deadline, and when a challenge stops being linkable are all undefined.</div><div class="finding-fix"><strong>Fix:</strong> pin timezone + inclusivity; lock entries at deadline; define linkable window.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">EC-H3 · Duplicate/multi-entry per challenge + tier-change mid-round</h3><span class="finding-location">FR-48, FR-49, FR-12</span></header><div class="finding-note">No cap on entries per writer per uitdaging; no rule for whether an entry is judged in the entry-time or judging-time tier pool when a writer is promoted mid-round.</div><div class="finding-fix"><strong>Fix:</strong> set an entry cap; pin the governing tier snapshot (entry-time recommended).</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">EC-H4 · Following-feed/counts when a followed skrywer is deleted or lapses</h3><span class="finding-location">FR-38/39/44</span></header><div class="finding-note">Dangling follow edges to deleted members; volgeling counts; notifications to deleted targets; silent empty feed for a lapsed (non-publishing) followee; follow-toggle idempotency.</div><div class="finding-fix"><strong>Fix:</strong> define edge cleanup, count integrity, idempotent follow, and a "quiet writer" empty state.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">EC-H5 · Redirect collisions: distinct legacy slugs → same new CPT permalink</h3><span class="finding-location">MR-6/7, NFR-4, OQ-1</span></header><div class="finding-note">Cross-type slug collisions force WP <code>-2</code> suffixes (breaking 1:1 301s and SM-1); <code>skryfwerk</code> items need a <em>second</em> 301 when later reclassified (chained redirect) — unspecified.</div><div class="finding-fix"><strong>Fix:</strong> define collision handling + re-redirect-on-reclassification policy.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">EC-H6 · Tier-import join edge cases (dup/no email match, normalisation)</h3><span class="finding-location">MR-3/4, FR-11</span></header><div class="finding-note">CSV→<code>ink_writer_tier</code> join on email has no tie-break for two matching accounts, no case/whitespace/diacritic normalisation (silently drops Goud/Silwer to Brons), and can't distinguish a default-Brons from a failed-join Brons.</div><div class="finding-fix"><strong>Fix:</strong> normalise emails; flag multi-match and failed-join distinctly.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">EC-H7 · Friendship→follow conversion: non-mutual, self, pending, or orphaned legacy data</h3><span class="finding-location">MR-8, FR-38</span></header><div class="finding-note">Follow edges to non-imported users (dangling), duplicate friendship rows (no dedup), and pending-vs-confirmed BuddyPress friendships (MR-8 says "each friendship" without qualifying).</div><div class="finding-fix"><strong>Fix:</strong> convert confirmed-only; dedup; skip edges to non-existent members.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">EC-M1 · Afrikaans number-agreement in dynamic counts ("1 hartjies" is wrong)</h3><span class="finding-location">FR-28/38; §3; §6</span></header><div class="finding-note">No singular/plural rule for count surfaces (1 hartjie / 342 hartjies; 1 volgeling / 2 volgelinge). <code>_n()</code> plural handling for <code>af</code> not in the i18n mechanism.</div><div class="finding-fix"><strong>Fix:</strong> require plural-aware rendering (<code>_n()</code>) for every count surface; pervasive + on-brand-critical.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">EC-M2 · Empty/zero states across lists and counts</h3><span class="finding-location">FR-28/29/32–36/39/50</span></header><div class="finding-note">No zero-state copy for empty profile/leeslys/feed/Ontdek results, a uitdaging with zero entries (forced winner?), a one-entrant tier pool, or pre-migration directory — all need human-authored Afrikaans (OQ-12).</div><div class="finding-fix"><strong>Fix:</strong> enumerate zero states; author Afrikaans empty copy.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">EC-M3 · Tier system is promotion-only — no demotion/correction model</h3><span class="finding-location">FR-11/12</span></header><div class="finding-note">No path to correct an erroneous promotion or a wrong import; graderingsgeskiedenis is append-only with no reversal event type. Operational dead-end the first time staff fat-finger a tier.</div><div class="finding-fix"><strong>Fix:</strong> add a redakteur correction/demotion action + audit event type.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">EC-M4 · Concurrent edits / double-submit, no idempotency policy</h3><span class="finding-location">FR-5/12/16–23/41/42</span></header><div class="finding-note">Double-click Plaas / slow PayFast return → duplicate publish or purchase; two redakteurs promoting simultaneously; multi-device leeslys/pins; last-entry-at-deadline race.</div><div class="finding-fix"><strong>Fix:</strong> define idempotency on publish/purchase + write-collision policy.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">EC-M5 · PayFast failure / abandonment / partial-return paths unspecified</h3><span class="finding-location">FR-5/6/9, NFR-9</span></header><div class="finding-note">Only the success return is defined. Declined/cancelled (FR-9 lacks a "payment failed" state), abandoned checkout (orphaned pending order), ITN-without-return (either order), duplicate ITN — all undefined.</div><div class="finding-fix"><strong>Fix:</strong> specify unhappy-path states + ITN/return ordering + idempotent activation.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">EC-M6 · skryfwerk items are reachable but have no front-end contract</h3><span class="finding-location">§3, MR-6, FR-32–35/40</span></header><div class="finding-note">Declared not-user-facing yet published with authors + inbound 301s: invisible to Ontdek/filters/search but reachable by URL, and absent from the author's own profile — a silent-content gap.</div><div class="finding-fix"><strong>Fix:</strong> define discovery/profile/search behaviour for <code>skryfwerk</code> + the reclassification policy.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">EC-M7 · Author-initiated unpublish/delete of a work carrying interactions</h3><span class="finding-location">FR-6/26–28/29/42/50</span></header><div class="finding-note">No cascade rule when a skrywer unpublishes/deletes a bydrae that has reaksies, responses, leeslys saves, or winner status; and whether a non-entitled lid can react/rate is ambiguous ("a lid", not "a subscriber").</div><div class="finding-fix"><strong>Fix:</strong> define interaction cascade on author delete; confirm engagement is not entitlement-gated.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">EC-M8 · Reading-layout boundary cases for gedig</h3><span class="finding-location">FR-25, FR-17</span></header><div class="finding-note">No rule for very long lines (wrap at 768px), no-stanza-break poems, irregular/trailing line endings (line counter vs per-line resonance must agree), or whitespace-meaningful concrete poetry vs the plain-text editor; per-line reaksie on a blank line undefined.</div><div class="finding-fix"><strong>Fix:</strong> define line/stanza semantics + wrap + blank-line resonance behaviour.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">EC-M9 · Configurable plan changes vs existing/in-flight subscribers</h3><span class="finding-location">FR-4, FR-8</span></header><div class="finding-note">A plan retired while members hold it, a mid-term price change, and renewal when the original plan no longer exists are unhandled — FR-8 "choose from available plans" strands holders of retired plans with no message.</div><div class="finding-fix"><strong>Fix:</strong> define retired-plan renewal flow + grandfathering/messaging.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">EC-L1 · Roman-numeral stanza markers: overflow + auto-vs-manual source</h3><span class="finding-location">FR-25</span></header><div class="finding-note">No rule for many-stanza poems or whether the marker is author-entered vs system-generated (collision with a poem using "I." as content).</div><div class="finding-fix"><strong>Fix:</strong> clarify marker source; minor.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">EC-L2 · Search on Afrikaans diacritics + the verhaal→storie rename</h3><span class="finding-location">FR-35, OQ-1, MR-6</span></header><div class="finding-note">No diacritic-insensitive matching (ê/ë/ô/î); searching legacy term "verhaal" finds nothing. Cosmetic.</div><div class="finding-fix"><strong>Fix:</strong> diacritic-folding + optional legacy-term synonym.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">EC-L3 · "Merk alles as gelees" with zero or concurrently-arriving notifications</h3><span class="finding-location">FR-44</span></header><div class="finding-note">No-op on empty set; a notification landing mid-operation appears as a phantom unread immediately after. Polish.</div><div class="finding-fix"><strong>Fix:</strong> mark-read by timestamp boundary.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">EC-L4 · Sponsor scheduling boundary + zero-active-sponsor homepage</h3><span class="finding-location">FR-58/59</span></header><div class="finding-note">No-active-sponsor strip behaviour, multiple-active rotation tie-break, and single-day (start==end) inclusivity undefined.</div><div class="finding-fix"><strong>Fix:</strong> define empty/overlap/single-day behaviour.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">EC-L5 · First-social-action prompt targets at cold-start/empty platform</h3><span class="finding-location">FR-3, UJ-1</span></header><div class="finding-note">Prompt to follow/save may have weak targets right after migration; skippable, so low impact, but suggestion logic is undefined.</div><div class="finding-fix"><strong>Fix:</strong> define suggestion source + graceful thin-catalog behaviour.</div></article>
+        </div>
+      </details>
+    </section>
+
+    <div class="mechanical">
+      <h3>Mechanical notes</h3>
+      <ul>
+        <li><strong>Glossary drift:</strong> minimal — terms hold verbatim across FRs/UJs/SMs. Watch the deliberate dual naming: label "ster gradering" + slug <code>ster_gradering</code> (OQ-13) vs meta key <code>ink_writer_tier</code> (OQ-14) — documented, not drift, but a propagation hazard.</li>
+        <li><strong>ID continuity:</strong> FR-1..FR-62 contiguous <em>except</em> FR-58 used twice in effect (Sponsors §4.12 vs the "FR-58" cited for deferred auto-renew, which has no FR). MR/SM/UJ/OQ/NFR ranges all contiguous and unique.</li>
+        <li><strong>Broken cross-refs:</strong> "FR-58, §14" (§4.2 Notes) resolves to the wrong/absent target. All other inline cross-refs resolve.</li>
+        <li><strong>Assumptions Index roundtrip:</strong> clean — inline <code>[ASSUMPTION]</code> tags all appear in §17 and vice-versa; §17 self-count "3 confirmed, 3 deferred" matches.</li>
+        <li><strong>UJ protagonist naming:</strong> all six UJs carry a named protagonist with inline context.</li>
+        <li><strong>Addendum sync:</strong> §C and §G carry stale "intent" content contradicting FR-2/OQ-15 (see Downstream + adversarial L-1).</li>
+        <li><strong>Required sections:</strong> all present for launch-stakes brownfield.</li>
+      </ul>
+    </div>
+
+    <footer class="report-footer">
+      <div class="meta">
+        <span>Rubric: .claude/skills/bmad-prd/assets/prd-validation-checklist.md</span>
+        <span>Generated: 2026-06-15T19:33:27Z</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

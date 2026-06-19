@@ -22,7 +22,7 @@ As of the 2026-06-14 sync it contains designs for all top-level INK pages (see b
 
 4. Implemented page references:
 - ink-lovable/src/pages/Index.tsx (Tuisblad)
-- ink-lovable/src/pages/ReadStory.tsx (Lees — storie/verhaal)
+- ink-lovable/src/pages/ReadStory.tsx (Lees — storie)
 - ink-lovable/src/pages/Write.tsx (Skryf)
 - ink-lovable/src/pages/Browse.tsx (Ontdek)
 - ink-lovable/src/pages/Challenge.tsx (Uitdaging — single)
