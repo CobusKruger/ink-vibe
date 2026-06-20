@@ -167,7 +167,7 @@ Source: `ux-designs/ux-ink-vibe-2026-06-15/` (EXPERIENCE.md + DESIGN.md). Named-
 | FR-7 | 4.4 |
 | FR-8 | 4.5 |
 | FR-9 | 4.7 |
-| FR-9a | 4.8 (+ 12A.0) |
+| FR-9a | 4.8 (+ 1.12) |
 | FR-10 | 4.6 |
 | FR-63 | 4.9, 4.10, 4.11 |
 | FR-11 | 5.1, 5.7 |
@@ -228,7 +228,7 @@ Source: `ux-designs/ux-ink-vibe-2026-06-15/` (EXPERIENCE.md + DESIGN.md). Named-
 | FR-61 | 15.4 |
 | FR-62 | 15.5 |
 
-*Stories without a direct FR (foundation, content models, migration, localisation execution, SEO/security/perf, R4 stub, annual competition) trace to NFRs and Additional Requirements: Epic 1 → NFR-1/2/6/9; Epic 2 → data-model substrate for all FRs; 10.6 → R4; 12A.0 → R5/R7/R3 (shared); 12B → R9; Epic 16 → NFR-4; Epic 17 → NFR-1; Epic 18 → NFR-1/3/4/7/8/9 + R6/R8.*
+*Stories without a direct FR (foundation, content models, migration, localisation execution, SEO/security/perf, R4 stub, annual competition) trace to NFRs and Additional Requirements: Epic 1 → NFR-1/2/6/9 (+ 1.12 → R5/R7/R3 shared form-letter store); Epic 2 → data-model substrate for all FRs; 10.6 → R4; 12B → R9; Epic 16 → NFR-4; Epic 17 → NFR-1; Epic 18 → NFR-1/3/4/7/8/9 + R6/R8.*
 
 ---
 
@@ -236,7 +236,7 @@ Source: `ux-designs/ux-ink-vibe-2026-06-15/` (EXPERIENCE.md + DESIGN.md). Named-
 
 | Epic | Title | P0 stories |
 |---|---|---|
-| 1 | Foundation (theme + tokens + ink-core scaffold) | 7 |
+| 1 | Foundation (theme + tokens + ink-core scaffold) | 8 |
 | 2 | Content models & taxonomy | 3 |
 | 3 | Accounts, registration & auth | 2 |
 | 4 | Membership, access & payment | 4 |
@@ -248,7 +248,7 @@ Source: `ux-designs/ux-ink-vibe-2026-06-15/` (EXPERIENCE.md + DESIGN.md). Named-
 | 10 | Library (Biblioteek) | 1 |
 | 11 | Training (Opleiding) | 0 |
 | 12 | Challenges (Uitdagings) & winners | 1 |
-| 12A | Challenge adjudication automation (NEW) | 8 |
+| 12A | Challenge adjudication automation (NEW) | 7 |
 | 12B | Annual competition management (NEW, P2) | 0 |
 | 13 | InkPols | 0 |
 | 14 | Sponsors (Borge) | 0 |
@@ -404,6 +404,20 @@ So that every P0 rule ships test-first (§14.17).
 **When** CI runs
 **Then** Pest/PHPUnit + Brain Monkey/WP_Mock (unit) and the `wp-env` integration harness are wired in
 **And** P0 rules (tier promotion 5.x, submission gate 6.8, follow graph 9.2) can land with their tests. (Full pyramid buildout is 18.8.)
+
+### Story 1.12: Form-letter + notification capability (foundation)
+
+As an ink-core developer,
+I want the lightweight form-letter + notification capability established in Foundation,
+So that its downstream consumers (R2/R3/R5/R7) build on a ready shared template store rather than a forward dependency. (R5/R7/R3 shared foundation; AD-9) *(Relocated from former 12A.0, 2026-06-20 — it is P0-Foundation scope, §14.1, and is consumed by earlier epics 4/5/9.)*
+
+**Acceptance Criteria:**
+
+**Given** the Notifications module (options-based, minimal dependencies — WP options + Kernel only, per AD-9)
+**When** the capability is built
+**Then** it stores form-letter text (WP options) + name-merge greeting (e.g. "Beste {skrywer}, …") + per-event send on/off toggles + a randomized message list — **not** a rich template engine
+**And** it is consumed by 12A.3/12A.4 (R2), 5.10 (R3), 4.8 (R5), and 9.11 (R7) — all of which now depend **backwards** on this Foundation story, not forwards
+**And** the option store is in scope for the NFR-1 leak scan (admin-authored text bypasses build-time `.mo`).
 
 ---
 
@@ -658,7 +672,7 @@ So that I'm thanked on activation and warned before expiry. (FR-9a)
 
 **Acceptance Criteria:**
 
-**Given** the simple form-letter store (12A.0; plain text + name-merge greeting, not a rich engine)
+**Given** the simple form-letter store (Story 1.12; plain text + name-merge greeting, not a rich engine)
 **When** lifecycle events fire
 **Then** a thank-you email is sent on every activation; a 1-week-prior warning on every term and a 1-month-prior warning on longer terms (sharing the FR-44 expiry anchor)
 **And** each email type is toggleable on/off per term length (1/6/12) by staff
@@ -830,7 +844,7 @@ So that I'm recognised when I advance. (FR-12a, R3)
 
 **Given** an auto-promotion
 **When** it commits
-**Then** a templated congratulation email is sent via the 12A.0 form-letter store (e.g. "Baie geluk! Jy is na Silwer bevorder.").
+**Then** a templated congratulation email is sent via the Story 1.12 form-letter store (e.g. "Baie geluk! Jy is na Silwer bevorder.").
 
 ---
 
@@ -1199,6 +1213,8 @@ So that readers can recognise quality. (FR-42)
 **Then** an aggregate rating + written reviews appear
 **And** public reviews are subject to the moderation path (Epic 18) and POPIA public-profile considerations.
 
+**Sequence:** the moderation/report path (Story 18.4) should land **before** public reviews are first exposed; until then reviews are created and held for moderation. (Cross-epic dependency flagged 2026-06-20; resolve in sprint ordering.)
+
 ### Story 9.7: Member directory (ledegids)
 
 As a lid,
@@ -1259,8 +1275,10 @@ So that I'm encouraged. (FR-44a, R7)
 
 **Given** a "receipt" event tied to the analytics read-count (9.12)
 **When** it fires
-**Then** a kennisgewing is sent with a **randomized** message from the 12A.0 form-letter list, deep-linking to **private My Profiel**
+**Then** a kennisgewing is sent with a **randomized** message from the Story 1.12 form-letter list, deep-linking to **private My Profiel**
 **And** with analytics absent the trigger is inert (degrades gracefully).
+
+**Sequence:** depends on the analytics provider (Story 18.9) via 9.12 — schedule **18.9 before** 9.11/9.12, **or** ship R7/R8 in a later sprint than the rest of Epic 9 (both degrade gracefully). (Cross-epic dependency flagged 2026-06-20; resolve in sprint ordering.)
 
 ### Story 9.12: Read-count surface on My Profiel (R8)
 
@@ -1528,21 +1546,9 @@ So that past rounds and their linkages survive. (FL 12.8, §14.6)
 
 ## Epic 12A: Challenge adjudication automation (NEW — 2026-06-20)
 
-The largest net-new build and the second launch pillar (editorial-burden automation). Reuses `ink_entries`, the Challenges module (judge-email composer + paste-text parser), the Tiers module (5.8), Notifications (12A.0), and the home featured slot (15.6). **Hard build order (all P0): R1 → R2 → R3.** The EntryID data model (12A.1) is the linchpin and must land first. **No `.docx` parser — results are pasted as plain text** (owner decision; removes the PhpWord/XXE/zip-bomb surface).
+The largest net-new build and the second launch pillar (editorial-burden automation). Reuses `ink_entries`, the Challenges module (judge-email composer + paste-text parser), the Tiers module (5.8), the **form-letter/notification capability (Story 1.12, Foundation)**, and the home featured slot (15.6). **Hard build order (all P0): R1 → R2 → R3.** The EntryID data model (12A.1) is the linchpin and must land first. **No `.docx` parser — results are pasted as plain text** (owner decision; removes the PhpWord/XXE/zip-bomb surface).
 
-### Story 12A.0: Form-letter + notification capability (foundation)
-
-As an ink-core developer,
-I want a lightweight form-letter + notification capability,
-So that R2/R3/R5/R7 share one simple template store. (R5/R7/R3 shared foundation)
-
-**Acceptance Criteria:**
-
-**Given** the Notifications module
-**When** the capability is built
-**Then** it stores form-letter text (WP options) + name-merge greeting (e.g. "Beste {skrywer}, …") + per-event send on/off toggles + a randomized message list — **not** a rich template engine
-**And** it is consumed by 12A.3/12A.4 (R2), 5.10 (R3), 4.8 (R5), and 9.11 (R7)
-**And** the option store is in scope for the NFR-1 leak scan (admin-authored text bypasses build-time `.mo`).
+> **Note (2026-06-20):** the shared form-letter/notification store was **relocated from 12A.0 to Foundation Story 1.12** so the earlier epics that consume it (4.8, 5.10, 9.11) depend backwards, not forwards. 12A's R2 winners-post generation (12A.4) consumes 1.12.
 
 ### Story 12A.1: EntryID data model (R1 linchpin)
 
@@ -1593,7 +1599,7 @@ So that I don't hand-write it. (FR-50-R2, R2)
 
 **Given** confirmed results
 **When** the post generates
-**Then** a wenneraankondiging is created from a **simple form-letter template** (12A.0), takes the featured home slot (15.6), and lists entries with links.
+**Then** a wenneraankondiging is created from a **simple form-letter template** (Story 1.12), takes the featured home slot (15.6), and lists entries with links.
 
 ### Story 12A.5: Moderator-feedback comment type + writer display toggle (R2)
 

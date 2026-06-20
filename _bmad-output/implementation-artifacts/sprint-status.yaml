@@ -1,0 +1,268 @@
+# generated: 2026-06-20
+# last_updated: 2026-06-20
+# project: ink-vibe
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: {project-root}/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-06-20
+last_updated: 2026-06-20
+project: ink-vibe
+project_key: NOKEY
+tracking_system: file-system
+story_location: "{project-root}/_bmad-output/implementation-artifacts"
+
+development_status:
+  # Epic 1: Foundation (theme + tokens + ink-core scaffold)
+  epic-1: in-progress
+  1-1-themejson-design-token-system: ready-for-dev
+  1-2-typography-system: backlog
+  1-3-dark-mode-tokens: backlog
+  1-4-global-templates-template-parts: backlog
+  1-5-core-block-pattern-library: backlog
+  1-6-block-locking-strategy: backlog
+  1-7-ink-core-plugin-scaffold: backlog
+  1-8-comment-disable-filters: backlog
+  1-9-page-archetypes-a-d-documented-built: backlog
+  1-10-locale-af-i18n-scaffolding-admin-language-mechanism: backlog
+  1-11-test-harness-scaffold: backlog
+  1-12-form-letter-notification-capability-foundation: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: Content models & taxonomy
+  epic-2: backlog
+  2-1-register-cpts: backlog
+  2-2-register-taxonomies: backlog
+  2-3-user-meta: backlog
+  2-4-cpt-admin-field-sets: backlog
+  2-5-term-images-native: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Accounts, registration & auth
+  epic-3: backlog
+  3-1-authentication-pages: backlog
+  3-2-remove-reader-writer-intent-capture-removed-2026-06-14: backlog
+  3-3-registration-lifecycle-onboarding: backlog
+  3-4-anti-spam-research-spike-r6: backlog
+  3-5-social-login-r6: backlog
+  3-6-optional-manual-approval-backstop-r6: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Membership, access & payment
+  epic-4: backlog
+  4-1-three-fixed-term-lidmaatskap-products: backlog
+  4-2-front-end-payfast-purchase-flow: backlog
+  4-3-access-enforcement-entitlement-gate: backlog
+  4-4-lidmaatskap-page: backlog
+  4-5-renewal-ui: backlog
+  4-6-store-ui-suppression: backlog
+  4-7-status-messaging-afrikaans: backlog
+  4-8-lidmaatskap-lifecycle-emails-r5: backlog
+  4-9-auto-renew-recurring-post-launch: backlog
+  4-10-recurring-renewal-warning-variant-post-launch: backlog
+  4-11-recurring-renewal-discount-post-launch: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Writer Gradering (Brons / Silwer / Goud / Meester)
+  epic-5: backlog
+  5-1-gradering-data-model: backlog
+  5-2-staff-set-adjust-gradering-admin-ui: backlog
+  5-3-promotion-log-history-graderingsgeskiedenis: backlog
+  5-4-gradering-display-on-profiles: backlog
+  5-5-gradering-in-discovery-winners: backlog
+  5-6-gradering-lidmaatskap-guardrails: backlog
+  5-7-win-count-meta-reset-on-promotion: backlog
+  5-8-automatic-promotion-engine: backlog
+  5-9-my-profiel-wins-needed-subtext: backlog
+  5-10-promotion-congratulation-email: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Submission workflow (custom)
+  epic-6: backlog
+  6-1-custom-front-end-submission-form: backlog
+  6-2-content-type-selector-with-counters: backlog
+  6-3-light-editor: backlog
+  6-4-optional-featured-image: backlog
+  6-5-optional-audio-video-attachment: backlog
+  6-6-challenge-linking-at-submission: backlog
+  6-7-draft-publish-states: backlog
+  6-8-submission-entitlement-gate: backlog
+  6-9-remove-legacy-edit-link-filter: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7: Reading & engagement
+  epic-7: backlog
+  7-1-single-reading-templates-prose: backlog
+  7-2-gedig-reading-layout: backlog
+  7-3-line-highlighting-reactions: backlog
+  7-4-structured-community-responses: backlog
+  7-5-contextual-prompts-after-a-piece: backlog
+  7-6-suggested-next-reads: backlog
+  7-7-reading-list-leeslys: backlog
+  7-8-reactions-data-counts: backlog
+  epic-7-retrospective: optional
+
+  # Epic 8: Discovery (Ontdek)
+  epic-8: backlog
+  8-1-ontdek-section-works-archive: backlog
+  8-2-ontdek-bydraes-tab: backlog
+  8-3-ontdek-skrywers-tab: backlog
+  8-4-search: backlog
+  8-5-discovery-surfaces: backlog
+  epic-8-retrospective: optional
+
+  # Epic 9: Community & social
+  epic-9: backlog
+  9-1-buddypress-scoped-config: backlog
+  9-2-follow-graph-asymmetric: backlog
+  9-3-following-feed: backlog
+  9-4-custom-profile-templates: backlog
+  9-5-pinned-selected-works: backlog
+  9-6-reader-ratings-reviews: backlog
+  9-7-member-directory-ledegids: backlog
+  9-8-private-messaging-deferred: backlog
+  9-9-notifications: backlog
+  9-10-member-online-widget-removed: backlog
+  9-11-receipt-notification-trigger-r7: backlog
+  9-12-read-count-surface-on-my-profiel-r8: backlog
+  epic-9-retrospective: optional
+
+  # Epic 10: Library (Biblioteek)
+  epic-10: backlog
+  10-1-biblioteek-item-archive-single: backlog
+  10-2-date-archive-browsing-deferred: backlog
+  10-3-pagination-deferred: backlog
+  10-4-author-filter-deferred: backlog
+  10-5-winner-challenge-linkage: backlog
+  10-6-biblioteek-auto-update-on-win-r4-stub: backlog
+  epic-10-retrospective: optional
+
+  # Epic 11: Training (Opleiding)
+  epic-11: backlog
+  11-1-opleiding-artikel-hub: backlog
+  11-2-vaardigheid-taxonomy-faceted-search: backlog
+  11-3-editors-shelf-curated-entry-points: backlog
+  11-4-auto-cross-surfacing: backlog
+  11-5-community-contribution-cta: backlog
+  epic-11-retrospective: optional
+
+  # Epic 12: Challenges (Uitdagings) & winners
+  epic-12: backlog
+  12-1-uitdaging-single-page: backlog
+  12-2-uitdagings-list-page: backlog
+  12-3-challenge-metadata: backlog
+  12-4-entry-capture: backlog
+  12-5-gradering-based-competition-pools: backlog
+  12-6-structured-placement-records: backlog
+  12-7-winner-gradering-promotion-link: backlog
+  12-8-historical-challenge-migration: backlog
+  epic-12-retrospective: optional
+
+  # Epic 12A: Challenge adjudication automation (NEW)
+  epic-12a: backlog
+  12a-1-entryid-data-model-r1-linchpin: backlog
+  12a-2-judge-email-collation-tool-r1: backlog
+  12a-3-paste-text-results-ingestion-coverage-report-r2: backlog
+  12a-4-winners-announcement-post-generation-r2: backlog
+  12a-5-moderator-feedback-comment-type-writer-display-toggle-r2: backlog
+  12a-6-winner-banner-per-rank-per-tier-variants: backlog
+  12a-7-featured-feed-ordering: backlog
+  epic-12a-retrospective: optional
+
+  # Epic 12B: Annual competition management (NEW, P2)
+  epic-12b: backlog
+  12b-1-annual-competition-management: backlog
+  epic-12b-retrospective: optional
+
+  # Epic 13: InkPols
+  epic-13: backlog
+  13-1-inkpols-uitgawe-model: backlog
+  13-2-issue-archive-by-year: backlog
+  13-3-pdf-viewing: backlog
+  13-4-back-catalogue-migration: backlog
+  epic-13-retrospective: optional
+
+  # Epic 14: Sponsors (Borge)
+  epic-14: backlog
+  14-1-borg-cpt: backlog
+  14-2-scheduling-rotation-logic: backlog
+  14-3-homepage-sponsor-placement: backlog
+  14-4-sponsor-recognition-page: backlog
+  epic-14-retrospective: optional
+
+  # Epic 15: Organisation pages & contact
+  epic-15: backlog
+  15-1-tuisblad: backlog
+  15-2-gemeenskap-page: backlog
+  15-3-oor-ink: backlog
+  15-4-kontak: backlog
+  15-5-footer-social-links: backlog
+  15-6-winners-post-featured-slot-featured-feed-ordering-r2: backlog
+  epic-15-retrospective: optional
+
+  # Epic 16: Migration & redirects
+  epic-16: backlog
+  16-1-db-clone-sanitise: backlog
+  16-2-user-import-role-reassignment: backlog
+  16-3-tier-csv-import: backlog
+  16-4-subscription-verification: backlog
+  16-5-post-cpt-reclassification: backlog
+  16-6-library-training-migration: backlog
+  16-7-redirect-generation: backlog
+  16-8-inkpols-sponsors-nav: backlog
+  16-9-buddypress-data-friendship-follow: backlog
+  16-10-media-verification: backlog
+  16-11-options-carry-forward-selective: backlog
+  16-12-wpbakery-shortcode-cleanup: backlog
+  epic-16-retrospective: optional
+
+  # Epic 17: Afrikaans-first & localisation (execution + QA)
+  epic-17: backlog
+  17-1-apply-approved-ui-copy: backlog
+  17-2-residual-plugin-afrikaans-pass: backlog
+  17-3-terminology-reconciliation-reopened-by-g1: backlog
+  17-4-no-english-leakage-qa-gate: backlog
+  epic-17-retrospective: optional
+
+  # Epic 18: SEO, security & performance
+  epic-18: backlog
+  18-1-rank-math-config-cpt-schema: backlog
+  18-2-redirect-integrity: backlog
+  18-3-security-stack-layered: backlog
+  18-4-moderation-report-path: backlog
+  18-5-caching-layer: backlog
+  18-6-production-hygiene: backlog
+  18-7-update-governance-i18n-resilience: backlog
+  18-8-full-test-suite-buildout: backlog
+  18-9-analytics-provider-selection-r8: backlog
+  18-10-registration-anti-spam-hardening-r6: backlog
+  epic-18-retrospective: optional

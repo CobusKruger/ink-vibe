@@ -8,7 +8,7 @@ inputDocuments:
   - _bmad-output/planning-artifacts/ux-designs/ux-ink-vibe-2026-06-15/DESIGN.md
   - _bmad-output/planning-artifacts/ux-designs/ux-ink-vibe-2026-06-15/EXPERIENCE.md
   - _bmad-output/project-context.md
-  - docs/specs/ink-feature-list.md
+  - docs/specs/ink-feature-list.md  # superseded 2026-06-20 by _bmad-output/planning-artifacts/epics.md (source of record)
 workflowType: 'architecture'
 project_name: 'ink-vibe'
 user_name: 'Cobus'
@@ -25,11 +25,11 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 
 ### Requirements Overview
 
-**Functional Requirements:** 63 FRs (FR-1…FR-63) across 13 feature clusters —
+**Functional Requirements:** 70 FRs (FR-1…FR-63 plus sub-items FR-3a/9a/12a/44a/44b/50-R1/50-R2, post the 2026-06-20 scope change) across 13 feature clusters —
 Identity & Registration, Membership/Payment/Access, Writer Tiers, Submission &
 Publishing, Reading & Engagement, Discovery, Community & Social, Challenges,
 Library, Training, InkPols, Sponsors, Organisation & Marketing. Downstream
-breakdown: 18 epics / ~109 stories (`ink-feature-list.md`). Architecturally the
+breakdown: 19 epics / ~120 stories (`epics.md`, source of record — supersedes `ink-feature-list.md`). Architecturally the
 FRs cluster into: (a) a custom business-logic plugin (`ink-core`) owning content
 models, tiers, submission gate, follow graph, engagement, challenges, sponsors;
 (b) a presentation-only FSE block theme (`ink-foundation`); (c) integration seams
@@ -102,7 +102,7 @@ governance, and observability (incl. the leak scan as a standing CI/cron gate).
 
 **Status:** Accepted (2026-06-16)
 
-**Context.** `ink-core` carries business logic in 15 of the 18 epics — content
+**Context.** `ink-core` carries business logic in most of the 19 epics — content
 models, entitlement, tiers, submission, engagement, follow graph, challenges,
 sponsors, discovery, plus notifications, custom forms, and migration. Its default
 trajectory is a "god plugin": one flat namespace with helpers reaching into each
@@ -1077,7 +1077,7 @@ directories and enforced in CI (Deptrac).
 
 ### Requirements Coverage Validation ✅
 
-**Epic Coverage:** All 18 epics mapped to specific locations (see Epic → Location Mapping).
+**Epic Coverage:** All 19 epics mapped to specific locations (see Epic → Location Mapping; the 2026-06-20 epics 12A/12B fold into the Challenges/Tiers rows).
 
 **Functional Requirements:** FR clusters have architectural homes — entitlement (AD-2),
 tiers incl. auto-promotion engine + Meester + win-count (AD-3 dec.6/AD-5), submission/

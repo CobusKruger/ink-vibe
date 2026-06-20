@@ -76,7 +76,7 @@ Top-level public nav (Afrikaans, sentence-case): **Tuis · Ontdek · Opleiding �
 
 `[NOTE]` These admin screens live inside the **WordPress admin (wp-admin)** and are rendered with WP's own admin chrome (Settings API / list tables / meta boxes / `@wordpress/components`). They **do not use the front-end design system** — no `theme.json` / Lovable tokens, palette, or mockups apply, so there is **no design-system / visual-design work** here. Every `ink-core` field, label, button, and status string is **Afrikaans** (the i18n boundary holds in admin too — see Concerns); admin chrome itself stays English.
 
-What *does* need pinning down for the multi-step, stateful screens (R1's editable preview; R2's parse → coverage report → confirm gate → irreversible actions) is **interaction flow + states + acceptance criteria**, not visual design. That detail is captured in the **Epic 12A story acceptance criteria** (`ink-feature-list.md`), not here. The table below is a flow reference only.
+What *does* need pinning down for the multi-step, stateful screens (R1's editable preview; R2's parse → coverage report → confirm gate → irreversible actions) is **interaction flow + states + acceptance criteria**, not visual design. That detail is captured in the **Epic 12A story acceptance criteria** (`_bmad-output/planning-artifacts/epics.md`, source of record — supersedes `ink-feature-list.md`), not here. The table below is a flow reference only.
 
 | Admin surface | Req | Purpose & flow (reference — ACs in Epic 12A) |
 |---|---|---|
