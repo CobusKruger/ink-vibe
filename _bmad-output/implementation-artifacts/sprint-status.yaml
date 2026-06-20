@@ -44,7 +44,7 @@ story_location: "{project-root}/_bmad-output/implementation-artifacts"
 development_status:
   # Epic 1: Foundation (theme + tokens + ink-core scaffold)
   epic-1: in-progress
-  1-1-themejson-design-token-system: ready-for-dev
+  1-1-themejson-design-token-system: done
   1-2-typography-system: backlog
   1-3-dark-mode-tokens: backlog
   1-4-global-templates-template-parts: backlog

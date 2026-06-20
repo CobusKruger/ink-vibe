@@ -85,6 +85,35 @@
         { "name": "3XL", "slug": "3xl", "size": "2rem" }
       ],
       "lineHeight": true
+    },
+    "shadow": {
+      "defaultPresets": false,
+      "presets": [
+        { "slug": "sm", "name": "Small", "shadow": "0 2px 12px -2px hsl(220 20% 12% / 0.06)" },
+        { "slug": "md", "name": "Medium", "shadow": "0 4px 20px -4px hsl(220 20% 12% / 0.08)" },
+        { "slug": "lg", "name": "Large", "shadow": "0 12px 40px -8px hsl(220 20% 12% / 0.12)" }
+      ]
+    },
+    "custom": {
+      "radius": {
+        "sm": "4px",
+        "md": "6px",
+        "lg": "8px",
+        "xl": "12px",
+        "2xl": "16px",
+        "full": "9999px"
+      },
+      "lineHeight": {
+        "tight": "1.2",
+        "normal": "1.5",
+        "relaxed": "1.7"
+      },
+      "fontWeight": {
+        "regular": "400",
+        "medium": "500",
+        "semibold": "600",
+        "bold": "700"
+      }
     }
   },
   "styles": {
@@ -96,7 +125,7 @@
       "heading": {
         "typography": {
           "fontFamily": "var:preset|font-family|heading",
-          "lineHeight": "1.2"
+          "lineHeight": "var:custom|line-height|tight"
         }
       },
       "link": {
@@ -113,7 +142,7 @@
     "typography": {
       "fontFamily": "var:preset|font-family|body",
       "fontSize": "var:preset|font-size|md",
-      "lineHeight": "1.5"
+      "lineHeight": "var:custom|line-height|normal"
     },
     "blocks": {
       "core/group": {

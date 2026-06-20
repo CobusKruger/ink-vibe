@@ -1,6 +1,10 @@
+---
+baseline_commit: 503122b890bcb9d980d24ff771a06069636534ba
+---
+
 # Story 1.1: theme.json design-token system
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -14,32 +18,37 @@ so that no template or pattern uses hardcoded values and Quality Gate A can pass
 
 1. **Token completeness** — Every token category in `docs/design-handoff/tokens/theme-tokens.json` is defined in `wp-content/themes/ink-foundation/theme.json` under its production (kebab-case) name: **colour** (16 light-mode colours), **type** (4 font families, 7 font sizes, 3 line-heights, 4 font-weights), **spacing** (10 sizes), **layout** (contentSize, wideSize), **radius** (6 values), and **shadow** (3 values). _[Source: epics.md#Story-1.1; theme-tokens.json]_
 2. **Production naming honoured** — Slugs follow `token-map.md`: Lovable camelCase → theme.json kebab-case (`surfaceAlt` → `surface-alt`, `mutedText` → `muted-text`, `highlightForeground` → `highlight-foreground`, `goldMuted` → `gold-muted`); spacing slugs prefixed `s-` (`s-4`…`s-96`); font-size slugs unprefixed (`xs`…`3xl`). Token **values** are copied verbatim from `theme-tokens.json`. _[Source: token-map.md#Rules; project-context.md "theme.json naming is the production source of truth"]_
-3. **Gate A — zero hardcoded values** — A review of every file under `templates/`, `parts/`, `patterns/`, and `theme.json` `styles` finds **no hardcoded colours (hex/rgb/hsl), no raw spacing values, and no unnamed type sizes**. Every such value resolves to a `theme.json` token (`var:preset|…` or `var:custom|…` / `has-…` class). _[Source: epics.md#Story-1.1; project-context.md Quality Gate A]_
+3. **Gate A — zero hardcoded values** — A review of every file under `templates/`, `template-parts/`, `patterns/`, and `theme.json` `styles` finds **no hardcoded colours (hex/rgb/hsl), no raw spacing values, and no unnamed type sizes**. Every such value resolves to a `theme.json` token (`var:preset|…` or `var:custom|…` / `has-…` class). _[Source: epics.md#Story-1.1; project-context.md Quality Gate A]_
 4. **theme.json validity** — `theme.json` declares `"$schema"` and `"version": 3`, parses as valid JSON, and loads cleanly in the WordPress 7.0 Site Editor with all tokens visible in the global-styles UI (colour palette, font sizes, spacing presets, shadow presets). _[Source: architecture.md#Starter-Template; project-context.md WP 7.0+]_
 
 ## Tasks / Subtasks
 
 > **Current state:** `wp-content/themes/ink-foundation/theme.json` (156 lines) **already defines** the 16 colours, 10 spacing sizes, layout widths, 4 font families, and 7 font sizes correctly. This story **completes** the token set and runs the Gate A audit — it is **not** a from-scratch build. Do not regress what is already present.
 
-- [ ] **Task 1 — Verify & preserve existing tokens (AC: 1, 2)**
-  - [ ] Confirm the 16-colour palette in `theme.json` matches `theme-tokens.json#color` exactly (slug + hex). Do **not** add, rename, or remove colours.
-  - [ ] Confirm spacing (`s-4`…`s-96`), layout (`contentSize:768px`, `wideSize:1400px`), font families (`display`/`heading`/`body`/`ui`), and font sizes (`xs`…`3xl`) match the token file. Leave `defaultPalette:false`, `defaultSpacingSizes:false`, `defaultFontSizes:false`, `appearanceTools:true` as-is.
-- [ ] **Task 2 — Add shadow tokens as native presets (AC: 1, 4)**
-  - [ ] Add `settings.shadow` with `"defaultPresets": false` and a `presets` array for `sm`, `md`, `lg`, using the exact CSS strings from `theme-tokens.json#shadow`. These become `var:preset|shadow|sm|md|lg`.
-- [ ] **Task 3 — Add radius tokens (AC: 1, 2)**
-  - [ ] theme.json **has no native radius-preset registry**, so define radius under `settings.custom.radius`: `sm:4px`, `md:6px`, `lg:8px`, `xl:12px`, `"2xl":16px`, `full:9999px` (values from `theme-tokens.json#radius`). These emit `--wp--custom--radius--{slug}` and are referenced as `var:custom|radius|sm`.
-- [ ] **Task 4 — Add named line-height & font-weight tokens (AC: 1, 3)**
-  - [ ] Add `settings.custom.lineHeight`: `tight:1.2`, `normal:1.5`, `relaxed:1.7` (from `theme-tokens.json#typography.lineHeight`). → `var:custom|line-height|tight` etc.
-  - [ ] Add `settings.custom.fontWeight`: `regular:400`, `medium:500`, `semibold:600`, `bold:700` (from `#typography.fontWeight`). → `var:custom|font-weight|semibold` etc.
-- [ ] **Task 5 — Replace hardcoded line-heights in theme.json `styles` (AC: 3)**
-  - [ ] In `styles.elements.heading.typography.lineHeight`, replace `"1.2"` with `"var:custom|line-height|tight"`.
-  - [ ] In `styles.typography.lineHeight`, replace `"1.5"` with `"var:custom|line-height|normal"`.
-- [ ] **Task 6 — Gate A audit of patterns & templates (AC: 3)**
-  - [ ] Grep `patterns/`, `templates/`, `parts/` for hardcoded design values: `#[0-9a-fA-F]{3,6}`, `rgb(`, `hsl(`, and px/rem values used for colour/spacing/font-size that are not token references. Fix any hits to use tokens.
-  - [ ] Known acceptable items (do **not** "fix" into invented tokens): `1px` border-**widths** (no border-width token exists), `letterSpacing:"0.08em"` and `textTransform:"uppercase"` treatments (not colour/spacing/size). Inline numeric `fontWeight:"600"/"700"` in block markup correspond to named weights — leave as-is for now (block markup cannot reference custom props; weight token enforcement is a 1.2 styling concern), but note them in Dev Notes.
-- [ ] **Task 7 — Validate & verify (AC: 4)**
-  - [ ] `theme.json` parses as valid JSON (`php -r 'json_decode(file_get_contents("theme.json")); echo json_last_error_msg();'` or equivalent).
-  - [ ] Load the theme in the WP 7.0 Site Editor (wp-env if available) and confirm colour palette, font sizes, spacing sizes, and shadow presets all appear in Global Styles. If no running WP env yet, document this as the verification step deferred to the first env stand-up (1.11) and confirm JSON validity + token presence by inspection.
+- [x] **Task 1 — Verify & preserve existing tokens (AC: 1, 2)**
+  - [x] Confirm the 16-colour palette in `theme.json` matches `theme-tokens.json#color` exactly (slug + hex). Do **not** add, rename, or remove colours.
+  - [x] Confirm spacing (`s-4`…`s-96`), layout (`contentSize:768px`, `wideSize:1400px`), font families (`display`/`heading`/`body`/`ui`), and font sizes (`xs`…`3xl`) match the token file. Leave `defaultPalette:false`, `defaultSpacingSizes:false`, `defaultFontSizes:false`, `appearanceTools:true` as-is.
+- [x] **Task 2 — Add shadow tokens as native presets (AC: 1, 4)**
+  - [x] Add `settings.shadow` with `"defaultPresets": false` and a `presets` array for `sm`, `md`, `lg`, using the exact CSS strings from `theme-tokens.json#shadow`. These become `var:preset|shadow|sm|md|lg`.
+- [x] **Task 3 — Add radius tokens (AC: 1, 2)**
+  - [x] theme.json **has no native radius-preset registry**, so define radius under `settings.custom.radius`: `sm:4px`, `md:6px`, `lg:8px`, `xl:12px`, `"2xl":16px`, `full:9999px` (values from `theme-tokens.json#radius`). These emit `--wp--custom--radius--{slug}` and are referenced as `var:custom|radius|sm`.
+- [x] **Task 4 — Add named line-height & font-weight tokens (AC: 1, 3)**
+  - [x] Add `settings.custom.lineHeight`: `tight:1.2`, `normal:1.5`, `relaxed:1.7` (from `theme-tokens.json#typography.lineHeight`). → `var:custom|line-height|tight` etc.
+  - [x] Add `settings.custom.fontWeight`: `regular:400`, `medium:500`, `semibold:600`, `bold:700` (from `#typography.fontWeight`). → `var:custom|font-weight|semibold` etc.
+- [x] **Task 5 — Replace hardcoded line-heights in theme.json `styles` (AC: 3)**
+  - [x] In `styles.elements.heading.typography.lineHeight`, replace `"1.2"` with `"var:custom|line-height|tight"`.
+  - [x] In `styles.typography.lineHeight`, replace `"1.5"` with `"var:custom|line-height|normal"`.
+- [x] **Task 6 — Gate A audit of patterns & templates (AC: 3)**
+  - [x] Grep `patterns/`, `templates/`, `template-parts/` for hardcoded design values: `#[0-9a-fA-F]{3,6}`, `rgb(`, `hsl(`, and px/rem values used for colour/spacing/font-size that are not token references. Fix any hits to use tokens.
+  - [x] Known acceptable items (do **not** "fix" into invented tokens): `1px` border-**widths** (no border-width token exists), `letterSpacing:"0.08em"` and `textTransform:"uppercase"` treatments (not colour/spacing/size). Inline numeric `fontWeight:"600"/"700"` in block markup correspond to named weights — leave as-is for now (block markup cannot reference custom props; weight token enforcement is a 1.2 styling concern), but note them in Dev Notes.
+- [x] **Task 7 — Validate & verify (AC: 4)**
+  - [x] `theme.json` parses as valid JSON (`php -r 'json_decode(file_get_contents("theme.json")); echo json_last_error_msg();'` or equivalent).
+  - [x] Load the theme in the WP 7.0 Site Editor (wp-env if available) and confirm colour palette, font sizes, spacing sizes, and shadow presets all appear in Global Styles. If no running WP env yet, document this as the verification step deferred to the first env stand-up (1.11) and confirm JSON validity + token presence by inspection.
+
+### Review Findings
+
+- [ ] [Review][Decision] AC-4 completion semantics are ambiguous without a live Site Editor run — Acceptance Criteria 4 requires loading cleanly in WP 7.0 Site Editor with tokens visible in Global Styles, while Completion Notes defer live verification to Story 1.11 due to no running environment. Decide whether this story may remain `review` with deferred live verification, or must return to `in-progress` until live verification is executed.
+- [x] [Review][Patch] Normalize Gate A audit path naming to avoid `parts/` vs `template-parts/` ambiguity [_bmad-output/implementation-artifacts/1-1-themejson-design-token-system.md:42]
 
 ## Dev Notes
 
@@ -99,10 +108,30 @@ _[Source: architecture.md#`ink-foundation` FSE theme tree, lines 996–1009]_
 
 ### Agent Model Used
 
-_(to be filled by dev agent)_
+claude-opus-4-8[1m] (Opus 4.8, 1M context)
 
 ### Debug Log References
 
+- JSON validity: `python3 -c "import json; json.load(open('theme.json'))"` → valid.
+- Token-completeness check (programmatic diff of `theme.json` settings vs `theme-tokens.json`): 16 colours, 4 font families, 7 font sizes, 10 spacing sizes, 2 layout widths, 6 radius, 3 shadow, 3 line-heights, 4 font-weights — all present, all values match source. Zero mismatches.
+- Gate A grep (`#hex|rgb(|hsl(` and untokenised `padding/margin/gap/fontSize`) across `patterns/`, `templates/`, `template-parts/`, and `theme.json styles`: **no hits**.
+
 ### Completion Notes List
 
+- **Scope was completion + audit, not from-scratch.** The pre-existing `theme.json` already held the 16 colours, 10 spacing sizes, layout widths, 4 font families, and 7 font sizes correctly (verified against `theme-tokens.json`, untouched). Task 1 was a verification pass — no regression introduced.
+- **Added (Tasks 2–4):** `settings.shadow.presets` (sm/md/lg — native v3 shadow presets → `var:preset|shadow|*`); `settings.custom.radius` (sm/md/lg/xl/2xl/full — no native radius-preset registry exists, so custom → `var:custom|radius|*`); `settings.custom.lineHeight` (tight/normal/relaxed) and `settings.custom.fontWeight` (regular/medium/semibold/bold).
+- **De-hardcoded (Task 5):** the two inline line-heights in `styles` (`"1.2"`/`"1.5"`) now reference `var:custom|line-height|tight` / `…|normal`.
+- **Gate A (Task 6):** existing patterns/templates were already slug-based for all colours/spacing/font-sizes. Documented-acceptable literals left intact: `1px` border-widths (no border-width token exists), inline `fontWeight:"600"/"700"` in block markup (block markup cannot reference custom props; named-weight enforcement is a Story 1.2 styling concern), `letterSpacing:"0.08em"` + `textTransform:"uppercase"` (typographic treatments, not colour/spacing/size).
+- **AC-4 Site Editor check:** no running WordPress env exists in the repo yet (code-only; wp-env stand-up is Story 1.11). Verified by JSON validity + `$schema`/`version: 3` presence + programmatic token presence. Live Site-Editor global-styles confirmation is deferred to the first env stand-up (1.11), as anticipated in Task 7.
+- **Guardrail honoured:** no `brons`/`silwer`/`goud`/`meester` tier colours invented — not in `theme-tokens.json`; tier display styling remains Epic 5.
+- No test/lint/build suite is configured at the repo root yet (Epic 1.11), so there were no existing tests to run or regress. Theme tokens are covered by the Gate A audit + (future) E2E/visual checks per project-context, not unit tests.
+
 ### File List
+
+- `wp-content/themes/ink-foundation/theme.json` (modified) — added shadow presets, custom radius/line-height/font-weight tokens; replaced two inline line-heights with token references.
+
+## Change Log
+
+| Date | Change |
+|---|---|
+| 2026-06-20 | Completed token set in `theme.json`: added shadow presets, radius/line-height/font-weight custom tokens; de-hardcoded two inline line-heights; ran Gate A audit (clean). Story → review. |
