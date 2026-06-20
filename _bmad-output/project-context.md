@@ -135,7 +135,8 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 - Read this file before implementing any code.
 - Follow ALL rules exactly as documented. When in doubt, prefer the more restrictive option.
-- Authoritative companions: `docs/specs/ink-consolidated-spec.md` (full spec), `docs/specs/ink-feature-list.md` (epics/stories), `docs/afrikaans-terms.md` (glossary), `docs/ui-copy-translations.md` (UI copy), `docs/design-handoff/` (tokens, page-map). This file distills the load-bearing rules; those documents hold the detail.
+- Authoritative companions: `docs/specs/ink-consolidated-spec.md` (full spec), `_bmad-output/planning-artifacts/epics.md` (**epics/stories — source of record**, BMAD-conformant), `docs/afrikaans-terms.md` (glossary), `docs/ui-copy-translations.md` (UI copy), `docs/design-handoff/` (tokens, page-map). This file distills the load-bearing rules; those documents hold the detail. **Note:** `docs/specs/ink-feature-list.md` is a **superseded companion input** (2026-06-20) — do not treat it as the living epics list; epics/stories changes go in `epics.md`.
+- **Planning artifacts span two locations** (this tripped a prior session): BMAD-native artifacts — PRD, `architecture.md`, UX (`ux-designs/`), `epics.md`, sprint-change-proposals — live under `_bmad-output/planning-artifacts/`; the spec, glossary, UI copy and design-handoff are living **companions** under `docs/`. Always consult this companion map before inferring an artifact is "missing" from a folder glob.
 - Update this file if new binding patterns emerge.
 
 **For Humans:**

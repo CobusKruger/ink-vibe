@@ -44,7 +44,9 @@
       "Bash(git -C .claude/worktrees/prd-ink branch --show-current)",
       "Bash(git -C .claude/worktrees/prd-ink log --oneline main..HEAD)",
       "Bash(git worktree *)",
-      "Bash(git branch *)"
+      "Bash(git branch *)",
+      "Bash(git -C /Users/cobus/Development/ink-lovable pull)",
+      "Bash(echo \"---EXIT:$?---\")"
     ]
   },
   "worktree": {

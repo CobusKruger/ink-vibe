@@ -1,6 +1,11 @@
 # INK — Comprehensive Feature List
 
-> **Companion to** `ink-consolidated-spec.md`. **Date:** 2026-06-14
+> ## ⛔ SUPERSEDED — companion input only (2026-06-20)
+> **This file is no longer the source of record for epics & stories.** The canonical, BMAD-conformant epic/story breakdown now lives at **`_bmad-output/planning-artifacts/epics.md`** (generated 2026-06-20 from the post-Correct-Course PRD/architecture/UX, with this file folded in). Downstream BMAD skills (`bmad-sprint-planning`, `bmad-create-story`, `bmad-check-implementation-readiness`) read `epics.md`, **not** this file.
+>
+> This document is retained as a **companion input** for its narrative notes and traceability. **Do not edit it as the living epics list** — make epic/story changes in `epics.md` (and reconcile here only if you want the prose to stay aligned). Keeping both as living docs is the two-sources-of-truth trap this demotion exists to prevent.
+
+> **Companion to** `ink-consolidated-spec.md`. **Date:** 2026-06-14 · **Superseded as epics source:** 2026-06-20
 > **Generated from:** [`spec-consolidation-brief.md`](./spec-consolidation-brief.md) — the originating brief and its four scope rules. Validate this deliverable against it.
 > **Purpose:** A complete, decomposable inventory of features for the new INK site, organised as **epics → features → stories** for ingestion into a spec-driven framework (BMAD recommended). Each feature notes its layer (Theme / `ink-core` / Platform), data sources, and key acceptance criteria.
 > **Fidelity rule:** Every feature below traces to a decision in the planning corpus or to a clarification confirmed on 2026-06-14. Items confirmed in clarification are tagged **[C-2026-06-14]**. Items still needing confirmation are tagged **[CONFIRM]** and cross-referenced to `ink-consolidated-spec.md §14`. No features have been invented.
@@ -113,7 +118,7 @@
 | # | Feature | Layer | Pri | Notes / acceptance |
 |---|---|---|---|---|
 | 7.1 | Single reading templates | T | P0 | Detail (Archetype C) for `storie`/`artikel` (reference-ready). |
-| 7.2 | **Gedig reading layout** | T | P1 | Designed 2026-06-14 (`PoetryReader.tsx`): stanza-aware, preserves line breaks, Roman-numeral stanza markers, per-line resonance (heart). Reference-ready. |
+| 7.2 | **Gedig reading layout** | T | P1 | Designed 2026-06-14 (`PoetryReader.tsx`): stanza-aware, preserves line breaks, Roman-numeral stanza markers, per-line resonance (heart). Poem body left-aligned (2026-06-20). Reference-ready. |
 | 7.3 | Line highlighting + reactions | K+T | P1 | Select text → highlight; reactions hartjie/duim op/wow. Encouragement, not critique. No public annotation. |
 | 7.4 | Structured community responses | K+T | P1 | "Gemeenskapsreaksies": types Lof/Insig/Voorstel. Replaces WP comments. |
 | 7.5 | Contextual prompts after a piece | K/T | P2 | Guided response prompts (may vary by content type). |

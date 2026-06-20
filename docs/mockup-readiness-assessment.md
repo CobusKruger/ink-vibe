@@ -26,7 +26,7 @@ The Lovable mockup is sufficiently complete to use as a design template. The des
 |---|---|---|---|
 | Tuisblad | `Index.tsx` + `components/home/*` | Reference-ready | Hero spotlight, challenge section, featured works, sponsors, CTA all present. |
 | Lees (storie) | `ReadStory.tsx` + `components/reading/*` | Reference-ready | Highlightable text, critique panel present. Static story only — no dynamic data. |
-| Lees (gedig) | `ReadStory.tsx` + `components/reading/PoetryReader.tsx` | Reference-ready | Stanza-aware poem layout (preserves line breaks; Roman-numeral stanza markers) with per-line "resonance" (heart) taps. Added 2026-06-14. |
+| Lees (gedig) | `ReadStory.tsx` + `components/reading/PoetryReader.tsx` | Reference-ready | Stanza-aware poem layout (preserves line breaks; Roman-numeral stanza markers) with per-line "resonance" (heart) taps. Added 2026-06-14; poem body left-aligned 2026-06-20 (dedication and resonance-count footer stay centred). |
 | Biblioteek | `Library.tsx` | Partial — see separate doc | Layout pattern (featured strip + category filter + search + card grid) is valid. Gaps: no date/archive browsing, no pagination, no author filter. See [Biblioteek organisasie.md](Biblioteek%20organisasie.md). |
 | Opleiding | `Library.tsx` | Usable as layout reference | Same layout pattern as Biblioteek. Content structure differs but the archetype is shared. |
 | Uitdagings (single) | `Challenge.tsx` | Reference-ready | Full challenge detail page with resources and submission list. |
