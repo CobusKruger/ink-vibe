@@ -57,32 +57,56 @@
         {
           "fontFamily": "Lora, Georgia, serif",
           "name": "Display",
-          "slug": "display"
+          "slug": "display",
+          "fontFace": [
+            { "fontFamily": "Lora", "fontStyle": "normal", "fontWeight": "400 700", "fontDisplay": "swap", "src": [ "file:./assets/fonts/lora-latin-wght-normal.woff2" ], "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD" },
+            { "fontFamily": "Lora", "fontStyle": "normal", "fontWeight": "400 700", "fontDisplay": "swap", "src": [ "file:./assets/fonts/lora-latin-ext-wght-normal.woff2" ], "unicodeRange": "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF" },
+            { "fontFamily": "Lora", "fontStyle": "italic", "fontWeight": "400 700", "fontDisplay": "swap", "src": [ "file:./assets/fonts/lora-latin-wght-italic.woff2" ], "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD" },
+            { "fontFamily": "Lora", "fontStyle": "italic", "fontWeight": "400 700", "fontDisplay": "swap", "src": [ "file:./assets/fonts/lora-latin-ext-wght-italic.woff2" ], "unicodeRange": "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF" }
+          ]
         },
         {
           "fontFamily": "Lora, Georgia, serif",
           "name": "Heading",
-          "slug": "heading"
+          "slug": "heading",
+          "fontFace": [
+            { "fontFamily": "Lora", "fontStyle": "normal", "fontWeight": "400 700", "fontDisplay": "swap", "src": [ "file:./assets/fonts/lora-latin-wght-normal.woff2" ], "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD" },
+            { "fontFamily": "Lora", "fontStyle": "normal", "fontWeight": "400 700", "fontDisplay": "swap", "src": [ "file:./assets/fonts/lora-latin-ext-wght-normal.woff2" ], "unicodeRange": "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF" },
+            { "fontFamily": "Lora", "fontStyle": "italic", "fontWeight": "400 700", "fontDisplay": "swap", "src": [ "file:./assets/fonts/lora-latin-wght-italic.woff2" ], "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD" },
+            { "fontFamily": "Lora", "fontStyle": "italic", "fontWeight": "400 700", "fontDisplay": "swap", "src": [ "file:./assets/fonts/lora-latin-ext-wght-italic.woff2" ], "unicodeRange": "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF" }
+          ]
         },
         {
           "fontFamily": "Inter, system-ui, sans-serif",
           "name": "Body",
-          "slug": "body"
+          "slug": "body",
+          "fontFace": [
+            { "fontFamily": "Inter", "fontStyle": "normal", "fontWeight": "100 900", "fontDisplay": "swap", "src": [ "file:./assets/fonts/inter-latin-wght-normal.woff2" ], "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD" },
+            { "fontFamily": "Inter", "fontStyle": "normal", "fontWeight": "100 900", "fontDisplay": "swap", "src": [ "file:./assets/fonts/inter-latin-ext-wght-normal.woff2" ], "unicodeRange": "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF" },
+            { "fontFamily": "Inter", "fontStyle": "italic", "fontWeight": "100 900", "fontDisplay": "swap", "src": [ "file:./assets/fonts/inter-latin-wght-italic.woff2" ], "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD" },
+            { "fontFamily": "Inter", "fontStyle": "italic", "fontWeight": "100 900", "fontDisplay": "swap", "src": [ "file:./assets/fonts/inter-latin-ext-wght-italic.woff2" ], "unicodeRange": "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF" }
+          ]
         },
         {
           "fontFamily": "Inter, system-ui, sans-serif",
           "name": "UI",
-          "slug": "ui"
+          "slug": "ui",
+          "fontFace": [
+            { "fontFamily": "Inter", "fontStyle": "normal", "fontWeight": "100 900", "fontDisplay": "swap", "src": [ "file:./assets/fonts/inter-latin-wght-normal.woff2" ], "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD" },
+            { "fontFamily": "Inter", "fontStyle": "normal", "fontWeight": "100 900", "fontDisplay": "swap", "src": [ "file:./assets/fonts/inter-latin-ext-wght-normal.woff2" ], "unicodeRange": "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF" },
+            { "fontFamily": "Inter", "fontStyle": "italic", "fontWeight": "100 900", "fontDisplay": "swap", "src": [ "file:./assets/fonts/inter-latin-wght-italic.woff2" ], "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD" },
+            { "fontFamily": "Inter", "fontStyle": "italic", "fontWeight": "100 900", "fontDisplay": "swap", "src": [ "file:./assets/fonts/inter-latin-ext-wght-italic.woff2" ], "unicodeRange": "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF" }
+          ]
         }
       ],
       "fontSizes": [
-        { "name": "XS", "slug": "xs", "size": "0.75rem" },
-        { "name": "SM", "slug": "sm", "size": "0.875rem" },
-        { "name": "MD", "slug": "md", "size": "1rem" },
-        { "name": "LG", "slug": "lg", "size": "1.125rem" },
-        { "name": "XL", "slug": "xl", "size": "1.25rem" },
-        { "name": "2XL", "slug": "2xl", "size": "1.5rem" },
-        { "name": "3XL", "slug": "3xl", "size": "2rem" }
+        { "name": "XS", "slug": "xs", "size": "0.75rem", "fluid": false },
+        { "name": "SM", "slug": "sm", "size": "0.875rem", "fluid": false },
+        { "name": "MD", "slug": "md", "size": "1rem", "fluid": false },
+        { "name": "LG", "slug": "lg", "size": "1.125rem", "fluid": false },
+        { "name": "XL", "slug": "xl", "size": "1.25rem", "fluid": false },
+        { "name": "2XL", "slug": "2xl", "size": "1.5rem", "fluid": { "min": "1.25rem", "max": "1.5rem" } },
+        { "name": "3XL", "slug": "3xl", "size": "2rem", "fluid": { "min": "1.5rem", "max": "2rem" } }
       ],
       "lineHeight": true
     },
@@ -128,6 +152,36 @@
           "lineHeight": "var:custom|line-height|tight"
         }
       },
+      "h1": {
+        "typography": {
+          "fontSize": "var:preset|font-size|3xl"
+        }
+      },
+      "h2": {
+        "typography": {
+          "fontSize": "var:preset|font-size|2xl"
+        }
+      },
+      "h3": {
+        "typography": {
+          "fontSize": "var:preset|font-size|xl"
+        }
+      },
+      "h4": {
+        "typography": {
+          "fontSize": "var:preset|font-size|lg"
+        }
+      },
+      "h5": {
+        "typography": {
+          "fontSize": "var:preset|font-size|md"
+        }
+      },
+      "h6": {
+        "typography": {
+          "fontSize": "var:preset|font-size|sm"
+        }
+      },
       "link": {
         "color": {
           "text": "var:preset|color|primary"
@@ -155,6 +209,11 @@
           }
         }
       },
+      "core/button": {
+        "typography": {
+          "fontFamily": "var:preset|font-family|ui"
+        }
+      },
       "core/navigation-link": {
         "typography": {
           "fontFamily": "var:preset|font-family|ui",
@@ -173,13 +232,17 @@
     {
       "area": "header",
       "name": "header",
-      "title": "Header"
+      "title": "Kopstuk"
     },
     {
       "area": "footer",
       "name": "footer",
-      "title": "Footer"
+      "title": "Voetstuk"
+    },
+    {
+      "area": "uncategorized",
+      "name": "section",
+      "title": "Seksie-omhulsel"
     }
   ]
 }
-
