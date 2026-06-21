@@ -62,4 +62,13 @@ final class Api {
 	public static function userMetaKeys(): array {
 		return UserMeta::keys();
 	}
+
+	/**
+	 * The per-CPT editorial field meta keys (InkPols / challenge / sponsor).
+	 *
+	 * @return list<string>
+	 */
+	public static function fieldMetaKeys(): array {
+		return FieldSets::metaKeys();
+	}
 }
