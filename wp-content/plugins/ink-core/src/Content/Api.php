@@ -15,9 +15,10 @@ defined( 'ABSPATH' ) || exit;
  * Content module facade.
  *
  * The sole public cross-module surface for Content (AD-1): other modules
- * (Submission, Discovery, …) read the INK post-type slugs through this facade,
- * never reaching into {@see PostTypes}' internals. At 2.1 it exposes the slug
- * surface only; later Epic-2 stories extend it with taxonomy/meta accessors.
+ * (Submission, Discovery, Training, Challenges, …) read the INK post-type and
+ * taxonomy slugs through this facade, never reaching into {@see PostTypes} or
+ * {@see Taxonomies} internals. At 2.1/2.2 it exposes the slug surface; later
+ * Epic-2 stories extend it with meta accessors.
  *
  * @package Ink\Core
  */
@@ -39,5 +40,14 @@ final class Api {
 	 */
 	public static function bydraeTypes(): array {
 		return PostTypes::bydraeTypes();
+	}
+
+	/**
+	 * Every INK taxonomy slug: genre, vaardigheid, uitdagingsrondte, ster_gradering.
+	 *
+	 * @return list<string>
+	 */
+	public static function taxonomies(): array {
+		return Taxonomies::all();
 	}
 }

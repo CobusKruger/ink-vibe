@@ -19,11 +19,12 @@ defined( 'ABSPATH' ) || exit;
  * Owns the INK content models (AD-1: Content owns CPTs/taxonomies/meta). Live at
  * 2.1: registration of the nine INK CPTs (`gedig`, `storie`, `artikel`,
  * `skryfwerk`, `biblioteek_item`, `opleiding_artikel`, `uitdaging`,
- * `inkpols_uitgawe`, `borg`) via {@see PostTypes}.
+ * `inkpols_uitgawe`, `borg`) via {@see PostTypes}. Live at 2.2: the four INK
+ * taxonomies (`genre`, `vaardigheid`, `uitdagingsrondte`, `ster_gradering`) via
+ * {@see Taxonomies}.
  *
- * RESERVED for the rest of Epic 2: taxonomies (`genre`, `vaardigheid`,
- * `uitdagingsrondte`, `ster_gradering` — Story 2.2), user meta (2.3), per-CPT
- * admin field sets (2.4) and native term images (2.5).
+ * RESERVED for the rest of Epic 2: user meta (2.3), per-CPT admin field sets
+ * (2.4) and native term images (2.5).
  *
  * @package Ink\Core
  */
@@ -33,13 +34,16 @@ final class Module implements ModuleContract {
 	 * Register this module's hooks.
 	 *
 	 * Dispatched once by the Kernel on `init` (via `Plugin::registerModules()`).
-	 * Delegates CPT registration to {@see PostTypes} so this bootstrap stays thin,
-	 * mirroring the Engagement `Module` → `Comments` house style.
+	 * Delegates registration to thin collaborators ({@see PostTypes},
+	 * {@see Taxonomies}) so this bootstrap stays thin, mirroring the Engagement
+	 * `Module` → `Comments` house style. CPTs register BEFORE taxonomies so every
+	 * taxonomy `object_type` target already exists.
 	 */
 	public function register(): void {
 		( new PostTypes() )->register();
+		( new Taxonomies() )->register();
 
-		// Reserved: taxonomies (2.2), user meta (2.3), admin field sets (2.4) and
-		// native term images (2.5) register here through the rest of Epic 2.
+		// Reserved: user meta (2.3), admin field sets (2.4) and native term images
+		// (2.5) register here through the rest of Epic 2.
 	}
 }
