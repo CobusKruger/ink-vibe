@@ -14,22 +14,41 @@ use Ink\Kernel\Module as ModuleContract;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Content module — RESERVED extension point for Epic 2.
+ * Content module bootstrap.
  *
- * Will register the INK CPTs (`gedig`, `storie`, `artikel`, `skryfwerk`,
- * `biblioteek_item`, `opleiding_artikel`, `uitdaging`, `inkpols_uitgawe`,
- * `borg`), taxonomies (`genre`, `vaardigheid`, `uitdagingsrondte`,
- * `ster_gradering`) and user/post meta. NOTHING is implemented at 1.7 —
- * `register()` is a documented no-op until Epic 2.
+ * Owns the INK content models (AD-1: Content owns CPTs/taxonomies/meta). Live at
+ * 2.1: registration of the nine INK CPTs (`gedig`, `storie`, `artikel`,
+ * `skryfwerk`, `biblioteek_item`, `opleiding_artikel`, `uitdaging`,
+ * `inkpols_uitgawe`, `borg`) via {@see PostTypes}. Live at 2.2: the four INK
+ * taxonomies (`genre`, `vaardigheid`, `uitdagingsrondte`, `ster_gradering`) via
+ * {@see Taxonomies}. Live at 2.3: the writer-tier user meta (`ink_writer_tier`,
+ * `ink_tier_promoted_at`) via {@see UserMeta}. Live at 2.4: the per-CPT admin
+ * field sets (InkPols / challenge / sponsor editorial meta + meta boxes) via
+ * {@see FieldSets}. Live at 2.5: native term images (`ink_term_image_id`) via
+ * {@see TermImages}, which retire the WPCustom Category Image plugin.
+ *
+ * Epic 2 content models are complete: CPTs, taxonomies, user meta, per-CPT admin
+ * field sets, and native term images.
  *
  * @package Ink\Core
  */
 final class Module implements ModuleContract {
 
 	/**
-	 * Register this module's hooks. No-op until Epic 2.
+	 * Register this module's hooks.
+	 *
+	 * Dispatched once by the Kernel on `init` (via `Plugin::registerModules()`).
+	 * Delegates registration to thin collaborators ({@see PostTypes},
+	 * {@see Taxonomies}, {@see UserMeta}, {@see FieldSets}, {@see TermImages}) so
+	 * this bootstrap stays thin, mirroring the Engagement `Module` → `Comments`
+	 * house style. CPTs register BEFORE taxonomies so every taxonomy `object_type`
+	 * target already exists; term images register after their taxonomies.
 	 */
 	public function register(): void {
-		// Reserved: CPTs, taxonomies and meta are registered here in Epic 2.
+		( new PostTypes() )->register();
+		( new Taxonomies() )->register();
+		( new UserMeta() )->register();
+		( new FieldSets() )->register();
+		( new TermImages() )->register();
 	}
 }

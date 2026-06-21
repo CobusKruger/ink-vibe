@@ -101,6 +101,12 @@ final class Plugin {
 		// concern, wired here (not in a feature module, not in the bootstrap).
 		add_filter( 'get_user_locale', I18n::forceStaffAdminLocale( ... ), 10, 2 );
 
+		// Terminology label registry bridge (AD-10): register the `ink/term`
+		// Block Bindings source so static block-template HTML can bind text to a
+		// glossary label. Cross-cutting i18n concern — wired from the Kernel, like
+		// the loaders above; must run on `init` (Block Bindings registration time).
+		add_action( 'init', \Ink\I18n\Bindings::register( ... ) );
+
 		// Reserved seam: dispatch each registered module's bootstrap on `init`.
 		// No modules are registered at 1.7, so this is a no-op until later epics.
 		add_action( 'init', $this->registerModules( ... ) );

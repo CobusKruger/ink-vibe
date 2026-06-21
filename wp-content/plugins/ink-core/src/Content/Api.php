@@ -12,13 +12,81 @@ namespace Ink\Content;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Content module facade — RESERVED.
+ * Content module facade.
  *
- * The sole public cross-module surface for Content (Epic 2). Other modules
- * reach Content only through this facade (AD-1), never into its internals. No
- * methods are exposed at 1.7.
+ * The sole public cross-module surface for Content (AD-1): other modules
+ * (Submission, Discovery, Training, Challenges, …) read the INK post-type and
+ * taxonomy slugs through this facade, never reaching into {@see PostTypes} or
+ * {@see Taxonomies} internals. At 2.1/2.2 it exposes the slug surface; later
+ * Epic-2 stories extend it with meta accessors.
  *
  * @package Ink\Core
  */
 final class Api {
+
+	/**
+	 * Every INK post-type slug, registration order preserved.
+	 *
+	 * @return list<string>
+	 */
+	public static function all(): array {
+		return PostTypes::all();
+	}
+
+	/**
+	 * The member-submission CPTs ("bydraes"): gedig, storie, artikel, skryfwerk.
+	 *
+	 * @return list<string>
+	 */
+	public static function bydraeTypes(): array {
+		return PostTypes::bydraeTypes();
+	}
+
+	/**
+	 * Every INK taxonomy slug: genre, vaardigheid, uitdagingsrondte, ster_gradering.
+	 *
+	 * @return list<string>
+	 */
+	public static function taxonomies(): array {
+		return Taxonomies::all();
+	}
+
+	/**
+	 * The writer-tier user-meta keys: ink_writer_tier, ink_tier_promoted_at.
+	 *
+	 * The registered key surface only; the behavioural tier read/write API is the
+	 * Epic-5 Tiers facade.
+	 *
+	 * @return list<string>
+	 */
+	public static function userMetaKeys(): array {
+		return UserMeta::keys();
+	}
+
+	/**
+	 * The per-CPT editorial field meta keys (InkPols / challenge / sponsor).
+	 *
+	 * @return list<string>
+	 */
+	public static function fieldMetaKeys(): array {
+		return FieldSets::metaKeys();
+	}
+
+	/**
+	 * The attachment ID of a term's native image, or 0 if none.
+	 *
+	 * @param int $term_id The term.
+	 */
+	public static function termImageId( int $term_id ): int {
+		return TermImages::imageId( $term_id );
+	}
+
+	/**
+	 * The taxonomies that carry a native term image.
+	 *
+	 * @return list<string>
+	 */
+	public static function termImageTaxonomies(): array {
+		return TermImages::imageTaxonomyList();
+	}
 }

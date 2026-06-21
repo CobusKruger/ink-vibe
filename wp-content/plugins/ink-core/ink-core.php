@@ -59,6 +59,7 @@ add_action( 'plugins_loaded', Kernel\Plugin::boot( ... ) );
 add_action(
 	'plugins_loaded',
 	static function (): void {
+		Kernel\Plugin::instance()->addModule( 'content', new Content\Module() );
 		Kernel\Plugin::instance()->addModule( 'engagement', new Engagement\Module() );
 		Kernel\Plugin::instance()->addModule( 'notifications', new Notifications\Module() );
 	}
