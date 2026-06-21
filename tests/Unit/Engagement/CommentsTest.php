@@ -4,15 +4,13 @@
  *
  * Target: {@see \Ink\Engagement\Comments} (feature 1.8).
  *
- * WIRED IN STORY 1.11. Authored ready-to-run by Story 1.8; Story 1.11 stood up
- * the foundational harness (Pest function API + Brain Monkey/WP_Mock, the
+ * Authored ready-to-run by Story 1.8; Story 1.11 will wire the runner (the
+ * foundational harness: Pest function API + Brain Monkey/WP_Mock, the
  * `tests/bootstrap.php` Brain Monkey lifecycle, `phpunit.xml` Unit testsuite)
- * and relocated this file to the repo-root `tests/` tree (architecture.md
- * lines 851, 963-966 — tests live at the repo root, not plugin-local; this
- * supersedes the placeholder plugin-local `tests/` location Story 1.8 used
- * while the harness did not yet exist). Uses the project's chosen unit stack
- * (project-context.md: "Many unit tests — ink-core rules with WP mocked
- * (Brain Monkey / WP_Mock, via Pest)").
+ * and may relocate this file within the repo-root `tests/` tree (architecture.md
+ * lines 851, 963-966 — tests live at the repo root, not plugin-local). Uses the
+ * project's chosen unit stack (project-context.md: "Many unit tests — ink-core
+ * rules with WP mocked (Brain Monkey / WP_Mock, via Pest)").
  *
  * Harness assumptions (provided by tests/bootstrap.php):
  *  - Brain\Monkey is set up/torn down per test (beforeEach -> Monkey\setUp()).

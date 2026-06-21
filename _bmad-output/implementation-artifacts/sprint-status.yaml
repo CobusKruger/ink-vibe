@@ -48,12 +48,12 @@ development_status:
   1-2-typography-system: done
   1-3-dark-mode-tokens: done
   1-4-global-templates-template-parts: done
-  1-5-core-block-pattern-library: in-progress
+  1-5-core-block-pattern-library: done
   1-6-block-locking-strategy: done
-  1-7-ink-core-plugin-scaffold: in-progress
-  1-8-comment-disable-filters: in-progress
+  1-7-ink-core-plugin-scaffold: done
+  1-8-comment-disable-filters: done
   1-9-page-archetypes-a-d-documented-built: done
-  1-10-locale-af-i18n-scaffolding-admin-language-mechanism: in-progress
+  1-10-locale-af-i18n-scaffolding-admin-language-mechanism: done
   1-11-test-harness-scaffold: done
   1-12-form-letter-notification-capability-foundation: in-progress
   epic-1-retrospective: optional

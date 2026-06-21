@@ -4,13 +4,12 @@
  *
  * Target: {@see \Ink\Kernel\I18n::forceStaffAdminLocale()} (Story 1.10).
  *
- * WIRED IN STORY 1.11. Authored ready-to-run by Story 1.10; Story 1.11 stood up
- * the foundational harness (Pest function API + Brain Monkey/WP_Mock, the
+ * Authored ready-to-run in Story 1.10; Story 1.11 will wire the runner (the
+ * foundational harness: Pest function API + Brain Monkey/WP_Mock, the
  * `tests/bootstrap.php` Brain Monkey lifecycle + `WP_User` double, `phpunit.xml`
- * Unit testsuite) and relocated this file to the repo-root `tests/` tree
- * (architecture.md lines 851, 963-966 — tests live at the repo root; this
- * supersedes the placeholder plugin-local `tests/` location Story 1.10 used
- * while the harness did not yet exist). Mirrors the 1.8 CommentsTest precedent.
+ * Unit testsuite) and may relocate this file within the repo-root `tests/` tree
+ * (architecture.md lines 851, 963-966 — tests live at the repo root, not
+ * plugin-local). Mirrors the 1.8 CommentsTest precedent.
  *
  * Harness assumptions (provided by tests/bootstrap.php):
  *  - Brain\Monkey is set up/torn down per test (beforeEach -> Monkey\setUp()).

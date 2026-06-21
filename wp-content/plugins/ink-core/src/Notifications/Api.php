@@ -43,8 +43,12 @@ final class Api {
 	 * Wire the facade to the module's collaborators (called by {@see Module::register()}).
 	 */
 	public static function bootstrap( TemplateStore $store, Notifier $notifier ): void {
-		self::$store    = $store;
-		self::$notifier = $notifier;
+		// No-op if the facade is already wired. A consumer that touches Api on
+		// `plugins_loaded` (before the `init` module dispatch runs Module::register())
+		// lazily builds a store and may register templates into it; clobbering it
+		// here would silently drop those registrations. First wiring wins.
+		self::$store    ??= $store;
+		self::$notifier ??= $notifier;
 	}
 
 	/**
