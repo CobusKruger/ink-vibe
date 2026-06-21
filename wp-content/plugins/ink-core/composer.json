@@ -1,0 +1,23 @@
+{
+    "name": "ink/ink-core",
+    "description": "INK business-logic plugin: content models, entitlement, Gradering, submission, engagement, challenges, sponsors and notifications. Modular monolith (AD-1).",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "php": ">=8.3"
+    },
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "Ink\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true
+        }
+    },
+    "minimum-stability": "stable"
+}

@@ -1,0 +1,18 @@
+# Reserved text-domain directory for the `ink-core` text domain.
+#
+# INK ships NO English `.mo` for ink-core: Afrikaans is the SOURCE language of
+# every ink-core string (the `__()`/`_e()` literal IS the Afrikaans text), so
+# gettext returns the Afrikaans source even under a staff member's forced-English
+# admin locale (admin-language split, §14.15).
+#
+# The admin-language mechanism is wired in Story 1.10: `Ink\Kernel\I18n` loads
+# this domain on `init` and filters `get_user_locale` to force editor/administrator
+# users to `en_US` IN ADMIN ONLY, while the site/front-end locale stays `af`
+# (§14.14). The §14.15 no-English-`.mo` policy is the ABSENCE of an English `.mo`
+# in this directory — it is a standing rule, not code. Every later `ink-core`
+# admin/CPT/taxonomy label is authored Afrikaans-source; the English-leak scan
+# (NFR-1, Story 17.4) is the standing detector.
+#
+# This directory may hold only `.gitkeep` and, if ever needed, an AFRIKAANS
+# artifact. Do NOT commit a `ink-core-en_US.mo` / `.po` (or any English ink-core
+# `.mo`) here — it would override the Afrikaans source and defeat §14.15.

@@ -1,0 +1,9 @@
+# Composer-built dependencies & autoloader — assembled in CI (AD-4 / AD-8),
+# never committed. The hand-rolled src/autoload.php fallback covers the
+# pre-build repo state.
+/vendor/
+
+# Build / tool artifacts
+.phpunit.result.cache
+.php-cs-fixer.cache
+*.log
