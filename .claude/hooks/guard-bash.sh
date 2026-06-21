@@ -147,8 +147,12 @@ def leading_cmd(toks):
 def is_file_operand(t):
     if t in ("-", "/dev/stdin", "/dev/stdout", "/dev/stderr", "/dev/null"):
         return False
-    if t.startswith(("-", "<", ">", "$", "`")):
+    if t.startswith(("-", "<", ">", "`")):
         return False
+    if t.startswith("$("):
+        return False                      # command substitution output, not a file
+    # A plain variable reference ($f / ${f}) is almost always a file path in a
+    # reader/grep context, so treat it as a (probable) file operand.
     if t.isdigit():
         return False
     return True
