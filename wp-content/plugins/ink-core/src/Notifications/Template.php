@@ -22,6 +22,10 @@ defined( 'ABSPATH' ) || exit;
  * locale — §14.15 / Story 1.10). Admin overrides live in the options store and
  * win over these defaults.
  *
+ * Gettext contract (decision 5a): the consumer passes these Afrikaans defaults
+ * already wrapped in `__( '…', 'ink-core' )` as literal strings at registration
+ * (see {@see Api::registerTemplate()}); the foundation does not wrap them.
+ *
  * This is a plain config record — NOT a template engine. The only dynamic part
  * is the single greeting-line merge token resolved by {@see MergeResolver}.
  *

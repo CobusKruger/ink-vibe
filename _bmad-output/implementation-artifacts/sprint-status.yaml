@@ -43,7 +43,7 @@ story_location: "{project-root}/_bmad-output/implementation-artifacts"
 
 development_status:
   # Epic 1: Foundation (theme + tokens + ink-core scaffold)
-  epic-1: in-progress
+  epic-1: done
   1-1-themejson-design-token-system: done
   1-2-typography-system: done
   1-3-dark-mode-tokens: done
@@ -55,7 +55,7 @@ development_status:
   1-9-page-archetypes-a-d-documented-built: done
   1-10-locale-af-i18n-scaffolding-admin-language-mechanism: done
   1-11-test-harness-scaffold: done
-  1-12-form-letter-notification-capability-foundation: in-progress
+  1-12-form-letter-notification-capability-foundation: done
   epic-1-retrospective: optional
 
   # Epic 2: Content models & taxonomy

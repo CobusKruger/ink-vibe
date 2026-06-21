@@ -53,6 +53,13 @@ final class Api {
 
 	/**
 	 * Register a consumer's Afrikaans-source template/event definition.
+	 *
+	 * Gettext contract (Story 1.12, decision 5a): the consumer passes the Afrikaans
+	 * default subject/body/messages already wrapped in `__( '…', 'ink-core' )` as
+	 * LITERAL strings, e.g. `new Template( 'tier_promotion', __( 'Baie geluk!', 'ink-core' ), … )`.
+	 * The foundation does not wrap them (it never sees the literals). Keep the strings
+	 * literal — never `__( $var )` — so `wp i18n make-pot` can extract them. No English
+	 * `.mo` ships, so the Afrikaans source is also the rendered output (§14.15).
 	 */
 	public static function registerTemplate( Template $template ): void {
 		self::store()->register( $template );
