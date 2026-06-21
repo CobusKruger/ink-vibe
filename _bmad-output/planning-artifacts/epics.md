@@ -237,7 +237,7 @@ Source: `ux-designs/ux-ink-vibe-2026-06-15/` (EXPERIENCE.md + DESIGN.md). Named-
 | Epic | Title | P0 stories |
 |---|---|---|
 | 1 | Foundation (theme + tokens + ink-core scaffold) | 8 |
-| 2 | Content models & taxonomy | 3 |
+| 2 | Content models & taxonomy | 4 |
 | 3 | Accounts, registration & auth | 2 |
 | 4 | Membership, access & payment | 4 |
 | 5 | Writer Gradering (Brons / Silwer / Goud / Meester) | 5 |
@@ -262,6 +262,8 @@ Source: `ux-designs/ux-ink-vibe-2026-06-15/` (EXPERIENCE.md + DESIGN.md). Named-
 ## Epic 1: Foundation (theme + tokens + ink-core scaffold)
 
 Establish the block theme, design-token system, and the `ink-core` plugin scaffold — including the foundational i18n/admin-language mechanism and test harness — so every later epic builds on token-compliant, Afrikaans-first, test-first foundations rather than retrofitting them.
+
+> [Correct-course 2026-06-21] Remediation: Epic 1 theme patterns route chrome labels through the terminology registry (Story 2.0) and wrap remaining copy in the theme text domain — bringing them into Quality-Gate-D conformance. Tracked for Epic 17 execution.
 
 ### Story 1.1: theme.json design-token system
 
@@ -425,6 +427,25 @@ So that its downstream consumers (R2/R3/R5/R7) build on a ready shared template 
 
 Register the CPTs, taxonomies, and user meta that form the data substrate for every feature — using the exact migration-load-bearing Afrikaans code IDs — so all later epics read and write a stable, shared model.
 
+### Story 2.0: Terminology label registry (glossary-backed label source)
+
+As an Afrikaans-first product with an owner-maintained controlled vocabulary,
+I want every code-rendered UI label sourced from a single glossary-backed registry,
+So that re-deciding a term is a one-file edit, not a codebase-wide search. (Layer K · P0)
+
+**Acceptance Criteria:**
+
+**Given** the `ink-core` plugin
+**When** the terminology registry is built
+**Then** a registry (e.g. `Ink\I18n\Terms`) maps glossary concept keys (`membership`, `gradering`, `bydrae`, …) to literal `__( '<Afrikaans>', 'ink-core' )` label definitions, seeded from `docs/afrikaans-terms.md` (UI-term column)
+**And** a helper (`ink_term('key')` / `Terms::label('key')`) returns the label, so callers never inline the literal
+**And** `wp i18n make-pot` extracts every registry label (literals only — never `__( $var )`)
+**And** code IDs, slugs, and enums remain the existing enum/constant single-source (unchanged).
+**Given** the theme cannot call `ink-core` PHP from static block-template HTML
+**When** a pattern or template needs a glossary label
+**Then** a theme-side bridge exposes the same labels to PHP patterns, and static `templates/*.html` uses the Block Bindings API where a dynamic term is needed
+**And** the registry's relationship to `afrikaans-terms.md` is documented: the glossary remains the human source of truth; the registry is its machine projection.
+
 ### Story 2.1: Register CPTs
 
 As an ink-core developer,
@@ -435,7 +456,8 @@ So that all content has a typed home and migration can map onto it.
 
 **Given** `ink-core` activation
 **When** CPTs register
-**Then** `gedig`, `storie`, `artikel`, `skryfwerk`, `biblioteek_item`, `opleiding_artikel`, `uitdaging`, `inkpols_uitgawe`, `borg` exist with Afrikaans slugs per the terms guide and exact code IDs (migration-load-bearing).
+**Then** `gedig`, `storie`, `artikel`, `skryfwerk`, `biblioteek_item`, `opleiding_artikel`, `uitdaging`, `inkpols_uitgawe`, `borg` exist with Afrikaans slugs per the terms guide and exact code IDs (migration-load-bearing)
+**And** all CPT labels (singular/plural/menu/admin) are sourced from the terminology registry (Story 2.0), not inline literals.
 
 ### Story 2.2: Register taxonomies
 
@@ -448,7 +470,8 @@ So that training and contributions auto-surface via shared terms (no manual link
 **Given** `ink-core` activation
 **When** taxonomies register
 **Then** `genre`, `vaardigheid`, `uitdagingsrondte`, `ster_gradering` exist
-**And** `genre`/`vaardigheid` are shared across bydraes and training for auto-surfacing.
+**And** `genre`/`vaardigheid` are shared across bydraes and training for auto-surfacing
+**And** taxonomy labels are sourced from the terminology registry (Story 2.0).
 
 ### Story 2.3: User meta
 
@@ -472,7 +495,8 @@ So that I can manage issue/challenge/sponsor details.
 
 **Given** the relevant CPT edit screen
 **When** I edit an item
-**Then** the right meta is available (e.g. InkPols issue date/volume/cover/PDF/teaser; challenge theme/deadline; sponsor link/tier/dates/placement) with Afrikaans `ink-core` labels.
+**Then** the right meta is available (e.g. InkPols issue date/volume/cover/PDF/teaser; challenge theme/deadline; sponsor link/tier/dates/placement) with Afrikaans `ink-core` labels
+**And** admin field-set labels are sourced from the terminology registry (Story 2.0) where they map to glossary concepts.
 
 ### Story 2.5: Term images native
 

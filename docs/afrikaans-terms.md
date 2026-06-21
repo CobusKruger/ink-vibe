@@ -283,3 +283,5 @@ Gebruik die `ink_` voorvoegsel:
 Wanneer 'n nuwe konsep ingevoer word wat nog nie in hierdie gids is nie, voeg dit hier by **voor** dit in die kode of UI verskyn. Die gids is die bron van waarheid, nie die kode nie.
 
 Kodekommentaar en UI-stringe moet hierdie terme volg. As 'n ontwikkelaar 'n nuwe string skryf wat 'n term gebruik wat nie in hierdie gids is nie, is dit 'n sein dat die term eers hier goedgekeur moet word.
+
+Die UI-term-kolom word in 'n masjienleesbare register (ink-core Terms) geprojekteer; die gids bly die menslike bron van waarheid. 'n Termverandering word een keer hier gemaak en dan in die register weerspieël (Story 2.0 / AD-10).

@@ -658,6 +658,54 @@ AD-1) and introduce these integration points:
   `ink/...` events from both domains — it is not a cross-domain *write* path). New code
   fails the build on the first illicit `use` exactly as today.
 
+### AD-10: Terminology label registry — single-source, glossary-backed UI labels
+
+**Status:** Accepted (2026-06-21)
+
+**Context.** `docs/afrikaans-terms.md` is the documented source of truth for INK's
+controlled vocabulary, with a binding rule: a concept is added to the glossary before it
+appears in code or UI. But the glossary is human-readable prose, hand-duplicated into code
+as scattered string literals. The architecture already enforces single-definition for
+**code identifiers** — enums for tiers/reactions/response-types and fixed CPT/taxonomy
+slugs (AD-1; never duplicate those literals across the codebase). It does **not** do the
+same for **UI display labels** — the Afrikaans words a member actually reads. Under the
+decided i18n strategy (gettext with Afrikaans as the *source* string, **no English `.mo`**
+for `ink-core`), each displayed label is the gettext source literal at its call site, so
+there is no single place to re-decide a term's label. The 2026-06-20 G1 terminology change
+(e.g. `intekening → lidmaatskap`, `tier → Gradering`) showed this is a recurring,
+owner-driven event, and Epic 2 is about to register the largest label surface on the site.
+
+**Decision.** `ink-core` exposes a **glossary-backed, single-source label registry** for all
+code-rendered UI labels, extending the AD-1 enum/code-ID single-source discipline from code
+identifiers to display labels.
+
+- A registry (e.g. `Ink\I18n\Terms`) maps glossary concept keys to **literal**
+  `__( '<Afrikaans>', 'ink-core' )` label definitions, seeded from the `afrikaans-terms.md`
+  UI-term column; a helper (`ink_term('key')` / `Terms::label('key')`) returns the label and
+  callers never inline the literal. Re-deciding a term is a one-file edit.
+- **gettext-compatible:** because the registry holds *literal* `__()` calls, `wp i18n
+  make-pot` still extracts every label — the registry file *is* the extraction surface. The
+  literals-only caveat is load-bearing: never wrap `__()` around a *variable* (`__( $label )`),
+  which `make-pot` cannot extract; literals live only in the registry, everywhere else calls
+  the key.
+- **Complements, does not replace, the existing single-source rules.** Code IDs, slugs, and
+  enums remain the enum/constant single-source (AD-1); the **no-English-`.mo`** policy is
+  unchanged (gettext returns the Afrikaans source). The registry is the label analogue of
+  the enum rule.
+- **Theme bridge + Block Bindings.** The theme cannot call `ink-core` PHP from static
+  block-template HTML; a small theme-side bridge exposes the same labels to PHP patterns, and
+  the **Block Bindings API** (WP 6.5+) is the targeted bridge for static `templates/*.html`
+  where a dynamic term is needed (adopt only where needed, not a blanket binding).
+- **Out of scope.** DB content (page bodies, nav menus, migrated posts) is not covered; term
+  changes there remain a `wp search-replace` operation, called out explicitly so it is not
+  assumed covered by the registry.
+
+**Consequences:**
+- The registry is a deterministic surface for the NFR-1 English-leak scan (AD-8) and label QA
+  — it joins the inspected set alongside the AD-9 template/options store.
+- The glossary stays the human source of truth; the registry is its machine projection. A
+  term change is made once in `afrikaans-terms.md`, then reflected in the registry (Story 2.0).
+
 ---
 
 ## Starter Template Evaluation
@@ -740,10 +788,11 @@ stand up CI (PHPStan/WPCS/Deptrac/Pest) — is the first implementation story
 
 ## Core Architectural Decisions
 
-The decisions below were made collaboratively and are recorded in full as **AD-1…AD-9**
+The decisions below were made collaboratively and are recorded in full as **AD-1…AD-10**
 under *Architecture Decisions* above (AD-9 + the integration/conflation addendum added by
-the 2026-06-20 burden-reduction scope change). This section indexes them by category and
-flags priority and open build-time items.
+the 2026-06-20 burden-reduction scope change; AD-10 added by the 2026-06-21 terminology
+correct-course). This section indexes them by category and flags priority and open
+build-time items.
 
 ### Decision Priority Analysis
 
@@ -787,6 +836,7 @@ flags priority and open build-time items.
 - **Notifications & messaging:** AD-9 (form-letter/template options store, name-merge only,
   BP + transactional email; consumed by R2/R3/R5/R7); integration-point/conflation addendum
   (Action Scheduler lifecycle sweeps, PayFast-recurring seam, R8/R6 plugin seams).
+- **Terminology & i18n labels:** AD-10 (glossary-backed single-source label registry; literal __(); complements the AD-5 enum/code-ID rule and the no-English-.mo policy).
 
 ### Open Build-Time Items (carried, non-blocking)
 

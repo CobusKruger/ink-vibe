@@ -60,6 +60,7 @@ development_status:
 
   # Epic 2: Content models & taxonomy
   epic-2: backlog
+  2-0-terminology-label-registry: backlog
   2-1-register-cpts: backlog
   2-2-register-taxonomies: backlog
   2-3-user-meta: backlog

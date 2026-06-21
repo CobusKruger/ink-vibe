@@ -79,6 +79,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **Admin-language split:** WP-core and third-party plugin admin chrome = **English** (by decision). All `ink-core` admin surfaces (CPT/taxonomy labels, tier promotion, sponsor scheduling, challenge/winner admin, reports) = **Afrikaans**. Mechanism: `ink-core` authors admin strings in Afrikaans as the source language and ships **no English `.mo`**, so gettext returns the Afrikaans source even under a staff member's English admin locale.
 - Site locale `af`; staff (editor/administrator) forced to English admin language via per-user WP setting in `ink-core` — front-end output stays Afrikaans regardless.
 - **`afrikaans-terms.md` is the glossary source of truth.** A new concept is added to the glossary **before** it appears in code or UI. Code IDs and UI labels follow it.
+- **Controlled-vocabulary UI labels come from the ink-core terminology registry** (single-source, glossary-backed literal __()), the same way fixed value sets come from enums. Never inline a glossary label as a bare literal outside the registry.
 - **Never lift copy from the Lovable mockup** — its text is English placeholder. UI copy comes from `ui-copy-translations.md`; real content from the migrated DB.
 - **No AI-generated Afrikaans.** Human-authored translations only.
 - Heading casing: **sentence case** ("Begin skryf", not "Begin Skryf").
