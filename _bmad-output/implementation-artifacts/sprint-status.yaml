@@ -56,7 +56,7 @@ development_status:
   1-10-locale-af-i18n-scaffolding-admin-language-mechanism: done
   1-11-test-harness-scaffold: done
   1-12-form-letter-notification-capability-foundation: done
-  epic-1-retrospective: optional
+  epic-1-retrospective: done
 
   # Epic 2: Content models & taxonomy
   epic-2: backlog
