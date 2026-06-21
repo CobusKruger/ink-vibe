@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    PHPUnit / Pest configuration for ink-vibe (NFR-9, Story 1.11).
+
+    Two testsuites mirroring the architecture's test pyramid (architecture.md
+    line 851, repo layout 963-966):
+      - Unit:        WP fully mocked (Brain Monkey). Bootstrap = tests/bootstrap.php.
+      - Integration: real WP+DB via the wp-env WP test library (Story 18.8 buildout).
+
+    Unit tests run anywhere `composer install` succeeds; integration tests run
+    inside the wp-env Docker stack (`npx @wordpress/env start`).
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         failOnWarning="true"
+         failOnRisky="true"
+         beStrictAboutOutputDuringTests="true">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>wp-content/plugins/ink-core/src</directory>
+        </include>
+    </source>
+</phpunit>

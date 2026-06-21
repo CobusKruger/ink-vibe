@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<ruleset name="ink-vibe">
+    <description>WPCS 3.3 ruleset for ink-core (+ ink-foundation theme PHP). NFR-9 / Story 1.11.</description>
+
+    <!-- What to scan. -->
+    <file>wp-content/plugins/ink-core</file>
+    <file>wp-content/themes/ink-foundation</file>
+
+    <!-- Never scan dependencies, build output, or the test harness with the WP ruleset. -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/tests/*</exclude-pattern>
+
+    <!-- Only PHP; show sniff codes and progress. -->
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+    <arg value="sp"/>
+
+    <!-- Build targets: PHP 8.3+, WP 7.0+ (project-context Technology Stack). -->
+    <config name="testVersion" value="8.3-"/>
+    <config name="minimum_wp_version" value="7.0"/>
+
+    <rule ref="WordPress">
+        <!--
+            The project deliberately adopts PSR-4 class conventions: PascalCase
+            classes + camelCase methods (architecture line 838 / AD-1). The
+            `ink_` snake_case rule applies ONLY to the global/procedural WP
+            surface (hooks, template tags, global functions), so exempt class
+            methods from the WP function-name sniff.
+        -->
+        <exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid"/>
+    </rule>
+
+    <!-- Recognise both first-party text domains for the i18n sniff (Gate D). -->
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array">
+                <element value="ink-core"/>
+                <element value="ink-foundation"/>
+            </property>
+        </properties>
+    </rule>
+</ruleset>

@@ -1,0 +1,59 @@
+{
+    "name": "ink/ink-vibe",
+    "description": "INK site project (AD-4 standard wp-content layout): first-party code (ink-core plugin + ink-foundation theme) plus the test + quality harness (NFR-9, Story 1.11). WP core and third-party plugins are Composer-assembled at build time and git-ignored.",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "php": ">=8.3",
+        "composer/installers": "^2.2"
+    },
+    "require-dev": {
+        "pestphp/pest": "^3.5",
+        "brain/monkey": "^2.6",
+        "phpstan/phpstan": "^2.0",
+        "szepeviktor/phpstan-wordpress": "^2.0.3",
+        "php-stubs/wordpress-stubs": "^6.7",
+        "squizlabs/php_codesniffer": "^3.10",
+        "wp-coding-standards/wpcs": "^3.3",
+        "phpcsstandards/phpcsutils": "^1.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "qossmic/deptrac-shim": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ink\\": "wp-content/plugins/ink-core/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ink\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "installer-paths": {
+            "wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
+            "wp-content/themes/{$name}/": ["type:wordpress-theme"],
+            "wp-content/mu-plugins/{$name}/": ["type:wordpress-muplugin"]
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "test:unit": "pest --testsuite=Unit",
+        "test:integration": "pest --testsuite=Integration",
+        "stan": "phpstan analyse",
+        "cs": "phpcs",
+        "cs:fix": "phpcbf",
+        "deptrac": "deptrac analyse --config-file=deptrac.yaml"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

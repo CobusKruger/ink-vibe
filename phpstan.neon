@@ -1,0 +1,16 @@
+includes:
+    # szepeviktor/phpstan-wordpress pulls php-stubs/wordpress-stubs automatically,
+    # so WP core symbols resolve without a live WordPress (architecture line 694).
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+    # Pragmatic starting level for the Foundation scaffold; later stories (18.8)
+    # raise it as coverage grows. The first real `composer stan` run may require a
+    # generated baseline — `phpstan analyse --generate-baseline` — for any
+    # pre-existing finding in the 1.7-1.10 skeletons.
+    level: 5
+    paths:
+        - wp-content/plugins/ink-core/src
+    # Only first-party ink-core PHP is analysed; the theme is covered by Gate-C
+    # platform checks + E2E, not PHPStan (project-context: concentrate the suite
+    # in ink-core).

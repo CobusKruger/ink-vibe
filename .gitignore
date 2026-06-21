@@ -1,0 +1,22 @@
+# Composer-assembled dependencies (AD-4: only first-party code is committed).
+/vendor/
+wp-content/plugins/ink-core/vendor/
+
+# Node / wp-env / build tooling.
+/node_modules/
+/.wp-env/
+/.wp-env.override.json
+
+# Test + analysis caches and artifacts.
+/.phpunit.cache/
+/.phpunit.result.cache
+.phpunit.result.cache
+/.php-cs-fixer.cache
+/coverage/
+/.deptrac.cache
+
+# Local environment secrets (per-env, never committed — AD-8).
+/.env
+
+# OS / editor noise.
+.DS_Store

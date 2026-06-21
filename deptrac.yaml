@@ -1,0 +1,92 @@
+# Deptrac — AD-1 modular-monolith dependency graph for ink-core (Story 1.11).
+#
+# THE CONFLATION RULE (FR-13, architecture lines 654-659): `Ink\Entitlement` and
+# `Ink\Tiers` must NOT reference each other. This is enforced structurally —
+# neither layer lists the other in its allowed dependencies, and Deptrac fails
+# the build on ANY dependency that is not explicitly allowed. Notifications is
+# the only shared downstream event consumer (it may depend on the domains; the
+# domains never depend on each other).
+#
+# Modules currently carry only Kernel-facing skeletons (1.7-1.10); each module
+# is allowed to depend on Kernel (shared enums / value objects / schema / cache).
+# Later stories EXTEND a module's allowlist as real cross-module Api-facade
+# dependencies appear — but the Entitlement <-> Tiers prohibition is permanent.
+deptrac:
+    paths:
+        - wp-content/plugins/ink-core/src
+    layers:
+        - name: Kernel
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Kernel\\.*#'
+        - name: Content
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Content\\.*#'
+        - name: Entitlement
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Entitlement\\.*#'
+        - name: Tiers
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Tiers\\.*#'
+        - name: Submission
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Submission\\.*#'
+        - name: Engagement
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Engagement\\.*#'
+        - name: Social
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Social\\.*#'
+        - name: Discovery
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Discovery\\.*#'
+        - name: Challenges
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Challenges\\.*#'
+        - name: Sponsors
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Sponsors\\.*#'
+        - name: Notifications
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Notifications\\.*#'
+        - name: Forms
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Forms\\.*#'
+    ruleset:
+        # Kernel is the shared base — depends on no other module.
+        Kernel: ~
+        # Every domain module may use the Kernel; cross-module deps are added
+        # by later stories as real Api-facade usage appears.
+        Content:
+            - Kernel
+        Entitlement:
+            - Kernel
+        Tiers:
+            - Kernel
+        Submission:
+            - Kernel
+        Engagement:
+            - Kernel
+        Social:
+            - Kernel
+        Discovery:
+            - Kernel
+        Challenges:
+            - Kernel
+        Sponsors:
+            - Kernel
+        Notifications:
+            - Kernel
+        Forms:
+            - Kernel
