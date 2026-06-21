@@ -101,7 +101,10 @@
       "Bash(echo \"=== text-transform occurrences ===\")",
       "Bash(echo \"=== raw Lora/Inter in styles? \\(theme.json styles block\\) ===\")",
       "Bash(cd /Users/cobus/Development/ink-vibe)",
-      "Bash(php -l wp-content/plugins/ink-core/src/Notifications/Api.php)"
+      "Bash(php -l wp-content/plugins/ink-core/src/Notifications/Api.php)",
+      "Bash(echo \"=== EXIT $? ===\")",
+      "Bash(echo \"=== committing ===\")",
+      "Bash(echo \"=== done ===\")"
     ],
     "defaultMode": "acceptEdits"
   },
