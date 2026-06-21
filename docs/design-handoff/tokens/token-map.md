@@ -25,3 +25,18 @@ Use this table to map exported Lovable tokens to WordPress theme.json keys.
 2. Normalize names first in theme-tokens.json.
 3. Generate theme.json values from normalized tokens only.
 4. Keep this mapping updated when design tokens change.
+
+## Dark mode
+
+`modes.dark` maps to the color **style variation** `wp-content/themes/ink-foundation/styles/dark.json` (not the base `theme.json`). It redeclares the full 16-slug palette so every `var:preset|color|*` reference keeps resolving, with **6 overrides** taking the `modes.dark` values and the other 10 carrying the light values forward:
+
+| slug | modes.dark value |
+|---|---|
+| surface | #171C1F |
+| surface-alt | #1A1D21 |
+| text | #EAE7DF |
+| primary | #EE5830 |
+| accent | #6AA88A |
+| border | #2A3035 |
+
+The variation is additive/opt-in (light remains the v1 default); activation (toggle / `prefers-color-scheme`) is deferred per architecture "light mode only at v1".

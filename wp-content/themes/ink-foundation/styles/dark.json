@@ -1,0 +1,34 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "title": "Donker",
+  "settings": {
+    "color": {
+      "defaultPalette": false,
+      "palette": [
+        { "slug": "primary", "name": "Primary", "color": "#EE5830" },
+        { "slug": "primary-light", "name": "Primary Light", "color": "#EF6842" },
+        { "slug": "secondary", "name": "Secondary", "color": "#EDE9E0" },
+        { "slug": "accent", "name": "Accent", "color": "#6AA88A" },
+        { "slug": "accent-light", "name": "Accent Light", "color": "#5C9979" },
+        { "slug": "surface", "name": "Surface", "color": "#171C1F" },
+        { "slug": "surface-alt", "name": "Surface Alt", "color": "#1A1D21" },
+        { "slug": "text", "name": "Text", "color": "#EAE7DF" },
+        { "slug": "muted-text", "name": "Muted Text", "color": "#6B7280" },
+        { "slug": "success", "name": "Success", "color": "#4D8066" },
+        { "slug": "warning", "name": "Warning", "color": "#D4A418" },
+        { "slug": "danger", "name": "Danger", "color": "#EF4444" },
+        { "slug": "border", "name": "Border", "color": "#2A3035" },
+        { "slug": "highlight", "name": "Highlight", "color": "#FFE066" },
+        { "slug": "highlight-foreground", "name": "Highlight Foreground", "color": "#1A1D21" },
+        { "slug": "gold-muted", "name": "Gold Muted", "color": "#C9B88A" }
+      ]
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "var:preset|color|surface",
+      "text": "var:preset|color|text"
+    }
+  }
+}
