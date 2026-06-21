@@ -106,3 +106,28 @@ function ink_foundation_register_block_styles(): void {
 	);
 }
 add_action( 'init', 'ink_foundation_register_block_styles' );
+
+/**
+ * Theme-side bridge to the `ink-core` terminology registry (AD-10, Story 2.0).
+ *
+ * PHP patterns (`patterns/*.php`) render glossary labels through this bridge so
+ * they read from the same single source as `ink-core` — without hardcoding the
+ * Afrikaans literal in the theme. It is `function_exists`-guarded so the theme
+ * never fatals when `ink-core` is inactive (it returns the provided fallback).
+ * This is presentation infrastructure — a label lookup with a graceful degrade,
+ * not business logic (three-layer separation holds).
+ *
+ * Static block-template HTML (`templates/*.html`) cannot call PHP — it binds to
+ * the `ink/term` Block Bindings source registered by `ink-core` instead.
+ *
+ * @param string $key      Glossary concept key (e.g. 'gradering').
+ * @param string $fallback Returned when `ink-core` is not active.
+ * @return string The Afrikaans label, or the fallback.
+ */
+function ink_foundation_term( string $key, string $fallback = '' ): string {
+	if ( function_exists( 'Ink\\ink_term' ) ) {
+		return \Ink\ink_term( $key );
+	}
+
+	return $fallback;
+}
