@@ -50,4 +50,16 @@ final class Api {
 	public static function taxonomies(): array {
 		return Taxonomies::all();
 	}
+
+	/**
+	 * The writer-tier user-meta keys: ink_writer_tier, ink_tier_promoted_at.
+	 *
+	 * The registered key surface only; the behavioural tier read/write API is the
+	 * Epic-5 Tiers facade.
+	 *
+	 * @return list<string>
+	 */
+	public static function userMetaKeys(): array {
+		return UserMeta::keys();
+	}
 }

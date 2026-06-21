@@ -21,10 +21,11 @@ defined( 'ABSPATH' ) || exit;
  * `skryfwerk`, `biblioteek_item`, `opleiding_artikel`, `uitdaging`,
  * `inkpols_uitgawe`, `borg`) via {@see PostTypes}. Live at 2.2: the four INK
  * taxonomies (`genre`, `vaardigheid`, `uitdagingsrondte`, `ster_gradering`) via
- * {@see Taxonomies}.
+ * {@see Taxonomies}. Live at 2.3: the writer-tier user meta (`ink_writer_tier`,
+ * `ink_tier_promoted_at`) via {@see UserMeta}.
  *
- * RESERVED for the rest of Epic 2: user meta (2.3), per-CPT admin field sets
- * (2.4) and native term images (2.5).
+ * RESERVED for the rest of Epic 2: per-CPT admin field sets (2.4) and native term
+ * images (2.5).
  *
  * @package Ink\Core
  */
@@ -35,15 +36,16 @@ final class Module implements ModuleContract {
 	 *
 	 * Dispatched once by the Kernel on `init` (via `Plugin::registerModules()`).
 	 * Delegates registration to thin collaborators ({@see PostTypes},
-	 * {@see Taxonomies}) so this bootstrap stays thin, mirroring the Engagement
-	 * `Module` → `Comments` house style. CPTs register BEFORE taxonomies so every
-	 * taxonomy `object_type` target already exists.
+	 * {@see Taxonomies}, {@see UserMeta}) so this bootstrap stays thin, mirroring
+	 * the Engagement `Module` → `Comments` house style. CPTs register BEFORE
+	 * taxonomies so every taxonomy `object_type` target already exists.
 	 */
 	public function register(): void {
 		( new PostTypes() )->register();
 		( new Taxonomies() )->register();
+		( new UserMeta() )->register();
 
-		// Reserved: user meta (2.3), admin field sets (2.4) and native term images
-		// (2.5) register here through the rest of Epic 2.
+		// Reserved: admin field sets (2.4) and native term images (2.5) register
+		// here through the rest of Epic 2.
 	}
 }
