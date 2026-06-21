@@ -99,6 +99,10 @@ final class UserMeta {
 	 * @return string A valid {@see Tier} backing value.
 	 */
 	public static function sanitizeTier( $value ): string {
+		if ( ! is_scalar( $value ) ) {
+			return Tier::Brons->value;
+		}
+
 		return ( Tier::tryFrom( (string) $value ) ?? Tier::Brons )->value;
 	}
 }

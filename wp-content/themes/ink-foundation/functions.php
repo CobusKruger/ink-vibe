@@ -124,10 +124,12 @@ add_action( 'init', 'ink_foundation_register_block_styles' );
  * @param string $fallback Returned when `ink-core` is not active.
  * @return string The Afrikaans label, or the fallback.
  */
-function ink_foundation_term( string $key, string $fallback = '' ): string {
-	if ( function_exists( 'Ink\\ink_term' ) ) {
-		return \Ink\ink_term( $key );
-	}
+if ( ! function_exists( 'ink_foundation_term' ) ) {
+	function ink_foundation_term( string $key, string $fallback = '' ): string {
+		if ( function_exists( 'Ink\\ink_term' ) ) {
+			return \Ink\ink_term( $key );
+		}
 
-	return $fallback;
+		return $fallback;
+	}
 }

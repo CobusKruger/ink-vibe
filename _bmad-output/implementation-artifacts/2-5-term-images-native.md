@@ -4,7 +4,7 @@ baseline_commit: add85da
 
 # Story 2.5: Term images native
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -56,6 +56,13 @@ so that the WPCustom Category Image plugin can be retired.
 
 - [x] **Task 7 — Static verification (no PHP binary — Epic-1 precedent) (AC: 1–5)**
   - [x] python3 scan: structure on all new/edited `ink-core` files; `META_KEY = 'ink_term_image_id'` constant; image taxonomies sourced from `Taxonomies` constants (no `'genre'`/`'vaardigheid'`/`'uitdagingsrondte'` literals in code); `register_term_meta` with `single`/`show_in_rest`/`type integer`/`sanitize_callback`/`auth_callback`/`manage_categories`; `{tax}_add_form_fields`/`{tax}_edit_form_fields`/`created_`/`edited_` hooks; render escapes (`esc_attr`) + `wp_nonce_field`; save verifies nonce + `current_user_can('manage_categories')`, every `$_POST` isset-guarded or `wp_unslash`-wrapped (no raw), no `$_GET`/`$_REQUEST`; `imageId()` reads `get_term_meta`; `Module::register` calls `TermImages` after `FieldSets`; `Api::termImageId`/`termImageTaxonomies` present; no migration code (no `wp_insert_term`/loop over "11"), no `register_post_meta`/`register_taxonomy`; theme untouched. Record `php -l`/Pest deferral.
+
+### Review Findings
+
+_Code review 2026-06-21 (3-layer adversarial: Blind Hunter / Edge Case Hunter / Acceptance Auditor). Result: 0 decision-needed, 1 patch, 1 defer, dismissed rest. Blind Hunter: no HIGH/MEDIUM — the save path (nonce → `manage_categories` cap → `wp_unslash` + `absint` → escaped output) and the `created_/edited_{tax}` hook signatures are correct. Auditor: all 5 ACs satisfied (native, no plugin dependency; meta shape; secure save; facade; wiring). Status → in-progress (patch left as action item)._
+
+- [x] [Review][Patch] APPLIED 2026-06-21 — `save()` now bails on non-scalar input (`if ( ! isset( $_POST['ink_term_image_id'] ) || ! is_scalar( $_POST['ink_term_image_id'] ) )`) before `absint`, so an array payload (`ink_term_image_id[]=1`) no longer silently stores `1`. [wp-content/plugins/ink-core/src/Content/TermImages.php:186]
+- [x] [Review][Defer] No attachment-validity check on save — `absint` accepts any positive integer, so a non-existent / non-image / since-deleted attachment ID persists as native term meta and `Api::termImageId()` returns it as valid-looking. Front-end rendering is explicitly out of scope here; validate (`wp_attachment_is_image`) where the image is consumed/rendered (Epics 8/11) or add a save-time check then. [src/Content/TermImages.php:save()]
 
 ## Dev Notes
 
@@ -137,3 +144,4 @@ claude-opus-4-8[1m] (Opus 4.8, 1M context)
 |---|---|
 | 2026-06-21 | Story created (context-engineered) — native term-image capability (`ink_term_image_id` term meta + native add/edit admin fields + secure save + `Content\Api::termImageId()` read API) on `genre`/`vaardigheid`/`uitdagingsrondte`, replacing the WPCustom Category Image plugin. The Epic-16 migration reassigns the 11 existing images through the same native key; no migration/JS-picker here. Status → ready-for-dev. |
 | 2026-06-21 | Story implemented — `TermImages` registrar (`ink_term_image_id` on 3 taxonomies), native add/edit admin fields (escaped + nonce), secure save (nonce+`manage_categories`+`wp_unslash`+`absint`), `imageId()` read API, Module/Api wiring, ready-to-run Pest test. python3 scan 61/61 (`php -l`/Pest deferred to 18.8). Status → review. |
+| 2026-06-21 | Code review (3-layer). Review patch applied: `is_scalar()` guard before `absint` in `save()` (`TermImages.php:186`). python3 structural re-scan clean. All review findings closed (0 decisions, 1 patch applied, 1 defer logged). Status → done. |

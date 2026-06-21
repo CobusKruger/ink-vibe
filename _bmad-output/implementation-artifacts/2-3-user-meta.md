@@ -4,7 +4,7 @@ baseline_commit: 628a611
 
 # Story 2.3: User meta
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -50,6 +50,16 @@ so that Gradering state has a stable store independent of membership.
 
 - [x] **Task 6 — Static verification (no PHP binary — Epic-1 precedent) (AC: 1–4)**
   - [x] python3 scan: structure (`<?php`/one `declare`/`ABSPATH`/balanced braces/no `?>`) on all new/edited `ink-core` files; 2 meta-key constants present with exact IDs; `register_meta( 'user', …)` called for both; default sourced from `Tier::Brons->value` (no `'brons'` literal); `auth_callback` uses `Capabilities::MANAGE_TIERS`; `sanitize_callback` present; `show_in_rest`/`single` true; `Content\Module::register` calls `UserMeta`; `Api::userMetaKeys` present; no `ink_tier_win_count` (out of scope); no `Ink\Entitlement` reference (conflation rule); no `register_post_type`/`register_taxonomy`/`add_meta_box`; no raw superglobals; theme untouched. Record `php -l`/Pest deferral.
+
+### Review Findings
+
+_Code review 2026-06-21 (3-layer adversarial: Blind Hunter / Edge Case Hunter / Acceptance Auditor). Result: 0 decision-needed, 1 patch, 4 defer, 2 dismissed as noise. Auditor: all 4 ACs satisfied — meta keys, Tier-enum default, sanitize/auth callbacks, REST, facade, scope discipline all correct. Status → in-progress (patch left as action item)._
+
+- [x] [Review][Patch] APPLIED 2026-06-21 — `sanitizeTier()` now returns the `brons` default for non-scalar input (`if ( ! is_scalar( $value ) )`) before the `(string)` cast, so an array/object REST payload no longer emits an "Array to string conversion" warning. [wp-content/plugins/ink-core/src/Content/UserMeta.php:101-106]
+- [x] [Review][Defer] Write gate `current_user_can( Capabilities::MANAGE_TIERS )` denies for ALL users (incl. admins) — `Kernel/Capabilities.php` is a stub that grants `ink_manage_tiers` to no role ("role-mapping in a later epic"). The protected meta is unwritable through the gated path until the Epic-5 role mapping lands; no writer (`Tiers::promote()`) exists yet, so latent and by-design. [src/Content/UserMeta.php:62 / src/Kernel/Capabilities.php:23]
+- [x] [Review][Defer] `auth_callback` is a zero-arg closure that ignores `$object_id` — once `MANAGE_TIERS` is granted, a holder can write ANY user's tier with no per-target scoping. Intended for staff-set editorial tier; confirm the authorization scope when the promotion UI lands (Epic 5). [src/Content/UserMeta.php:62-86]
+- [x] [Review][Defer] `ink_tier_promoted_at` uses `sanitize_text_field` with no datetime-format validation — a malformed timestamp would persist and serve over REST. Input is controlled by the eventual `Tiers::promote()` writer; normalise/validate the format there (Epic 5). [src/Content/UserMeta.php:83-86]
+- [x] [Review][Defer] The `brons` default resolves only on the WP registered-default-aware read path — Epic-5 consumers should read tier through a typed accessor (guaranteeing a valid `Tier` for unset users) rather than raw `get_user_meta`. Provide that accessor with the consumer. [src/Content/UserMeta.php:71]
 
 ## Dev Notes
 
@@ -132,3 +142,4 @@ claude-opus-4-8[1m] (Opus 4.8, 1M context)
 |---|---|
 | 2026-06-21 | Story created (context-engineered) — register the writer-tier user-meta substrate (`ink_writer_tier` default `brons` via the Kernel `Tier` enum, `ink_tier_promoted_at`) in `Ink\Content`, REST-aware, sanitize-coerced to a valid grade, staff-write-gated on `MANAGE_TIERS`, independent of `Entitlement` (conflation rule); facade exposes the keys. `ink_tier_win_count` + promotion behaviour deferred to Epic 5. Status → ready-for-dev. |
 | 2026-06-21 | Story implemented — `UserMeta` registrar + 2 meta-key constants, `register_meta` for both keys, enum-sourced default + sanitize coercion, `MANAGE_TIERS` auth gate, Module/Api wiring, ready-to-run Pest test. python3 scan 45/45 (`php -l`/Pest deferred to 18.8). Status → review. |
+| 2026-06-21 | Code review (3-layer). Review patch applied: `is_scalar()` guard in `sanitizeTier()` (`UserMeta.php:101-106`). python3 structural re-scan clean. All review findings closed (0 decisions, 1 patch applied, 4 defers logged). Status → done. |

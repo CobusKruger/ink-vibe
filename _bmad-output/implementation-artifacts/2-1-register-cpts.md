@@ -4,7 +4,7 @@ baseline_commit: 0ef5bb6
 
 # Story 2.1: Register CPTs
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -47,6 +47,17 @@ so that all content has a typed home and migration can map onto it.
 - [x] **Task 5 — Static verification (no PHP binary — Epic-1 precedent) (AC: 1–4)**
   - [x] python3 scan: structure (`<?php`/one `declare`/`ABSPATH`/balanced braces/no `?>`) on all new/edited `ink-core` files; 9 slug constants present with exact IDs; `register_post_type` looped with `show_in_rest=>true`; labels built via `Terms::label`/`sprintf` (no inlined glossary noun, no `__( $var )`); `Content\Module::register` calls `PostTypes`; bootstrap wires `'content'`; `Api::all`/`bydraeTypes` present; no `register_taxonomy`/`register_meta` (out of scope); no raw superglobals; theme untouched. Record `php -l`/Pest deferral.
 
+### Review Findings
+
+_Code review 2026-06-21 (3-layer adversarial: Blind Hunter / Edge Case Hunter / Acceptance Auditor). Result: 1 decision-needed, 1 patch, 4 defer, 3 dismissed as noise. Status → in-progress (patch left as action item). Auditor: all 4 ACs satisfied — code IDs, label sourcing, wiring, REST/strictness all correct._
+
+- [x] [Review][Decision] `borg` visibility — RESOLVED 2026-06-21 (owner, Cobus): **keep `borg` single pages publicly reachable.** Borge are featured on the "Ons borge" recognition page (Epic 14.4) *and* their individual pages (`/borg/{slug}/`) stay reachable — there is no reason to hide them. The current registration (`public => true`, `has_archive => false`) is correct as-is: no `/borg/` archive listing, but reachable singles. NO `publicly_queryable => false` / `exclude_from_search => true` added; no code change. [wp-content/plugins/ink-core/src/Content/PostTypes.php:173-181]
+- [x] [Review][Patch] APPLIED 2026-06-21 — `add_new` now `sprintf( __( 'Voeg nuwe %s', 'ink-core' ), $singular )` (was the noun-less `__( 'Voeg nuwe by', 'ink-core' )`); the nine CPTs' Add-New control now reads correct Afrikaans. [wp-content/plugins/ink-core/src/Content/PostTypes.php:228]
+- [x] [Review][Defer] `map_meta_cap => true` with no `capability_type`/`capabilities` — all nine CPTs inherit default `post` caps, so the flag gives a false impression of isolation (borg/submissions editable by any post-capable user). The story explicitly defers custom capability mapping; revisit when caps land. [wp-content/plugins/ink-core/src/Content/PostTypes.php:200]
+- [x] [Review][Defer] Registrar does not assert `Terms::has()` before `Terms::label()` — a missing/typo'd Terms key would silently register a raw machine key (e.g. `biblioteek_item_plural`) as the visible CPT label in production (`WP_DEBUG` off). All keys exist today; pre-existing registry fail-soft design. [src/Content/PostTypes.php labels()]
+- [x] [Review][Defer] Archive/rewrite slugs (`/biblioteek/`, `/opleiding/`, `/inkpols/`) have no page/rewrite collision guard, and rewrite rules only flush on activation — a post-activation slug change 404s until permalinks are re-saved. Migration-URL & runtime concern owned by Epic 16 (redirects). [src/Content/PostTypes.php]
+- [x] [Review][Defer] `/inkpols/` archive URL is introduced without a cited migration-plan source (only `/biblioteek/` and `/opleiding/` are documented). Consistent with the legacy `inkpols` CPT and within AC-4 discretion, but should be recorded in the migration plan. [src/Content/PostTypes.php:173]
+
 ## Dev Notes
 
 ### What this story is (and is NOT)
@@ -58,7 +69,7 @@ so that all content has a typed home and migration can map onto it.
 
 - **Slug single-source:** the 9 post-type keys are `PostTypes` class constants — the migration-load-bearing IDs live in exactly one place (mirrors AD-10's enum/constant discipline for IDs; the registry holds only the display labels).
 - **Label sourcing:** `name`/`singular_name`/`menu_name` come straight from `Terms::label()`; composed admin labels are `sprintf( __( 'Voeg nuwe %s by', 'ink-core' ), Terms::label('gedig') )`-style — the noun from the registry, the scaffolding generic. A term re-decision (e.g. `storie` wording) propagates to every CPT label automatically.
-- **Archive prefixes:** `biblioteek_item` → `/biblioteek/`, `opleiding_artikel` → `/opleiding/` (migration plan keeps these). The bydrae CPTs use their own Afrikaans slug; `borg` has no public archive.
+- **Archive prefixes:** `biblioteek_item` → `/biblioteek/`, `opleiding_artikel` → `/opleiding/` (migration plan keeps these). The bydrae CPTs use their own Afrikaans slug; `borg` has no public *archive* (no `/borg/` listing) but its single pages stay publicly reachable (owner decision 2026-06-21 — featured on "Ons borge" *and* individually accessible).
 
 ### ⚠️ Guardrails
 
@@ -103,7 +114,7 @@ claude-opus-4-8[1m] (Opus 4.8, 1M context)
 
 - **Registrar (`PostTypes`)** declares the 9 migration-load-bearing code IDs as `public const` single-source; `definitions()` carries per-CPT supports/visibility/archive/icon/rewrite; `register()` loops them into `register_post_type` with `show_in_rest => true`, `map_meta_cap => true`.
 - **Labels** are sourced entirely from the 2.0 `Terms` registry: `name`/`singular_name`/`menu_name` straight from `Terms::label()`; composed admin chrome via `sprintf( __( 'literal %s', 'ink-core' ), $noun )` — generic Afrikaans scaffolding, registry noun. `__()` is never wrapped around a variable (make-pot safe).
-- **Archive prefixes** keep the documented migration URLs: `biblioteek_item` → `/biblioteek/`, `opleiding_artikel` → `/opleiding/`; `borg` has no public archive.
+- **Archive prefixes** keep the documented migration URLs: `biblioteek_item` → `/biblioteek/`, `opleiding_artikel` → `/opleiding/`; `borg` has no public *archive* but its single pages remain reachable (owner decision 2026-06-21).
 - **Wiring (AD-1):** `Content\Module::register()` delegates to `PostTypes` (thin `Module → collaborator` house style mirroring Engagement); `ink-core.php` registers the `content` module on `plugins_loaded` (dispatched on `init` by the Kernel seam); `Content\Api` exposes `all()` / `bydraeTypes()` as the sole cross-module slug surface. No registration leaks into the theme.
 - **Scope discipline:** CPTs only — no taxonomies (2.2), user meta (2.3), admin field sets (2.4) or term images (2.5).
 - **Verification:** `php -l` / Pest / PHPStan deferred to the CI buildout (Story 18.8) per the Epic-1 precedent (no PHP binary / built `vendor/` in-repo). The ready-to-run `PostTypesTest.php` (Brain Monkey, captures `register_post_type` args, asserts slugs/archives/labels/facade) runs once the runner is wired; the python3 structural scan substitutes now (53/53).
@@ -122,3 +133,5 @@ claude-opus-4-8[1m] (Opus 4.8, 1M context)
 |---|---|
 | 2026-06-21 | Story created (context-engineered) — register the 9 INK CPTs in `Ink\Content` with exact migration-load-bearing code IDs + Afrikaans slugs; labels sourced from the 2.0 `Terms` registry; `show_in_rest` true; archive prefixes for biblioteek/opleiding; wired through the Kernel module seam + bootstrap; Content facade exposes the slugs. Status → ready-for-dev. |
 | 2026-06-21 | Story implemented — `PostTypes` registrar + 9 slug constants, Terms-sourced labels, Module/Api/bootstrap wiring, ready-to-run Pest test. python3 scan 53/53 (`php -l`/Pest deferred to 18.8). Status → review. |
+| 2026-06-21 | Code review decision resolved (owner): `borg` single pages stay publicly reachable — `public => true`/`has_archive => false` kept as-is, no visibility flags added, no code change. Corrected the Dev Notes "no public archive" wording to clarify singles remain reachable. Open: 1 patch (`add_new` label). |
+| 2026-06-21 | Review patch applied: fixed the broken `add_new` label → `sprintf( __( 'Voeg nuwe %s', 'ink-core' ), $singular )` (`PostTypes.php:228`). python3 structural re-scan clean. All review findings closed (1 decision resolved, 1 patch applied, 4 defers logged). Status → done. |

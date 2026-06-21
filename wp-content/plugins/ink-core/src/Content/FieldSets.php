@@ -211,7 +211,7 @@ final class FieldSets {
 		foreach ( $definitions[ $post->post_type ]['fields'] as $field ) {
 			$key = $field['key'];
 
-			if ( ! isset( $_POST[ $key ] ) ) {
+			if ( ! isset( $_POST[ $key ] ) || ! is_scalar( $_POST[ $key ] ) ) {
 				continue;
 			}
 

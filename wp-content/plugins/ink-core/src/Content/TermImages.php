@@ -183,7 +183,7 @@ final class TermImages {
 			return;
 		}
 
-		if ( ! isset( $_POST['ink_term_image_id'] ) ) {
+		if ( ! isset( $_POST['ink_term_image_id'] ) || ! is_scalar( $_POST['ink_term_image_id'] ) ) {
 			return;
 		}
 

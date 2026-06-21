@@ -224,7 +224,8 @@ final class PostTypes {
 			'menu_name'             => $plural,
 			'name_admin_bar'        => $singular,
 			'all_items'             => $plural,
-			'add_new'               => __( 'Voeg nuwe by', 'ink-core' ),
+			/* translators: %s: the singular content-type label (e.g. Gedig). */
+			'add_new'               => sprintf( __( 'Voeg nuwe %s', 'ink-core' ), $singular ),
 			/* translators: %s: the singular content-type label (e.g. Gedig). */
 			'add_new_item'          => sprintf( __( 'Voeg nuwe %s by', 'ink-core' ), $singular ),
 			/* translators: %s: the singular content-type label. */

@@ -4,7 +4,7 @@ baseline_commit: 68c552f
 
 # Story 2.2: Register taxonomies
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -54,6 +54,15 @@ so that training and contributions auto-surface via shared terms (no manual link
 
 - [x] **Task 6 — Static verification (no PHP binary — Epic-1 precedent) (AC: 1–4)**
   - [x] python3 scan: structure (`<?php`/one `declare`/`ABSPATH`/balanced braces/no `?>`) on all new/edited `ink-core` files; 4 slug constants present with exact IDs; `register_taxonomy` looped with `show_in_rest=>true`/`hierarchical=>true`; `object_types` sourced from `PostTypes` (no re-typed CPT literals); labels built via `Terms::label`/`sprintf` (no inlined glossary noun, no `__( $var )`); `Content\Module::register` calls `Taxonomies` after `PostTypes`; `Api::taxonomies` present; no `register_post_type`/`register_meta`/`add_meta_box` (out of scope); no raw superglobals; theme untouched. Record `php -l`/Pest deferral.
+
+### Review Findings
+
+_Code review 2026-06-21 (3-layer adversarial: Blind Hunter / Edge Case Hunter / Acceptance Auditor). Result: 0 decision-needed, 0 patch, 4 defer, 4 dismissed as noise. Auditor: all 4 ACs satisfied — code IDs, shared genre/vaardigheid attachments, label sourcing, REST/hierarchical/wiring all correct. No unresolved HIGH/MEDIUM → Status: done._
+
+- [x] [Review][Defer] `ster_gradering` rewrite slug is hand-typed `'ster-gradering'` (hyphen) while the other three taxonomies derive their rewrite slug from the underscore code-ID constant — a constant edit won't propagate to the public URL, and the four term-archive URLs are formatted inconsistently. Cosmetic/SEO; standardise when term-archive templates land (Epic 8). [wp-content/plugins/ink-core/src/Content/Taxonomies.php:550]
+- [x] [Review][Defer] All four taxonomies register with default term caps (`manage_categories`) and no `capabilities` arg — once member roles exist (Epic 3/5), controlled-vocabulary integrity (the reason for `hierarchical => true`) depends on those roles lacking the term-add cap; nothing enforces it at this layer yet. Owned by the capability/roles work. [src/Content/Taxonomies.php]
+- [x] [Review][Defer] `uitdagingsrondte` / `ster_gradering` are deliberately NOT attached to the `uitdaging` CPT (the challenge entry record is authoritative per AD-5), but this is undocumented and untested as a deliberate non-attachment — a regression would be invisible. Document/verify in Epic 12. [src/Content/Taxonomies.php:546-551]
+- [x] [Review][Defer] Registrar does not assert `Terms::has()` before `Terms::label()` — a renamed/removed registry key would silently ship a raw machine key (e.g. `genre_plural`) into admin chrome and term-archive titles in production (`WP_DEBUG` off). Pre-existing registry fail-soft design (same as 2.1); the authored test would catch it once the Pest runner lands (18.8). [src/Content/Taxonomies.php:586-626]
 
 ## Dev Notes
 

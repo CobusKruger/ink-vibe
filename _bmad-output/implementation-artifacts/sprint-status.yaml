@@ -60,13 +60,13 @@ development_status:
   epic-1-retrospective: done
 
   # Epic 2: Content models & taxonomy
-  epic-2: in-progress
-  2-0-terminology-label-registry: review
-  2-1-register-cpts: review
-  2-2-register-taxonomies: review
-  2-3-user-meta: review
-  2-4-cpt-admin-field-sets: review
-  2-5-term-images-native: review
+  epic-2: done
+  2-0-terminology-label-registry: done
+  2-1-register-cpts: done
+  2-2-register-taxonomies: done
+  2-3-user-meta: done
+  2-4-cpt-admin-field-sets: done
+  2-5-term-images-native: done
   epic-2-retrospective: optional
 
   # Epic 3: Accounts, registration & auth

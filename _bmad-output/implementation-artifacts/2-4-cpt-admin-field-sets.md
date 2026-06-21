@@ -4,7 +4,7 @@ baseline_commit: 319e685
 
 # Story 2.4: CPT admin field sets
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -62,6 +62,13 @@ so that I can manage issue/challenge/sponsor details.
 
 - [x] **Task 8 — Static verification (no PHP binary — Epic-1 precedent) (AC: 1–5)**
   - [x] python3 scan: structure (`<?php`/one `declare`/`ABSPATH`/balanced braces/no `?>`) on all new/edited `ink-core` files; all `ink_`-prefixed field constants present; CPT slugs sourced from `PostTypes` constants (no `'inkpols_uitgawe'`/`'uitdaging'`/`'borg'` literals in code); `register_post_meta` looped with `show_in_rest`/`single`/`sanitize_callback`/`auth_callback`; caps via `Capabilities::MANAGE_CHALLENGES`/`MANAGE_SPONSORS`; meta-box title via `Terms::label`; `add_meta_box` + `save_post`; the save handler verifies a nonce (`wp_verify_nonce`), checks `current_user_can( 'edit_post'`, guards autosave/revision, and every `$_POST` read is wrapped in `wp_unslash` + a sanitiser (assert no bare `$_POST[...]` without `wp_unslash`); no `$_GET`/`$_REQUEST`; render output escaped (`esc_attr`/`esc_textarea`); no `__( $var )`; `Module::register` calls `FieldSets` after `UserMeta`; `Api::fieldMetaKeys` present; no `register_taxonomy`/term-image/`SponsorTier` code; theme untouched. Record `php -l`/Pest deferral.
+
+### Review Findings
+
+_Code review 2026-06-21 (3-layer adversarial: Blind Hunter / Edge Case Hunter / Acceptance Auditor). Result: 0 decision-needed, 1 patch, 1 defer, dismissed rest. Blind Hunter: no findings — the save path (nonce → verify → autosave/revision guard → post-type → `edit_post` cap → unslash + sanitise → update; all render output escaped) is solid. Auditor: all 5 ACs satisfied. Status → in-progress (patch left as action item)._
+
+- [x] [Review][Patch] APPLIED 2026-06-21 — save loop now skips non-scalar payloads (`if ( ! isset( $_POST[ $key ] ) || ! is_scalar( $_POST[ $key ] ) )`), so an array payload (`ink_inkpols_cover_id[]=1`) no longer reaches `absint`/`esc_url_raw`/`sanitizeDate` (no warnings, no `1` stored for attachment-ID fields). [wp-content/plugins/ink-core/src/Content/FieldSets.php:214]
+- [x] [Review][Defer] REST vs meta-box capability divergence — the `uitdaging`/`borg` field `auth_callback` gates on `MANAGE_CHALLENGES`/`MANAGE_SPONSORS` (granted to no role yet per the `Kernel/Capabilities` stub), while the classic meta-box `save()` gates on `edit_post`. So REST/block-editor writes to challenge & sponsor meta are blocked for every user (incl. admins) until role-mapping lands, while the meta-box round-trip succeeds. By-design (caps deferred to Epic 5); reconcile when caps are mapped. [src/Content/FieldSets.php:207, 276, 296]
 
 ## Dev Notes
 
@@ -144,3 +151,4 @@ claude-opus-4-8[1m] (Opus 4.8, 1M context)
 |---|---|
 | 2026-06-21 | Story created (context-engineered) — per-CPT editorial meta + native classic meta boxes for `inkpols_uitgawe`/`uitdaging`/`borg`; `register_post_meta` (typed, REST, sanitised, capability-gated); Afrikaans labels (box title from `Terms`, field labels generic admin literals); secure save (nonce+`edit_post`+`wp_unslash`+sanitise); facade exposes the keys. Term images (2.5), `SponsorTier`/scheduling (Epic 14), media-picker JS deferred. Status → ready-for-dev. |
 | 2026-06-21 | Story implemented — declarative `FieldSets` (12 meta keys across 3 CPTs), `register_post_meta` + classic meta boxes, escaped render + `wp_nonce_field`, secure `save()` (nonce+`edit_post`+`wp_unslash`+sanitise), `sanitizeDate`, Module/Api wiring, ready-to-run Pest test. python3 scan 67/67 (`php -l`/Pest deferred to 18.8). Status → review. |
+| 2026-06-21 | Code review (3-layer). Review patch applied: `is_scalar()` guard in the meta-box save loop (`FieldSets.php:214`). python3 structural re-scan clean. All review findings closed (0 decisions, 1 patch applied, 1 defer logged). Status → done. |

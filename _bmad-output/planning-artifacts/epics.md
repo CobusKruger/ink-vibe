@@ -555,6 +555,8 @@ So that I am gently onboarded without being blocked. (FR-2, FR-3)
 **Then** the lid creates an account → completes profile (gratis lid) → is prompted to follow a skrywer or save a bydrae to leeslys
 **And** the prompt is skippable, does not block completion, and degrades gracefully with a thin catalogue.
 
+**Deferred from Epic 2 review (see deferred-work.md):** when member/editor roles are defined here, set CPT `capability_type`/`capabilities` — the 9 CPTs currently inherit default `post` caps via `map_meta_cap => true`, giving a false impression of isolation (2.1); and restrict taxonomy term-management caps (default `manage_categories`) so members can't fork controlled-vocabulary terms (2.2).
+
 ### Story 3.4: Anti-spam research spike (R6)
 
 As a redakteur,
@@ -758,6 +760,8 @@ So that tiers have a typed, persisted store. (FR-11, R3)
 **Then** `ink_writer_tier` ∈ {brons, silwer, goud, **meester**}, default brons
 **And** Meester is a manual-only terminal state, never auto-promoted, rendered in brand red-orange `primary #EA4015` (not `danger`).
 
+**Deferred from Epic 2 review (see deferred-work.md):** expose a typed tier accessor that guarantees the `brons` default for unset users — the registered default only resolves on the WP default-aware read path, so consumers must not read raw `get_user_meta` (2.3).
+
 ### Story 5.2: Staff set/adjust Gradering admin UI
 
 As a redakteur,
@@ -769,6 +773,8 @@ So that I can promote, correct, or assign Meester with an audit trail. (FR-12, U
 **Given** the admin UI
 **When** I change a Gradering
 **Then** I can set it in any direction (incl. Meester — the only path to Meester), record a reason, optionally link a challenge result, and a change-log entry is written.
+
+**Deferred from Epic 2 review (see deferred-work.md):** grant `MANAGE_TIERS` to this role — until mapped, the 2.3 tier-write `auth_callback` denies *every* user including admins; decide per-target scoping (the callback ignores `$object_id`, so any holder could edit any user's tier); and validate/normalise the `ink_tier_promoted_at` datetime format in the `Tiers::promote()` writer (2.3).
 
 ### Story 5.3: Promotion log / history (graderingsgeskiedenis)
 
@@ -1157,6 +1163,8 @@ So that relevant writers/works surface to me. (FR-36)
 **When** surfaces render
 **Then** "writers like this", new voices, recently active, writers in your Gradering, and unread-by-you appear (custom, not default community screens).
 
+**Deferred from Epic 2 review (see deferred-work.md):** when term-archive / discovery URLs land, standardise the `ster_gradering` term rewrite slug — it is currently a hand-typed `'ster-gradering'` literal that breaks the constant single-source the other three taxonomies use (2.2); and validate term-image attachment IDs (`wp_attachment_is_image`) when rendering genre/vaardigheid images — the 2.5 save stores any positive integer unchecked, so a stale/non-image ID renders broken.
+
 ---
 
 ## Epic 9: Community & social
@@ -1504,6 +1512,8 @@ So that rounds are well-formed and time-correct. (FR-47)
 **Then** `challenge_theme` and `challenge_deadline` exist with a **monthly** cadence
 **And** all times are SAST; the deadline is inclusive through 23:59:59 SAST; after deadline, entries are frozen for judging.
 
+**Deferred from Epic 2 review (see deferred-work.md):** grant `MANAGE_CHALLENGES` to the challenge-admin role and reconcile the REST-vs-meta-box capability divergence on `uitdaging` meta — the 2.4 field `auth_callback` gates on `MANAGE_CHALLENGES` (granted to no role yet) while the meta-box save uses `edit_post`, so REST/block-editor writes are blocked until the cap is mapped.
+
 ### Story 12.4: Entry capture
 
 As a skrywer,
@@ -1516,6 +1526,8 @@ So that it is judged in the right context. (FR-48, UJ-4)
 **When** I submit an inskrywing
 **Then** it links to the round via `uitdagingsrondte`
 **And** at most 3 entries of each content type per uitdaging are allowed; the entry-time Gradering pool governs judging.
+
+**Deferred from Epic 2 review (see deferred-work.md):** confirm + test the deliberate model that `uitdagingsrondte` (and `ster_gradering`) attach to the entry / works, NOT the `uitdaging` CPT (the entry record is authoritative, AD-5) — 2.2 left this as an undocumented, untested non-attachment, so a regression would be invisible.
 
 ### Story 12.5: Gradering-based competition pools
 
@@ -1776,6 +1788,8 @@ So that I can manage sponsor details. (FR-58)
 **When** edited
 **Then** fields include name, logo variants, link, `sponsor_tier`, campaign start/end, and placement preferences.
 
+**Deferred from Epic 2 review (see deferred-work.md):** grant `MANAGE_SPONSORS` to the sponsor-admin role and reconcile the REST-vs-meta-box capability divergence on `borg` meta — the 2.4 field `auth_callback` gates on `MANAGE_SPONSORS` (granted to no role yet) while the meta-box save uses `edit_post`, so REST/block-editor writes are blocked until the cap is mapped. (Note: `borg` single pages are intentionally publicly reachable — owner decision 2026-06-21.)
+
 ### Story 14.2: Scheduling / rotation logic
 
 As a redakteur,
@@ -1958,6 +1972,8 @@ So that content lands in the right model. (FL 16.5)
 **Then** unclassifiable → `skryfwerk` catch-all (**not hand-classified at volume**); rewrite rules flushed
 **And** `inkpols`→`inkpols_uitgawe` rename; `monthly_challenge` not migrated 1:1 (uitdaging records built from round categories, real data folded in else dropped).
 
+**Deferred from Epic 2 review (see deferred-work.md):** guard CPT archive/rewrite-slug collisions (`/biblioteek/`, `/opleiding/`, `/inkpols/` vs same-slug pages) and ensure the rewrite flush covers post-activation slug changes — 2.1 has no collision guard and only flushes on activation; and record the `/inkpols/` archive-URL mapping in the migration plan (only `/biblioteek/` and `/opleiding/` are currently documented — 2.1).
+
 ### Story 16.6: Library/training migration
 
 As an ink-core developer,
@@ -2098,6 +2114,8 @@ So that no English reaches the front end. (NFR-1)
 **When** the automated English-leak scan runs (crawl key front-end pages + `wp i18n` counts, with the defined allowlist)
 **Then** every front-end template/pattern + user-facing email passes; the §12 leak vectors (incl. the 12A.0 form-letter store) are in scope; admin stays English (§14.14)
 **And** it re-runs after ungated updates (depends on 1.10 scaffolding).
+
+**Deferred from Epic 2 review (see deferred-work.md):** fold registry-label robustness into the gate — the CPT (2.1) and taxonomy (2.2) registrars don't assert `Terms::has()`, so a missing/typo'd concept key ships a raw machine key (e.g. `genre_plural`) as a label; the 2.0 `ink/term` Block Bindings `resolve()` renders a blank/raw key for a misconfigured binding; and the 2.0 label helpers (`Terms::label()`/`ink_term()`) have no "called before `init`" guard (`_doing_it_wrong` on WP 6.7+). The leak scan should catch raw-key/blank-label leaks; add the `Terms::has()` guards.
 
 ---
 

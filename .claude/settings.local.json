@@ -104,7 +104,18 @@
       "Bash(php -l wp-content/plugins/ink-core/src/Notifications/Api.php)",
       "Bash(echo \"=== EXIT $? ===\")",
       "Bash(echo \"=== committing ===\")",
-      "Bash(echo \"=== done ===\")"
+      "Bash(echo \"=== done ===\")",
+      "Bash(echo \"=== Epic 2 region line numbers ===\")",
+      "Bash(echo \"=== taxonomy mentions ===\")",
+      "Bash(echo \"=== afrikaans-terms taxonomy slugs ===\")",
+      "Bash(echo \"=== architecture: meta box / fields / ACF / CMB2 / register_post_meta / SponsorTier ===\")",
+      "Bash(echo \"scan count: $\\(python3 /Users/cobus/.claude/jobs/e2c3415d/tmp/scan_2_5.py 2>&1)",
+      "Bash(echo \"=== Terms.php label\\(\\) + debug branch ===\")",
+      "Bash(echo \"=== Bindings.php resolve\\(\\) ===\")",
+      "Bash(echo \"=== theme bridge ink_foundation_term ===\")",
+      "Bash(echo \"=== head ===\")",
+      "Bash(echo \"=== add_new / add_new_item labels ===\")",
+      "Bash(echo \"=== borg definition block ===\")"
     ],
     "defaultMode": "acceptEdits"
   },

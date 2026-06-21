@@ -83,7 +83,7 @@ final class Terms {
 			'artikel'                   => __( 'Artikel', 'ink-core' ),
 			'artikel_plural'            => __( 'Artikels', 'ink-core' ),
 			'skryfwerk'                 => __( 'Skryfwerk', 'ink-core' ),
-			'skryfwerk_plural'          => __( 'Skryfwerke', 'ink-core' ),
+			'skryfwerk_plural'          => __( 'Skrywes', 'ink-core' ),
 			'biblioteek_item'           => __( 'Biblioteekitem', 'ink-core' ),
 			'biblioteek_item_plural'    => __( 'Biblioteekitems', 'ink-core' ),
 			'opleiding_artikel'         => __( 'Hulpbronartikel', 'ink-core' ),
@@ -128,7 +128,7 @@ final class Terms {
 		if ( ! array_key_exists( $key, $map ) ) {
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 				trigger_error(
-					sprintf( 'Ink\I18n\Terms: unknown terminology key "%s".', esc_html( $key ) ),
+					sprintf( 'Ink\I18n\Terms: unknown terminology key "%s".', $key ),
 					E_USER_NOTICE
 				);
 			}
