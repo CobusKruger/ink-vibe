@@ -24,9 +24,11 @@ defined( 'ABSPATH' ) || exit;
  * {@see Taxonomies}. Live at 2.3: the writer-tier user meta (`ink_writer_tier`,
  * `ink_tier_promoted_at`) via {@see UserMeta}. Live at 2.4: the per-CPT admin
  * field sets (InkPols / challenge / sponsor editorial meta + meta boxes) via
- * {@see FieldSets}.
+ * {@see FieldSets}. Live at 2.5: native term images (`ink_term_image_id`) via
+ * {@see TermImages}, which retire the WPCustom Category Image plugin.
  *
- * RESERVED for the rest of Epic 2: native term images (2.5).
+ * Epic 2 content models are complete: CPTs, taxonomies, user meta, per-CPT admin
+ * field sets, and native term images.
  *
  * @package Ink\Core
  */
@@ -37,17 +39,16 @@ final class Module implements ModuleContract {
 	 *
 	 * Dispatched once by the Kernel on `init` (via `Plugin::registerModules()`).
 	 * Delegates registration to thin collaborators ({@see PostTypes},
-	 * {@see Taxonomies}, {@see UserMeta}, {@see FieldSets}) so this bootstrap stays
-	 * thin, mirroring the Engagement `Module` → `Comments` house style. CPTs
-	 * register BEFORE taxonomies so every taxonomy `object_type` target already
-	 * exists.
+	 * {@see Taxonomies}, {@see UserMeta}, {@see FieldSets}, {@see TermImages}) so
+	 * this bootstrap stays thin, mirroring the Engagement `Module` → `Comments`
+	 * house style. CPTs register BEFORE taxonomies so every taxonomy `object_type`
+	 * target already exists; term images register after their taxonomies.
 	 */
 	public function register(): void {
 		( new PostTypes() )->register();
 		( new Taxonomies() )->register();
 		( new UserMeta() )->register();
 		( new FieldSets() )->register();
-
-		// Reserved: native term images (2.5) register here in the rest of Epic 2.
+		( new TermImages() )->register();
 	}
 }

@@ -71,4 +71,22 @@ final class Api {
 	public static function fieldMetaKeys(): array {
 		return FieldSets::metaKeys();
 	}
+
+	/**
+	 * The attachment ID of a term's native image, or 0 if none.
+	 *
+	 * @param int $term_id The term.
+	 */
+	public static function termImageId( int $term_id ): int {
+		return TermImages::imageId( $term_id );
+	}
+
+	/**
+	 * The taxonomies that carry a native term image.
+	 *
+	 * @return list<string>
+	 */
+	public static function termImageTaxonomies(): array {
+		return TermImages::imageTaxonomyList();
+	}
 }

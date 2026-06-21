@@ -66,7 +66,7 @@ development_status:
   2-2-register-taxonomies: review
   2-3-user-meta: review
   2-4-cpt-admin-field-sets: review
-  2-5-term-images-native: backlog
+  2-5-term-images-native: review
   epic-2-retrospective: optional
 
   # Epic 3: Accounts, registration & auth
