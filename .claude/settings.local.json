@@ -149,7 +149,15 @@
       "Bash(/Users/cobus/Development/ink-vibe/vendor/bin/phpcs wp-content/plugins/ink-core/src/Accounts/Onboarding.php wp-content/plugins/ink-core/src/Kernel/Capabilities.php wp-content/plugins/ink-core/src/Kernel/Activation.php wp-content/plugins/ink-core/src/Content/PostTypes.php wp-content/plugins/ink-core/src/Content/Taxonomies.php)",
       "Bash(/Users/cobus/Development/ink-vibe/vendor/bin/phpstan analyse *)",
       "Bash(echo \"phpcs exit=$?\")",
-      "Bash(vendor/bin/phpstan analyse *)"
+      "Bash(vendor/bin/phpstan analyse *)",
+      "WebFetch(domain:api.anthropic.com)",
+      "WebFetch(domain:http-intake.logs.us5.datadoghq.com)",
+      "Bash(rm -f __TRACKED_VAR__/ts_false_dbgfile.log)",
+      "Bash(env -u CLAUDE_CODE_CHILD_SESSION -u CLAUDE_CODE_AGENT -u CLAUDE_CODE_SESSION_ID ENABLE_TOOL_SEARCH=false claude -p 'say hi' --debug-file __TRACKED_VAR__/ts_false_dbgfile.log --output-format json)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(ls -la __TRACKED_VAR__/ts_false_dbgfile.log)",
+      "Bash(wc -l __TRACKED_VAR__/ts_false_dbgfile.log)",
+      "Bash(claude install *)"
     ],
     "defaultMode": "acceptEdits"
   },

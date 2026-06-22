@@ -317,14 +317,24 @@ def analyse(cmd):
 
             if base in READERS:
                 r = check_read(base, args)
-            elif base in GREPS:
-                r = check_grep(base, args)
-            elif base == "find":
-                r = check_find(args)
-            elif base == "ls":
-                r = check_ls(args)
             elif base == "sed":
                 r = check_sed(args)
+            # NOTE: the grep/find/ls -> Grep/Glob redirects are disabled on this
+            # machine. The macOS *native* Claude Code build does not register the
+            # Grep and Glob tools: they exist in the binary but are dropped from
+            # the default tool set (confirmed across 2.1.179/183/185; not a
+            # setting, not ENABLE_TOOL_SEARCH, not ripgrep). Redirecting to those
+            # absent tools would break shell search outright, so shell grep/find/
+            # ls are ALLOWED here. The cat/head/tail -> Read, sed -> Read, and
+            # `>file` -> Write/Edit redirects stay active (those tools do exist).
+            # To re-enable once on a build that ships Grep/Glob (e.g. the npm
+            # install), restore the three branches below:
+            #   elif base in GREPS:
+            #       r = check_grep(base, args)
+            #   elif base == "find":
+            #       r = check_find(args)
+            #   elif base == "ls":
+            #       r = check_ls(args)
             else:
                 r = None
             if r:
