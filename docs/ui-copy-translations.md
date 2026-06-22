@@ -551,6 +551,20 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | 1-month expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 maand voor verval; menslike kopie nodig |
 | 1-week expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 week voor verval; menslike kopie nodig |
 
+### Rekening-goedkeuring backstop (R6 — Storie 3.6, af by verstek)
+
+*(Opsionele goedkeuringstou wat 'n redakteur kan aanskakel. **Af by verstek** — wanneer af, bly registrasie vryevloei en niks hiervan verskyn nie (UJ-1). Die enkelwoord-etikette (goedkeur/verwerp/"wag op goedkeuring"/toustnaam) is in die terminologieregister geprojekteer maar **wag op redakteur-bekragtiging**; die volledige lid-gerigte sinne en e-poskopie hieronder is **menslike kopie nodig — moenie KI-vertaal nie**.)*
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Login-blocked pending notice (full sentence shown when a pending account tries to log in) | [NEEDS HUMAN AFRIKAANS] | Volledige lid-gerigte sin; "jy"-stem, sinskas; voorlopige plekhouer in kode tot menslike kopie land |
+| Approve button label | [NEEDS HUMAN AFRIKAANS] | Enkelwoord "Goedkeur" geprojekteer in register; wag op bekragtiging |
+| Reject button label | [NEEDS HUMAN AFRIKAANS] | Enkelwoord "Verwerp" geprojekteer in register; wag op bekragtiging |
+| Approve result notice ("account approved") | [NEEDS HUMAN AFRIKAANS] | Redakteur-statusboodskap ná goedkeuring; menslike kopie nodig |
+| Reject result notice ("account rejected") | [NEEDS HUMAN AFRIKAANS] | Redakteur-statusboodskap ná verwerping; menslike kopie nodig |
+| Approval email (subject + body) | [NEEDS HUMAN AFRIKAANS] | Transaksionele e-pos ná goedkeuring; stuur-skakelaar AF tot menslike kopie land |
+| Rejection email (subject + body) | [NEEDS HUMAN AFRIKAANS] | Transaksionele e-pos ná verwerping; stuur-skakelaar AF tot menslike kopie land |
+
 ### Outomatiese plasing-bevestigingskennisgewings (R7 — gerandomiseerde lys)
 
 *(Gerandomiseerde aanmoedigingsboodskappe ná 'n bydrae geplaas is. Menslike kopie nodig — moenie KI-vertaal nie.)*

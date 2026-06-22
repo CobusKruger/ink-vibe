@@ -23,7 +23,13 @@ defined( 'ABSPATH' ) || exit;
  *    WP-core password-reset mail filters) — {@see Registration} (Story 3.1);
  *  - the one-time, skippable post-signup onboarding STATE (the
  *    `ink_onboarding_complete` user-meta flag + its nonce-protected
- *    skip/complete write) — {@see Onboarding} (Story 3.3).
+ *    skip/complete write) — {@see Onboarding} (Story 3.3);
+ *  - the OFF-by-default R6 manual-approval BACKSTOP (the fail-safe-OFF toggle,
+ *    the WP-native "wag op goedkeuring" pending account state stamped on
+ *    `user_register` when enabled, the `wp_authenticate_user` login gate, and
+ *    the admin approval-queue screen to goedkeur/verwerp) — {@see Approval}
+ *    (Story 3.6). It is never the launch default; when OFF, signup stays exactly
+ *    as frictionless as today (UJ-1).
  * WordPress owns the auth MECHANISM (credential storage, sessions, lost-password
  * tokens) — this module hooks it, never reimplements it. The Afrikaans auth +
  * onboarding SCREENS are presentation and live in the `ink-foundation` theme;
@@ -46,8 +52,12 @@ defined( 'ABSPATH' ) || exit;
  * and the leeslys `ink_reading_list` (Story 7.7 / `Ink\Engagement`) — onboarding
  * only PROMPTS toward them and degrades gracefully, building no table / REST
  * write; the reader/writer intent gate (Story 3.2 — REMOVED; no intent flag is
- * stored); the anti-spam defense build-out (Story 3.4 decided it; hardening is
- * 18.10) and the approval queue (Story 3.6, R6); social-login OAuth itself (the
+ * stored); the always-on anti-spam baseline (Story 3.4 decided it — Turnstile,
+ * email double-opt-in, honeypot/timing — layers 1–4, NOT built here) and the
+ * edge rate-limiting / IP-reputation / Patchstack / Turnstile-tuning /
+ * blocked-attempt-analytics HARDENING around the pending state (Story 18.10) —
+ * the 3.6 toggle + pending state + approval queue themselves are owned above by
+ * {@see Approval}; social-login OAuth itself (the
  * vetted plugin's job — this module only exposes the availability seam); the
  * Lidmaatskap purchase flow (Epic 4); the My Profiel / Skrywerprofiel pages
  * (Epic 9); the promotion engine / full editorial-role policy (Epic 5).
@@ -60,13 +70,20 @@ final class Module implements ModuleContract {
 	 * Register this module's hooks.
 	 *
 	 * Dispatched once by the Kernel on `init` (via `Plugin::registerModules()`).
-	 * Delegates to the {@see Registration} (Story 3.1) and {@see Onboarding}
-	 * (Story 3.3) collaborators so this bootstrap stays thin, mirroring the
-	 * `Content\Module → {PostTypes,Taxonomies,UserMeta,…}` /
-	 * `Engagement\Module → Comments` multi-collaborator house style.
+	 * Delegates to the {@see Registration} (Story 3.1), {@see Onboarding}
+	 * (Story 3.3) and {@see Approval} (Story 3.6) collaborators so this bootstrap
+	 * stays thin, mirroring the `Content\Module → {PostTypes,Taxonomies,UserMeta,…}`
+	 * / `Engagement\Module → Comments` multi-collaborator house style.
+	 *
+	 * {@see SocialLogin} (Story 3.5) is deliberately NOT wired here — it is a
+	 * read-only availability seam with no hooks of its own. {@see Approval}, by
+	 * contrast, registers hooks (`user_register`, `wp_authenticate_user`,
+	 * `admin_menu`, `admin_post_*`), so it MUST be wired; its runtime behaviour
+	 * stays gated OFF-by-default by its own toggle.
 	 */
 	public function register(): void {
 		( new Registration() )->register();
 		( new Onboarding() )->register();
+		( new Approval() )->register();
 	}
 }

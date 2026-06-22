@@ -66,6 +66,19 @@ final class Terms {
 			'betaalde_lid'             => __( 'Betaalde lid', 'ink-core' ),
 			'gratis_lid'               => __( 'Gratis lid', 'ink-core' ),
 
+			// Account-approval backstop (R6, Story 3.6 — OFF by default). These
+			// labels surface ONLY when a redakteur enables the optional approval
+			// queue; until then no member ever sees them (the frictionless UJ-1
+			// path). Controlled-vocabulary projection of afrikaans-terms.md
+			// "Rekening-goedkeuring" — flagged [NEEDS HUMAN AFRIKAANS] / pending
+			// redakteur ratification there. The full member-facing PROSE (notice
+			// sentences, result messages, email bodies) stays gated in
+			// ui-copy-translations.md, not invented here.
+			'account_pending'          => __( 'Wag op goedkeuring', 'ink-core' ),
+			'account_approve'          => __( 'Goedkeur', 'ink-core' ),
+			'account_reject'           => __( 'Verwerp', 'ink-core' ),
+			'account_approval_queue'   => __( 'Rekening-goedkeuringstou', 'ink-core' ),
+
 			// Writer Gradering (the progression system + grades).
 			'gradering'                => __( 'Gradering', 'ink-core' ),
 			'brons'                    => __( 'Brons', 'ink-core' ),

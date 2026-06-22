@@ -38,7 +38,8 @@ generated: 2026-06-20
 last_updated: 2026-06-22
 # epic-2 started 2026-06-21; 2-1 → review 2026-06-21
 # epic-2 retrospective completed 2026-06-22
-# epic-3 started 2026-06-22; 3-1 → done (code review) 2026-06-22; 3-3 → done 2026-06-22; 3-4 → done (research spike) 2026-06-22
+# epic-3 started 2026-06-22; 3-1 → done (code review) 2026-06-22; 3-3 → done 2026-06-22; 3-4 → done (research spike) 2026-06-22; 3-6 → done (code review) 2026-06-22
+# note: 3-2 is a TOMBSTONE (reader/writer intent gate removed 2026-06-14) — left as backlog but should not be created/built
 project: ink-vibe
 project_key: NOKEY
 tracking_system: file-system
@@ -78,7 +79,7 @@ development_status:
   3-3-registration-lifecycle-onboarding: done
   3-4-anti-spam-research-spike-r6: done
   3-5-social-login-r6: in-progress
-  3-6-optional-manual-approval-backstop-r6: backlog
+  3-6-optional-manual-approval-backstop-r6: done
   epic-3-retrospective: optional
 
   # Epic 4: Membership, access & payment

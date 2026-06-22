@@ -47,6 +47,19 @@ Die reël is eenvoudig: **kies een term per konsep en hou by daardie term.**
 
 ---
 
+### Rekening-goedkeuring (R6 — opsionele backstop)
+
+*Eienaarsbesluit 2026-06-20 (C8) / Storie 3.6: 'n opsionele, **af-by-verstek** goedkeuringstou wat 'n redakteur kan aanskakel slegs as misbruik dit regverdig. Wanneer af, bly registrasie heeltemal vryevloei (UJ-1). Hierdie terme is **[NEEDS HUMAN AFRIKAANS]** — voorgestelde standaard-Afrikaans, **wag op redakteur-bekragtiging** voordat dit aan lede gewys word. Moenie KI-vertaal nie; die volledige lid-gerigte sinne en e-poskopie bly in `ui-copy-translations.md` as `[NEEDS HUMAN AFRIKAANS]` gemerk.*
+
+| Konsep | UI-term (Afrikaans) | Kode-ID / sleutel | Notas |
+|---|---|---|---|
+| Die toestand van 'n nuwe rekening wat op 'n redakteur se goedkeuring wag | **wag op goedkeuring** | `account_pending` | ⚠️ Voorgestel — wag op bekragtiging. Slegs aktief wanneer die backstop AAN is; andersins bestaan hierdie toestand glad nie (vryevloei). |
+| Die handeling om 'n wagtende rekening te aanvaar | **goedkeur** | `account_approve` | ⚠️ Voorgestel — wag op bekragtiging. Werkwoord op die goedkeuringstou-knoppie. |
+| Die handeling om 'n wagtende rekening te weier | **verwerp** | `account_reject` | ⚠️ Voorgestel — wag op bekragtiging. Werkwoord op die goedkeuringstou-knoppie. |
+| Die admin-skerm wat wagtende rekeninge lys | **Rekening-goedkeuringstou** | `account_approval_queue` | ⚠️ Voorgestel — wag op bekragtiging. Redakteur-skerm (WP-admin-chrome, `ink_moderate`-gekeur); geen ontwerpstelsel-werk. |
+
+---
+
 ### Skrywersvlakke
 
 | Konsep | UI-term (Afrikaans) | Kode-ID / sleutel | Notas |

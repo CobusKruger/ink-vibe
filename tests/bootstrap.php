@@ -51,3 +51,10 @@ require_once $ink_autoload;
 if ( ! class_exists( 'WP_User' ) ) {
 	require_once __DIR__ . '/stubs/class-wp-user.php';
 }
+
+// Likewise a minimal WP_Error double: the Accounts approval backstop (Story 3.6)
+// returns `new \WP_Error( … )` from its `wp_authenticate_user` login gate, so the
+// symbol must exist for the unit tests to instantiate and inspect it.
+if ( ! class_exists( 'WP_Error' ) ) {
+	require_once __DIR__ . '/stubs/class-wp-error.php';
+}

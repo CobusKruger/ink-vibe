@@ -2,6 +2,11 @@
 
 Consolidated `defer` findings from code reviews. Each item is real but not actionable in its originating story (pre-existing, by-design, or owned by a later story/epic).
 
+## Deferred from: code review of 3-6-optional-manual-approval-backstop-r6 (2026-06-22)
+
+- **REST / application-password / XML-RPC auth bypass** [`Approval.php:929`] — the login gate filters `wp_authenticate_user`, which does NOT fire for application-password / REST / XML-RPC auth, so a pending account could in principle authenticate off-form while the backstop is ON. Belongs to the Story-18.10 hardening surface (which hardens *around* the 3.6 pending state); a freshly-pending self-registration has no application password yet, so live exposure is minimal.
+- **No executed test for approve→login-passes or the forged-POST nonce/cap gate** [`tests/Unit/Accounts/ApprovalTest.php`] — unit tests prove the flag writes + the gate's keying off `isBlocked`, but not the end-to-end "approve ⇒ user can now log in" composition, nor that `guardWrite` rejects a forged/nonce-less POST (the handler ends in `wp_safe_redirect` + `exit`). Deferred to E2E (Story 18.8), consistent with the `Onboarding::completeViaPost` precedent.
+
 ## Deferred from: code review of Epic 1 stories (2026-06-21)
 
 ### Story 1.2 — typography-system

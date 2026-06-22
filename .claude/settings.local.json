@@ -157,7 +157,8 @@
       "Bash(echo \"exit=$?\")",
       "Bash(ls -la __TRACKED_VAR__/ts_false_dbgfile.log)",
       "Bash(wc -l __TRACKED_VAR__/ts_false_dbgfile.log)",
-      "Bash(claude install *)"
+      "Bash(claude install *)",
+      "Bash(vendor/bin/phpcs wp-content/themes/ink-foundation/patterns/auth-register.php wp-content/themes/ink-foundation/patterns/auth-forgot-password.php wp-content/plugins/ink-core/src/Accounts/Registration.php)"
     ],
     "defaultMode": "acceptEdits"
   },
