@@ -16,13 +16,21 @@
  *     tests, so we register a minimal `WP_User` double when the real class is
  *     absent.
  *
- * Runs under Pest/PHPUnit, NOT WordPress — so there is intentionally no
- * `ABSPATH` guard here.
+ * Runs under Pest/PHPUnit, NOT WordPress. We do, however, define a sentinel
+ * `ABSPATH` constant below: every ink-core source file opens with
+ * `defined( 'ABSPATH' ) || exit;`, so without it the first autoloaded SUT class
+ * would silently `exit(0)` and abort the whole run. Defining the constant
+ * satisfies that guard without loading WordPress.
  *
  * @package Ink\Tests
  */
 
 declare(strict_types=1);
+
+// Satisfy the `defined( 'ABSPATH' ) || exit;` guard that opens every ink-core
+// source file. WordPress is not loaded for the unit suite; this sentinel simply
+// stops autoloading a guarded class from terminating the process.
+defined( 'ABSPATH' ) || define( 'ABSPATH', dirname( __DIR__ ) . '/' );
 
 $ink_autoload = __DIR__ . '/../vendor/autoload.php';
 

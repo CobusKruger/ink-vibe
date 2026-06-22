@@ -54,11 +54,11 @@ final class Capabilities {
 	 * @return list<string>
 	 */
 	public static function all(): array {
-		return [
+		return array(
 			self::MANAGE_TIERS,
 			self::MANAGE_CHALLENGES,
 			self::MANAGE_SPONSORS,
 			self::MODERATE,
-		];
+		);
 	}
 }

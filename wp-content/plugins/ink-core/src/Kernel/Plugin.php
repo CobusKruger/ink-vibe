@@ -46,7 +46,7 @@ final class Plugin {
 	 *
 	 * @var array<string, Module>
 	 */
-	private array $modules = [];
+	private array $modules = array();
 
 	/**
 	 * Private constructor — use {@see Plugin::boot()}.

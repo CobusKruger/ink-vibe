@@ -93,13 +93,13 @@ final class Taxonomies {
 		$works = array_merge( $bydraes, array( PostTypes::BIBLIOTEEK_ITEM ) );
 
 		return array(
-			self::GENRE => array(
+			self::GENRE            => array(
 				'singular'     => 'genre',
 				'plural'       => 'genre_plural',
 				'object_types' => $bydraes_and_training,
 				'rewrite'      => self::GENRE,
 			),
-			self::VAARDIGHEID => array(
+			self::VAARDIGHEID      => array(
 				'singular'     => 'vaardigheid',
 				'plural'       => 'vaardigheid_plural',
 				// Training is its primary home; shared with bydraes (+ library) so
@@ -118,7 +118,7 @@ final class Taxonomies {
 				'object_types' => $works,
 				'rewrite'      => self::UITDAGINGSRONDTE,
 			),
-			self::STER_GRADERING => array(
+			self::STER_GRADERING   => array(
 				'singular'     => 'ster_gradering',
 				'plural'       => 'ster_gradering_plural',
 				'object_types' => $works,

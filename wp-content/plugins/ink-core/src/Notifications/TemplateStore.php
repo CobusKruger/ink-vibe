@@ -72,7 +72,9 @@ final class TemplateStore {
 			return (string) $override['subject'];
 		}
 
-		return $this->definition( $key )?->defaultSubject ?? '';
+		$definition = $this->definition( $key );
+
+		return $definition instanceof Template ? $definition->defaultSubject : '';
 	}
 
 	/**
@@ -85,7 +87,9 @@ final class TemplateStore {
 			return (string) $override['body'];
 		}
 
-		return $this->definition( $key )?->defaultBody ?? '';
+		$definition = $this->definition( $key );
+
+		return $definition instanceof Template ? $definition->defaultBody : '';
 	}
 
 	/**
@@ -99,7 +103,9 @@ final class TemplateStore {
 			return (bool) $override['enabled'];
 		}
 
-		return (bool) ( $this->definition( $key )?->defaultEnabled ?? false );
+		$definition = $this->definition( $key );
+
+		return $definition instanceof Template ? $definition->defaultEnabled : false;
 	}
 
 	/**
@@ -114,7 +120,9 @@ final class TemplateStore {
 			return array_values( array_map( 'strval', $override['messages'] ) );
 		}
 
-		return $this->definition( $key )?->defaultMessages ?? array();
+		$definition = $this->definition( $key );
+
+		return $definition instanceof Template ? $definition->defaultMessages : array();
 	}
 
 	/**

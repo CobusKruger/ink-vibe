@@ -64,6 +64,8 @@ This `README.md` is the entry point and index for the planning work. As new plan
 
 - [plugin-transition-guide.md](./plugin-transition-guide.md)
   Survey of all 25 active and 8 inactive plugins on the staging site. Documents which plugins stay, which are replaced, and which are removed.
+- [testing-and-quality-harness.md](./testing-and-quality-harness.md)
+  Installation and configuration guide for the automated test + quality harness (AD-8 / NFR-9): toolchain install, the four PHP gates (Pest unit, PHPStan, PHPCS/WPCS, Deptrac), every config file explained, how agents run the suite in this folder, the CI pipeline, and the deferred integration/E2E (Story 18.8).
 - [bmad-guidance.md](./bmad-guidance.md)
   Reference notes on the BMAD 6 methodology and suggested role assignments for this project.
 

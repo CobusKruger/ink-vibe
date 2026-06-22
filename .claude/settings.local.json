@@ -115,7 +115,21 @@
       "Bash(echo \"=== theme bridge ink_foundation_term ===\")",
       "Bash(echo \"=== head ===\")",
       "Bash(echo \"=== add_new / add_new_item labels ===\")",
-      "Bash(echo \"=== borg definition block ===\")"
+      "Bash(echo \"=== borg definition block ===\")",
+      "Bash(php --version)",
+      "Bash(composer --version)",
+      "Bash(composer test:unit --log-junit __TRACKED_VAR__/final.xml)",
+      "Bash(echo \"composer test:unit exit=$?\")",
+      "Bash(php -r 'readfile\\($argv[1]\\);' __TRACKED_VAR__/final.xml)",
+      "Bash(composer deptrac *)",
+      "Bash(composer cs *)",
+      "Bash(composer stan *)",
+      "Bash(echo \"cs=$?\")",
+      "Bash(composer test:unit)",
+      "Bash(composer test:unit *)",
+      "Bash(composer test)",
+      "Bash(vendor/bin/pest --testsuite=Unit)",
+      "Bash(vendor/bin/pest --testsuite=Unit *)"
     ],
     "defaultMode": "acceptEdits"
   },

@@ -29,6 +29,8 @@ defined( 'ABSPATH' ) || exit;
 final class Notifier {
 
 	/**
+	 * Wire the notifier to its template store and name-merge resolver.
+	 *
 	 * @param TemplateStore $store The form-letter store (toggle + text + lists).
 	 * @param MergeResolver $merge The greeting-line name-merge resolver.
 	 */

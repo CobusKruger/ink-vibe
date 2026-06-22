@@ -23,12 +23,64 @@
     <rule ref="WordPress">
         <!--
             The project deliberately adopts PSR-4 class conventions: PascalCase
-            classes + camelCase methods (architecture line 838 / AD-1). The
-            `ink_` snake_case rule applies ONLY to the global/procedural WP
-            surface (hooks, template tags, global functions), so exempt class
-            methods from the WP function-name sniff.
+            classes + camelCase methods (architecture AD-1). The `ink_`
+            snake_case rule applies ONLY to the global/procedural WP surface
+            (hooks, template tags, global functions), so exempt class methods
+            from the WP function-name sniff.
         -->
         <exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid"/>
+
+        <!--
+            PSR-4 file naming (AD-1 / AD-4). `ink-core` is Composer-autoloaded
+            (`Ink\` => wp-content/plugins/ink-core/src/), which REQUIRES the
+            filename to match the class name (TemplateStore.php for class
+            TemplateStore). WPCS's WordPress-core `class-*.php` / hyphenated-
+            lowercase convention is mutually exclusive with PSR-4 autoloading, so
+            it is exempted for the first-party tree.
+        -->
+        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+
+        <!--
+            camelCase OO members. Consistent with the camelCase-method decision
+            above, value objects expose camelCase properties (e.g. Template's
+            $defaultSubject) that are load-bearing public API referenced across
+            the module and its tests. snake_case is enforced on the procedural WP
+            surface, not on class members.
+        -->
+        <exclude name="WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase"/>
+        <exclude name="WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase"/>
+
+        <!--
+            Redundant-with-types doc sniffs. Every param/property carries a PHP
+            8.3 type declaration and is verified by PHPStan, so a @param/@var tag
+            that only restates the native type adds no information; docblocks here
+            are description-focused and document only the non-obvious arguments.
+            IncorrectTypeHint additionally conflicts with the PHPStan generic
+            PHPDoc the code relies on (`list<string>`, `array<string, Template>`),
+            which Squiz cannot parse. Description/structure doc sniffs
+            (MissingShort, file @package, fully-undocumented functions) and ALL
+            security/i18n sniffs remain active.
+        -->
+        <exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
+        <exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
+        <exclude name="Squiz.Commenting.FunctionComment.IncorrectTypeHint"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ParamNameNoMatch"/>
+        <exclude name="Squiz.Commenting.VariableComment.MissingVar"/>
+    </rule>
+
+    <!--
+        Block-pattern files carry WordPress's pattern-registration header
+        (Title/Slug/Categories/Block Types/Description), which the engine parses
+        to register the pattern — it is NOT a PHP file docblock and (like WP
+        core's own pattern files) carries no @package. Exempt the file-comment
+        sniffs for patterns/ only; every other theme PHP file is still checked.
+    -->
+    <rule ref="Squiz.Commenting.FileComment.MissingPackageTag">
+        <exclude-pattern>*/patterns/*\.php$</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FileComment.SpacingAfterComment">
+        <exclude-pattern>*/patterns/*\.php$</exclude-pattern>
     </rule>
 
     <!-- Recognise both first-party text domains for the i18n sniff (Gate D). -->

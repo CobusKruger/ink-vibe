@@ -34,6 +34,8 @@ defined( 'ABSPATH' ) || exit;
 final class Template {
 
 	/**
+	 * Define one template's Afrikaans-source defaults.
+	 *
 	 * @param string       $key             Unique template/event key (`ink_`-scoped, snake_case), e.g. `tier_promotion`.
 	 * @param string       $defaultSubject  Afrikaans-source default email subject (sentence case).
 	 * @param string       $defaultBody     Afrikaans-source default body; may contain the `{skrywer}` merge token.

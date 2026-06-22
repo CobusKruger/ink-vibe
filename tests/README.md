@@ -25,9 +25,11 @@ E2E (`tests/e2e/`, Playwright) is built in **Story 18.8** with the full pyramid.
 
 ## Running
 
+**Prerequisites:** PHP **8.3** + Composer on PATH (`brew install php@8.3 composer`). The unit suite is mocked (no WordPress, no DB) and runs anywhere PHP ≥ 8.3 is present — verified green on both 8.3 and 8.5. The unit bootstrap defines a sentinel `ABSPATH` so the `defined( 'ABSPATH' ) || exit;` guard at the top of every `ink-core` source file doesn't `exit(0)` mid-run when a class is autoloaded.
+
 ```bash
 composer install            # builds vendor/ (dev tooling: Pest, Brain Monkey, PHPStan, WPCS, Deptrac)
-composer test:unit          # Pest unit suite (WP mocked)
+composer test:unit          # Pest unit suite (WP mocked) — currently 66 passing, 1 intentional skip
 composer stan               # PHPStan
 composer cs                 # PHPCS / WPCS
 composer deptrac            # AD-1 module graph + Entitlement ⟂ Tiers (conflation rule)

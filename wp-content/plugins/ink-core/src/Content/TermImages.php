@@ -99,7 +99,7 @@ final class TermImages {
 			);
 
 			add_action( "{$tax}_add_form_fields", array( $this, 'renderAddField' ) );
-			add_action( "{$tax}_edit_form_fields", array( $this, 'renderEditField' ), 10, 2 );
+			add_action( "{$tax}_edit_form_fields", array( $this, 'renderEditField' ) );
 			add_action( "created_{$tax}", array( $this, 'save' ) );
 			add_action( "edited_{$tax}", array( $this, 'save' ) );
 		}

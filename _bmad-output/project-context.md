@@ -67,6 +67,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
   - *Fewer integration tests* — real WP+DB (wp-env + WP test library, or wp-browser/Codeception) for the seams that matter: *active membership ⇒ can submit*, *expired ⇒ denied*, *tier write ⇒ meta + log*.
   - *Thin E2E layer* — Playwright + `@wordpress/e2e-test-utils-playwright` for critical journeys only: register → buy membership via **PayFast sandbox** → submit → publish → read/react → renewal/expiry.
 - **`ink-core` rules ship test-first** — the test-harness scaffold is foundational (Epic 1), not deferred.
+- **Run the unit suite locally — Pest execution is NO LONGER deferred (2026-06-22).** PHP 8.3 + Composer are installed on the dev machine; `composer install` builds `vendor/`. During the dev-story cycle you MUST **author *and run*** the Pest unit tests with `composer test:unit`, and **the suite must pass before a story is marked done.** Do **not** substitute a python3 "structural scan" for execution, and do **not** defer Pest/`php -l`/PHPStan to the CI buildout — the Epic 1–2 "no PHP binary, defer to Story 18.8" precedent is **retired**; do not carry it into new stories. The unit suite is mocked (Brain Monkey, no WordPress/DB) and runs on PHP ≥ 8.3; the unit bootstrap defines a sentinel `ABSPATH` so guarded `ink-core` source files don't `exit(0)` on autoload. **Story 18.8 still owns CI wiring + the integration/E2E layers** (wp-env, Playwright) — not local unit execution, which is available now.
 - **Risk-based depth:** smoke-only for minor/security updates; full regression for major version bumps.
 - **English-leak check is an automated test**, not a manual pass: crawl key front-end pages + scan `wp i18n` untranslated counts. It is a *standing* gate (re-runs after ungated core/plugin updates), not a one-time build check.
 - **PayFast always uses sandbox in tests** — never hit the live ZAR gateway.
@@ -146,4 +147,4 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Update when the technology stack, plugin set, or a resolved decision (§14) changes.
 - Review periodically; remove rules that become obvious over time.
 
-Last Updated: 2026-06-14
+Last Updated: 2026-06-22

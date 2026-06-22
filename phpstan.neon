@@ -9,8 +9,29 @@ parameters:
     # generated baseline — `phpstan analyse --generate-baseline` — for any
     # pre-existing finding in the 1.7-1.10 skeletons.
     level: 5
+    # Analyse against the project's supported PHP range (Requires PHP: 8.3) rather
+    # than whatever the dev host runs (e.g. 8.5). Keeps analysis deterministic and
+    # matched to CI, which runs 8.3.
+    phpVersion:
+        min: 80300
+        max: 80399
+    # The module stores carry `@var array<string, T>` PHPDocs; treat those as
+    # hints, not runtime guarantees, so PHPStan does not infer false "never null"
+    # / "always true" certainty from them (its own recommended setting for the
+    # nullsafe.neverNull / arrayValues.list findings these PHPDocs produce).
+    treatPhpDocTypesAsCertain: false
+    # Declares the plugin constants defined in ink-core.php (outside the analysed
+    # src/ path) so INK_CORE_PATH/FILE/VERSION/URL resolve. Analysis-only — never
+    # loaded at runtime.
+    bootstrapFiles:
+        - phpstan-bootstrap.php
     paths:
         - wp-content/plugins/ink-core/src
+    # The hand-rolled PSR-4 autoload bridge resolves its require paths at runtime
+    # against the built plugin (guarded by is_readable()); the plugin-local
+    # vendor/ is not committed (AD-4), so static require-path checking misfires.
+    excludePaths:
+        - wp-content/plugins/ink-core/src/autoload.php
     # Only first-party ink-core PHP is analysed; the theme is covered by Gate-C
     # platform checks + E2E, not PHPStan (project-context: concentrate the suite
     # in ink-core).

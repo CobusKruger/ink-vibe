@@ -98,7 +98,7 @@ final class PostTypes {
 		$bydrae_supports = array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'revisions' );
 
 		return array(
-			self::GEDIG => array(
+			self::GEDIG             => array(
 				'singular' => 'gedig',
 				'plural'   => 'gedig_plural',
 				'supports' => $bydrae_supports,
@@ -107,7 +107,7 @@ final class PostTypes {
 				'icon'     => 'dashicons-edit',
 				'rewrite'  => self::GEDIG,
 			),
-			self::STORIE => array(
+			self::STORIE            => array(
 				'singular' => 'storie',
 				'plural'   => 'storie_plural',
 				'supports' => $bydrae_supports,
@@ -116,7 +116,7 @@ final class PostTypes {
 				'icon'     => 'dashicons-book',
 				'rewrite'  => self::STORIE,
 			),
-			self::ARTIKEL => array(
+			self::ARTIKEL           => array(
 				'singular' => 'artikel',
 				'plural'   => 'artikel_plural',
 				'supports' => $bydrae_supports,
@@ -125,7 +125,7 @@ final class PostTypes {
 				'icon'     => 'dashicons-media-document',
 				'rewrite'  => self::ARTIKEL,
 			),
-			self::SKRYFWERK => array(
+			self::SKRYFWERK         => array(
 				'singular' => 'skryfwerk',
 				'plural'   => 'skryfwerk_plural',
 				'supports' => $bydrae_supports,
@@ -134,7 +134,7 @@ final class PostTypes {
 				'icon'     => 'dashicons-welcome-write-blog',
 				'rewrite'  => self::SKRYFWERK,
 			),
-			self::BIBLIOTEEK_ITEM => array(
+			self::BIBLIOTEEK_ITEM   => array(
 				'singular' => 'biblioteek_item',
 				'plural'   => 'biblioteek_item_plural',
 				'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt' ),
@@ -152,7 +152,7 @@ final class PostTypes {
 				'icon'     => 'dashicons-welcome-learn-more',
 				'rewrite'  => 'opleiding',
 			),
-			self::UITDAGING => array(
+			self::UITDAGING         => array(
 				'singular' => 'uitdaging',
 				'plural'   => 'uitdaging_plural',
 				'supports' => array( 'title', 'editor', 'thumbnail', 'excerpt' ),
@@ -161,7 +161,7 @@ final class PostTypes {
 				'icon'     => 'dashicons-awards',
 				'rewrite'  => self::UITDAGING,
 			),
-			self::INKPOLS_UITGAWE => array(
+			self::INKPOLS_UITGAWE   => array(
 				'singular' => 'inkpols_uitgawe',
 				'plural'   => 'inkpols_uitgawe_plural',
 				'supports' => array( 'title', 'editor', 'thumbnail', 'excerpt' ),
@@ -170,7 +170,7 @@ final class PostTypes {
 				'icon'     => 'dashicons-media-text',
 				'rewrite'  => 'inkpols',
 			),
-			self::BORG => array(
+			self::BORG              => array(
 				'singular' => 'borg',
 				'plural'   => 'borg_plural',
 				'supports' => array( 'title', 'editor', 'thumbnail' ),

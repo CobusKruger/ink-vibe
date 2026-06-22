@@ -60,54 +60,54 @@ final class Terms {
 	private static function map(): array {
 		return array(
 			// Core people / access concepts (afrikaans-terms.md Deel 1).
-			'lid'                       => __( 'Lid', 'ink-core' ),
-			'skrywer'                   => __( 'Skrywer', 'ink-core' ),
-			'membership'                => __( 'Lidmaatskap', 'ink-core' ),
-			'betaalde_lid'              => __( 'Betaalde lid', 'ink-core' ),
-			'gratis_lid'                => __( 'Gratis lid', 'ink-core' ),
+			'lid'                      => __( 'Lid', 'ink-core' ),
+			'skrywer'                  => __( 'Skrywer', 'ink-core' ),
+			'membership'               => __( 'Lidmaatskap', 'ink-core' ),
+			'betaalde_lid'             => __( 'Betaalde lid', 'ink-core' ),
+			'gratis_lid'               => __( 'Gratis lid', 'ink-core' ),
 
 			// Writer Gradering (the progression system + grades).
-			'gradering'                 => __( 'Gradering', 'ink-core' ),
-			'brons'                     => __( 'Brons', 'ink-core' ),
-			'silwer'                    => __( 'Silwer', 'ink-core' ),
-			'goud'                      => __( 'Goud', 'ink-core' ),
-			'meester'                   => __( 'Meester', 'ink-core' ),
+			'gradering'                => __( 'Gradering', 'ink-core' ),
+			'brons'                    => __( 'Brons', 'ink-core' ),
+			'silwer'                   => __( 'Silwer', 'ink-core' ),
+			'goud'                     => __( 'Goud', 'ink-core' ),
+			'meester'                  => __( 'Meester', 'ink-core' ),
 
 			// Contribution (general noun + the CPTs).
-			'bydrae'                    => __( 'Bydrae', 'ink-core' ),
-			'bydrae_plural'             => __( 'Bydraes', 'ink-core' ),
-			'gedig'                     => __( 'Gedig', 'ink-core' ),
-			'gedig_plural'              => __( 'Gedigte', 'ink-core' ),
-			'storie'                    => __( 'Storie', 'ink-core' ),
-			'storie_plural'             => __( 'Stories', 'ink-core' ),
-			'artikel'                   => __( 'Artikel', 'ink-core' ),
-			'artikel_plural'            => __( 'Artikels', 'ink-core' ),
-			'skryfwerk'                 => __( 'Skryfwerk', 'ink-core' ),
-			'skryfwerk_plural'          => __( 'Skrywes', 'ink-core' ),
-			'biblioteek_item'           => __( 'Biblioteekitem', 'ink-core' ),
-			'biblioteek_item_plural'    => __( 'Biblioteekitems', 'ink-core' ),
-			'opleiding_artikel'         => __( 'Hulpbronartikel', 'ink-core' ),
-			'opleiding_artikel_plural'  => __( 'Hulpbronartikels', 'ink-core' ),
-			'uitdaging'                 => __( 'Uitdaging', 'ink-core' ),
-			'uitdaging_plural'          => __( 'Uitdagings', 'ink-core' ),
-			'inkpols_uitgawe'           => __( 'Uitgawe', 'ink-core' ),
-			'inkpols_uitgawe_plural'    => __( 'Uitgawes', 'ink-core' ),
-			'borg'                      => __( 'Borg', 'ink-core' ),
-			'borg_plural'               => __( 'Borge', 'ink-core' ),
+			'bydrae'                   => __( 'Bydrae', 'ink-core' ),
+			'bydrae_plural'            => __( 'Bydraes', 'ink-core' ),
+			'gedig'                    => __( 'Gedig', 'ink-core' ),
+			'gedig_plural'             => __( 'Gedigte', 'ink-core' ),
+			'storie'                   => __( 'Storie', 'ink-core' ),
+			'storie_plural'            => __( 'Stories', 'ink-core' ),
+			'artikel'                  => __( 'Artikel', 'ink-core' ),
+			'artikel_plural'           => __( 'Artikels', 'ink-core' ),
+			'skryfwerk'                => __( 'Skryfwerk', 'ink-core' ),
+			'skryfwerk_plural'         => __( 'Skrywes', 'ink-core' ),
+			'biblioteek_item'          => __( 'Biblioteekitem', 'ink-core' ),
+			'biblioteek_item_plural'   => __( 'Biblioteekitems', 'ink-core' ),
+			'opleiding_artikel'        => __( 'Hulpbronartikel', 'ink-core' ),
+			'opleiding_artikel_plural' => __( 'Hulpbronartikels', 'ink-core' ),
+			'uitdaging'                => __( 'Uitdaging', 'ink-core' ),
+			'uitdaging_plural'         => __( 'Uitdagings', 'ink-core' ),
+			'inkpols_uitgawe'          => __( 'Uitgawe', 'ink-core' ),
+			'inkpols_uitgawe_plural'   => __( 'Uitgawes', 'ink-core' ),
+			'borg'                     => __( 'Borg', 'ink-core' ),
+			'borg_plural'              => __( 'Borge', 'ink-core' ),
 
 			// Sections.
-			'biblioteek'                => __( 'Biblioteek', 'ink-core' ),
-			'opleiding'                 => __( 'Opleiding', 'ink-core' ),
+			'biblioteek'               => __( 'Biblioteek', 'ink-core' ),
+			'opleiding'                => __( 'Opleiding', 'ink-core' ),
 
 			// Taxonomies (singular / plural).
-			'genre'                     => __( 'Genre', 'ink-core' ),
-			'genre_plural'              => __( 'Genres', 'ink-core' ),
+			'genre'                    => __( 'Genre', 'ink-core' ),
+			'genre_plural'             => __( 'Genres', 'ink-core' ),
 			'vaardigheid'              => __( 'Vaardigheidsarea', 'ink-core' ),
-			'vaardigheid_plural'        => __( 'Vaardigheidsareas', 'ink-core' ),
-			'uitdagingsrondte'          => __( 'Uitdagingsrondte', 'ink-core' ),
-			'uitdagingsrondte_plural'   => __( 'Uitdagingsrondtes', 'ink-core' ),
-			'ster_gradering'            => __( 'Ster gradering', 'ink-core' ),
-			'ster_gradering_plural'     => __( 'Ster graderings', 'ink-core' ),
+			'vaardigheid_plural'       => __( 'Vaardigheidsareas', 'ink-core' ),
+			'uitdagingsrondte'         => __( 'Uitdagingsrondte', 'ink-core' ),
+			'uitdagingsrondte_plural'  => __( 'Uitdagingsrondtes', 'ink-core' ),
+			'ster_gradering'           => __( 'Ster gradering', 'ink-core' ),
+			'ster_gradering_plural'    => __( 'Ster graderings', 'ink-core' ),
 		);
 	}
 
@@ -127,8 +127,9 @@ final class Terms {
 
 		if ( ! array_key_exists( $key, $map ) ) {
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				trigger_error(
-					sprintf( 'Ink\I18n\Terms: unknown terminology key "%s".', $key ),
+				wp_trigger_error(
+					__METHOD__,
+					sprintf( 'unknown terminology key "%s".', $key ),
 					E_USER_NOTICE
 				);
 			}

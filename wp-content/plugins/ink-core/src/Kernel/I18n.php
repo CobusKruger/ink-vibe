@@ -92,8 +92,8 @@ final class I18n {
 	 * `locale` user-meta on read would be a mutation-on-read anti-pattern and
 	 * would fight a staff member who legitimately set their own preference.
 	 *
-	 * @param string         $locale  The user locale WordPress resolved.
-	 * @param int|\WP_User    $user_id The user id (or `WP_User`) the locale is for.
+	 * @param string       $locale  The user locale WordPress resolved.
+	 * @param int|\WP_User $user_id The user id (or `WP_User`) the locale is for.
 	 * @return string `en_US` for staff in wp-admin; the incoming `$locale` otherwise.
 	 */
 	public static function forceStaffAdminLocale( string $locale, int|\WP_User $user_id ): string {

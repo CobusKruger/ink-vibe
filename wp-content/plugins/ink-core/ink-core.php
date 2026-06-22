@@ -41,8 +41,8 @@ require_once INK_CORE_PATH . 'src/autoload.php';
 
 // Activation / deactivation: versioned-DB-option stub, empty schema registry,
 // rewrite-rule flush stub, and PHP/WP minimum-version guard.
-register_activation_hook( INK_CORE_FILE, [ Kernel\Activation::class, 'activate' ] );
-register_deactivation_hook( INK_CORE_FILE, [ Kernel\Activation::class, 'deactivate' ] );
+register_activation_hook( INK_CORE_FILE, array( Kernel\Activation::class, 'activate' ) );
+register_deactivation_hook( INK_CORE_FILE, array( Kernel\Activation::class, 'deactivate' ) );
 
 // Boot the Kernel once WordPress and all plugins are loaded. The Kernel is the
 // single place later stories register their module bootstraps.

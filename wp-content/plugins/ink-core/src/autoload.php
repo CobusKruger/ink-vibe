@@ -36,20 +36,20 @@ if ( is_readable( $ink_core_composer_autoload ) ) {
  *
  * Example: `Ink\Kernel\Plugin` → `{INK_CORE_PATH}src/Kernel/Plugin.php`.
  *
- * @param string $class Fully-qualified class name requested by the engine.
+ * @param string $class_name Fully-qualified class name requested by the engine.
  */
 spl_autoload_register(
-	static function ( string $class ): void {
+	static function ( string $class_name ): void {
 		$prefix   = 'Ink\\';
 		$base_dir = INK_CORE_PATH . 'src/';
 
 		$len = strlen( $prefix );
 
-		if ( 0 !== strncmp( $prefix, $class, $len ) ) {
+		if ( 0 !== strncmp( $prefix, $class_name, $len ) ) {
 			return;
 		}
 
-		$relative_class = substr( $class, $len );
+		$relative_class = substr( $class_name, $len );
 
 		// Reject any traversal attempt before touching the filesystem.
 		if ( str_contains( $relative_class, '..' ) ) {

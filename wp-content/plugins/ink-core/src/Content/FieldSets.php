@@ -215,7 +215,11 @@ final class FieldSets {
 				continue;
 			}
 
-			$raw       = wp_unslash( $_POST[ $key ] );
+			// Unslashed here, then sanitized on the next line by the field's own
+			// declared sanitize callback ($field['sanitize'], e.g. absint /
+			// sanitize_text_field). WPCS cannot trace the dynamic callable, so the
+			// access is annotated; nonce + capability are verified above.
+			$raw       = wp_unslash( $_POST[ $key ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized on the next line via $field['sanitize'].
 			$sanitized = call_user_func( $field['sanitize'], $raw );
 
 			update_post_meta( $post_id, $key, $sanitized );
@@ -272,7 +276,7 @@ final class FieldSets {
 					),
 				),
 			),
-			PostTypes::UITDAGING => array(
+			PostTypes::UITDAGING       => array(
 				'cap'    => Capabilities::MANAGE_CHALLENGES,
 				'term'   => 'uitdaging',
 				'fields' => array(
@@ -292,7 +296,7 @@ final class FieldSets {
 					),
 				),
 			),
-			PostTypes::BORG => array(
+			PostTypes::BORG            => array(
 				'cap'    => Capabilities::MANAGE_SPONSORS,
 				'term'   => 'borg',
 				'fields' => array(

@@ -36,7 +36,7 @@ final class Schema {
 	 *
 	 * @var array<string, callable(): string>
 	 */
-	private static array $providers = [];
+	private static array $providers = array();
 
 	/**
 	 * Register a custom-table schema provider.
@@ -44,7 +44,7 @@ final class Schema {
 	 * Reserved seam for later modules (e.g. follow graph, tier history). The
 	 * provider returns the `dbDelta()` SQL for its table when `install()` runs.
 	 *
-	 * @param string            $id       Unique table identifier.
+	 * @param string             $id       Unique table identifier.
 	 * @param callable(): string $provider Returns dbDelta-compatible SQL.
 	 */
 	public static function register( string $id, callable $provider ): void {
@@ -59,7 +59,7 @@ final class Schema {
 	 * this is where their tables are created/upgraded.
 	 */
 	public static function install(): void {
-		if ( [] === self::$providers ) {
+		if ( array() === self::$providers ) {
 			return;
 		}
 

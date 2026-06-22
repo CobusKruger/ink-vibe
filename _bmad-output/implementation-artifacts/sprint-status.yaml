@@ -35,8 +35,9 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-21
+last_updated: 2026-06-22
 # epic-2 started 2026-06-21; 2-1 → review 2026-06-21
+# epic-2 retrospective completed 2026-06-22
 project: ink-vibe
 project_key: NOKEY
 tracking_system: file-system
@@ -67,7 +68,7 @@ development_status:
   2-3-user-meta: done
   2-4-cpt-admin-field-sets: done
   2-5-term-images-native: done
-  epic-2-retrospective: optional
+  epic-2-retrospective: done
 
   # Epic 3: Accounts, registration & auth
   epic-3: backlog
