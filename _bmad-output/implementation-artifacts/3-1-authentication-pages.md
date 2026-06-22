@@ -4,7 +4,7 @@ baseline_commit: 95ba8fa8f981107ecc9c99cdd6eaf2bfa96dbf45
 
 # Story 3.1: Authentication pages
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -198,3 +198,31 @@ claude-opus-4-8[1m] (Opus 4.8, 1M context)
 |---|---|
 | 2026-06-22 | Story created (context-engineered) — Afrikaans Registreer/Meld aan/Wagwoord-herstel surfaces built fresh in `ink-foundation` over WP-native auth (architecture line 1081, assembly-only); a new `Ink\Accounts` module (Kernel-seam-wired) sets the account-creation default `ink_writer_tier = brons` (via `Tier::Brons->value`/`UserMeta::WRITER_TIER`) + gratis lid / no active lidmaatskap (THE conflation rule, zero `Entitlement` reference); Afrikaans transactional auth email through the Story-1.12 Notifications capability + WP-core mail filters; no intent flag (3.2 removed), no onboarding (3.3), no R6 (3.4–3.6). Pest unit tests authored AND run (`composer test:unit`) — the defer-to-18.8/python3-scan precedent is retired. Status → ready-for-dev. |
 | 2026-06-22 | Story implemented (dev-story). New `Ink\Accounts` module (`Module`/`Api`/`Registration`) wired via `addModule( 'accounts', … )`; `applyDefaults()` stamps Brons (enum/constant, idempotent, gratis lid, zero Entitlement); welcome template `ink_account_welcome` registered Afrikaans-source with send toggle OFF ([WAG OP MENSLIKE KOPIE] body placeholder); WP-core password-reset mail Afrikaansed via `retrieve_password_title`/`retrieve_password_message` (reset URL preserved). Three single-column token-only theme patterns + page templates (Meld aan / Registreer / Wagwoord-herstel) over WP-native auth, registered in `theme.json customTemplates`. `tests/Unit/Accounts/RegistrationTest.php` (8 cases) authored AND run — `composer test:unit` GREEN (73 passed, 1 skipped, 444 assertions). phpcs clean, phpstan clean, all `php -l` clean. Status → review. |
+| 2026-06-22 | Code review (Blind Hunter + Edge Case Hunter + Acceptance Auditor). 2 decision-needed (resolved), 2 patch, 2 deferred, 4 dismissed. Patches applied: **P1** hardened the reset-URL extraction regex (markup-delimiter-safe + trailing-punctuation trim); **P3** built in-theme Afrikaans Registreer + Wagwoord-herstel `<form>`s posting to WP's own register / lost-password endpoints (closing the AC-1 leakage gap left by the link-buttons, owner decision); **P2** strengthened the Pest suite (wrapped/empty reset-URL cases, both reset filters asserted, welcome template asserted registered+disabled via injected store + `wp_mail` never). Deferred: logged-in guard on auth surfaces; hardcoded slug links / unbound pages (→ `deferred-work.md`). `composer test:unit` GREEN (100 passed, 1 skipped); phpcs clean on touched files; phpstan `[OK] No errors`. Status → done. |
+
+## Review Findings
+
+_Adversarial code review (Blind Hunter + Edge Case Hunter + Acceptance Auditor), 2026-06-22, diff `95ba8fa..936f5da`._
+
+### Decision needed — RESOLVED (2026-06-22)
+
+- [x] **[Review][Decision → Patch] Registreer & Wagwoord-herstel surfaces bounce to the English WP-core `wp-login.php` screens, not in-theme Afrikaans forms** — **RESOLVED: build in-theme Afrikaans forms now** (see Patch P3). AC-1 requires the three auth surfaces "built fresh in `ink-foundation`" with zero English leakage. Only **Meld aan** rendered an in-theme Afrikaans form; `auth-register.php` / `auth-forgot-password.php` were link-buttons to the English WP-core screens. Owner ruled: build them as in-theme Afrikaans forms in this story. _[auth-register.php, auth-forgot-password.php]_
+- [x] **[Review][Decision → Dismissed] Password-reset email sends a link-less body when the reset URL can't be extracted** — **RESOLVED: keep as-is, harden the regex only** (see Patch P1). Owner accepts the link-less risk on extraction failure (current WP-core format puts the URL on its own line; works today). No body-fallback / URL-reconstruction added. _[Registration.php:153-178]_
+
+### Patch — APPLIED (2026-06-22)
+
+- [x] **[Review][Patch P1] Harden the reset-URL extraction** [`wp-content/plugins/ink-core/src/Accounts/Registration.php`:172-181] — **DONE.** Regex tightened to `#https?://[^\s<>"\']+#` (stops at markup delimiters, so `<URL>` is captured without its brackets) + `rtrim( …, '.,;:!?)' )` strips trailing sentence punctuation. First-match behavior kept per the owner decision.
+- [x] **[Review][Patch P3] Build in-theme Afrikaans Registreer + Wagwoord-herstel forms** [`ink-foundation/patterns/auth-register.php`, `auth-forgot-password.php`] — **DONE.** Link-buttons replaced with single-column Afrikaans `<form>`s that POST to WordPress's own `wp-login.php?action=register` / `?action=lostpassword` endpoints (`site_url( …, 'login_post' )`), firing `register_form` / `lostpassword_form` so core/plugins inject fields — auth used, not reimplemented. Glossary-only copy via `esc_html__( …, 'ink-foundation' )`; un-curated field/label copy flagged `[NEEDS HUMAN AFRIKAANS]` (the documented auth-form copy gap — not invented). Closes the AC-1 English-leakage gap on the register/reset input steps.
+- [x] **[Review][Patch] Strengthen the Pest coverage** [`tests/Unit/Accounts/RegistrationTest.php`] — **DONE.** Added: wrapped/trailing-punctuation URL extracted clean; URL-less body stays Afrikaans (documents the accepted keep-as-is behavior); both `retrieve_password_title`/`_message` filters asserted registered; welcome template asserted genuinely *registered AND disabled* with an Afrikaans subject (store injected via `Api::bootstrap`) + `Functions\expect('wp_mail')->never()`. Suite green: **100 passed, 1 skipped** (`composer test:unit`). phpcs clean on touched files; phpstan `[OK] No errors`.
+
+### Deferred
+
+- [x] **[Review][Defer] No `is_user_logged_in()` guard on the auth surfaces** [`auth-register.php`, `auth-forgot-password.php`] — deferred. A logged-in member sees a stale "Skep jou rekening" / "Wagwoord-herstel" screen; Meld aan degrades gracefully (the `core/loginout` block swaps to a logout link). Static FSE patterns make an in-pattern guard awkward; revisit when the auth pages get their real page-binding/routing.
+- [x] **[Review][Defer] Hardcoded root-relative slug cross-links + unbound page objects** [`auth-*.php`, `theme.json`] — deferred. Patterns link to literal `/meld-aan` `/registreer` `/wagwoord-herstel` and the `customTemplates` are registered, but this story creates no `page` objects bound to those slugs, so the cross-links are dead until an editor creates the pages. Page creation is editorial/content; the slug coupling is inherent to static patterns.
+
+### Dismissed (4)
+
+- Idempotency guard's dead `false`/`null` checks + junk-existing-value survives — `get_user_meta(…, true)` returns `''` when unset, and Story-2.3 `UserMeta::sanitizeTier()` coerces junk on read; harmless defensive code.
+- `register()` calls `registerWelcomeTemplate()` inline — correct & documented; Notifications-store availability is guaranteed by module-registration order in `ink-core.php` (notifications before accounts).
+- `retrieve_password_*` filters registered with `accepted_args=1` — wholesale replacement is intentional; discarded args are not needed.
+- Blind Hunter: "`Ink\Notifications\Api::send` / `Template` undefined" — context-blindness false positive; the facade ships from Story 1.12 (confirmed by the Acceptance Auditor).

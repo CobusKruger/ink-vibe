@@ -4,6 +4,14 @@
  * Slug: ink-foundation/auth-forgot-password
  * Categories: ink-foundation
  * Description: Enkelkolom-skerm vir wagwoord-herstel wat WordPress se eie verlore-wagwoord-meganisme gebruik (geen herbou van outentisering nie).
+ *
+ * Presentation only (three-layer separation). The form POSTs to WordPress's own
+ * lost-password endpoint (`wp-login.php?action=lostpassword` → `retrieve_password`)
+ * — auth is USED, never reimplemented; the `lostpassword_form` action is fired so
+ * core/plugins inject their own fields. The reset e-mail itself is Afrikaansed in
+ * ink-core (Story 3.1 `retrieve_password_title` / `_message` filters). All copy is
+ * Afrikaans; field/microcopy not yet curated in ui-copy-translations.md (the
+ * documented auth-form copy gap) is marked [NEEDS HUMAN AFRIKAANS].
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"480px"}} -->
@@ -18,13 +26,20 @@
 		<p class="has-muted-text-color has-text-color has-md-font-size">Voer jou e-pos in en ons stuur 'n skakel om jou wagwoord te herstel.</p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:buttons {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
-		<div class="wp-block-buttons">
-			<!-- wp:button {"backgroundColor":"primary","textColor":"surface-alt","width":100} -->
-			<div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-surface-alt-color has-primary-background-color has-text-color has-background wp-element-button" href="/wp-login.php?action=lostpassword">Herstel wagwoord</a></div>
-			<!-- /wp:button -->
-		</div>
-		<!-- /wp:buttons -->
+		<!-- wp:html -->
+		<?php // Renders WordPress's OWN lost-password handler in-theme (Afrikaans, single-column) — auth is used, not rebuilt. ?>
+		<form name="lostpasswordform" class="ink-auth-form" action="<?php echo esc_url( site_url( 'wp-login.php?action=lostpassword', 'login_post' ) ); ?>" method="post">
+			<p class="ink-auth-field">
+				<label for="user_login"><?php echo esc_html__( 'E-pos of gebruikersnaam', 'ink-foundation' ); ?></label>
+				<input type="text" name="user_login" id="user_login" autocapitalize="off" autocorrect="off" autocomplete="username" required="required" />
+			</p>
+			<?php do_action( 'lostpassword_form' ); ?>
+			<p class="ink-auth-submit">
+				<button type="submit" name="wp-submit" class="wp-element-button"><?php echo esc_html__( 'Herstel wagwoord', 'ink-foundation' ); ?></button>
+			</p>
+			<span class="ink-needs-human-af" hidden>[NEEDS HUMAN AFRIKAANS] — auth-form field labels / validation copy not yet authored in ui-copy-translations.md.</span>
+		</form>
+		<!-- /wp:html -->
 
 		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
 		<p class="has-muted-text-color has-text-color has-sm-font-size">Onthou jy jou wagwoord? <a href="/meld-aan">Meld aan</a></p>

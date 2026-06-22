@@ -165,15 +165,20 @@ final class Registration {
 	 * Pull the first http(s) URL (the password-reset link) out of the WP-core body.
 	 *
 	 * The reset token URL is WordPress's — it is preserved as-is, never rebuilt.
+	 * The character class stops at whitespace AND at the markup delimiters a
+	 * wrapped/HTML-ified body uses (`<`, `>`, `"`, `'`), so an angle-bracketed
+	 * `<https://…>` link is captured without its delimiters; trailing sentence
+	 * punctuation a body may append after the link is then trimmed. (Review P1:
+	 * the previous greedy `\S+` swallowed those into the URL, corrupting the link.)
 	 *
 	 * @param string $message The WP-core message body.
 	 * @return string The reset URL, or an empty string if none is found.
 	 */
 	private function extractResetUrl( string $message ): string {
-		if ( 1 === preg_match( '#https?://\S+#', $message, $matches ) ) {
-			return $matches[0];
+		if ( 1 !== preg_match( '#https?://[^\s<>"\']+#', $message, $matches ) ) {
+			return '';
 		}
 
-		return '';
+		return rtrim( $matches[0], '.,;:!?)' );
 	}
 }
