@@ -541,6 +541,19 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | [N] top-3 results needed to reach Gold | [N] top 3 uitslae nodig om Goud te bereik | Gradering-bevorderingsubteks; glossaarterm |
 | Master *(tier label)* | Meester | Hoogste Gradering, slegs handmatig toegeken; handelsmerk-rooi-oranje. Glossaarterm (R3) |
 
+### Aansluitingsopsies — drie vaste termyne (Storie 4.1, FR-4)
+
+*(Die drie vaste-termyn lidmaatskap-planne: 1 maand / 6 maande / 12 maande. Die termyn-etikette ("1 maand" / "6 maande" / "12 maande") is reeds in die terminologieregister geprojekteer (`term_1_month` / `term_6_months` / `term_12_months`, glossaar reël 45) en word vandaar verbruik — nie inlyn nie. Die **prys** (R60 / R300 / R600 by lansering) word deur die WooCommerce-produk besit en deur 'n redakteur in WooCommerce-admin verstel — geen vaste pryswaarde in kode nie. Die lid-gerigte plan-PROSA hieronder is **menslike kopie nodig — moenie KI-vertaal nie**.)*
+
+> ⚠️ **GEEN vanity-afslag/besparingsraam by lansering nie (AC-3 / Storie 4.5).** Die bestaande "Lidmaatskap-blad"-afdeling hierbo bevat "Save 12%"/"Spaar 25%"-rye (uit die Lovable-mock, Engelse plekhouer) — daardie besparings-/persentasie-afslag-bewoording mag **nie** by lansering vertoon word nie. 'n Egte herhalende afslag is na-lansering (Storie 4.11). Storie 4.1 se register dra geen afslag-/besparingsveld nie.
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Plan description — 1 maand | [NEEDS HUMAN AFRIKAANS] | Lid-gerigte beskrywing vir die 1-maand-aansluitingsopsie; menslike kopie nodig; geen besparingsraam |
+| Plan description — 6 maande | [NEEDS HUMAN AFRIKAANS] | Lid-gerigte beskrywing vir die 6-maande-aansluitingsopsie; menslike kopie nodig; geen besparingsraam |
+| Plan description — 12 maande | [NEEDS HUMAN AFRIKAANS] | Lid-gerigte beskrywing vir die 12-maande-aansluitingsopsie; menslike kopie nodig; geen besparingsraam |
+| Lidmaatskap-blad CTA (kies-'n-plan) | [NEEDS HUMAN AFRIKAANS] | Oproep-tot-aksie wat 4.4 sal verbruik; menslike kopie nodig |
+
 ### Lidmaatskap-lewensiklus e-pos (scope-increase 2026-06-20)
 
 *(Nuwe transaksionele e-pos. Afrikaanse onderwerpe/snippette nog nie in die glossaar nie — wag op menslike kopie.)*

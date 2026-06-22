@@ -66,6 +66,19 @@ final class Terms {
 			'betaalde_lid'             => __( 'Betaalde lid', 'ink-core' ),
 			'gratis_lid'               => __( 'Gratis lid', 'ink-core' ),
 
+			// Lidmaatskap plans (Story 4.1 — the three fixed-term aansluitingsopsies).
+			// The plan noun + the fixed term-length display labels. The PRICE
+			// (R60/R300/R600) is owned by the WooCommerce product (admin-editable),
+			// never a label here; only the term LENGTH is INK-held (the fixed value
+			// set, afrikaans-terms.md line 44–45). The member-facing plan PROSE
+			// (descriptions / CTA) stays [NEEDS HUMAN AFRIKAANS] in
+			// ui-copy-translations.md, not invented here.
+			'membership_plan'          => __( 'Aansluitingsopsie', 'ink-core' ),
+			'membership_plan_plural'   => __( 'Aansluitingsopsies', 'ink-core' ),
+			'term_1_month'             => __( '1 maand', 'ink-core' ),
+			'term_6_months'            => __( '6 maande', 'ink-core' ),
+			'term_12_months'           => __( '12 maande', 'ink-core' ),
+
 			// Account-approval backstop (R6, Story 3.6 — OFF by default). These
 			// labels surface ONLY when a redakteur enables the optional approval
 			// queue; until then no member ever sees them (the frictionless UJ-1

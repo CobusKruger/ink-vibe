@@ -63,5 +63,6 @@ add_action(
 		Kernel\Plugin::instance()->addModule( 'engagement', new Engagement\Module() );
 		Kernel\Plugin::instance()->addModule( 'notifications', new Notifications\Module() );
 		Kernel\Plugin::instance()->addModule( 'accounts', new Accounts\Module() );
+		Kernel\Plugin::instance()->addModule( 'entitlement', new Entitlement\Module() );
 	}
 );
