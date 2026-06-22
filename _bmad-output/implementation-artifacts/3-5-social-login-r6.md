@@ -4,7 +4,7 @@ baseline_commit: e4b851c
 
 # Story 3.5: Social login (R6)
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -58,6 +58,24 @@ so that signup friction is reduced while account abuse is curbed — entirely in
   - [ ] `php -l` + `phpcs` + `phpstan` clean on changed `ink-core` files. strict types + `ABSPATH` guard + `Ink\Accounts` namespace + no closing `?>`; no raw superglobals; `src/Accounts/` has no `use Ink\Entitlement`.
   - [ ] Scope discipline: no OAuth/token code in `ink-core`; no plugin installed in the repo; no approval queue / anti-spam built here; no tier re-stamp; theme carries no business logic and degrades gracefully (renders nothing when the plugin is absent, never errors).
   - [ ] Afrikaans/no-English sweep on the new social chrome; list `[NEEDS HUMAN AFRIKAANS]` gaps and any plugin-emitted English for the Epic-17 backlog. Confirm the POPIA consent note is present and Afrikaans.
+
+### Review Findings
+
+_Code review 2026-06-22 (3 adversarial layers: Blind Hunter, Edge Case Hunter, Acceptance Auditor), reviewing the 3.5 commit `52b383b` against baseline `e4b851c`. Test suite **independently re-run** (the Dev Agent Record was empty): `composer test:unit` → **120 passed / 1 skipped**; `SocialLoginTest` 4/4; `php -l` clean. AC-1/4/5/6 PASS; AC-2 FAIL, AC-3 PARTIAL._
+
+- [x] [Review][Patch] **Front-end English leakage — hidden `[NEEDS HUMAN AFRIKAANS]` span (Gate D)** — both patterns ship `<span class="ink-needs-human-af" hidden>[NEEDS HUMAN AFRIKAANS]</span>` into the rendered page source of `/meld-aan` + `/registreer` (when a social plugin is active). `hidden` only hides it visually; the English literal is in the DOM and the standing leak-scan crawls it. The marker already exists correctly as a PHP comment — drop the span. [auth-login.php, auth-register.php] (blind+edge+auditor)
+- [x] [Review][Patch] **Hardcoded `/privaatheidsbeleid` privacy link breaks in subdir/multisite** — `esc_url( '/privaatheidsbeleid' )` is root-relative; the SAME files use `site_url( 'wp-login.php?action=register', 'login_post' )` correctly nearby. Use `get_privacy_policy_url()` with a `home_url( '/privaatheidsbeleid' )` fallback. [auth-login.php, auth-register.php] (blind+edge)
+- [x] [Review][Patch] **phpcs violations in the social section (embedded PHP tags not on own lines)** — `composer cs` reports 4 `Squiz.PHP.EmbeddedPhp.ContentBeforeOpen/ContentAfterEnd` errors; shipped uncaught (theme patterns weren't in the dev's phpcs run). Restructure the inline `<?php echo … ?> <span>` so tags sit on their own lines. [auth-login.php:34,37,45,48] (review gate)
+- [x] [Review][Patch] **Invented Afrikaans copy not documented as a gap (AC-2)** — the divider `'Of gaan voort met'` and the POPIA consent sentence are inline literals absent from `ui-copy-translations.md` and the `Ink\I18n\Terms` registry, yet flagged `[NEEDS HUMAN AFRIKAANS]`. Add `[NEEDS HUMAN AFRIKAANS]` rows to `ui-copy-translations.md` for the divider, the consent note, and the privacy-link label (mirroring the 3.6 precedent); keep the clearly-commented placeholder literals in code. [ui-copy-translations.md] (auditor)
+- [x] [Review][Patch] **Dead `function_exists( 'do_action' )` guard** — `do_action` is always defined in any context the theme runs; the guard is unreachable noise. Remove it. [functions.php] (blind+edge)
+- [x] [Review][Patch] **Seam contract under-documented — empty-section edge** — if a deploy flips `ink_social_login_available` true but nothing hooks `ink_social_login_buttons`, the section renders a divider + consent note with no buttons. Document in `SocialLogin` that the integration must do BOTH (flip the filter AND hook the buttons action); note the empty-section symptom. (Runtime `has_action()` gating rejected — fragile against init load-order.) [SocialLogin.php] (edge)
+- [x] [Review][Patch] **Story not closed — empty Dev Agent Record (AC-6 traceability)** — code is committed but the story Status is still `ready-for-dev` with Debug Log / Completion Notes / File List all "_(to be completed)_". Fill them with the verified results and set Status. [story file] (auditor)
+- [x] [Review][Defer] **`/meld-aan` hardcoded footer link** [auth-register.php] — same subdir/multisite breakage, but PRE-EXISTING (not introduced by 3.5; it's the existing "Reeds 'n rekening?" footer). Fix in a future auth-pattern pass.
+- [x] [Review][Defer] **DRY: ~25 lines of identical social-section markup duplicated across both patterns** — extract to one `functions.php` helper. Refactor (not a bug); the block-render behaviour is verified only by E2E (Story 18.8), so deferred rather than risked in a review patch.
+- [x] [Review][Defer] **No real `/privaatheidsbeleid` privacy page exists** — pre-launch content gate (the link currently 404s until the privacy page is authored).
+- [x] [Review][Defer] **Rendered social buttons + real OAuth round-trip** — needs the live vetted plugin + creds; E2E (Story 18.8).
+
+_Dismissed as noise (2): `(bool)` cast of the filter accepting a string `'false'` as truthy (speculative — the filter contract is boolean, this is a presentation gate not a security toggle, and hardening would mask a misbehaving plugin); test 4 "re-tests Registration not SocialLogin" (it is the sanctioned AC-4 conflation assertion — SocialLogin is a pure read with no write path to assert)._
 
 ## Dev Notes
 
@@ -117,18 +135,34 @@ claude-opus-4-8[1m] (Opus 4.8, 1M context)
 
 ### Debug Log References
 
-_(to be completed by the dev agent — record `composer test:unit` green, `php -l`, `phpcs`, `phpstan`)_
+_Recorded during code review 2026-06-22 (the dev cycle left this empty; results below are the reviewer's independent re-runs after the review patches)._
+
+- `composer test:unit` → **120 passed / 1 skipped (692 assertions)**; `vendor/bin/pest --testsuite=Unit --filter=SocialLogin` → **4 passed (9 assertions)**.
+- `php -l` on `SocialLogin.php`, `functions.php`, `patterns/auth-login.php`, `patterns/auth-register.php` → no syntax errors.
+- `composer cs` (phpcs) on the four touched files → **0 errors** (pre-review it reported 4 `Squiz.PHP.EmbeddedPhp` errors in `auth-login.php`; fixed by the review patch).
+- `composer stan` (phpstan) → **No errors**.
 
 ### Completion Notes List
 
-_(to be completed by the dev agent)_
+- **The seam (`Ink\Accounts\SocialLogin`)** — a read-only, filter-driven availability helper (`isAvailable()` = `(bool) apply_filters( 'ink_social_login_available', false )`, default-off ⇒ graceful degradation). NO OAuth, NO token storage, NO entitlement reference; not wired into `Module::register()` (no hooks of its own — correct, avoids an orphan). The vetted plugin owns auth, integrated via hooks at deploy time (Composer-assembled, git-ignored).
+- **Theme surface** — `class_exists`-guarded bridges (`ink_foundation_social_login_available()` / `_buttons()`) + an Afrikaans social section (divider, plugin-button bridge, POPIA consent) on both auth patterns; renders nothing when the plugin/`ink-core` is absent (e-mail path always works).
+- **Conflation-clean** — a social signup inherits Brons / gratis lid through the EXISTING `user_register` → `Registration::applyDefaults()` path; no parallel default-setter, no tier re-stamp, no entitlement, no intent flag. `src/Accounts/` carries zero `Ink\Entitlement` (verified).
+- **Code-review patches applied (2026-06-22):** (1) removed the hidden `[NEEDS HUMAN AFRIKAANS]` English spans from both patterns (Gate-D front-end leak); (2) hardcoded `/privaatheidsbeleid` → `get_privacy_policy_url()` with a `home_url()` fallback; (3) fixed 4 phpcs embedded-PHP-tag violations in the social section; (4) removed the dead `function_exists( 'do_action' )` guard; (5) added `[NEEDS HUMAN AFRIKAANS]` rows to `ui-copy-translations.md` for the divider/consent/privacy-link copy (was invented inline, undocumented); (6) documented the seam contract (flip the filter AND hook the buttons action) + the empty-section symptom.
+- **⚠️ Owner/deploy-time gates (do before social login goes live):** choose + configure the vetted Google/Apple plugin and its OAuth credentials; ratify the Afrikaans divider/consent/privacy copy (currently clearly-marked placeholders); author the `/privaatheidsbeleid` privacy page (the consent link 404s until it exists). All inert by default (seam off ⇒ no social section renders).
+- **Deferred (see `deferred-work.md`):** `/meld-aan` hardcoded footer link (pre-existing, 3.1); DRY-extract the duplicated social section (E2E-verified, 18.8); the privacy page content; rendered buttons + real OAuth round-trip (E2E 18.8).
 
 ### File List
 
-_(to be completed by the dev agent)_
+- **New (`ink-core`)** `wp-content/plugins/ink-core/src/Accounts/SocialLogin.php` — the `isAvailable()` availability seam (+ seam-contract docblock from review).
+- **Edited (`ink-core`)** `wp-content/plugins/ink-core/src/Accounts/Module.php` — doc-comment names the 3.5 seam as in-scope (no `register()` change).
+- **Edited (theme)** `wp-content/themes/ink-foundation/functions.php` — `ink_foundation_social_login_available()` / `_buttons()` bridges (dead `do_action` guard removed in review).
+- **Edited (theme)** `wp-content/themes/ink-foundation/patterns/auth-login.php`, `patterns/auth-register.php` — Afrikaans social section (spans removed, privacy URL fixed, phpcs-clean in review).
+- **New (tests)** `tests/Unit/Accounts/SocialLoginTest.php` — 4 Pest cases (constants, default-false, filter-true, social-signup-inherits-Brons).
+- **Edited (docs, review)** `docs/ui-copy-translations.md` — `[NEEDS HUMAN AFRIKAANS]` rows for the social divider / consent / privacy-link copy.
 
 ## Change Log
 
 | Date | Change |
 |---|---|
+| 2026-06-22 | Code review (3 adversarial layers) — the dev cycle had committed the code (`52b383b`) but left the story at `ready-for-dev` with an empty Dev Agent Record, so the review independently re-ran the gates and closed the story. 0 decisions, 7 patches applied, 4 deferred, 2 dismissed. **Patches:** (1) removed hidden `[NEEDS HUMAN AFRIKAANS]` English spans from both patterns (Gate-D front-end leak); (2) hardcoded `/privaatheidsbeleid` → `get_privacy_policy_url()` + `home_url()` fallback; (3) fixed 4 phpcs embedded-PHP-tag violations in `auth-login.php`; (4) removed dead `function_exists('do_action')` guard; (5) added `[NEEDS HUMAN AFRIKAANS]` rows to `ui-copy-translations.md` for the social copy; (6) documented the seam contract (filter AND buttons-action) in `SocialLogin`. Filled the Dev Agent Record + File List. Verified: `composer test:unit` **120 passed / 1 skipped**; `SocialLogin` 4/4; php -l, phpcs, phpstan all clean. Status → done. |
 | 2026-06-22 | Story created (context-engineered) — social-login (R6) as a graceful-degrading SEAM (per the 3.4 decision + architecture line 650-652): a thin `Ink\Accounts\SocialLogin::isAvailable()` filter helper (default-off ⇒ degrades) + an Afrikaans social section on the auth patterns (divider, plugin-button bridge, POPIA consent) + a test that social signups inherit Brons/gratis-lid defaults via the existing `user_register` path. NO OAuth/tokens in `ink-core`, NO plugin install (deploy-time integration step, Composer-assembled/git-ignored), NO approval queue (3.6) / anti-spam (3.4) / Entitlement coupling / tier re-stamp / intent flag. Pest tests authored AND run. Status → ready-for-dev. |

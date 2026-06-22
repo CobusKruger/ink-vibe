@@ -31,6 +31,13 @@ defined( 'ABSPATH' ) || exit;
  * deploy-time integration step (third-party plugins are Composer-assembled and
  * git-ignored), per the Story-3.4 decision.
  *
+ * SEAM CONTRACT (both halves are required): a deploy-time integration must (1)
+ * flip {@see AVAILABLE_FILTER} true AND (2) hook {@see BUTTONS_ACTION} to paint
+ * its buttons. Flipping the filter true WITHOUT hooking the action is a
+ * misconfiguration — the auth surface then shows the divider + POPIA consent
+ * chrome with no buttons beneath it. The theme bridge fires the action; ink-core
+ * neither registers nor validates the plugin's hook.
+ *
  * THE conflation rule (AD-1): a socially-registered account lands at Brons /
  * gratis lid through the SAME `user_register` path as e-mail signup
  * ({@see Registration::applyDefaults()} already stamps it) — this seam adds no

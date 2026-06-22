@@ -551,6 +551,16 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | 1-month expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 maand voor verval; menslike kopie nodig |
 | 1-week expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 week voor verval; menslike kopie nodig |
 
+### Sosiale aanmelding (R6 — Storie 3.5, grasieus-degraderende naat)
+
+*(Sosiale-aanmeldafdeling op die meld-aan/registreer-bladsye. Verskyn slegs as 'n gekeurde sosiale-aanmeld-inprop by ontplooiing geaktiveer is (af by verstek ⇒ niks hiervan verskyn nie). Die afdeling-kopie hieronder word as voorlopige plekhouer in die patroonlêers gewys en is **menslike kopie nodig — moenie KI-vertaal nie**; die provider-knoppie-etikette self kom van die derdeparty-inprop (sy `af`-etikette word by integrasie gestel; enige Engels word vir die Epic-17 lek-agterstand aangeteken).)*
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Social divider line ("Or continue with") | [NEEDS HUMAN AFRIKAANS] | Voorlopig "Of gaan voort met" in die patroon; wag op menslike kopie |
+| POPIA consent note (social sign-in shares basic profile data) | [NEEDS HUMAN AFRIKAANS] | Voorlopig "Deur met 'n sosiale rekening voort te gaan, deel jy basiese profielinligting met INK." in die patroon; wag op menslike kopie |
+| Privacy-policy link label | [NEEDS HUMAN AFRIKAANS] | Voorlopig "Privaatheidsbeleid"; skakel na die privaatheidsblad (`get_privacy_policy_url()` met `/privaatheidsbeleid`-terugval — die werklike blad is 'n voor-lansering inhoud-hek) |
+
 ### Rekening-goedkeuring backstop (R6 — Storie 3.6, af by verstek)
 
 *(Opsionele goedkeuringstou wat 'n redakteur kan aanskakel. **Af by verstek** — wanneer af, bly registrasie vryevloei en niks hiervan verskyn nie (UJ-1). Die enkelwoord-etikette (goedkeur/verwerp/"wag op goedkeuring"/toustnaam) is in die terminologieregister geprojekteer maar **wag op redakteur-bekragtiging**; die volledige lid-gerigte sinne en e-poskopie hieronder is **menslike kopie nodig — moenie KI-vertaal nie**.)*

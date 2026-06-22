@@ -2,6 +2,13 @@
 
 Consolidated `defer` findings from code reviews. Each item is real but not actionable in its originating story (pre-existing, by-design, or owned by a later story/epic).
 
+## Deferred from: code review of 3-5-social-login-r6 (2026-06-22)
+
+- **`/meld-aan` hardcoded footer link** [`auth-register.php`] — root-relative path breaks in subdirectory/multisite installs (same class as the 3.5 privacy link, which WAS fixed). PRE-EXISTING — predates Story 3.5 (the "Reeds 'n rekening? Meld aan" footer). Fold into a future auth-pattern hardening pass; use `wp_login_url()` / `home_url()`.
+- **DRY: duplicated social-section markup** [`auth-login.php` + `auth-register.php`] — ~25 lines of identical separator/divider/buttons/consent markup live in both patterns; the review patches had to be applied twice. Extract to a single `ink_foundation_render_social_section()` bridge. Deferred (not a bug) because block-pattern render behaviour of an extracted helper is verified only by E2E (Story 18.8), not the unit suite.
+- **No real `/privaatheidsbeleid` privacy page** — the POPIA consent link currently 404s; authoring the Afrikaans privacy page is a pre-launch content gate.
+- **Rendered social buttons + real OAuth round-trip** — requires the live vetted social-login plugin + OAuth-app credentials (Composer-assembled, git-ignored, deploy-time). E2E (Story 18.8).
+
 ## Deferred from: code review of 3-6-optional-manual-approval-backstop-r6 (2026-06-22)
 
 - **REST / application-password / XML-RPC auth bypass** [`Approval.php:929`] — the login gate filters `wp_authenticate_user`, which does NOT fire for application-password / REST / XML-RPC auth, so a pending account could in principle authenticate off-form while the backstop is ON. Belongs to the Story-18.10 hardening surface (which hardens *around* the 3.6 pending state); a freshly-pending self-registration has no application password yet, so live exposure is minimal.

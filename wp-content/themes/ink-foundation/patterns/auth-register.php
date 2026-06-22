@@ -54,11 +54,11 @@
 
 		<!-- wp:paragraph {"align":"center","fontSize":"sm","textColor":"muted-text"} -->
 		<p class="has-text-align-center has-muted-text-color has-text-color has-sm-font-size">
-		<?php
-			// [NEEDS HUMAN AFRIKAANS] — social divider line not yet authored in ui-copy-translations.md.
+			<?php
+			// [NEEDS HUMAN AFRIKAANS] — social divider line not yet authored (see ui-copy-translations.md).
 			echo esc_html__( 'Of gaan voort met', 'ink-foundation' );
-		?>
-		<span class="ink-needs-human-af" hidden>[NEEDS HUMAN AFRIKAANS]</span></p>
+			?>
+		</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:html -->
@@ -67,11 +67,20 @@
 
 		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
 		<p class="has-muted-text-color has-text-color has-sm-font-size">
-		<?php
-			// [NEEDS HUMAN AFRIKAANS] — POPIA social-login consent note not yet authored.
+			<?php
+			// [NEEDS HUMAN AFRIKAANS] — POPIA social-login consent note not yet authored (see ui-copy-translations.md).
+			$ink_privacy_url = function_exists( 'get_privacy_policy_url' ) ? get_privacy_policy_url() : '';
+			if ( '' === $ink_privacy_url ) {
+				$ink_privacy_url = home_url( '/privaatheidsbeleid' );
+			}
 			echo esc_html__( 'Deur met \'n sosiale rekening voort te gaan, deel jy basiese profielinligting met INK.', 'ink-foundation' );
-		?>
-		<a href="<?php echo esc_url( '/privaatheidsbeleid' ); ?>"><?php echo esc_html__( 'Privaatheidsbeleid', 'ink-foundation' ); ?></a> <span class="ink-needs-human-af" hidden>[NEEDS HUMAN AFRIKAANS]</span></p>
+			printf(
+				' <a href="%1$s">%2$s</a>',
+				esc_url( $ink_privacy_url ),
+				esc_html__( 'Privaatheidsbeleid', 'ink-foundation' )
+			);
+			?>
+		</p>
 		<!-- /wp:paragraph -->
 <?php endif; ?>
 

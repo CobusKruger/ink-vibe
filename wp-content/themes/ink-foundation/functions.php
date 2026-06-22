@@ -213,10 +213,10 @@ if ( ! function_exists( 'ink_foundation_social_login_buttons' ) ) {
 	 * provider buttons by hooking {@see \Ink\Accounts\SocialLogin::BUTTONS_ACTION};
 	 * when absent this emits nothing (graceful degradation — the e-mail auth path
 	 * stays usable). The theme owns NO OAuth and reimplements no provider logic.
-	 * `class_exists`/`function_exists`-guarded so it never fatals.
+	 * `class_exists`-guarded so it never fatals when `ink-core` is inactive.
 	 */
 	function ink_foundation_social_login_buttons(): void {
-		if ( ! class_exists( 'Ink\\Accounts\\SocialLogin' ) || ! function_exists( 'do_action' ) ) {
+		if ( ! class_exists( 'Ink\\Accounts\\SocialLogin' ) ) {
 			return;
 		}
 
@@ -224,6 +224,10 @@ if ( ! function_exists( 'ink_foundation_social_login_buttons' ) ) {
 			return;
 		}
 
+		// The active vetted plugin hooks this action to paint its provider buttons.
+		// Seam contract: a deploy-time integration must flip the availability filter
+		// AND hook this action — with the filter true but nothing hooked (a
+		// misconfiguration) the divider/consent chrome shows without buttons.
 		do_action( \Ink\Accounts\SocialLogin::BUTTONS_ACTION );
 	}
 }
