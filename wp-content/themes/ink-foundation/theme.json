@@ -243,6 +243,11 @@
       "name": "page-wagwoord-herstel",
       "title": "Wagwoord-herstel",
       "postTypes": [ "page" ]
+    },
+    {
+      "name": "page-onboarding",
+      "title": "Onboarding",
+      "postTypes": [ "page" ]
     }
   ],
   "templateParts": [

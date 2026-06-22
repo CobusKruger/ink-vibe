@@ -31,6 +31,26 @@ defined( 'ABSPATH' ) || exit;
  */
 final class PostTypes {
 
+	/**
+	 * The shared INK content `capability_type` (singular/plural pair).
+	 *
+	 * Story 3.3 closes the 2.1 false-isolation gap: the nine CPTs previously used
+	 * `map_meta_cap => true` with NO `capability_type`, silently inheriting bare
+	 * default `post` caps (every contributor/subscriber with a `post` cap could
+	 * touch INK content). Mapping them to a dedicated `ink_content` capability
+	 * type means INK content is governed by `edit_ink_contents` /
+	 * `publish_ink_contents` / … rather than `edit_posts`. `map_meta_cap => true`
+	 * stays on, so per-object meta caps (`edit_ink_content` for a specific item)
+	 * are derived from these primitives with correct ownership checks.
+	 *
+	 * These primitive caps are granted to `administrator` + `editor` at activation
+	 * ({@see capabilities()} feeds {@see \Ink\Kernel\Activation}); they are NOT
+	 * granted to `subscriber`, which closes the gap. The full per-tier author cap
+	 * scheme (who among members may author which CPT) is Epic 5 — deferred, noted.
+	 */
+	public const CAPABILITY_TYPE_SINGULAR = 'ink_content';
+	public const CAPABILITY_TYPE_PLURAL   = 'ink_contents';
+
 	// Migration-load-bearing code IDs — the single source for the slugs.
 	public const GEDIG             = 'gedig';
 	public const STORIE            = 'storie';
@@ -190,15 +210,106 @@ final class PostTypes {
 	 */
 	private static function args( array $def ): array {
 		return array(
-			'labels'       => self::labels( (string) $def['singular'], (string) $def['plural'] ),
-			'public'       => (bool) $def['public'],
-			'show_in_rest' => true, // Block editor + REST (AD-6).
-			'has_archive'  => $def['archive'],
-			'supports'     => $def['supports'],
-			'menu_icon'    => $def['icon'],
-			'rewrite'      => array( 'slug' => (string) $def['rewrite'] ),
-			'map_meta_cap' => true,
+			'labels'          => self::labels( (string) $def['singular'], (string) $def['plural'] ),
+			'public'          => (bool) $def['public'],
+			'show_in_rest'    => true, // Block editor + REST (AD-6).
+			'has_archive'     => $def['archive'],
+			'supports'        => $def['supports'],
+			'menu_icon'       => $def['icon'],
+			'rewrite'         => array( 'slug' => (string) $def['rewrite'] ),
+			// Story 3.3 (2.1 gap): a dedicated INK content capability type so the
+			// CPTs no longer inherit bare default `post` caps (false isolation).
+			'capability_type' => array( self::CAPABILITY_TYPE_SINGULAR, self::CAPABILITY_TYPE_PLURAL ),
+			'map_meta_cap'    => true, // Derive per-object meta caps from the primitives (ownership-aware).
 		);
+	}
+
+	/**
+	 * The primitive INK-content capabilities `register_post_type` derives from the
+	 * shared {@see CAPABILITY_TYPE_PLURAL} capability type.
+	 *
+	 * These are the caps that must be GRANTED to a role for INK content to be
+	 * manageable (deny-everyone guard, Story 3.3): with a custom `capability_type`,
+	 * even an administrator does not implicitly hold them, so the activation step
+	 * ({@see \Ink\Kernel\Activation}) grants this set to `administrator` + `editor`.
+	 * `subscriber` is intentionally NOT granted them — closing the 2.1 gap.
+	 *
+	 * @return list<string>
+	 */
+	public static function capabilities(): array {
+		$plural   = self::CAPABILITY_TYPE_PLURAL;
+		$singular = self::CAPABILITY_TYPE_SINGULAR;
+
+		return array(
+			'edit_' . $singular,
+			'read_' . $singular,
+			'delete_' . $singular,
+			'edit_' . $plural,
+			'edit_others_' . $plural,
+			'publish_' . $plural,
+			'read_private_' . $plural,
+			'delete_' . $plural,
+			'delete_private_' . $plural,
+			'delete_published_' . $plural,
+			'delete_others_' . $plural,
+			'edit_private_' . $plural,
+			'edit_published_' . $plural,
+			'create_' . $plural,
+		);
+	}
+
+	/**
+	 * The roles that manage INK content (administrator + editor / redakteur).
+	 *
+	 * @return list<string>
+	 */
+	private static function contentRoles(): array {
+		return array( 'administrator', 'editor' );
+	}
+
+	/**
+	 * Grant the INK-content primitive caps to the content-managing roles.
+	 *
+	 * Story 3.3 deny-everyone guard: with a custom `capability_type`, NO role
+	 * (not even administrator) implicitly holds {@see capabilities()} — so the
+	 * activation step grants them to `administrator` + `editor`. `subscriber`
+	 * (the gratis lid) is intentionally NOT granted them, closing the 2.1
+	 * false-isolation gap. Persists in the DB → runs from
+	 * {@see \Ink\Kernel\Activation::activate()}, not on `init`. Idempotent +
+	 * fail-safe (a missing role is skipped, never fatals).
+	 */
+	public static function grantContentCaps(): void {
+		foreach ( self::contentRoles() as $role_name ) {
+			$role = get_role( $role_name );
+
+			if ( null === $role ) {
+				continue;
+			}
+
+			foreach ( self::capabilities() as $cap ) {
+				$role->add_cap( $cap );
+			}
+		}
+	}
+
+	/**
+	 * Remove the INK-content primitive caps from the content-managing roles.
+	 *
+	 * The activation grant's inverse, for {@see \Ink\Kernel\Activation::deactivate()}.
+	 * Fail-safe when a role is absent.
+	 */
+	public static function revokeContentCaps(): void {
+		foreach ( self::contentRoles() as $role_name ) {
+			$role = get_role( $role_name );
+
+			if ( null === $role ) {
+				continue;
+			}
+
+			foreach ( self::capabilities() as $cap ) {
+				$role->remove_cap( $cap );
+			}
+		}
 	}
 
 	/**

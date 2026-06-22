@@ -133,3 +133,53 @@ if ( ! function_exists( 'ink_foundation_term' ) ) {
 		return $fallback;
 	}
 }
+
+if ( ! function_exists( 'ink_foundation_onboarding_complete' ) ) {
+	/**
+	 * Whether the current lid has completed/dismissed onboarding (Story 3.3).
+	 *
+	 * A thin presentation gate so the onboarding template can decide whether to
+	 * show the flow — driving AC-1's one-time / no-re-nag behaviour without any
+	 * business logic in the theme (it merely reads the `ink-core`-owned flag
+	 * through the module's read surface). `class_exists`-guarded so the theme
+	 * never fatals when `ink-core` is inactive — it then reports "not complete"
+	 * (false), which is harmless presentation degradation.
+	 *
+	 * @return bool True once the lid has finished or skipped onboarding.
+	 */
+	function ink_foundation_onboarding_complete(): bool {
+		if ( ! class_exists( 'Ink\\Accounts\\Onboarding' ) || ! function_exists( 'get_current_user_id' ) ) {
+			return false;
+		}
+
+		return \Ink\Accounts\Onboarding::hasCompleted( get_current_user_id() );
+	}
+}
+
+if ( ! function_exists( 'ink_foundation_onboarding_form_fields' ) ) {
+	/**
+	 * Echo the hidden form fields the onboarding skip/complete POST needs.
+	 *
+	 * Presentation glue only: the nonce field + the `admin-post` action hidden
+	 * input, sourced from the `ink-core` {@see \Ink\Accounts\Onboarding} single
+	 * source (never a duplicated literal). State-change discipline (nonce +
+	 * own-record capability + sanitise) lives in the `ink-core` handler, not the
+	 * theme. `class_exists`-guarded so the theme degrades to no fields (the form
+	 * simply will not authorise) when `ink-core` is inactive — never fatals.
+	 */
+	function ink_foundation_onboarding_form_fields(): void {
+		if ( ! class_exists( 'Ink\\Accounts\\Onboarding' ) ) {
+			return;
+		}
+
+		wp_nonce_field(
+			\Ink\Accounts\Onboarding::nonceAction(),
+			\Ink\Accounts\Onboarding::nonceName()
+		);
+
+		printf(
+			'<input type="hidden" name="action" value="%s" />',
+			esc_attr( \Ink\Accounts\Onboarding::postAction() )
+		);
+	}
+}

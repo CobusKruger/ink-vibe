@@ -29,6 +29,7 @@ namespace Ink\Tests\Unit\Content;
 use Ink\Content\Api;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
+use Ink\Kernel\Capabilities;
 use Brain\Monkey;
 use Brain\Monkey\Functions;
 
@@ -169,6 +170,27 @@ test( 'composed admin labels interpolate the registry noun', function (): void {
 	expect( $registered['genre']['args']['labels']['add_new_item'] )->toBe( 'Voeg nuwe Genre by' );
 	expect( $registered['genre']['args']['labels']['search_items'] )->toBe( 'Soek Genres' );
 	expect( $registered['vaardigheid']['args']['labels']['edit_item'] )->toBe( 'Wysig Vaardigheidsarea' );
+} );
+
+/**
+ * Story 3.3 (2.2 gap): controlled-vocabulary term MANAGEMENT (add/edit/delete)
+ * is restricted to the staff `ink_moderate` cap on every taxonomy, so a gratis
+ * lid / member cannot fork the controlled vocabulary. `assign_terms` stays broad
+ * (`edit_posts`) — picking an existing term while authoring is not a vocabulary
+ * mutation.
+ */
+test( 'term management is staff-only (ink_moderate); assign stays broad', function (): void {
+	$registered = ink_capture_registered_taxonomies();
+
+	foreach ( $registered as $slug => $entry ) {
+		$caps = $entry['args']['capabilities'];
+
+		expect( $caps['manage_terms'] )->toBe( Capabilities::MODERATE );
+		expect( $caps['edit_terms'] )->toBe( Capabilities::MODERATE );
+		expect( $caps['delete_terms'] )->toBe( Capabilities::MODERATE );
+		expect( $caps['manage_terms'] )->not->toBe( 'manage_categories' );
+		expect( $caps['assign_terms'] )->toBe( 'edit_posts' );
+	}
 } );
 
 /**

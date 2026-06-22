@@ -9,16 +9,20 @@ declare(strict_types=1);
 
 namespace Ink\Kernel;
 
+use Ink\Content\PostTypes;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Plugin activation and deactivation lifecycle.
  *
  * Activation records the schema-version option, runs the (currently empty)
- * schema registry, flushes rewrite rules as a stub for the CPTs/taxonomies
- * Epic 2 will register, and guards the PHP 8.3 / WP 7.0 minimum. It creates NO
- * tables, CPTs or terms — each module owns and migrates its own store in a
- * later epic (AD-5/AD-1). Deactivation flushes rewrite rules.
+ * schema registry, grants the INK editorial custom caps to the `editor` role
+ * (Story 3.3 / AD-6 — role/cap grants persist, so they run at activation, not on
+ * every `init`), flushes rewrite rules for the Epic-2 CPTs/taxonomies, and guards
+ * the PHP 8.3 / WP 7.0 minimum. It creates NO tables, CPTs or terms — each module
+ * owns and migrates its own store in a later epic (AD-5/AD-1). Deactivation
+ * revokes the editorial caps and flushes rewrite rules.
  *
  * @package Ink\Core
  */
@@ -46,7 +50,8 @@ final class Activation {
 	 * Run on plugin activation.
 	 *
 	 * Guards minimum versions, records the DB-version option, runs the empty
-	 * schema registry, and flushes rewrite rules.
+	 * schema registry, grants the editorial custom caps to the `editor` role, and
+	 * flushes rewrite rules.
 	 */
 	public static function activate(): void {
 		self::guardEnvironment();
@@ -58,17 +63,29 @@ final class Activation {
 		// dbDelta schema in a later epic (AD-5).
 		Schema::install();
 
-		// Stub for the rewrite rules the Epic 2 CPTs/taxonomies will introduce.
-		// Harmless now (no custom rules exist); the correct activation pattern.
+		// Story 3.3 / AD-6: grant the four INK editorial custom caps to the
+		// editorial roles (admin + editor / redakteur), and the INK-content
+		// primitive caps (from the CPTs' custom capability_type) to the
+		// content-managing roles. These persist in the DB, so they belong at
+		// activation — NOT on every `init`. Idempotent + fail-safe; the caps that
+		// gate live paths ARE granted to real roles (no deny-everyone stub).
+		Capabilities::grantToEditor();
+		PostTypes::grantContentCaps();
+
+		// Flush the rewrite rules the Epic 2 CPTs/taxonomies introduce.
 		flush_rewrite_rules();
 	}
 
 	/**
 	 * Run on plugin deactivation.
 	 *
-	 * Flushes rewrite rules so any rules the plugin contributed are cleared.
+	 * Revokes the editorial custom caps it granted (no orphaned caps left behind)
+	 * and flushes rewrite rules so any rules the plugin contributed are cleared.
 	 */
 	public static function deactivate(): void {
+		Capabilities::revokeFromEditor();
+		PostTypes::revokeContentCaps();
+
 		flush_rewrite_rules();
 	}
 

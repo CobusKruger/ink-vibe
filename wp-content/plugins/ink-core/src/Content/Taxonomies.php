@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Content;
 
 use Ink\I18n\Terms;
+use Ink\Kernel\Capabilities;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -142,6 +143,35 @@ final class Taxonomies {
 			'show_admin_column' => true,
 			'show_ui'           => true,
 			'rewrite'           => array( 'slug' => (string) $def['rewrite'] ),
+			'capabilities'      => self::termCapabilities(),
+		);
+	}
+
+	/**
+	 * The term-management capability map for every INK taxonomy (Story 3.3, 2.2 gap).
+	 *
+	 * Previously the four taxonomies used the WP default term caps — and crucially
+	 * the registrar set NO `capabilities` arg, so `manage_terms`/`edit_terms`/
+	 * `delete_terms` defaulted to `manage_categories`, but `assign_terms`
+	 * defaulted to `edit_posts`. INK's controlled vocabulary (`genre`,
+	 * `vaardigheid`, `uitdagingsrondte`, `ster_gradering`) must NOT be forkable by a
+	 * gratis lid / member: add/edit/delete is restricted to staff (the INK
+	 * `ink_moderate` editorial cap, granted to `editor` at activation — closing the
+	 * gap with a cap that IS granted to a real role, not a deny-everyone stub).
+	 *
+	 * `assign_terms` stays on `edit_posts` (broad): assigning an existing term to
+	 * one's own contribution is an authoring action, not a vocabulary mutation — a
+	 * member cannot add a NEW term, only pick from the controlled set. (The full
+	 * per-tier author-cap policy is Epic 5 — deferred, noted.)
+	 *
+	 * @return array<string, string>
+	 */
+	private static function termCapabilities(): array {
+		return array(
+			'manage_terms' => Capabilities::MODERATE, // Staff-only (editor + admin).
+			'edit_terms'   => Capabilities::MODERATE, // Staff-only.
+			'delete_terms' => Capabilities::MODERATE, // Staff-only.
+			'assign_terms' => 'edit_posts',           // Broad: authoring picks from the controlled set.
 		);
 	}
 

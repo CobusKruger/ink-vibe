@@ -135,6 +135,46 @@ test( 'every CPT is registered show_in_rest with map_meta_cap and a menu icon', 
 } );
 
 /**
+ * Story 3.3 (2.1 gap): every CPT carries the dedicated INK content
+ * `capability_type` so it no longer inherits bare default `post` caps — the
+ * false-isolation gap is closed. `map_meta_cap` stays on for ownership-aware
+ * per-object meta caps.
+ */
+test( 'every CPT uses the dedicated ink_content capability type, not post', function (): void {
+	$registered = ink_capture_registered_post_types();
+
+	foreach ( $registered as $slug => $args ) {
+		expect( $args['capability_type'] )->toBe(
+			array( PostTypes::CAPABILITY_TYPE_SINGULAR, PostTypes::CAPABILITY_TYPE_PLURAL )
+		);
+		expect( $args['capability_type'] )->not->toContain( 'post' );
+		expect( $args['map_meta_cap'] )->toBeTrue();
+	}
+
+	expect( PostTypes::CAPABILITY_TYPE_SINGULAR )->toBe( 'ink_content' );
+	expect( PostTypes::CAPABILITY_TYPE_PLURAL )->toBe( 'ink_contents' );
+} );
+
+/**
+ * Story 3.3 deny-everyone guard: the primitive INK-content caps derived from the
+ * custom type are the ones the activation step grants — they are namespaced to
+ * `ink_content(s)` (never the default `post` primitives a subscriber may hold).
+ */
+test( 'capabilities() lists ink_content primitives the activation step grants', function (): void {
+	$caps = PostTypes::capabilities();
+
+	expect( $caps )->toContain( 'edit_ink_contents' );
+	expect( $caps )->toContain( 'publish_ink_contents' );
+	expect( $caps )->toContain( 'edit_others_ink_contents' );
+	expect( $caps )->not->toContain( 'edit_posts' );
+	expect( $caps )->not->toContain( 'publish_posts' );
+
+	foreach ( $caps as $cap ) {
+		expect( $cap )->toContain( 'ink_content' );
+	}
+} );
+
+/**
  * AC-2: labels resolve through the Terms registry — the `storie` name is the
  * registry plural ("Stories"), the singular_name the registry singular.
  */
