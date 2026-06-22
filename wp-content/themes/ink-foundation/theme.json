@@ -228,6 +228,23 @@
       }
     }
   },
+  "customTemplates": [
+    {
+      "name": "page-meld-aan",
+      "title": "Meld aan",
+      "postTypes": [ "page" ]
+    },
+    {
+      "name": "page-registreer",
+      "title": "Registreer",
+      "postTypes": [ "page" ]
+    },
+    {
+      "name": "page-wagwoord-herstel",
+      "title": "Wagwoord-herstel",
+      "postTypes": [ "page" ]
+    }
+  ],
   "templateParts": [
     {
       "area": "header",
