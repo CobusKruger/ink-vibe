@@ -3,7 +3,13 @@
  * Title: Meld aan
  * Slug: ink-foundation/auth-login
  * Categories: ink-foundation
- * Description: Enkelkolom-aanmeldskerm wat WordPress se eie aanmeldmeganisme gebruik (geen herbou van outentisering nie).
+ * Description: Enkelkolom-aanmeldskerm wat WordPress se eie aanmeldmeganisme gebruik (geen herbou van outentisering nie). Sluit 'n grasieus-degraderende sosiale-aanmeldnaat (R6, Storie 3.5) in wat slegs verskyn as 'n gekeurde sosiale-aanmeld-inprop aktief is.
+ *
+ * Presentation only (three-layer separation). The social-login section is a SEAM:
+ * it renders the vetted plugin's buttons via the ink-core render action ONLY when
+ * the plugin is available, and emits nothing otherwise — the e-mail auth path
+ * always works. No OAuth / provider logic lives in this theme file. All copy is
+ * Afrikaans; un-authored microcopy is marked [NEEDS HUMAN AFRIKAANS].
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"480px"}} -->
@@ -19,6 +25,29 @@
 		<!-- /wp:paragraph -->
 
 		<!-- wp:loginout {"displayLoginAsForm":true,"redirectToCurrent":false} /-->
+<?php if ( function_exists( 'ink_foundation_social_login_available' ) && ink_foundation_social_login_available() ) : ?>
+		<!-- wp:separator {"className":"is-style-wide"} -->
+		<hr class="wp-block-separator has-alpha-channel-opacity is-style-wide"/>
+		<!-- /wp:separator -->
+
+		<!-- wp:paragraph {"align":"center","fontSize":"sm","textColor":"muted-text"} -->
+		<p class="has-text-align-center has-muted-text-color has-text-color has-sm-font-size"><?php
+			// [NEEDS HUMAN AFRIKAANS] — social divider line not yet authored in ui-copy-translations.md.
+			echo esc_html__( 'Of gaan voort met', 'ink-foundation' );
+		?> <span class="ink-needs-human-af" hidden>[NEEDS HUMAN AFRIKAANS]</span></p>
+		<!-- /wp:paragraph -->
+
+		<!-- wp:html -->
+		<div class="ink-social-login-buttons"><?php ink_foundation_social_login_buttons(); ?></div>
+		<!-- /wp:html -->
+
+		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
+		<p class="has-muted-text-color has-text-color has-sm-font-size"><?php
+			// [NEEDS HUMAN AFRIKAANS] — POPIA social-login consent note not yet authored.
+			echo esc_html__( 'Deur met \'n sosiale rekening voort te gaan, deel jy basiese profielinligting met INK.', 'ink-foundation' );
+		?> <a href="<?php echo esc_url( '/privaatheidsbeleid' ); ?>"><?php echo esc_html__( 'Privaatheidsbeleid', 'ink-foundation' ); ?></a> <span class="ink-needs-human-af" hidden>[NEEDS HUMAN AFRIKAANS]</span></p>
+		<!-- /wp:paragraph -->
+<?php endif; ?>
 
 		<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group">

@@ -183,3 +183,47 @@ if ( ! function_exists( 'ink_foundation_onboarding_form_fields' ) ) {
 		);
 	}
 }
+
+if ( ! function_exists( 'ink_foundation_social_login_available' ) ) {
+	/**
+	 * Whether the social-login section should render on the auth surfaces (Story 3.5).
+	 *
+	 * Reads the `ink-core` R6 seam ({@see \Ink\Accounts\SocialLogin::isAvailable()})
+	 * so the auth patterns can decide whether to paint the social section. R6 social
+	 * login is a vetted-plugin seam — the theme carries NO OAuth, only this
+	 * presentation gate. `class_exists`-guarded so the theme degrades to "no social
+	 * section" (false) when `ink-core` is inactive — never fatals.
+	 *
+	 * @return bool True when a vetted social-login plugin is available.
+	 */
+	function ink_foundation_social_login_available(): bool {
+		if ( ! class_exists( 'Ink\\Accounts\\SocialLogin' ) ) {
+			return false;
+		}
+
+		return \Ink\Accounts\SocialLogin::isAvailable();
+	}
+}
+
+if ( ! function_exists( 'ink_foundation_social_login_buttons' ) ) {
+	/**
+	 * Fire the render action the active social-login plugin hooks for its buttons.
+	 *
+	 * Presentation seam only: when a vetted plugin is available it paints its
+	 * provider buttons by hooking {@see \Ink\Accounts\SocialLogin::BUTTONS_ACTION};
+	 * when absent this emits nothing (graceful degradation — the e-mail auth path
+	 * stays usable). The theme owns NO OAuth and reimplements no provider logic.
+	 * `class_exists`/`function_exists`-guarded so it never fatals.
+	 */
+	function ink_foundation_social_login_buttons(): void {
+		if ( ! class_exists( 'Ink\\Accounts\\SocialLogin' ) || ! function_exists( 'do_action' ) ) {
+			return;
+		}
+
+		if ( ! \Ink\Accounts\SocialLogin::isAvailable() ) {
+			return;
+		}
+
+		do_action( \Ink\Accounts\SocialLogin::BUTTONS_ACTION );
+	}
+}
