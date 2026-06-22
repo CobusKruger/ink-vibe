@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Entitlement module — the WooCommerce Memberships seam (Epic 4).
  *
- * Story 4.1 populates the FIRST piece of this module: the config-driven
+ * Story 4.1 populated the FIRST piece of this module: the config-driven
  * lidmaatskap PLAN REGISTRY ({@see MembershipPlans} / {@see LidmaatskapTerm} /
  * {@see MembershipPlan}), exposed to the rest of `ink-core` through {@see Api}
  * (the only cross-module surface). The three launch plan slots are fixed-term
@@ -25,10 +25,19 @@ defined( 'ABSPATH' ) || exit;
  * hardcoded value. No auto-renew / no discount at launch (Stories 4.9–4.11 are
  * post-launch).
  *
+ * Story 4.2 adds the front-end PayFast purchase SEAM ({@see PurchaseActivation}):
+ * it initiates a purchase of a 4.1 plan by handing off to the WooCommerce checkout
+ * / WC PayFast gateway, and REACTS to the WooCommerce Memberships activation
+ * transition (`wc_memberships_user_membership_status_changed`, gated on `active`)
+ * to self-activate the lidmaatskap with no manual EFT/admin step and fire the
+ * thank-you/activation email trigger via the Notifications API (placeholder
+ * template, send toggle OFF — Story 4.8 owns the copy). PayFast is off-site; this
+ * module stores no card data and hardcodes no gateway credential (AD-4).
+ *
  * Still RESERVED for later Epic-4 stories (NOT built here): the submission-
  * entitlement gate `can_submit()` (Story 4.3 / AD-2 — evaluated against the
- * lidmaatskap end date in SAST), the PayFast self-activation flow (Story 4.2),
- * and the lifecycle automation (Stories 4.7/4.8).
+ * lidmaatskap end date in SAST) and the lifecycle email COPY + expiry warnings
+ * (Stories 4.7/4.8).
  *
  * THE conflation rule (AD-1, FR-13): Entitlement controls submission entitlement
  * and is kept strictly independent of writer Gradering — `Ink\Entitlement` ⟂
@@ -58,11 +67,19 @@ final class Module implements ModuleContract {
 	 *
 	 * The plan registry itself ({@see MembershipPlans}) stays a passive, config-
 	 * driven ACCESSOR consumed on demand through {@see Api} — it owns no runtime
-	 * hooks. The 4.3 `can_submit()` gate and the WooCommerce Memberships event
-	 * listeners remain RESERVED for their own stories.
+	 * hooks. The 4.3 `can_submit()` gate remains RESERVED for its own story.
+	 *
+	 * Story 4.2 wires the {@see PurchaseActivation} collaborator (the one-
+	 * collaborator-per-concern house style, mirroring `Accounts\Module →
+	 * {Registration, Onboarding, Approval}`): it registers the WooCommerce
+	 * Memberships activation listener + the activation email template. Its
+	 * behaviour is self-gated (the `new_status === active` check + the send toggle),
+	 * so wiring it unconditionally is safe.
 	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'registerSettings' ) );
+
+		( new PurchaseActivation() )->register();
 	}
 
 	/**

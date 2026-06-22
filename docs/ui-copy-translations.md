@@ -558,11 +558,13 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 
 *(Nuwe transaksionele e-pos. Afrikaanse onderwerpe/snippette nog nie in die glossaar nie — wag op menslike kopie.)*
 
+> **Storie 4.2 (PayFast self-aktivering) bedraad slegs die DANKIE-/AKTIVERINGS-snellertjie**, nie die kopie nie. By 'n suksesvolle WooCommerce Memberships-aktivering (`wc_memberships_user_membership_status_changed` → `active`) vuur `Ink\Entitlement\PurchaseActivation` die sjabloon `ink_membership_activated_email` af via die Notifications-API. Die sjabloon is geregistreer met 'n **[WAG OP MENSLIKE KOPIE]**-plekhouer-liggaam en die **stuur-skakelaar AF by verstek** — geen `wp_mail` vuur tot Storie 4.8 die menslike Afrikaanse kopie inbring en die skakelaar aanskakel nie. Moenie KI-vertaal nie.
+
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| Thank-you email (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Dankie-e-pos ná aansluiting/betaling; menslike kopie nodig |
-| 1-month expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 maand voor verval; menslike kopie nodig |
-| 1-week expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 week voor verval; menslike kopie nodig |
+| Thank-you email (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Dankie-/aktiverings-e-pos ná aansluiting/betaling. **Snellertjie bedraad in Storie 4.2** (`ink_membership_activated_email`, plekhouer-liggaam, stuur-skakelaar AF); die KOPIE is Storie 4.8 se werk. Menslike kopie nodig. |
+| 1-month expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 maand voor verval; Storie 4.8; menslike kopie nodig |
+| 1-week expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 week voor verval; Storie 4.8; menslike kopie nodig |
 
 ### Sosiale aanmelding (R6 — Storie 3.5, grasieus-degraderende naat)
 

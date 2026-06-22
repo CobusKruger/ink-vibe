@@ -37,6 +37,11 @@ final class Api {
 	private static ?MembershipPlans $plans = null;
 
 	/**
+	 * The shared purchase/activation seam (Story 4.2; lazily built, stateless).
+	 */
+	private static ?PurchaseActivation $purchase = null;
+
+	/**
 	 * The three launch lidmaatskap plan slots (one per fixed term).
 	 *
 	 * @return list<MembershipPlan>
@@ -98,9 +103,32 @@ final class Api {
 	}
 
 	/**
+	 * The WooCommerce checkout URL that starts the off-site PayFast purchase of a
+	 * term's plan (Story 4.2) — or null when it cannot be offered.
+	 *
+	 * The cross-module surface the 4.4 Lidmaatskap page consumes to render a "buy"
+	 * CTA: it hands off to the WooCommerce checkout / WC PayFast gateway for the
+	 * mapped 4.1 product, building no card form and referencing no PayFast
+	 * credential. Null when WooCommerce is absent or the plan is not sellable.
+	 *
+	 * @param LidmaatskapTerm $term The fixed term to purchase.
+	 * @return string|null The checkout URL, or null when unavailable.
+	 */
+	public static function purchaseUrl( LidmaatskapTerm $term ): ?string {
+		return self::purchase()->purchaseUrl( $term );
+	}
+
+	/**
 	 * The shared registry instance.
 	 */
 	private static function registry(): MembershipPlans {
 		return self::$plans ??= new MembershipPlans();
+	}
+
+	/**
+	 * The shared purchase/activation seam (stateless, so a fresh instance is fine).
+	 */
+	private static function purchase(): PurchaseActivation {
+		return self::$purchase ??= new PurchaseActivation();
 	}
 }

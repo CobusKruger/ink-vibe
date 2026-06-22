@@ -11,7 +11,8 @@
  * It also declares the signatures of OPTIONAL platform-plugin functions that
  * `ink-core` calls behind a `function_exists()` guard but that are NOT in the
  * WordPress-core stubs — currently WooCommerce's `wc_get_product()` (Story 4.1,
- * `Ink\Entitlement\MembershipPlans`). WooCommerce is a platform plugin assembled
+ * `Ink\Entitlement\MembershipPlans`) and `wc_get_checkout_url()` (Story 4.2,
+ * `Ink\Entitlement\PurchaseActivation`). WooCommerce is a platform plugin assembled
  * at build time (AD-4) and is not a Composer stub dependency, so PHPStan reports
  * `function.notFound` for its symbols. Declaring the signature here (analysis-
  * only) resolves it without an `@phpstan-ignore` suppression; the runtime call
@@ -44,5 +45,20 @@ if ( ! function_exists( 'wc_get_product' ) ) {
 	 */
 	function wc_get_product( $the_product = false ) { // phpcs:ignore
 		return false;
+	}
+}
+
+if ( ! function_exists( 'wc_get_checkout_url' ) ) {
+	/**
+	 * Analysis-only signature for WooCommerce's checkout-URL accessor (platform plugin).
+	 *
+	 * Real implementation ships with WooCommerce. `ink-core` calls it only behind a
+	 * `function_exists()` guard ({@see \Ink\Entitlement\PurchaseActivation}) to hand
+	 * the off-site PayFast purchase off to the WooCommerce checkout.
+	 *
+	 * @return string The WooCommerce checkout page URL.
+	 */
+	function wc_get_checkout_url() { // phpcs:ignore
+		return '';
 	}
 }

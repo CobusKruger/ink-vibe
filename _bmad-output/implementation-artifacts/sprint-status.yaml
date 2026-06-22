@@ -42,6 +42,7 @@ last_updated: 2026-06-22
 # epic-3 ALL stories done (3-2 tombstone) — epic-3 ready to close; epic-3-retrospective (optional) is the formal close step
 # note: 3-2 is a TOMBSTONE (reader/writer intent gate removed 2026-06-14) — left as backlog but should not be created/built
 # epic-4 started 2026-06-22 (first Epic 4 story); 4-1 → review 2026-06-22 (create-story + dev-story, the Ink\Entitlement plan-registry seam)
+# 4-2 → review 2026-06-22 (create-story + dev-story, the Ink\Entitlement PurchaseActivation PayFast self-activation seam)
 project: ink-vibe
 project_key: NOKEY
 tracking_system: file-system
@@ -87,7 +88,7 @@ development_status:
   # Epic 4: Membership, access & payment
   epic-4: in-progress
   4-1-three-fixed-term-lidmaatskap-products: review
-  4-2-front-end-payfast-purchase-flow: backlog
+  4-2-front-end-payfast-purchase-flow: review
   4-3-access-enforcement-entitlement-gate: backlog
   4-4-lidmaatskap-page: backlog
   4-5-renewal-ui: backlog
