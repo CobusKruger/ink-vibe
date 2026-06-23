@@ -248,6 +248,11 @@
       "name": "page-onboarding",
       "title": "Onboarding",
       "postTypes": [ "page" ]
+    },
+    {
+      "name": "page-lidmaatskap",
+      "title": "Lidmaatskap",
+      "postTypes": [ "page" ]
     }
   ],
   "templateParts": [

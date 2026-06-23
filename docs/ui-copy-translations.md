@@ -525,11 +525,27 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Monthly | Maandeliks | Planetiket |
 | 6 months | 6 maande | |
 | 12 months | 12 maande | |
-| Save 12% | Spaar 12% | |
-| Save 25% | Spaar 25% | |
+| ~~Save 12%~~ | **[REMOVED — no vanity savings framing at launch per FR-4 / Storie 4.1-AC3]** | Verwyder in Storie 4.4 (Lidmaatskap-blad bou). Geen besparings-/%-afslag-raam by lansering nie; 'n egte herhalende afslag is na-lansering (Storie 4.11). |
+| ~~Save 25%~~ | **[REMOVED — no vanity savings framing at launch per FR-4 / Storie 4.1-AC3]** | Verwyder in Storie 4.4 (Lidmaatskap-blad bou). Geen besparings-/%-afslag-raam by lansering nie; 'n egte herhalende afslag is na-lansering (Storie 4.11). |
 | / [N]mo | / [N] mnd | Prys-suffix |
 | Your support keeps Inkwell ad-free and independent. | Jou ondersteuning hou INK advertensievry en onafhanklik. | |
 | Renew for [N] month(s) | Hernu vir [N] maand(e) | Knoppie |
+
+#### Gekureerde blad-kopie (Storie 4.4, FR-7)
+
+*(GEFINALISEERDE Afrikaanse kopie wat die `patterns/lidmaatskap.php`-patroon vertoon — sinskas, deur die `ink-foundation`-teksdomein (`esc_html__`/`esc_html_e`) gerender sodat dit vertaalbaar is en deur die Engels-lek-skandering gevang word. Onderskei van die `[NEEDS HUMAN AFRIKAANS]`-prosa-plekhouers hieronder, wat 'n bewuste, bekendgemaakte voor-lansering kopie-hek bly.)*
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| What your membership includes | Wat jou lidmaatskap insluit | Voordele-afdeling H2 |
+| Membership questions | Vrae oor lidmaatskap | FAQ-afdeling H2 |
+| Join INK today | Sluit vandag by INK aan | Aankoop-CTA-band H2 |
+| How long does a membership last? | Hoe lank duur 'n lidmaatskap? | FAQ-vraag (`<summary>`) |
+| Does my membership renew automatically? | Hernu my lidmaatskap outomaties? | FAQ-vraag (`<summary>`); GEEN outo-hernuwing by lansering (FR-4) |
+| How do I pay? | Hoe betaal ek? | FAQ-vraag (`<summary>`); PayFast/ZAR |
+| Join | Sluit aan | Per-plan aankoop-knoppie (sellbare plan) |
+| Coming soon | Binnekort beskikbaar | Per-plan knoppie-plekhouer (onsellbare plan; `aria-disabled`) |
+| Price coming soon | Prys binnekort beskikbaar | Prys-plekhouer wanneer geen lewende WooCommerce-prys nie |
 
 ### Gradering-blad (My Profiel — privaat)
 
@@ -545,7 +561,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 
 *(Die drie vaste-termyn lidmaatskap-planne: 1 maand / 6 maande / 12 maande. Die termyn-etikette ("1 maand" / "6 maande" / "12 maande") is reeds in die terminologieregister geprojekteer (`term_1_month` / `term_6_months` / `term_12_months`, glossaar reël 45) en word vandaar verbruik — nie inlyn nie. Die **prys** (R60 / R300 / R600 by lansering) word deur die WooCommerce-produk besit en deur 'n redakteur in WooCommerce-admin verstel — geen vaste pryswaarde in kode nie. Die lid-gerigte plan-PROSA hieronder is **menslike kopie nodig — moenie KI-vertaal nie**.)*
 
-> ⚠️ **GEEN vanity-afslag/besparingsraam by lansering nie (AC-3 / Storie 4.5).** Die bestaande "Lidmaatskap-blad"-afdeling hierbo bevat "Save 12%"/"Spaar 25%"-rye (uit die Lovable-mock, Engelse plekhouer) — daardie besparings-/persentasie-afslag-bewoording mag **nie** by lansering vertoon word nie. 'n Egte herhalende afslag is na-lansering (Storie 4.11). Storie 4.1 se register dra geen afslag-/besparingsveld nie.
+> ✅ **OPGERUIM in Storie 4.4 (2026-06-23).** Die "Save 12%"/"Spaar 25%"-besparingsrye in die "Lidmaatskap-blad"-afdeling hierbo is geneutraliseer met 'n `[REMOVED — no vanity savings framing at launch per FR-4 / Storie 4.1-AC3]`-nota (hulle was 'n Lovable-mock Engelse plekhouer; 4.1 het die opruim na 4.4 uitgestel). **Staande reël:** GEEN vanity-afslag/besparingsraam ("X% af", "spaar R…", "beste waarde", per-maand-vergelyking) by lansering nie — op die Lidmaatskap-blad (4.4) óf die hernuwings-UI (4.5). 'n Egte herhalende afslag is na-lansering (Storie 4.11). Storie 4.1 se register dra geen afslag-/besparingsveld nie, en die 4.4-patroon vertoon geen besparingsraam nie.
 
 | Engels | Afrikaans | Notas |
 |---|---|---|

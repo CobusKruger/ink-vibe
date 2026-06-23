@@ -75,6 +75,25 @@ function ink_foundation_register_block_styles(): void {
 		)
 	);
 
+	// Card (details): the same bordered, rounded, soft-shadowed surface as the group
+	// card, registered for core/details so the FAQ accordions (Lidmaatskap-blad,
+	// Story 4.4) actually pick up the treatment — the group registration's selector
+	// (`.wp-block-group.is-style-card`) does NOT match a `core/details` block, so the
+	// className was previously a no-op. Token-only (Gate A).
+	register_block_style(
+		'core/details',
+		array(
+			'name'         => 'card',
+			'label'        => __( 'Kaart', 'ink-foundation' ),
+			'inline_style' => '.wp-block-details.is-style-card{'
+				. 'background-color:var(--wp--preset--color--surface-alt);'
+				. 'border:1px solid var(--wp--preset--color--border);'
+				. 'border-radius:var(--wp--custom--radius--lg);'
+				. 'box-shadow:var(--wp--preset--shadow--sm);'
+				. '}',
+		)
+	);
+
 	// Pill: a fully-rounded button variant (distinct from core fill + is-style-outline).
 	register_block_style(
 		'core/button',
@@ -181,6 +200,34 @@ if ( ! function_exists( 'ink_foundation_onboarding_form_fields' ) ) {
 			'<input type="hidden" name="action" value="%s" />',
 			esc_attr( \Ink\Accounts\Onboarding::postAction() )
 		);
+	}
+}
+
+if ( ! function_exists( 'ink_foundation_membership_plans' ) ) {
+	/**
+	 * The lidmaatskap plan rows for the Lidmaatskap page pattern (Story 4.4, FR-7).
+	 *
+	 * Presentation glue only: a read-through to the `ink-core` Entitlement facade
+	 * ({@see \Ink\Entitlement\Api::planRows()}) so the pricing-table pattern can
+	 * surface DYNAMIC plan data — term label, the WooCommerce-resolved price, the
+	 * sellability flag, and the WC/PayFast purchase URL — WITHOUT any plan business
+	 * logic living in the theme (three-layer separation). The theme iterates the
+	 * rows it is handed and renders them with token-only locked blocks; it computes
+	 * nothing, hardcodes no price, and never re-queries WooCommerce. All plan
+	 * shaping lives in `ink-core`'s `PlanPresenter` read-model.
+	 *
+	 * `class_exists`-guarded so the theme degrades gracefully to an empty list when
+	 * `ink-core` is inactive — the pattern then renders its static labels without a
+	 * live price/CTA, never a fatal.
+	 *
+	 * @return array<int, array{months:int, term_label:string, price:string|null, is_available:bool, purchase_url:string|null}>
+	 */
+	function ink_foundation_membership_plans(): array {
+		if ( ! class_exists( 'Ink\\Entitlement\\Api' ) ) {
+			return array();
+		}
+
+		return \Ink\Entitlement\Api::planRows();
 	}
 }
 

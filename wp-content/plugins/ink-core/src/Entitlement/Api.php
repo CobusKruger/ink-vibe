@@ -51,6 +51,11 @@ final class Api {
 	private static ?SubmissionGate $gate = null;
 
 	/**
+	 * The shared plan presentation read-model (Story 4.4; lazily built, stateless).
+	 */
+	private static ?PlanPresenter $presenter = null;
+
+	/**
 	 * The three launch lidmaatskap plan slots (one per fixed term).
 	 *
 	 * @return list<MembershipPlan>
@@ -148,10 +153,34 @@ final class Api {
 	}
 
 	/**
+	 * The presentation-ready rows for the Lidmaatskap page (Story 4.4, FR-7).
+	 *
+	 * The single cross-module surface the theme's `ink_foundation_membership_plans()`
+	 * bridge consumes (AD-1: the facade is the only public surface): one flat row per
+	 * fixed term (1/6/12), each carrying the registry-resolved term label, the
+	 * WooCommerce runtime price (or null), the sellability flag, and the WC/PayFast
+	 * purchase URL (or null). The theme renders these rows with token-only locked
+	 * blocks and computes nothing — keeping all plan shaping in `ink-core`
+	 * (project-context.md three-layer rule). Delegates to {@see PlanPresenter}.
+	 *
+	 * @return list<array{months:int, term_label:string, price:string|null, is_available:bool, purchase_url:string|null}>
+	 */
+	public static function planRows(): array {
+		return self::presenter()->rows();
+	}
+
+	/**
 	 * The shared registry instance.
 	 */
 	private static function registry(): MembershipPlans {
 		return self::$plans ??= new MembershipPlans();
+	}
+
+	/**
+	 * The shared plan presentation read-model (stateless, so a fresh instance is fine).
+	 */
+	private static function presenter(): PlanPresenter {
+		return self::$presenter ??= new PlanPresenter();
 	}
 
 	/**
