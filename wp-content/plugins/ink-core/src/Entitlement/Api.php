@@ -17,12 +17,16 @@ defined( 'ABSPATH' ) || exit;
  * Other `ink-core` modules reach the lidmaatskap plan registry ONLY through this
  * facade (never into {@see MembershipPlans} internals): the 4.4 Lidmaatskap page
  * (`Api::plans()`), the 4.5 renewal UI (`Api::terms()` / `Api::priceFor()`), and
- * the 4.3 entitlement gate (which will reuse the same membership concept). Mirrors
+ * the 4.3 entitlement gate (`Api::can_submit()`). Mirrors
  * {@see \Ink\Notifications\Api}'s static-facade shape.
  *
- * Scope (Story 4.1): this facade exposes the PLAN REGISTRY only. The
- * `can_submit()` entitlement gate (AD-2) stays RESERVED for Story 4.3 and is NOT
- * added here.
+ * Scope (Story 4.3): this facade now ALSO exposes the submission-entitlement gate —
+ * {@see can_submit()} (facading {@see SubmissionGate}, AD-2): "may this user plaas
+ * right now?", evaluated against the WooCommerce Membership END DATE in SAST (NOT
+ * the cron-flipped status flag). It is the reusable evaluation the publish point
+ * (Story 6.8, `Ink\Submission`) and AD-3 challenge entry consume; this story does
+ * NOT wire the enforcement point into a submission flow (deferred to 6.8 — that
+ * module + the front-end form do not exist yet; AD-6 decision 2 / FR-19 -> 6.8).
  *
  * THE conflation rule (AD-1): lidmaatskap entitlement ⟂ writer Gradering — this
  * facade carries no reference to `Ink\Tiers`.
@@ -40,6 +44,11 @@ final class Api {
 	 * The shared purchase/activation seam (Story 4.2; lazily built, stateless).
 	 */
 	private static ?PurchaseActivation $purchase = null;
+
+	/**
+	 * The shared submission-entitlement gate (Story 4.3; lazily built, stateless).
+	 */
+	private static ?SubmissionGate $gate = null;
 
 	/**
 	 * The three launch lidmaatskap plan slots (one per fixed term).
@@ -119,6 +128,26 @@ final class Api {
 	}
 
 	/**
+	 * Whether the user may plaas (submit/publish) right now — the entitlement gate.
+	 *
+	 * The reusable runtime evaluation (Story 4.3, AD-2/AD-6) the publish point
+	 * (Story 6.8, `Ink\Submission`) and AD-3 challenge entry consume: `true` iff the
+	 * user has an ACTIVE INK lidmaatskap membership whose END DATE is still valid
+	 * through end of day SAST — evaluated against the membership end date in SAST, NOT
+	 * the lagging WooCommerce `expired` status flag. Fail-safe deny for a null /
+	 * logged-out / non-member user or when WooCommerce Memberships is unavailable.
+	 *
+	 * THE conflation rule (AD-1): computed ONLY from membership state — reads no
+	 * `ink_writer_tier`, references no `Ink\Tiers`.
+	 *
+	 * @param int|\WP_User|null $user The user id, WP_User, or null/logged-out.
+	 * @return bool True when the user may submit; false otherwise (fail-safe).
+	 */
+	public static function can_submit( int|\WP_User|null $user ): bool {
+		return self::gate()->canSubmit( $user );
+	}
+
+	/**
 	 * The shared registry instance.
 	 */
 	private static function registry(): MembershipPlans {
@@ -130,5 +159,12 @@ final class Api {
 	 */
 	private static function purchase(): PurchaseActivation {
 		return self::$purchase ??= new PurchaseActivation();
+	}
+
+	/**
+	 * The shared submission-entitlement gate (stateless, so a fresh instance is fine).
+	 */
+	private static function gate(): SubmissionGate {
+		return self::$gate ??= new SubmissionGate();
 	}
 }

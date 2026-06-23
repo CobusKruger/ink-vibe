@@ -34,10 +34,22 @@ defined( 'ABSPATH' ) || exit;
  * template, send toggle OFF — Story 4.8 owns the copy). PayFast is off-site; this
  * module stores no card data and hardcodes no gateway credential (AD-4).
  *
- * Still RESERVED for later Epic-4 stories (NOT built here): the submission-
- * entitlement gate `can_submit()` (Story 4.3 / AD-2 — evaluated against the
- * lidmaatskap end date in SAST) and the lifecycle email COPY + expiry warnings
- * (Stories 4.7/4.8).
+ * Story 4.3 adds the submission-entitlement gate {@see SubmissionGate} (facaded by
+ * {@see Api::can_submit()}, AD-2): "may this user plaas right now?", evaluated
+ * against the WooCommerce Membership END DATE in SAST (NOT the cron-flipped status
+ * flag), through end of day SAST on the expiry day, via the single reusable
+ * {@see \Ink\Kernel\Sast} boundary helper. Auto-revoke is EMERGENT (a lapsed end
+ * date simply returns false — no revoke routine, no write that deletes the account,
+ * touches `ink_writer_tier`, or unpublishes a bydrae). It is a PURE RUNTIME
+ * evaluation invoked on demand by its consumers (the publish point in Story 6.8 /
+ * `Ink\Submission`, and AD-3 challenge entry), NOT a hook subscriber (AD-6: "`plaas`
+ * eligibility is evaluated at runtime … not modeled as a capability"), so it adds no
+ * `add_action` to {@see register()}.
+ *
+ * Still RESERVED for later Epic-4 stories (NOT built here): the actual publish-flow
+ * WIRING of the gate (Story 6.8 — `Ink\Submission`, which does not exist yet); the
+ * full Afrikaans status-messaging copy (Story 4.7); and the lifecycle email COPY +
+ * expiry warnings (Stories 4.7/4.8).
  *
  * THE conflation rule (AD-1, FR-13): Entitlement controls submission entitlement
  * and is kept strictly independent of writer Gradering — `Ink\Entitlement` ⟂
@@ -67,7 +79,9 @@ final class Module implements ModuleContract {
 	 *
 	 * The plan registry itself ({@see MembershipPlans}) stays a passive, config-
 	 * driven ACCESSOR consumed on demand through {@see Api} — it owns no runtime
-	 * hooks. The 4.3 `can_submit()` gate remains RESERVED for its own story.
+	 * hooks. The 4.3 {@see SubmissionGate} (`can_submit()`) is likewise a pure
+	 * on-demand runtime evaluation — it registers NO hook (AD-6), so this method is
+	 * unchanged by Story 4.3.
 	 *
 	 * Story 4.2 wires the {@see PurchaseActivation} collaborator (the one-
 	 * collaborator-per-concern house style, mirroring `Accounts\Module →

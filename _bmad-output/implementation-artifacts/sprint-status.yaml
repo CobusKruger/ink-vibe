@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-22
+last_updated: 2026-06-23
 # epic-2 started 2026-06-21; 2-1 → review 2026-06-21
 # epic-2 retrospective completed 2026-06-22
 # epic-3 started 2026-06-22; 3-1 → done (code review) 2026-06-22; 3-3 → done 2026-06-22; 3-4 → done (research spike) 2026-06-22; 3-6 → done (code review) 2026-06-22; 3-5 → done (code review) 2026-06-22
@@ -89,7 +89,7 @@ development_status:
   epic-4: in-progress
   4-1-three-fixed-term-lidmaatskap-products: review
   4-2-front-end-payfast-purchase-flow: review
-  4-3-access-enforcement-entitlement-gate: backlog
+  4-3-access-enforcement-entitlement-gate: review
   4-4-lidmaatskap-page: backlog
   4-5-renewal-ui: backlog
   4-6-store-ui-suppression: backlog
