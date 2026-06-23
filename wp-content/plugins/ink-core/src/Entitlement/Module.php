@@ -46,6 +46,17 @@ defined( 'ABSPATH' ) || exit;
  * eligibility is evaluated at runtime … not modeled as a capability"), so it adds no
  * `add_action` to {@see register()}.
  *
+ * Story 4.6 adds the storefront-UI suppression seam {@see StorefrontSuppression}: it
+ * hides the GENERAL WooCommerce storefront (shop/catalog page + product archives, the
+ * cart page, generic add-to-cart affordances, inapplicable My-Account tabs) via
+ * documented WooCommerce/WP hooks/filters so the site reads as a community, not a shop
+ * (FR-10) — while CARVING OUT the lidmaatskap purchase flow (the checkout page + an
+ * add-to-cart for a configured Story-4.1 lidmaatskap product, identified through the
+ * SAME {@see MembershipPlans} product-id set {@see SubmissionGate::inkProductIds()}
+ * uses). It reimplements no WooCommerce behaviour and edits no plugin file; when
+ * WooCommerce is inactive it wires zero hooks (graceful no-op). It carries zero
+ * `Ink\Tiers` coupling (store suppression is unrelated to writer Gradering).
+ *
  * Still RESERVED for later Epic-4 stories (NOT built here): the actual publish-flow
  * WIRING of the gate (Story 6.8 — `Ink\Submission`, which does not exist yet); the
  * full Afrikaans status-messaging copy (Story 4.7); and the lifecycle email COPY +
@@ -89,11 +100,19 @@ final class Module implements ModuleContract {
 	 * Memberships activation listener + the activation email template. Its
 	 * behaviour is self-gated (the `new_status === active` check + the send toggle),
 	 * so wiring it unconditionally is safe.
+	 *
+	 * Story 4.6 wires the {@see StorefrontSuppression} collaborator (the same house
+	 * style): it suppresses the general WooCommerce storefront via documented hooks,
+	 * carving out the lidmaatskap purchase flow. It is self-gated — its own
+	 * `register()` wires ZERO hooks when WooCommerce is inactive
+	 * ({@see StorefrontSuppression::isWooCommerceActive()}) — so wiring it
+	 * unconditionally here is safe and never fatals on a WC-absent install.
 	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'registerSettings' ) );
 
 		( new PurchaseActivation() )->register();
+		( new StorefrontSuppression() )->register();
 	}
 
 	/**
