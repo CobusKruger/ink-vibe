@@ -16,9 +16,21 @@ defined( 'ABSPATH' ) || exit;
  *
  * Other `ink-core` modules reach the lidmaatskap plan registry ONLY through this
  * facade (never into {@see MembershipPlans} internals): the 4.4 Lidmaatskap page
- * (`Api::planRows()`), the 4.5 renewal UI (`Api::renewalRows()`), and the 4.3
- * entitlement gate (`Api::can_submit()`). Mirrors
+ * (`Api::planRows()`), the 4.5 renewal UI (`Api::renewalRows()`), the 4.3
+ * entitlement gate (`Api::can_submit()`), and the 4.7 status messages
+ * (`Api::statusMessage()` / `Api::statusMessageFor()`). Mirrors
  * {@see \Ink\Notifications\Api}'s static-facade shape.
+ *
+ * Scope (Story 4.7): this facade ALSO exposes the lid-family Afrikaans STATUS
+ * MESSAGES (FR-9) — {@see statusMessage()} (a typed {@see MembershipStatus} →
+ * its registry-resolved Afrikaans message) and {@see statusMessageFor()} (a
+ * WooCommerce Memberships status string → the matching message). The four
+ * messages are single-source, glossary-backed literals in {@see \Ink\I18n\Terms}
+ * (projected from `docs/afrikaans-terms.md` Deel 3, never AI-translated); the
+ * state→message resolution lives in {@see StatusMessages}. This story wires NO
+ * render consumer — the publish-DENIAL point is Story 6.8 (`Ink\Submission`) and
+ * the My Profiel / Skrywerprofiel status SURFACE is Story 9.4; both consume this
+ * surface later.
  *
  * Scope (Story 4.3): this facade now ALSO exposes the submission-entitlement gate —
  * {@see can_submit()} (facading {@see SubmissionGate}, AD-2): "may this user plaas
@@ -54,6 +66,11 @@ final class Api {
 	 * The shared plan presentation read-model (Story 4.4; lazily built, stateless).
 	 */
 	private static ?PlanPresenter $presenter = null;
+
+	/**
+	 * The shared status-message resolver (Story 4.7; lazily built, stateless).
+	 */
+	private static ?StatusMessages $status_messages = null;
 
 	/**
 	 * The three launch lidmaatskap plan slots (one per fixed term).
@@ -192,6 +209,41 @@ final class Api {
 	}
 
 	/**
+	 * The lid-family Afrikaans status message for a typed access state (Story 4.7, FR-9).
+	 *
+	 * The clean cross-module surface the publish-DENIAL enforcement point (Story 6.8,
+	 * `Ink\Submission`) and the My Profiel / Skrywerprofiel status SURFACE (Story 9.4)
+	 * consume: a typed {@see MembershipStatus} → its single-source, glossary-backed
+	 * Afrikaans message (resolved through {@see \Ink\I18n\Terms}, never an inline
+	 * literal). The consumer escapes the string at its own render point. Delegates to
+	 * {@see StatusMessages}.
+	 *
+	 * THE conflation rule (AD-1): a lidmaatskap-state concept — no `Ink\Tiers` reference.
+	 *
+	 * @param MembershipStatus $status The access state.
+	 * @return string The lid-family Afrikaans status message.
+	 */
+	public static function statusMessage( MembershipStatus $status ): string {
+		return self::statusMessages()->messageFor( $status );
+	}
+
+	/**
+	 * The lid-family Afrikaans status message for a WooCommerce Memberships status string.
+	 *
+	 * For a consumer (Story 9.4) that holds only the platform's raw status slug: maps it
+	 * to the matching {@see MembershipStatus} (fail-safe to the access-denied state for an
+	 * unrecognised status; NEVER the payment-failed state — that is a PayFast-return state,
+	 * not a membership status) and returns the registry-resolved message. Delegates to
+	 * {@see StatusMessages}.
+	 *
+	 * @param string $wc_status The WooCommerce Memberships status slug.
+	 * @return string The lid-family Afrikaans status message.
+	 */
+	public static function statusMessageFor( string $wc_status ): string {
+		return self::statusMessages()->messageForWcStatus( $wc_status );
+	}
+
+	/**
 	 * The shared registry instance.
 	 */
 	private static function registry(): MembershipPlans {
@@ -217,5 +269,12 @@ final class Api {
 	 */
 	private static function gate(): SubmissionGate {
 		return self::$gate ??= new SubmissionGate();
+	}
+
+	/**
+	 * The shared status-message resolver (stateless, so a fresh instance is fine).
+	 */
+	private static function statusMessages(): StatusMessages {
+		return self::$status_messages ??= new StatusMessages();
 	}
 }

@@ -533,6 +533,19 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Renew for [N] month (singular) | Hernu vir %d maand | Knoppie — `_n()` enkelvoud (N = 1). "maand" is die staande glossaar-enkelvoud (Storie 4.1 termyn-etiket "1 maand"). |
 | Renew for [N] months (plural) | Hernu vir %d maande | Knoppie — `_n()` meervoud (N = 6 / 12). "maande" is die staande glossaar-meervoud (Storie 4.1 termyn-etikette "6 maande" / "12 maande"). |
 
+#### Gekureerde lidmaatskap-statusboodskappe (Storie 4.7, FR-9)
+
+*(GEFINALISEERDE Afrikaanse kopie — die vier lid-familie toegangstoestand-boodskappe, VERBATIM uit die terminologiegids Deel 3 ("Stelsel- en statusboodskappe", menslik geskryf en goedgekeur). Hulle is in die `ink-core`-terminologieregister (`Ink\I18n\Terms`) geprojekteer onder stabiele konsep-sleutels en word deur die sleutel verbruik via `Ink\Entitlement\Api::statusMessage()` — **nooit inlyn nie**. Dit is **NIE `[NEEDS HUMAN AFRIKAANS]`** nie: die kopie is reeds goedgekeur; geen KI-vertaling, geen plekhouers vir 4.7 nie. Sinskas, "jy"-stem, nul Engelse lek.)*
+
+| Toestand | Afrikaans | Registersleutel | Notas |
+|---|---|---|---|
+| Active (lidmaatskap aktief) | Jou lidmaatskap is aktief. Jy kan nou werk plaas. | `status_active` | Verbruik deur die status-oppervlak (Storie 9.4) |
+| Expired (lidmaatskap verval) | Jou lidmaatskap het verval. Hernu om werk te plaas. | `status_expired` | Verbruik deur die status-oppervlak (Storie 9.4) + die plaas-weieringspunt (Storie 6.8) |
+| Access denied (betaalde lidmaatskap nodig) | Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies. | `status_access_denied` | Verbruik deur die plaas-weieringspunt (Storie 6.8) |
+| Payment failed / cancelled | Jou betaling het misluk of is gekanselleer. | `status_payment_failed` | PayFast-terugkeer-toestand (nié 'n WooCommerce-lidmaatskapstatus nie); verbruik deur die 4.2-betalingsterugkeer-konteks |
+
+> **Geen `[NEEDS HUMAN AFRIKAANS]` vir Storie 4.7.** Al vier toestande karteer na reeds-goedgekeurde glossaar-kopie (Deel 3). Storie 4.7 PROJEKTEER die kopie — dit skryf geen Afrikaans nie en vind niks uit nie. Die "verval binnekort"-herinnering (Deel 3) is Storie 4.8 / 9.9 se werk, nie deel van die vier 4.7-toestande nie.
+
 #### Gekureerde hernuwings-kopie (Storie 4.5, FR-8)
 
 *(Die drie gekureerde renewal-stringe hierbo — "Hernu lidmaatskap" (H2), "Kies hoe lank jy jou INK-lidmaatskap wil verleng." (intro) en "Hernu vir [N] maand(e)" (knoppie) — word vanaf Storie 4.5 deur die `patterns/lidmaatskap-hernu.php`-patroon (die My Profiel → Lidmaatskap-blad hernuwings-afdeling) gerender, deur die `ink-foundation`-teksdomein (`esc_html__`) sodat hulle vertaalbaar is en deur die Engels-lek-skandering gevang word. **Geen besparings-/%-afslag-raam** op die hernuwings-UI (staande reël — sien die ✅-nota hieronder, wat 4.4 ÉN 4.5 dek). "Hernu" by lansering = 'n verdere vaste termyn via PayFast aankoop (Storie 4.2); **geen outo-hernuwing** (Stories 4.9–4.11 is na-lansering). Ook gerender: "Prys binnekort beskikbaar" (geen lewende prys), "Binnekort beskikbaar" (`aria-disabled`, onsellbare plan), "Meld aan om jou lidmaatskap te hernu." (uitgelogde terugval) — almal via `esc_html__`. Die My Profiel-houer self is Epic 9 (Storie 9.4); 4.5 lewer net die hernuwings-afdeling.)*

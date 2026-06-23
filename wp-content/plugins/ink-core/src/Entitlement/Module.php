@@ -57,10 +57,22 @@ defined( 'ABSPATH' ) || exit;
  * WooCommerce is inactive it wires zero hooks (graceful no-op). It carries zero
  * `Ink\Tiers` coupling (store suppression is unrelated to writer Gradering).
  *
+ * Story 4.7 adds the lid-family Afrikaans STATUS MESSAGES (FR-9): the four
+ * access-state messages (active / expired / access-denied / payment-failed) are
+ * projected as single-source, glossary-backed literals into {@see \Ink\I18n\Terms}
+ * (from `docs/afrikaans-terms.md` Deel 3 — human-authored, never AI-translated), and
+ * the state→message resolution lives in {@see MembershipStatus} (the closed access-
+ * state enum, mirroring {@see LidmaatskapTerm}) + {@see StatusMessages} (the resolver),
+ * exposed through {@see Api::statusMessage()} / {@see Api::statusMessageFor()}. Like
+ * the 4.3 gate, the resolver is a PURE ON-DEMAND READ — it registers NO hook (so
+ * {@see register()} is unchanged by Story 4.7) and renders nothing. The render
+ * CONSUMERS are later stories: the publish-DENIAL point (Story 6.8, `Ink\Submission`)
+ * and the My Profiel / Skrywerprofiel status SURFACE (Story 9.4).
+ *
  * Still RESERVED for later Epic-4 stories (NOT built here): the actual publish-flow
- * WIRING of the gate (Story 6.8 — `Ink\Submission`, which does not exist yet); the
- * full Afrikaans status-messaging copy (Story 4.7); and the lifecycle email COPY +
- * expiry warnings (Stories 4.7/4.8).
+ * WIRING of the gate + the denial-message render (Story 6.8 — `Ink\Submission`, which
+ * does not exist yet); and the lifecycle email COPY + expiry warnings (Story 4.8 —
+ * which route through the Notifications form-letter store, not this status registry).
  *
  * THE conflation rule (AD-1, FR-13): Entitlement controls submission entitlement
  * and is kept strictly independent of writer Gradering — `Ink\Entitlement` ⟂

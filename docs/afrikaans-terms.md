@@ -214,6 +214,14 @@ Hierdie woorde en frases verskyn as knoppies, skakels en toestandsboodskappe. Ge
 | Toegang geweier (nie aangemeld nie) | "Jy moet aangemeld wees om te reageer." |
 | Toegang geweier (betaalde lidmaatskap nodig) | "Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies." |
 
+> **Registerprojeksie (Storie 4.7, FR-9 — lidmaatskap-statusboodskappe).** Vier van die boodskappe hierbo is die **lid-familie toegangstoestand-boodskappe** wat 'n lid se vier toestande dek — **aktief / verval / toegang-geweier / betaling-misluk**. Hulle word VERBATIM (geen KI-vertaling, geen nuwe bewoording) in die `ink-core`-terminologieregister (`Ink\I18n\Terms`) geprojekteer onder stabiele konsep-sleutels, en deur die sleutel verbruik (nooit inlyn nie) via `Ink\Entitlement\Api::statusMessage()`:
+> - `status_active` → "Lidmaatskapbevestiging" ("Jou lidmaatskap is aktief. Jy kan nou werk plaas.")
+> - `status_expired` → "Lidmaatskap verval" ("Jou lidmaatskap het verval. Hernu om werk te plaas.")
+> - `status_access_denied` → "Toegang geweier (betaalde lidmaatskap nodig)" ("Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies.")
+> - `status_payment_failed` → "Betaling misluk of gekanselleer" ("Jou betaling het misluk of is gekanselleer.")
+>
+> Hierdie glossaar bly die menslike bron van waarheid; die register is sy masjienprojeksie. Die verbruikers is latere stories: die plaas-**weieringspunt** (Storie 6.8, `Ink\Submission`) en die My Profiel / Skrywerprofiel **status-oppervlak** (Storie 9.4). Die "verval binnekort"-herinnering (hierbo) is NIE deel van die vier 4.7-toestande nie — dit is Storie 4.8 / 9.9 (verval-herinnering), en die "nie aangemeld nie"-weiering is 'n reaksie-toegangsgeval, nie 'n lidmaatskap-toestand nie.
+
 ---
 
 ## Deel 4: Terme om te vermy

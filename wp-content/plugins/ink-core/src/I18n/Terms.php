@@ -92,6 +92,27 @@ final class Terms {
 			'account_reject'           => __( 'Verwerp', 'ink-core' ),
 			'account_approval_queue'   => __( 'Rekening-goedkeuringstou', 'ink-core' ),
 
+			// Lidmaatskap status messages (Story 4.7, FR-9 — the four lid-family
+			// access-state messages). These are the MACHINE PROJECTION of
+			// `docs/afrikaans-terms.md` Deel 3 ("Stelsel- en statusboodskappe",
+			// the curated status copy) — HUMAN-AUTHORED, copied VERBATIM, never
+			// AI-translated and never invented here (afrikaans-terms.md remains
+			// the source of truth; this is its projection). The four AC states
+			// map one-to-one to these keys via {@see \Ink\Entitlement\MembershipStatus}:
+			// status_active → Deel 3 "Lidmaatskapbevestiging"; status_expired →
+			// "Lidmaatskap verval"; status_access_denied → "Toegang geweier (betaalde
+			// lidmaatskap nodig)"; status_payment_failed → "Betaling misluk of
+			// gekanselleer".
+			// Consumed BY KEY (never inlined) via `Ink\Entitlement\Api::statusMessage()`
+			// at the publish-denial point (Story 6.8) + the My Profiel / Skrywerprofiel
+			// status surface (Story 9.4). They are full SENTENCES (not single-word
+			// labels), but they remain controlled-vocabulary lid-family copy, so the
+			// single-source registry rule applies the same way.
+			'status_active'            => __( 'Jou lidmaatskap is aktief. Jy kan nou werk plaas.', 'ink-core' ),
+			'status_expired'           => __( 'Jou lidmaatskap het verval. Hernu om werk te plaas.', 'ink-core' ),
+			'status_access_denied'     => __( 'Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies.', 'ink-core' ),
+			'status_payment_failed'    => __( 'Jou betaling het misluk of is gekanselleer.', 'ink-core' ),
+
 			// Writer Gradering (the progression system + grades).
 			'gradering'                => __( 'Gradering', 'ink-core' ),
 			'brons'                    => __( 'Brons', 'ink-core' ),

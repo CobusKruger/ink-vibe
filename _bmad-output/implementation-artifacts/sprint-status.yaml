@@ -45,6 +45,7 @@ last_updated: 2026-06-23
 # 4-2 → review 2026-06-22 (create-story + dev-story, the Ink\Entitlement PurchaseActivation PayFast self-activation seam)
 # 4-4 → review 2026-06-23 (create-story + dev-story, the Lidmaatskap PAGE — assembly-only pricing-table FSE pattern + page template; plan data via Ink\Entitlement\PlanPresenter/Api::planRows() + the ink_foundation_membership_plans() theme bridge; closed 4.1-AC3 vanity-savings cleanup)
 # 4-5 → review 2026-06-23 (create-story + dev-story, the Lidmaatskap RENEWAL section pattern (ink-foundation/lidmaatskap-hernu) + Ink\Entitlement\RenewalPresenter/Api::renewalRows() REUSING 4.4 PlanPresenter + 4.2 purchaseUrl; renew = manual fixed-term purchase, NO auto-renew, NO discount labels; interim page-my-profiel-lidmaatskap host superseded by Epic 9.4; tests 206 passed/1 skipped +11, zero regressions)
+# 4-7 → review 2026-06-23 (create-story + dev-story, FR-9 Afrikaans status messaging — projected the four lid-family status messages (active/expired/access-denied/payment-failed) VERBATIM from afrikaans-terms.md Deel 3 (human-authored, approved — zero AI Afrikaans, zero [NEEDS HUMAN AFRIKAANS]) into Ink\I18n\Terms::map() as single-source __() literals (status_active/status_expired/status_access_denied/status_payment_failed); added closed Ink\Entitlement\MembershipStatus enum (state→messageKey, mirroring LidmaatskapTerm) + Ink\Entitlement\StatusMessages resolver (messageFor + fromWcStatus, never returns PaymentFailed) exposed via Api::statusMessage()/statusMessageFor(). No consumer wired now: denial-copy → Story 6.8 (Ink\Submission, not built), status surface → Story 9.4 (My Profiel/Skrywerprofiel). canSubmit() bool contract unchanged; resolver/enum register NO hook. Conflation-clean (no Ink\Tiers). tests 248 passed/1 skipped +13, zero regressions; phpcs/phpstan clean; deptrac green no Entitlement→Tiers edge)
 # 4-6 → review 2026-06-23 (create-story + dev-story, the Ink\Entitlement\StorefrontSuppression collaborator — WooCommerce storefront-UI suppression via documented hooks: template_redirect (shop/catalog/cart → home), woocommerce_is_purchasable + woocommerce_loop_add_to_cart_link (non-lidmaatskap products inert), woocommerce_account_menu_items (prune downloads tab). CARVE-OUT: checkout page + lidmaatskap-product add-to-cart NEVER suppressed — distinguished by is_checkout() + the MembershipPlans product-id set SubmissionGate already uses, so the 4.2/4.4/4.5 purchase flow survives. WC-absent = zero hooks (no-op). Suppression is removal, no new Afrikaans copy. Zero Ink\Tiers coupling. Wired in Entitlement\Module::register() — no addModule/bootstrap edit. tests 217 passed/1 skipped +16, zero regressions; phpcs/phpstan clean; deptrac no new edge)
 project: ink-vibe
 project_key: NOKEY
@@ -96,7 +97,7 @@ development_status:
   4-4-lidmaatskap-page: review
   4-5-renewal-ui: review
   4-6-store-ui-suppression: review
-  4-7-status-messaging-afrikaans: backlog
+  4-7-status-messaging-afrikaans: review
   4-8-lidmaatskap-lifecycle-emails-r5: backlog
   4-9-auto-renew-recurring-post-launch: backlog
   4-10-recurring-renewal-warning-variant-post-launch: backlog

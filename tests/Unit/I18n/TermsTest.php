@@ -66,6 +66,57 @@ test( 'label returns taxonomy labels', function (): void {
 } );
 
 /**
+ * Story 4.7 / AC-1+AC-2: the four lid-family status messages resolve to their exact
+ * approved Afrikaans copy (projected VERBATIM from afrikaans-terms.md Deel 3), via the
+ * single-source registry — never an inline literal.
+ */
+test( 'label returns the four lidmaatskap status messages (Story 4.7)', function (): void {
+	expect( Terms::label( 'status_active' ) )
+		->toBe( 'Jou lidmaatskap is aktief. Jy kan nou werk plaas.' );
+	expect( Terms::label( 'status_expired' ) )
+		->toBe( 'Jou lidmaatskap het verval. Hernu om werk te plaas.' );
+	expect( Terms::label( 'status_access_denied' ) )
+		->toBe( 'Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies.' );
+	expect( Terms::label( 'status_payment_failed' ) )
+		->toBe( 'Jou betaling het misluk of is gekanselleer.' );
+} );
+
+/**
+ * Story 4.7 / AC-2: the status-message keys are registered (consumed by key, not inlined).
+ */
+test( 'the four status-message keys are registered', function (): void {
+	expect( Terms::has( 'status_active' ) )->toBeTrue();
+	expect( Terms::has( 'status_expired' ) )->toBeTrue();
+	expect( Terms::has( 'status_access_denied' ) )->toBeTrue();
+	expect( Terms::has( 'status_payment_failed' ) )->toBeTrue();
+} );
+
+/**
+ * Story 4.7 / Gate D: the status messages carry the expected lid-family Afrikaans
+ * tokens and NO English leakage (no obvious English status words).
+ */
+test( 'the status messages are Afrikaans with no English leakage', function (): void {
+	$messages = array(
+		Terms::label( 'status_active' ),
+		Terms::label( 'status_expired' ),
+		Terms::label( 'status_access_denied' ),
+		Terms::label( 'status_payment_failed' ),
+	);
+
+	$blob = strtolower( implode( ' ', $messages ) );
+
+	// Expected Afrikaans tokens are present (lid-family vocabulary).
+	foreach ( array( 'lidmaatskap', 'aktief', 'verval', 'betaling', 'misluk', 'betaalde lede' ) as $token ) {
+		expect( $blob )->toContain( $token );
+	}
+
+	// No English status words leak to the front end (Gate D).
+	foreach ( array( 'membership', 'expired', 'payment', 'failed', 'active', 'denied', 'cancelled' ) as $english ) {
+		expect( $blob )->not->toContain( $english );
+	}
+} );
+
+/**
  * AC-2: has() reports membership of the registry.
  */
 test( 'has reports whether a key is registered', function (): void {
