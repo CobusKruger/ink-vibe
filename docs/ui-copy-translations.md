@@ -530,6 +530,14 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | / [N]mo | / [N] mnd | Prys-suffix |
 | Your support keeps Inkwell ad-free and independent. | Jou ondersteuning hou INK advertensievry en onafhanklik. | |
 | Renew for [N] month(s) | Hernu vir [N] maand(e) | Knoppie |
+| Renew for [N] month (singular) | Hernu vir %d maand | Knoppie — `_n()` enkelvoud (N = 1). "maand" is die staande glossaar-enkelvoud (Storie 4.1 termyn-etiket "1 maand"). |
+| Renew for [N] months (plural) | Hernu vir %d maande | Knoppie — `_n()` meervoud (N = 6 / 12). "maande" is die staande glossaar-meervoud (Storie 4.1 termyn-etikette "6 maande" / "12 maande"). |
+
+#### Gekureerde hernuwings-kopie (Storie 4.5, FR-8)
+
+*(Die drie gekureerde renewal-stringe hierbo — "Hernu lidmaatskap" (H2), "Kies hoe lank jy jou INK-lidmaatskap wil verleng." (intro) en "Hernu vir [N] maand(e)" (knoppie) — word vanaf Storie 4.5 deur die `patterns/lidmaatskap-hernu.php`-patroon (die My Profiel → Lidmaatskap-blad hernuwings-afdeling) gerender, deur die `ink-foundation`-teksdomein (`esc_html__`) sodat hulle vertaalbaar is en deur die Engels-lek-skandering gevang word. **Geen besparings-/%-afslag-raam** op die hernuwings-UI (staande reël — sien die ✅-nota hieronder, wat 4.4 ÉN 4.5 dek). "Hernu" by lansering = 'n verdere vaste termyn via PayFast aankoop (Storie 4.2); **geen outo-hernuwing** (Stories 4.9–4.11 is na-lansering). Ook gerender: "Prys binnekort beskikbaar" (geen lewende prys), "Binnekort beskikbaar" (`aria-disabled`, onsellbare plan), "Meld aan om jou lidmaatskap te hernu." (uitgelogde terugval) — almal via `esc_html__`. Die My Profiel-houer self is Epic 9 (Storie 9.4); 4.5 lewer net die hernuwings-afdeling.)*
+
+> **Enkelvoud/meervoud-knoppie (`_n()`) — gekureer, nie 'n KI-keuse nie.** Die knoppie word met WordPress se `_n( 'Hernu vir %d maand', 'Hernu vir %d maande', $n, 'ink-foundation' )` gerender. Die enkelvoud- ("maand", N = 1) en meervoud-vorms ("maande", N = 6 / 12) is NIE deur die ontwikkelaar-agent uitgedink nie — hulle is die staande glossaar-maandwoordeskat wat reeds in die Storie 4.1 termyn-etikette gebruik word ("1 maand" / "6 maande" / "12 maande", terminologieregister `term_1_month` / `term_6_months` / `term_12_months`). Hulle word hier eksplisiet as die gekureerde enkelvoud/meervoud-knoppiekopie aangeteken (sien die twee tabelrye hierbo). `_n()` bly die korrekte WP-meervoudsmeganisme; geen NUWE bewoording is uitgedink nie.
 
 #### Gekureerde blad-kopie (Storie 4.4, FR-7)
 

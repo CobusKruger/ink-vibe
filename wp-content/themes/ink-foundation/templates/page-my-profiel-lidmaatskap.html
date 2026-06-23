@@ -1,0 +1,15 @@
+<!-- INTERIM HOST (Storie 4.5, FR-8): hosts the ink-foundation/lidmaatskap-hernu renewal
+     section so it is verifiable BEFORE the My Profiel container exists. The My Profiel
+     page + tab framework is Epic 9 (Storie 9.4) + BuddyPress config (Storie 9.1). When
+     9.4 lands it will embed the lidmaatskap-hernu slug as the Lidmaatskap tab and this
+     interim page can be retired/redirected. The logged-in gate + "Meld aan om te hernu"
+     fallback live INSIDE the pattern PHP (static templates cannot call PHP). -->
+<!-- wp:template-part {"slug":"header","theme":"ink-foundation","tagName":"header","area":"header","lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:group {"tagName":"main","align":"full","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+<main class="wp-block-group alignfull">
+	<!-- wp:pattern {"slug":"ink-foundation/lidmaatskap-hernu"} /-->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","theme":"ink-foundation","tagName":"footer","area":"footer","lock":{"move":true,"remove":true}} /-->

@@ -16,8 +16,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * Other `ink-core` modules reach the lidmaatskap plan registry ONLY through this
  * facade (never into {@see MembershipPlans} internals): the 4.4 Lidmaatskap page
- * (`Api::plans()`), the 4.5 renewal UI (`Api::terms()` / `Api::priceFor()`), and
- * the 4.3 entitlement gate (`Api::can_submit()`). Mirrors
+ * (`Api::planRows()`), the 4.5 renewal UI (`Api::renewalRows()`), and the 4.3
+ * entitlement gate (`Api::can_submit()`). Mirrors
  * {@see \Ink\Notifications\Api}'s static-facade shape.
  *
  * Scope (Story 4.3): this facade now ALSO exposes the submission-entitlement gate —
@@ -166,6 +166,28 @@ final class Api {
 	 * @return list<array{months:int, term_label:string, price:string|null, is_available:bool, purchase_url:string|null}>
 	 */
 	public static function planRows(): array {
+		return self::presenter()->rows();
+	}
+
+	/**
+	 * The presentation-ready rows for the My Profiel renewal section (Story 4.5, FR-8).
+	 *
+	 * The single cross-module surface the theme's `ink_foundation_renewal_plans()` bridge
+	 * consumes (AD-1: the facade is the only public surface): one flat row per fixed term
+	 * (1/6/12) for the renewal UI. At launch the renewal rows are IDENTICAL to the 4.4
+	 * plan rows (term label, the WooCommerce runtime price + ZAR `price_display`, the
+	 * sellability flag, and the WC/PayFast `purchase_url` — the RENEW CTA target), so this
+	 * delegates straight to the shared {@see PlanPresenter} ({@see planRows()}) — no
+	 * separate read-model is needed (a renewal-only class would be a verbatim pass-through).
+	 * Renewal at launch IS the manual fixed-term purchase flow (renew = buy another fixed
+	 * term via {@see purchaseUrl()}); there is no auto-renew/recurring concept and no
+	 * discount/savings field (Stories 4.9–4.11 are post-launch). The named surface is kept
+	 * distinct from {@see planRows()} so a future story can let renewal rows diverge
+	 * (renewal-specific framing) without re-threading the theme bridge.
+	 *
+	 * @return list<array{months:int, term_label:string, price:string|null, price_display:string|null, is_available:bool, purchase_url:string|null}>
+	 */
+	public static function renewalRows(): array {
 		return self::presenter()->rows();
 	}
 

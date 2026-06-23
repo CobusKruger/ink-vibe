@@ -231,6 +231,59 @@ if ( ! function_exists( 'ink_foundation_membership_plans' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ink_foundation_renewal_plans' ) ) {
+	/**
+	 * The lidmaatskap renewal rows for the My Profiel renewal section (Story 4.5, FR-8).
+	 *
+	 * Presentation glue only: a read-through to the `ink-core` Entitlement facade
+	 * ({@see \Ink\Entitlement\Api::renewalRows()}) so the renewal section pattern can
+	 * surface DYNAMIC renewal data — term label, the WooCommerce-resolved price, the
+	 * sellability flag, and the WC/PayFast purchase URL (the RENEW CTA target) — WITHOUT
+	 * any plan business logic living in the theme (three-layer separation). The rows are
+	 * the same 4.4 plan-row shape REUSED for renewal: "renew" at launch is the manual
+	 * fixed-term purchase (renew = buy another fixed term via the 4.2 hand-off); there is
+	 * no auto-renew/recurring affordance and no discount/savings field. The theme
+	 * iterates the rows it is handed and renders token-only locked blocks; it computes
+	 * nothing, hardcodes no price, and never re-queries WooCommerce.
+	 *
+	 * `class_exists`-guarded so the theme degrades gracefully to an empty list when
+	 * `ink-core` is inactive — the section then renders its static term labels without a
+	 * live price/CTA, never a fatal.
+	 *
+	 * @return array<int, array{months:int, term_label:string, price:string|null, price_display:string|null, is_available:bool, purchase_url:string|null}>
+	 */
+	function ink_foundation_renewal_plans(): array {
+		if ( ! class_exists( 'Ink\\Entitlement\\Api' ) ) {
+			return array();
+		}
+
+		return \Ink\Entitlement\Api::renewalRows();
+	}
+}
+
+if ( ! function_exists( 'ink_foundation_is_member_logged_in' ) ) {
+	/**
+	 * Whether the current viewer is a logged-in lid (Story 4.5 renewal-section gate).
+	 *
+	 * A thin presentation gate so the renewal section (and its interim host) renders the
+	 * renew options only for a logged-in lid, and a "Meld aan om te hernu" fallback
+	 * otherwise. This is NOT the submission-entitlement gate (that is Story 4.3/6.8,
+	 * `Api::can_submit()`) — the renewal surface is open to any logged-in lid wishing to
+	 * extend access; no entitlement logic lives in the theme. `function_exists`-guarded
+	 * so the theme degrades to "logged out" (false) outside a WordPress runtime — never
+	 * fatals.
+	 *
+	 * @return bool True when a logged-in lid is viewing.
+	 */
+	function ink_foundation_is_member_logged_in(): bool {
+		if ( ! function_exists( 'is_user_logged_in' ) ) {
+			return false;
+		}
+
+		return is_user_logged_in();
+	}
+}
+
 if ( ! function_exists( 'ink_foundation_social_login_available' ) ) {
 	/**
 	 * Whether the social-login section should render on the auth surfaces (Story 3.5).

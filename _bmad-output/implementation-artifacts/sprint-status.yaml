@@ -44,6 +44,7 @@ last_updated: 2026-06-23
 # epic-4 started 2026-06-22 (first Epic 4 story); 4-1 → review 2026-06-22 (create-story + dev-story, the Ink\Entitlement plan-registry seam)
 # 4-2 → review 2026-06-22 (create-story + dev-story, the Ink\Entitlement PurchaseActivation PayFast self-activation seam)
 # 4-4 → review 2026-06-23 (create-story + dev-story, the Lidmaatskap PAGE — assembly-only pricing-table FSE pattern + page template; plan data via Ink\Entitlement\PlanPresenter/Api::planRows() + the ink_foundation_membership_plans() theme bridge; closed 4.1-AC3 vanity-savings cleanup)
+# 4-5 → review 2026-06-23 (create-story + dev-story, the Lidmaatskap RENEWAL section pattern (ink-foundation/lidmaatskap-hernu) + Ink\Entitlement\RenewalPresenter/Api::renewalRows() REUSING 4.4 PlanPresenter + 4.2 purchaseUrl; renew = manual fixed-term purchase, NO auto-renew, NO discount labels; interim page-my-profiel-lidmaatskap host superseded by Epic 9.4; tests 206 passed/1 skipped +11, zero regressions)
 project: ink-vibe
 project_key: NOKEY
 tracking_system: file-system
@@ -92,7 +93,7 @@ development_status:
   4-2-front-end-payfast-purchase-flow: review
   4-3-access-enforcement-entitlement-gate: review
   4-4-lidmaatskap-page: review
-  4-5-renewal-ui: backlog
+  4-5-renewal-ui: review
   4-6-store-ui-suppression: backlog
   4-7-status-messaging-afrikaans: backlog
   4-8-lidmaatskap-lifecycle-emails-r5: backlog

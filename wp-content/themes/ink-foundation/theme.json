@@ -253,6 +253,11 @@
       "name": "page-lidmaatskap",
       "title": "Lidmaatskap",
       "postTypes": [ "page" ]
+    },
+    {
+      "name": "page-my-profiel-lidmaatskap",
+      "title": "My Profiel — Lidmaatskap (hernu)",
+      "postTypes": [ "page" ]
     }
   ],
   "templateParts": [
