@@ -4,7 +4,7 @@ baseline_commit: b55807e967fe7a040b1c72910425797081d6054d
 
 # Story 4.1: Three fixed-term lidmaatskap products
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

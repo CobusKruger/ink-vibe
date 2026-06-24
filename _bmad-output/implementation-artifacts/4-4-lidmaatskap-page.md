@@ -4,7 +4,7 @@ baseline_commit: f39411571ec08ab3836f89da839eab1cd1331717
 
 # Story 4.4: Lidmaatskap page
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

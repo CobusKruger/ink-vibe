@@ -4,7 +4,7 @@ baseline_commit: 1b513540aee8340d438880426c2e7617df98277b
 
 # Story 4.2: Front-end PayFast purchase flow
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

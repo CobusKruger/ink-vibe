@@ -4,7 +4,7 @@ baseline_commit: 28ccaeff7e4c112cb2b7e0fcb8807d1f064bd4d7
 
 # Story 4.7: Status messaging (Afrikaans)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

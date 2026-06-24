@@ -4,7 +4,7 @@ baseline_commit: fcb6f936bf77bd5c3822432533e77aa164b74e8a
 
 # Story 4.5: Renewal UI
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

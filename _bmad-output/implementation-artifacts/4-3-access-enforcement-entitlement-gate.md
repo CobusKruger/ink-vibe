@@ -4,7 +4,7 @@ baseline_commit: c69971cf33b81f14c5bbd306a9904c43e3e3dc2e
 
 # Story 4.3: Access enforcement (entitlement gate)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

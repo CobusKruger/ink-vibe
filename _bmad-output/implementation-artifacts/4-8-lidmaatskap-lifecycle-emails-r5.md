@@ -4,7 +4,7 @@ baseline_commit: af08370ae1746f0a41cde380f4507a6031ddbaad
 
 # Story 4.8: Lidmaatskap lifecycle emails (R5)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

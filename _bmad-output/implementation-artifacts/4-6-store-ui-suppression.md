@@ -4,7 +4,7 @@ baseline_commit: 6baa1a239079d163b7f7be2e7dd6e2c3942b96cc
 
 # Story 4.6: Store-UI suppression
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

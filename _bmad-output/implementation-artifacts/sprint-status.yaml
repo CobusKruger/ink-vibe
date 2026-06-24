@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-23
+last_updated: 2026-06-24
 # epic-2 started 2026-06-21; 2-1 → review 2026-06-21
 # epic-2 retrospective completed 2026-06-22
 # epic-3 started 2026-06-22; 3-1 → done (code review) 2026-06-22; 3-3 → done 2026-06-22; 3-4 → done (research spike) 2026-06-22; 3-6 → done (code review) 2026-06-22; 3-5 → done (code review) 2026-06-22
@@ -91,18 +91,24 @@ development_status:
   epic-3-retrospective: optional
 
   # Epic 4: Membership, access & payment
-  epic-4: in-progress
-  4-1-three-fixed-term-lidmaatskap-products: review
-  4-2-front-end-payfast-purchase-flow: review
-  4-3-access-enforcement-entitlement-gate: review
-  4-4-lidmaatskap-page: review
-  4-5-renewal-ui: review
-  4-6-store-ui-suppression: review
-  4-7-status-messaging-afrikaans: review
-  4-8-lidmaatskap-lifecycle-emails-r5: review
-  4-9-auto-renew-recurring-post-launch: backlog
-  4-10-recurring-renewal-warning-variant-post-launch: backlog
-  4-11-recurring-renewal-discount-post-launch: backlog
+  # All 8 LAUNCH stories (4-1..4-8) done via the full BMAD loop (create-story →
+  # dev-story → 3-layer adversarial code review → fixes → full suite → commit).
+  # 4-9..4-11 are POST-LAUNCH (recurring/auto-renew), blocked on PayFast recurring
+  # verification (epics.md §14.8 / OQ-9) — intentionally NOT built; left backlog.
+  # See deferred-work.md "Epic 4" section. epic-4-retrospective (optional) is the
+  # formal close step.
+  epic-4: done
+  4-1-three-fixed-term-lidmaatskap-products: done
+  4-2-front-end-payfast-purchase-flow: done
+  4-3-access-enforcement-entitlement-gate: done
+  4-4-lidmaatskap-page: done
+  4-5-renewal-ui: done
+  4-6-store-ui-suppression: done
+  4-7-status-messaging-afrikaans: done
+  4-8-lidmaatskap-lifecycle-emails-r5: done
+  4-9-auto-renew-recurring-post-launch: backlog        # POST-LAUNCH — not built (PayFast recurring dep)
+  4-10-recurring-renewal-warning-variant-post-launch: backlog   # POST-LAUNCH — depends on 4.9
+  4-11-recurring-renewal-discount-post-launch: backlog          # POST-LAUNCH — depends on 4.9
   epic-4-retrospective: optional
 
   # Epic 5: Writer Gradering (Brons / Silwer / Goud / Meester)

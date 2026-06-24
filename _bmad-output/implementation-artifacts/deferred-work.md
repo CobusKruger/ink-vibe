@@ -71,6 +71,23 @@ Consolidated `defer` findings from code reviews. Each item is real but not actio
 ## Deferred from: code review of Story 2.5 — term-images-native (2026-06-21)
 - **No attachment-validity check on term-image save** [`Content/TermImages.php` save()] — `absint` accepts any positive integer, so a non-existent / non-image / deleted attachment ID persists and `Api::termImageId()` returns it as valid. Front-end rendering is out of scope here; validate (`wp_attachment_is_image`) where the image is consumed (Epics 8/11) or add a save-time check then.
 
+## Deferred from: Epic 4 — Membership, access & payment (2026-06-24)
+
+### Stories 4.9–4.11 — POST-LAUNCH (not built; blocked on PayFast recurring verification)
+The three recurring/auto-renew stories are explicitly post-launch per epics.md §14.8 / OQ-9 and are **intentionally not implemented** in this epic. They stay `backlog` in sprint-status (not a gap):
+- **4.9 Auto-renew (recurring)** [FR-63] — requires PayFast recurring support + WooCommerce-Memberships extension compatibility to be **verified first**. Until then, renewal IS the manual fixed-term flow shipped in Story 4.5. No code.
+- **4.10 Recurring-renewal warning variant** [FR-63] — depends on 4.9; the launch lifecycle emails (Story 4.8) cover the manual-term thank-you + 1-week/1-month expiry warnings only.
+- **4.11 Recurring-renewal discount** [FR-63, §14.5] — depends on 4.9; a genuine recurring discount with no vanity "%-off" framing. (Launch carries no discount/savings framing at all — see 4.1 AC-3.)
+
+### Cross-story deferrals surfaced by Epic 4 code reviews
+- **Story 9.4 (My Profiel) must embed the renewal section** — Story 4.5 ships the `ink-foundation/lidmaatskap-hernu` section + an interim `page-my-profiel-lidmaatskap` host. 9.4 must embed the section into the real My Profiel → Lidmaatskap tab and retire/redirect the interim host. FR-8 only fully reaches users once 9.4 lands (4.5 AC is PARTIAL by design).
+- **Story 6.8 wires the entitlement gate at the publish point** — Story 4.3 delivers `Ink\Entitlement\Api::can_submit()` (the evaluation) but no enforcement point exists yet (`Ink\Submission` is Epic 6). 6.8 calls `can_submit()` at *plaas* and surfaces the 4.7 denial copy. FR-6/FR-19 fully close at 6.8.
+- **Story 4.7 status copy + 4.8 email copy are `[NEEDS HUMAN AFRIKAANS]` / `[WAG OP MENSLIKE KOPIE]` placeholders** where not yet curated — pre-launch content gate. 4.8 lifecycle emails stay toggle-OFF until human copy lands AND staff enable a (type, term) pair. In scope for the NFR-1 leak gate (tooling: Story 17.4 / 18.x).
+- **4.8 lifecycle-email tone for non-payment activations** — the activation thank-you fires on *any* `→ active` transition (incl. complimentary/admin grants). 4.8's copy author should keep the wording tone-appropriate or add a paid-only filter if desired.
+- **Store-UI "reads as a community" residue → Epic 15/18** — Story 4.6 suppresses the literal cart/catalog/checkout surfaces; WooCommerce nav-menu items / breadcrumbs are nav config (Epic 15 nav) / Rank Math (Epic 18), not suppressed here.
+- **Pre-existing `patterns/onboarding.php` phpcs errors** (Epic 3, unmodified by Epic 4) — repo-hygiene debt for a separate cleanup pass; not an Epic-4 regression.
+- **Live-WooCommerce / PayFast-sandbox E2E verification → Story 18.8** — the entire Epic-4 WC/PayFast/Memberships/Action-Scheduler integration is unit-tested against mocks (Brain Monkey); real-WP + PayFast-sandbox round-trips (purchase → activate → entitlement → renewal → expiry-warning scheduling) are the E2E layer's job.
+
 ## Deferred from: code review of story 3-1 — authentication-pages (2026-06-22)
 - **No `is_user_logged_in()` guard on the auth surfaces** [`ink-foundation/patterns/auth-register.php`, `auth-forgot-password.php`] — a logged-in member visiting the page sees a stale "Skep jou rekening" / "Wagwoord-herstel" screen with live links; Meld aan degrades gracefully (the `core/loginout` block swaps to a logout link). Static FSE patterns make an in-pattern conditional awkward; revisit when the auth pages get their real page-binding/routing.
 - **Hardcoded root-relative slug cross-links + unbound page objects** [`ink-foundation/patterns/auth-*.php`, `theme.json`] — patterns link to literal `/meld-aan` `/registreer` `/wagwoord-herstel` and `customTemplates` are registered, but this story creates no `page` objects bound to those slugs, so the cross-links are dead until an editor creates the pages at exactly those slugs. Page creation is editorial/content; the slug coupling is inherent to static patterns. Bind/verify when the auth pages are created.
