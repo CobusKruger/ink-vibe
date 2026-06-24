@@ -69,10 +69,24 @@ defined( 'ABSPATH' ) || exit;
  * CONSUMERS are later stories: the publish-DENIAL point (Story 6.8, `Ink\Submission`)
  * and the My Profiel / Skrywerprofiel status SURFACE (Story 9.4).
  *
+ * Story 4.8 adds the lidmaatskap LIFECYCLE EMAILS (FR-9a / R5): the expiry-warning
+ * half lives in the {@see LifecycleEmails} collaborator — a 1-week-prior warning on
+ * every term + a 1-month-prior warning on longer terms (6/12), scheduled off the
+ * shared SAST expiry anchor ({@see \Ink\Kernel\Sast}, AD-2) via Action Scheduler
+ * (bundled with WooCommerce; AD-6/AD-9), re-checked LIVE on send (a renewed/cancelled
+ * lid is not warned, reusing the 4.3 end-of-day-SAST logic), each type toggleable
+ * on/off PER TERM (the {type}×{term} matrix via the 1.12 `TemplateStore` per-term
+ * toggle keys, fail-safe OFF). The activation thank-you stays the ONE
+ * {@see PurchaseActivation} template (`ink_membership_activated_email`) — 4.8 only adds
+ * its per-term toggle gate (not a second template). All copy is Afrikaans-source with
+ * `[WAG OP MENSLIKE KOPIE]` placeholders + toggles OFF until human copy lands (NFR-1 /
+ * Gate D; never AI-translated). It routes through the Notifications form-letter store,
+ * not the 4.7 status registry.
+ *
  * Still RESERVED for later Epic-4 stories (NOT built here): the actual publish-flow
  * WIRING of the gate + the denial-message render (Story 6.8 — `Ink\Submission`, which
- * does not exist yet); and the lifecycle email COPY + expiry warnings (Story 4.8 —
- * which route through the Notifications form-letter store, not this status registry).
+ * does not exist yet); recurring/auto-renew + the recurring-renewal warning variant +
+ * recurring discount (Stories 4.9–4.11, post-launch).
  *
  * THE conflation rule (AD-1, FR-13): Entitlement controls submission entitlement
  * and is kept strictly independent of writer Gradering — `Ink\Entitlement` ⟂
@@ -119,12 +133,22 @@ final class Module implements ModuleContract {
 	 * `register()` wires ZERO hooks when WooCommerce is inactive
 	 * ({@see StorefrontSuppression::isWooCommerceActive()}) — so wiring it
 	 * unconditionally here is safe and never fatals on a WC-absent install.
+	 *
+	 * Story 4.8 wires the {@see LifecycleEmails} collaborator (the same house style):
+	 * it registers the two expiry-warning templates (Afrikaans-source, toggles OFF),
+	 * the WC Memberships status-change listener at priority 20 (AFTER 4.2's priority-10
+	 * thank-you trigger — one transition fires the thank-you then (re)schedules/cancels
+	 * the warnings), and the Action Scheduler send callback. Self-gated by the `→ active`
+	 * check + the Action-Scheduler/WC availability seams + the fail-safe-OFF per-term
+	 * toggles, so wiring it unconditionally is safe on a WC / Action-Scheduler-absent
+	 * install (graceful no-op, no fatal).
 	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'registerSettings' ) );
 
 		( new PurchaseActivation() )->register();
 		( new StorefrontSuppression() )->register();
+		( new LifecycleEmails() )->register();
 	}
 
 	/**

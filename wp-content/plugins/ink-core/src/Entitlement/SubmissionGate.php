@@ -116,9 +116,14 @@ class SubmissionGate {
 	 * check and is evaluated by the END DATE (the AD-2 cron-lag protection). `active`,
 	 * `complimentary`, `free`, and `free_trial` likewise pass the status check.
 	 *
+	 * `public` because it is the SINGLE SOURCE for "which statuses are an administrative
+	 * revocation" across the Entitlement module: the Story-4.8 {@see LifecycleEmails}
+	 * send-time re-check reuses this exact set (do not re-derive / duplicate it — a
+	 * second hardcoded copy would silently drift from this one).
+	 *
 	 * @var list<string>
 	 */
-	private const REVOKED_STATUSES = array( 'cancelled', 'paused', 'pending', 'pending_cancellation' );
+	public const REVOKED_STATUSES = array( 'cancelled', 'paused', 'pending', 'pending_cancellation' );
 
 	/**
 	 * Whether the user may plaas (submit/publish) right now.

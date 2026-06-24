@@ -162,7 +162,7 @@ class PurchaseActivation {
 			return; // Malformed membership object ⇒ graceful no-op.
 		}
 
-		$this->sendActivationEmail( $user_id );
+		$this->sendActivationEmail( $user_id, $user_membership );
 	}
 
 	/**
@@ -267,18 +267,37 @@ class PurchaseActivation {
 	 * (`get_userdata()`, falling back to `user_login` when `display_name` is empty —
 	 * the {@see \Ink\Accounts\Approval::sendDecisionEmail()} precedent), then calls
 	 * {@see Notifications::send()} once. A missing user / empty email is a graceful
-	 * no-op. The send is gated by the template's toggle (OFF until Story 4.8), so no
-	 * `wp_mail` dispatches today.
+	 * no-op.
 	 *
-	 * @param int $user_id The activated lid.
+	 * PER-TERM TOGGLE (Story 4.8, AC-2/AC-4): the activation thank-you is toggleable
+	 * PER TERM (1/6/12). When the activated membership's term resolves, the send is
+	 * gated on the per-term toggle key ({@see LifecycleEmails::toggleKeyFor()} over the
+	 * shared {@see ACTIVATED_TEMPLATE_KEY}) — fail-safe OFF, so an unconfigured term
+	 * does not send. When the term cannot be resolved (malformed membership / WC absent
+	 * / non-INK membership), it FALLS BACK to the base template toggle (the
+	 * {@see Notifications::send()} gate on {@see ACTIVATED_TEMPLATE_KEY}) as the
+	 * authority — so the existing 4.2 behaviour (base-toggle-gated, OFF until copy
+	 * lands) is preserved when no per-term toggle is in play. Either way there is
+	 * exactly ONE activation template; only the toggle gating is per term.
+	 *
+	 * @param int   $user_id         The activated lid.
+	 * @param mixed $user_membership The WC membership (to resolve the term for the toggle).
 	 */
-	private function sendActivationEmail( int $user_id ): void {
+	private function sendActivationEmail( int $user_id, mixed $user_membership = null ): void {
 		$user = get_userdata( $user_id );
 
 		// Accept ONLY a genuine WP_User (the Approval::sendDecisionEmail() house
 		// pattern) — a filtered / unexpected non-WP_User return from get_userdata()
 		// is a graceful no-op, never a dispatch with an unresolved recipient.
 		if ( ! ( $user instanceof \WP_User ) || '' === (string) $user->user_email ) {
+			return;
+		}
+
+		// Per-term toggle gate: when the term resolves, the (thank-you, term) pair must
+		// be ON (fail-safe OFF). When it does not resolve, fall through to the base
+		// template toggle (the Notifications::send() gate) as the sole authority.
+		$term = $this->resolveTerm( $user_membership );
+		if ( $term instanceof LidmaatskapTerm && ! $this->isActivationEnabledForTerm( $term ) ) {
 			return;
 		}
 
@@ -292,6 +311,71 @@ class PurchaseActivation {
 			(string) $user->user_email,
 			array( 'skrywer' => $skrywer )
 		);
+	}
+
+	/**
+	 * Whether the activation thank-you is enabled for a term — the per-term toggle.
+	 *
+	 * Reads the per-term toggle key ({@see LifecycleEmails::toggleKeyFor()} over
+	 * {@see ACTIVATED_TEMPLATE_KEY}) through the 1.12 Notifications options row, so an
+	 * unset (thank-you, term) pair is fail-safe OFF. The SAME derivation the warnings
+	 * use ({@see LifecycleEmails::isEnabledForTerm()}) — one source for the matrix.
+	 *
+	 * @param LidmaatskapTerm $term The activated membership's term.
+	 * @return bool True when the (thank-you, term) pair is explicitly ON.
+	 */
+	private function isActivationEnabledForTerm( LidmaatskapTerm $term ): bool {
+		$toggle_key = LifecycleEmails::toggleKeyFor( self::ACTIVATED_TEMPLATE_KEY, $term );
+
+		$all = get_option( \Ink\Notifications\TemplateStore::OPTION, array() );
+
+		if ( ! is_array( $all ) ) {
+			return false;
+		}
+
+		$row = $all[ $toggle_key ] ?? array();
+
+		if ( ! is_array( $row ) || ! array_key_exists( 'enabled', $row ) ) {
+			return false; // Unconfigured (thank-you, term) pair ⇒ fail-safe OFF.
+		}
+
+		return (bool) $row['enabled'];
+	}
+
+	/**
+	 * Resolve the activated membership's fixed term from its plan products (4.1 inverse).
+	 *
+	 * Mirrors {@see LifecycleEmails::resolveTerm()}: the term is the {@see LidmaatskapTerm}
+	 * whose mapped Story-4.1 product id is among the membership's plan products. Returns
+	 * null for a non-INK / malformed membership or when WooCommerce is absent — the
+	 * activation send then falls back to the base template toggle.
+	 *
+	 * @param mixed $user_membership The WC Memberships user-membership object.
+	 * @return LidmaatskapTerm|null The resolved fixed term, or null.
+	 */
+	private function resolveTerm( mixed $user_membership ): ?LidmaatskapTerm {
+		if ( ! is_object( $user_membership ) || ! method_exists( $user_membership, 'get_plan' ) ) {
+			return null;
+		}
+
+		$plan = $user_membership->get_plan();
+
+		if ( ! is_object( $plan ) || ! method_exists( $plan, 'get_product_ids' ) ) {
+			return null;
+		}
+
+		$plan_product_ids = array_map( 'intval', (array) $plan->get_product_ids() );
+		$plans            = new MembershipPlans();
+
+		foreach ( MembershipPlans::terms() as $term ) {
+			$product_id = $plans->productIdFor( $term );
+
+			if ( null !== $product_id && in_array( $product_id, $plan_product_ids, true ) ) {
+				return $term;
+			}
+		}
+
+		return null;
 	}
 
 	/**

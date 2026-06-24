@@ -313,6 +313,95 @@ test( 'the activation email does NOT fire on a no-op active→active save', func
 } );
 
 /**
+ * A WC membership double that ALSO exposes `get_plan()->get_product_ids()`, so the
+ * Story-4.8 per-term activation toggle can resolve the term (4.1 mapping inverse).
+ *
+ * @param list<int> $product_ids The plan's product ids.
+ */
+function ink_membership_with_plan( int $user_id, array $product_ids ): object {
+	$plan = new class( $product_ids ) {
+		/** @param list<int> $ids */
+		public function __construct( private array $ids ) {}
+		/** @return list<int> */
+		public function get_product_ids(): array {
+			return $this->ids;
+		}
+	};
+
+	return new class( $user_id, $plan ) {
+		public function __construct( private int $user_id, private object $plan ) {}
+		public function get_user_id(): int {
+			return $this->user_id;
+		}
+		public function get_plan(): object {
+			return $this->plan;
+		}
+	};
+}
+
+/**
+ * Story 4.8 (AC-2/AC-4): when the activated membership's term resolves, the activation
+ * thank-you is gated on the PER-TERM toggle. With the 4.1 map present (6mo→106) and the
+ * (thank-you, 6mo) per-term toggle OFF (fail-safe), NO wp_mail fires even though the base
+ * activation template toggle is ON.
+ */
+test( 'the activation thank-you does NOT send when the per-term toggle is OFF (term resolves)', function (): void {
+	Functions\when( 'get_option' )->alias(
+		function ( string $name, $default = false ) {
+			if ( 'ink_membership_plan_products' === $name ) {
+				return array( 1 => 101, 6 => 106, 12 => 112 );
+			}
+			if ( TemplateStore::OPTION === $name ) {
+				// Base activation toggle ON, but NO per-term row ⇒ per-term fail-safe OFF.
+				return array( PurchaseActivation::ACTIVATED_TEMPLATE_KEY => array( 'enabled' => true ) );
+			}
+			return $default;
+		}
+	);
+	Functions\when( 'apply_filters' )->returnArg( 2 );
+	Functions\when( 'get_userdata' )->justReturn( ink_userdata( 'lid@ink.test', 'Jan', 'jan' ) );
+	Functions\expect( 'wp_mail' )->never(); // per-term (thank-you,6mo) OFF ⇒ no dispatch.
+
+	ink_wire_notifications();
+	$activation = new PurchaseActivation();
+	$activation->registerEmailTemplate();
+
+	$activation->onMembershipStatusChanged( ink_membership_with_plan( 7, array( 106 ) ), 'pending', PurchaseActivation::STATUS_ACTIVE );
+} );
+
+/**
+ * Story 4.8 (AC-2/AC-4): with the 4.1 map present, the base activation toggle ON, AND the
+ * (thank-you, 6mo) per-term toggle ON, the activation thank-you dispatches exactly once.
+ */
+test( 'the activation thank-you sends once when BOTH the base and the per-term toggle are ON', function (): void {
+	$term_key = \Ink\Entitlement\LifecycleEmails::toggleKeyFor( PurchaseActivation::ACTIVATED_TEMPLATE_KEY, LidmaatskapTerm::SixMonths );
+
+	Functions\when( 'get_option' )->alias(
+		function ( string $name, $default = false ) use ( $term_key ) {
+			if ( 'ink_membership_plan_products' === $name ) {
+				return array( 1 => 101, 6 => 106, 12 => 112 );
+			}
+			if ( TemplateStore::OPTION === $name ) {
+				return array(
+					PurchaseActivation::ACTIVATED_TEMPLATE_KEY => array( 'enabled' => true ),
+					$term_key => array( 'enabled' => true ),
+				);
+			}
+			return $default;
+		}
+	);
+	Functions\when( 'apply_filters' )->returnArg( 2 );
+	Functions\when( 'get_userdata' )->justReturn( ink_userdata( 'lid@ink.test', 'Jan', 'jan' ) );
+	Functions\expect( 'wp_mail' )->once()->andReturn( true );
+
+	ink_wire_notifications();
+	$activation = new PurchaseActivation();
+	$activation->registerEmailTemplate();
+
+	$activation->onMembershipStatusChanged( ink_membership_with_plan( 7, array( 106 ) ), 'pending', PurchaseActivation::STATUS_ACTIVE );
+} );
+
+/**
  * AC-1/AC-3: a malformed membership object (no `get_user_id()`) is a graceful no-op
  * — the handler never fatals and never reads a card / gateway field.
  */
