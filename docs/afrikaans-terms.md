@@ -42,6 +42,7 @@ Die reël is eenvoudig: **kies een term per konsep en hou by daardie term.**
 | Die aanmeldproses | **registreer** | — | |
 | Die lid se toegangstoestand (gratis of betaald) | **lidmaatskap** | `membership` | **Eienaarsbesluit 2026-06-20 (G1):** "lidmaatskap" is nou die enigste term vir die membership/subscription-konsep. Die vorige onderskeid tussen "lidmaatskap" en "intekening" is laat vaar — gebruik **nie** meer "intekening" nie. Die gratis/betaald-onderskeid word deur "gratis lid" / "betaalde lid" uitgedruk. |
 | Die prys en tydsduur van 'n lidmaatskap | **aansluitingsopsie** | `membership_plan` | Drie vaste termyne: 1 maand / 6 maande / 12 maande. |
+| Die tydsduur van 'n aansluitingsopsie (vertoonetiket) | **1 maand** / **6 maande** / **12 maande** | `term_1_month` / `term_6_months` / `term_12_months` | Vaste waardestel (Story 4.1, `LidmaatskapTerm`-enum, agtergrondwaarde = aantal maande 1/6/12). Net die termynlengte word in `ink-core` vasgelê; die prys (R60/R300/R600) word deur die WooCommerce-produk besit en deur 'n redakteur in WooCommerce-admin verstel — geen vaste pryswaarde in kode nie. |
 | Iemand met 'n aktiewe betaalde lidmaatskap | **betaalde lid** | — | **Eienaarsbesluit 2026-06-20 (G1):** vervang "intekenlid". Mag werk plaas en alle opleidingstof gebruik. |
 | Iemand met 'n gratis geregistreerde rekening | **gratis lid** | — | Het 'n rekening; mag lees, reageer, volg en 'n leeslys hou. Mag **nie** werk plaas of opleidingstof gebruik nie. |
 
@@ -212,6 +213,14 @@ Hierdie woorde en frases verskyn as knoppies, skakels en toestandsboodskappe. Ge
 | Gradering-bevordering | "Baie geluk! Jy is na Silwer bevorder." |
 | Toegang geweier (nie aangemeld nie) | "Jy moet aangemeld wees om te reageer." |
 | Toegang geweier (betaalde lidmaatskap nodig) | "Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies." |
+
+> **Registerprojeksie (Storie 4.7, FR-9 — lidmaatskap-statusboodskappe).** Vier van die boodskappe hierbo is die **lid-familie toegangstoestand-boodskappe** wat 'n lid se vier toestande dek — **aktief / verval / toegang-geweier / betaling-misluk**. Hulle word VERBATIM (geen KI-vertaling, geen nuwe bewoording) in die `ink-core`-terminologieregister (`Ink\I18n\Terms`) geprojekteer onder stabiele konsep-sleutels, en deur die sleutel verbruik (nooit inlyn nie) via `Ink\Entitlement\Api::statusMessage()`:
+> - `status_active` → "Lidmaatskapbevestiging" ("Jou lidmaatskap is aktief. Jy kan nou werk plaas.")
+> - `status_expired` → "Lidmaatskap verval" ("Jou lidmaatskap het verval. Hernu om werk te plaas.")
+> - `status_access_denied` → "Toegang geweier (betaalde lidmaatskap nodig)" ("Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies.")
+> - `status_payment_failed` → "Betaling misluk of gekanselleer" ("Jou betaling het misluk of is gekanselleer.")
+>
+> Hierdie glossaar bly die menslike bron van waarheid; die register is sy masjienprojeksie. Die verbruikers is latere stories: die plaas-**weieringspunt** (Storie 6.8, `Ink\Submission`) en die My Profiel / Skrywerprofiel **status-oppervlak** (Storie 9.4). Die "verval binnekort"-herinnering (hierbo) is NIE deel van die vier 4.7-toestande nie — dit is Storie 4.8 / 9.9 (verval-herinnering), en die "nie aangemeld nie"-weiering is 'n reaksie-toegangsgeval, nie 'n lidmaatskap-toestand nie.
 
 ---
 

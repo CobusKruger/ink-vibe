@@ -72,6 +72,14 @@ deptrac:
             - Kernel
         Entitlement:
             - Kernel
+            # Story 4.2: the PurchaseActivation seam consumes the Notifications Api
+            # facade to register + fire the activation email (AD-9: "it emits the
+            # lifecycle events Notifications consumes"). A real, non-circular
+            # cross-module Api-facade dependency (Notifications depends only on
+            # Kernel and never back on Entitlement) — the documented "extend a
+            # module's allowlist as real Api-facade usage appears" path. The
+            # PERMANENT Entitlement ⟂ Tiers prohibition is untouched.
+            - Notifications
         Tiers:
             - Kernel
         Submission:

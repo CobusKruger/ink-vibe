@@ -24,11 +24,26 @@ if ( ! class_exists( 'WP_User' ) ) {
 		/** @var int Mirrors WP_User::$ID. */
 		public int $ID = 0;
 
+		/** @var string Mirrors WP_User::$user_email (a WP_User data field). */
+		public string $user_email = '';
+
+		/** @var string Mirrors WP_User::$display_name (a WP_User data field). */
+		public string $display_name = '';
+
+		/** @var string Mirrors WP_User::$user_login (a WP_User data field). */
+		public string $user_login = '';
+
 		/**
-		 * @param int $id Optional user id.
+		 * @param int    $id           Optional user id.
+		 * @param string $user_email   Optional email (the recipient-resolution field).
+		 * @param string $display_name Optional display name (the {skrywer} greeting source).
+		 * @param string $user_login   Optional login (the display_name fallback).
 		 */
-		public function __construct( int $id = 0 ) {
-			$this->ID = $id;
+		public function __construct( int $id = 0, string $user_email = '', string $display_name = '', string $user_login = '' ) {
+			$this->ID           = $id;
+			$this->user_email   = $user_email;
+			$this->display_name = $display_name;
+			$this->user_login   = $user_login;
 		}
 	}
 }

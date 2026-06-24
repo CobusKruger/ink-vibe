@@ -525,11 +525,48 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Monthly | Maandeliks | Planetiket |
 | 6 months | 6 maande | |
 | 12 months | 12 maande | |
-| Save 12% | Spaar 12% | |
-| Save 25% | Spaar 25% | |
+| ~~Save 12%~~ | **[REMOVED — no vanity savings framing at launch per FR-4 / Storie 4.1-AC3]** | Verwyder in Storie 4.4 (Lidmaatskap-blad bou). Geen besparings-/%-afslag-raam by lansering nie; 'n egte herhalende afslag is na-lansering (Storie 4.11). |
+| ~~Save 25%~~ | **[REMOVED — no vanity savings framing at launch per FR-4 / Storie 4.1-AC3]** | Verwyder in Storie 4.4 (Lidmaatskap-blad bou). Geen besparings-/%-afslag-raam by lansering nie; 'n egte herhalende afslag is na-lansering (Storie 4.11). |
 | / [N]mo | / [N] mnd | Prys-suffix |
 | Your support keeps Inkwell ad-free and independent. | Jou ondersteuning hou INK advertensievry en onafhanklik. | |
 | Renew for [N] month(s) | Hernu vir [N] maand(e) | Knoppie |
+| Renew for [N] month (singular) | Hernu vir %d maand | Knoppie — `_n()` enkelvoud (N = 1). "maand" is die staande glossaar-enkelvoud (Storie 4.1 termyn-etiket "1 maand"). |
+| Renew for [N] months (plural) | Hernu vir %d maande | Knoppie — `_n()` meervoud (N = 6 / 12). "maande" is die staande glossaar-meervoud (Storie 4.1 termyn-etikette "6 maande" / "12 maande"). |
+
+#### Gekureerde lidmaatskap-statusboodskappe (Storie 4.7, FR-9)
+
+*(GEFINALISEERDE Afrikaanse kopie — die vier lid-familie toegangstoestand-boodskappe, VERBATIM uit die terminologiegids Deel 3 ("Stelsel- en statusboodskappe", menslik geskryf en goedgekeur). Hulle is in die `ink-core`-terminologieregister (`Ink\I18n\Terms`) geprojekteer onder stabiele konsep-sleutels en word deur die sleutel verbruik via `Ink\Entitlement\Api::statusMessage()` — **nooit inlyn nie**. Dit is **NIE `[NEEDS HUMAN AFRIKAANS]`** nie: die kopie is reeds goedgekeur; geen KI-vertaling, geen plekhouers vir 4.7 nie. Sinskas, "jy"-stem, nul Engelse lek.)*
+
+| Toestand | Afrikaans | Registersleutel | Notas |
+|---|---|---|---|
+| Active (lidmaatskap aktief) | Jou lidmaatskap is aktief. Jy kan nou werk plaas. | `status_active` | Verbruik deur die status-oppervlak (Storie 9.4) |
+| Expired (lidmaatskap verval) | Jou lidmaatskap het verval. Hernu om werk te plaas. | `status_expired` | Verbruik deur die status-oppervlak (Storie 9.4) + die plaas-weieringspunt (Storie 6.8) |
+| Access denied (betaalde lidmaatskap nodig) | Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies. | `status_access_denied` | Verbruik deur die plaas-weieringspunt (Storie 6.8) |
+| Payment failed / cancelled | Jou betaling het misluk of is gekanselleer. | `status_payment_failed` | PayFast-terugkeer-toestand (nié 'n WooCommerce-lidmaatskapstatus nie); verbruik deur die 4.2-betalingsterugkeer-konteks |
+
+> **Geen `[NEEDS HUMAN AFRIKAANS]` vir Storie 4.7.** Al vier toestande karteer na reeds-goedgekeurde glossaar-kopie (Deel 3). Storie 4.7 PROJEKTEER die kopie — dit skryf geen Afrikaans nie en vind niks uit nie. Die "verval binnekort"-herinnering (Deel 3) is Storie 4.8 / 9.9 se werk, nie deel van die vier 4.7-toestande nie.
+
+#### Gekureerde hernuwings-kopie (Storie 4.5, FR-8)
+
+*(Die drie gekureerde renewal-stringe hierbo — "Hernu lidmaatskap" (H2), "Kies hoe lank jy jou INK-lidmaatskap wil verleng." (intro) en "Hernu vir [N] maand(e)" (knoppie) — word vanaf Storie 4.5 deur die `patterns/lidmaatskap-hernu.php`-patroon (die My Profiel → Lidmaatskap-blad hernuwings-afdeling) gerender, deur die `ink-foundation`-teksdomein (`esc_html__`) sodat hulle vertaalbaar is en deur die Engels-lek-skandering gevang word. **Geen besparings-/%-afslag-raam** op die hernuwings-UI (staande reël — sien die ✅-nota hieronder, wat 4.4 ÉN 4.5 dek). "Hernu" by lansering = 'n verdere vaste termyn via PayFast aankoop (Storie 4.2); **geen outo-hernuwing** (Stories 4.9–4.11 is na-lansering). Ook gerender: "Prys binnekort beskikbaar" (geen lewende prys), "Binnekort beskikbaar" (`aria-disabled`, onsellbare plan), "Meld aan om jou lidmaatskap te hernu." (uitgelogde terugval) — almal via `esc_html__`. Die My Profiel-houer self is Epic 9 (Storie 9.4); 4.5 lewer net die hernuwings-afdeling.)*
+
+> **Enkelvoud/meervoud-knoppie (`_n()`) — gekureer, nie 'n KI-keuse nie.** Die knoppie word met WordPress se `_n( 'Hernu vir %d maand', 'Hernu vir %d maande', $n, 'ink-foundation' )` gerender. Die enkelvoud- ("maand", N = 1) en meervoud-vorms ("maande", N = 6 / 12) is NIE deur die ontwikkelaar-agent uitgedink nie — hulle is die staande glossaar-maandwoordeskat wat reeds in die Storie 4.1 termyn-etikette gebruik word ("1 maand" / "6 maande" / "12 maande", terminologieregister `term_1_month` / `term_6_months` / `term_12_months`). Hulle word hier eksplisiet as die gekureerde enkelvoud/meervoud-knoppiekopie aangeteken (sien die twee tabelrye hierbo). `_n()` bly die korrekte WP-meervoudsmeganisme; geen NUWE bewoording is uitgedink nie.
+
+#### Gekureerde blad-kopie (Storie 4.4, FR-7)
+
+*(GEFINALISEERDE Afrikaanse kopie wat die `patterns/lidmaatskap.php`-patroon vertoon — sinskas, deur die `ink-foundation`-teksdomein (`esc_html__`/`esc_html_e`) gerender sodat dit vertaalbaar is en deur die Engels-lek-skandering gevang word. Onderskei van die `[NEEDS HUMAN AFRIKAANS]`-prosa-plekhouers hieronder, wat 'n bewuste, bekendgemaakte voor-lansering kopie-hek bly.)*
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| What your membership includes | Wat jou lidmaatskap insluit | Voordele-afdeling H2 |
+| Membership questions | Vrae oor lidmaatskap | FAQ-afdeling H2 |
+| Join INK today | Sluit vandag by INK aan | Aankoop-CTA-band H2 |
+| How long does a membership last? | Hoe lank duur 'n lidmaatskap? | FAQ-vraag (`<summary>`) |
+| Does my membership renew automatically? | Hernu my lidmaatskap outomaties? | FAQ-vraag (`<summary>`); GEEN outo-hernuwing by lansering (FR-4) |
+| How do I pay? | Hoe betaal ek? | FAQ-vraag (`<summary>`); PayFast/ZAR |
+| Join | Sluit aan | Per-plan aankoop-knoppie (sellbare plan) |
+| Coming soon | Binnekort beskikbaar | Per-plan knoppie-plekhouer (onsellbare plan; `aria-disabled`) |
+| Price coming soon | Prys binnekort beskikbaar | Prys-plekhouer wanneer geen lewende WooCommerce-prys nie |
 
 ### Gradering-blad (My Profiel — privaat)
 
@@ -541,15 +578,30 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | [N] top-3 results needed to reach Gold | [N] top 3 uitslae nodig om Goud te bereik | Gradering-bevorderingsubteks; glossaarterm |
 | Master *(tier label)* | Meester | Hoogste Gradering, slegs handmatig toegeken; handelsmerk-rooi-oranje. Glossaarterm (R3) |
 
+### Aansluitingsopsies — drie vaste termyne (Storie 4.1, FR-4)
+
+*(Die drie vaste-termyn lidmaatskap-planne: 1 maand / 6 maande / 12 maande. Die termyn-etikette ("1 maand" / "6 maande" / "12 maande") is reeds in die terminologieregister geprojekteer (`term_1_month` / `term_6_months` / `term_12_months`, glossaar reël 45) en word vandaar verbruik — nie inlyn nie. Die **prys** (R60 / R300 / R600 by lansering) word deur die WooCommerce-produk besit en deur 'n redakteur in WooCommerce-admin verstel — geen vaste pryswaarde in kode nie. Die lid-gerigte plan-PROSA hieronder is **menslike kopie nodig — moenie KI-vertaal nie**.)*
+
+> ✅ **OPGERUIM in Storie 4.4 (2026-06-23).** Die "Save 12%"/"Spaar 25%"-besparingsrye in die "Lidmaatskap-blad"-afdeling hierbo is geneutraliseer met 'n `[REMOVED — no vanity savings framing at launch per FR-4 / Storie 4.1-AC3]`-nota (hulle was 'n Lovable-mock Engelse plekhouer; 4.1 het die opruim na 4.4 uitgestel). **Staande reël:** GEEN vanity-afslag/besparingsraam ("X% af", "spaar R…", "beste waarde", per-maand-vergelyking) by lansering nie — op die Lidmaatskap-blad (4.4) óf die hernuwings-UI (4.5). 'n Egte herhalende afslag is na-lansering (Storie 4.11). Storie 4.1 se register dra geen afslag-/besparingsveld nie, en die 4.4-patroon vertoon geen besparingsraam nie.
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Plan description — 1 maand | [NEEDS HUMAN AFRIKAANS] | Lid-gerigte beskrywing vir die 1-maand-aansluitingsopsie; menslike kopie nodig; geen besparingsraam |
+| Plan description — 6 maande | [NEEDS HUMAN AFRIKAANS] | Lid-gerigte beskrywing vir die 6-maande-aansluitingsopsie; menslike kopie nodig; geen besparingsraam |
+| Plan description — 12 maande | [NEEDS HUMAN AFRIKAANS] | Lid-gerigte beskrywing vir die 12-maande-aansluitingsopsie; menslike kopie nodig; geen besparingsraam |
+| Lidmaatskap-blad CTA (kies-'n-plan) | [NEEDS HUMAN AFRIKAANS] | Oproep-tot-aksie wat 4.4 sal verbruik; menslike kopie nodig |
+
 ### Lidmaatskap-lewensiklus e-pos (scope-increase 2026-06-20)
 
 *(Nuwe transaksionele e-pos. Afrikaanse onderwerpe/snippette nog nie in die glossaar nie — wag op menslike kopie.)*
 
+> **Storie 4.2 (PayFast self-aktivering) bedraad slegs die DANKIE-/AKTIVERINGS-snellertjie**, nie die kopie nie. By 'n suksesvolle WooCommerce Memberships-aktivering (`wc_memberships_user_membership_status_changed` → `active`) vuur `Ink\Entitlement\PurchaseActivation` die sjabloon `ink_membership_activated_email` af via die Notifications-API. Die sjabloon is geregistreer met 'n **[WAG OP MENSLIKE KOPIE]**-plekhouer-liggaam en die **stuur-skakelaar AF by verstek** — geen `wp_mail` vuur tot Storie 4.8 die menslike Afrikaanse kopie inbring en die skakelaar aanskakel nie. Moenie KI-vertaal nie.
+
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| Thank-you email (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Dankie-e-pos ná aansluiting/betaling; menslike kopie nodig |
-| 1-month expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 maand voor verval; menslike kopie nodig |
-| 1-week expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 week voor verval; menslike kopie nodig |
+| Thank-you email (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Dankie-/aktiverings-e-pos ná aansluiting/betaling. **Snellertjie bedraad in Storie 4.2** (`ink_membership_activated_email`, plekhouer-liggaam, stuur-skakelaar AF); die KOPIE is Storie 4.8 se werk. Menslike kopie nodig. |
+| 1-month expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 maand voor verval; Storie 4.8; menslike kopie nodig |
+| 1-week expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 week voor verval; Storie 4.8; menslike kopie nodig |
 
 ### Sosiale aanmelding (R6 — Storie 3.5, grasieus-degraderende naat)
 
