@@ -60,6 +60,15 @@ enum Tier: string {
 	public const PROMOTED_AT_META_KEY = 'ink_tier_promoted_at';
 
 	/**
+	 * The `ink_tier_win_count` user-meta key — Kernel-owned single source (Story 5.7).
+	 *
+	 * Holds the top-3 wins accumulated toward the next Gradering; reset to 0 by
+	 * the `Ink\Tiers\Api::promote()` path. Kernel-owned so the `Ink\Tiers` reader/
+	 * writer needs no `Tiers → Content` edge; `UserMeta::WIN_COUNT` aliases it.
+	 */
+	public const WIN_COUNT_META_KEY = 'ink_tier_win_count';
+
+	/**
 	 * The single-source default grade for an unset/new writer.
 	 *
 	 * Mirrors the `register_meta` default and the read-side guarantee in

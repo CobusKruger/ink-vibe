@@ -44,6 +44,7 @@ test( 'promote writes the grade, stamps promoted_at, logs, and fires the event',
 
 	Functions\expect( 'update_user_meta' )->once()->with( 42, 'ink_writer_tier', 'silwer' );
 	Functions\expect( 'update_user_meta' )->once()->with( 42, 'ink_tier_promoted_at', '2026-06-26 07:30:00' );
+	Functions\expect( 'update_user_meta' )->once()->with( 42, 'ink_tier_win_count', 0 ); // Story 5.7 reset.
 
 	$GLOBALS['wpdb']->shouldReceive( 'insert' )->once()->andReturn( 1 );
 
@@ -74,6 +75,7 @@ test( 'promote supports a downward correction', function (): void {
 	Functions\when( 'get_user_meta' )->justReturn( 'goud' );
 	Functions\expect( 'update_user_meta' )->once()->with( 9, 'ink_writer_tier', 'silwer' );
 	Functions\expect( 'update_user_meta' )->once()->with( 9, 'ink_tier_promoted_at', Mockery::type( 'string' ) );
+	Functions\expect( 'update_user_meta' )->once()->with( 9, 'ink_tier_win_count', 0 );
 	$GLOBALS['wpdb']->shouldReceive( 'insert' )->once()->andReturn( 1 );
 	Actions\expectDone( 'ink/tier_promoted' )->once();
 
@@ -84,6 +86,7 @@ test( 'promote supports a manual set to Meester', function (): void {
 	Functions\when( 'get_user_meta' )->justReturn( 'goud' );
 	Functions\expect( 'update_user_meta' )->once()->with( 9, 'ink_writer_tier', 'meester' );
 	Functions\expect( 'update_user_meta' )->once()->with( 9, 'ink_tier_promoted_at', Mockery::type( 'string' ) );
+	Functions\expect( 'update_user_meta' )->once()->with( 9, 'ink_tier_win_count', 0 );
 	$GLOBALS['wpdb']->shouldReceive( 'insert' )->once()->andReturn( 1 );
 	Actions\expectDone( 'ink/tier_promoted' )->once();
 

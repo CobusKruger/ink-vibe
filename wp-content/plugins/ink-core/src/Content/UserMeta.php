@@ -42,11 +42,13 @@ final class UserMeta {
 	// values are unchanged, so no migration and no consumer breakage.
 	public const WRITER_TIER      = Tier::META_KEY;
 	public const TIER_PROMOTED_AT = Tier::PROMOTED_AT_META_KEY;
+	public const WIN_COUNT        = Tier::WIN_COUNT_META_KEY;
 
 	/**
 	 * Every INK writer-tier user-meta key, registration order preserved.
 	 *
-	 * `ink_tier_win_count` is intentionally absent — it is registered in Story 5.7.
+	 * `ink_tier_win_count` (Story 5.7) holds the top-3 wins toward the next
+	 * Gradering; the `Ink\Tiers\Api::promote()` path resets it to 0 on promotion.
 	 *
 	 * @return list<string>
 	 */
@@ -54,6 +56,7 @@ final class UserMeta {
 		return array(
 			self::WRITER_TIER,
 			self::TIER_PROMOTED_AT,
+			self::WIN_COUNT,
 		);
 	}
 
@@ -87,6 +90,19 @@ final class UserMeta {
 				'default'           => '',
 				'sanitize_callback' => 'sanitize_text_field',
 				'auth_callback'     => $gate,
+			)
+		);
+
+		register_meta(
+			'user',
+			self::WIN_COUNT,
+			array(
+				'single'            => true,
+				'type'              => 'integer',
+				'show_in_rest'      => true,
+				'default'           => 0,
+				'sanitize_callback' => 'absint',
+				'auth_callback'     => $gate, // Staff/system-written only; never self-set.
 			)
 		);
 	}

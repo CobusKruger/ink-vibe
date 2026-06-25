@@ -65,10 +65,10 @@ final class Api {
 	 * (`$from === $to`) writes nothing, logs nothing, fires nothing, returns
 	 * false.
 	 *
-	 * Story 5.7 adds the `ink_tier_win_count` reset inside this method (the
-	 * counter resets to 0 on every promotion). THE conflation rule (AD-1): this
-	 * reads/writes only the Kernel `Tier` + this module's log + WordPress; it
-	 * never references `Ink\Entitlement`.
+	 * The `ink_tier_win_count` counter is reset to 0 inside this method on every
+	 * promotion (Story 5.7). THE conflation rule (AD-1): this reads/writes only
+	 * the Kernel `Tier` + this module's log + WordPress; it never references
+	 * `Ink\Entitlement`.
 	 *
 	 * @param int    $user_id      The writer whose grade changes.
 	 * @param Tier   $to           The target grade.
@@ -93,6 +93,10 @@ final class Api {
 		update_user_meta( $user_id, Tier::META_KEY, $to->value );
 		update_user_meta( $user_id, Tier::PROMOTED_AT_META_KEY, current_time( 'mysql', true ) );
 
+		// Reset the win counter on every promotion (Story 5.7, R3) — accumulation
+		// toward the next Gradering restarts at the new grade.
+		update_user_meta( $user_id, Tier::WIN_COUNT_META_KEY, 0 );
+
 		PromotionLog::record( $user_id, $from, $to, $actor_id, $reason, $challenge_id );
 
 		/**
@@ -112,5 +116,40 @@ final class Api {
 		do_action( 'ink/tier_promoted', $user_id, $from, $to, $actor_id, $challenge_id ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- INK ink/... event-surface convention (AD).
 
 		return true;
+	}
+
+	/**
+	 * The writer's current accumulated top-3 win count toward the next Gradering.
+	 *
+	 * Reads `ink_tier_win_count` (Story 5.7), defaulting to 0 for an unset/junk
+	 * value — the typed read path consumers use instead of raw `get_user_meta`.
+	 *
+	 * @param int $user_id The writer.
+	 */
+	public static function winCountForUser( int $user_id ): int {
+		$raw = get_user_meta( $user_id, Tier::WIN_COUNT_META_KEY, true );
+
+		return is_scalar( $raw ) ? (int) $raw : 0;
+	}
+
+	/**
+	 * Accumulate top-3 wins onto the writer's counter, returning the new total.
+	 *
+	 * The dumb accumulator: it records wins but does NOT check thresholds or
+	 * trigger a promotion — that is the Story 5.8 engine (which calls this, then
+	 * compares against {@see Tier::isAutoPromotable()} + the 5/15 thresholds, then
+	 * calls {@see self::promote()}). A non-positive `$count` never decreases the
+	 * counter.
+	 *
+	 * @param int $user_id The writer.
+	 * @param int $count   The number of wins to add (default 1).
+	 * @return int The new accumulated total.
+	 */
+	public static function recordWin( int $user_id, int $count = 1 ): int {
+		$new = self::winCountForUser( $user_id ) + max( 0, $count );
+
+		update_user_meta( $user_id, Tier::WIN_COUNT_META_KEY, $new );
+
+		return $new;
 	}
 }

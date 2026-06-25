@@ -60,15 +60,15 @@ afterEach( function (): void {
 } );
 
 /**
- * AC-1: exactly the two writer-tier keys register; `ink_tier_win_count` is NOT
- * registered here (it is Story 5.7).
+ * AC-1: the three writer-tier keys register, including `ink_tier_win_count`
+ * (added in Story 5.7).
  */
-test( 'keys() exposes exactly the two writer-tier meta keys', function (): void {
+test( 'keys() exposes the three writer-tier meta keys', function (): void {
 	expect( UserMeta::keys() )->toBe( array(
 		'ink_writer_tier',
 		'ink_tier_promoted_at',
+		'ink_tier_win_count',
 	) );
-	expect( UserMeta::keys() )->not->toContain( 'ink_tier_win_count' );
 } );
 
 /**
@@ -77,16 +77,17 @@ test( 'keys() exposes exactly the two writer-tier meta keys', function (): void 
 test( 'the meta-key constants are the exact prefixed IDs', function (): void {
 	expect( UserMeta::WRITER_TIER )->toBe( 'ink_writer_tier' );
 	expect( UserMeta::TIER_PROMOTED_AT )->toBe( 'ink_tier_promoted_at' );
+	expect( UserMeta::WIN_COUNT )->toBe( 'ink_tier_win_count' );
 } );
 
 /**
- * AC-1/AC-2: both keys register against the `user` object type, win_count absent.
+ * AC-1/AC-2: all three keys register against the `user` object type.
  */
-test( 'register() registers both keys against the user object type', function (): void {
+test( 'register() registers the keys against the user object type', function (): void {
 	$registered = ink_capture_registered_user_meta();
 
 	expect( array_keys( $registered ) )->toBe( UserMeta::keys() );
-	expect( $registered )->not->toHaveKey( 'ink_tier_win_count' );
+	expect( $registered )->toHaveKey( 'ink_tier_win_count' );
 
 	foreach ( $registered as $key => $entry ) {
 		expect( $entry['object_type'] )->toBe( 'user' );
@@ -94,28 +95,34 @@ test( 'register() registers both keys against the user object type', function ()
 } );
 
 /**
- * AC-1: `ink_writer_tier` defaults to `brons` (from the Kernel Tier enum).
+ * AC-1: defaults — `ink_writer_tier` brons, promoted_at empty, win_count 0 (int).
  */
-test( 'ink_writer_tier defaults to brons', function (): void {
+test( 'the tier meta defaults are correct', function (): void {
 	$registered = ink_capture_registered_user_meta();
 
 	expect( $registered['ink_writer_tier']['args']['default'] )->toBe( 'brons' );
 	expect( $registered['ink_tier_promoted_at']['args']['default'] )->toBe( '' );
+	expect( $registered['ink_tier_win_count']['args']['default'] )->toBe( 0 );
+	expect( $registered['ink_tier_win_count']['args']['type'] )->toBe( 'integer' );
 } );
 
 /**
- * AC-3: both keys are single + REST-aware.
+ * AC-3: every key is single + REST-aware + gated/sanitised; the string keys are
+ * `string`, the win counter is `integer`.
  */
-test( 'both keys are single and show_in_rest', function (): void {
+test( 'all keys are single, REST-aware, gated and sanitised', function (): void {
 	$registered = ink_capture_registered_user_meta();
 
 	foreach ( $registered as $key => $entry ) {
 		expect( $entry['args']['single'] )->toBeTrue();
 		expect( $entry['args']['show_in_rest'] )->toBeTrue();
-		expect( $entry['args']['type'] )->toBe( 'string' );
 		expect( $entry['args'] )->toHaveKey( 'auth_callback' );
 		expect( $entry['args'] )->toHaveKey( 'sanitize_callback' );
 	}
+
+	expect( $registered['ink_writer_tier']['args']['type'] )->toBe( 'string' );
+	expect( $registered['ink_tier_promoted_at']['args']['type'] )->toBe( 'string' );
+	expect( $registered['ink_tier_win_count']['args']['type'] )->toBe( 'integer' );
 } );
 
 /**
