@@ -41,6 +41,7 @@ last_updated: 2026-06-25
 # 5-2 → review (create-story + dev-story; Tiers\Api::promote() SOLE write path — meta + normalised promoted_at + PromotionLog append + FIRST ink-core do_action 'ink/tier_promoted' event seam for 5.10; MANAGE_TIERS-gated AdminProfile set/adjust user-profile UI (2nd sanctioned $_POST site); closed 3 Story-2.3 deferrals (MANAGE_TIERS grant verified, per-target scope decided = global editorial cap, promoted_at format normalised); Tiers module wired into bootstrap; tests 305 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
 # 5-7 → review (create-story + dev-story, before 5.8; ink_tier_win_count meta (Kernel-owned key) + Api::winCountForUser()/recordWin() accumulator + reset-on-promotion in promote(); closed the 2.3 win-count deferral; tests 310 passed/1 skipped, cs/stan clean, deptrac no new edge)
 # 5-8 → review (create-story + dev-story; Tiers\PromotionEngine — 5/15 threshold engine (Brons→Silwer@5, Silwer→Goud@15; Goud/Meester terminal), one-step-per-call, system actor 0, Afrikaans 'Outomatiese bevordering' reason; Api::awardWins() facade for 12A.3 (not built); fires ink/tier_promoted = 5.10 seam; tests 318 passed/1 skipped +8, cs/stan clean, deptrac no new edge)
+# 5-4 → review (create-story + dev-story; reusable Gradering badge — GraderingView presenter + Api::gradingView() + guarded theme bridge ink_foundation_gradering_badge() + token-only .ink-gradering CSS in theme.json (Meester→primary #EA4015, a11y text+aria-hidden mark); profile-template placement deferred to 9.4; tests 325 passed/1 skipped +7, cs/stan clean, deptrac no new edge)
 # epic-2 started 2026-06-21; 2-1 → review 2026-06-21
 # epic-2 retrospective completed 2026-06-22
 # epic-3 started 2026-06-22; 3-1 → done (code review) 2026-06-22; 3-3 → done 2026-06-22; 3-4 → done (research spike) 2026-06-22; 3-6 → done (code review) 2026-06-22; 3-5 → done (code review) 2026-06-22
@@ -124,7 +125,7 @@ development_status:
   5-1-gradering-data-model: review
   5-2-staff-set-adjust-gradering-admin-ui: review
   5-3-promotion-log-history-graderingsgeskiedenis: review  # built before 5.2 (log substrate dependency)
-  5-4-gradering-display-on-profiles: backlog
+  5-4-gradering-display-on-profiles: review
   5-5-gradering-in-discovery-winners: backlog
   5-6-gradering-lidmaatskap-guardrails: backlog
   5-7-win-count-meta-reset-on-promotion: review  # built before 5.8 (counter dependency)

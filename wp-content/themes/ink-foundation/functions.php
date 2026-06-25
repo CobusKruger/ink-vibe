@@ -261,6 +261,41 @@ if ( ! function_exists( 'ink_foundation_renewal_plans' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ink_foundation_gradering_badge' ) ) {
+	/**
+	 * The accessible writer-Gradering badge for the profile templates (Story 5.4, FR-14).
+	 *
+	 * Presentation glue only: reads the typed display view from the `ink-core`
+	 * Tiers facade ({@see \Ink\Tiers\Api::gradingView()}) and renders a token-only
+	 * badge. The grade LABEL is always rendered as text (a11y — never colour-only);
+	 * the leading mark is decorative (`aria-hidden`). Meester carries the
+	 * `ink-gradering--meester` modifier, which the theme maps to the brand
+	 * `primary` (#EA4015) token (NOT `danger`). Story 9.4 embeds this on the public
+	 * Skrywerprofiel + private My Profiel.
+	 *
+	 * `class_exists`-guarded so the theme degrades to an empty string when
+	 * `ink-core` is inactive — never a fatal. Computes nothing; all grade logic
+	 * lives in `ink-core` (three-layer separation).
+	 *
+	 * @param int $user_id The writer (0 → current user).
+	 * @return string The badge HTML, or '' when ink-core is inactive.
+	 */
+	function ink_foundation_gradering_badge( int $user_id = 0 ): string {
+		if ( ! class_exists( 'Ink\\Tiers\\Api' ) ) {
+			return '';
+		}
+
+		$user_id = $user_id > 0 ? $user_id : get_current_user_id();
+		$view    = \Ink\Tiers\Api::gradingView( $user_id );
+
+		return sprintf(
+			'<span class="ink-gradering ink-gradering--%1$s"><span class="ink-gradering__mark" aria-hidden="true">&#9733;</span><span class="ink-gradering__label">%2$s</span></span>',
+			esc_attr( $view->cssModifier() ),
+			esc_html( $view->label )
+		);
+	}
+}
+
 if ( ! function_exists( 'ink_foundation_is_member_logged_in' ) ) {
 	/**
 	 * Whether the current viewer is a logged-in lid (Story 4.5 renewal-section gate).

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Tiers;
 
+use Ink\I18n\Terms;
 use Ink\Kernel\Tier;
 
 defined( 'ABSPATH' ) || exit;
@@ -169,5 +170,25 @@ final class Api {
 	 */
 	public static function awardWins( int $user_id, int $wins = 1, int $challenge_id = 0 ): ?Tier {
 		return PromotionEngine::award( $user_id, $wins, $challenge_id );
+	}
+
+	/**
+	 * The presentation-ready view of a writer's Gradering (Story 5.4).
+	 *
+	 * The single source for profile display: the typed grade ({@see self::forUser()}),
+	 * its glossary label, and the Meester-is-special flag. The theme bridge
+	 * renders the accessible badge from this view; Story 9.4 embeds it on the
+	 * Skrywerprofiel + My Profiel templates.
+	 *
+	 * @param int $user_id The writer.
+	 */
+	public static function gradingView( int $user_id ): GraderingView {
+		$tier = self::forUser( $user_id );
+
+		return new GraderingView(
+			$tier,
+			Terms::label( $tier->value ),
+			Tier::Meester === $tier,
+		);
 	}
 }
