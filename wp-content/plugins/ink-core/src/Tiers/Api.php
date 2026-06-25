@@ -52,4 +52,65 @@ final class Api {
 
 		return Tier::tryFrom( (string) $raw ) ?? Tier::default();
 	}
+
+	/**
+	 * THE sole write path for `ink_writer_tier`.
+	 *
+	 * Every Gradering change — manual (Story 5.2 admin UI) or automatic (Story
+	 * 5.8 engine, which calls this with `$actor_id = 0`) — goes through here:
+	 * it writes the grade, stamps a normalised GMT `ink_tier_promoted_at`,
+	 * appends the append-only `graderingsgeskiedenis` audit record
+	 * ({@see PromotionLog::record()}), and fires the `ink/tier_promoted` event
+	 * (the seam Story 5.10's congratulation email subscribes to). A no-op change
+	 * (`$from === $to`) writes nothing, logs nothing, fires nothing, returns
+	 * false.
+	 *
+	 * Story 5.7 adds the `ink_tier_win_count` reset inside this method (the
+	 * counter resets to 0 on every promotion). THE conflation rule (AD-1): this
+	 * reads/writes only the Kernel `Tier` + this module's log + WordPress; it
+	 * never references `Ink\Entitlement`.
+	 *
+	 * @param int    $user_id      The writer whose grade changes.
+	 * @param Tier   $to           The target grade.
+	 * @param int    $actor_id     The acting staff user id, or 0 for the automatic engine.
+	 * @param string $reason       The reason recorded in the audit log.
+	 * @param int    $challenge_id Optional linked challenge id (0 = none).
+	 * @return bool True when a change was applied; false on a no-op.
+	 */
+	public static function promote(
+		int $user_id,
+		Tier $to,
+		int $actor_id = 0,
+		string $reason = '',
+		int $challenge_id = 0
+	): bool {
+		$from = self::forUser( $user_id );
+
+		if ( $from === $to ) {
+			return false;
+		}
+
+		update_user_meta( $user_id, Tier::META_KEY, $to->value );
+		update_user_meta( $user_id, Tier::PROMOTED_AT_META_KEY, current_time( 'mysql', true ) );
+
+		PromotionLog::record( $user_id, $from, $to, $actor_id, $reason, $challenge_id );
+
+		/**
+		 * Fires after a writer's Gradering changes (the seam for the Story 5.10
+		 * congratulation email and any future audit/notification consumer).
+		 *
+		 * @param int  $user_id      The writer.
+		 * @param Tier $from         The previous grade.
+		 * @param Tier $to           The new grade.
+		 * @param int  $actor_id     The acting staff id, or 0 for the automatic engine.
+		 * @param int  $challenge_id The linked challenge id (0 = none).
+		 */
+		// The `ink/...` slash namespace is INK's deliberate event-surface
+		// convention (architecture.md line 483), distinguishing first-party domain
+		// events from WordPress core/plugin hooks; WPCS's underscore preference is
+		// intentionally overridden for this surface.
+		do_action( 'ink/tier_promoted', $user_id, $from, $to, $actor_id, $challenge_id ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- INK ink/... event-surface convention (AD).
+
+		return true;
+	}
 }
