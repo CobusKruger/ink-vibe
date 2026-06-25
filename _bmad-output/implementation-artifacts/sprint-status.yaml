@@ -36,6 +36,7 @@
 
 generated: 2026-06-20
 last_updated: 2026-06-25
+# epic-5 started 2026-06-25; 5-1 → review (create-story + dev-story, Gradering data-model: Tier enum default/isManualOnly/isAutoPromotable + Kernel-owned meta-key single source + typed default-safe Tiers\Api::forUser() closing the 2.3 deferral; tests 283 passed/1 skipped +13, cs/stan clean, deptrac no new edge, Entitlement⟂Tiers holds)
 # epic-2 started 2026-06-21; 2-1 → review 2026-06-21
 # epic-2 retrospective completed 2026-06-22
 # epic-3 started 2026-06-22; 3-1 → done (code review) 2026-06-22; 3-3 → done 2026-06-22; 3-4 → done (research spike) 2026-06-22; 3-6 → done (code review) 2026-06-22; 3-5 → done (code review) 2026-06-22
@@ -114,8 +115,9 @@ development_status:
   epic-4-retrospective: done
 
   # Epic 5: Writer Gradering (Brons / Silwer / Goud / Meester)
-  epic-5: backlog
-  5-1-gradering-data-model: backlog
+  # epic-5 started 2026-06-25; loop via full BMAD create-story → dev-story → tests → commit.
+  epic-5: in-progress
+  5-1-gradering-data-model: review
   5-2-staff-set-adjust-gradering-admin-ui: backlog
   5-3-promotion-log-history-graderingsgeskiedenis: backlog
   5-4-gradering-display-on-profiles: backlog

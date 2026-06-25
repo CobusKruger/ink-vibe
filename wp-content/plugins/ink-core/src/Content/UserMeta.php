@@ -36,9 +36,12 @@ defined( 'ABSPATH' ) || exit;
  */
 final class UserMeta {
 
-	// Migration-/ID-stable meta keys — the single source.
-	public const WRITER_TIER      = 'ink_writer_tier';
-	public const TIER_PROMOTED_AT = 'ink_tier_promoted_at';
+	// Migration-/ID-stable meta keys — aliases of the Kernel-owned single source
+	// ({@see Tier::META_KEY}). The Kernel ownership lets `Ink\Tiers` read the same
+	// key without a forbidden `Tiers → Content` edge (Story 5.1); the literal
+	// values are unchanged, so no migration and no consumer breakage.
+	public const WRITER_TIER      = Tier::META_KEY;
+	public const TIER_PROMOTED_AT = Tier::PROMOTED_AT_META_KEY;
 
 	/**
 	 * Every INK writer-tier user-meta key, registration order preserved.
