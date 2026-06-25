@@ -39,8 +39,17 @@ define( 'INK_CORE_URL', plugin_dir_url( __FILE__ ) );
 // else a hand-rolled PSR-4 fallback so the plugin is loadable in the repo today.
 require_once INK_CORE_PATH . 'src/autoload.php';
 
-// Activation / deactivation: versioned-DB-option stub, empty schema registry,
-// rewrite-rule flush stub, and PHP/WP minimum-version guard.
+// Register custom-table schema providers at INCLUDE time (not inside a
+// plugins_loaded/init closure). On the activation request, plugins_loaded has
+// already fired before activate_plugin() includes this file and runs the
+// activation hook, so an init-registered provider would be invisible to
+// Schema::install(). The include-time registration guarantees the provider is
+// present when activation creates the tables. ink-core.php is the composition
+// root, outside deptrac's src/ scan, so no tracked edge is created.
+Kernel\Schema::register( Tiers\PromotionLog::TABLE, array( Tiers\PromotionLog::class, 'schemaSql' ) ); // Story 5.3: graderingsgeskiedenis audit log.
+
+// Activation / deactivation: versioned-DB-option, schema registry install,
+// rewrite-rule flush, and PHP/WP minimum-version guard.
 register_activation_hook( INK_CORE_FILE, array( Kernel\Activation::class, 'activate' ) );
 register_deactivation_hook( INK_CORE_FILE, array( Kernel\Activation::class, 'deactivate' ) );
 
