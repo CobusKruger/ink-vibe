@@ -25,7 +25,7 @@ defined( 'ABSPATH' ) || exit;
  *    `ink_onboarding_complete` user-meta flag + its nonce-protected
  *    skip/complete write) — {@see Onboarding} (Story 3.3);
  *  - the OFF-by-default R6 manual-approval BACKSTOP (the fail-safe-OFF toggle,
- *    the WP-native "wag op goedkeuring" pending account state stamped on
+ *    the WP-native "wag vir goedkeuring" pending account state stamped on
  *    `user_register` when enabled, the `wp_authenticate_user` login gate, and
  *    the admin approval-queue screen to goedkeur/verwerp) — {@see Approval}
  *    (Story 3.6). It is never the launch default; when OFF, signup stays exactly

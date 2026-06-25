@@ -78,9 +78,9 @@ defined( 'ABSPATH' ) || exit;
  * on/off PER TERM (the {type}×{term} matrix via the 1.12 `TemplateStore` per-term
  * toggle keys, fail-safe OFF). The activation thank-you stays the ONE
  * {@see PurchaseActivation} template (`ink_membership_activated_email`) — 4.8 only adds
- * its per-term toggle gate (not a second template). All copy is Afrikaans-source with
- * `[WAG OP MENSLIKE KOPIE]` placeholders + toggles OFF until human copy lands (NFR-1 /
- * Gate D; never AI-translated). It routes through the Notifications form-letter store,
+ * its per-term toggle gate (not a second template). All copy is human-authored
+ * Afrikaans (ui-copy-translations.md) with send toggles OFF until staff enable them
+ * (NFR-1 / Gate D; never AI-translated). It routes through the Notifications form-letter store,
  * not the 4.7 status registry.
  *
  * Still RESERVED for later Epic-4 stories (NOT built here): the actual publish-flow

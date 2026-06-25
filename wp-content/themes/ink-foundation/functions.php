@@ -266,7 +266,7 @@ if ( ! function_exists( 'ink_foundation_is_member_logged_in' ) ) {
 	 * Whether the current viewer is a logged-in lid (Story 4.5 renewal-section gate).
 	 *
 	 * A thin presentation gate so the renewal section (and its interim host) renders the
-	 * renew options only for a logged-in lid, and a "Meld aan om te hernu" fallback
+	 * renew options only for a logged-in lid, and a "Meld aan om te hernieu" fallback
 	 * otherwise. This is NOT the submission-entitlement gate (that is Story 4.3/6.8,
 	 * `Api::can_submit()`) — the renewal surface is open to any logged-in lid wishing to
 	 * extend access; no entitlement logic lives in the theme. `function_exists`-guarded

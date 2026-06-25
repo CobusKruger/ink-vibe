@@ -69,7 +69,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **`ink-core` rules ship test-first** — the test-harness scaffold is foundational (Epic 1), not deferred.
 - **Run the unit suite locally — Pest execution is NO LONGER deferred (2026-06-22).** PHP 8.3 + Composer are installed on the dev machine; `composer install` builds `vendor/`. During the dev-story cycle you MUST **author *and run*** the Pest unit tests with `composer test:unit`, and **the suite must pass before a story is marked done.** Do **not** substitute a python3 "structural scan" for execution, and do **not** defer Pest/`php -l`/PHPStan to the CI buildout — the Epic 1–2 "no PHP binary, defer to Story 18.8" precedent is **retired**; do not carry it into new stories. The unit suite is mocked (Brain Monkey, no WordPress/DB) and runs on PHP ≥ 8.3; the unit bootstrap defines a sentinel `ABSPATH` so guarded `ink-core` source files don't `exit(0)` on autoload. **Story 18.8 still owns CI wiring + the integration/E2E layers** (wp-env, Playwright) — not local unit execution, which is available now.
 - **Risk-based depth:** smoke-only for minor/security updates; full regression for major version bumps.
-- **English-leak check is an automated test**, not a manual pass: crawl key front-end pages + scan `wp i18n` untranslated counts. It is a *standing* gate (re-runs after ungated core/plugin updates), not a one-time build check.
+- **English-leak check is an automated test**, not a manual pass: crawl key front-end pages + scan `wp i18n` untranslated counts. It is a *standing* gate (re-runs after ungated core/plugin updates), not a one-time build check. The **static subset already runs today**: `composer copy:scan` (`tools/leak-scan/`, CI `quality` job) is a ratchet gate over unauthored-Afrikaans placeholders — see the unauthored-copy workflow under Afrikaans-first. The full page-crawl + `wp i18n` layer lands in Story 17.4 / Epic 18.
 - **PayFast always uses sandbox in tests** — never hit the live ZAR gateway.
 
 ### Code Quality & Style Rules
@@ -83,6 +83,11 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **Controlled-vocabulary UI labels come from the ink-core terminology registry** (single-source, glossary-backed literal __()), the same way fixed value sets come from enums. Never inline a glossary label as a bare literal outside the registry.
 - **Never lift copy from the Lovable mockup** — its text is English placeholder. UI copy comes from `ui-copy-translations.md`; real content from the migrated DB.
 - **No AI-generated Afrikaans.** Human-authored translations only.
+- **Unauthored-copy workflow (the standing process).** When a story needs Afrikaans that doesn't exist yet, do NOT translate it — leave a placeholder and route it to the human author:
+  1. **Mark it in code** with `[NEEDS HUMAN AFRIKAANS]` (UI/template) or `[WAG OP MENSLIKE KOPIE]` (email/notice), wrapped in the correct text domain, and keep any feature/email send-toggle **OFF**.
+  2. **Mirror a row** in `ui-copy-translations.md` (the canonical UI-copy doc) carrying the same placeholder + an English sample + notes.
+  3. **Collect for authoring** in `docs/afrikaans-translation-sheet.md` — a flat `ID` / `EN:` / `AF:` sheet the human fills in one pass. The ID→destination map lives in `docs/afrikaans-copy-worklist.md` (crosswalk). When the sheet comes back, wire each `AF:` into `ui-copy-translations.md` + `afrikaans-terms.md` + the code `file:line`, then lower the scan baseline.
+  4. **The gate:** `composer copy:scan` (`tools/leak-scan/`, runs in CI `quality` job) is a ratchet over `placeholder-baseline.json` — it FAILS on any *new* placeholder in live code (theme patterns/templates + `ink-core/src`; docs/tests excluded) and prompts you to lower the baseline as copy lands. Run `composer copy:scan -- --update-baseline` after authoring. **Launch target: baseline empty.** This is the static subset of the full NFR-1 leak gate (Story 17.4 / Epic 18 add the page-crawl + `wp i18n` layer).
 - Heading casing: **sentence case** ("Begin skryf", not "Begin Skryf").
 
 **Design tokens (Quality Gate A):**
@@ -147,4 +152,4 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Update when the technology stack, plugin set, or a resolved decision (§14) changes.
 - Review periodically; remove rules that become obvious over time.
 
-Last Updated: 2026-06-22
+Last Updated: 2026-06-25

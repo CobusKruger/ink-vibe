@@ -70,10 +70,9 @@ defined( 'ABSPATH' ) || exit;
  *
  * AFRIKAANS-SOURCE + NFR-1 (AC-5). The default subject/body are Afrikaans-source
  * LITERAL `__( …, 'ink-core' )` strings (decision 5a; `wp i18n make-pot` extracts
- * them; no English `.mo` ships). Because the curated email PROSE is not yet authored
- * (ui-copy-translations.md marks all three 4.8 rows `[NEEDS HUMAN AFRIKAANS]`), the
- * bodies are clearly-marked `[WAG OP MENSLIKE KOPIE]` placeholders built only from
- * approved glossary terms — never AI-translated. Any later admin override stored in
+ * them; no English `.mo` ships). The curated email prose is the human-authored
+ * Afrikaans in ui-copy-translations.md (never AI-translated); the send toggles stay
+ * OFF until staff deliberately enable them. Any later admin override stored in
  * the Notifications options store is a new NFR-1 leak vector in scope for the standing
  * leak scan (Story 17.4 / Epic 18) — not built here.
  *
@@ -626,10 +625,10 @@ class LifecycleEmails {
 	 *
 	 * One base {@see Template} per warning TYPE — Afrikaans-source LITERAL `__()`
 	 * subject/body (decision 5a; `wp i18n make-pot` extracts them; no English `.mo`),
-	 * the `{skrywer}` greeting, the send toggle OFF. The body is a clearly-marked
-	 * `[WAG OP MENSLIKE KOPIE]` placeholder built only from approved glossary terms —
-	 * Story 4.8's curated copy is `[NEEDS HUMAN AFRIKAANS]` (ui-copy ~603–604), so NO
-	 * `wp_mail` fires today. Mirrors {@see PurchaseActivation::registerEmailTemplate()}.
+	 * the `{skrywer}` greeting, the send toggle OFF. The body is the human-authored
+	 * Afrikaans curated in ui-copy-translations.md (~603–604), never AI-translated;
+	 * the send toggle stays OFF until staff enable it. Mirrors
+	 * {@see PurchaseActivation::registerEmailTemplate()}.
 	 *
 	 * The PER-TERM toggles are NOT registered as separate templates (that would
 	 * duplicate the body): one base template per type carries the copy + the master
@@ -640,12 +639,11 @@ class LifecycleEmails {
 		Notifications::registerTemplate(
 			new Template(
 				self::WARN_1WEEK_TEMPLATE_KEY,
-				// Subject — glossary-only placeholder, sentence case.
-				__( 'Jou lidmaatskap verval binnekort [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
-				// Body — PLACEHOLDER. [NEEDS HUMAN AFRIKAANS] — toggle stays OFF until
-				// Story 4.8's curated copy lands; glossary terms only, no invented prose.
-				__( 'Hallo {skrywer}, jou lidmaatskap verval oor een week. [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
-				// Send toggle OFF by default — no wp_mail until human copy is approved.
+				// Subject — human-authored Afrikaans, sentence case.
+				__( 'Jou lidmaatskap verval binnekort', 'ink-core' ),
+				// Body — human-authored Afrikaans; send toggle stays OFF until staff enable sending.
+				__( 'Hallo {skrywer}. Jou lidmaatskap verval oor een week.', 'ink-core' ),
+				// Send toggle OFF by default — copy is ready; enable deliberately to start sending.
 				false
 			)
 		);
@@ -653,8 +651,8 @@ class LifecycleEmails {
 		Notifications::registerTemplate(
 			new Template(
 				self::WARN_1MONTH_TEMPLATE_KEY,
-				__( 'Jou lidmaatskap verval binnekort [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
-				__( 'Hallo {skrywer}, jou lidmaatskap verval oor een maand. [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
+				__( 'Jou lidmaatskap verval binnekort', 'ink-core' ),
+				__( 'Hallo {skrywer}. Jou lidmaatskap verval oor een maand.', 'ink-core' ),
 				false
 			)
 		);

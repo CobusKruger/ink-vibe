@@ -192,9 +192,9 @@ test( 'the warning-type list applies 1-week to every term and 1-month to longer 
 
 /**
  * AC-1/AC-5: the two warning templates register Afrikaans-source, DISABLED (base toggle
- * OFF), {skrywer} greeting + [WAG OP MENSLIKE KOPIE] placeholder, no English leak.
+ * OFF), {skrywer} greeting + authored Afrikaans body (no placeholder marker), no English leak.
  */
-test( 'the warning templates register Afrikaans-source, DISABLED, with the placeholder body', function (): void {
+test( 'the warning templates register Afrikaans-source, DISABLED, with the authored body', function (): void {
 	Functions\when( 'get_option' )->justReturn( array() );
 	$store = ink_le_wire_notifications();
 
@@ -204,7 +204,8 @@ test( 'the warning templates register Afrikaans-source, DISABLED, with the place
 		expect( $store->isRegistered( $key ) )->toBeTrue();
 		expect( $store->isEnabled( $key ) )->toBeFalse(); // base toggle OFF.
 		expect( $store->body( $key ) )->toContain( '{skrywer}' );
-		expect( $store->body( $key ) )->toContain( '[WAG OP MENSLIKE KOPIE]' );
+		expect( $store->body( $key ) )->not->toContain( '[WAG OP MENSLIKE KOPIE]' ); // human copy landed.
+		expect( $store->body( $key ) )->toContain( 'verval' );
 
 		$subject = strtolower( $store->subject( $key ) );
 		foreach ( array( 'membership', 'expire', 'expiry', 'warning', 'reminder', 'renew' ) as $english ) {

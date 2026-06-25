@@ -481,7 +481,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Posts *(statistiek-etiket)* | Bydraes | Oorweeg ook "[N] stories · [N] gedigte · [N] artikels" in die uitgebreide oorsig |
 | Friends *(statistiek-etiket)* | Vriende | |
 | Unread *(statistiek-etiket)* | Ongelees | |
-| Inkwell Member · renews [date] | INK-lid · hernu [datum] | |
+| Inkwell Member · renews [date] | INK-lid · hernieu [datum] | |
 | Recent activity | Onlangse aktiwiteit | Kaart-opskrif |
 
 ### Bydraes-blad
@@ -518,9 +518,9 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Active subscription | Aktiewe lidmaatskap | "lidmaatskap" — sien Deel 3 van terminologiegids (G1, 2026-06-20); "intekening" is afgeskaf |
 | Status | Status | Etiket |
 | Active | Aktief | Waarde |
-| Renews | Hernu | Etiket |
+| Renews | Hernieu | Etiket |
 | Member since | Lid sedert | Etiket |
-| Renew membership | Hernu lidmaatskap | H3 |
+| Renew membership | Hernieu lidmaatskap | H3 |
 | Choose how long you'd like to extend your Inkwell membership. | Kies hoe lank jy jou INK-lidmaatskap wil verleng. | |
 | Monthly | Maandeliks | Planetiket |
 | 6 months | 6 maande | |
@@ -529,9 +529,9 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | ~~Save 25%~~ | **[REMOVED — no vanity savings framing at launch per FR-4 / Storie 4.1-AC3]** | Verwyder in Storie 4.4 (Lidmaatskap-blad bou). Geen besparings-/%-afslag-raam by lansering nie; 'n egte herhalende afslag is na-lansering (Storie 4.11). |
 | / [N]mo | / [N] mnd | Prys-suffix |
 | Your support keeps Inkwell ad-free and independent. | Jou ondersteuning hou INK advertensievry en onafhanklik. | |
-| Renew for [N] month(s) | Hernu vir [N] maand(e) | Knoppie |
-| Renew for [N] month (singular) | Hernu vir %d maand | Knoppie — `_n()` enkelvoud (N = 1). "maand" is die staande glossaar-enkelvoud (Storie 4.1 termyn-etiket "1 maand"). |
-| Renew for [N] months (plural) | Hernu vir %d maande | Knoppie — `_n()` meervoud (N = 6 / 12). "maande" is die staande glossaar-meervoud (Storie 4.1 termyn-etikette "6 maande" / "12 maande"). |
+| Renew for [N] month(s) | Hernieu vir [N] maand(e) | Knoppie |
+| Renew for [N] month (singular) | Hernieu vir %d maand | Knoppie — `_n()` enkelvoud (N = 1). "maand" is die staande glossaar-enkelvoud (Storie 4.1 termyn-etiket "1 maand"). |
+| Renew for [N] months (plural) | Hernieu vir %d maande | Knoppie — `_n()` meervoud (N = 6 / 12). "maande" is die staande glossaar-meervoud (Storie 4.1 termyn-etikette "6 maande" / "12 maande"). |
 
 #### Gekureerde lidmaatskap-statusboodskappe (Storie 4.7, FR-9)
 
@@ -540,7 +540,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Toestand | Afrikaans | Registersleutel | Notas |
 |---|---|---|---|
 | Active (lidmaatskap aktief) | Jou lidmaatskap is aktief. Jy kan nou werk plaas. | `status_active` | Verbruik deur die status-oppervlak (Storie 9.4) |
-| Expired (lidmaatskap verval) | Jou lidmaatskap het verval. Hernu om werk te plaas. | `status_expired` | Verbruik deur die status-oppervlak (Storie 9.4) + die plaas-weieringspunt (Storie 6.8) |
+| Expired (lidmaatskap verval) | Jou lidmaatskap het verval. Hernieu om werk te plaas. | `status_expired` | Verbruik deur die status-oppervlak (Storie 9.4) + die plaas-weieringspunt (Storie 6.8) |
 | Access denied (betaalde lidmaatskap nodig) | Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies. | `status_access_denied` | Verbruik deur die plaas-weieringspunt (Storie 6.8) |
 | Payment failed / cancelled | Jou betaling het misluk of is gekanselleer. | `status_payment_failed` | PayFast-terugkeer-toestand (nié 'n WooCommerce-lidmaatskapstatus nie); verbruik deur die 4.2-betalingsterugkeer-konteks |
 
@@ -548,13 +548,13 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 
 #### Gekureerde hernuwings-kopie (Storie 4.5, FR-8)
 
-*(Die drie gekureerde renewal-stringe hierbo — "Hernu lidmaatskap" (H2), "Kies hoe lank jy jou INK-lidmaatskap wil verleng." (intro) en "Hernu vir [N] maand(e)" (knoppie) — word vanaf Storie 4.5 deur die `patterns/lidmaatskap-hernu.php`-patroon (die My Profiel → Lidmaatskap-blad hernuwings-afdeling) gerender, deur die `ink-foundation`-teksdomein (`esc_html__`) sodat hulle vertaalbaar is en deur die Engels-lek-skandering gevang word. **Geen besparings-/%-afslag-raam** op die hernuwings-UI (staande reël — sien die ✅-nota hieronder, wat 4.4 ÉN 4.5 dek). "Hernu" by lansering = 'n verdere vaste termyn via PayFast aankoop (Storie 4.2); **geen outo-hernuwing** (Stories 4.9–4.11 is na-lansering). Ook gerender: "Prys binnekort beskikbaar" (geen lewende prys), "Binnekort beskikbaar" (`aria-disabled`, onsellbare plan), "Meld aan om jou lidmaatskap te hernu." (uitgelogde terugval) — almal via `esc_html__`. Die My Profiel-houer self is Epic 9 (Storie 9.4); 4.5 lewer net die hernuwings-afdeling.)*
+*(Die drie gekureerde renewal-stringe hierbo — "Hernieu lidmaatskap" (H2), "Kies hoe lank jy jou INK-lidmaatskap wil verleng." (intro) en "Hernieu vir [N] maand(e)" (knoppie) — word vanaf Storie 4.5 deur die `patterns/lidmaatskap-hernu.php`-patroon (die My Profiel → Lidmaatskap-blad hernuwings-afdeling) gerender, deur die `ink-foundation`-teksdomein (`esc_html__`) sodat hulle vertaalbaar is en deur die Engels-lek-skandering gevang word. **Geen besparings-/%-afslag-raam** op die hernuwings-UI (staande reël — sien die ✅-nota hieronder, wat 4.4 ÉN 4.5 dek). "Hernieu" by lansering = 'n verdere vaste termyn via PayFast aankoop (Storie 4.2); **geen outo-hernuwing** (Stories 4.9–4.11 is na-lansering). Ook gerender: "Prys binnekort beskikbaar" (geen lewende prys), "Binnekort beskikbaar" (`aria-disabled`, onsellbare plan), "Meld aan om jou lidmaatskap te hernieu." (uitgelogde terugval) — almal via `esc_html__`. Die My Profiel-houer self is Epic 9 (Storie 9.4); 4.5 lewer net die hernuwings-afdeling.)*
 
-> **Enkelvoud/meervoud-knoppie (`_n()`) — gekureer, nie 'n KI-keuse nie.** Die knoppie word met WordPress se `_n( 'Hernu vir %d maand', 'Hernu vir %d maande', $n, 'ink-foundation' )` gerender. Die enkelvoud- ("maand", N = 1) en meervoud-vorms ("maande", N = 6 / 12) is NIE deur die ontwikkelaar-agent uitgedink nie — hulle is die staande glossaar-maandwoordeskat wat reeds in die Storie 4.1 termyn-etikette gebruik word ("1 maand" / "6 maande" / "12 maande", terminologieregister `term_1_month` / `term_6_months` / `term_12_months`). Hulle word hier eksplisiet as die gekureerde enkelvoud/meervoud-knoppiekopie aangeteken (sien die twee tabelrye hierbo). `_n()` bly die korrekte WP-meervoudsmeganisme; geen NUWE bewoording is uitgedink nie.
+> **Enkelvoud/meervoud-knoppie (`_n()`) — gekureer, nie 'n KI-keuse nie.** Die knoppie word met WordPress se `_n( 'Hernieu vir %d maand', 'Hernieu vir %d maande', $n, 'ink-foundation' )` gerender. Die enkelvoud- ("maand", N = 1) en meervoud-vorms ("maande", N = 6 / 12) is NIE deur die ontwikkelaar-agent uitgedink nie — hulle is die staande glossaar-maandwoordeskat wat reeds in die Storie 4.1 termyn-etikette gebruik word ("1 maand" / "6 maande" / "12 maande", terminologieregister `term_1_month` / `term_6_months` / `term_12_months`). Hulle word hier eksplisiet as die gekureerde enkelvoud/meervoud-knoppiekopie aangeteken (sien die twee tabelrye hierbo). `_n()` bly die korrekte WP-meervoudsmeganisme; geen NUWE bewoording is uitgedink nie.
 
 #### Gekureerde blad-kopie (Storie 4.4, FR-7)
 
-*(GEFINALISEERDE Afrikaanse kopie wat die `patterns/lidmaatskap.php`-patroon vertoon — sinskas, deur die `ink-foundation`-teksdomein (`esc_html__`/`esc_html_e`) gerender sodat dit vertaalbaar is en deur die Engels-lek-skandering gevang word. Onderskei van die `[NEEDS HUMAN AFRIKAANS]`-prosa-plekhouers hieronder, wat 'n bewuste, bekendgemaakte voor-lansering kopie-hek bly.)*
+*(GEFINALISEERDE Afrikaanse kopie wat die `patterns/lidmaatskap.php`-patroon vertoon — sinskas, deur die `ink-foundation`-teksdomein (`esc_html__`/`esc_html_e`) gerender sodat dit vertaalbaar is en deur die Engels-lek-skandering gevang word. Die plan-prosa, intro, voordele en FAQ-antwoorde is nou almal menslik geskryf en goedgekeur — geen `[NEEDS HUMAN AFRIKAANS]`-plekhouers bly oor nie.)*
 
 | Engels | Afrikaans | Notas |
 |---|---|---|
@@ -562,11 +562,17 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Membership questions | Vrae oor lidmaatskap | FAQ-afdeling H2 |
 | Join INK today | Sluit vandag by INK aan | Aankoop-CTA-band H2 |
 | How long does a membership last? | Hoe lank duur 'n lidmaatskap? | FAQ-vraag (`<summary>`) |
-| Does my membership renew automatically? | Hernu my lidmaatskap outomaties? | FAQ-vraag (`<summary>`); GEEN outo-hernuwing by lansering (FR-4) |
+| Does my membership renew automatically? | Hernieu my lidmaatskap outomaties? | FAQ-vraag (`<summary>`); GEEN outo-hernuwing by lansering (FR-4) |
 | How do I pay? | Hoe betaal ek? | FAQ-vraag (`<summary>`); PayFast/ZAR |
 | Join | Sluit aan | Per-plan aankoop-knoppie (sellbare plan) |
 | Coming soon | Binnekort beskikbaar | Per-plan knoppie-plekhouer (onsellbare plan; `aria-disabled`) |
 | Price coming soon | Prys binnekort beskikbaar | Prys-plekhouer wanneer geen lewende WooCommerce-prys nie |
+| Page intro (under H1) | Vir hoe lank wil jy vandag aansluit? | Lidmaatskap-blad intro-alinea onder die H1 |
+| Membership benefit 2 | Laat jou skryfwerk op INK pryk. | Voordele-lys item 2 (item 1 = "Jou ondersteuning hou INK advertensievry en onafhanklik.") |
+| Membership benefit 3 | Neem deel aan kompetisies en maandelikse uitdagings. | Voordele-lys item 3 |
+| FAQ answer — how long does a membership last? | Jou lidmaatskap duur vir die termyn wat jy gekies het — 'n maand, ses maande, of 'n jaar. | FAQ-antwoord |
+| FAQ answer — does it renew automatically? | Nee. Lidmaatskap hernieu nie outomaties nie. Ons sal jou laat weet 'n week voordat dit verval. | FAQ-antwoord; GEEN outo-hernuwing (FR-4) |
+| FAQ answer — how do I pay? | Betaling word veilig hanteer deur PayFast. Ons sien nooit jou kaartbesonderhede nie. | FAQ-antwoord; PayFast/ZAR |
 
 ### Gradering-blad (My Profiel — privaat)
 
@@ -580,28 +586,29 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 
 ### Aansluitingsopsies — drie vaste termyne (Storie 4.1, FR-4)
 
-*(Die drie vaste-termyn lidmaatskap-planne: 1 maand / 6 maande / 12 maande. Die termyn-etikette ("1 maand" / "6 maande" / "12 maande") is reeds in die terminologieregister geprojekteer (`term_1_month` / `term_6_months` / `term_12_months`, glossaar reël 45) en word vandaar verbruik — nie inlyn nie. Die **prys** (R60 / R300 / R600 by lansering) word deur die WooCommerce-produk besit en deur 'n redakteur in WooCommerce-admin verstel — geen vaste pryswaarde in kode nie. Die lid-gerigte plan-PROSA hieronder is **menslike kopie nodig — moenie KI-vertaal nie**.)*
+*(Die drie vaste-termyn lidmaatskap-planne: 1 maand / 6 maande / 12 maande. Die termyn-etikette ("1 maand" / "6 maande" / "12 maande") is reeds in die terminologieregister geprojekteer (`term_1_month` / `term_6_months` / `term_12_months`, glossaar reël 45) en word vandaar verbruik — nie inlyn nie. Die **prys** (R60 / R300 / R600 by lansering) word deur die WooCommerce-produk besit en deur 'n redakteur in WooCommerce-admin verstel — geen vaste pryswaarde in kode nie. Die lid-gerigte plan-PROSA hieronder is **menslik geskryf en goedgekeur** (moenie KI-vertaal nie).)*
 
 > ✅ **OPGERUIM in Storie 4.4 (2026-06-23).** Die "Save 12%"/"Spaar 25%"-besparingsrye in die "Lidmaatskap-blad"-afdeling hierbo is geneutraliseer met 'n `[REMOVED — no vanity savings framing at launch per FR-4 / Storie 4.1-AC3]`-nota (hulle was 'n Lovable-mock Engelse plekhouer; 4.1 het die opruim na 4.4 uitgestel). **Staande reël:** GEEN vanity-afslag/besparingsraam ("X% af", "spaar R…", "beste waarde", per-maand-vergelyking) by lansering nie — op die Lidmaatskap-blad (4.4) óf die hernuwings-UI (4.5). 'n Egte herhalende afslag is na-lansering (Storie 4.11). Storie 4.1 se register dra geen afslag-/besparingsveld nie, en die 4.4-patroon vertoon geen besparingsraam nie.
 
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| Plan description — 1 maand | [NEEDS HUMAN AFRIKAANS] | Lid-gerigte beskrywing vir die 1-maand-aansluitingsopsie; menslike kopie nodig; geen besparingsraam |
-| Plan description — 6 maande | [NEEDS HUMAN AFRIKAANS] | Lid-gerigte beskrywing vir die 6-maande-aansluitingsopsie; menslike kopie nodig; geen besparingsraam |
-| Plan description — 12 maande | [NEEDS HUMAN AFRIKAANS] | Lid-gerigte beskrywing vir die 12-maande-aansluitingsopsie; menslike kopie nodig; geen besparingsraam |
-| Lidmaatskap-blad CTA (kies-'n-plan) | [NEEDS HUMAN AFRIKAANS] | Oproep-tot-aksie wat 4.4 sal verbruik; menslike kopie nodig |
+| Plan description — 1 maand | Volle toegang vir 'n maand. | Lid-gerigte beskrywing vir die 1-maand-aansluitingsopsie; geen besparingsraam |
+| Plan description — 6 maande | Volle toegang vir ses maande. | Lid-gerigte beskrywing vir die 6-maande-aansluitingsopsie; geen besparingsraam |
+| Plan description — 12 maande | Volle toegang vir 'n jaar. | Lid-gerigte beskrywing vir die 12-maande-aansluitingsopsie; geen besparingsraam |
+| Lidmaatskap-blad CTA (kies-'n-plan) | Kies 'n opsie hierbo om 'n lid te word. | Oproep-tot-aksie (Lidmaatskap-blad aankoopband) |
 
 ### Lidmaatskap-lewensiklus e-pos (scope-increase 2026-06-20)
 
-*(Nuwe transaksionele e-pos. Afrikaanse onderwerpe/snippette nog nie in die glossaar nie — wag op menslike kopie.)*
+*(Nuwe transaksionele e-pos. Onderwerpe/liggame hieronder is menslik geskryf en goedgekeur; **stuur-skakelaars bly AF tot personeel hulle doelbewus aanskakel** — geen `wp_mail` vuur nie.)*
 
 > **Storie 4.2 (PayFast self-aktivering) bedraad slegs die DANKIE-/AKTIVERINGS-snellertjie**, nie die kopie nie. By 'n suksesvolle WooCommerce Memberships-aktivering (`wc_memberships_user_membership_status_changed` → `active`) vuur `Ink\Entitlement\PurchaseActivation` die sjabloon `ink_membership_activated_email` af via die Notifications-API. Die sjabloon is geregistreer met 'n **[WAG OP MENSLIKE KOPIE]**-plekhouer-liggaam en die **stuur-skakelaar AF by verstek** — geen `wp_mail` vuur tot Storie 4.8 die menslike Afrikaanse kopie inbring en die skakelaar aanskakel nie. Moenie KI-vertaal nie.
 
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| Thank-you email (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Dankie-/aktiverings-e-pos ná aansluiting/betaling. **Snellertjie bedraad in Storie 4.2** (`ink_membership_activated_email`, plekhouer-liggaam, stuur-skakelaar AF); die KOPIE is Storie 4.8 se werk. Menslike kopie nodig. |
-| 1-month expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 maand voor verval; Storie 4.8; menslike kopie nodig |
-| 1-week expiry warning (subject + snippet) | [NEEDS HUMAN AFRIKAANS] | Herinnering 1 week voor verval; Storie 4.8; menslike kopie nodig |
+| Thank-you email (subject + snippet) | Onderwerp: Jou lidmaatskap is nou aktief · Liggaam: Hallo {skrywer}! Jou lidmaatskap is nou aktief. Dankie dat jy vir INK ondersteun. | Dankie-/aktiverings-e-pos ná aansluiting/betaling. Snellertjie bedraad in Storie 4.2 (`ink_membership_activated_email`); **stuur-skakelaar bly AF tot personeel dit aanskakel.** |
+| 1-month expiry warning (subject + snippet) | Onderwerp: Jou lidmaatskap verval binnekort · Liggaam: Hallo {skrywer}. Jou lidmaatskap verval oor een maand. | Herinnering 1 maand voor verval; Storie 4.8; stuur-skakelaar AF |
+| 1-week expiry warning (subject + snippet) | Onderwerp: Jou lidmaatskap verval binnekort · Liggaam: Hallo {skrywer}. Jou lidmaatskap verval oor een week. | Herinnering 1 week voor verval; Storie 4.8; stuur-skakelaar AF |
+| Account-welcome email body (Storie 3.3) | Hallo {skrywer}, en welkom by INK! Jou rekening is pas geskep. | Liggaam van die rekening-geskep welkom-e-pos; onderwerp "Welkom by INK" reeds goedgekeur; stuur-skakelaar AF |
 
 ### Sosiale aanmelding (R6 — Storie 3.5, grasieus-degraderende naat)
 
@@ -609,23 +616,34 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| Social divider line ("Or continue with") | [NEEDS HUMAN AFRIKAANS] | Voorlopig "Of gaan voort met" in die patroon; wag op menslike kopie |
-| POPIA consent note (social sign-in shares basic profile data) | [NEEDS HUMAN AFRIKAANS] | Voorlopig "Deur met 'n sosiale rekening voort te gaan, deel jy basiese profielinligting met INK." in die patroon; wag op menslike kopie |
-| Privacy-policy link label | [NEEDS HUMAN AFRIKAANS] | Voorlopig "Privaatheidsbeleid"; skakel na die privaatheidsblad (`get_privacy_policy_url()` met `/privaatheidsbeleid`-terugval — die werklike blad is 'n voor-lansering inhoud-hek) |
+| Social divider line ("Or continue with") | Of gebruik eerder | Gerender slegs as 'n sosiale-aanmeld-inprop aktief is |
+| POPIA consent note (social sign-in shares basic profile data) | As jy 'n sosiale media-rekening gebruik, sien INK sekere basiese besonderhede. | POPIA-toestemmingsnota |
+| Privacy-policy link label | Privaatheidsbeleid | Skakel na die privaatheidsblad (`get_privacy_policy_url()` met `/privaatheidsbeleid`-terugval — die werklike blad is 'n voor-lansering inhoud-hek) |
 
 ### Rekening-goedkeuring backstop (R6 — Storie 3.6, af by verstek)
 
-*(Opsionele goedkeuringstou wat 'n redakteur kan aanskakel. **Af by verstek** — wanneer af, bly registrasie vryevloei en niks hiervan verskyn nie (UJ-1). Die enkelwoord-etikette (goedkeur/verwerp/"wag op goedkeuring"/toustnaam) is in die terminologieregister geprojekteer maar **wag op redakteur-bekragtiging**; die volledige lid-gerigte sinne en e-poskopie hieronder is **menslike kopie nodig — moenie KI-vertaal nie**.)*
+*(Opsionele goedkeuringstou wat 'n redakteur kan aanskakel. **Af by verstek** — wanneer af, bly registrasie vryevloei en niks hiervan verskyn nie (UJ-1). Die enkelwoord-etikette (keur goed / verwerp / "wag vir goedkeuring" / toustnaam) is in die terminologieregister geprojekteer en **redakteur-bekragtig**; die volledige lid-gerigte sinne en e-poskopie hieronder is **menslik geskryf** (e-pos stuur-skakelaars bly AF).)*
 
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| Login-blocked pending notice (full sentence shown when a pending account tries to log in) | [NEEDS HUMAN AFRIKAANS] | Volledige lid-gerigte sin; "jy"-stem, sinskas; voorlopige plekhouer in kode tot menslike kopie land |
-| Approve button label | [NEEDS HUMAN AFRIKAANS] | Enkelwoord "Goedkeur" geprojekteer in register; wag op bekragtiging |
-| Reject button label | [NEEDS HUMAN AFRIKAANS] | Enkelwoord "Verwerp" geprojekteer in register; wag op bekragtiging |
-| Approve result notice ("account approved") | [NEEDS HUMAN AFRIKAANS] | Redakteur-statusboodskap ná goedkeuring; menslike kopie nodig |
-| Reject result notice ("account rejected") | [NEEDS HUMAN AFRIKAANS] | Redakteur-statusboodskap ná verwerping; menslike kopie nodig |
-| Approval email (subject + body) | [NEEDS HUMAN AFRIKAANS] | Transaksionele e-pos ná goedkeuring; stuur-skakelaar AF tot menslike kopie land |
-| Rejection email (subject + body) | [NEEDS HUMAN AFRIKAANS] | Transaksionele e-pos ná verwerping; stuur-skakelaar AF tot menslike kopie land |
+| Login-blocked pending notice (full sentence shown when a pending account tries to log in) | Jou rekening wag vir goedkeuring. Ons kyk binnekort daarna. | Volledige lid-gerigte sin; "jy"-stem, sinskas |
+| Login-blocked rejected notice (shown when a rejected account tries to log in) | Jou rekening is ongelukkig afgekeur. | Distinkte boodskap vir 'n afgekeurde rekening |
+| Approve button label | Keur goed | Register `account_approve` (redakteur-bekragtig) |
+| Reject button label | Verwerp | Register `account_reject` (redakteur-bekragtig) |
+| Approve result notice ("account approved") | Jou rekening is goedgekeur. | Redakteur-statusboodskap ná goedkeuring |
+| Reject result notice ("account rejected") | Jou rekening is afgekeur. | Redakteur-statusboodskap ná verwerping |
+| Error result notice (action could not complete) | Iets het foutgegaan. | Redakteur-statusboodskap by 'n mislukte handeling |
+| Approval email (subject + body) | Onderwerp: Jou INK rekening is goedgekeur · Liggaam: Hallo {skrywer}. Jou rekening is goedgekeur. Jy kan nou inteken en begin skryf. | Transaksionele e-pos ná goedkeuring; stuur-skakelaar AF |
+| Rejection email (subject + body) | Onderwerp: Omtrent jou INK rekeningaansoek · Liggaam: Hallo {skrywer}. Jou rekeningaansoek is ongelukkig afgekeur. | Transaksionele e-pos ná verwerping; stuur-skakelaar AF |
+
+### Onboarding (Storie 3.3, ná registrasie)
+
+*(Sagte, oorslaanbare onboarding-skerm ná registrasie. Menslik geskryf, sinskas, "jy"-stem.)*
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Onboarding welcome line | Jy is nou 'n gratis lid. Welkom! Vertel ons asseblief meer van jou op die "My Profiel" bladsy. | Verwelkomingsreël op die onboarding-skerm |
+| Profile-completion prompt | Gee jou naam en 'n kort beskrywing, sodat ander jou kan leer ken. | Prompt onder "Voltooi jou profiel" |
 
 ### Outomatiese plasing-bevestigingskennisgewings (R7 — gerandomiseerde lys)
 

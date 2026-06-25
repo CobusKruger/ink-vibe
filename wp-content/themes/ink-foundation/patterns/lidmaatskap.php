@@ -19,9 +19,9 @@
  *
  * Quality Gate A: every colour/spacing/type value resolves to a theme.json token.
  * Quality Gate D: term labels come from the ink-core terminology registry; the
- * per-plan descriptions, FAQ answers, and CTA prose are NOT yet curated — they are
- * clearly-marked [NEEDS HUMAN AFRIKAANS] placeholders (the rows reserved in
- * docs/ui-copy-translations.md), never invented or lifted from the Lovable mock.
+ * per-plan descriptions, FAQ answers, and CTA prose are the human-authored
+ * Afrikaans curated in docs/ui-copy-translations.md, never invented or lifted
+ * from the Lovable mock.
  * NO vanity savings / %-off framing anywhere (FR-4 / Storie 4.1-AC3 / 4.5).
  * Structural wrappers are locked (move/remove) per the Storie 1.6 strategy; the
  * content inside stays editable for non-technical staff (NFR-6).
@@ -31,6 +31,14 @@ $ink_plans     = function_exists( 'ink_foundation_membership_plans' ) ? ink_foun
 $ink_plan_noun = function_exists( 'ink_foundation_term' )
 	? ink_foundation_term( 'membership_plan_plural', 'Aansluitingsopsies' )
 	: 'Aansluitingsopsies';
+
+// Per-term, member-facing plan descriptions (human-authored Afrikaans —
+// docs/ui-copy-translations.md "Aansluitingsopsies"; no savings framing).
+$ink_plan_descriptions = array(
+	1  => __( 'Volle toegang vir \'n maand.', 'ink-foundation' ),
+	6  => __( 'Volle toegang vir ses maande.', 'ink-foundation' ),
+	12 => __( 'Volle toegang vir \'n jaar.', 'ink-foundation' ),
+);
 
 // Fail-safe: when ink-core is inactive the bridge returns an empty list. Render the
 // three fixed terms as static, price-less, CTA-less slots so the page skeleton still
@@ -67,8 +75,7 @@ if ( empty( $ink_plans ) ) {
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"lg","textColor":"muted-text"} -->
-		<?php // [NEEDS HUMAN AFRIKAANS] — Lidmaatskap-blad intro-alinea nog nie gekureer in ui-copy-translations.md; menslike kopie nodig. ?>
-		<p class="has-muted-text-color has-text-color has-lg-font-size">Kies die toegangstermyn wat jou pas. [NEEDS HUMAN AFRIKAANS]</p>
+		<p class="has-muted-text-color has-text-color has-lg-font-size"><?php echo esc_html__( 'Vir hoe lank wil jy vandag aansluit?', 'ink-foundation' ); ?></p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
@@ -113,8 +120,8 @@ foreach ( $ink_plans as $ink_plan ) :
 				<!-- /wp:paragraph -->
 
 				<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-			<?php // [NEEDS HUMAN AFRIKAANS] — lid-gerigte plan-beskrywing per termyn (ui-copy-translations.md "Aansluitingsopsies"-ry); menslike kopie nodig, geen besparingsraam. ?>
-				<p class="has-muted-text-color has-text-color has-md-font-size">[NEEDS HUMAN AFRIKAANS] — beskrywing vir hierdie termyn.</p>
+			<?php $ink_plan_months = isset( $ink_plan['months'] ) ? (int) $ink_plan['months'] : 0; ?>
+				<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html( $ink_plan_descriptions[ $ink_plan_months ] ?? '' ); ?></p>
 				<!-- /wp:paragraph -->
 
 				<!-- wp:buttons {"lock":{"move":true,"remove":true},"layout":{"type":"flex","justifyContent":"center"}} -->
@@ -155,12 +162,11 @@ foreach ( $ink_plans as $ink_plan ) :
 			<!-- /wp:list-item -->
 
 			<!-- wp:list-item {"fontSize":"md"} -->
-			<?php // [NEEDS HUMAN AFRIKAANS] — verdere voordele nog nie gekureer; menslike kopie nodig. ?>
-			<li class="has-md-font-size">[NEEDS HUMAN AFRIKAANS] — verdere voordeel van lidmaatskap.</li>
+			<li class="has-md-font-size"><?php echo esc_html__( 'Laat jou skryfwerk op INK pryk.', 'ink-foundation' ); ?></li>
 			<!-- /wp:list-item -->
 
 			<!-- wp:list-item {"fontSize":"md"} -->
-			<li class="has-md-font-size">[NEEDS HUMAN AFRIKAANS] — verdere voordeel van lidmaatskap.</li>
+			<li class="has-md-font-size"><?php echo esc_html__( 'Neem deel aan kompetisies en maandelikse uitdagings.', 'ink-foundation' ); ?></li>
 			<!-- /wp:list-item -->
 		</ul>
 		<!-- /wp:list -->
@@ -180,17 +186,15 @@ foreach ( $ink_plans as $ink_plan ) :
 		<!-- wp:details {"lock":{"move":true,"remove":true},"className":"is-style-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}}} -->
 		<details class="wp-block-details is-style-card" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)"><summary><?php echo esc_html__( 'Hoe lank duur \'n lidmaatskap?', 'ink-foundation' ); ?></summary>
 			<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-			<?php // [NEEDS HUMAN AFRIKAANS] — FAQ-antwoord nog nie gekureer; menslike kopie nodig (moenie KI-vertaal nie). ?>
-			<p class="has-muted-text-color has-text-color has-md-font-size">[NEEDS HUMAN AFRIKAANS] — antwoord oor termynlengtes (1 / 6 / 12 maande).</p>
+			<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( 'Jou lidmaatskap duur vir die termyn wat jy gekies het — \'n maand, ses maande, of \'n jaar.', 'ink-foundation' ); ?></p>
 			<!-- /wp:paragraph -->
 		</details>
 		<!-- /wp:details -->
 
 		<!-- wp:details {"lock":{"move":true,"remove":true},"className":"is-style-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}}} -->
-		<details class="wp-block-details is-style-card" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)"><summary><?php echo esc_html__( 'Hernu my lidmaatskap outomaties?', 'ink-foundation' ); ?></summary>
+		<details class="wp-block-details is-style-card" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)"><summary><?php echo esc_html__( 'Hernieu my lidmaatskap outomaties?', 'ink-foundation' ); ?></summary>
 			<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-			<?php // [NEEDS HUMAN AFRIKAANS] — FAQ-antwoord nog nie gekureer; menslike kopie nodig. Let wel: GEEN outo-hernuwing by lansering nie (FR-4). ?>
-			<p class="has-muted-text-color has-text-color has-md-font-size">[NEEDS HUMAN AFRIKAANS] — antwoord oor hernuwing (geen outo-hernuwing by lansering).</p>
+			<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( 'Nee. Lidmaatskap hernieu nie outomaties nie. Ons sal jou laat weet \'n week voordat dit verval.', 'ink-foundation' ); ?></p>
 			<!-- /wp:paragraph -->
 		</details>
 		<!-- /wp:details -->
@@ -198,8 +202,7 @@ foreach ( $ink_plans as $ink_plan ) :
 		<!-- wp:details {"lock":{"move":true,"remove":true},"className":"is-style-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}}} -->
 		<details class="wp-block-details is-style-card" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)"><summary><?php echo esc_html__( 'Hoe betaal ek?', 'ink-foundation' ); ?></summary>
 			<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-			<?php // [NEEDS HUMAN AFRIKAANS] — FAQ-antwoord nog nie gekureer; menslike kopie nodig (PayFast/ZAR). ?>
-			<p class="has-muted-text-color has-text-color has-md-font-size">[NEEDS HUMAN AFRIKAANS] — antwoord oor betaling (PayFast, ZAR).</p>
+			<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( 'Betaling word veilig hanteer deur PayFast. Ons sien nooit jou kaartbesonderhede nie.', 'ink-foundation' ); ?></p>
 			<!-- /wp:paragraph -->
 		</details>
 		<!-- /wp:details -->
@@ -217,8 +220,7 @@ foreach ( $ink_plans as $ink_plan ) :
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"align":"center","fontSize":"lg","textColor":"muted-text"} -->
-		<?php // [NEEDS HUMAN AFRIKAANS] — Lidmaatskap-blad CTA-kopie (ui-copy-translations.md "Aansluitingsopsies"-ry); menslike kopie nodig. ?>
-		<p class="has-text-align-center has-muted-text-color has-text-color has-lg-font-size">Kies 'n plan hierbo om jou lidmaatskap te begin. [NEEDS HUMAN AFRIKAANS]</p>
+		<p class="has-text-align-center has-muted-text-color has-text-color has-lg-font-size"><?php echo esc_html__( 'Kies \'n opsie hierbo om \'n lid te word.', 'ink-foundation' ); ?></p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->

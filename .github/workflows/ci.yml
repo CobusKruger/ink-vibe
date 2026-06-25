@@ -42,6 +42,9 @@ jobs:
       - name: Deptrac (AD-1 module graph + Entitlement ⟂ Tiers)
         run: composer deptrac
 
+      - name: Afrikaans copy-placeholder scan (NFR-1 static subset — ratchet)
+        run: composer copy:scan
+
       - name: Pest (unit suite — WP mocked)
         run: composer test:unit
 
@@ -83,7 +86,9 @@ jobs:
     needs: quality
     # Placeholder only. The full E2E pyramid + critical journeys
     # (register → PayFast sandbox → submit → publish → react → renew) land in
-    # Story 18.8 (NFR-9). Likewise the English-leak scan (NFR-1, tools/leak-scan)
+    # Story 18.8 (NFR-9). The static subset of the English-leak scan (NFR-1,
+    # tools/leak-scan/scan-placeholders.php — placeholder-marker ratchet) already
+    # runs in the `quality` job above; the full page-crawl + `wp i18n` gate
     # becomes a standing CI + cron gate in Story 17.4 / Epic 18.
     if: false
     steps:
