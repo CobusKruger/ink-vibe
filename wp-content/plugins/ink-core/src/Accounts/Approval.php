@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
  * (Epic 3, Story 3.6; FR-3a / C8; the Story-3.4 build decision's layer 5).
  *
  * This is the legitimate `ink-core` Accounts-module surface for R6: a single
- * fail-safe-OFF toggle, a WP-native "wag op goedkeuring" pending account state
+ * fail-safe-OFF toggle, a WP-native "wag vir goedkeuring" pending account state
  * stamped on `user_register` when ON, a login gate (a `wp_authenticate_user`
  * filter returning an Afrikaans `WP_Error`), and the plugin's first admin
  * approval-queue screen (WP-admin chrome, redakteur, `ink_moderate`) to
@@ -48,14 +48,14 @@ defined( 'ABSPATH' ) || exit;
  * default; NOT any front-end / design-system / `theme.json` work (the queue is
  * WP-admin chrome); NOT reimplemented WordPress auth.
  *
- * Curated-copy gate (Gate D): the controlled-vocabulary LABELS (goedkeur /
- * verwerp / "wag op goedkeuring" / the queue name) come from the AD-10
+ * Curated-copy gate (Gate D): the controlled-vocabulary LABELS (keur goed /
+ * verwerp / "wag vir goedkeuring" / the queue name) come from the AD-10
  * terminology registry ({@see Terms} / `ink_term()`), projected from
  * `docs/afrikaans-terms.md` where they are flagged pending redakteur
  * ratification. The full member-facing PROSE (the login-blocked sentence, the
- * approve/reject result notices, the approval/rejection email bodies) is
- * `[NEEDS HUMAN AFRIKAANS]` / `[WAG OP MENSLIKE KOPIE]` and is NOT invented here;
- * the email send toggles default OFF until human copy lands.
+ * approve/reject result notices, the approval/rejection email bodies) is the
+ * human-authored Afrikaans in `ui-copy-translations.md` (never AI-translated);
+ * the email send toggles default OFF until staff deliberately enable them.
  *
  * @package Ink\Core
  */
@@ -306,26 +306,20 @@ final class Approval {
 
 		$user_id = (int) $user->ID;
 
-		// Afrikaans-source messages (Gate D). Built from ratified registry labels +
-		// clearly-marked placeholders — the full sentences are [NEEDS HUMAN AFRIKAANS]
-		// in ui-copy-translations.md (mirroring the Registration welcome placeholder
-		// discipline); do not invent or AI-translate prose here. A REJECTED account
-		// gets a DISTINCT code + message: it is not "waiting for approval".
+		// Afrikaans-source messages (Gate D), human-authored in ui-copy-translations.md
+		// (never AI-translated). A REJECTED account gets a DISTINCT code + message:
+		// it is not "waiting for approval".
 		if ( self::isRejected( $user_id ) ) {
 			return new \WP_Error(
 				self::ERROR_CODE_REJECTED,
-				__( 'Jou rekening-aansoek is verwerp. [WAG OP MENSLIKE KOPIE]', 'ink-core' )
+				__( 'Jou rekening is ongelukkig afgekeur.', 'ink-core' )
 			);
 		}
 
 		if ( self::isPending( $user_id ) ) {
 			return new \WP_Error(
 				self::ERROR_CODE,
-				sprintf(
-					/* translators: %s: the "wag op goedkeuring" status label. */
-					__( 'Jou rekening %s deur \'n redakteur. [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
-					Terms::label( 'account_pending' )
-				)
+				__( 'Jou rekening wag vir goedkeuring. Ons kyk binnekort daarna.', 'ink-core' )
 			);
 		}
 
@@ -460,17 +454,16 @@ final class Approval {
 	 * Mirrors {@see Registration::registerWelcomeTemplate()}: Afrikaans-source
 	 * subject/body as LITERAL `__( …, 'ink-core' )` strings (extractable by
 	 * `wp i18n make-pot`; no English `.mo` ships), the `{skrywer}` greeting token,
-	 * and the per-event send toggle OFF by default. The bodies are clearly-marked
-	 * `[WAG OP MENSLIKE KOPIE]` placeholders — the real copy is `[NEEDS HUMAN
-	 * AFRIKAANS]` in `ui-copy-translations.md`; the owner confirms curated copy
-	 * before turning the toggle on.
+	 * and the per-event send toggle OFF by default. The bodies are the human-authored
+	 * Afrikaans curated in `ui-copy-translations.md` (never AI-translated); staff
+	 * enable the toggle deliberately to start sending.
 	 */
 	public function registerEmailTemplates(): void {
 		Notifications::registerTemplate(
 			new Template(
 				self::APPROVED_TEMPLATE_KEY,
-				__( 'Jou INK-rekening is goedgekeur [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
-				__( 'Hallo {skrywer}, jou rekening is goedgekeur. [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
+				__( 'Jou INK rekening is goedgekeur', 'ink-core' ),
+				__( 'Hallo {skrywer}. Jou rekening is goedgekeur. Jy kan nou inteken en begin skryf.', 'ink-core' ),
 				false
 			)
 		);
@@ -478,8 +471,8 @@ final class Approval {
 		Notifications::registerTemplate(
 			new Template(
 				self::REJECTED_TEMPLATE_KEY,
-				__( 'Jou INK-rekening-aansoek [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
-				__( 'Hallo {skrywer}, jou rekening-aansoek is verwerp. [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
+				__( 'Omtrent jou INK rekeningaansoek', 'ink-core' ),
+				__( 'Hallo {skrywer}. Jou rekeningaansoek is ongelukkig afgekeur.', 'ink-core' ),
 				false
 			)
 		);
@@ -531,7 +524,7 @@ final class Approval {
 
 		if ( ! self::isEnabled() ) {
 			// Documented OFF-state: chrome stays reachable; no pending accounts exist.
-			echo '<p>' . esc_html__( 'Die goedkeuring-backstop is af. Registrasie is vryevloei en geen rekeninge wag op goedkeuring nie.', 'ink-core' ) . '</p>';
+			echo '<p>' . esc_html__( 'Die goedkeuring-backstop is af. Registrasie is vryevloei en geen rekeninge wag vir goedkeuring nie.', 'ink-core' ) . '</p>';
 			echo '</div>';
 			return;
 		}
@@ -573,8 +566,7 @@ final class Approval {
 	 *
 	 * Display-only: reads our own `ink_notice` redirect marker (allowlisted, never
 	 * used for any state change), so no nonce is required here. The notice copy is
-	 * a clearly-marked `[WAG OP MENSLIKE KOPIE]` placeholder — the final wording is
-	 * `[NEEDS HUMAN AFRIKAANS]` in ui-copy-translations.md, not invented here.
+	 * the human-authored Afrikaans curated in ui-copy-translations.md (not invented here).
 	 */
 	private function renderNotice(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display-only status from our own wp_safe_redirect; value is allowlisted, drives no write.
@@ -586,9 +578,9 @@ final class Approval {
 		$notice = sanitize_key( wp_unslash( $_GET['ink_notice'] ) );
 
 		$messages = array(
-			'approved' => __( 'Die rekening is goedgekeur. [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
-			'rejected' => __( 'Die rekening is verwerp. [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
-			'error'    => __( 'Die handeling kon nie voltooi word nie. [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
+			'approved' => __( 'Jou rekening is goedgekeur.', 'ink-core' ),
+			'rejected' => __( 'Jou rekening is afgekeur.', 'ink-core' ),
+			'error'    => __( 'Iets het foutgegaan.', 'ink-core' ),
 		);
 
 		if ( ! isset( $messages[ $notice ] ) ) {

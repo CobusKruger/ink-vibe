@@ -74,7 +74,7 @@ test( 'label returns the four lidmaatskap status messages (Story 4.7)', function
 	expect( Terms::label( 'status_active' ) )
 		->toBe( 'Jou lidmaatskap is aktief. Jy kan nou werk plaas.' );
 	expect( Terms::label( 'status_expired' ) )
-		->toBe( 'Jou lidmaatskap het verval. Hernu om werk te plaas.' );
+		->toBe( 'Jou lidmaatskap het verval. Hernieu om werk te plaas.' );
 	expect( Terms::label( 'status_access_denied' ) )
 		->toBe( 'Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies.' );
 	expect( Terms::label( 'status_payment_failed' ) )

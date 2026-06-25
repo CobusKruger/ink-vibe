@@ -6,9 +6,8 @@
  * Description: Sagte, oorslaanbare, eenmalige onboarding-skerm na registrasie — profiel voltooi + een eerste sosiale aksie (volg 'n skrywer / stoor 'n bydrae na jou leeslys), wat grasieus degradeer op 'n dun katalogus. Aanbieding alleen; geen besigheidslogika.
  *
  * Presentation only (three-layer separation). All copy is Afrikaans, sentence
- * case, "jy"-voice, sourced from the approved glossary / ui-copy-translations.md
- * where authored; un-authored onboarding microcopy is clearly marked
- * [NEEDS HUMAN AFRIKAANS] (never invented / AI-translated). All output escaped.
+ * case, "jy"-voice, human-authored in the approved glossary / ui-copy-translations.md
+ * (never invented / AI-translated). All output escaped.
  *
  * Scope: the onboarding SURFACE + first-action PROMPT (a graceful-degrading
  * seam). The follow graph (Story 9.2) and leeslys (Story 7.7) are NOT built here
@@ -31,11 +30,7 @@ $ink_post_to = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : 
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-md-font-size"><?php
-			// [NEEDS HUMAN AFRIKAANS] — onboarding welcome line not yet authored in
-			// ui-copy-translations.md. Built from approved glossary terms only.
-			echo esc_html__( 'Jou rekening is gereed as gratis lid. Voltooi jou profiel en neem \'n eerste stap — jy kan dit enige tyd oorslaan.', 'ink-foundation' );
-		?> <span class="ink-needs-human-af" hidden>[NEEDS HUMAN AFRIKAANS]</span></p>
+		<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( 'Jy is nou \'n gratis lid. Welkom! Vertel ons asseblief meer van jou op die "My Profiel" bladsy.', 'ink-foundation' ); ?></p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
@@ -45,10 +40,7 @@ $ink_post_to = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : 
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-			<p class="has-muted-text-color has-text-color has-sm-font-size"><?php
-				// [NEEDS HUMAN AFRIKAANS] — profile-completion prompt not yet authored.
-				echo esc_html__( 'Voeg \'n naam en \'n kort beskrywing by sodat ander jou kan leer ken.', 'ink-foundation' );
-			?> <span class="ink-needs-human-af" hidden>[NEEDS HUMAN AFRIKAANS]</span></p>
+			<p class="has-muted-text-color has-text-color has-sm-font-size"><?php echo esc_html__( 'Gee jou naam en \'n kort beskrywing, sodat ander jou kan leer ken.', 'ink-foundation' ); ?></p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:buttons {"layout":{"type":"constrained"}} -->

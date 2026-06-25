@@ -50,14 +50,14 @@ Die reël is eenvoudig: **kies een term per konsep en hou by daardie term.**
 
 ### Rekening-goedkeuring (R6 — opsionele backstop)
 
-*Eienaarsbesluit 2026-06-20 (C8) / Storie 3.6: 'n opsionele, **af-by-verstek** goedkeuringstou wat 'n redakteur kan aanskakel slegs as misbruik dit regverdig. Wanneer af, bly registrasie heeltemal vryevloei (UJ-1). Hierdie terme is **[NEEDS HUMAN AFRIKAANS]** — voorgestelde standaard-Afrikaans, **wag op redakteur-bekragtiging** voordat dit aan lede gewys word. Moenie KI-vertaal nie; die volledige lid-gerigte sinne en e-poskopie bly in `ui-copy-translations.md` as `[NEEDS HUMAN AFRIKAANS]` gemerk.*
+*Eienaarsbesluit 2026-06-20 (C8) / Storie 3.6: 'n opsionele, **af-by-verstek** goedkeuringstou wat 'n redakteur kan aanskakel slegs as misbruik dit regverdig. Wanneer af, bly registrasie heeltemal vryevloei (UJ-1). Hierdie terme is **redakteur-bekragtig (2026-06-25)**. Moenie KI-vertaal nie.*
 
 | Konsep | UI-term (Afrikaans) | Kode-ID / sleutel | Notas |
 |---|---|---|---|
-| Die toestand van 'n nuwe rekening wat op 'n redakteur se goedkeuring wag | **wag op goedkeuring** | `account_pending` | ⚠️ Voorgestel — wag op bekragtiging. Slegs aktief wanneer die backstop AAN is; andersins bestaan hierdie toestand glad nie (vryevloei). |
-| Die handeling om 'n wagtende rekening te aanvaar | **goedkeur** | `account_approve` | ⚠️ Voorgestel — wag op bekragtiging. Werkwoord op die goedkeuringstou-knoppie. |
-| Die handeling om 'n wagtende rekening te weier | **verwerp** | `account_reject` | ⚠️ Voorgestel — wag op bekragtiging. Werkwoord op die goedkeuringstou-knoppie. |
-| Die admin-skerm wat wagtende rekeninge lys | **Rekening-goedkeuringstou** | `account_approval_queue` | ⚠️ Voorgestel — wag op bekragtiging. Redakteur-skerm (WP-admin-chrome, `ink_moderate`-gekeur); geen ontwerpstelsel-werk. |
+| Die toestand van 'n nuwe rekening wat op 'n redakteur se goedkeuring wag | **wag vir goedkeuring** | `account_pending` | ✅ Bekragtig. Slegs aktief wanneer die backstop AAN is; andersins bestaan hierdie toestand glad nie (vryevloei). |
+| Die handeling om 'n wagtende rekening te aanvaar | **keur goed** | `account_approve` | ✅ Bekragtig 2026-06-25 ("Goedkeur" → "Keur goed"). Werkwoord op die goedkeuringstou-knoppie. |
+| Die handeling om 'n wagtende rekening te weier | **verwerp** | `account_reject` | ✅ Bekragtig. Werkwoord op die goedkeuringstou-knoppie. |
+| Die admin-skerm wat wagtende rekeninge lys | **Rekening-goedkeuringstou** | `account_approval_queue` | ✅ Bekragtig. Redakteur-skerm (WP-admin-chrome, `ink_moderate`-gekeur); geen ontwerpstelsel-werk. |
 
 ---
 
@@ -207,7 +207,7 @@ Hierdie woorde en frases verskyn as knoppies, skakels en toestandsboodskappe. Ge
 | Begin volg | "Jy volg nou [naam]." |
 | Inskrywing ontvang | "Jou inskrywing is ontvang." |
 | Lidmaatskapbevestiging | "Jou lidmaatskap is aktief. Jy kan nou werk plaas." |
-| Lidmaatskap verval | "Jou lidmaatskap het verval. Hernu om werk te plaas." |
+| Lidmaatskap verval | "Jou lidmaatskap het verval. Hernieu om werk te plaas." |
 | Lidmaatskap verval binnekort (herinnering) | "Jou lidmaatskap verval binnekort." |
 | Betaling misluk of gekanselleer | "Jou betaling het misluk of is gekanselleer." |
 | Gradering-bevordering | "Baie geluk! Jy is na Silwer bevorder." |
@@ -216,7 +216,7 @@ Hierdie woorde en frases verskyn as knoppies, skakels en toestandsboodskappe. Ge
 
 > **Registerprojeksie (Storie 4.7, FR-9 — lidmaatskap-statusboodskappe).** Vier van die boodskappe hierbo is die **lid-familie toegangstoestand-boodskappe** wat 'n lid se vier toestande dek — **aktief / verval / toegang-geweier / betaling-misluk**. Hulle word VERBATIM (geen KI-vertaling, geen nuwe bewoording) in die `ink-core`-terminologieregister (`Ink\I18n\Terms`) geprojekteer onder stabiele konsep-sleutels, en deur die sleutel verbruik (nooit inlyn nie) via `Ink\Entitlement\Api::statusMessage()`:
 > - `status_active` → "Lidmaatskapbevestiging" ("Jou lidmaatskap is aktief. Jy kan nou werk plaas.")
-> - `status_expired` → "Lidmaatskap verval" ("Jou lidmaatskap het verval. Hernu om werk te plaas.")
+> - `status_expired` → "Lidmaatskap verval" ("Jou lidmaatskap het verval. Hernieu om werk te plaas.")
 > - `status_access_denied` → "Toegang geweier (betaalde lidmaatskap nodig)" ("Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies.")
 > - `status_payment_failed` → "Betaling misluk of gekanselleer" ("Jou betaling het misluk of is gekanselleer.")
 >

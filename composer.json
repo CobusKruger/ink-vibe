@@ -52,7 +52,8 @@
         "stan": "phpstan analyse --memory-limit=1G",
         "cs": "phpcs",
         "cs:fix": "phpcbf",
-        "deptrac": "deptrac analyse --config-file=deptrac.yaml"
+        "deptrac": "deptrac analyse --config-file=deptrac.yaml",
+        "copy:scan": "php tools/leak-scan/scan-placeholders.php"
     },
     "minimum-stability": "stable",
     "prefer-stable": true

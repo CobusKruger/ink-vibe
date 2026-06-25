@@ -196,8 +196,8 @@ test( 'a non-active transition fires nothing (idempotent, no double-send)', func
 
 /**
  * AC-2: the activation template registers Afrikaans-source with the send toggle OFF
- * by default — so NO wp_mail fires until Story 4.8 lands the curated copy and turns
- * it on. The body carries the {skrywer} greeting. (Reads back via the known store —
+ * by default — so NO wp_mail fires until staff enable it, even though the curated
+ * copy has now landed. The body carries the {skrywer} greeting. (Reads back via the known store —
  * an unregistered template is ALSO fail-safe OFF, so a send()-only assertion would
  * pass green even if registration broke; the ApprovalTest precedent.)
  */
@@ -215,7 +215,8 @@ test( 'the activation email registers Afrikaans-source, DISABLED, and does not s
 	expect( $store->isRegistered( $key ) )->toBeTrue();
 	expect( $store->isEnabled( $key ) )->toBeFalse();
 	expect( $store->body( $key ) )->toContain( '{skrywer}' );
-	expect( $store->body( $key ) )->toContain( '[WAG OP MENSLIKE KOPIE]' );
+	expect( $store->body( $key ) )->not->toContain( '[WAG OP MENSLIKE KOPIE]' ); // human copy landed.
+	expect( $store->body( $key ) )->toContain( 'Dankie' );
 
 	// Afrikaans-source, zero English leakage in the subject.
 	$subject = strtolower( $store->subject( $key ) );

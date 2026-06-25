@@ -103,12 +103,9 @@ final class Registration {
 	 * English `.mo` ships, so the Afrikaans source is also the rendered output.
 	 * The greeting uses the `{skrywer}` merge token.
 	 *
-	 * GATE — human Afrikaans body copy: the welcome-email body is flagged
-	 * `[NEEDS HUMAN AFRIKAANS]` in `ui-copy-translations.md` / the glossary. Until
-	 * curated copy lands, the per-event send toggle is OFF by default (no
-	 * `wp_mail` fires) and the body is a short, clearly-marked placeholder built
-	 * only from approved glossary terms — never AI-translated prose. The owner
-	 * confirms the curated copy before the toggle is turned on.
+	 * The welcome-email body is the human-authored Afrikaans curated in
+	 * `ui-copy-translations.md` (never AI-translated). The per-event send toggle is
+	 * OFF by default (no `wp_mail` fires) until staff deliberately enable it.
 	 */
 	public function registerWelcomeTemplate(): void {
 		Notifications::registerTemplate(
@@ -116,10 +113,9 @@ final class Registration {
 				self::WELCOME_TEMPLATE_KEY,
 				// Subject — glossary-only, sentence case.
 				__( 'Welkom by INK', 'ink-core' ),
-				// Body — PLACEHOLDER. [NEEDS HUMAN AFRIKAANS] — toggle stays OFF
-				// until curated copy lands; glossary terms only, no invented prose.
-				__( 'Hallo {skrywer}, jou rekening is geskep. [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
-				// Send toggle OFF by default — no wp_mail until human copy is approved.
+				// Body — human-authored Afrikaans; send toggle stays OFF until staff enable sending.
+				__( 'Hallo {skrywer}, en welkom by INK! Jou rekening is pas geskep.', 'ink-core' ),
+				// Send toggle OFF by default — copy is ready; enable deliberately to start sending.
 				false
 			)
 		);

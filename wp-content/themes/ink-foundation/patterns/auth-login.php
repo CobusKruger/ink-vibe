@@ -9,7 +9,7 @@
  * it renders the vetted plugin's buttons via the ink-core render action ONLY when
  * the plugin is available, and emits nothing otherwise — the e-mail auth path
  * always works. No OAuth / provider logic lives in this theme file. All copy is
- * Afrikaans; un-authored microcopy is marked [NEEDS HUMAN AFRIKAANS].
+ * Afrikaans, human-authored in ui-copy-translations.md (never AI-translated).
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"480px"}} -->
@@ -33,8 +33,8 @@
 		<!-- wp:paragraph {"align":"center","fontSize":"sm","textColor":"muted-text"} -->
 		<p class="has-text-align-center has-muted-text-color has-text-color has-sm-font-size">
 			<?php
-			// [NEEDS HUMAN AFRIKAANS] — social divider line not yet authored (see ui-copy-translations.md).
-			echo esc_html__( 'Of gaan voort met', 'ink-foundation' );
+			// Social divider line (human-authored Afrikaans).
+			echo esc_html__( 'Of gebruik eerder', 'ink-foundation' );
 			?>
 		</p>
 		<!-- /wp:paragraph -->
@@ -46,12 +46,12 @@
 		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
 		<p class="has-muted-text-color has-text-color has-sm-font-size">
 			<?php
-			// [NEEDS HUMAN AFRIKAANS] — POPIA social-login consent note not yet authored (see ui-copy-translations.md).
+			// POPIA social-login consent note (human-authored Afrikaans).
 			$ink_privacy_url = function_exists( 'get_privacy_policy_url' ) ? get_privacy_policy_url() : '';
 			if ( '' === $ink_privacy_url ) {
 				$ink_privacy_url = home_url( '/privaatheidsbeleid' );
 			}
-			echo esc_html__( 'Deur met \'n sosiale rekening voort te gaan, deel jy basiese profielinligting met INK.', 'ink-foundation' );
+			echo esc_html__( 'As jy \'n sosiale media-rekening gebruik, sien INK sekere basiese besonderhede.', 'ink-foundation' );
 			printf(
 				' <a href="%1$s">%2$s</a>',
 				esc_url( $ink_privacy_url ),

@@ -67,7 +67,7 @@ test( 'each state resolves its Afrikaans message via the registry', function ():
 
 	// Sanity: the genuine approved Afrikaans copy (afrikaans-terms.md Deel 3).
 	expect( MembershipStatus::Active->message() )->toBe( 'Jou lidmaatskap is aktief. Jy kan nou werk plaas.' );
-	expect( MembershipStatus::Expired->message() )->toBe( 'Jou lidmaatskap het verval. Hernu om werk te plaas.' );
+	expect( MembershipStatus::Expired->message() )->toBe( 'Jou lidmaatskap het verval. Hernieu om werk te plaas.' );
 	expect( MembershipStatus::PaymentFailed->message() )->toBe( 'Jou betaling het misluk of is gekanselleer.' );
 } );
 

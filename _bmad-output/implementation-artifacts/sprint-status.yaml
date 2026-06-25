@@ -35,11 +35,13 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-24
+last_updated: 2026-06-25
 # epic-2 started 2026-06-21; 2-1 → review 2026-06-21
 # epic-2 retrospective completed 2026-06-22
 # epic-3 started 2026-06-22; 3-1 → done (code review) 2026-06-22; 3-3 → done 2026-06-22; 3-4 → done (research spike) 2026-06-22; 3-6 → done (code review) 2026-06-22; 3-5 → done (code review) 2026-06-22
 # epic-3 ALL stories done (3-2 tombstone) — epic-3 ready to close; epic-3-retrospective (optional) is the formal close step
+# epic-3 retrospective completed 2026-06-25 (epic-3-retro-2026-06-25.md) — delayed recovery retro. KEY FINDING: tests first EXECUTED in Epic 3 (2026-06-22, →120 pass), not Epic 4 (Epic 4 scaled 120→270) — closes Epic 2 action #1. Epic 2 #2 (is_scalar shared helper) STILL NOT done — now 11+ inline sites, regressed; #3 (skryfwerk in afrikaans-terms.md) STILL NOT done. Both carried to Epic 5 kickoff. epic-3 → done.
+# epic-4 retrospective completed 2026-06-25 (epic-4-retro-2026-06-24.md) — tests-actually-ran gap CLOSED (120→270); 18.8 PayFast-sandbox round-trip is top pre-launch item; epic-3 retro to run next (verifies Epic-2 actions #2/#3) before epic-3→done
 # note: 3-2 is a TOMBSTONE (reader/writer intent gate removed 2026-06-14) — left as backlog but should not be created/built
 # epic-4 started 2026-06-22 (first Epic 4 story); 4-1 → review 2026-06-22 (create-story + dev-story, the Ink\Entitlement plan-registry seam)
 # 4-2 → review 2026-06-22 (create-story + dev-story, the Ink\Entitlement PurchaseActivation PayFast self-activation seam)
@@ -81,14 +83,14 @@ development_status:
   epic-2-retrospective: done
 
   # Epic 3: Accounts, registration & auth
-  epic-3: in-progress
+  epic-3: done
   3-1-authentication-pages: done
   3-2-remove-reader-writer-intent-capture-removed-2026-06-14: backlog
   3-3-registration-lifecycle-onboarding: done
   3-4-anti-spam-research-spike-r6: done
   3-5-social-login-r6: done
   3-6-optional-manual-approval-backstop-r6: done
-  epic-3-retrospective: optional
+  epic-3-retrospective: done
 
   # Epic 4: Membership, access & payment
   # All 8 LAUNCH stories (4-1..4-8) done via the full BMAD loop (create-story →
@@ -109,7 +111,7 @@ development_status:
   4-9-auto-renew-recurring-post-launch: backlog        # POST-LAUNCH — not built (PayFast recurring dep)
   4-10-recurring-renewal-warning-variant-post-launch: backlog   # POST-LAUNCH — depends on 4.9
   4-11-recurring-renewal-discount-post-launch: backlog          # POST-LAUNCH — depends on 4.9
-  epic-4-retrospective: optional
+  epic-4-retrospective: done
 
   # Epic 5: Writer Gradering (Brons / Silwer / Goud / Meester)
   epic-5: backlog

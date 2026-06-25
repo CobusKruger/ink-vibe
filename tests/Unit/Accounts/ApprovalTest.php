@@ -285,7 +285,7 @@ test( 'blockPendingLogin returns a distinct rejected WP_Error when ON and reject
 	expect( $result->get_error_code() )->not->toBe( Approval::ERROR_CODE ); // not the pending code.
 
 	$message = strtolower( $result->get_error_message() );
-	expect( $message )->toContain( 'verwerp' ); // Afrikaans "rejected", not "waiting".
+	expect( $message )->toContain( 'afgekeur' ); // Afrikaans "rejected/declined", not "waiting".
 	// Zero English leakage (Gate D).
 	expect( $message )->not->toContain( 'account' );
 	expect( $message )->not->toContain( 'rejected' );

@@ -71,8 +71,7 @@ final class Terms {
 			// (R60/R300/R600) is owned by the WooCommerce product (admin-editable),
 			// never a label here; only the term LENGTH is INK-held (the fixed value
 			// set, afrikaans-terms.md line 44–45). The member-facing plan PROSE
-			// (descriptions / CTA) stays [NEEDS HUMAN AFRIKAANS] in
-			// ui-copy-translations.md, not invented here.
+			// (descriptions / CTA) is human-authored in ui-copy-translations.md.
 			'membership_plan'          => __( 'Aansluitingsopsie', 'ink-core' ),
 			'membership_plan_plural'   => __( 'Aansluitingsopsies', 'ink-core' ),
 			'term_1_month'             => __( '1 maand', 'ink-core' ),
@@ -83,12 +82,11 @@ final class Terms {
 			// labels surface ONLY when a redakteur enables the optional approval
 			// queue; until then no member ever sees them (the frictionless UJ-1
 			// path). Controlled-vocabulary projection of afrikaans-terms.md
-			// "Rekening-goedkeuring" — flagged [NEEDS HUMAN AFRIKAANS] / pending
-			// redakteur ratification there. The full member-facing PROSE (notice
-			// sentences, result messages, email bodies) stays gated in
-			// ui-copy-translations.md, not invented here.
-			'account_pending'          => __( 'Wag op goedkeuring', 'ink-core' ),
-			'account_approve'          => __( 'Goedkeur', 'ink-core' ),
+			// "Rekening-goedkeuring" (redakteur-ratified). The full member-facing
+			// PROSE (notice sentences, result messages, email bodies) is
+			// human-authored in ui-copy-translations.md.
+			'account_pending'          => __( 'Wag vir goedkeuring', 'ink-core' ),
+			'account_approve'          => __( 'Keur goed', 'ink-core' ),
 			'account_reject'           => __( 'Verwerp', 'ink-core' ),
 			'account_approval_queue'   => __( 'Rekening-goedkeuringstou', 'ink-core' ),
 
@@ -109,7 +107,7 @@ final class Terms {
 			// labels), but they remain controlled-vocabulary lid-family copy, so the
 			// single-source registry rule applies the same way.
 			'status_active'            => __( 'Jou lidmaatskap is aktief. Jy kan nou werk plaas.', 'ink-core' ),
-			'status_expired'           => __( 'Jou lidmaatskap het verval. Hernu om werk te plaas.', 'ink-core' ),
+			'status_expired'           => __( 'Jou lidmaatskap het verval. Hernieu om werk te plaas.', 'ink-core' ),
 			'status_access_denied'     => __( 'Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies.', 'ink-core' ),
 			'status_payment_failed'    => __( 'Jou betaling het misluk of is gekanselleer.', 'ink-core' ),
 

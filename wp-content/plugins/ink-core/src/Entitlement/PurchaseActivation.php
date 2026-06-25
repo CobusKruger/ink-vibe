@@ -94,9 +94,9 @@ class PurchaseActivation {
 	/**
 	 * The Notifications template/event key for the thank-you / activation email.
 	 *
-	 * Story 4.2 registers this Afrikaans-source template with its send toggle OFF
-	 * and a `[WAG OP MENSLIKE KOPIE]` placeholder body, and fires its TRIGGER on
-	 * activation. Story 4.8 owns the curated copy + turning the toggle on. The
+	 * Story 4.2 registers this Afrikaans-source template (send toggle OFF) and
+	 * fires its TRIGGER on activation. The curated thank-you copy is now authored
+	 * in ui-copy-translations.md; the toggle is enabled deliberately. The
 	 * `_email` suffix keeps the key in the Notifications keyspace.
 	 */
 	public const ACTIVATED_TEMPLATE_KEY = 'ink_membership_activated_email';
@@ -221,22 +221,19 @@ class PurchaseActivation {
 	 * `wp i18n make-pot` extracts them; no English `.mo` ships), the body carries the
 	 * `{skrywer}` greeting token, and the per-event send toggle is OFF by default.
 	 *
-	 * GATE — human Afrikaans copy: Story 4.8 owns the curated thank-you/activation
-	 * copy and turning the toggle on. Until then the body is a short, clearly-marked
-	 * `[WAG OP MENSLIKE KOPIE]` placeholder built only from approved glossary terms
-	 * (`[NEEDS HUMAN AFRIKAANS]` in `ui-copy-translations.md`) — never AI-translated
-	 * prose, so NO `wp_mail` fires today.
+	 * The thank-you/activation copy is the human-authored Afrikaans curated in
+	 * `ui-copy-translations.md` (never AI-translated). The per-event send toggle is
+	 * OFF by default, so NO `wp_mail` fires until staff deliberately enable it.
 	 */
 	public function registerEmailTemplate(): void {
 		Notifications::registerTemplate(
 			new Template(
 				self::ACTIVATED_TEMPLATE_KEY,
-				// Subject — glossary-only placeholder, sentence case.
-				__( 'Jou lidmaatskap is aktief [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
-				// Body — PLACEHOLDER. [NEEDS HUMAN AFRIKAANS] — toggle stays OFF until
-				// Story 4.8's curated copy lands; glossary terms only, no invented prose.
-				__( 'Hallo {skrywer}, jou lidmaatskap is nou aktief. [WAG OP MENSLIKE KOPIE]', 'ink-core' ),
-				// Send toggle OFF by default — no wp_mail until human copy is approved.
+				// Subject — human-authored Afrikaans, sentence case.
+				__( 'Jou lidmaatskap is nou aktief', 'ink-core' ),
+				// Body — human-authored Afrikaans; send toggle stays OFF until staff enable sending.
+				__( 'Hallo {skrywer}! Jou lidmaatskap is nou aktief. Dankie dat jy vir INK ondersteun.', 'ink-core' ),
+				// Send toggle OFF by default — copy is ready; enable deliberately to start sending.
 				false
 			)
 		);

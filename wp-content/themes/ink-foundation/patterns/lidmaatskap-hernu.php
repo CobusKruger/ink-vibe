@@ -1,9 +1,9 @@
 <?php
 /**
- * Title: Lidmaatskap — hernu
+ * Title: Lidmaatskap — hernieu
  * Slug: ink-foundation/lidmaatskap-hernu
  * Categories: ink-foundation
- * Description: Hernuwings-afdeling vir die My Profiel → Lidmaatskap-blad (Storie 4.5, FR-8): 'n aangemelde lid kies 'n vaste termyn (1 / 6 / 12 maande) om sy lidmaatskap te hernu (toegang te verleng) deur 'n verdere vaste termyn via PayFast aan te koop. Saamgestel uit bestaande kernblokke + INK-blokstyle.
+ * Description: Hernuwings-afdeling vir die My Profiel → Lidmaatskap-blad (Storie 4.5, FR-8): 'n aangemelde lid kies 'n vaste termyn (1 / 6 / 12 maande) om sy lidmaatskap te hernieu (toegang te verleng) deur 'n verdere vaste termyn via PayFast aan te koop. Saamgestel uit bestaande kernblokke + INK-blokstyle.
  *
  * Presentation only (three-layer separation). The renewal ROWS — term label, the
  * WooCommerce-resolved price, the sellability flag, and the WC/PayFast purchase URL
@@ -22,7 +22,7 @@
  *
  * A `class_exists`/`function_exists`-guarded logged-in gate
  * (`ink_foundation_is_member_logged_in()`) shows the renew options only to a logged-in
- * lid; a "Meld aan om te hernu" fallback shows otherwise. When `ink-core`/WooCommerce is
+ * lid; a "Meld aan om te hernieu" fallback shows otherwise. When `ink-core`/WooCommerce is
  * inactive or a plan is not sellable, each slot degrades gracefully (static label, no
  * live price/CTA) — never a fatal, never an invented endpoint.
  *
@@ -36,7 +36,7 @@
  * Quality Gate D: term labels come from the ink-core terminology registry; the heading,
  * intro and renew-button copy are CURATED Afrikaans (ui-copy-translations.md "Lidmaatskap-blad"
  * My Profiel subsection), rendered via the `ink-foundation` text domain so the leak scan
- * catches them; un-curated prose stays clearly-marked [NEEDS HUMAN AFRIKAANS]. Sentence case.
+ * catches them. Sentence case.
  * Structural wrappers are locked (move/remove) per Storie 1.6; content inside stays editable (NFR-6).
  */
 
@@ -74,7 +74,7 @@ if ( empty( $ink_renewal_plans ) ) {
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:heading {"level":2,"fontSize":"2xl"} -->
-		<h2 class="wp-block-heading has-2xl-font-size"><?php echo esc_html__( 'Hernu lidmaatskap', 'ink-foundation' ); ?></h2>
+		<h2 class="wp-block-heading has-2xl-font-size"><?php echo esc_html__( 'Hernieu lidmaatskap', 'ink-foundation' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
@@ -91,11 +91,11 @@ if ( empty( $ink_renewal_plans ) ) {
 		$ink_is_available  = ! empty( $ink_plan['is_available'] );
 		$ink_purchase_url  = isset( $ink_plan['purchase_url'] ) ? $ink_plan['purchase_url'] : null;
 
-		// Curated renew-button copy "Hernu vir [N] maand(e)" — N from the row's term length,
+		// Curated renew-button copy "Hernieu vir [N] maand(e)" — N from the row's term length,
 		// singular/plural via _n() (the curated maand/maande forms). No price/savings in it.
 		$ink_renew_label = sprintf(
 		/* translators: %d: number of months in the chosen renewal term. */
-			_n( 'Hernu vir %d maand', 'Hernu vir %d maande', $ink_months, 'ink-foundation' ),
+			_n( 'Hernieu vir %d maand', 'Hernieu vir %d maande', $ink_months, 'ink-foundation' ),
 			$ink_months
 		);
 		?>
@@ -146,7 +146,7 @@ if ( empty( $ink_renewal_plans ) ) {
 		<!-- /wp:columns -->
 <?php else : ?>
 		<!-- wp:paragraph {"fontSize":"md"} -->
-		<p class="has-md-font-size"><a href="<?php echo esc_url( home_url( '/meld-aan' ) ); ?>"><?php echo esc_html__( 'Meld aan om jou lidmaatskap te hernu.', 'ink-foundation' ); ?></a></p>
+		<p class="has-md-font-size"><a href="<?php echo esc_url( home_url( '/meld-aan' ) ); ?>"><?php echo esc_html__( 'Meld aan om jou lidmaatskap te hernieu.', 'ink-foundation' ); ?></a></p>
 		<!-- /wp:paragraph -->
 <?php endif; ?>
 	</div>
