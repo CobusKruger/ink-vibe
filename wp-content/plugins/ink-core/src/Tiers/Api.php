@@ -152,4 +152,22 @@ final class Api {
 
 		return $new;
 	}
+
+	/**
+	 * Award top-3 win(s) and auto-promote on a threshold — the cross-module
+	 * facade for the automatic promotion engine (Story 5.8).
+	 *
+	 * The surface a future Challenges / R2-ingestion step (Story 12A.3) calls;
+	 * delegates to {@see PromotionEngine::award()} (Brons→Silwer at 5,
+	 * Silwer→Goud at 15; Goud/Meester have no auto-threshold). Promotions are
+	 * recorded as `actor_id = 0` (system).
+	 *
+	 * @param int $user_id      The writer.
+	 * @param int $wins         The number of top-3 wins to award (default 1).
+	 * @param int $challenge_id Optional linked challenge id.
+	 * @return Tier|null The new grade if promoted; null otherwise.
+	 */
+	public static function awardWins( int $user_id, int $wins = 1, int $challenge_id = 0 ): ?Tier {
+		return PromotionEngine::award( $user_id, $wins, $challenge_id );
+	}
 }
