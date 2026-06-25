@@ -88,4 +88,28 @@ final class PromotionEngine {
 			? $next
 			: null;
 	}
+
+	/**
+	 * The progress toward the next Gradering for a grade + current win count
+	 * (Story 5.9) — reads the SAME single-source threshold map as {@see self::award()}.
+	 *
+	 * @param Tier $current The writer's current grade.
+	 * @param int  $count   The current accumulated win count.
+	 * @return array{needed: int, next: Tier}|null Wins still needed + the next
+	 *         grade, or null for a terminal grade (Goud/Meester — no auto-threshold).
+	 */
+	public static function progressFor( Tier $current, int $count ): ?array {
+		if ( ! isset( self::THRESHOLDS[ $current->value ] ) ) {
+			return null;
+		}
+
+		$rule = self::THRESHOLDS[ $current->value ];
+
+		return array(
+			// Clamped to ≥1: the counter resets on promotion, so in practice the
+			// count is always below the threshold; the clamp is defensive.
+			'needed' => max( 1, $rule['wins'] - $count ),
+			'next'   => $rule['next'],
+		);
+	}
 }

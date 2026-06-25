@@ -191,4 +191,38 @@ final class Api {
 			Tier::Meester === $tier,
 		);
 	}
+
+	/**
+	 * The private-My-Profiel "wins needed" subtext for a writer (Story 5.9).
+	 *
+	 * Returns the Afrikaans `_n()` sentence (e.g. "4 top 3 uitslae nodig om Silwer
+	 * te bereik" / "1 top 3 uitslag nodig om …") toward the next Gradering, or
+	 * null when the writer is at a terminal grade (Goud/Meester — the subtext is
+	 * hidden). The 5/15 thresholds come from the single-source
+	 * {@see PromotionEngine::progressFor()}; the next-grade label from `Terms`.
+	 *
+	 * @param int $user_id The writer.
+	 */
+	public static function winsNeededSubtext( int $user_id ): ?string {
+		$progress = PromotionEngine::progressFor(
+			self::forUser( $user_id ),
+			self::winCountForUser( $user_id )
+		);
+
+		if ( null === $progress ) {
+			return null;
+		}
+
+		return sprintf(
+			/* translators: 1: number of top-3 wins still needed; 2: the next Gradering label. */
+			_n(
+				'%1$d top 3 uitslag nodig om %2$s te bereik',
+				'%1$d top 3 uitslae nodig om %2$s te bereik',
+				$progress['needed'],
+				'ink-core'
+			),
+			$progress['needed'],
+			Terms::label( $progress['next']->value )
+		);
+	}
 }

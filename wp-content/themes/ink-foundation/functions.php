@@ -296,6 +296,32 @@ if ( ! function_exists( 'ink_foundation_gradering_badge' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ink_foundation_gradering_wins_needed' ) ) {
+	/**
+	 * The private-My-Profiel "wins needed" subtext (Story 5.9, FR-14 / R3).
+	 *
+	 * Presentation glue only: reads the composed Afrikaans subtext from the
+	 * `ink-core` Tiers facade ({@see \Ink\Tiers\Api::winsNeededSubtext()}) — e.g.
+	 * "4 top 3 uitslae nodig om Silwer te bereik". Returns '' for a Goud/Meester
+	 * writer (no next grade — hidden) or when ink-core is inactive. The threshold
+	 * math + the `_n()` copy live in `ink-core`; the theme computes nothing. Story
+	 * 9.4 places this near the 5.4 badge on the private My Profiel.
+	 *
+	 * @param int $user_id The writer (0 → current user).
+	 * @return string The subtext (escaped), or '' when hidden/inactive.
+	 */
+	function ink_foundation_gradering_wins_needed( int $user_id = 0 ): string {
+		if ( ! class_exists( 'Ink\\Tiers\\Api' ) ) {
+			return '';
+		}
+
+		$user_id = $user_id > 0 ? $user_id : get_current_user_id();
+		$subtext = \Ink\Tiers\Api::winsNeededSubtext( $user_id );
+
+		return null === $subtext ? '' : esc_html( $subtext );
+	}
+}
+
 if ( ! function_exists( 'ink_foundation_is_member_logged_in' ) ) {
 	/**
 	 * Whether the current viewer is a logged-in lid (Story 4.5 renewal-section gate).
