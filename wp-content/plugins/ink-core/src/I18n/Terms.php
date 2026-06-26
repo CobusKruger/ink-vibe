@@ -62,6 +62,7 @@ final class Terms {
 			// Core people / access concepts (afrikaans-terms.md Deel 1).
 			'lid'                       => __( 'Lid', 'ink-core' ),
 			'skrywer'                   => __( 'Skrywer', 'ink-core' ),
+			'skrywer_plural'            => __( 'Skrywers', 'ink-core' ),
 			'membership'                => __( 'Lidmaatskap', 'ink-core' ),
 			'betaalde_lid'              => __( 'Betaalde lid', 'ink-core' ),
 			'gratis_lid'                => __( 'Gratis lid', 'ink-core' ),

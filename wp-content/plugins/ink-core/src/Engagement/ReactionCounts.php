@@ -42,13 +42,16 @@ final class ReactionCounts {
 	public static function label( Reaction $reaction, int $n ): string {
 		switch ( $reaction ) {
 			case Reaction::Hartjie:
+				/* translators: %d: the number of hartjie reactions. */
 				$format = _n( '%d hartjie', '%d hartjies', $n, 'ink-core' );
 				break;
 			case Reaction::DuimOp:
+				/* translators: %d: the number of duim-op reactions. */
 				$format = _n( '%d duim op', '%d duim op', $n, 'ink-core' );
 				break;
 			case Reaction::Wow:
 			default:
+				/* translators: %d: the number of wow reactions. */
 				$format = _n( '%d wow', '%d wows', $n, 'ink-core' );
 				break;
 		}

@@ -200,3 +200,29 @@ test( 'term management is staff-only (ink_moderate); assign stays broad', functi
 test( 'Api facade exposes the taxonomy slug surface', function (): void {
 	expect( Api::taxonomies() )->toBe( Taxonomies::all() );
 } );
+
+/**
+ * Story 8.1 (closes the 2.2 single-source gap): every taxonomy's rewrite slug is
+ * DERIVED from its code-id constant (underscore → hyphen), not a hand-typed
+ * literal. `ster_gradering` resolves to `ster-gradering` (the public URL is
+ * preserved) and the other three are identity. Non-vacuous: a regression to the
+ * old `'ster-gradering'` literal — or to the underscore code id leaking into the
+ * URL — fails this assertion.
+ */
+test( 'rewrite slugs are derived from the code-id constant (single source)', function (): void {
+	$registered = ink_capture_registered_taxonomies();
+
+	$expected = array(
+		'genre'            => 'genre',
+		'vaardigheid'      => 'vaardigheid',
+		'uitdagingsrondte' => 'uitdagingsrondte',
+		'ster_gradering'   => 'ster-gradering', // underscore → hyphen, URL preserved.
+	);
+
+	foreach ( $expected as $slug => $rewrite ) {
+		expect( $registered[ $slug ]['args']['rewrite']['slug'] )->toBe( $rewrite );
+	}
+
+	// The ster_gradering URL must NOT leak the underscore code id.
+	expect( $registered['ster_gradering']['args']['rewrite']['slug'] )->not->toContain( '_' );
+} );

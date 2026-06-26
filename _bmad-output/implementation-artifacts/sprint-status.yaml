@@ -185,8 +185,8 @@ development_status:
   epic-7-retrospective: optional
 
   # Epic 8: Discovery (Ontdek)
-  epic-8: backlog
-  8-1-ontdek-section-works-archive: backlog
+  epic-8: in-progress
+  8-1-ontdek-section-works-archive: review
   8-2-ontdek-bydraes-tab: backlog
   8-3-ontdek-skrywers-tab: backlog
   8-4-search: backlog

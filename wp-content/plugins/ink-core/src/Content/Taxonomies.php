@@ -66,17 +66,36 @@ final class Taxonomies {
 	 */
 	public function register(): void {
 		foreach ( self::definitions() as $slug => $def ) {
-			register_taxonomy( $slug, $def['object_types'], self::args( $def ) );
+			register_taxonomy( $slug, $def['object_types'], self::args( $slug, $def ) );
 		}
+	}
+
+	/**
+	 * The public rewrite slug for a taxonomy, derived from its code-id constant.
+	 *
+	 * The single source for the URL: underscores in a code id become hyphens for
+	 * readability (`ster_gradering` → `ster-gradering`), so the constant is the
+	 * ONLY place a slug is declared and a constant edit propagates to the URL
+	 * automatically. The other three ids have no underscore, so the transform is a
+	 * no-op for them — every rewrite slug now reads identically from the constant
+	 * (Story 8.1; closes the 2.2 hand-typed-`'ster-gradering'` single-source gap).
+	 *
+	 * @param string $code The migration-load-bearing taxonomy code id.
+	 * @return string
+	 */
+	private static function rewriteSlug( string $code ): string {
+		return str_replace( '_', '-', $code );
 	}
 
 	/**
 	 * Per-taxonomy registration config.
 	 *
-	 * Each entry: the singular/plural {@see Terms} keys, the `object_types` it
+	 * Each entry: the singular/plural {@see Terms} keys and the `object_types` it
 	 * attaches to (sourced from {@see PostTypes} constants — never re-typed CPT
-	 * literals), and the rewrite slug. `genre`/`vaardigheid` span the bydrae CPTs
-	 * AND `opleiding_artikel` (the auto-surfacing overlap). All are hierarchical.
+	 * literals). The rewrite slug is NOT declared here — it is derived from the
+	 * code-id constant in {@see self::rewriteSlug()} (single source). `genre`/
+	 * `vaardigheid` span the bydrae CPTs AND `opleiding_artikel` (the auto-
+	 * surfacing overlap). All are hierarchical.
 	 *
 	 * @return array<string, array<string, mixed>>
 	 */
@@ -98,7 +117,6 @@ final class Taxonomies {
 				'singular'     => 'genre',
 				'plural'       => 'genre_plural',
 				'object_types' => $bydraes_and_training,
-				'rewrite'      => self::GENRE,
 			),
 			self::VAARDIGHEID      => array(
 				'singular'     => 'vaardigheid',
@@ -109,7 +127,6 @@ final class Taxonomies {
 					array( PostTypes::OPLEIDING_ARTIKEL ),
 					$works
 				),
-				'rewrite'      => self::VAARDIGHEID,
 			),
 			self::UITDAGINGSRONDTE => array(
 				'singular'     => 'uitdagingsrondte',
@@ -117,13 +134,11 @@ final class Taxonomies {
 				// Entered works + winning works. The term stays for discovery; the
 				// `ink_entries` table (Epic 12/12A) is the authoritative record.
 				'object_types' => $works,
-				'rewrite'      => self::UITDAGINGSRONDTE,
 			),
 			self::STER_GRADERING   => array(
 				'singular'     => 'ster_gradering',
 				'plural'       => 'ster_gradering_plural',
 				'object_types' => $works,
-				'rewrite'      => 'ster-gradering',
 			),
 		);
 	}
@@ -131,10 +146,11 @@ final class Taxonomies {
 	/**
 	 * Build the `register_taxonomy` args from a definition.
 	 *
-	 * @param array<string, mixed> $def One {@see Taxonomies::definitions()} entry.
+	 * @param string               $slug The taxonomy code id (the rewrite-slug source).
+	 * @param array<string, mixed> $def  One {@see Taxonomies::definitions()} entry.
 	 * @return array<string, mixed>
 	 */
-	private static function args( array $def ): array {
+	private static function args( string $slug, array $def ): array {
 		return array(
 			'labels'            => self::labels( (string) $def['singular'], (string) $def['plural'] ),
 			'public'            => true,
@@ -142,7 +158,7 @@ final class Taxonomies {
 			'show_in_rest'      => true, // Block editor + REST (AD-6).
 			'show_admin_column' => true,
 			'show_ui'           => true,
-			'rewrite'           => array( 'slug' => (string) $def['rewrite'] ),
+			'rewrite'           => array( 'slug' => self::rewriteSlug( $slug ) ),
 			'capabilities'      => self::termCapabilities(),
 		);
 	}

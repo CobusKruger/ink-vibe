@@ -83,5 +83,6 @@ add_action(
 		Kernel\Plugin::instance()->addModule( 'entitlement', new Entitlement\Module() );
 		Kernel\Plugin::instance()->addModule( 'tiers', new Tiers\Module() );
 			Kernel\Plugin::instance()->addModule( 'submission', new Submission\Module() );
+		Kernel\Plugin::instance()->addModule( 'discovery', new Discovery\Module() );
 	}
 );

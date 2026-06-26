@@ -81,9 +81,9 @@ final class ResponsesList {
 	/**
 	 * Build the Gemeenskapsreaksies section HTML. Pure — Terms + escaping only.
 	 *
-	 * @param int                                                                                       $post_id   The work.
-	 * @param list<array{id:int, type:ResponseType, content:string, author:string, date:string}>        $responses The existing typed responses.
-	 * @param int                                                                                       $count     The filtered response count.
+	 * @param int                                                                                $post_id   The work.
+	 * @param list<array{id:int, type:ResponseType, content:string, author:string, date:string}> $responses The existing typed responses.
+	 * @param int                                                                                $count     The filtered response count.
 	 * @return string
 	 */
 	public static function toHtml( int $post_id, array $responses, int $count ): string {

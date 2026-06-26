@@ -114,6 +114,13 @@ deptrac:
             - Kernel
         Discovery:
             - Kernel
+            # Story 8.1: the Ontdek works archive queries the bydrae CPT slugs from
+            # the migration-load-bearing single source `Ink\Content\PostTypes`
+            # (GEDIG/STORIE/ARTIKEL). A real, non-circular cross-module dependency
+            # on the slug registry — mirrors the Submission->Content (6.1) and
+            # Engagement->Content (7.6) edges. No Entitlement/Tiers edge (discovery
+            # of published work is open; conflation-clean).
+            - Content
         Challenges:
             - Kernel
         Sponsors:

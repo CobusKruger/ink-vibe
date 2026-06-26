@@ -83,10 +83,10 @@ final class SuggestedReads {
 	 * One `tax_query` clause per taxonomy that has term ids, OR-combined — so a
 	 * suggestion need only share a term in ANY of the post's taxonomies.
 	 *
-	 * @param int                       $post_id        The current post (excluded).
-	 * @param array<string, list<int>>  $term_ids_by_tax Taxonomy slug → term ids.
-	 * @param list<string>              $types          The bydrae types to query.
-	 * @param int                       $limit          Max suggestions.
+	 * @param int                      $post_id        The current post (excluded).
+	 * @param array<string, list<int>> $term_ids_by_tax Taxonomy slug → term ids.
+	 * @param list<string>             $types          The bydrae types to query.
+	 * @param int                      $limit          Max suggestions.
 	 * @return array<string, mixed>
 	 */
 	public static function queryArgs( int $post_id, array $term_ids_by_tax, array $types, int $limit ): array {
