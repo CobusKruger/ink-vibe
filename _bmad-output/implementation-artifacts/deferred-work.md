@@ -2,6 +2,11 @@
 
 Consolidated `defer` findings from code reviews. Each item is real but not actionable in its originating story (pre-existing, by-design, or owned by a later story/epic).
 
+## Deferred from: Story 8.5 — discovery-surfaces (2026-06-26)
+
+- **"Unread-by-you" discovery surface not built** [`Ink\Discovery\DiscoverySurfaces`; epics.md#Story 8.5 AC] — true "unread by you" needs a per-user READ history, which does not exist: the 8.3 `_ink_read_count` is an aggregate per work, and the leeslys (`ink_reading_list`) is *saves*, not *reads*. A per-user read log is its own mechanism (a custom table or capped per-user structure, incremented in `Discovery\ReadCount::maybeCount`). Per the epic's "(fast-follow) personalised surfaces" framing this is deferred to the read-history work (Epic 9 activity feed / Epic 18 analytics-provider 18.9). The surfaces component (`toHtml`) is built to slot the row in once the data exists; the other four surfaces (New voices, Recently active, Skrywers soos jy, Skrywers in jou Gradering) ship in 8.5. A misleading "unsaved-as-unread" proxy was deliberately NOT shipped.
+- **Per-profile contextual "writers like this"** [`DiscoverySurfaces::writersLikeArgs`] — the hub renders "Skrywers soos jy" (relative to the logged-in writer); the per-PROFILE "writers like this" (relative to the writer whose profile you are viewing) is wired on the Epic-9 Skrywerprofiel page, which consumes the same `writersLikeArgs` builder. Relatedness is shared-FORM today (Principle 8); a follow/affinity refinement is an Epic-9 (follow graph) enhancement.
+
 ## Deferred from: code review of Epic 5 Group D (5.6 guardrails) (2026-06-26)
 
 - **Conflation behavioural test covers only `PurchaseActivation`, not `LifecycleEmails`** [`tests/Unit/Tiers/ConflationGuardrailTest.php`] — `LifecycleEmails` (second handler on `wc_memberships_user_membership_status_changed`) has zero `update_user_meta` today (no live leak); add a transition drive through it when convenient.

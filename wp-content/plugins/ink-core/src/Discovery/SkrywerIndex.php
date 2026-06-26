@@ -37,6 +37,14 @@ final class SkrywerIndex {
 	public const FIRST_PUBLISH_META = 'ink_skrywer_eerste_publikasie';
 
 	/**
+	 * User-meta: the writer's most-recent-publication GMT unix timestamp (always
+	 * refreshed) — drives the "Recently active" discovery surface (Story 8.5).
+	 *
+	 * @var string
+	 */
+	public const LAST_PUBLISH_META = 'ink_skrywer_laaste_publikasie';
+
+	/**
 	 * User-meta: the writer's denormalized total read count (seed + increment).
 	 *
 	 * @var string
@@ -122,11 +130,15 @@ final class SkrywerIndex {
 		// Form flag — this writer has published in this form.
 		update_user_meta( $author, self::formFlagKey( $type ), '1' );
 
+		$ts = isset( $post->post_date_gmt ) ? max( 0, (int) strtotime( (string) $post->post_date_gmt ) ) : 0;
+
 		// First publication — set ONCE (a later publish never moves it back/forward).
 		if ( '' === (string) get_user_meta( $author, self::FIRST_PUBLISH_META, true ) ) {
-			$ts = isset( $post->post_date_gmt ) ? (int) strtotime( (string) $post->post_date_gmt ) : 0;
-			update_user_meta( $author, self::FIRST_PUBLISH_META, max( 0, $ts ) );
+			update_user_meta( $author, self::FIRST_PUBLISH_META, $ts );
 		}
+
+		// Last publication — ALWAYS refreshed (drives "Recently active").
+		update_user_meta( $author, self::LAST_PUBLISH_META, $ts );
 
 		// Read-total seed — so the "Meeste gelees" meta-ordered query includes a
 		// writer with zero reads yet (the meta join would otherwise drop them).

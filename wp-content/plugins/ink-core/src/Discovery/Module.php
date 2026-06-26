@@ -41,5 +41,6 @@ final class Module implements ModuleContract {
 		( new SkrywersTab() )->register();
 		( new SearchIndex() )->register();
 		( new Search() )->register();
+		( new DiscoverySurfaces() )->register();
 	}
 }

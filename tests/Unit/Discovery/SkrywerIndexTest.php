@@ -43,6 +43,7 @@ test( 'publishing a bydrae sets the form flag, the first publication and seeds t
 	Functions\when( 'get_user_meta' )->justReturn( '' ); // first-publish + read-total both absent
 	Functions\expect( 'update_user_meta' )->once()->with( 7, 'ink_skrywer_het_gedig', '1' );
 	Functions\expect( 'update_user_meta' )->once()->with( 7, SkrywerIndex::FIRST_PUBLISH_META, \Mockery::type( 'int' ) );
+	Functions\expect( 'update_user_meta' )->once()->with( 7, SkrywerIndex::LAST_PUBLISH_META, \Mockery::type( 'int' ) );
 	Functions\expect( 'update_user_meta' )->once()->with( 7, SkrywerIndex::READ_TOTAL_META, 0 );
 
 	SkrywerIndex::onTransition(
@@ -52,10 +53,13 @@ test( 'publishing a bydrae sets the form flag, the first publication and seeds t
 	);
 } );
 
-test( 'first publication is set ONCE and the read-total is not re-seeded on a later publish', function (): void {
-	// Both first-publish and read-total already exist → only the new form flag writes.
+test( 'first publication is set ONCE but last publication is ALWAYS refreshed', function (): void {
+	// Both first-publish and read-total already exist → first-publish + read-total
+	// are NOT re-written; the form flag + last-publish ARE.
 	Functions\when( 'get_user_meta' )->justReturn( '1700000000' );
-	Functions\expect( 'update_user_meta' )->once(); // exactly one write: the form flag
+	Functions\expect( 'update_user_meta' )->once()->with( 7, 'ink_skrywer_het_storie', '1' );
+	Functions\expect( 'update_user_meta' )->once()->with( 7, SkrywerIndex::LAST_PUBLISH_META, \Mockery::type( 'int' ) );
+	Functions\expect( 'update_user_meta' )->never()->with( 7, SkrywerIndex::FIRST_PUBLISH_META, \Mockery::any() );
 
 	SkrywerIndex::onTransition(
 		'publish',
