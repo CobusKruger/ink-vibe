@@ -81,6 +81,29 @@ $ink_skryf_first_slug = isset( $ink_skryf_types[0]['slug'] ) ? (string) $ink_skr
 			<span class="ink-skryf-counter" data-words-label="<?php echo esc_attr__( 'woorde', 'ink-foundation' ); ?>" data-lines-label="<?php echo esc_attr__( 'reëls', 'ink-foundation' ); ?>" aria-live="polite"></span>
 		</p>
 
+	<?php
+		$ink_skryf_challenges = isset( $ink_skryf['open_challenges'] ) && is_array( $ink_skryf['open_challenges'] ) ? $ink_skryf['open_challenges'] : array();
+	if ( ! empty( $ink_skryf_challenges ) ) :
+		?>
+		<fieldset class="ink-skryf-challenges">
+			<legend><?php echo esc_html__( 'Aktiewe uitdagings (opsioneel)', 'ink-foundation' ); ?></legend>
+			<p class="ink-skryf-challenges__hint"><?php echo esc_html__( 'Merk enige uitdagings waarop hierdie stuk reageer.', 'ink-foundation' ); ?></p>
+		<?php
+		foreach ( $ink_skryf_challenges as $ink_ch ) :
+			$ink_ch_id    = isset( $ink_ch['id'] ) ? (int) $ink_ch['id'] : 0;
+			$ink_ch_title = isset( $ink_ch['title'] ) ? (string) $ink_ch['title'] : '';
+			if ( $ink_ch_id <= 0 ) {
+				continue;
+			}
+			?>
+				<label class="ink-skryf-challenge">
+					<input type="checkbox" name="<?php echo esc_attr( $ink_skryf['field_challenges'] ?? 'ink_submission_uitdagings' ); ?>[]" value="<?php echo esc_attr( (string) $ink_ch_id ); ?>" />
+				<?php echo esc_html( $ink_ch_title ); ?>
+				</label>
+			<?php endforeach; ?>
+		</fieldset>
+<?php endif; ?>
+
 		<p class="ink-skryf-field">
 			<label for="ink-skryf-image"><?php echo esc_html__( 'Voorbeeld-prent (opsioneel)', 'ink-foundation' ); ?></label>
 			<input type="file" id="ink-skryf-image" name="<?php echo esc_attr( $ink_skryf['field_image'] ?? 'ink_submission_featured_image' ); ?>" accept="image/*" />

@@ -205,8 +205,36 @@ class SubmissionForm {
 
 		$this->attachFeaturedImage( (int) $post_id );
 		$this->attachMedia( (int) $post_id );
+		$this->linkChallenges( (int) $post_id );
 
 		$this->redirect( $this->formUrl( 'konsep-gestoor' ) );
+	}
+
+	/**
+	 * Link the new bydrae to the OPEN uitdagings the skrywer ticked (Story 6.6).
+	 *
+	 * Reads the `ink_submission_uitdagings[]` checkbox array, coerces each entry to
+	 * a positive id, and hands them to {@see ChallengeLinking::link()} (which links
+	 * only the open ones). Nonce already verified by {@see handlePost()}.
+	 *
+	 * @param int $post_id The freshly created bydrae id.
+	 */
+	protected function linkChallenges( int $post_id ): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified in handlePost() before this runs.
+		if ( ! isset( $_POST[ ChallengeLinking::FIELD ] ) || ! is_array( $_POST[ ChallengeLinking::FIELD ] ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- each ticked id is absint()-sanitised below; nonce verified in handlePost().
+		$raw = wp_unslash( $_POST[ ChallengeLinking::FIELD ] );
+
+		$ids = array();
+
+		foreach ( (array) $raw as $value ) {
+			$ids[] = absint( $value );
+		}
+
+		( new ChallengeLinking() )->link( $post_id, $ids );
 	}
 
 	/**

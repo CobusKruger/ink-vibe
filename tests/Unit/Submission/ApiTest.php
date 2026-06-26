@@ -22,6 +22,8 @@ use Brain\Monkey\Functions;
 beforeEach( function (): void {
 	Monkey\setUp();
 	Functions\when( '__' )->returnArg( 1 );
+	// formModel() lists open challenges (Story 6.6) — no published uitdagings here.
+	Functions\when( 'get_posts' )->justReturn( array() );
 } );
 
 afterEach( function (): void {

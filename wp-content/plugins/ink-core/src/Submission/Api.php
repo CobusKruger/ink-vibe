@@ -38,7 +38,7 @@ final class Api {
 	 * show lines+words for a gedig and words-only for prose without re-defining the
 	 * rule — {@see Counters} / {@see ContentType} remain the single source.
 	 *
-	 * @return array{post_action:string, nonce_action:string, nonce_name:string, field_type:string, field_title:string, field_body:string, field_image:string, field_media:string, types:list<array{slug:string, label:string, counter_mode:string}>}
+	 * @return array{post_action:string, nonce_action:string, nonce_name:string, field_type:string, field_title:string, field_body:string, field_image:string, field_media:string, field_challenges:string, open_challenges:list<array{id:int, title:string}>, types:list<array{slug:string, label:string, counter_mode:string}>}
 	 */
 	public static function formModel(): array {
 		$types = array();
@@ -52,15 +52,17 @@ final class Api {
 		}
 
 		return array(
-			'post_action'  => SubmissionForm::postAction(),
-			'nonce_action' => SubmissionForm::nonceAction(),
-			'nonce_name'   => SubmissionForm::nonceName(),
-			'field_type'   => SubmissionForm::FIELD_TYPE,
-			'field_title'  => SubmissionForm::FIELD_TITLE,
-			'field_body'   => SubmissionForm::FIELD_BODY,
-			'field_image'  => FeaturedImage::FIELD,
-			'field_media'  => MediaAttachment::FIELD,
-			'types'        => $types,
+			'post_action'      => SubmissionForm::postAction(),
+			'nonce_action'     => SubmissionForm::nonceAction(),
+			'nonce_name'       => SubmissionForm::nonceName(),
+			'field_type'       => SubmissionForm::FIELD_TYPE,
+			'field_title'      => SubmissionForm::FIELD_TITLE,
+			'field_body'       => SubmissionForm::FIELD_BODY,
+			'field_image'      => FeaturedImage::FIELD,
+			'field_media'      => MediaAttachment::FIELD,
+			'field_challenges' => ChallengeLinking::FIELD,
+			'open_challenges'  => ( new ChallengeLinking() )->openChallenges(),
+			'types'            => $types,
 		);
 	}
 }
