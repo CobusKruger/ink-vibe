@@ -278,6 +278,30 @@ if ( ! function_exists( 'ink_foundation_skryf_form_fields' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ink_foundation_skryf_success' ) ) {
+	/**
+	 * The success-screen view-model for a freshly published bydrae (Story 6.7).
+	 *
+	 * Presentation glue: a read-through to {@see \Ink\Submission\Api::successModel()}
+	 * so the Skryf pattern can render "Jou [gedig/storie/artikel] is gepubliseer"
+	 * after a plaas, without any logic in the theme. `class_exists`-guarded; returns
+	 * an empty array when `ink-core` is inactive or the id is not a published bydrae
+	 * (the pattern then just shows the form) — never a fatal.
+	 *
+	 * @param int $post_id The published bydrae id (from the post-plaas redirect).
+	 * @return array<string, mixed> The success model, or an empty array.
+	 */
+	function ink_foundation_skryf_success( int $post_id ): array {
+		if ( ! class_exists( 'Ink\\Submission\\Api' ) ) {
+			return array();
+		}
+
+		$model = \Ink\Submission\Api::successModel( $post_id );
+
+		return is_array( $model ) ? $model : array();
+	}
+}
+
 if ( ! function_exists( 'ink_foundation_membership_plans' ) ) {
 	/**
 	 * The lidmaatskap plan rows for the Lidmaatskap page pattern (Story 4.4, FR-7).

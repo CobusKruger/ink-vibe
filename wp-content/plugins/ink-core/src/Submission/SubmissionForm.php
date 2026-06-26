@@ -62,6 +62,13 @@ class SubmissionForm {
 	public const FIELD_BODY  = 'ink_submission_body';
 
 	/**
+	 * The intent field + its two values: save a konsep vs plaas (publish).
+	 */
+	public const INTENT_FIELD   = 'ink_submission_intent';
+	public const INTENT_DRAFT   = 'konsep';
+	public const INTENT_PUBLISH = 'plaas';
+
+	/**
 	 * Register the Skryf hooks. Invoked once from {@see Module::register()}.
 	 *
 	 * Logged-in `admin-post` only (no `nopriv`) — an anonymous visitor cannot
@@ -77,7 +84,7 @@ class SubmissionForm {
 	 * The three user-facing bydrae types. `skryfwerk` is deliberately EXCLUDED —
 	 * it is the migration holding bucket (afrikaans-terms.md / project-context §3),
 	 * not a type a member chooses; a tampered `skryfwerk` (or any other) value is
-	 * rejected by {@see buildDraft()}.
+	 * rejected by {@see buildPost()}.
 	 *
 	 * @return list<string>
 	 */
@@ -107,7 +114,20 @@ class SubmissionForm {
 	}
 
 	/**
-	 * Validate the submitted fields and build the draft bydrae `wp_insert_post` array.
+	 * Map a submit intent to a post status (Story 6.7).
+	 *
+	 * `plaas` publishes; anything else (incl. the missing/`konsep` case) is the
+	 * fail-safe ungated draft.
+	 *
+	 * @param string $intent The submitted intent value.
+	 * @return string `publish` or `draft`.
+	 */
+	public static function statusForIntent( string $intent ): string {
+		return self::INTENT_PUBLISH === $intent ? 'publish' : 'draft';
+	}
+
+	/**
+	 * Validate the submitted fields and build the bydrae `wp_insert_post` array.
 	 *
 	 * Pure, fail-safe, type-aware validation (no WordPress state): the type must be
 	 * one of {@see submittableTypes()} (an unknown / tampered type — including the
@@ -120,9 +140,10 @@ class SubmissionForm {
 	 * @param string $title     The bydrae title (already sanitised).
 	 * @param string $body      The bydrae body (already sanitised).
 	 * @param int    $author_id The submitting skrywer's user id.
+	 * @param string $status    The post status (`draft` for a konsep, `publish` for plaas).
 	 * @return array<string, mixed>|WP_Error The `wp_insert_post` args, or an error.
 	 */
-	public function buildDraft( string $type, string $title, string $body, int $author_id ) {
+	public function buildPost( string $type, string $title, string $body, int $author_id, string $status = 'draft' ) {
 		if ( ! in_array( $type, self::submittableTypes(), true ) ) {
 			return new WP_Error( 'ink_submission_invalid_type', 'Onbekende bydrae-tipe.' );
 		}
@@ -139,9 +160,7 @@ class SubmissionForm {
 			'post_type'    => $type,
 			'post_title'   => $title,
 			'post_content' => $body,
-			// Epic-6 build-order: a draft (konsep) is ungated (FR-23). The publish
-			// path + entitlement gate arrive in Stories 6.7 / 6.8.
-			'post_status'  => 'draft',
+			'post_status'  => $status,
 			'post_author'  => $author_id,
 		);
 	}
@@ -189,7 +208,13 @@ class SubmissionForm {
 			$body = ProseSanitizer::sanitize( (string) wp_unslash( $_POST[ self::FIELD_BODY ] ) );
 		}
 
-		$postarr = $this->buildDraft( $type, $title, $body, $user_id );
+		$intent = isset( $_POST[ self::INTENT_FIELD ] ) && is_scalar( $_POST[ self::INTENT_FIELD ] )
+			? sanitize_key( wp_unslash( $_POST[ self::INTENT_FIELD ] ) )
+			: self::INTENT_DRAFT;
+
+		$status = self::statusForIntent( $intent );
+
+		$postarr = $this->buildPost( $type, $title, $body, $user_id, $status );
 
 		if ( is_wp_error( $postarr ) ) {
 			$this->redirect( $this->formUrl( 'fout' ) );
@@ -207,7 +232,28 @@ class SubmissionForm {
 		$this->attachMedia( (int) $post_id );
 		$this->linkChallenges( (int) $post_id );
 
+		if ( 'publish' === $status ) {
+			$this->redirect( $this->successUrl( (int) $post_id ) );
+			return;
+		}
+
 		$this->redirect( $this->formUrl( 'konsep-gestoor' ) );
+	}
+
+	/**
+	 * The Skryf success-screen URL for a freshly published bydrae (Story 6.7).
+	 *
+	 * @param int $post_id The published bydrae id.
+	 * @return string The local success URL.
+	 */
+	protected function successUrl( int $post_id ): string {
+		return add_query_arg(
+			array(
+				'ink_skryf' => 'geplaas',
+				'id'        => $post_id,
+			),
+			home_url( '/skryf/' )
+		);
 	}
 
 	/**

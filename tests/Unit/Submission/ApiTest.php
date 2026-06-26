@@ -73,3 +73,35 @@ test( 'formModel carries the per-type counter mode', function (): void {
 	expect( $modes['storie'] )->toBe( 'words' );
 	expect( $modes['artikel'] )->toBe( 'words' );
 } );
+
+/**
+ * successModel returns the screen data for a published bydrae (Story 6.7).
+ */
+test( 'successModel returns title/type/permalink for a published bydrae', function (): void {
+	Functions\when( 'get_post_type' )->justReturn( 'gedig' );
+	Functions\when( 'get_post_status' )->justReturn( 'publish' );
+	Functions\when( 'get_the_title' )->justReturn( 'My Gedig' );
+	Functions\when( 'get_permalink' )->justReturn( 'https://ink.test/gedig/my-gedig' );
+
+	$model = Api::successModel( 123 );
+
+	expect( $model )->toBeArray();
+	expect( $model['title'] )->toBe( 'My Gedig' );
+	expect( $model['type_label'] )->toBeString()->not->toBe( '' );
+	expect( $model['permalink'] )->toBe( 'https://ink.test/gedig/my-gedig' );
+} );
+
+/**
+ * successModel is null for a non-published post, a non-bydrae, or an invalid id.
+ */
+test( 'successModel is null unless a published bydrae', function (): void {
+	expect( Api::successModel( 0 ) )->toBeNull();
+
+	Functions\when( 'get_post_type' )->justReturn( 'gedig' );
+	Functions\when( 'get_post_status' )->justReturn( 'draft' );
+	expect( Api::successModel( 123 ) )->toBeNull(); // draft, not published
+
+	Functions\when( 'get_post_type' )->justReturn( 'page' );
+	Functions\when( 'get_post_status' )->justReturn( 'publish' );
+	expect( Api::successModel( 123 ) )->toBeNull(); // not a bydrae
+} );

@@ -47,6 +47,10 @@ function ink_skryf_form(): SubmissionForm {
 			return '' === $notice ? '/skryf/' : '/skryf/?ink_skryf=' . $notice;
 		}
 
+		protected function successUrl( int $post_id ): string {
+			return '/skryf/?ink_skryf=geplaas&id=' . $post_id;
+		}
+
 		protected function redirect( string $url ): void {
 			$this->redirected[] = $url;
 			// No wp_safe_redirect / exit — record the target and let flow return.
@@ -75,11 +79,11 @@ test( 'accessors expose the nonce + post-action single source', function (): voi
 /**
  * A valid submission of each type builds a draft bydrae of the chosen CPT.
  */
-test( 'buildDraft builds a draft post array for each valid type', function (): void {
+test( 'buildPost builds a draft post array for each valid type', function (): void {
 	$form = new SubmissionForm();
 
 	foreach ( array( 'gedig', 'storie', 'artikel' ) as $type ) {
-		$arr = $form->buildDraft( $type, 'My titel', 'Reël een', 7 );
+		$arr = $form->buildPost( $type, 'My titel', 'Reël een', 7 );
 
 		expect( $arr )->toBeArray();
 		expect( $arr['post_type'] )->toBe( $type );
@@ -91,26 +95,46 @@ test( 'buildDraft builds a draft post array for each valid type', function (): v
 } );
 
 /**
+ * buildPost honours an explicit status (Story 6.7 publish path).
+ */
+test( 'buildPost honours an explicit publish status', function (): void {
+	$arr = ( new SubmissionForm() )->buildPost( 'gedig', 'T', 'B', 7, 'publish' );
+
+	expect( $arr )->toBeArray();
+	expect( $arr['post_status'] )->toBe( 'publish' );
+} );
+
+/**
+ * statusForIntent maps plaas to publish; anything else is the ungated draft.
+ */
+test( 'statusForIntent maps plaas to publish and else to draft', function (): void {
+	expect( SubmissionForm::statusForIntent( 'plaas' ) )->toBe( 'publish' );
+	expect( SubmissionForm::statusForIntent( 'konsep' ) )->toBe( 'draft' );
+	expect( SubmissionForm::statusForIntent( '' ) )->toBe( 'draft' );
+	expect( SubmissionForm::statusForIntent( 'tamper' ) )->toBe( 'draft' );
+} );
+
+/**
  * The migration bucket and any unknown type are rejected — no post array.
  */
-test( 'buildDraft rejects skryfwerk and unknown types', function (): void {
+test( 'buildPost rejects skryfwerk and unknown types', function (): void {
 	$form = new SubmissionForm();
 
-	expect( $form->buildDraft( 'skryfwerk', 'T', 'B', 7 ) )->toBeInstanceOf( \WP_Error::class );
-	expect( $form->buildDraft( 'gibberish', 'T', 'B', 7 ) )->toBeInstanceOf( \WP_Error::class );
-	expect( $form->buildDraft( '', 'T', 'B', 7 ) )->toBeInstanceOf( \WP_Error::class );
+	expect( $form->buildPost( 'skryfwerk', 'T', 'B', 7 ) )->toBeInstanceOf( \WP_Error::class );
+	expect( $form->buildPost( 'gibberish', 'T', 'B', 7 ) )->toBeInstanceOf( \WP_Error::class );
+	expect( $form->buildPost( '', 'T', 'B', 7 ) )->toBeInstanceOf( \WP_Error::class );
 } );
 
 /**
  * Title and body are required — whitespace-only counts as empty.
  */
-test( 'buildDraft requires a non-empty title and body', function (): void {
+test( 'buildPost requires a non-empty title and body', function (): void {
 	$form = new SubmissionForm();
 
-	expect( $form->buildDraft( 'gedig', '', 'B', 7 ) )->toBeInstanceOf( \WP_Error::class );
-	expect( $form->buildDraft( 'gedig', '   ', 'B', 7 ) )->toBeInstanceOf( \WP_Error::class );
-	expect( $form->buildDraft( 'gedig', 'T', '', 7 ) )->toBeInstanceOf( \WP_Error::class );
-	expect( $form->buildDraft( 'gedig', 'T', "  \n ", 7 ) )->toBeInstanceOf( \WP_Error::class );
+	expect( $form->buildPost( 'gedig', '', 'B', 7 ) )->toBeInstanceOf( \WP_Error::class );
+	expect( $form->buildPost( 'gedig', '   ', 'B', 7 ) )->toBeInstanceOf( \WP_Error::class );
+	expect( $form->buildPost( 'gedig', 'T', '', 7 ) )->toBeInstanceOf( \WP_Error::class );
+	expect( $form->buildPost( 'gedig', 'T', "  \n ", 7 ) )->toBeInstanceOf( \WP_Error::class );
 } );
 
 /**
@@ -150,6 +174,42 @@ test( 'handlePost inserts a draft bydrae on a valid submission', function (): vo
 	$form->handlePost();
 
 	expect( $form->redirected )->toBe( array( '/skryf/?ink_skryf=konsep-gestoor' ) );
+} );
+
+/**
+ * On a `plaas` intent the bydrae is published and the success screen is shown.
+ */
+test( 'handlePost publishes and redirects to the success screen on plaas', function (): void {
+	$_POST = array(
+		SubmissionForm::NONCE_NAME    => 'nonce123',
+		SubmissionForm::FIELD_TYPE    => 'gedig',
+		SubmissionForm::FIELD_TITLE   => 'My Gedig',
+		SubmissionForm::FIELD_BODY    => 'Reël een',
+		SubmissionForm::INTENT_FIELD  => 'plaas',
+	);
+
+	Functions\when( 'get_current_user_id' )->justReturn( 7 );
+	Functions\when( 'wp_unslash' )->returnArg( 1 );
+	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+	Functions\when( 'sanitize_key' )->returnArg( 1 );
+	Functions\when( 'wp_kses' )->returnArg( 1 );
+	Functions\when( 'wp_verify_nonce' )->justReturn( 1 );
+	Functions\when( 'is_wp_error' )->alias( static fn( $thing ): bool => $thing instanceof \WP_Error );
+
+	Functions\expect( 'wp_insert_post' )
+		->once()
+		->with(
+			\Mockery::on(
+				static fn( $arr ): bool => is_array( $arr ) && 'publish' === $arr['post_status'] && 'gedig' === $arr['post_type']
+			),
+			true
+		)
+		->andReturn( 123 );
+
+	$form = ink_skryf_form();
+	$form->handlePost();
+
+	expect( $form->redirected )->toBe( array( '/skryf/?ink_skryf=geplaas&id=123' ) );
 } );
 
 /**
