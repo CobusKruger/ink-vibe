@@ -43,7 +43,8 @@ last_updated: 2026-06-25
 # 5-8 → review (create-story + dev-story; Tiers\PromotionEngine — 5/15 threshold engine (Brons→Silwer@5, Silwer→Goud@15; Goud/Meester terminal), one-step-per-call, system actor 0, Afrikaans 'Outomatiese bevordering' reason; Api::awardWins() facade for 12A.3 (not built); fires ink/tier_promoted = 5.10 seam; tests 318 passed/1 skipped +8, cs/stan clean, deptrac no new edge)
 # 5-4 → review (create-story + dev-story; reusable Gradering badge — GraderingView presenter + Api::gradingView() + guarded theme bridge ink_foundation_gradering_badge() + token-only .ink-gradering CSS in theme.json (Meester→primary #EA4015, a11y text+aria-hidden mark); profile-template placement deferred to 9.4; tests 325 passed/1 skipped +7, cs/stan clean, deptrac no new edge)
 # 5-9 → review (create-story + dev-story; PromotionEngine::progressFor() (single-source 5/15) + Api::winsNeededSubtext() (_n() Afrikaans 'N top 3 uitslae nodig om X te bereik', glossary-approved, hidden at Goud/Meester) + theme bridge; My Profiel placement deferred to 9.4; tests 331 passed/1 skipped +6, cs/stan clean, deptrac no new edge)
-# 5-10 → review (create-story + dev-story, FINAL Epic-5 story; Tiers\PromotionEmails Notifications consumer — subscribes ink/tier_promoted, sends on auto-promotion (actor 0) to Silwer/Goud via the 1.12 store; two Afrikaans-source templates (glossary copy 'Baie geluk! Jy is na X bevorder.', toggle OFF); reuses 1.12 (no new engine); deptrac Tiers→Notifications edge ADDED (mirrors 4.2 Entitlement→Notifications); tests 338 passed/1 skipped +7, cs/stan clean, deptrac green)
+# 5-10 → review (create-story + dev-story; Tiers\PromotionEmails Notifications consumer — subscribes ink/tier_promoted, sends on auto-promotion (actor 0) to Silwer/Goud via the 1.12 store; two Afrikaans-source templates (glossary copy 'Baie geluk! Jy is na X bevorder.', toggle OFF); reuses 1.12 (no new engine); deptrac Tiers→Notifications edge ADDED (mirrors 4.2 Entitlement→Notifications); tests 338 passed/1 skipped +7, cs/stan clean, deptrac green)
+# 5-5 → review (create-story + dev-story; Tiers discovery/winner primitives — Api::usersByGrade() (get_users meta filter, no raw SQL) + Api::winnerLabel() ('Oktober Goud-wenner') + 'wenner' Terms term (glossary-first, lowercase); Ontdek/winner surfaces deferred to Epic 8/12; tests 342 passed/1 skipped, cs/stan clean, deptrac no new edge)
 # epic-2 started 2026-06-21; 2-1 → review 2026-06-21
 # epic-2 retrospective completed 2026-06-22
 # epic-3 started 2026-06-22; 3-1 → done (code review) 2026-06-22; 3-3 → done 2026-06-22; 3-4 → done (research spike) 2026-06-22; 3-6 → done (code review) 2026-06-22; 3-5 → done (code review) 2026-06-22
@@ -128,7 +129,7 @@ development_status:
   5-2-staff-set-adjust-gradering-admin-ui: review
   5-3-promotion-log-history-graderingsgeskiedenis: review  # built before 5.2 (log substrate dependency)
   5-4-gradering-display-on-profiles: review
-  5-5-gradering-in-discovery-winners: backlog
+  5-5-gradering-in-discovery-winners: review
   5-6-gradering-lidmaatskap-guardrails: backlog
   5-7-win-count-meta-reset-on-promotion: review  # built before 5.8 (counter dependency)
   5-8-automatic-promotion-engine: review

@@ -225,4 +225,56 @@ final class Api {
 			Terms::label( $progress['next']->value )
 		);
 	}
+
+	/**
+	 * The user IDs of writers at a given Gradering — the discovery filter /
+	 * segmentation primitive (Story 5.5).
+	 *
+	 * A `get_users()` meta filter on the single-source `ink_writer_tier` key
+	 * (never raw SQL), merged with optional caller args (e.g. `number`, `paged`).
+	 * The Epic-8 Ontdek filters consume this.
+	 *
+	 * @param Tier                 $tier The grade to filter by.
+	 * @param array<string, mixed> $args Optional extra `WP_User_Query` args.
+	 * @return list<int> Writer user IDs at the grade.
+	 */
+	public static function usersByGrade( Tier $tier, array $args = array() ): array {
+		// Filtering writers by their Gradering meta is the intended query; the
+		// slow-query advisory is accepted (the result set is staff/discovery-scoped
+		// and callers pass paging args).
+		$users = get_users(
+			array_merge(
+				array(
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+					'meta_key'   => Tier::META_KEY,
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+					'meta_value' => $tier->value,
+					'fields'     => 'ID',
+				),
+				$args
+			)
+		);
+
+		return array_map( 'intval', (array) $users );
+	}
+
+	/**
+	 * Compose a winner label carrying the Gradering context (Story 5.5), e.g.
+	 * "Oktober Goud-wenner".
+	 *
+	 * The grade label + the "wenner" term come from the single-source `Terms`
+	 * registry (glossary-backed); the period is supplied by the caller (the
+	 * Epic-12 challenge surface).
+	 *
+	 * @param Tier   $grade  The winner's Gradering.
+	 * @param string $period The challenge period label (e.g. "Oktober").
+	 */
+	public static function winnerLabel( Tier $grade, string $period ): string {
+		return sprintf(
+			'%1$s %2$s-%3$s',
+			$period,
+			Terms::label( $grade->value ),
+			Terms::label( 'wenner' )
+		);
+	}
 }
