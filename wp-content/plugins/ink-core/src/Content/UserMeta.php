@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Content;
 
 use Ink\Kernel\Capabilities;
+use Ink\Kernel\Scalar;
 use Ink\Kernel\Tier;
 
 defined( 'ABSPATH' ) || exit;
@@ -118,7 +119,7 @@ final class UserMeta {
 	 * @return string A valid {@see Tier} backing value.
 	 */
 	public static function sanitizeTier( $value ): string {
-		if ( ! is_scalar( $value ) ) {
+		if ( ! Scalar::safe( $value ) ) {
 			return Tier::Brons->value;
 		}
 

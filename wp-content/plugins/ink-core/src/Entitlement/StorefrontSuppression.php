@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ink\Entitlement;
 
+use Ink\Kernel\Scalar;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -521,7 +523,7 @@ class StorefrontSuppression {
 		$ids        = array();
 
 		foreach ( $candidates as $candidate ) {
-			if ( ! is_scalar( $candidate ) ) {
+			if ( ! Scalar::safe( $candidate ) ) {
 				continue;
 			}
 
@@ -627,8 +629,8 @@ class StorefrontSuppression {
 				continue;
 			}
 
-			$product_id   = isset( $item['product_id'] ) && is_scalar( $item['product_id'] ) ? (int) $item['product_id'] : 0;
-			$variation_id = isset( $item['variation_id'] ) && is_scalar( $item['variation_id'] ) ? (int) $item['variation_id'] : 0;
+			$product_id   = Scalar::asInt( $item['product_id'] ?? null );
+			$variation_id = Scalar::asInt( $item['variation_id'] ?? null );
 
 			if ( ( $product_id > 0 && $this->isLidmaatskapProduct( $product_id ) )
 				|| ( $variation_id > 0 && $this->isLidmaatskapProduct( $variation_id ) ) ) {

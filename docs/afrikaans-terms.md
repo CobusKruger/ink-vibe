@@ -265,6 +265,7 @@ Gebruik Afrikaanse slugs waar dit die inhoudsmodel beskryf:
 - `gedig`
 - `storie`
 - `artikel`
+- `skryfwerk` (migrasie-houerbak vir ongeklassifiseerde ou inhoud — **nie 'n gebruikergerigte term nie**; sien PRD §3 / MR-6)
 - `uitdaging`
 - `biblioteek_item`
 - `opleiding_artikel`

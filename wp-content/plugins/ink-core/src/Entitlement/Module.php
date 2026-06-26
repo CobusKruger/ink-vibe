@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Entitlement;
 
 use Ink\Kernel\Module as ModuleContract;
+use Ink\Kernel\Scalar;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -194,7 +195,7 @@ final class Module implements ModuleContract {
 		foreach ( $value as $key => $product_id ) {
 			// Array keys are inherently int|string; only the value needs the guard
 			// (the Epic-2 "non-scalar to coercion" bug class).
-			if ( ! is_scalar( $product_id ) ) {
+			if ( ! Scalar::safe( $product_id ) ) {
 				continue;
 			}
 

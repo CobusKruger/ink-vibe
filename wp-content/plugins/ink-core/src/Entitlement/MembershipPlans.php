@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ink\Entitlement;
 
+use Ink\Kernel\Scalar;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -110,11 +112,7 @@ class MembershipPlans {
 
 		$product_id = $map[ $term->months() ] ?? null;
 
-		if ( ! is_scalar( $product_id ) ) {
-			return null;
-		}
-
-		$product_id = (int) $product_id;
+		$product_id = Scalar::asInt( $product_id );
 
 		return $product_id > 0 ? $product_id : null;
 	}

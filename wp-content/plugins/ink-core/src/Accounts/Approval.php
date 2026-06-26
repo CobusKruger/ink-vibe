@@ -11,6 +11,7 @@ namespace Ink\Accounts;
 
 use Ink\I18n\Terms;
 use Ink\Kernel\Capabilities;
+use Ink\Kernel\Scalar;
 use Ink\Notifications\Api as Notifications;
 use Ink\Notifications\Template;
 
@@ -190,7 +191,7 @@ final class Approval {
 	 * Register the pending + rejected user-meta on the Story-2.3 substrate.
 	 *
 	 * Mirrors {@see Onboarding::registerMeta()} house style: `single`, boolean,
-	 * a `false` registered default, an `is_scalar`-guarded sanitiser (the Epic-2
+	 * a `false` registered default, a {@see Scalar}::safe()-guarded sanitiser (the Epic-2
 	 * recurring bug class — a non-scalar payload must never reach a scalar
 	 * coercion), and an `auth_callback`. Unlike the self-set onboarding flag, the
 	 * pending/rejected state is STAFF-managed (the system stamps it; only a
@@ -212,7 +213,7 @@ final class Approval {
 	}
 
 	/**
-	 * Coerce any incoming value to a boolean flag (shared `is_scalar` guard).
+	 * Coerce any incoming value to a boolean flag (shared {@see Scalar}::safe() guard).
 	 *
 	 * A non-scalar payload (array/object from a malformed REST/POST body) falls
 	 * back to the `false` default rather than reaching a scalar coercion.
@@ -221,7 +222,7 @@ final class Approval {
 	 * @return bool The normalised flag.
 	 */
 	public static function sanitizeFlag( $value ): bool {
-		if ( ! is_scalar( $value ) ) {
+		if ( ! Scalar::safe( $value ) ) {
 			return false;
 		}
 
@@ -632,8 +633,8 @@ final class Approval {
 	 *
 	 * The sanctioned (never raw) `$_POST` path, mirroring
 	 * {@see Onboarding::completeViaPost()}: capability check → nonce verify →
-	 * `is_scalar`-guarded sanitised user id → {@see approve()} → redirect back. No
-	 * raw superglobal reaches a sanitiser without the `is_scalar` guard.
+	 * {@see Scalar}::safe()-guarded sanitised user id → {@see approve()} → redirect back. No
+	 * raw superglobal reaches a sanitiser without the {@see Scalar}::safe() guard.
 	 */
 	public function approveViaPost(): void {
 		$user_id = $this->guardWrite( self::NONCE_APPROVE );
@@ -663,7 +664,7 @@ final class Approval {
 	/**
 	 * Shared write-guard for the approve/reject handlers (AD-6 write contract).
 	 *
-	 * Capability (`ink_moderate`) + nonce + `is_scalar`-guarded sanitised user id,
+	 * Capability (`ink_moderate`) + nonce + {@see Scalar}::safe()-guarded sanitised user id,
 	 * with NO raw `$_POST`/`$_GET`/`$_REQUEST` reaching a sanitiser. Returns the
 	 * validated user id, or 0 when any gate fails (the caller then no-ops the write
 	 * and simply redirects back).

@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ink\Accounts;
 
+use Ink\Kernel\Scalar;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -83,7 +85,7 @@ final class Onboarding {
 	 *
 	 * Mirrors {@see \Ink\Content\UserMeta} house style: `single`, a typed value, a
 	 * sane registered default (`false` = "not yet onboarded"), a
-	 * `sanitize_callback` guarded by the shared `is_scalar()` idiom (a non-scalar
+	 * `sanitize_callback` guarded by the shared {@see Scalar}::safe() helper (a non-scalar
 	 * payload must never reach a scalar sanitiser — the Epic-2 recurring bug
 	 * class), and an `auth_callback` that authorizes the OWN-RECORD case only
 	 * (self-set onboarding state, unlike the staff-gated tier).
@@ -106,7 +108,7 @@ final class Onboarding {
 	/**
 	 * Coerce any incoming value to the boolean onboarding flag.
 	 *
-	 * The shared `is_scalar()` guard (Epic-2 recurring bug class): a non-scalar
+	 * The shared {@see Scalar}::safe() guard (Epic-2 recurring bug class): a non-scalar
 	 * payload (array/object from a malformed REST/POST body) falls back to the
 	 * `false` default rather than reaching a scalar coercion. A scalar is
 	 * normalised through `rest_sanitize_boolean` so "0"/"false"/"" read as false.
@@ -115,7 +117,7 @@ final class Onboarding {
 	 * @return bool The normalised flag.
 	 */
 	public static function sanitizeFlag( $value ): bool {
-		if ( ! is_scalar( $value ) ) {
+		if ( ! Scalar::safe( $value ) ) {
 			return false;
 		}
 
@@ -210,7 +212,7 @@ final class Onboarding {
 	 *
 	 * The sanctioned (never raw) `$_POST` path: nonce verify → logged-in own-record
 	 * check → write only the flag → redirect back. NO raw superglobal reaches a
-	 * sanitiser without the `is_scalar()` guard. Errors degrade gracefully — a
+	 * sanitiser without the {@see Scalar}::safe() guard. Errors degrade gracefully — a
 	 * failed flag-write must never block the lid from using the account, so the
 	 * handler always returns the lid to the site rather than fatalling.
 	 */

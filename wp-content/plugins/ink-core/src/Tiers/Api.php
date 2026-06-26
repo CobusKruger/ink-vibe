@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Tiers;
 
 use Ink\I18n\Terms;
+use Ink\Kernel\Scalar;
 use Ink\Kernel\Tier;
 
 defined( 'ABSPATH' ) || exit;
@@ -47,7 +48,7 @@ final class Api {
 	public static function forUser( int $user_id ): Tier {
 		$raw = get_user_meta( $user_id, Tier::META_KEY, true );
 
-		if ( ! is_scalar( $raw ) || '' === (string) $raw ) {
+		if ( '' === Scalar::asString( $raw ) ) {
 			return Tier::default();
 		}
 
@@ -163,7 +164,7 @@ final class Api {
 	public static function winCountForUser( int $user_id ): int {
 		$raw = get_user_meta( $user_id, Tier::WIN_COUNT_META_KEY, true );
 
-		return is_scalar( $raw ) ? max( 0, (int) $raw ) : 0;
+		return Scalar::asNonNegativeInt( $raw );
 	}
 
 	/**
