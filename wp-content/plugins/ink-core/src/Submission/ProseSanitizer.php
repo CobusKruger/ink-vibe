@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ink\Submission;
 
+use Ink\Kernel\ProseFormat;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -44,13 +46,9 @@ final class ProseSanitizer {
 	 * @return array<string, array<string, mixed>> The `wp_kses` allowed-HTML map.
 	 */
 	public static function allowedTags(): array {
-		return array(
-			'strong' => array(),
-			'b'      => array(),
-			'em'     => array(),
-			'i'      => array(),
-			'br'     => array(),
-		);
+		// Single-source: the read-time gedig renderer (Story 7.2) shares this exact
+		// allowlist via the Kernel, so write-time and read-time cannot drift.
+		return ProseFormat::allowedInlineTags();
 	}
 
 	/**

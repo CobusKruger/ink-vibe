@@ -38,7 +38,8 @@ final class Module implements ModuleContract {
 	 */
 	public function register(): void {
 		( new Comments() )->register();
+		( new GedigBody() )->register();
 
-		// Reserved: highlights, reactions, responses, leeslys land in Epic 7.
+		// Reserved: highlights, reactions, responses, leeslys land later in Epic 7.
 	}
 }

@@ -85,6 +85,26 @@ test( 'reading templates carry NO WP comments UI', function () use ( $ink_read, 
 	}
 } );
 
+test( 'the gedig reading template exists and renders the poem via the ink/gedig-body block', function () use ( $ink_read, $ink_comment_markers ): void {
+	$template = $ink_read( 'templates/single-gedig.html' );
+	expect( $template )->toContain( 'wp:template-part' );
+	expect( $template )->toContain( 'ink-foundation/reading-gedig' );
+
+	$pattern = $ink_read( 'patterns/reading-gedig.php' );
+	// Poem body is the custom server block (bypasses wpautop) — NOT core/post-content.
+	expect( $pattern )->toContain( 'wp:ink/gedig-body' );
+	expect( $pattern )->not->toContain( 'wp:post-content' );
+	expect( $pattern )->toContain( '"contentSize":"768px"' );
+	expect( $pattern )->toContain( "ink_foundation_term( 'gedig'" );
+
+	// Non-vacuous no-comments guard: real reading markup present, THEN markers absent.
+	expect( $pattern )->toContain( 'wp:post-title' );
+	foreach ( $ink_comment_markers as $marker ) {
+		expect( $pattern )->not->toContain( $marker );
+		expect( $template )->not->toContain( $marker );
+	}
+} );
+
 test( 'reading-storie and reading-artikel eyebrows source the type label from the terminology bridge', function () use ( $ink_read ): void {
 	// Controlled-vocabulary labels come from the ink-core terminology registry via
 	// the theme bridge — never inlined as bare literals (project-context Gate D).

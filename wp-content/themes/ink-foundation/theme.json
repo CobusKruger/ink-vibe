@@ -141,7 +141,7 @@
     }
   },
   "styles": {
-    "css": ".ink-gradering{display:inline-flex;align-items:center;gap:var(--wp--preset--spacing--s-4);font-family:var(--wp--preset--font-family--heading);font-weight:600;line-height:var(--wp--custom--line-height--tight)} .ink-gradering__mark{line-height:1} .ink-gradering--meester{color:var(--wp--preset--color--primary)}",
+    "css": ".ink-gradering{display:inline-flex;align-items:center;gap:var(--wp--preset--spacing--s-4);font-family:var(--wp--preset--font-family--heading);font-weight:600;line-height:var(--wp--custom--line-height--tight)} .ink-gradering__mark{line-height:1} .ink-gradering--meester{color:var(--wp--preset--color--primary)} .ink-gedig{line-height:var(--wp--custom--line-height--relaxed)} .ink-gedig__stanza{margin:0} .ink-gedig__sep{height:1lh} .ink-gedig__line{white-space:pre-wrap;margin:0;border-radius:var(--wp--custom--radius--sm)} .ink-gedig__line:hover{background-color:var(--wp--preset--color--secondary)} .ink-gedig__line--marker{color:var(--wp--preset--color--accent);font-weight:var(--wp--custom--font-weight--semibold);text-transform:uppercase;letter-spacing:0.08em}",
     "color": {
       "background": "var:preset|color|surface",
       "text": "var:preset|color|text"
