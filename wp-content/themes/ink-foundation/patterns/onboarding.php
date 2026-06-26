@@ -70,10 +70,12 @@ $ink_post_to = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : 
 				The approved empty-state copy is from ui-copy-translations.md line 658/659.
 			-->
 			<!-- wp:paragraph {"fontSize":"md"} -->
-			<p class="has-md-font-size"><?php
-				/* translators: %s: the singular skrywer label from the glossary. */
-				echo esc_html( sprintf( __( 'Volg \'n %s of stoor \'n %2$s na jou leeslys.', 'ink-foundation' ), $ink_skrywer, $ink_bydrae ) );
-			?></p>
+			<p class="has-md-font-size">
+			<?php
+				/* translators: %1$s: the singular skrywer label from the glossary. %2$s: the singular bydrae label. */
+				echo esc_html( sprintf( __( 'Volg \'n %1$s of stoor \'n %2$s na jou leeslys.', 'ink-foundation' ), $ink_skrywer, $ink_bydrae ) );
+			?>
+			</p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:group {"className":"is-style-emphasis","layout":{"type":"constrained"}} -->
@@ -83,10 +85,12 @@ $ink_post_to = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : 
 				<!-- /wp:paragraph -->
 
 				<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-				<p class="has-muted-text-color has-text-color has-sm-font-size"><?php
+				<p class="has-muted-text-color has-text-color has-sm-font-size">
+				<?php
 					/* translators: %s: the singular skrywer label from the glossary. */
 					echo esc_html( sprintf( __( 'Volg \'n %s om hul nuwe stukke in jou aktiwiteitsvoer te sien.', 'ink-foundation' ), $ink_skrywer ) );
-				?></p>
+				?>
+				</p>
 				<!-- /wp:paragraph -->
 
 				<!-- wp:buttons {"layout":{"type":"constrained"}} -->
