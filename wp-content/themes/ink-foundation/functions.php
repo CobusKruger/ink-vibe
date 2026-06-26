@@ -203,6 +203,56 @@ if ( ! function_exists( 'ink_foundation_onboarding_form_fields' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ink_foundation_skryf_model' ) ) {
+	/**
+	 * The Skryf submission-form view-model for the Skryf page pattern (Story 6.1).
+	 *
+	 * Presentation glue only: a read-through to the `ink-core` Submission facade
+	 * ({@see \Ink\Submission\Api::formModel()}) so the Skryf pattern can render the
+	 * DYNAMIC bits — the submittable bydrae types (with their Afrikaans nouns) and
+	 * the form wiring (post action, field names) — WITHOUT any submission logic in
+	 * the theme (three-layer separation). `class_exists`-guarded so the theme
+	 * degrades to an empty model when `ink-core` is inactive — never a fatal.
+	 *
+	 * @return array<string, mixed> The form view-model, or an empty array.
+	 */
+	function ink_foundation_skryf_model(): array {
+		if ( ! class_exists( 'Ink\\Submission\\Api' ) ) {
+			return array();
+		}
+
+		return \Ink\Submission\Api::formModel();
+	}
+}
+
+if ( ! function_exists( 'ink_foundation_skryf_form_fields' ) ) {
+	/**
+	 * Echo the hidden form fields the Skryf submission POST needs.
+	 *
+	 * Presentation glue only: the nonce field + the `admin-post` action hidden
+	 * input, sourced from the `ink-core` {@see \Ink\Submission\SubmissionForm}
+	 * single source. State-change discipline (nonce + logged-in + sanitise) lives
+	 * in the `ink-core` handler, not the theme. `class_exists`-guarded so the theme
+	 * degrades to no fields (the form simply will not authorise) when `ink-core` is
+	 * inactive — never fatals.
+	 */
+	function ink_foundation_skryf_form_fields(): void {
+		if ( ! class_exists( 'Ink\\Submission\\SubmissionForm' ) ) {
+			return;
+		}
+
+		wp_nonce_field(
+			\Ink\Submission\SubmissionForm::nonceAction(),
+			\Ink\Submission\SubmissionForm::nonceName()
+		);
+
+		printf(
+			'<input type="hidden" name="action" value="%s" />',
+			esc_attr( \Ink\Submission\SubmissionForm::postAction() )
+		);
+	}
+}
+
 if ( ! function_exists( 'ink_foundation_membership_plans' ) ) {
 	/**
 	 * The lidmaatskap plan rows for the Lidmaatskap page pattern (Story 4.4, FR-7).

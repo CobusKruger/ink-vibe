@@ -1,0 +1,237 @@
+<?php
+/**
+ * The custom front-end submission form handler (the Skryf flow) — Story 6.1.
+ *
+ * @package Ink\Core
+ */
+
+declare(strict_types=1);
+
+namespace Ink\Submission;
+
+use Ink\Content\PostTypes;
+use WP_Error;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Owns the custom Skryf submission write path (FR-16), replacing the legacy
+ * Youzify front-end editor.
+ *
+ * A logged-in skrywer picks a bydrae type (gedig / storie / artikel), enters a
+ * title and body, and submits; this collaborator validates the input and creates
+ * the bydrae of the chosen CPT, authored by that user. Per the Epic-6 build-order
+ * the bydrae is saved as a **konsep (draft)** here — saving a draft is never
+ * entitlement-gated (FR-23); the *plaas* (publish) path and the lidmaatskap
+ * entitlement gate land in Stories 6.7 and 6.8.
+ *
+ * Authorisation is INK's own, not WordPress's editor caps: the `ink_content`
+ * capability family is granted only to administrator / editor (Story 3.3), so a
+ * skrywer (gratis or paid lid) holds none of it — front-end submission is
+ * authorised by "logged in + nonce" for a draft, and (from 6.8) by active
+ * lidmaatskap for a publish. The handler therefore creates the post directly via
+ * {@see wp_insert_post()} after its OWN checks, rather than relying on
+ * `current_user_can( 'create_ink_contents' )`.
+ *
+ * THE conflation rule (AD-1): this carries ZERO reference to `Ink\Tiers` — the
+ * writer Gradering (`ink_writer_tier`) never gates submission. The write seam is
+ * the sanctioned logged-in `admin-post` path, mirroring {@see \Ink\Accounts\Onboarding}:
+ * nonce-verified, raw `$_POST` guarded inline with `is_scalar()` before any
+ * sanitiser, then a safe redirect.
+ *
+ * @package Ink\Core
+ */
+class SubmissionForm {
+
+	/**
+	 * Nonce action + field name for the Skryf write round-trip.
+	 */
+	public const NONCE_ACTION = 'ink_submission_plaas';
+	public const NONCE_NAME   = 'ink_submission_nonce';
+
+	/**
+	 * The logged-in `admin-post` action the Skryf form posts to.
+	 */
+	public const POST_ACTION = 'ink_submission_plaas';
+
+	/**
+	 * Form field names (single source for handler + theme bridge).
+	 */
+	public const FIELD_TYPE  = 'ink_submission_type';
+	public const FIELD_TITLE = 'ink_submission_title';
+	public const FIELD_BODY  = 'ink_submission_body';
+
+	/**
+	 * Register the Skryf hooks. Invoked once from {@see Module::register()}.
+	 *
+	 * Logged-in `admin-post` only (no `nopriv`) — an anonymous visitor cannot
+	 * reach the write path (AD-7 sanctions `admin-post` for a write of this size).
+	 */
+	public function register(): void {
+		add_action( 'admin_post_' . self::POST_ACTION, array( $this, 'handlePost' ) );
+	}
+
+	/**
+	 * The bydrae CPTs a skrywer may submit through the Skryf form.
+	 *
+	 * The three user-facing bydrae types. `skryfwerk` is deliberately EXCLUDED —
+	 * it is the migration holding bucket (afrikaans-terms.md / project-context §3),
+	 * not a type a member chooses; a tampered `skryfwerk` (or any other) value is
+	 * rejected by {@see buildDraft()}.
+	 *
+	 * @return list<string>
+	 */
+	public static function submittableTypes(): array {
+		return array( PostTypes::GEDIG, PostTypes::STORIE, PostTypes::ARTIKEL );
+	}
+
+	/**
+	 * The nonce action (test/template surface).
+	 */
+	public static function nonceAction(): string {
+		return self::NONCE_ACTION;
+	}
+
+	/**
+	 * The nonce field name (test/template surface).
+	 */
+	public static function nonceName(): string {
+		return self::NONCE_NAME;
+	}
+
+	/**
+	 * The `admin-post` action the Skryf form targets (test/template surface).
+	 */
+	public static function postAction(): string {
+		return self::POST_ACTION;
+	}
+
+	/**
+	 * Validate the submitted fields and build the draft bydrae `wp_insert_post` array.
+	 *
+	 * Pure, fail-safe, type-aware validation (no WordPress state): the type must be
+	 * one of {@see submittableTypes()} (an unknown / tampered type — including the
+	 * non-submittable `skryfwerk` bucket — is rejected), and both title and body
+	 * must be non-empty after trimming. On any failure a {@see WP_Error} is
+	 * returned and NO post is created (the caller returns the skrywer to the form
+	 * rather than silently dropping their work).
+	 *
+	 * @param string $type      The chosen bydrae CPT slug (already sanitised).
+	 * @param string $title     The bydrae title (already sanitised).
+	 * @param string $body      The bydrae body (already sanitised).
+	 * @param int    $author_id The submitting skrywer's user id.
+	 * @return array<string, mixed>|WP_Error The `wp_insert_post` args, or an error.
+	 */
+	public function buildDraft( string $type, string $title, string $body, int $author_id ) {
+		if ( ! in_array( $type, self::submittableTypes(), true ) ) {
+			return new WP_Error( 'ink_submission_invalid_type', 'Onbekende bydrae-tipe.' );
+		}
+
+		if ( '' === trim( $title ) ) {
+			return new WP_Error( 'ink_submission_missing_title', 'Titel ontbreek.' );
+		}
+
+		if ( '' === trim( $body ) ) {
+			return new WP_Error( 'ink_submission_missing_body', 'Inhoud ontbreek.' );
+		}
+
+		return array(
+			'post_type'    => $type,
+			'post_title'   => $title,
+			'post_content' => $body,
+			// Epic-6 build-order: a draft (konsep) is ungated (FR-23). The publish
+			// path + entitlement gate arrive in Stories 6.7 / 6.8.
+			'post_status'  => 'draft',
+			'post_author'  => $author_id,
+		);
+	}
+
+	/**
+	 * Handle the nonce-protected Skryf POST (logged-in only).
+	 *
+	 * Sanctioned path: logged-in guard → nonce verify → inline `is_scalar` guards +
+	 * `wp_unslash` + sanitise → {@see buildDraft()} → {@see wp_insert_post()} →
+	 * safe redirect. Every failure degrades gracefully (returns the skrywer to the
+	 * form); no raw superglobal reaches a sanitiser un-guarded.
+	 */
+	public function handlePost(): void {
+		$user_id = get_current_user_id();
+
+		if ( 0 === $user_id ) {
+			$this->redirect( $this->formUrl() );
+			return;
+		}
+
+		if ( ! isset( $_POST[ self::NONCE_NAME ] ) || ! is_scalar( $_POST[ self::NONCE_NAME ] ) ) {
+			$this->redirect( $this->formUrl() );
+			return;
+		}
+
+		$nonce = sanitize_text_field( wp_unslash( $_POST[ self::NONCE_NAME ] ) );
+
+		if ( ! wp_verify_nonce( $nonce, self::NONCE_ACTION ) ) {
+			$this->redirect( $this->formUrl() );
+			return;
+		}
+
+		$type = isset( $_POST[ self::FIELD_TYPE ] ) && is_scalar( $_POST[ self::FIELD_TYPE ] )
+			? sanitize_key( wp_unslash( $_POST[ self::FIELD_TYPE ] ) )
+			: '';
+
+		$title = isset( $_POST[ self::FIELD_TITLE ] ) && is_scalar( $_POST[ self::FIELD_TITLE ] )
+			? sanitize_text_field( wp_unslash( $_POST[ self::FIELD_TITLE ] ) )
+			: '';
+
+		$body = isset( $_POST[ self::FIELD_BODY ] ) && is_scalar( $_POST[ self::FIELD_BODY ] )
+			? wp_kses_post( wp_unslash( $_POST[ self::FIELD_BODY ] ) )
+			: '';
+
+		$postarr = $this->buildDraft( $type, $title, $body, $user_id );
+
+		if ( is_wp_error( $postarr ) ) {
+			$this->redirect( $this->formUrl( 'fout' ) );
+			return;
+		}
+
+		$post_id = wp_insert_post( $postarr, true );
+
+		if ( is_wp_error( $post_id ) || 0 === (int) $post_id ) {
+			$this->redirect( $this->formUrl( 'fout' ) );
+			return;
+		}
+
+		$this->redirect( $this->formUrl( 'konsep-gestoor' ) );
+	}
+
+	/**
+	 * The Skryf page URL, with an optional notice marker.
+	 *
+	 * @param string $notice Optional `ink_skryf` notice slug.
+	 * @return string The local Skryf URL.
+	 */
+	protected function formUrl( string $notice = '' ): string {
+		$url = home_url( '/skryf/' );
+
+		return '' === $notice ? $url : add_query_arg( 'ink_skryf', $notice, $url );
+	}
+
+	/**
+	 * Redirect to a local URL and end the request.
+	 *
+	 * Wrapped as a seam: tests override {@see halt()} to avoid terminating the
+	 * test process while still asserting the redirect target.
+	 *
+	 * @param string $url Target URL.
+	 */
+	protected function redirect( string $url ): void {
+		wp_safe_redirect( $url );
+		$this->halt();
+	}
+
+	/**
+	 * End the request after a redirect. Overridable seam for tests.
+	 */
+	protected function halt(): void {
+		exit;
+	}
+}

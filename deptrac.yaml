@@ -92,6 +92,12 @@ deptrac:
             - Notifications
         Submission:
             - Kernel
+            # Story 6.1: the Skryf form reads the bydrae CPT slugs from the
+            # migration-load-bearing single source `Ink\Content\PostTypes`
+            # (GEDIG/STORIE/ARTIKEL constants + bydraeTypes()). A real
+            # cross-module dependency on the slug registry — the documented
+            # "extend a module's allowlist as real usage appears" path.
+            - Content
         Engagement:
             - Kernel
         Social:
