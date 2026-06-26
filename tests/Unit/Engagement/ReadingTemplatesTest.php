@@ -111,6 +111,12 @@ test( 'every reading pattern embeds the Gemeenskapsreaksies block (the only feed
 	}
 } );
 
+test( 'every reading pattern embeds the suggested-reads (Verwante stukke) block', function () use ( $ink_read ): void {
+	foreach ( array( 'reading-storie.php', 'reading-artikel.php', 'reading-gedig.php' ) as $pattern ) {
+		expect( $ink_read( 'patterns/' . $pattern ) )->toContain( 'wp:ink/verwante-stukke' );
+	}
+} );
+
 test( 'every reading pattern shows the contextual prompt before the response form', function () use ( $ink_read ): void {
 	foreach ( array( 'reading-storie.php', 'reading-artikel.php', 'reading-gedig.php' ) as $pattern ) {
 		$markup = $ink_read( 'patterns/' . $pattern );

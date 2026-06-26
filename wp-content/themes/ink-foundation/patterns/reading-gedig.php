@@ -61,6 +61,8 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 		<!-- wp:ink/leesprompte /-->
 
 		<!-- wp:ink/gemeenskapsreaksies /-->
+
+		<!-- wp:ink/verwante-stukke /-->
 	</div>
 	<!-- /wp:group -->
 </section>

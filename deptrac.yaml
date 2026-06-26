@@ -107,6 +107,9 @@ deptrac:
             - Entitlement
         Engagement:
             - Kernel
+            # Story 7.6: suggested reads queries the bydrae CPT slugs from the
+            # migration-load-bearing single source `Ink\Content\PostTypes`.
+            - Content
         Social:
             - Kernel
         Discovery:
