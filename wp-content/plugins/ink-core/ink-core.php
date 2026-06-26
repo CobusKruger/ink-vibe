@@ -50,6 +50,7 @@ Kernel\Schema::register( Tiers\PromotionLog::TABLE, array( Tiers\PromotionLog::c
 Kernel\Schema::register( Engagement\ReactionStore::TABLE, array( Engagement\ReactionStore::class, 'schemaSql' ) ); // Story 7.3: line-reaction table.
 Kernel\Schema::register( Engagement\ReadingListStore::TABLE, array( Engagement\ReadingListStore::class, 'schemaSql' ) ); // Story 7.7: leeslys table.
 Kernel\Schema::register( Social\FollowStore::TABLE, array( Social\FollowStore::class, 'schemaSql' ) ); // Story 9.2: asymmetric follow graph.
+Kernel\Schema::register( Social\RatingStore::TABLE, array( Social\RatingStore::class, 'schemaSql' ) ); // Story 9.6: reader ratings & reviews.
 
 // Activation / deactivation: versioned-DB-option, schema registry install,
 // rewrite-rule flush, and PHP/WP minimum-version guard.

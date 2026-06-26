@@ -32,6 +32,13 @@ declare(strict_types=1);
 // stops autoloading a guarded class from terminating the process.
 defined( 'ABSPATH' ) || define( 'ABSPATH', dirname( __DIR__ ) . '/' );
 
+// WordPress `$wpdb` output-format constants. Mocked stores (e.g. RatingStore)
+// pass these to `$wpdb->get_row()/get_results()`; WordPress is not loaded for
+// the unit suite, so define the same string values core uses.
+defined( 'ARRAY_A' ) || define( 'ARRAY_A', 'ARRAY_A' );
+defined( 'ARRAY_N' ) || define( 'ARRAY_N', 'ARRAY_N' );
+defined( 'OBJECT' ) || define( 'OBJECT', 'OBJECT' );
+
 $ink_autoload = __DIR__ . '/../vendor/autoload.php';
 
 if ( ! is_readable( $ink_autoload ) ) {

@@ -92,6 +92,8 @@ final class SkrywerProfiel {
 			'volgeling' => Api::volgelingLabel( Api::followerCount( $author_id ) ),
 			'volg'      => FollowToggle::render( array( 'skrywerId' => $author_id ) ),
 			'pinned'    => self::pinnedCards( $author_id ),
+			'aggregate' => Api::ratingAggregateFor( $author_id ),
+			'reviews'   => Api::approvedReviewsFor( $author_id ),
 		);
 
 		return self::toHtml( $profile );
@@ -157,7 +159,7 @@ final class SkrywerProfiel {
 	 * NO wins-needed subtext — those are private My Profiel surfaces (the FR-40
 	 * separation).
 	 *
-	 * @param array{name:string, bio:string, avatar:string, badge:string, volgeling:string, volg:string, pinned?:list<array{title:string, permalink:string, type:string}>} $profile The public profile data.
+	 * @param array{name:string, bio:string, avatar:string, badge:string, volgeling:string, volg:string, pinned?:list<array{title:string, permalink:string, type:string}>, aggregate?:array{count?:int, average?:float}, reviews?:list<array{user_id:int, score:int, resensie:string}>} $profile The public profile data.
 	 * @return string
 	 */
 	public static function toHtml( array $profile ): string {
@@ -168,6 +170,8 @@ final class SkrywerProfiel {
 		$volgeling = isset( $profile['volgeling'] ) ? (string) $profile['volgeling'] : '';
 		$volg      = isset( $profile['volg'] ) ? (string) $profile['volg'] : '';
 		$pinned    = isset( $profile['pinned'] ) && is_array( $profile['pinned'] ) ? $profile['pinned'] : array();
+		$aggregate = isset( $profile['aggregate'] ) && is_array( $profile['aggregate'] ) ? $profile['aggregate'] : array();
+		$reviews   = isset( $profile['reviews'] ) && is_array( $profile['reviews'] ) ? $profile['reviews'] : array();
 
 		$html = '<section class="ink-skrywerprofiel">';
 
@@ -221,6 +225,58 @@ final class SkrywerProfiel {
 		$html .= '<section class="ink-skrywerprofiel__prestasies">'
 			. '<h2 class="ink-skrywerprofiel__prestasies-titel">' . esc_html__( 'Prestasies', 'ink-core' ) . '</h2>'
 			. '</section>';
+
+		// Lesergradering — reader ratings & reviews (Story 9.6). APPROVED only
+		// (public); empty/held until the moderation path (18.4) approves any.
+		$html .= self::ratingsHtml( $aggregate, $reviews );
+
+		$html .= '</section>';
+
+		return $html;
+	}
+
+	/**
+	 * The Lesergradering (reader-rating) section. Pure — escaping only.
+	 *
+	 * Renders the approved aggregate + approved reviews; an empty "nog geen
+	 * oordele" state when none are approved. Public = approved only — a held
+	 * review is never shown here.
+	 *
+	 * @param array{count?:int, average?:float}                    $aggregate The approved aggregate.
+	 * @param list<array{user_id:int, score:int, resensie:string}> $reviews   The approved reviews.
+	 * @return string
+	 */
+	private static function ratingsHtml( array $aggregate, array $reviews ): string {
+		$count = isset( $aggregate['count'] ) ? (int) $aggregate['count'] : 0;
+
+		$html = '<section class="ink-skrywerprofiel__lesergradering">'
+			. '<h2 class="ink-skrywerprofiel__lesergradering-titel">' . esc_html__( 'Lesergradering', 'ink-core' ) . '</h2>';
+
+		if ( $count <= 0 ) {
+			$html .= '<p class="ink-skrywerprofiel__lesergradering-leeg">' . esc_html__( 'Nog geen oordele nie.', 'ink-core' ) . '</p></section>';
+
+			return $html;
+		}
+
+		$average = isset( $aggregate['average'] ) ? (float) $aggregate['average'] : 0.0;
+
+		$html .= '<p class="ink-skrywerprofiel__lesergradering-gem">'
+			. esc_html( number_format_i18n( $average, 1 ) ) . ' &middot; '
+			. esc_html( Api::leseroordeelLabel( $count ) )
+			. '</p>';
+
+		if ( array() !== $reviews ) {
+			$html .= '<ul class="ink-skrywerprofiel__oordele">';
+
+			foreach ( $reviews as $review ) {
+				$html .= '<li class="ink-skrywerprofiel__oordeel">'
+					. '<span class="ink-skrywerprofiel__oordeel-ster">' . esc_html( (string) (int) $review['score'] ) . '</span>'
+					. '<p class="ink-skrywerprofiel__oordeel-teks">' . esc_html( (string) $review['resensie'] ) . '</p>'
+					. '</li>';
+			}
+
+			$html .= '</ul>';
+		}
 
 		$html .= '</section>';
 

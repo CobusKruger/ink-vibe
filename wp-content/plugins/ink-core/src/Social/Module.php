@@ -56,6 +56,13 @@ class Module implements ModuleContract {
 		// Story 9.5: pinned / selected works — REST write path + curation block.
 		( new PinnedWorksController() )->register();
 		( new PinnedWorksManager() )->register();
+
+		// Story 9.6: reader ratings & reviews — REST write path + form block
+		// (the public Lesergradering display lives on the Skrywerprofiel block;
+		// the ink_ratings table is registered with the Kernel Schema in the
+		// bootstrap). Reviews are held for moderation (18.4).
+		( new RatingController() )->register();
+		( new RatingForm() )->register();
 	}
 
 	/**

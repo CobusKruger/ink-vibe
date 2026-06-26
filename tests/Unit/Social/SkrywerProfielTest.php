@@ -25,6 +25,8 @@ beforeEach( function (): void {
 	Functions\when( 'esc_html__' )->returnArg( 1 );
 	Functions\when( 'esc_attr' )->returnArg( 1 );
 	Functions\when( 'esc_url' )->returnArg( 1 );
+	Functions\when( 'number_format_i18n' )->alias( static fn ( $n, $d = 0 ): string => number_format( (float) $n, (int) $d ) );
+	Functions\when( '_n' )->alias( static fn ( string $s, string $p, int $n ): string => 1 === $n ? $s : $p );
 } );
 
 afterEach( function (): void {
@@ -91,6 +93,46 @@ test( 'toHtml renders no pinned-works heading when there are no pins', function 
 	);
 
 	expect( $html )->not->toContain( 'ink-skrywerprofiel__vasgespel-titel' );
+} );
+
+test( 'toHtml renders the Lesergradering aggregate + approved reviews when present', function (): void {
+	$html = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => '',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+			'aggregate' => array( 'count' => 2, 'average' => 4.5 ),
+			'reviews'   => array(
+				array( 'user_id' => 7, 'score' => 5, 'resensie' => 'Pragtig geskryf.' ),
+			),
+		)
+	);
+
+	expect( $html )->toContain( 'ink-skrywerprofiel__lesergradering' );
+	expect( $html )->toContain( '4.5' );
+	expect( $html )->toContain( 'leseroordele' ); // plural count label
+	expect( $html )->toContain( 'Pragtig geskryf.' );
+} );
+
+test( 'toHtml renders the empty Lesergradering state when nothing is approved (held pre-18.4)', function (): void {
+	$html = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => '',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+			'aggregate' => array( 'count' => 0, 'average' => 0.0 ),
+			'reviews'   => array(),
+		)
+	);
+
+	expect( $html )->toContain( 'ink-skrywerprofiel__lesergradering-leeg' );
+	expect( $html )->not->toContain( 'ink-skrywerprofiel__oordele' );
 } );
 
 test( 'the PUBLIC card renders NO private surfaces (no read counts, no wins-needed)', function (): void {

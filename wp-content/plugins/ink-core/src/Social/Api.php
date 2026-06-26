@@ -84,4 +84,48 @@ final class Api {
 	public static function pinnedWorksFor( int $user_id ): array {
 		return PinnedWorks::forUser( $user_id );
 	}
+
+	/**
+	 * The PUBLIC reader-rating aggregate for a writer (approved only, Story 9.6).
+	 *
+	 * @param int $skrywer_id The rated writer.
+	 * @return array{count:int, average:float}
+	 */
+	public static function ratingAggregateFor( int $skrywer_id ): array {
+		return RatingStore::aggregate( $skrywer_id );
+	}
+
+	/**
+	 * The PUBLIC approved written reviews for a writer (Story 9.6).
+	 *
+	 * @param int $skrywer_id The rated writer.
+	 * @return list<array{user_id:int, score:int, resensie:string}>
+	 */
+	public static function approvedReviewsFor( int $skrywer_id ): array {
+		return RatingStore::approvedReviews( $skrywer_id );
+	}
+
+	/**
+	 * The verb-less leseroordeel-count label (e.g. "12 leseroordele").
+	 *
+	 * @param int $n The (approved) review count.
+	 * @return string
+	 */
+	public static function leseroordeelLabel( int $n ): string {
+		/* translators: %s: the number of leseroordele (reader reviews). */
+		$format = _n( '%s leseroordeel', '%s leseroordele', $n, 'ink-core' );
+
+		return sprintf( $format, number_format_i18n( $n ) );
+	}
+
+	/**
+	 * Whether a lid has already rated a writer (Story 9.6).
+	 *
+	 * @param int $user_id    The rater.
+	 * @param int $skrywer_id The rated writer.
+	 * @return bool
+	 */
+	public static function hasRated( int $user_id, int $skrywer_id ): bool {
+		return RatingStore::hasRated( $user_id, $skrywer_id );
+	}
 }
