@@ -137,7 +137,7 @@ development_status:
   5-8-automatic-promotion-engine: done  # code review 2026-06-26 (Group B) — terminal-grade no-accumulate patch applied
   5-9-my-profiel-wins-needed-subtext: done  # code review 2026-06-26 (Group C) — clean, 1 defer
   5-10-promotion-congratulation-email: done  # code review 2026-06-26 (Group C) — clean, 2 defers
-  epic-5-retrospective: optional
+  epic-5-retrospective: done  # completed 2026-06-26 (epic-5-retro-2026-06-26.md) — run after the 4-group code review; 4 actions (cross-story durability pass, is_scalar helper [Epic 2 #2, now owned], non-vacuous guardrail-test rule, Epic 6 copy-gate prereq); no epic update required
 
   # Epic 6: Submission workflow (custom)
   epic-6: backlog
