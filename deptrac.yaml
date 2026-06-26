@@ -98,6 +98,13 @@ deptrac:
             # cross-module dependency on the slug registry — the documented
             # "extend a module's allowlist as real usage appears" path.
             - Content
+            # Story 6.8: the publish gate calls `Ink\Entitlement\Api::can_submit()`
+            # + `::statusMessage()` (AD-2/FR-19) — THE conflation rule's enforcement
+            # point. A real, non-circular cross-module Api-facade dependency
+            # (Entitlement depends only on Kernel/Notifications, never back on
+            # Submission). The PERMANENT Entitlement <-> Tiers prohibition is
+            # untouched — Submission gates on lidmaatskap, NEVER on Ink\Tiers.
+            - Entitlement
         Engagement:
             - Kernel
         Social:

@@ -302,6 +302,26 @@ if ( ! function_exists( 'ink_foundation_skryf_success' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ink_foundation_skryf_denial' ) ) {
+	/**
+	 * The Afrikaans publish-denial message for the Skryf gate (Story 6.8).
+	 *
+	 * Presentation glue: a read-through to {@see \Ink\Submission\Api::denialMessage()}
+	 * (the Entitlement 4.7 access-denied copy) so the pattern can show the denial
+	 * after a non-entitled plaas, without any gate logic in the theme.
+	 * `class_exists`-guarded; empty string when `ink-core` is inactive.
+	 *
+	 * @return string The denial message, or ''.
+	 */
+	function ink_foundation_skryf_denial(): string {
+		if ( ! class_exists( 'Ink\\Submission\\Api' ) ) {
+			return '';
+		}
+
+		return \Ink\Submission\Api::denialMessage();
+	}
+}
+
 if ( ! function_exists( 'ink_foundation_membership_plans' ) ) {
 	/**
 	 * The lidmaatskap plan rows for the Lidmaatskap page pattern (Story 4.4, FR-7).

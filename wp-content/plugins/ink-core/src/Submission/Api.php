@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ink\Submission;
 
+use Ink\Entitlement\Api as EntitlementApi;
+use Ink\Entitlement\MembershipStatus;
 use Ink\I18n\Terms;
 
 defined( 'ABSPATH' ) || exit;
@@ -100,5 +102,19 @@ final class Api {
 			'type_label' => Terms::label( $type ),
 			'permalink'  => (string) get_permalink( $post_id ),
 		);
+	}
+
+	/**
+	 * The Afrikaans publish-denial message (Story 6.8, FR-19).
+	 *
+	 * Sourced from the Entitlement facade's 4.7 `status_access_denied` message
+	 * ("Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies.") — a single
+	 * source, never re-authored here. Shown with a link to the lidmaatskap plans
+	 * when a non-entitled plaas is denied (the bydrae is preserved as a konsep).
+	 *
+	 * @return string The access-denied message.
+	 */
+	public static function denialMessage(): string {
+		return EntitlementApi::statusMessage( MembershipStatus::AccessDenied );
 	}
 }

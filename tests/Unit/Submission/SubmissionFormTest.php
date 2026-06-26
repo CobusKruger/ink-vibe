@@ -43,6 +43,12 @@ function ink_skryf_form(): SubmissionForm {
 		/** @var list<string> */
 		public array $redirected = array();
 
+		public bool $canPublishReturn = true;
+
+		protected function canPublish( int $user_id ): bool {
+			return $this->canPublishReturn;
+		}
+
 		protected function formUrl( string $notice = '' ): string {
 			return '' === $notice ? '/skryf/' : '/skryf/?ink_skryf=' . $notice;
 		}
@@ -210,6 +216,47 @@ test( 'handlePost publishes and redirects to the success screen on plaas', funct
 	$form->handlePost();
 
 	expect( $form->redirected )->toBe( array( '/skryf/?ink_skryf=geplaas&id=123' ) );
+} );
+
+/**
+ * THE conflation rule (Story 6.8): a non-entitled plaas is DENIED — the bydrae is
+ * preserved as a konsep (draft, NOT published) and the writer is sent to the
+ * denial state. The gate keys on entitlement only; the writer Gradering is never
+ * consulted, so a lapsed Goud writer (canPublish=false) is denied just the same.
+ */
+test( 'handlePost denies a non-entitled plaas, preserving the bydrae as a draft', function (): void {
+	$_POST = array(
+		SubmissionForm::NONCE_NAME   => 'nonce123',
+		SubmissionForm::FIELD_TYPE   => 'gedig',
+		SubmissionForm::FIELD_TITLE  => 'My Gedig',
+		SubmissionForm::FIELD_BODY   => 'Reël een',
+		SubmissionForm::INTENT_FIELD => 'plaas',
+	);
+
+	Functions\when( 'get_current_user_id' )->justReturn( 7 );
+	Functions\when( 'wp_unslash' )->returnArg( 1 );
+	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+	Functions\when( 'sanitize_key' )->returnArg( 1 );
+	Functions\when( 'wp_kses' )->returnArg( 1 );
+	Functions\when( 'wp_verify_nonce' )->justReturn( 1 );
+	Functions\when( 'is_wp_error' )->alias( static fn( $thing ): bool => $thing instanceof \WP_Error );
+
+	// Despite the plaas intent, the insert must be a DRAFT (text preserved).
+	Functions\expect( 'wp_insert_post' )
+		->once()
+		->with(
+			\Mockery::on(
+				static fn( $arr ): bool => is_array( $arr ) && 'draft' === $arr['post_status']
+			),
+			true
+		)
+		->andReturn( 123 );
+
+	$form                   = ink_skryf_form();
+	$form->canPublishReturn = false; // no active lidmaatskap (e.g. lapsed Goud)
+	$form->handlePost();
+
+	expect( $form->redirected )->toBe( array( '/skryf/?ink_skryf=geen-toegang' ) );
 } );
 
 /**

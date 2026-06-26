@@ -76,6 +76,11 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	<p class="has-md-font-size"><?php echo esc_html__( 'Meld aan om werk te plaas.', 'ink-foundation' ); ?> <a href="/meld-aan"><?php echo esc_html__( 'Meld aan', 'ink-foundation' ); ?></a></p>
 	<!-- /wp:paragraph -->
 	<?php else : ?>
+		<?php if ( 'geen-toegang' === $ink_skryf_notice && function_exists( 'ink_foundation_skryf_denial' ) ) : ?>
+	<!-- wp:paragraph {"className":"ink-skryf-denial"} -->
+	<p class="ink-skryf-denial"><?php echo esc_html( ink_foundation_skryf_denial() ); ?> <a href="/lidmaatskap"><?php echo esc_html__( 'Sien aansluitingsopsies', 'ink-foundation' ); ?></a></p>
+	<!-- /wp:paragraph -->
+		<?php endif; ?>
 	<!-- wp:html -->
 	<form class="ink-skryf-form" method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 		<fieldset class="ink-skryf-types">

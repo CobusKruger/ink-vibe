@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Submission;
 
 use Ink\Content\PostTypes;
+use Ink\Entitlement\Api as EntitlementApi;
 use WP_Error;
 
 defined( 'ABSPATH' ) || exit;
@@ -214,6 +215,17 @@ class SubmissionForm {
 
 		$status = self::statusForIntent( $intent );
 
+		// THE conflation rule (Story 6.8, FR-19): publishing tracks lidmaatskap.
+		// A plaas is gated on active entitlement AT THIS MOMENT — never on the
+		// writer Gradering. A non-entitled plaas is downgraded to a konsep so the
+		// writer's text is preserved, and the denial is shown.
+		$denied = false;
+
+		if ( 'publish' === $status && ! $this->canPublish( $user_id ) ) {
+			$status = 'draft';
+			$denied = true;
+		}
+
 		$postarr = $this->buildPost( $type, $title, $body, $user_id, $status );
 
 		if ( is_wp_error( $postarr ) ) {
@@ -232,12 +244,33 @@ class SubmissionForm {
 		$this->attachMedia( (int) $post_id );
 		$this->linkChallenges( (int) $post_id );
 
+		if ( $denied ) {
+			// Text preserved as a konsep; show the Afrikaans denial + plans link.
+			$this->redirect( $this->formUrl( 'geen-toegang' ) );
+			return;
+		}
+
 		if ( 'publish' === $status ) {
 			$this->redirect( $this->successUrl( (int) $post_id ) );
 			return;
 		}
 
 		$this->redirect( $this->formUrl( 'konsep-gestoor' ) );
+	}
+
+	/**
+	 * Whether the user may publish RIGHT NOW — THE conflation rule (Story 6.8).
+	 *
+	 * Delegates to the Entitlement facade: active lidmaatskap evaluated against the
+	 * SAST end-of-date authority (AD-2), NOT a status flag. It NEVER reads the
+	 * writer Gradering (`ink_writer_tier`) — a lapsed Goud writer is denied, because
+	 * Gradering does not grant publishing. Overridable seam for tests.
+	 *
+	 * @param int $user_id The submitting skrywer.
+	 * @return bool True only when the user has active lidmaatskap entitlement.
+	 */
+	protected function canPublish( int $user_id ): bool {
+		return EntitlementApi::can_submit( $user_id );
 	}
 
 	/**

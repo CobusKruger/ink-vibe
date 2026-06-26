@@ -105,3 +105,10 @@ test( 'successModel is null unless a published bydrae', function (): void {
 	Functions\when( 'get_post_status' )->justReturn( 'publish' );
 	expect( Api::successModel( 123 ) )->toBeNull(); // not a bydrae
 } );
+
+/**
+ * denialMessage surfaces the Entitlement access-denied copy (Story 6.8).
+ */
+test( 'denialMessage returns the Entitlement access-denied message', function (): void {
+	expect( Api::denialMessage() )->toBeString()->not->toBe( '' );
+} );
