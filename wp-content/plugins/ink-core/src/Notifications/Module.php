@@ -54,5 +54,10 @@ final class Module implements ModuleContract {
 		// 4.8-anchored lidmaatskap-expiry reminder through Kennisgewings::add()
 		// (guarded — a clean no-op without BuddyPress).
 		( new Events() )->register();
+
+		// Story 9.11 (R7): the receipt trigger — an encouraging kennisgewing when
+		// a work crosses a read-count milestone. Inert until the 18.9 analytics +
+		// 9.12 fire `ink/ontvangs` AND the R7 form-letter list is authored.
+		( new ReceiptNotification() )->register();
 	}
 }
