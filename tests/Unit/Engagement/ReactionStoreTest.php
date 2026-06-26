@@ -57,7 +57,7 @@ test( 'schemaSql is dbDelta-compatible, enforces one-per-user-per-line, and has 
 	}
 } );
 
-test( 'set upserts one row per user per line (ON DUPLICATE KEY UPDATE)', function (): void {
+test( 'set upserts one row per user per line (ON DUPLICATE KEY UPDATE) and syncs the total', function (): void {
 	Functions\expect( 'current_time' )->once()->with( 'mysql', true )->andReturn( '2026-06-26 10:00:00' );
 
 	$GLOBALS['wpdb']->shouldReceive( 'prepare' )
@@ -74,10 +74,19 @@ test( 'set upserts one row per user per line (ON DUPLICATE KEY UPDATE)', functio
 
 	$GLOBALS['wpdb']->shouldReceive( 'query' )->once()->with( 'PREPARED' )->andReturn( 1 );
 
+	// syncTotal() runs after the write: aggregate count → denormalized post-meta.
+	$GLOBALS['wpdb']->shouldReceive( 'prepare' )
+		->with( Mockery::pattern( '/SELECT reaction, COUNT\(\*\) AS total/' ), 42 )
+		->andReturn( 'COUNT_PREPARED' );
+	$GLOBALS['wpdb']->shouldReceive( 'get_results' )->with( 'COUNT_PREPARED' )->andReturn(
+		array( (object) array( 'reaction' => 'hartjie', 'total' => '2' ) )
+	);
+	Functions\expect( 'update_post_meta' )->once()->with( 42, ReactionStore::TOTAL_META_KEY, 2 );
+
 	expect( ReactionStore::set( 42, 3, 7, Reaction::Hartjie ) )->toBeTrue();
 } );
 
-test( 'remove deletes the member row for that line', function (): void {
+test( 'remove deletes the member row for that line and syncs the total', function (): void {
 	$GLOBALS['wpdb']->shouldReceive( 'delete' )
 		->once()
 		->with(
@@ -91,7 +100,33 @@ test( 'remove deletes the member row for that line', function (): void {
 		)
 		->andReturn( 1 );
 
+	// syncTotal() re-counts after the delete (now zero rows → total 0).
+	$GLOBALS['wpdb']->shouldReceive( 'prepare' )
+		->with( Mockery::pattern( '/SELECT reaction, COUNT\(\*\) AS total/' ), 42 )
+		->andReturn( 'COUNT_PREPARED' );
+	$GLOBALS['wpdb']->shouldReceive( 'get_results' )->with( 'COUNT_PREPARED' )->andReturn( null );
+	Functions\expect( 'update_post_meta' )->once()->with( 42, ReactionStore::TOTAL_META_KEY, 0 );
+
 	expect( ReactionStore::remove( 42, 3, 7 ) )->toBeTrue();
+} );
+
+test( 'syncTotal sums every reaction type into the denormalized post-meta and returns it', function (): void {
+	$GLOBALS['wpdb']->shouldReceive( 'prepare' )
+		->with( Mockery::pattern( '/SELECT reaction, COUNT\(\*\) AS total/' ), 42 )
+		->andReturn( 'COUNT_PREPARED' );
+	$GLOBALS['wpdb']->shouldReceive( 'get_results' )->with( 'COUNT_PREPARED' )->andReturn(
+		array(
+			(object) array( 'reaction' => 'hartjie', 'total' => '342' ),
+			(object) array( 'reaction' => 'wow', 'total' => '5' ),
+		)
+	);
+	Functions\expect( 'update_post_meta' )->once()->with( 42, 'ink_reaksie_telling', 347 );
+
+	expect( ReactionStore::syncTotal( 42 ) )->toBe( 347 );
+} );
+
+test( 'syncTotal is a no-op for a non-positive post id', function (): void {
+	expect( ReactionStore::syncTotal( 0 ) )->toBe( 0 );
 } );
 
 test( 'userReaction maps a stored value to the enum, null when none', function (): void {

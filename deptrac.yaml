@@ -121,6 +121,12 @@ deptrac:
             # Engagement->Content (7.6) edges. No Entitlement/Tiers edge (discovery
             # of published work is open; conflation-clean).
             - Content
+            # Story 8.2: the "Mees geliefd" sort + the trending recompute read the
+            # DENORMALIZED reaction-total meta-key contract via the Engagement Api
+            # facade (`Api::reactionTotalMetaKey()`). A real, non-circular cross-
+            # module Api-facade dependency (Engagement depends only on Kernel/Content,
+            # never back on Discovery). No Entitlement/Tiers edge.
+            - Engagement
         Challenges:
             - Kernel
         Sponsors:

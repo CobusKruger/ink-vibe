@@ -35,5 +35,6 @@ final class Module implements ModuleContract {
 	 */
 	public function register(): void {
 		( new WorksArchive() )->register();
+		( new TrendingScore() )->register();
 	}
 }

@@ -39,6 +39,16 @@ final class ReactionStore {
 	public const TABLE = 'ink_line_reactions';
 
 	/**
+	 * Post-meta key holding the DENORMALIZED total reaction count for a work.
+	 *
+	 * The single source for the "Mees geliefd" discovery sort (AD-7 — a JOINed
+	 * COUNT against this table is uncacheable, so the total is denormalized into
+	 * indexed post-meta and maintained transactionally on every reaction write).
+	 * Cross-module consumers read it via {@see Api::reactionTotalMetaKey()}.
+	 */
+	public const TOTAL_META_KEY = 'ink_reaksie_telling';
+
+	/**
 	 * The fully-qualified (prefixed) table name.
 	 */
 	public static function tableName(): string {
@@ -108,6 +118,8 @@ final class ReactionStore {
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
+		self::syncTotal( $post_id );
+
 		return false !== $result;
 	}
 
@@ -135,7 +147,32 @@ final class ReactionStore {
 		);
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
+		self::syncTotal( $post_id );
+
 		return ! empty( $deleted );
+	}
+
+	/**
+	 * Recompute + persist the denormalized total reaction count for a work.
+	 *
+	 * Called transactionally after every reaction write ({@see self::set()} /
+	 * {@see self::remove()}) so the "Mees geliefd" discovery sort can `orderby`
+	 * indexed post-meta instead of a live JOINed COUNT (AD-7). Recompute-on-write
+	 * (rather than an increment) stays correct under the UNIQUE-key upsert/toggle.
+	 *
+	 * @param int $post_id The work.
+	 * @return int The new total (sum across all reaction types / lines).
+	 */
+	public static function syncTotal( int $post_id ): int {
+		if ( $post_id <= 0 ) {
+			return 0;
+		}
+
+		$total = array_sum( self::countsForPost( $post_id ) );
+
+		update_post_meta( $post_id, self::TOTAL_META_KEY, $total );
+
+		return $total;
 	}
 
 	/**
