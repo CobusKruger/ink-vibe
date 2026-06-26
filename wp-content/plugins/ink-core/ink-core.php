@@ -84,5 +84,6 @@ add_action(
 		Kernel\Plugin::instance()->addModule( 'tiers', new Tiers\Module() );
 			Kernel\Plugin::instance()->addModule( 'submission', new Submission\Module() );
 		Kernel\Plugin::instance()->addModule( 'discovery', new Discovery\Module() );
+		Kernel\Plugin::instance()->addModule( 'social', new Social\Module() );
 	}
 );
