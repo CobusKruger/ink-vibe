@@ -19,25 +19,7 @@ declare(strict_types=1);
 
 namespace Ink\Tests\Unit\Submission;
 
-/**
- * Return a file's PHP source with all comments / doc-comments stripped.
- */
-function ink_submission_code_only( string $file ): string {
-	$code = '';
-
-	foreach ( token_get_all( (string) file_get_contents( $file ) ) as $token ) {
-		if ( is_array( $token ) ) {
-			if ( T_COMMENT === $token[0] || T_DOC_COMMENT === $token[0] ) {
-				continue;
-			}
-			$code .= $token[1];
-		} else {
-			$code .= $token;
-		}
-	}
-
-	return $code;
-}
+use Ink\Tests\Support\CodeScan;
 
 test( 'no Submission CODE references Ink\\Tiers or ink_writer_tier', function (): void {
 	$dir   = dirname( __DIR__, 3 ) . '/wp-content/plugins/ink-core/src/Submission';
@@ -50,7 +32,7 @@ test( 'no Submission CODE references Ink\\Tiers or ink_writer_tier', function ()
 	$scanned_code = false;
 
 	foreach ( (array) $files as $file ) {
-		$code = ink_submission_code_only( $file );
+		$code = CodeScan::withoutComments( $file );
 
 		// Prove comment-stripping left real code (every module file has a class).
 		if ( str_contains( $code, 'class ' ) ) {
