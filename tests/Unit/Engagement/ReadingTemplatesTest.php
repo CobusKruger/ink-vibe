@@ -105,6 +105,12 @@ test( 'the gedig reading template exists and renders the poem via the ink/gedig-
 	}
 } );
 
+test( 'every reading pattern embeds the Gemeenskapsreaksies block (the only feedback path)', function () use ( $ink_read ): void {
+	foreach ( array( 'reading-storie.php', 'reading-artikel.php', 'reading-gedig.php' ) as $pattern ) {
+		expect( $ink_read( 'patterns/' . $pattern ) )->toContain( 'wp:ink/gemeenskapsreaksies' );
+	}
+} );
+
 test( 'reading-storie and reading-artikel eyebrows source the type label from the terminology bridge', function () use ( $ink_read ): void {
 	// Controlled-vocabulary labels come from the ink-core terminology registry via
 	// the theme bridge — never inlined as bare literals (project-context Gate D).

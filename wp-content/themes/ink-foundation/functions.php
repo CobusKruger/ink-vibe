@@ -128,6 +128,39 @@ function ink_foundation_enqueue_line_reactions(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_line_reactions' );
 
 /**
+ * Enqueue the Gemeenskapsreaksie form client on a single work (Story 7.4, FR-27).
+ *
+ * The ink/gemeenskapsreaksies block renders the typed response form server-side;
+ * this thin client posts it through the `ink/v1/gemeenskapsreaksie` REST endpoint
+ * (the only feedback path). Loaded on the reading surfaces (gedig/storie/artikel).
+ */
+function ink_foundation_enqueue_gemeenskapsreaksie(): void {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'gedig', 'storie', 'artikel' ) ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-gemeenskapsreaksie',
+		get_theme_file_uri( 'assets/js/gemeenskapsreaksie.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+
+	wp_localize_script(
+		'ink-foundation-gemeenskapsreaksie',
+		'inkGemeenskapsreaksie',
+		array(
+			'restUrl' => esc_url_raw( rest_url( 'ink/v1/gemeenskapsreaksie' ) ),
+			'nonce'   => wp_create_nonce( 'wp_rest' ),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_gemeenskapsreaksie' );
+
+/**
  * Register the core block style variations (card / button / emphasis).
  *
  * These are token-driven presentation treatments applied to any block instance

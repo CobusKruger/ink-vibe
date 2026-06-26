@@ -55,5 +55,11 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 		<!-- wp:ink/gedig-body /-->
 	</div>
 	<!-- /wp:group -->
+
+	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"margin":{"top":"var:preset|spacing|s-48"}}},"layout":{"type":"constrained","contentSize":"768px"}} -->
+	<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--s-48)">
+		<!-- wp:ink/gemeenskapsreaksies /-->
+	</div>
+	<!-- /wp:group -->
 </section>
 <!-- /wp:group -->

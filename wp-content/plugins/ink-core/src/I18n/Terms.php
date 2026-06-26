@@ -60,11 +60,11 @@ final class Terms {
 	private static function map(): array {
 		return array(
 			// Core people / access concepts (afrikaans-terms.md Deel 1).
-			'lid'                      => __( 'Lid', 'ink-core' ),
-			'skrywer'                  => __( 'Skrywer', 'ink-core' ),
-			'membership'               => __( 'Lidmaatskap', 'ink-core' ),
-			'betaalde_lid'             => __( 'Betaalde lid', 'ink-core' ),
-			'gratis_lid'               => __( 'Gratis lid', 'ink-core' ),
+			'lid'                       => __( 'Lid', 'ink-core' ),
+			'skrywer'                   => __( 'Skrywer', 'ink-core' ),
+			'membership'                => __( 'Lidmaatskap', 'ink-core' ),
+			'betaalde_lid'              => __( 'Betaalde lid', 'ink-core' ),
+			'gratis_lid'                => __( 'Gratis lid', 'ink-core' ),
 
 			// Lidmaatskap plans (Story 4.1 — the three fixed-term aansluitingsopsies).
 			// The plan noun + the fixed term-length display labels. The PRICE
@@ -72,11 +72,11 @@ final class Terms {
 			// never a label here; only the term LENGTH is INK-held (the fixed value
 			// set, afrikaans-terms.md line 44–45). The member-facing plan PROSE
 			// (descriptions / CTA) is human-authored in ui-copy-translations.md.
-			'membership_plan'          => __( 'Aansluitingsopsie', 'ink-core' ),
-			'membership_plan_plural'   => __( 'Aansluitingsopsies', 'ink-core' ),
-			'term_1_month'             => __( '1 maand', 'ink-core' ),
-			'term_6_months'            => __( '6 maande', 'ink-core' ),
-			'term_12_months'           => __( '12 maande', 'ink-core' ),
+			'membership_plan'           => __( 'Aansluitingsopsie', 'ink-core' ),
+			'membership_plan_plural'    => __( 'Aansluitingsopsies', 'ink-core' ),
+			'term_1_month'              => __( '1 maand', 'ink-core' ),
+			'term_6_months'             => __( '6 maande', 'ink-core' ),
+			'term_12_months'            => __( '12 maande', 'ink-core' ),
 
 			// Account-approval backstop (R6, Story 3.6 — OFF by default). These
 			// labels surface ONLY when a redakteur enables the optional approval
@@ -85,10 +85,10 @@ final class Terms {
 			// "Rekening-goedkeuring" (redakteur-ratified). The full member-facing
 			// PROSE (notice sentences, result messages, email bodies) is
 			// human-authored in ui-copy-translations.md.
-			'account_pending'          => __( 'Wag vir goedkeuring', 'ink-core' ),
-			'account_approve'          => __( 'Keur goed', 'ink-core' ),
-			'account_reject'           => __( 'Verwerp', 'ink-core' ),
-			'account_approval_queue'   => __( 'Rekening-goedkeuringstou', 'ink-core' ),
+			'account_pending'           => __( 'Wag vir goedkeuring', 'ink-core' ),
+			'account_approve'           => __( 'Keur goed', 'ink-core' ),
+			'account_reject'            => __( 'Verwerp', 'ink-core' ),
+			'account_approval_queue'    => __( 'Rekening-goedkeuringstou', 'ink-core' ),
 
 			// Lidmaatskap status messages (Story 4.7, FR-9 — the four lid-family
 			// access-state messages). These are the MACHINE PROJECTION of
@@ -106,56 +106,64 @@ final class Terms {
 			// status surface (Story 9.4). They are full SENTENCES (not single-word
 			// labels), but they remain controlled-vocabulary lid-family copy, so the
 			// single-source registry rule applies the same way.
-			'status_active'            => __( 'Jou lidmaatskap is aktief. Jy kan nou werk plaas.', 'ink-core' ),
-			'status_expired'           => __( 'Jou lidmaatskap het verval. Hernieu om werk te plaas.', 'ink-core' ),
-			'status_access_denied'     => __( 'Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies.', 'ink-core' ),
-			'status_payment_failed'    => __( 'Jou betaling het misluk of is gekanselleer.', 'ink-core' ),
+			'status_active'             => __( 'Jou lidmaatskap is aktief. Jy kan nou werk plaas.', 'ink-core' ),
+			'status_expired'            => __( 'Jou lidmaatskap het verval. Hernieu om werk te plaas.', 'ink-core' ),
+			'status_access_denied'      => __( 'Slegs betaalde lede kan werk plaas. Sien aansluitingsopsies.', 'ink-core' ),
+			'status_payment_failed'     => __( 'Jou betaling het misluk of is gekanselleer.', 'ink-core' ),
 
 			// Writer Gradering (the progression system + grades).
-			'gradering'                => __( 'Gradering', 'ink-core' ),
-			'brons'                    => __( 'Brons', 'ink-core' ),
-			'silwer'                   => __( 'Silwer', 'ink-core' ),
-			'goud'                     => __( 'Goud', 'ink-core' ),
-			'meester'                  => __( 'Meester', 'ink-core' ),
+			'gradering'                 => __( 'Gradering', 'ink-core' ),
+			'brons'                     => __( 'Brons', 'ink-core' ),
+			'silwer'                    => __( 'Silwer', 'ink-core' ),
+			'goud'                      => __( 'Goud', 'ink-core' ),
+			'meester'                   => __( 'Meester', 'ink-core' ),
 			// Competition (used by discovery/winner labels, Story 5.5). Lowercase per
 			// the glossary UI-term (a common noun, e.g. "Oktober Goud-wenner").
-			'wenner'                   => __( 'wenner', 'ink-core' ),
+			'wenner'                    => __( 'wenner', 'ink-core' ),
 
 			// Contribution (general noun + the CPTs).
-			'bydrae'                   => __( 'Bydrae', 'ink-core' ),
-			'bydrae_plural'            => __( 'Bydraes', 'ink-core' ),
-			'gedig'                    => __( 'Gedig', 'ink-core' ),
-			'gedig_plural'             => __( 'Gedigte', 'ink-core' ),
-			'storie'                   => __( 'Storie', 'ink-core' ),
-			'storie_plural'            => __( 'Stories', 'ink-core' ),
-			'artikel'                  => __( 'Artikel', 'ink-core' ),
-			'artikel_plural'           => __( 'Artikels', 'ink-core' ),
-			'skryfwerk'                => __( 'Skryfwerk', 'ink-core' ),
-			'skryfwerk_plural'         => __( 'Skrywes', 'ink-core' ),
-			'biblioteek_item'          => __( 'Biblioteekitem', 'ink-core' ),
-			'biblioteek_item_plural'   => __( 'Biblioteekitems', 'ink-core' ),
-			'opleiding_artikel'        => __( 'Hulpbronartikel', 'ink-core' ),
-			'opleiding_artikel_plural' => __( 'Hulpbronartikels', 'ink-core' ),
-			'uitdaging'                => __( 'Uitdaging', 'ink-core' ),
-			'uitdaging_plural'         => __( 'Uitdagings', 'ink-core' ),
-			'inkpols_uitgawe'          => __( 'Uitgawe', 'ink-core' ),
-			'inkpols_uitgawe_plural'   => __( 'Uitgawes', 'ink-core' ),
-			'borg'                     => __( 'Borg', 'ink-core' ),
-			'borg_plural'              => __( 'Borge', 'ink-core' ),
+			'bydrae'                    => __( 'Bydrae', 'ink-core' ),
+			'bydrae_plural'             => __( 'Bydraes', 'ink-core' ),
+			'gedig'                     => __( 'Gedig', 'ink-core' ),
+			'gedig_plural'              => __( 'Gedigte', 'ink-core' ),
+			'storie'                    => __( 'Storie', 'ink-core' ),
+			'storie_plural'             => __( 'Stories', 'ink-core' ),
+			'artikel'                   => __( 'Artikel', 'ink-core' ),
+			'artikel_plural'            => __( 'Artikels', 'ink-core' ),
+			'skryfwerk'                 => __( 'Skryfwerk', 'ink-core' ),
+			'skryfwerk_plural'          => __( 'Skrywes', 'ink-core' ),
+			'biblioteek_item'           => __( 'Biblioteekitem', 'ink-core' ),
+			'biblioteek_item_plural'    => __( 'Biblioteekitems', 'ink-core' ),
+			'opleiding_artikel'         => __( 'Hulpbronartikel', 'ink-core' ),
+			'opleiding_artikel_plural'  => __( 'Hulpbronartikels', 'ink-core' ),
+			'uitdaging'                 => __( 'Uitdaging', 'ink-core' ),
+			'uitdaging_plural'          => __( 'Uitdagings', 'ink-core' ),
+			'inkpols_uitgawe'           => __( 'Uitgawe', 'ink-core' ),
+			'inkpols_uitgawe_plural'    => __( 'Uitgawes', 'ink-core' ),
+			'borg'                      => __( 'Borg', 'ink-core' ),
+			'borg_plural'               => __( 'Borge', 'ink-core' ),
+
+			// Engagement — structured community responses (Story 7.4, glossary line 157).
+			'gemeenskapsreaksie'        => __( 'Gemeenskapsreaksie', 'ink-core' ),
+			'gemeenskapsreaksie_plural' => __( 'Gemeenskapsreaksies', 'ink-core' ),
+			'lof'                       => __( 'Lof', 'ink-core' ),
+			'insig'                     => __( 'Insig', 'ink-core' ),
+			'voorstel'                  => __( 'Voorstel', 'ink-core' ),
+			'plaas'                     => __( 'Plaas', 'ink-core' ), // Recurring authored submit verb (Skryf + Gemeenskapsreaksie).
 
 			// Sections.
-			'biblioteek'               => __( 'Biblioteek', 'ink-core' ),
-			'opleiding'                => __( 'Opleiding', 'ink-core' ),
+			'biblioteek'                => __( 'Biblioteek', 'ink-core' ),
+			'opleiding'                 => __( 'Opleiding', 'ink-core' ),
 
 			// Taxonomies (singular / plural).
-			'genre'                    => __( 'Genre', 'ink-core' ),
-			'genre_plural'             => __( 'Genres', 'ink-core' ),
-			'vaardigheid'              => __( 'Vaardigheidsarea', 'ink-core' ),
-			'vaardigheid_plural'       => __( 'Vaardigheidsareas', 'ink-core' ),
-			'uitdagingsrondte'         => __( 'Uitdagingsrondte', 'ink-core' ),
-			'uitdagingsrondte_plural'  => __( 'Uitdagingsrondtes', 'ink-core' ),
-			'ster_gradering'           => __( 'Ster gradering', 'ink-core' ),
-			'ster_gradering_plural'    => __( 'Ster graderings', 'ink-core' ),
+			'genre'                     => __( 'Genre', 'ink-core' ),
+			'genre_plural'              => __( 'Genres', 'ink-core' ),
+			'vaardigheid'               => __( 'Vaardigheidsarea', 'ink-core' ),
+			'vaardigheid_plural'        => __( 'Vaardigheidsareas', 'ink-core' ),
+			'uitdagingsrondte'          => __( 'Uitdagingsrondte', 'ink-core' ),
+			'uitdagingsrondte_plural'   => __( 'Uitdagingsrondtes', 'ink-core' ),
+			'ster_gradering'            => __( 'Ster gradering', 'ink-core' ),
+			'ster_gradering_plural'     => __( 'Ster graderings', 'ink-core' ),
 		);
 	}
 
