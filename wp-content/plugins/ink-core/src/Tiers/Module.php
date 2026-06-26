@@ -37,9 +37,11 @@ defined( 'ABSPATH' ) || exit;
 final class Module implements ModuleContract {
 
 	/**
-	 * Register this module's hooks: the staff Gradering admin UI (Story 5.2).
+	 * Register this module's hooks: the staff Gradering admin UI (Story 5.2) and
+	 * the auto-promotion congratulation email (Story 5.10).
 	 */
 	public function register(): void {
 		( new AdminProfile() )->register();
+		( new PromotionEmails() )->register();
 	}
 }

@@ -82,6 +82,14 @@ deptrac:
             - Notifications
         Tiers:
             - Kernel
+            # Story 5.10: the PromotionEmails consumer dispatches the auto-promotion
+            # congratulation email through the Notifications Api facade (AD-9). A real,
+            # non-circular cross-module Api-facade dependency (Notifications depends only
+            # on Kernel, never back on Tiers) — the documented "extend a module's
+            # allowlist as real Api-facade usage appears" path, mirroring the 4.2
+            # Entitlement -> Notifications edge. The PERMANENT Entitlement <-> Tiers
+            # prohibition is untouched.
+            - Notifications
         Submission:
             - Kernel
         Engagement:
