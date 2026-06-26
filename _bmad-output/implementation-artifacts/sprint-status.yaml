@@ -45,6 +45,8 @@ last_updated: 2026-06-25
 # 5-9 → review (create-story + dev-story; PromotionEngine::progressFor() (single-source 5/15) + Api::winsNeededSubtext() (_n() Afrikaans 'N top 3 uitslae nodig om X te bereik', glossary-approved, hidden at Goud/Meester) + theme bridge; My Profiel placement deferred to 9.4; tests 331 passed/1 skipped +6, cs/stan clean, deptrac no new edge)
 # 5-10 → review (create-story + dev-story; Tiers\PromotionEmails Notifications consumer — subscribes ink/tier_promoted, sends on auto-promotion (actor 0) to Silwer/Goud via the 1.12 store; two Afrikaans-source templates (glossary copy 'Baie geluk! Jy is na X bevorder.', toggle OFF); reuses 1.12 (no new engine); deptrac Tiers→Notifications edge ADDED (mirrors 4.2 Entitlement→Notifications); tests 338 passed/1 skipped +7, cs/stan clean, deptrac green)
 # 5-5 → review (create-story + dev-story; Tiers discovery/winner primitives — Api::usersByGrade() (get_users meta filter, no raw SQL) + Api::winnerLabel() ('Oktober Goud-wenner') + 'wenner' Terms term (glossary-first, lowercase); Ontdek/winner surfaces deferred to Epic 8/12; tests 342 passed/1 skipped, cs/stan clean, deptrac no new edge)
+# 5-6 → review (create-story + dev-story, FINAL Epic-5 story; conflation-rule guardrail TESTS — structural code-only scan (Tiers⊥Entitlement both directions + no tier-meta leak into Entitlement + sole tier writer in Tiers) + behavioural test (membership transitions never write ink_writer_tier); tests-only, NO production change (codebase already clean); tests 346 passed/1 skipped, stan clean, deptrac Entitlement⟂Tiers holds AD-8)
+# EPIC 5 COMPLETE: all 10 stories (5.1-5.10) → review via the full BMAD loop (create-story → dev-story → tests pass → commit). 270→346 unit tests (+76), zero regressions throughout. epic-5-retrospective (optional) is the formal close step.
 # epic-2 started 2026-06-21; 2-1 → review 2026-06-21
 # epic-2 retrospective completed 2026-06-22
 # epic-3 started 2026-06-22; 3-1 → done (code review) 2026-06-22; 3-3 → done 2026-06-22; 3-4 → done (research spike) 2026-06-22; 3-6 → done (code review) 2026-06-22; 3-5 → done (code review) 2026-06-22
@@ -130,7 +132,7 @@ development_status:
   5-3-promotion-log-history-graderingsgeskiedenis: review  # built before 5.2 (log substrate dependency)
   5-4-gradering-display-on-profiles: review
   5-5-gradering-in-discovery-winners: review
-  5-6-gradering-lidmaatskap-guardrails: backlog
+  5-6-gradering-lidmaatskap-guardrails: review  # built last (codifies conflation rule across 5.1-5.10)
   5-7-win-count-meta-reset-on-promotion: review  # built before 5.8 (counter dependency)
   5-8-automatic-promotion-engine: review
   5-9-my-profiel-wins-needed-subtext: review
