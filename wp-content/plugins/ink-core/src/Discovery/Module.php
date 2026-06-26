@@ -42,5 +42,6 @@ final class Module implements ModuleContract {
 		( new SearchIndex() )->register();
 		( new Search() )->register();
 		( new DiscoverySurfaces() )->register();
+		( new ReadCountSurface() )->register();
 	}
 }

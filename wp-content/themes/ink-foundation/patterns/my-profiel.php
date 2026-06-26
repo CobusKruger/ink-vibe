@@ -56,9 +56,11 @@ $ink_badge       = function_exists( 'ink_foundation_gradering_badge' )
 		</div>
 		<!-- /wp:group -->
 
-		<?php // Story 9.12 (R8): the private per-bydrae read-count surface renders into this slot. ?>
+		<?php // Story 9.12 (R8): the private per-bydrae read-count surface. ?>
 		<!-- wp:group {"className":"ink-my-profiel__leesgetalle","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-		<div class="wp-block-group ink-my-profiel__leesgetalle" data-ink-slot="leesgetalle"></div>
+		<div class="wp-block-group ink-my-profiel__leesgetalle" data-ink-slot="leesgetalle">
+			<!-- wp:ink/leesgetalle /-->
+		</div>
 		<!-- /wp:group -->
 
 		<?php // Story 9.5: pin / unpin your own works (curation). ?>

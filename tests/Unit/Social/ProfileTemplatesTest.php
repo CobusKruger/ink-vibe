@@ -41,7 +41,8 @@ test( 'the my-profiel pattern embeds the private surfaces + reused blocks', func
 	$markup = $ink_read( $ink_theme() . '/patterns/my-profiel.php' );
 
 	expect( $markup )->toContain( 'ink_foundation_gradering_wins_needed' ); // wins-needed (private)
-	expect( $markup )->toContain( 'data-ink-slot="leesgetalle"' );          // reserved read-count slot (9.12)
+	expect( $markup )->toContain( 'data-ink-slot="leesgetalle"' );          // read-count slot (9.12)
+	expect( $markup )->toContain( 'wp:ink/leesgetalle' );                    // the read-count surface (9.12, private)
 	expect( $markup )->toContain( 'wp:ink/volg-voer' );                      // following-feed (9.3)
 	expect( $markup )->toContain( 'wp:ink/leeslys' );                        // leeslys (7.7)
 	expect( $markup )->toContain( 'ink-foundation/lidmaatskap-hernu' );      // renewal section (4.5)
