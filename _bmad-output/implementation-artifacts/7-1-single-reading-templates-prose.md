@@ -4,7 +4,10 @@ baseline_commit: c2ee395
 
 # Story 7.1: Single reading templates (prose)
 
-Status: review
+Status: done
+
+<!-- Epic 7 code review (2026-06-26): clean — no findings against this story. -->
+
 
 ## Story
 

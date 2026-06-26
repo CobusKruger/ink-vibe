@@ -92,7 +92,7 @@ final class ResponseController {
 		$type    = sanitize_key( (string) $request->get_param( 'type' ) );
 		$content = sanitize_textarea_field( wp_unslash( (string) $request->get_param( 'content' ) ) );
 
-		$error = self::validate( $type, $content, self::isReadable( $post_id ) );
+		$error = self::validate( $type, $content, Readable::isBydrae( $post_id ) );
 		if ( $error instanceof WP_Error ) {
 			return $error;
 		}
@@ -129,15 +129,5 @@ final class ResponseController {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Whether a post exists and is published (a readable work).
-	 *
-	 * @param int $post_id The post.
-	 * @return bool
-	 */
-	private static function isReadable( int $post_id ): bool {
-		return $post_id > 0 && 'publish' === get_post_status( $post_id );
 	}
 }

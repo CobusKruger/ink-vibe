@@ -124,7 +124,9 @@ final class ResponseStore {
 	 *
 	 * A count of `comment_type='ink_reaksie'` only — NOT WordPress's default
 	 * `comment_count`, so the custom-type rows never inflate a displayed comment
-	 * total.
+	 * total. Counts ONLY rows carrying a valid `ink_response_type`, so the count
+	 * matches exactly what {@see self::forPost()} renders (a row without a valid
+	 * type never surfaces, and must not be counted either).
 	 *
 	 * @param int $post_id The work.
 	 * @return int
@@ -132,10 +134,17 @@ final class ResponseStore {
 	public static function countForPost( int $post_id ): int {
 		return (int) get_comments(
 			array(
-				'post_id' => $post_id,
-				'type'    => self::COMMENT_TYPE,
-				'status'  => 'approve',
-				'count'   => true,
+				'post_id'    => $post_id,
+				'type'       => self::COMMENT_TYPE,
+				'status'     => 'approve',
+				'count'      => true,
+				'meta_query' => array(
+					array(
+						'key'     => self::META_TYPE,
+						'value'   => ResponseType::values(),
+						'compare' => 'IN',
+					),
+				),
 			)
 		);
 	}

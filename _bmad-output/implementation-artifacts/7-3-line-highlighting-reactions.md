@@ -4,7 +4,12 @@ baseline_commit: 95e628c
 
 # Story 7.3: Line highlighting + reactions
 
-Status: review
+Status: done
+
+### Review Findings
+
+- [x] [Review][Patch] Write path accepted any published post — added a readable-bydrae gate (`Ink\Engagement\Readable::isBydrae`, gedig/storie/artikel only) so a crafted REST call can't react to a Page/skryfwerk/attachment. [`ReactionController.php`, `Readable.php`]
+- [x] [Review][Defer] Reaction toggle has no in-flight button disable (double-click race) — harmless (UNIQUE key prevents dup rows); client polish for the E2E pass (18.8). See deferred-work.md.
 
 ## Story
 

@@ -89,14 +89,22 @@ test( 'forPost maps typed responses and SKIPS a row with a missing/invalid type'
 	expect( $responses[0]['content'] )->toBe( 'Lof-teks' );
 } );
 
-test( 'countForPost asks for the FILTERED ink_reaksie count, not comment_count (AD-5a)', function (): void {
+test( 'countForPost asks for the FILTERED, TYPED ink_reaksie count, not comment_count (AD-5a)', function (): void {
 	Functions\expect( 'get_comments' )
 		->once()
 		->with( Mockery::on( static function ( array $args ): bool {
+			// Filtered to ink_reaksie AND only rows carrying a valid response type,
+			// so the count matches exactly what forPost() renders (review patch).
+			$has_meta = isset( $args['meta_query'][0] )
+				&& 'ink_response_type' === $args['meta_query'][0]['key']
+				&& 'IN' === $args['meta_query'][0]['compare']
+				&& array( 'lof', 'insig', 'voorstel' ) === $args['meta_query'][0]['value'];
+
 			return 42 === $args['post_id']
 				&& 'ink_reaksie' === $args['type']
 				&& 'approve' === $args['status']
-				&& true === $args['count'];
+				&& true === $args['count']
+				&& $has_meta;
 		} ) )
 		->andReturn( 5 );
 

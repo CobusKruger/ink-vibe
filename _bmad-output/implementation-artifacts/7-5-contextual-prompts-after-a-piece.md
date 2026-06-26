@@ -4,7 +4,11 @@ baseline_commit: 80b12a3
 
 # Story 7.5: Contextual prompts after a piece
 
-Status: review
+Status: done
+
+### Review Findings
+
+- [x] [Review][Defer] Prompt copy lives in the `ink-core` domain (verbatim authored, copy:scan clean) rather than a single-source registry key — copy-debt to ratify on the next copy pass. See deferred-work.md.
 
 ## Story
 

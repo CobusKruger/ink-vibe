@@ -169,16 +169,19 @@ development_status:
   # update required; Epic 7 (Reading & engagement) clear to start.
   epic-6-retrospective: done
 
-  # Epic 7: Reading & engagement
-  epic-7: in-progress
-  7-1-single-reading-templates-prose: review
-  7-2-gedig-reading-layout: review
-  7-3-line-highlighting-reactions: review
-  7-4-structured-community-responses: review
-  7-5-contextual-prompts-after-a-piece: review
-  7-6-suggested-next-reads: review
-  7-7-reading-list-leeslys: review
-  7-8-reactions-data-counts: review
+  # Epic 7: Reading & engagement — all 8 stories done; adversarial code review
+  # (Blind Hunter / Edge Case Hunter / Acceptance Auditor, 2026-06-26) applied 2
+  # patches (typed-response count alignment; readable-bydrae write-path gate via
+  # Ink\Engagement\Readable) — 0 HIGH defects. 5 items deferred (see deferred-work.md).
+  epic-7: done
+  7-1-single-reading-templates-prose: done
+  7-2-gedig-reading-layout: done
+  7-3-line-highlighting-reactions: done
+  7-4-structured-community-responses: done
+  7-5-contextual-prompts-after-a-piece: done
+  7-6-suggested-next-reads: done
+  7-7-reading-list-leeslys: done
+  7-8-reactions-data-counts: done
   epic-7-retrospective: optional
 
   # Epic 8: Discovery (Ontdek)

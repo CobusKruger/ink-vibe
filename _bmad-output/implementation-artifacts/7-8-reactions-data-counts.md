@@ -4,7 +4,11 @@ baseline_commit: 94103df
 
 # Story 7.8: Reactions data + counts
 
-Status: review
+Status: done
+
+### Review Findings
+
+- [x] [Review][Defer] `duim op` (invariant) / `wow`→`wows` count plurals are natural forms of the authored reaction terms but only `hartjie`/`hartjies` is glossary-explicit — copy-debt to ratify the forms. See deferred-work.md.
 
 ## Story
 

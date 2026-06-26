@@ -86,7 +86,7 @@ final class ReadingListController {
 	public function handleSave( WP_REST_Request $request ) {
 		$post_id = absint( $request->get_param( 'post_id' ) );
 
-		$error = self::validate( self::isReadable( $post_id ) );
+		$error = self::validate( Readable::isBydrae( $post_id ) );
 		if ( $error instanceof WP_Error ) {
 			return $error;
 		}
@@ -110,7 +110,7 @@ final class ReadingListController {
 	public function handleRemove( WP_REST_Request $request ) {
 		$post_id = absint( $request->get_param( 'post_id' ) );
 
-		$error = self::validate( self::isReadable( $post_id ) );
+		$error = self::validate( Readable::isBydrae( $post_id ) );
 		if ( $error instanceof WP_Error ) {
 			return $error;
 		}
@@ -137,15 +137,5 @@ final class ReadingListController {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Whether a post exists and is published (a readable work).
-	 *
-	 * @param int $post_id The post.
-	 * @return bool
-	 */
-	private static function isReadable( int $post_id ): bool {
-		return $post_id > 0 && 'publish' === get_post_status( $post_id );
 	}
 }

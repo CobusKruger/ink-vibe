@@ -4,7 +4,11 @@ baseline_commit: 19611e3
 
 # Story 7.2: Gedig reading layout
 
-Status: review
+Status: done
+
+### Review Findings
+
+- [x] [Review][Defer] `<br>`-delimited line breaks share one resonance anchor [`GedigBody.php`] — non-primary path (the Skryf textarea emits `\n`); splitting on `<br>` would change the physical-line-index contract 7.3 depends on. See deferred-work.md.
 
 ## Story
 

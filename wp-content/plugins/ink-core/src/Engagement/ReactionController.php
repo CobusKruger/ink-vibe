@@ -118,7 +118,7 @@ final class ReactionController {
 		$reaction = sanitize_key( (string) $request->get_param( 'reaction' ) );
 		$user_id  = get_current_user_id();
 
-		$error = self::validate( $line, $reaction, self::isReadable( $post_id ), self::bodyOf( $post_id ) );
+		$error = self::validate( $line, $reaction, Readable::isBydrae( $post_id ), self::bodyOf( $post_id ) );
 		if ( $error instanceof WP_Error ) {
 			return $error;
 		}
@@ -224,16 +224,6 @@ final class ReactionController {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Whether a post exists and is published (a readable work).
-	 *
-	 * @param int $post_id The post.
-	 * @return bool
-	 */
-	private static function isReadable( int $post_id ): bool {
-		return $post_id > 0 && 'publish' === get_post_status( $post_id );
 	}
 
 	/**

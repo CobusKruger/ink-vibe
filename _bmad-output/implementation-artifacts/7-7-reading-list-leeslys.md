@@ -4,7 +4,12 @@ baseline_commit: e1c69b7
 
 # Story 7.7: Reading list (leeslys)
 
-Status: review
+Status: done
+
+### Review Findings
+
+- [x] [Review][Patch] Write path accepted any published post — added the shared readable-bydrae gate (`Readable::isBydrae`) so only a gedig/storie/artikel can be saved/removed. [`ReadingListController.php`, `Readable.php`]
+- [x] [Review][Defer] Orphan leeslys rows for later-unpublished/deleted posts are never pruned (render filters them) — a periodic cleanup is the right home (Epic 18). See deferred-work.md.
 
 ## Story
 

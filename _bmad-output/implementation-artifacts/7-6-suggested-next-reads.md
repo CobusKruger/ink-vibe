@@ -4,7 +4,12 @@ baseline_commit: c845554
 
 # Story 7.6: Suggested next reads
 
-Status: review
+Status: done
+
+### Review Findings
+
+- [x] [Review][Defer] "Verwante stukke" heading is a bare `ink-core` literal (design-scaffold from archetype-c, not invented) rather than a `Terms` registry key — copy-debt to ratify into the glossary. See deferred-work.md.
+- [x] [Review][Dismiss] Suggestions include `ster_gradering` (star rating) as a relatedness axis — this is spec-compliant: AC #1 explicitly lists "Gradering via taxonomy" as a relatedness signal.
 
 ## Story
 

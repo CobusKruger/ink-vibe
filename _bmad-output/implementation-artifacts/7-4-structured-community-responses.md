@@ -4,7 +4,13 @@ baseline_commit: b261fd2
 
 # Story 7.4: Structured community responses
 
-Status: review
+Status: done
+
+### Review Findings
+
+- [x] [Review][Patch] Heading count could exceed the rendered list — `countForPost` now counts only `ink_reaksie` rows carrying a valid `ink_response_type` (meta_query IN the enum), matching exactly what `forPost()` renders. [`ResponseStore.php`]
+- [x] [Review][Patch] Write path accepted any published post — added the shared readable-bydrae gate (`Readable::isBydrae`) so a Gemeenskapsreaksie can only land on a gedig/storie/artikel. [`ResponseController.php`, `Readable.php`]
+- [x] [Review][Defer] Blank comment author if `get_userdata()` fails (deleted user, narrow) — cosmetic; resolve when author rendering hardens (Epic 9). See deferred-work.md.
 
 ## Story
 
