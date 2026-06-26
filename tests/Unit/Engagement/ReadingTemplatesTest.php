@@ -111,6 +111,15 @@ test( 'every reading pattern embeds the Gemeenskapsreaksies block (the only feed
 	}
 } );
 
+test( 'every reading pattern shows the contextual prompt before the response form', function () use ( $ink_read ): void {
+	foreach ( array( 'reading-storie.php', 'reading-artikel.php', 'reading-gedig.php' ) as $pattern ) {
+		$markup = $ink_read( 'patterns/' . $pattern );
+		expect( $markup )->toContain( 'wp:ink/leesprompte' );
+		// The prompt introduces the form, so it must appear before it.
+		expect( strpos( $markup, 'wp:ink/leesprompte' ) )->toBeLessThan( strpos( $markup, 'wp:ink/gemeenskapsreaksies' ) );
+	}
+} );
+
 test( 'reading-storie and reading-artikel eyebrows source the type label from the terminology bridge', function () use ( $ink_read ): void {
 	// Controlled-vocabulary labels come from the ink-core terminology registry via
 	// the theme bridge — never inlined as bare literals (project-context Gate D).
