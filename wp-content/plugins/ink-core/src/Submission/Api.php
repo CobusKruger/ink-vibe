@@ -38,7 +38,7 @@ final class Api {
 	 * show lines+words for a gedig and words-only for prose without re-defining the
 	 * rule — {@see Counters} / {@see ContentType} remain the single source.
 	 *
-	 * @return array{post_action:string, nonce_action:string, nonce_name:string, field_type:string, field_title:string, field_body:string, types:list<array{slug:string, label:string, counter_mode:string}>}
+	 * @return array{post_action:string, nonce_action:string, nonce_name:string, field_type:string, field_title:string, field_body:string, field_image:string, types:list<array{slug:string, label:string, counter_mode:string}>}
 	 */
 	public static function formModel(): array {
 		$types = array();
@@ -58,6 +58,7 @@ final class Api {
 			'field_type'   => SubmissionForm::FIELD_TYPE,
 			'field_title'  => SubmissionForm::FIELD_TITLE,
 			'field_body'   => SubmissionForm::FIELD_BODY,
+			'field_image'  => FeaturedImage::FIELD,
 			'types'        => $types,
 		);
 	}

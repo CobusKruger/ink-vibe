@@ -45,7 +45,7 @@ $ink_skryf_first_slug = isset( $ink_skryf_types[0]['slug'] ) ? (string) $ink_skr
 	<!-- /wp:paragraph -->
 <?php else : ?>
 	<!-- wp:html -->
-	<form class="ink-skryf-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+	<form class="ink-skryf-form" method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 		<fieldset class="ink-skryf-types">
 			<legend><?php echo esc_html__( 'Kies \'n tipe', 'ink-foundation' ); ?></legend>
 			<?php
@@ -79,6 +79,11 @@ $ink_skryf_first_slug = isset( $ink_skryf_types[0]['slug'] ) ? (string) $ink_skr
 			<label for="ink-skryf-body"><?php echo esc_html__( 'Jou werk', 'ink-foundation' ); ?></label>
 			<textarea id="ink-skryf-body" name="<?php echo esc_attr( $ink_skryf['field_body'] ); ?>" rows="16" placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_skryf_first_slug ] ?? '' ); ?>" required></textarea>
 			<span class="ink-skryf-counter" data-words-label="<?php echo esc_attr__( 'woorde', 'ink-foundation' ); ?>" data-lines-label="<?php echo esc_attr__( 'reëls', 'ink-foundation' ); ?>" aria-live="polite"></span>
+		</p>
+
+		<p class="ink-skryf-field">
+			<label for="ink-skryf-image"><?php echo esc_html__( 'Voorbeeld-prent (opsioneel)', 'ink-foundation' ); ?></label>
+			<input type="file" id="ink-skryf-image" name="<?php echo esc_attr( $ink_skryf['field_image'] ?? 'ink_submission_featured_image' ); ?>" accept="image/*" />
 		</p>
 
 		<?php

@@ -203,7 +203,64 @@ class SubmissionForm {
 			return;
 		}
 
+		$this->attachFeaturedImage( (int) $post_id );
+
 		$this->redirect( $this->formUrl( 'konsep-gestoor' ) );
+	}
+
+	/**
+	 * Attach an OPTIONAL featured image to the new bydrae (Story 6.4).
+	 *
+	 * Bails silently when no usable image was uploaded. Any failure (non-image,
+	 * upload error, media-stack error) is non-fatal — the bydrae keeps its text,
+	 * just without a thumbnail. The real MIME validation is `media_handle_upload`'s;
+	 * the {@see FeaturedImage} checks are a UX pre-gate so we only invoke the media
+	 * stack for a plausible image. Nonce is already verified by {@see handlePost()}.
+	 *
+	 * @param int $post_id The freshly created bydrae id.
+	 */
+	protected function attachFeaturedImage( int $post_id ): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified in handlePost() before this runs.
+		if ( ! isset( $_FILES[ FeaturedImage::FIELD ] ) || ! is_array( $_FILES[ FeaturedImage::FIELD ] ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- $_FILES metadata is read through FeaturedImage's is_scalar guards; media_handle_upload performs the authoritative MIME validation.
+		$file = wp_unslash( $_FILES[ FeaturedImage::FIELD ] );
+
+		if ( ! FeaturedImage::isPresent( $file ) || ! FeaturedImage::isImage( $file ) ) {
+			return;
+		}
+
+		$this->ensureMediaStack();
+
+		$attachment_id = $this->mediaHandleUpload( FeaturedImage::FIELD, $post_id );
+
+		if ( is_wp_error( $attachment_id ) || 0 === (int) $attachment_id ) {
+			return;
+		}
+
+		set_post_thumbnail( $post_id, (int) $attachment_id );
+	}
+
+	/**
+	 * Load the WordPress media-handling includes. Overridable seam for tests.
+	 */
+	protected function ensureMediaStack(): void {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+	}
+
+	/**
+	 * Hand the uploaded file to WordPress media handling. Overridable seam for tests.
+	 *
+	 * @param string $field   The `$_FILES` field name.
+	 * @param int    $post_id The post to attach to.
+	 * @return int|\WP_Error The attachment id, or an error.
+	 */
+	protected function mediaHandleUpload( string $field, int $post_id ) {
+		return media_handle_upload( $field, $post_id );
 	}
 
 	/**
