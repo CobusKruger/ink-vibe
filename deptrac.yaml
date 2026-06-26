@@ -112,6 +112,14 @@ deptrac:
             - Content
         Social:
             - Kernel
+            # Story 9.3: the following-feed lists published bydraes, so it reads the
+            # reader-facing CPT slugs from the migration-load-bearing single source
+            # `Ink\Content\PostTypes::readableTypes()` (GEDIG/STORIE/ARTIKEL). A real,
+            # non-circular cross-module dependency on the slug registry — mirrors the
+            # Discovery->Content (8.1), Submission->Content (6.1) and
+            # Engagement->Content (7.6) edges. No Entitlement/Tiers edge (seeing your
+            # feed is open; conflation-clean).
+            - Content
         Discovery:
             - Kernel
             # Story 8.1: the Ontdek works archive queries the bydrae CPT slugs from

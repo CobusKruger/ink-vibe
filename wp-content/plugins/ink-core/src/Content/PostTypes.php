@@ -96,6 +96,21 @@ final class PostTypes {
 	}
 
 	/**
+	 * The reader-facing bydrae types — the single source for any "list published
+	 * work" surface (Ontdek archive, following-feed). The `skryfwerk` migration
+	 * bucket is deliberately EXCLUDED: it is never reader-facing.
+	 *
+	 * @return list<string>
+	 */
+	public static function readableTypes(): array {
+		return array(
+			self::GEDIG,
+			self::STORIE,
+			self::ARTIKEL,
+		);
+	}
+
+	/**
 	 * Register every INK post type. Invoked on `init` from {@see Module::register()}.
 	 */
 	public function register(): void {

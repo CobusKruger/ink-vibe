@@ -141,10 +141,14 @@ final class WorksArchive {
 	/**
 	 * The readable bydrae types for the archive (skryfwerk bucket excluded).
 	 *
+	 * Delegates to {@see PostTypes::readableTypes()} — the single source shared
+	 * with the following-feed (Story 9.3) and any other "list published work"
+	 * surface.
+	 *
 	 * @return list<string>
 	 */
 	public static function readableTypes(): array {
-		return array( PostTypes::GEDIG, PostTypes::STORIE, PostTypes::ARTIKEL );
+		return PostTypes::readableTypes();
 	}
 
 	/**

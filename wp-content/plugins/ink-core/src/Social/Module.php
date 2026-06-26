@@ -46,6 +46,9 @@ class Module implements ModuleContract {
 		// the table DDL is registered with the Kernel Schema in the bootstrap.
 		( new FollowController() )->register();
 		( new FollowToggle() )->register();
+
+		// Story 9.3: the following-feed (the profile "Aktiwiteit" tab).
+		( new FollowingFeed() )->register();
 	}
 
 	/**
