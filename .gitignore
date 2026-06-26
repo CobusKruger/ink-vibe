@@ -20,3 +20,7 @@ wp-content/plugins/ink-core/vendor/
 
 # OS / editor noise.
 .DS_Store
+
+# Scratch space for transient files (e.g. git commit -F message files). Contents ignored; dir kept.
+/tmp/*
+!/tmp/.gitkeep

@@ -19,6 +19,10 @@ It denies, per individual command segment (split on ; && || | and newlines):
   5. Listing file names via plain `ls`  ->  Glob tool.
   6. Authoring file content via echo/printf/cat/tee redirected into a file
      ->  Write / Edit tools.
+  7. Passing a commit message via heredoc (`git commit ... <<EOF` or
+     `-m "$(cat <<'EOF' …)"`)  ->  write the message to the repo-local tmp/ and
+     use `git commit -F tmp/commit-msg.txt`. The heredoc/angle-bracket text
+     trips the zsh <N-M> glob permission heuristic and forces an approval prompt.
 
 Why per-segment: the old version only inspected the FIRST token of the whole
 command and disabled its read check whenever any `|` appeared, so
@@ -285,6 +289,22 @@ def check_write(cmdtok, stage):
     return None
 
 
+def check_git_heredoc(base, args, stage):
+    """Deny `git commit` that supplies its message via a heredoc. The heredoc
+    (and the `<noreply@…>` trailer's angle brackets) trips the zsh <N-M> glob
+    permission heuristic, forcing an approval prompt. Steer to `git commit -F`
+    with a message file in the repo-local tmp/."""
+    if base != "git" or "commit" not in args:
+        return None
+    if "<<" not in stage:
+        return None
+    return ("Don't pass a commit message via heredoc (`git commit ... <<EOF` or "
+            "`-m \"$(cat <<'EOF' …)\"`). The heredoc/angle-bracket text trips the "
+            "zsh <N-M> glob permission heuristic and forces an approval prompt. "
+            "Write the message to the repo-local gitignored tmp/ with the Write "
+            "tool, then run `git commit -F tmp/commit-msg.txt`.")
+
+
 def analyse(cmd):
     statements = split_command(cmd)
     for stmt in statements:
@@ -296,6 +316,11 @@ def analyse(cmd):
             if cmdtok is None:
                 continue
             base = cmdtok.rsplit("/", 1)[-1]      # /bin/grep -> grep
+
+            # git commit via heredoc -> use `git commit -F tmp/commit-msg.txt`.
+            r = check_git_heredoc(base, args, stage)
+            if r:
+                return r
 
             # cd-prefix: a `cd` followed by more in the same compound.
             if base == "cd" and idx == 0:
