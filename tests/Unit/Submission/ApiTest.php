@@ -77,9 +77,11 @@ test( 'formModel carries the per-type counter mode', function (): void {
 /**
  * successModel returns the screen data for a published bydrae (Story 6.7).
  */
-test( 'successModel returns title/type/permalink for a published bydrae', function (): void {
+test( 'successModel returns title/type/permalink for the author of a published bydrae', function (): void {
 	Functions\when( 'get_post_type' )->justReturn( 'gedig' );
 	Functions\when( 'get_post_status' )->justReturn( 'publish' );
+	Functions\when( 'get_post_field' )->justReturn( 7 );      // post_author
+	Functions\when( 'get_current_user_id' )->justReturn( 7 ); // same user → author
 	Functions\when( 'get_the_title' )->justReturn( 'My Gedig' );
 	Functions\when( 'get_permalink' )->justReturn( 'https://ink.test/gedig/my-gedig' );
 
@@ -104,6 +106,19 @@ test( 'successModel is null unless a published bydrae', function (): void {
 	Functions\when( 'get_post_type' )->justReturn( 'page' );
 	Functions\when( 'get_post_status' )->justReturn( 'publish' );
 	expect( Api::successModel( 123 ) )->toBeNull(); // not a bydrae
+} );
+
+/**
+ * successModel is not spoofable — a non-author cannot view someone else's success
+ * screen by passing an arbitrary published bydrae id (Story 6.8 review fix).
+ */
+test( 'successModel is null when the viewer is not the author', function (): void {
+	Functions\when( 'get_post_type' )->justReturn( 'gedig' );
+	Functions\when( 'get_post_status' )->justReturn( 'publish' );
+	Functions\when( 'get_post_field' )->justReturn( 7 );      // post_author
+	Functions\when( 'get_current_user_id' )->justReturn( 99 ); // different user
+
+	expect( Api::successModel( 123 ) )->toBeNull();
 } );
 
 /**

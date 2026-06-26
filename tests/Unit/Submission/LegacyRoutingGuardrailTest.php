@@ -41,9 +41,11 @@ test( 'no legacy Youzify submission override remains in theme or ink-core code',
 		}
 	}
 
-	$banned    = array( 'youzify', 'plaas-nuwe-publikasie', 'plaas_nuwe' );
-	$offenders = array();
-	$scanned   = 0;
+	$banned        = array( 'youzify', 'plaas-nuwe-publikasie', 'plaas_nuwe' );
+	$offenders     = array();
+	$scanned       = 0;
+	$theme_scanned = false;
+	$functions_php = $root . '/wp-content/themes/ink-foundation/functions.php';
 
 	foreach ( $targets as $file ) {
 		if ( ! is_string( $file ) || ! file_exists( $file ) ) {
@@ -56,6 +58,13 @@ test( 'no legacy Youzify submission override remains in theme or ink-core code',
 			++$scanned;
 		}
 
+		// Prove the THEME half (not just ink-core) was actually scanned — the
+		// theme functions.php is where the legacy override would have lived, so a
+		// path-layout change that silently drops it must fail this guardrail.
+		if ( $file === $functions_php && str_contains( $code, 'function ' ) ) {
+			$theme_scanned = true;
+		}
+
 		foreach ( $banned as $needle ) {
 			if ( str_contains( $code, $needle ) ) {
 				$offenders[] = basename( $file ) . ':' . $needle;
@@ -63,7 +72,8 @@ test( 'no legacy Youzify submission override remains in theme or ink-core code',
 		}
 	}
 
-	expect( $scanned )->toBeGreaterThan( 0 ); // non-vacuous: real code was scanned
+	expect( $scanned )->toBeGreaterThan( 0 );   // non-vacuous: real code was scanned
+	expect( $theme_scanned )->toBeTrue();        // non-vacuous: the theme half was scanned
 	expect( $offenders )->toBe( array() );
 } );
 

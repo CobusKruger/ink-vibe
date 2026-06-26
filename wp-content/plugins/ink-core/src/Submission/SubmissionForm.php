@@ -242,13 +242,18 @@ class SubmissionForm {
 
 		$this->attachFeaturedImage( (int) $post_id );
 		$this->attachMedia( (int) $post_id );
-		$this->linkChallenges( (int) $post_id );
 
 		if ( $denied ) {
-			// Text preserved as a konsep; show the Afrikaans denial + plans link.
+			// A denied plaas is NOT a round entry. The text + the writer's own
+			// uploaded media are preserved as a konsep, but we do NOT register
+			// `uitdagingsrondte` entries for a submission the member is not
+			// entitled to publish — challenge linking is reserved for a save the
+			// member actually chose (konsep) or a successful publish.
 			$this->redirect( $this->formUrl( 'geen-toegang' ) );
 			return;
 		}
+
+		$this->linkChallenges( (int) $post_id );
 
 		if ( 'publish' === $status ) {
 			$this->redirect( $this->successUrl( (int) $post_id ) );

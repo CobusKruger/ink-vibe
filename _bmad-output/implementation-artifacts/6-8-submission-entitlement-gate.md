@@ -4,7 +4,13 @@ baseline_commit: d3bc55b
 
 # Story 6.8: Submission entitlement gate
 
-Status: review
+Status: done
+
+## Review Findings
+
+- [x] [Review][Patch] `Api::successModel()` was spoofable — any visitor could view "Jou … is gepubliseer" for an arbitrary published bydrae id (Blind+Edge, LOW). Added an author check (`post_author === current user`) so only the author sees their own success screen; added a non-author → null test. [src/Submission/Api.php]
+- [x] [Review][Defer] `ProseSanitizer` stripping tested at policy level only (`wp_kses` mocked) — real-strip exercise is Story 18.8 integration. See deferred-work.md.
+- The conflation core (gate keys on lidmaatskap only; lapsed Goud denied; draft preserved) passed all three layers; the non-vacuous conflation guardrail confirms `src/Submission/` is free of `Ink\Tiers`.
 
 ## Story
 

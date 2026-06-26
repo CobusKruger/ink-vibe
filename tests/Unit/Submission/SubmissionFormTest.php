@@ -226,11 +226,15 @@ test( 'handlePost publishes and redirects to the success screen on plaas', funct
  */
 test( 'handlePost denies a non-entitled plaas, preserving the bydrae as a draft', function (): void {
 	$_POST = array(
-		SubmissionForm::NONCE_NAME   => 'nonce123',
-		SubmissionForm::FIELD_TYPE   => 'gedig',
-		SubmissionForm::FIELD_TITLE  => 'My Gedig',
-		SubmissionForm::FIELD_BODY   => 'Reël een',
-		SubmissionForm::INTENT_FIELD => 'plaas',
+		SubmissionForm::NONCE_NAME              => 'nonce123',
+		SubmissionForm::FIELD_TYPE              => 'gedig',
+		SubmissionForm::FIELD_TITLE             => 'My Gedig',
+		SubmissionForm::FIELD_BODY              => 'Reël een',
+		SubmissionForm::INTENT_FIELD            => 'plaas',
+		// A ticked challenge: the denied path must NOT link it (if linkChallenges
+		// ran it would hit unmocked get_post_type and fail — so a clean pass proves
+		// the round entry is skipped on denial, the review-fix behaviour).
+		\Ink\Submission\ChallengeLinking::FIELD => array( 5 ),
 	);
 
 	Functions\when( 'get_current_user_id' )->justReturn( 7 );
@@ -238,6 +242,7 @@ test( 'handlePost denies a non-entitled plaas, preserving the bydrae as a draft'
 	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
 	Functions\when( 'sanitize_key' )->returnArg( 1 );
 	Functions\when( 'wp_kses' )->returnArg( 1 );
+	Functions\when( 'absint' )->alias( static fn( $value ): int => (int) $value );
 	Functions\when( 'wp_verify_nonce' )->justReturn( 1 );
 	Functions\when( 'is_wp_error' )->alias( static fn( $thing ): bool => $thing instanceof \WP_Error );
 

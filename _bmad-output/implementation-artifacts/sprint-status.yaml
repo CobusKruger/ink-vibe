@@ -139,18 +139,27 @@ development_status:
   5-10-promotion-congratulation-email: done  # code review 2026-06-26 (Group C) — clean, 2 defers
   epic-5-retrospective: done  # completed 2026-06-26 (epic-5-retro-2026-06-26.md) — run after the 4-group code review; 4 actions (cross-story durability pass, is_scalar helper [Epic 2 #2, now owned], non-vacuous guardrail-test rule, Epic 6 copy-gate prereq); no epic update required
 
-  # Epic 6: Submission workflow (custom)
-  # epic-6 started 2026-06-26; full BMAD loop (create-story -> dev-story -> tests -> commit).
-  epic-6: in-progress
-  6-1-custom-front-end-submission-form: review
-  6-2-content-type-selector-with-counters: review
-  6-3-light-editor: review
-  6-4-optional-featured-image: review
-  6-5-optional-audio-video-attachment: review
-  6-6-challenge-linking-at-submission: review
-  6-7-draft-publish-states: review
-  6-8-submission-entitlement-gate: review
-  6-9-remove-legacy-edit-link-filter: review
+  # Epic 6: Submission workflow (custom) — the Ink\Submission Skryf workflow.
+  # epic-6 started 2026-06-26; all 9 stories built via the full BMAD loop
+  # (create-story -> dev-story -> tests -> commit), then a 3-layer adversarial
+  # code review (Blind Hunter / Edge Case Hunter / Acceptance Auditor, 2026-06-26):
+  # 6 patches applied (denied-path challenge-linking skip; H1/intro into the text
+  # domain; success-screen read-and-respond prompts; MediaAttachment direct meta
+  # registration; successModel author check; legacy-routing guardrail theme
+  # non-vacuity), 5 deferred (deferred-work.md), 3 dismissed. 360->408 unit tests,
+  # zero regressions; conflation rule held (Entitlement gate, never Tiers).
+  # Preceded by the kickoff debt paydown (994c5da: shared Ink\Kernel\Scalar helper,
+  # Epic-2 is_scalar debt; skryfwerk added to afrikaans-terms.md). epic-6-retrospective optional.
+  epic-6: done
+  6-1-custom-front-end-submission-form: done
+  6-2-content-type-selector-with-counters: done
+  6-3-light-editor: done
+  6-4-optional-featured-image: done
+  6-5-optional-audio-video-attachment: done
+  6-6-challenge-linking-at-submission: done
+  6-7-draft-publish-states: done
+  6-8-submission-entitlement-gate: done
+  6-9-remove-legacy-edit-link-filter: done
   epic-6-retrospective: optional
 
   # Epic 7: Reading & engagement

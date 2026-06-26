@@ -97,6 +97,12 @@ final class Api {
 			return null;
 		}
 
+		// Only the author sees "Jou ... is gepubliseer" — the screen must not be
+		// spoofable by passing an arbitrary published bydrae id in the URL.
+		if ( (int) get_post_field( 'post_author', $post_id ) !== get_current_user_id() ) {
+			return null;
+		}
+
 		return array(
 			'title'      => (string) get_the_title( $post_id ),
 			'type_label' => Terms::label( $type ),

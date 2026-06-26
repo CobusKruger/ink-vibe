@@ -55,20 +55,28 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	<p class="has-muted-text-color has-text-color has-md-font-size"><?php printf( /* translators: %s: the bydrae title. */ esc_html__( 'Dankie dat jy “%s” gedeel het. Skryf is \'n gesprek — die gemeenskap groei wanneer skrywers mekaar lees en op mekaar reageer.', 'ink-foundation' ), esc_html( $ink_done_title ) ); ?></p>
 	<!-- /wp:paragraph -->
 
+	<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
+	<p class="has-muted-text-color has-text-color has-sm-font-size"><?php echo esc_html__( 'Lees en reageer', 'ink-foundation' ); ?></p>
+	<!-- /wp:paragraph -->
+
 	<!-- wp:heading {"level":2,"fontSize":"lg"} -->
-	<h2 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( 'Lees en reageer', 'ink-foundation' ); ?></h2>
+	<h2 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( 'Gee \'n skrywer vandag \'n hupstoot', 'ink-foundation' ); ?></h2>
 	<!-- /wp:heading -->
+
+	<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
+	<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( '\'n Deurdagte opmerking kan iemand se week verander. Begin met een van hierdie.', 'ink-foundation' ); ?></p>
+	<!-- /wp:paragraph -->
 
 	<!-- wp:paragraph -->
 	<p><a href="/skryf"><?php echo esc_html__( 'Skryf nog \'n stuk', 'ink-foundation' ); ?></a> · <a href="/"><?php echo esc_html__( 'Terug na tuis', 'ink-foundation' ); ?></a></p>
 	<!-- /wp:paragraph -->
 <?php else : ?>
 	<!-- wp:heading {"level":1,"fontSize":"2xl"} -->
-	<h1 class="wp-block-heading has-2xl-font-size">Deel jou woorde</h1>
+	<h1 class="wp-block-heading has-2xl-font-size"><?php esc_html_e( 'Deel jou woorde', 'ink-foundation' ); ?></h1>
 	<!-- /wp:heading -->
 
 	<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-	<p class="has-muted-text-color has-text-color has-md-font-size">Elke storie begin met 'n enkele woord. Begin joune hier.</p>
+	<p class="has-muted-text-color has-text-color has-md-font-size"><?php esc_html_e( 'Elke storie begin met \'n enkele woord. Begin joune hier.', 'ink-foundation' ); ?></p>
 	<!-- /wp:paragraph -->
 
 	<?php if ( ! $ink_skryf_in ) : ?>

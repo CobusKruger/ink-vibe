@@ -4,7 +4,12 @@ baseline_commit: 994c5da
 
 # Story 6.1: Custom front-end submission form
 
-Status: review
+Status: done
+
+## Review Findings
+
+- [x] [Review][Patch] H1 "Deel jou woorde" + supporting paragraph were raw literals, not in the `ink-foundation` text domain like every other string in the pattern (Acceptance Auditor, HIGH) — wrapped both in `esc_html_e( …, 'ink-foundation' )`. [patterns/skryf.php]
+- [x] [Review][Defer] No anti-spam / rate-limit on draft creation (logged-in + nonce only, by design) — Story 18.10. See deferred-work.md.
 
 ## Story
 

@@ -4,7 +4,11 @@ baseline_commit: d3bc55b
 
 # Story 6.3: Light editor
 
-Status: review
+Status: done
+
+## Review Findings
+
+- Allowlist + verbatim-preservation verified by all three layers. [Defer] real-`wp_kses` stripping exercise is Story 18.8 integration (policy is unit-tested) — see deferred-work.md.
 
 ## Story
 

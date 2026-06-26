@@ -4,7 +4,11 @@ baseline_commit: d3bc55b
 
 # Story 6.7: Draft / publish states
 
-Status: review
+Status: done
+
+## Review Findings
+
+- [x] [Review][Patch] The success-screen "read-and-respond prompts" omitted the curated copy — it used "Lees en reageer" as the H2 and only nav links (Acceptance Auditor, MED). Added the curated block: "Lees en reageer" eyebrow + H2 "Gee 'n skrywer vandag 'n hupstoot" + the prompt sentence, then the nav links (ui-copy-translations.md:407-409). [patterns/skryf.php]
 
 ## Story
 

@@ -4,7 +4,11 @@ baseline_commit: d3bc55b
 
 # Story 6.4: Optional featured image
 
-Status: review
+Status: done
+
+## Review Findings
+
+- Clean — passed all three adversarial layers (optional + non-fatal upload verified; no findings).
 
 ## Story
 

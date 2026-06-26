@@ -4,7 +4,11 @@ baseline_commit: d3bc55b
 
 # Story 6.5: Optional audio/video attachment
 
-Status: review
+Status: done
+
+## Review Findings
+
+- [x] [Review][Patch] `MediaAttachment::register()` hooked `init` from within the running `init` dispatch (Edge Case Hunter, MED) — changed to call `registerMeta()` directly (the `Content\FieldSets` house pattern), removing the WP_Hook-iterator fragility. [src/Submission/MediaAttachment.php]
 
 ## Story
 

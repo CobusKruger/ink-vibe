@@ -4,7 +4,12 @@ baseline_commit: d3bc55b
 
 # Story 6.6: Challenge linking at submission
 
-Status: review
+Status: done
+
+## Review Findings
+
+- [x] [Review][Patch] Challenge linking ran on the entitlement-DENIED publish path — a denied plaas registered `uitdagingsrondte` round entries on the downgraded draft (Blind+Edge+Auditor; cross-story durability rule). Moved `linkChallenges()` after the `$denied` early-return so a denied publish is never a round entry; the konsep + the writer's own media are still preserved. Verified by the deny test (a ticked challenge + no error proves linking is skipped). [src/Submission/SubmissionForm.php]
+- [x] [Review][Defer] `resolveRoundTerm()` get-or-create race + frozen round-term title — Epic 12/12A seam. See deferred-work.md.
 
 ## Story
 

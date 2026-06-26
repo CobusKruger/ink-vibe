@@ -4,7 +4,11 @@ baseline_commit: d3bc55b
 
 # Story 6.9: Remove legacy edit-link filter
 
-Status: review
+Status: done
+
+## Review Findings
+
+- [x] [Review][Patch] `LegacyRoutingGuardrailTest` non-vacuity was blind to the theme half — `$scanned > 0` was satisfied by ink-core files alone, so a path-layout change dropping the theme glob would pass silently (Edge Case Hunter, LOW; the non-vacuous-guardrail rule). Added a `$theme_scanned` assertion that the theme `functions.php` specifically was read. [tests/Unit/Submission/LegacyRoutingGuardrailTest.php]
 
 ## Story
 

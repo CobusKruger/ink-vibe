@@ -4,7 +4,11 @@ baseline_commit: d3bc55b
 
 # Story 6.2: Content-type selector with counters
 
-Status: review
+Status: done
+
+## Review Findings
+
+- Clean — passed all three adversarial layers (counter single-source + JS mirror verified; no findings).
 
 ## Story
 

@@ -40,12 +40,14 @@ final class MediaAttachment {
 	/**
 	 * Register the media-attachment meta on the submittable bydrae CPTs.
 	 *
-	 * Invoked from {@see Module::register()} (dispatched on `init`). Single integer
-	 * attachment id, `absint`-sanitised, `show_in_rest` so the reading layer can
-	 * read it; written only by a logged-in author (the Skryf handler).
+	 * Invoked from {@see Module::register()}, which the Kernel already dispatches on
+	 * `init` — so `registerMeta()` is called DIRECTLY here (the {@see \Ink\Content\FieldSets}
+	 * house pattern) rather than nesting a second `add_action('init', …)` from
+	 * within the running `init` hook. Single integer attachment id, `absint`-sanitised,
+	 * `show_in_rest` so the reading layer can read it; written only by a logged-in author.
 	 */
 	public function register(): void {
-		add_action( 'init', array( $this, 'registerMeta' ) );
+		$this->registerMeta();
 	}
 
 	/**
