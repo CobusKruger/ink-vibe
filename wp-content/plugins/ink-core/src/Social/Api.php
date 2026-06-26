@@ -74,4 +74,14 @@ final class Api {
 	public static function volgelingLabel( int $n ): string {
 		return FollowCounts::volgelingLabel( $n );
 	}
+
+	/**
+	 * A writer's pinned (vasgespelde) work ids, in display order (Story 9.5).
+	 *
+	 * @param int $user_id The writer.
+	 * @return list<int>
+	 */
+	public static function pinnedWorksFor( int $user_id ): array {
+		return PinnedWorks::forUser( $user_id );
+	}
 }

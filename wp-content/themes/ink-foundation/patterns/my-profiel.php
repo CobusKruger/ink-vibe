@@ -61,6 +61,9 @@ $ink_badge       = function_exists( 'ink_foundation_gradering_badge' )
 		<div class="wp-block-group ink-my-profiel__leesgetalle" data-ink-slot="leesgetalle"></div>
 		<!-- /wp:group -->
 
+		<?php // Story 9.5: pin / unpin your own works (curation). ?>
+		<!-- wp:ink/vasgespel-bestuur /-->
+
 		<?php // Story 9.3: the following-feed (Aktiwiteit van wie jy volg). ?>
 		<!-- wp:ink/volg-voer /-->
 

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Social;
 
+use Ink\I18n\Terms;
 use Ink\Tiers\Api as TiersApi;
 
 defined( 'ABSPATH' ) || exit;
@@ -90,6 +91,7 @@ final class SkrywerProfiel {
 			'badge'     => self::graderingBadge( $author_id ),
 			'volgeling' => Api::volgelingLabel( Api::followerCount( $author_id ) ),
 			'volg'      => FollowToggle::render( array( 'skrywerId' => $author_id ) ),
+			'pinned'    => self::pinnedCards( $author_id ),
 		);
 
 		return self::toHtml( $profile );
@@ -120,14 +122,42 @@ final class SkrywerProfiel {
 	}
 
 	/**
+	 * The queried author's pinned works, resolved to cards (Story 9.5).
+	 *
+	 * Reads {@see PinnedWorks::forUser()} (in pin = display order) and resolves
+	 * each id to a card, skipping any that is no longer a published bydrae (a
+	 * stale pin never renders a broken card).
+	 *
+	 * @param int $author_id The skrywer.
+	 * @return list<array{title:string, permalink:string, type:string}>
+	 */
+	private static function pinnedCards( int $author_id ): array {
+		$cards = array();
+
+		foreach ( PinnedWorks::forUser( $author_id ) as $post_id ) {
+			if ( 'publish' !== get_post_status( $post_id ) ) {
+				continue;
+			}
+
+			$cards[] = array(
+				'title'     => get_the_title( $post_id ),
+				'permalink' => (string) get_permalink( $post_id ),
+				'type'      => (string) get_post_type( $post_id ),
+			);
+		}
+
+		return $cards;
+	}
+
+	/**
 	 * Build the public profile card HTML. Pure — escaping only.
 	 *
 	 * Renders ONLY public data (name/bio/avatar/gradering/volgeling/volg + the
-	 * reserved pinned-works slot + accomplishments). It deliberately renders NO
-	 * read-count and NO wins-needed subtext — those are private My Profiel
-	 * surfaces (the FR-40 separation).
+	 * pinned-works + accomplishments). It deliberately renders NO read-count and
+	 * NO wins-needed subtext — those are private My Profiel surfaces (the FR-40
+	 * separation).
 	 *
-	 * @param array{name:string, bio:string, avatar:string, badge:string, volgeling:string, volg:string} $profile The public profile data.
+	 * @param array{name:string, bio:string, avatar:string, badge:string, volgeling:string, volg:string, pinned?:list<array{title:string, permalink:string, type:string}>} $profile The public profile data.
 	 * @return string
 	 */
 	public static function toHtml( array $profile ): string {
@@ -137,6 +167,7 @@ final class SkrywerProfiel {
 		$badge     = isset( $profile['badge'] ) ? (string) $profile['badge'] : '';
 		$volgeling = isset( $profile['volgeling'] ) ? (string) $profile['volgeling'] : '';
 		$volg      = isset( $profile['volg'] ) ? (string) $profile['volg'] : '';
+		$pinned    = isset( $profile['pinned'] ) && is_array( $profile['pinned'] ) ? $profile['pinned'] : array();
 
 		$html = '<section class="ink-skrywerprofiel">';
 
@@ -169,8 +200,22 @@ final class SkrywerProfiel {
 			$html .= '<div class="ink-skrywerprofiel__bio">' . esc_html( $bio ) . '</div>';
 		}
 
-		// Reserved pinned-works slot — Story 9.5 renders selected works here.
-		$html .= '<div class="ink-skrywerprofiel__vasgespel" data-ink-slot="vasgespelde-werke"></div>';
+		// Pinned / selected works — "best work first" (Story 9.5). Heading only
+		// when there is at least one pin; nothing when empty.
+		if ( array() !== $pinned ) {
+			$html .= '<div class="ink-skrywerprofiel__vasgespel" data-ink-slot="vasgespelde-werke">'
+				. '<h2 class="ink-skrywerprofiel__vasgespel-titel">' . esc_html__( 'Vasgespelde werke', 'ink-core' ) . '</h2>'
+				. '<ul class="ink-skrywerprofiel__vasgespel-lys">';
+
+			foreach ( $pinned as $card ) {
+				$html .= '<li class="ink-skrywerprofiel__vasgespel-item is-style-card">'
+					. '<span class="ink-skrywerprofiel__vasgespel-tipe">' . esc_html( Terms::label( (string) $card['type'] ) ) . '</span>'
+					. '<a class="ink-skrywerprofiel__vasgespel-titel-skakel" href="' . esc_url( (string) $card['permalink'] ) . '">' . esc_html( (string) $card['title'] ) . '</a>'
+					. '</li>';
+			}
+
+			$html .= '</ul></div>';
+		}
 
 		// Accomplishments area (writer achievements / placements surface).
 		$html .= '<section class="ink-skrywerprofiel__prestasies">'

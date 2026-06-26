@@ -24,6 +24,7 @@ beforeEach( function (): void {
 	Functions\when( 'esc_html' )->returnArg( 1 );
 	Functions\when( 'esc_html__' )->returnArg( 1 );
 	Functions\when( 'esc_attr' )->returnArg( 1 );
+	Functions\when( 'esc_url' )->returnArg( 1 );
 } );
 
 afterEach( function (): void {
@@ -54,7 +55,42 @@ test( 'toHtml renders the public profile card: name, bio, gradering, volgeling, 
 	expect( $html )->toContain( 'ink-gradering--goud' );   // gradering badge (display)
 	expect( $html )->toContain( '12 volgelinge' );          // volgeling count
 	expect( $html )->toContain( 'ink-volg-knoppie' );       // Volg toggle
-	expect( $html )->toContain( 'ink-skrywerprofiel__vasgespel' ); // reserved 9.5 slot
+} );
+
+test( 'toHtml renders the pinned works (best work first) when the writer has pins', function (): void {
+	$html = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => '',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+			'pinned'    => array(
+				array( 'title' => 'Vlerke', 'permalink' => '/vlerke', 'type' => 'gedig' ),
+			),
+		)
+	);
+
+	expect( $html )->toContain( 'ink-skrywerprofiel__vasgespel' );
+	expect( $html )->toContain( 'Vlerke' );
+	expect( $html )->toContain( '/vlerke' );
+} );
+
+test( 'toHtml renders no pinned-works heading when there are no pins', function (): void {
+	$html = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => '',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+			'pinned'    => array(),
+		)
+	);
+
+	expect( $html )->not->toContain( 'ink-skrywerprofiel__vasgespel-titel' );
 } );
 
 test( 'the PUBLIC card renders NO private surfaces (no read counts, no wins-needed)', function (): void {

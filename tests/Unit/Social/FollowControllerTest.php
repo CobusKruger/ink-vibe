@@ -58,6 +58,9 @@ test( 'the follow controller, store, toggle and counts are conflation-clean (no 
 		$root . 'FollowToggle.php',
 		$root . 'FollowCounts.php',
 		$root . 'FollowingFeed.php',
+		$root . 'PinnedWorks.php',
+		$root . 'PinnedWorksController.php',
+		$root . 'PinnedWorksManager.php',
 	);
 
 	$scanned = 0;
@@ -69,5 +72,5 @@ test( 'the follow controller, store, toggle and counts are conflation-clean (no 
 		expect( $code )->not->toContain( 'Ink\\Entitlement' );
 	}
 
-	expect( $scanned )->toBe( 5 );
+	expect( $scanned )->toBe( 8 );
 } );

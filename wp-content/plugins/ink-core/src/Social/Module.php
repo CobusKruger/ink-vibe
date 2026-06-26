@@ -52,6 +52,10 @@ class Module implements ModuleContract {
 
 		// Story 9.4: the public Skrywerprofiel block (resolves the queried author).
 		( new SkrywerProfiel() )->register();
+
+		// Story 9.5: pinned / selected works — REST write path + curation block.
+		( new PinnedWorksController() )->register();
+		( new PinnedWorksManager() )->register();
 	}
 
 	/**

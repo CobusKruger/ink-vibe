@@ -161,6 +161,10 @@ final class Terms {
 			'volg_tans'                 => __( 'Volg tans', 'ink-core' ),
 			'volg_nie_meer'             => __( 'Volg nie meer nie', 'ink-core' ),
 
+			// Social — pinned works (Story 9.5, ui-copy lines 281/702 "Speld vas" / "Vasgespeld").
+			'vasgespel'                 => __( 'Speld vas', 'ink-core' ),
+			'vasgespeld'                => __( 'Vasgespeld', 'ink-core' ),
+
 			// Sections.
 			'biblioteek'                => __( 'Biblioteek', 'ink-core' ),
 			'opleiding'                 => __( 'Opleiding', 'ink-core' ),
