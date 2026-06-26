@@ -165,6 +165,9 @@ final class Terms {
 			'vasgespel'                 => __( 'Speld vas', 'ink-core' ),
 			'vasgespeld'                => __( 'Vasgespeld', 'ink-core' ),
 
+			// Social — member directory (Story 9.7, glossary line 162).
+			'ledegids'                  => __( 'Ledegids', 'ink-core' ),
+
 			// Sections.
 			'biblioteek'                => __( 'Biblioteek', 'ink-core' ),
 			'opleiding'                 => __( 'Opleiding', 'ink-core' ),

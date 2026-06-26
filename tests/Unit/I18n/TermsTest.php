@@ -150,3 +150,13 @@ test( 'all returns the full registry as the inspectable surface', function (): v
 		expect( $value )->not->toBe( '' );
 	}
 } );
+
+/**
+ * Epic 9 social terms resolve to their glossary labels.
+ */
+test( 'the social glossary keys resolve to their approved labels', function (): void {
+	expect( Terms::label( 'volg' ) )->toBe( 'Volg' );
+	expect( Terms::label( 'volg_tans' ) )->toBe( 'Volg tans' );
+	expect( Terms::label( 'vasgespeld' ) )->toBe( 'Vasgespeld' );
+	expect( Terms::label( 'ledegids' ) )->toBe( 'Ledegids' );
+} );
