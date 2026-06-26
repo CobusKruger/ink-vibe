@@ -125,6 +125,16 @@ test( 'followingCount counts over the user_id column', function (): void {
 	expect( FollowStore::followingCount( 7 ) )->toBe( 5 );
 } );
 
+test( 'followerIdsFor queries the followee_id column (who follows this writer)', function (): void {
+	$GLOBALS['wpdb']->shouldReceive( 'prepare' )
+		->once()
+		->with( Mockery::pattern( '/SELECT user_id.*WHERE followee_id = %d/s' ), 42 )
+		->andReturn( 'PREPARED' );
+	$GLOBALS['wpdb']->shouldReceive( 'get_col' )->once()->andReturn( array( '7', '9' ) );
+
+	expect( FollowStore::followerIdsFor( 42 ) )->toBe( array( 7, 9 ) );
+} );
+
 test( 'followeeIdsFor returns the followed ids newest first, empty when none', function (): void {
 	$GLOBALS['wpdb']->shouldReceive( 'prepare' )
 		->with( Mockery::pattern( '/SELECT followee_id.*WHERE user_id = %d ORDER BY created_at DESC/s' ), 7 )

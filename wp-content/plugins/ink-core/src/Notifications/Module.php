@@ -49,7 +49,10 @@ final class Module implements ModuleContract {
 
 		Api::bootstrap( $store, $notifier );
 
-		// Reserved: BP notification types (9.9); consumers register templates +
-		// subscribe `ink/{module}/{event}` events to Api::send() in their epics.
+		// Story 9.9: in-app kennisgewings (BP notifications store). The source
+		// subscriptions route reaksie/@mention, followed-writer new work and the
+		// 4.8-anchored lidmaatskap-expiry reminder through Kennisgewings::add()
+		// (guarded — a clean no-op without BuddyPress).
+		( new Events() )->register();
 	}
 }

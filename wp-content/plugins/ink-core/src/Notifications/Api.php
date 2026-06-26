@@ -84,6 +84,28 @@ final class Api {
 	}
 
 	/**
+	 * Create an in-app kennisgewing (Story 9.9; guarded — no-op without BuddyPress).
+	 *
+	 * @param int              $user_id  The recipient.
+	 * @param NotificationType $type     The kennisgewing category.
+	 * @param int              $item_id  The primary subject id.
+	 * @param int              $actor_id The triggering user (0 = system).
+	 * @return bool True when a notification was written.
+	 */
+	public static function notify( int $user_id, NotificationType $type, int $item_id, int $actor_id = 0 ): bool {
+		return Kennisgewings::add( $user_id, $type, $item_id, $actor_id );
+	}
+
+	/**
+	 * "Merk alles as gelees" — move the per-user read boundary to now (Story 9.9).
+	 *
+	 * @param int $user_id The user.
+	 */
+	public static function markAllRead( int $user_id ): void {
+		Kennisgewings::markAllRead( $user_id );
+	}
+
+	/**
 	 * The shared store, lazily built if {@see Api::bootstrap()} has not run.
 	 */
 	private static function store(): TemplateStore {

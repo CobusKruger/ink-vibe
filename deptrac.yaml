@@ -153,5 +153,14 @@ deptrac:
             - Kernel
         Notifications:
             - Kernel
+            # Story 9.9: the in-app kennisgewing sources fan out to the work
+            # author's volgelinge (Social\Api::followerIdsFor), read the readable
+            # CPT slugs (Content\PostTypes::readableTypes), and share the 4.8
+            # lifecycle expiry anchor (Entitlement\LifecycleEmails::HOOK_SEND_WARNING
+            # — hook-name constant only, the shared schedule, NOT a gate). No Tiers
+            # edge; conflation-clean (notifications never gate on tier/entitlement).
+            - Social
+            - Content
+            - Entitlement
         Forms:
             - Kernel

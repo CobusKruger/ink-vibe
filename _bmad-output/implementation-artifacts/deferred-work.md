@@ -2,6 +2,11 @@
 
 Consolidated `defer` findings from code reviews. Each item is real but not actionable in its originating story (pre-existing, by-design, or owned by a later story/epic).
 
+## Deferred from: Story 9.9 — notifications (2026-06-26)
+
+- **Two kennisgewing SOURCES are emitter-ready but their source events don't exist yet** [`Ink\Notifications\Events`, `Kennisgewings::add()`]: (a) **uitdaging announcement/deadline** — the Challenges module emits no `ink/...` uitdaging events (Epic 12 owns the uitdaging lifecycle); (b) the **read-receipt milestone** (R7) — owned by Story 9.11, which depends on the 18.9 analytics provider. The `NotificationType::Uitdaging` / `NotificationType::Ontvangs` cases + the guarded `Kennisgewings::add()` emitter are in place NOW; each wires by calling `add()` from its source when that source lands. Same graceful-sequencing pattern as the held reviews (9.6) and R7/R8. Non-blocking.
+- **BP notification panel styling + the Afrikaans notification-sentence formatter are E2E/theme** — BuddyPress composes + renders the notification list; INK supplies the typed `ink` component-action and a guarded Afrikaans formatter. The rendered panel + the per-type sentence copy are verified against a live BuddyPress (Story 18.8 E2E), not the mocked unit suite. The unit suite covers the pure boundary logic + the emitter guards.
+
 ## Deferred from: Story 9.8 — private messaging (2026-06-26)
 
 - **Private Messaging is out of launch scope (§14.7, FL 9.8) — by design, non-blocking.** The BuddyPress `messages` component is code-enforced OFF by the Story 9.1 scope (`Ink\Social\BuddyPress::FORCED_OFF` includes `messages`; never in `SCOPED_ON`), so a cloned-DB-active messaging component is forced off regardless. No INK messaging UI/route/table/block is shipped. A standing guardrail (`tests/Unit/Social/MessagingDeferredTest.php`) fails the suite if `messages` is ever re-added to launch scope. **Revisit post-launch** — when picked up it is a `messages`-component re-enable (or an INK alternative), with its own moderation/POPIA considerations. Tracked decision, not a gap.

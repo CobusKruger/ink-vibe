@@ -207,6 +207,31 @@ final class FollowStore {
 	}
 
 	/**
+	 * The follower ids of a skrywer — who to notify on new work (Story 9.9).
+	 *
+	 * The reverse of {@see self::followeeIdsFor()}, served by `KEY followee_id`.
+	 *
+	 * @param int $followee_id The followed skrywer.
+	 * @return list<int>
+	 */
+	public static function followerIdsFor( int $followee_id ): array {
+		global $wpdb;
+
+		$table = self::tableName();
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT user_id FROM {$table} WHERE followee_id = %d ORDER BY created_at DESC, id DESC",
+				$followee_id
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		return is_array( $ids ) ? array_map( 'intval', $ids ) : array();
+	}
+
+	/**
 	 * The skrywer ids a member follows, newest first (for the 9.3 feed).
 	 *
 	 * @param int $user_id The follower.

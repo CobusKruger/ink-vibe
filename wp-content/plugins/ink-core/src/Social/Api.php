@@ -66,6 +66,16 @@ final class Api {
 	}
 
 	/**
+	 * The follower ids of a skrywer (the 9.9 new-work fan-out source).
+	 *
+	 * @param int $skrywer_id The followed skrywer.
+	 * @return list<int>
+	 */
+	public static function followerIdsFor( int $skrywer_id ): array {
+		return FollowStore::followerIdsFor( $skrywer_id );
+	}
+
+	/**
 	 * The verb-less volgeling-count label (e.g. "12 volgelinge").
 	 *
 	 * @param int $n The follower count.
