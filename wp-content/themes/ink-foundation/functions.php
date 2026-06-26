@@ -75,6 +75,59 @@ function ink_foundation_enqueue_skryf_assets(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_skryf_assets' );
 
 /**
+ * Enqueue the line-reactions client on a single gedig (Story 7.3, FR-26).
+ *
+ * The reading-surface reaction widget attaches to the `[data-ink-line]` anchors
+ * the ink/gedig-body block renders and writes through the `ink/v1/reaksie` REST
+ * endpoint. Business logic stays server-side; this only ships the thin client +
+ * its config (REST root, nonce, post id, Afrikaans reaction labels). Loaded only
+ * where the anchors exist.
+ */
+function ink_foundation_enqueue_line_reactions(): void {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( 'gedig' ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-line-reactions',
+		get_theme_file_uri( 'assets/js/line-reactions.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+
+	wp_localize_script(
+		'ink-foundation-line-reactions',
+		'inkLineReactions',
+		array(
+			'restUrl'   => esc_url_raw( rest_url( 'ink/v1/reaksie' ) ),
+			'nonce'     => wp_create_nonce( 'wp_rest' ),
+			'postId'    => get_the_ID(),
+			'reactions' => array(
+				array(
+					'key'   => 'hartjie',
+					'label' => __( 'Hartjie', 'ink-foundation' ),
+					'glyph' => '♥',
+				),
+				array(
+					'key'   => 'duim_op',
+					'label' => __( 'Duim op', 'ink-foundation' ),
+					'glyph' => '👍',
+				),
+				array(
+					'key'   => 'wow',
+					'label' => __( 'Wow', 'ink-foundation' ),
+					'glyph' => '✨',
+				),
+			),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_line_reactions' );
+
+/**
  * Register the core block style variations (card / button / emphasis).
  *
  * These are token-driven presentation treatments applied to any block instance
