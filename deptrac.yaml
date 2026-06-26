@@ -120,6 +120,11 @@ deptrac:
             # Engagement->Content (7.6) edges. No Entitlement/Tiers edge (seeing your
             # feed is open; conflation-clean).
             - Content
+            # Story 9.4: the public Skrywerprofiel block shows the writer's Gradering
+            # badge — a DISPLAY read of `Ink\Tiers\Api::gradingView()`, never a gate
+            # (THE conflation rule holds). Mirrors the accepted Discovery->Tiers
+            # display edge (8.5). No Entitlement edge.
+            - Tiers
         Discovery:
             - Kernel
             # Story 8.1: the Ontdek works archive queries the bydrae CPT slugs from

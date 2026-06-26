@@ -49,6 +49,9 @@ class Module implements ModuleContract {
 
 		// Story 9.3: the following-feed (the profile "Aktiwiteit" tab).
 		( new FollowingFeed() )->register();
+
+		// Story 9.4: the public Skrywerprofiel block (resolves the queried author).
+		( new SkrywerProfiel() )->register();
 	}
 
 	/**
