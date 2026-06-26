@@ -2,6 +2,33 @@
 
 Consolidated `defer` findings from code reviews. Each item is real but not actionable in its originating story (pre-existing, by-design, or owned by a later story/epic).
 
+## Deferred from: code review of Epic 5 Group D (5.6 guardrails) (2026-06-26)
+
+- **Conflation behavioural test covers only `PurchaseActivation`, not `LifecycleEmails`** [`tests/Unit/Tiers/ConflationGuardrailTest.php`] — `LifecycleEmails` (second handler on `wc_memberships_user_membership_status_changed`) has zero `update_user_meta` today (no live leak); add a transition drive through it when convenient.
+- **Guardrail globs are single-level + skip top-level `src/*.php`** [`ConflationGuardrailTest.php`] — `Tiers`/`Entitlement` are flat dirs today; the scan degrades the moment a nested subdir appears. Recurse (or assert the flat assumption) when a module grows subdirectories.
+- **Structural scan retains string literals (substring `toContain`)** [`ConflationGuardrailTest.php`] — a future `__()` label containing "Tiers"/"Entitlement" would false-FAIL (safe failure, not false confidence). Tighten to a symbol/namespaced match if it bites.
+
+## Deferred from: code review of Epic 5 Group C (5.4+5.5+5.9+5.10) (2026-06-26)
+
+- **`winnerLabel('')` emits a leading space** [`Tiers/Api.php`] — `winnerLabel(Tier::Goud, '')` → `" Goud-wenner"`. The Epic-12 winner surface (not built) supplies the period; primitive contract is "non-empty period". Trivial `trim()` if it matters.
+- **`wenner` registry key vs glossary slug `winner`** [`Tiers/I18n Terms.php`, `afrikaans-terms.md:102`] — registry keys on the Afrikaans label `'wenner'` while the glossary's machine slug column reads `winner`. Functionally correct; verify the slug-vs-label keying convention with the glossary author.
+- **`winsNeededSubtext()` at/above-threshold clamp masks "promotion pending"** [`Tiers/PromotionEngine.php` progressFor] — `max(1, wins-count)` shows "1 nodig" for a writer already at/over threshold (only reachable via a non-reset counter: manual DB edit, legacy value, or a future direct `recordWin` path). `promote()` resets on every promotion, so the normal path can't reach it. Revisit if a non-reset accumulation path appears.
+- **Blank congratulation email if toggle-override ON but template unregistered** [`Tiers/PromotionEmails.php` + Notifications 1.12] — load-order edge ("first wiring wins") + a stored `enabled=true` override could let `Notifier::send` proceed with empty subject/body. Fix belongs in the 1.12 Notifier (suppress when unregistered even under an override), not Tiers. Speculative; toggle is OFF by default.
+- **`PromotionEmails::onTierPromoted()` has no idempotency guard** [`Tiers/PromotionEmails.php`] — a double-fired `ink/tier_promoted` would send two emails. Synchronous single-fire today; revisit if the event becomes async/retried (12A.3 Action-Scheduler ingestion).
+
+## Deferred from: code review of Epic 5 Group B (5.2+5.8) (2026-06-26)
+
+- **`PromotionEngine::award()` large-batch overshoot discards surplus wins** [`PromotionEngine.php`] — `award($id, 100)` on a Brons writer promotes one step and resets to 0, losing the surplus past the first threshold. "One step per call" is the documented spec intent (no grade-skip); whether a backlog should promote multiple steps is owned by the not-yet-built R2 ingestion caller (Story 12A.3).
+- **`awardWins()` is not idempotent on `$challenge_id` re-runs** [`PromotionEngine.php`] — no dedupe on the challenge link, so replaying the same challenge result double-counts wins. Idempotency is Story 12A.3's concern by spec design (the engine's contract is "caller supplies the win count").
+- **`Api::promote()` does not verify `$user_id` exists** [`Api.php`] — `forUser()` returns Brons for an unknown user, so a non-no-op `promote()` could write orphan usermeta + an audit row for a phantom user. Low-impact (both callers supply real ids); revisit if a programmatic caller can pass unvalidated ids.
+
+## Deferred from: code review of Epic 5 Group A (5.1+5.3+5.7) (2026-06-26)
+
+- **`PromotionLogEntry::createdAt` exposes a raw GMT string with no timezone marker** [`PromotionLog.php`/`PromotionLogEntry.php:866`] — storage is correctly GMT (`current_time('mysql', true)`), but any consumer rendering the value directly shows GMT as if local (SAST is UTC+2, a 2-hour skew). Display-boundary concern; owned by the downstream Graderingsgeskiedenis display consumer (Story 5.4+ / profile templates).
+- **`reason` column is unbounded `text` and unsanitised** [`PromotionLog.php:727,733`] — an over-length staff `reason` fails `$wpdb->insert` under MySQL strict mode (→ `record()` returns false → silent audit-row loss, see the related decision item). The `reason` source is the staff admin UI (Story 5.2), where length/validation belongs.
+- **5.7 spec baseline-count documentation drift** [`5-7-…md`] — AC-3 cites "baseline 305", the 5.3 hand-off ends at 294, the Change Log reaches 310. Plausibly consistent if 5.2 landed between, but unverifiable from the diff. Documentation-accuracy only; the suite passes.
+- **Epic-5 story commits carry `Co-Authored-By` / `Claude-Session` trailers** [commits `6b7222d`…`3c0429c`] — CLAUDE.md now prohibits these (`attribution.commit: ""`), but the prohibition landed in the final branch commit `62b694f`, so all 10 story commits predate enforcement. Commit metadata, not in the diff body; not worth a history rewrite. Note only — keep new commits trailer-free.
+
 ## Deferred from: code review of 3-5-social-login-r6 (2026-06-22)
 
 - **`/meld-aan` hardcoded footer link** [`auth-register.php`] — root-relative path breaks in subdirectory/multisite installs (same class as the 3.5 privacy link, which WAS fixed). PRE-EXISTING — predates Story 3.5 (the "Reeds 'n rekening? Meld aan" footer). Fold into a future auth-pattern hardening pass; use `wp_login_url()` / `home_url()`.

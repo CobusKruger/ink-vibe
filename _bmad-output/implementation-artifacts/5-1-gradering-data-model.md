@@ -4,7 +4,7 @@ baseline_commit: 4f5e43d711c8d4c6467336ba23e46afac09e160a
 
 # Story 5.1: Gradering data model
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -107,3 +107,9 @@ claude-opus-4-8 (BMAD dev-story loop)
 ### Change Log
 
 - 2026-06-25 — Story 5.1 implemented (create-story → dev-story). Gradering data-model semantics + Kernel-owned meta-key single source + typed default-safe `Tiers\Api::forUser()` accessor (closes Epic-2/2.3 deferral). 283 passed / 1 skipped; cs/stan clean; deptrac no new edge. Status → review.
+
+## Review Findings (code review 2026-06-26, Group A: 5.1+5.3+5.7)
+
+_3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor). All four ACs evidenced; conflation rule holds; no Critical/High violations. One cross-cutting decision involves this story's read path:_
+
+- [x] [Review][Decision→Dismissed] `Api::forUser()` case-sensitive junk→Brons coercion — `Tier::tryFrom('Goud')`/`'Brons'` (mis-cased) returns `null` → coerced to Brons. **RESOLVED 2026-06-26 — accept as-is (no code change).** AC-2 sanctions junk→Brons coercion by design; the sole writer persists lowercase `->value`, so the demotion path is only reachable by external/manual writes (a Story 16.3 import data-quality concern). Tracked with the dismissed audit-fidelity item in Story 5.3's Review Findings. [`Api.php:54`]

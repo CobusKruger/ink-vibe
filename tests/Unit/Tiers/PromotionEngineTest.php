@@ -106,6 +106,20 @@ test( 'Goud never auto-promotes', function (): void {
 } );
 
 /**
+ * Review patch (Group B): a terminal grade (Goud/Meester) does NOT accumulate
+ * wins — the counter is never reset for it, so accumulating would grow it
+ * unbounded. No meta write occurs at all.
+ */
+test( 'a terminal grade does not accumulate wins', function (): void {
+	ink_stub_tier_meta( 'goud', 99 );
+	$GLOBALS['wpdb']->shouldReceive( 'insert' )->never();
+	Functions\expect( 'update_user_meta' )->never(); // no recordWin, no promote.
+	Actions\expectDone( 'ink/tier_promoted' )->never();
+
+	expect( PromotionEngine::award( 7, 1 ) )->toBeNull();
+} );
+
+/**
  * AC-1: multiple wins in one call can cross the threshold and promote once.
  */
 test( 'multiple wins in one call cross the threshold', function (): void {

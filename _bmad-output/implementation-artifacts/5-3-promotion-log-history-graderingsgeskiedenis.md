@@ -4,7 +4,7 @@ baseline_commit: 6b7222de1980e87104d61ab5a08d5071decadbec
 
 # Story 5.3: Promotion log / history (graderingsgeskiedenis)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -101,3 +101,14 @@ claude-opus-4-8 (BMAD dev-story loop)
 ### Change Log
 
 - 2026-06-26 — Story 5.3 implemented (create-story → dev-story, built before 5.2 as the log substrate). `ink_tier_history` custom table + typed `PromotionLog::record()`/`forUser()` + `PromotionLogEntry` value object; schema registered at include time for activation correctness. 294 passed / 1 skipped (+11); cs/stan clean; deptrac no new edge. Status → review.
+
+## Review Findings (code review 2026-06-26, Group A: 5.1+5.3+5.7)
+
+_3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor). All layers passed; AC coverage confirmed; conflation rule holds. Items below are the deduped, triaged residue._
+
+- [x] [Review][Decision→Dismissed] Audit-log fidelity — lossy grade coercion to Brons — `PromotionLogEntry::fromRow()` and `Api::forUser()` coerce any unrecognised/empty/**mis-cased** stored grade to `Tier::Brons`. **RESOLVED 2026-06-26 — accept as-is (no code change).** Spec 5.1 AC-2 explicitly sanctions junk→Brons coercion on the read path, and the sole writer (`promote()`) always persists canonical lowercase `->value`, so the lossy/demotion path is only reachable by external/manual DB writes or a future bad import — a data-quality concern (Story 16.3 import), not a model defect. [`PromotionLogEntry.php:861-862`, `Api.php:54,88-101`]
+- [x] [Review][Patch] Audit durability — table created only at activation + `promote()` ignores `record()` failure — **APPLIED 2026-06-26**: added `Activation::maybeUpgrade()` (admin_init, version-gated idempotent `Schema::install()` + `ink_core_db_version` bump) and `promote()` now fires `ink/tier_promotion_log_failed` + a `WP_DEBUG` `wp_trigger_error` when `record()` returns false. Tests: new `ActivationTest` (3) + `PromoteTest` audit-failure-seam case. — `dbDelta()` runs only in `Activation::activate()`; there is no version-gated upgrade routine (the `ink_core_db_version` option is written but never read back to trigger a migration). On an already-active site upgraded to this version — or on any failed insert — `record()` returns `false`, but `Api::promote()` discards that return: the grade meta + `promoted_at` are written and `ink/tier_promoted` fires while the audit row is silently dropped, defeating the FR-12 append-only guarantee. **RESOLVED 2026-06-26 — full fix:** add a version-gated `Schema::install()` upgrade routine (compare `INK_CORE_VERSION` vs stored `ink_core_db_version` on `admin_init`) AND make `promote()` react to `record() === false` (observable, not silent). [`ink-core.php:49`, `Kernel/Activation.php`, `Api.php` promote → `PromotionLog::record()`]
+- [x] [Review][Patch] Tighten `forUser()` ORDER BY test to pin the `, id DESC` tiebreaker [`tests/Unit/Tiers/PromotionLogTest.php`] — **APPLIED 2026-06-26**: `Mockery::pattern` now matches `ORDER BY created_at DESC, id DESC`.
+- [x] [Review][Patch] Assert the GMT flag in the `record()` timestamp test [`tests/Unit/Tiers/PromotionLogTest.php`] — **APPLIED 2026-06-26**: `current_time` now mocked via `Functions\expect(...)->with('mysql', true)`, asserting the GMT argument.
+- [x] [Review][Defer] `PromotionLogEntry::createdAt` exposes a raw GMT string with no timezone marker [`PromotionLogEntry.php:866`] — deferred, display-boundary concern owned by the downstream history-display consumer (5.4+); storage choice (GMT) is correct.
+- [x] [Review][Defer] `reason` column is unbounded `text` and unsanitised; an over-length value fails the insert under MySQL strict mode [`PromotionLog.php:727,733`] — deferred, the `reason` source is the staff admin UI (Story 5.2), where input validation/length belongs.

@@ -55,6 +55,13 @@ final class AdminProfile {
 	private const CHALLENGE_CHOICES = 50;
 
 	/**
+	 * Maximum stored length for the change reason. The audit `reason` column is
+	 * `text`; the cap keeps a stray paste from truncating mid-write or failing
+	 * the insert under MySQL strict mode.
+	 */
+	private const REASON_MAX_LENGTH = 500;
+
+	/**
 	 * Bind the render + save hooks. Invoked from {@see Module::register()}.
 	 *
 	 * `edit_user_profile` (+ `_update`) fire when editing ANOTHER user — staff
@@ -111,8 +118,9 @@ final class AdminProfile {
 			esc_html__( 'Rede vir verandering', 'ink-core' )
 		);
 		printf(
-			'<td><input type="text" id="%1$s" name="%1$s" value="" class="regular-text" /></td>',
-			esc_attr( self::FIELD_REASON )
+			'<td><input type="text" id="%1$s" name="%1$s" value="" maxlength="%2$d" class="regular-text" /></td>',
+			esc_attr( self::FIELD_REASON ),
+			(int) self::REASON_MAX_LENGTH
 		);
 		echo '</tr>';
 
@@ -146,6 +154,12 @@ final class AdminProfile {
 	 * → `wp_unslash` + sanitise → {@see Api::promote()} (the sole write path),
 	 * actor = the acting staff user. Never reads a raw superglobal.
 	 *
+	 * The reason is length-capped, the optional challenge link is re-validated as
+	 * a published `uitdaging` (a tampered select value is dropped to "no link",
+	 * never logged verbatim), and a manual write is refused when no acting user
+	 * resolves — `actor_id = 0` is the automatic-engine sentinel, so recording a
+	 * manual change as actor 0 would falsify the audit trail.
+	 *
 	 * @param int $user_id The user being saved.
 	 */
 	public function save( int $user_id ): void {
@@ -177,11 +191,43 @@ final class AdminProfile {
 			? sanitize_text_field( wp_unslash( $_POST[ self::FIELD_REASON ] ) )
 			: '';
 
+		if ( '' !== $reason ) {
+			$reason = function_exists( 'mb_substr' )
+				? mb_substr( $reason, 0, self::REASON_MAX_LENGTH )
+				: substr( $reason, 0, self::REASON_MAX_LENGTH );
+		}
+
 		$challenge_id = isset( $_POST[ self::FIELD_CHALLENGE ] ) && is_scalar( $_POST[ self::FIELD_CHALLENGE ] )
 			? absint( wp_unslash( $_POST[ self::FIELD_CHALLENGE ] ) )
 			: 0;
 
-		Api::promote( $user_id, $target, get_current_user_id(), $reason, $challenge_id );
+		// Select-tampering guard: only a published uitdaging may be linked. An
+		// unknown id or a wrong-type post is dropped to 0 (no link) rather than
+		// written verbatim into the audit log + the ink/tier_promoted payload.
+		if ( 0 !== $challenge_id && ! $this->isLinkableChallenge( $challenge_id ) ) {
+			$challenge_id = 0;
+		}
+
+		$actor_id = get_current_user_id();
+
+		// A manual change must be attributable: actor 0 is the sentinel for the
+		// automatic engine (Story 5.8), so refuse a manual write that cannot
+		// identify its actor rather than mis-log it as a system promotion.
+		if ( 0 === $actor_id ) {
+			return;
+		}
+
+		Api::promote( $user_id, $target, $actor_id, $reason, $challenge_id );
+	}
+
+	/**
+	 * Whether a post id is a published uitdaging that may be linked to a change.
+	 *
+	 * @param int $challenge_id The posted challenge id.
+	 */
+	private function isLinkableChallenge( int $challenge_id ): bool {
+		return 'uitdaging' === get_post_type( $challenge_id )
+			&& 'publish' === get_post_status( $challenge_id );
 	}
 
 	/**

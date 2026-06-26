@@ -4,7 +4,7 @@ baseline_commit: 08f2a8a54c0be8534295e50f1a1438381cc28270
 
 # Story 5.7: Win-count meta + reset-on-promotion
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -98,3 +98,11 @@ claude-opus-4-8 (BMAD dev-story loop)
 ### Change Log
 
 - 2026-06-26 — Story 5.7 implemented (create-story → dev-story, before 5.8). `ink_tier_win_count` meta (Kernel-owned key) + `winCountForUser()`/`recordWin()` accumulator + reset-on-promotion inside `Api::promote()`. 310 passed / 1 skipped; cs/stan clean; deptrac no new edge. Status → review.
+
+## Review Findings (code review 2026-06-26, Group A: 5.1+5.3+5.7)
+
+_3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor). All layers passed; AC coverage confirmed; conflation rule holds._
+
+- [x] [Review][Patch] `winCountForUser()` does not floor at 0 on read [`Api.php`] — **APPLIED 2026-06-26**: read now returns `max(0, (int) $raw)`; new `WinCountTest` cases cover a negative stored value flooring to 0 and `recordWin` accumulating from the floored base.
+- [x] [Review][Patch] `recordWin()` writes unconditionally on a no-op [`Api.php`] — **APPLIED 2026-06-26**: early-returns the current total when `max(0,$count) === 0` (no `update_user_meta` write); the "never decreases" test now asserts `update_user_meta->never()` for `-3` and `0`.
+- [x] [Review][Defer] 5.7 spec baseline-count documentation drift [story file] — AC-3 cites "baseline 305", the 5.3 hand-off ends at 294, and the Change Log reaches 310. Plausibly consistent if 5.2 (not in this group) landed between, but not verifiable from this diff. Documentation-accuracy only; the suite demonstrably passes.

@@ -65,14 +65,16 @@ final class PromotionEngine {
 	public static function award( int $user_id, int $wins = 1, int $challenge_id = 0 ): ?Tier {
 		$current = Api::forUser( $user_id );
 
-		// Accumulate first — wins count at the current Gradering whether or not
-		// this grade has a threshold.
-		$total = Api::recordWin( $user_id, $wins );
-
 		if ( ! isset( self::THRESHOLDS[ $current->value ] ) ) {
-			// Goud / Meester — no auto-threshold.
+			// Goud / Meester — no auto-threshold, and the counter is never reset
+			// for a terminal grade (only promote() resets it, and these never
+			// promote). Skip accumulation so ink_tier_win_count cannot grow
+			// unbounded with wins that can never count toward anything.
 			return null;
 		}
+
+		// Accumulate the wins at the (auto-promotable) current Gradering.
+		$total = Api::recordWin( $user_id, $wins );
 
 		$rule = self::THRESHOLDS[ $current->value ];
 

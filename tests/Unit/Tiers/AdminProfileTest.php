@@ -81,9 +81,64 @@ test( 'save promotes with sanitized values and the acting staff actor', function
 	Functions\when( 'get_current_user_id' )->justReturn( 5 );
 	Functions\when( 'get_user_meta' )->justReturn( 'silwer' ); // current grade.
 	Functions\when( 'update_user_meta' )->justReturn( true );
+	Functions\when( 'get_post_type' )->justReturn( 'uitdaging' );   // challenge 11 is a published uitdaging.
+	Functions\when( 'get_post_status' )->justReturn( 'publish' );
 	$GLOBALS['wpdb']->shouldReceive( 'insert' )->once()->andReturn( 1 );
 
 	Actions\expectDone( 'ink/tier_promoted' )->once()->with( 42, Tier::Silwer, Tier::Goud, 5, 11 );
+
+	( new AdminProfile() )->save( 42 );
+	expect( true )->toBeTrue();
+} );
+
+/**
+ * Review patch (Group B): a tampered challenge link (a non-uitdaging / unpublished
+ * post id) is dropped to 0 — never written verbatim into the audit log.
+ */
+test( 'save drops a tampered challenge link to no-link', function (): void {
+	$_POST = array(
+		'ink_set_gradering_nonce' => 'n',
+		'ink_gradering'           => 'goud',
+		'ink_gradering_uitdaging' => '999', // a post id of the wrong type.
+	);
+	Functions\when( 'wp_unslash' )->returnArg( 1 );
+	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+	Functions\when( 'wp_verify_nonce' )->justReturn( true );
+	Functions\when( 'current_user_can' )->justReturn( true );
+	Functions\when( 'absint' )->alias( fn ( $v ): int => abs( (int) $v ) );
+	Functions\when( 'get_current_user_id' )->justReturn( 5 );
+	Functions\when( 'get_user_meta' )->justReturn( 'silwer' );
+	Functions\when( 'update_user_meta' )->justReturn( true );
+	Functions\when( 'get_post_type' )->justReturn( 'page' );    // wrong type → not linkable.
+	Functions\when( 'get_post_status' )->justReturn( 'publish' );
+	$GLOBALS['wpdb']->shouldReceive( 'insert' )->once()->andReturn( 1 );
+
+	// challenge_id is dropped to 0, not the tampered 999.
+	Actions\expectDone( 'ink/tier_promoted' )->once()->with( 42, Tier::Silwer, Tier::Goud, 5, 0 );
+
+	( new AdminProfile() )->save( 42 );
+	expect( true )->toBeTrue();
+} );
+
+/**
+ * Review patch (Group B): a manual write with no resolvable actor (actor 0 = the
+ * automatic-engine sentinel) is refused — never mis-logged as a system promotion.
+ */
+test( 'save refuses a manual change when no acting user resolves', function (): void {
+	$_POST = array(
+		'ink_set_gradering_nonce' => 'n',
+		'ink_gradering'           => 'goud',
+	);
+	Functions\when( 'wp_unslash' )->returnArg( 1 );
+	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+	Functions\when( 'wp_verify_nonce' )->justReturn( true );
+	Functions\when( 'current_user_can' )->justReturn( true );
+	Functions\when( 'absint' )->alias( fn ( $v ): int => abs( (int) $v ) );
+	Functions\when( 'get_user_meta' )->justReturn( 'silwer' );
+	Functions\when( 'get_current_user_id' )->justReturn( 0 ); // no acting user.
+
+	Functions\expect( 'update_user_meta' )->never();
+	Actions\expectDone( 'ink/tier_promoted' )->never();
 
 	( new AdminProfile() )->save( 42 );
 	expect( true )->toBeTrue();

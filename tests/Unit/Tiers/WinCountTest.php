@@ -44,6 +44,15 @@ test( 'winCountForUser returns the stored count as an int', function (): void {
 } );
 
 /**
+ * AC-2: a negative stored value is floored at 0 on read — the read path can
+ * never leak a negative count into the accumulator or the 5.8 threshold check.
+ */
+test( 'winCountForUser floors a negative stored value at 0', function (): void {
+	Functions\when( 'get_user_meta' )->justReturn( '-3' );
+	expect( Api::winCountForUser( 42 ) )->toBe( 0 );
+} );
+
+/**
  * AC-1/AC-2: recordWin accumulates by 1 (default) and returns the new total.
  */
 test( 'recordWin adds one by default and returns the new total', function (): void {
@@ -64,11 +73,24 @@ test( 'recordWin can add several wins at once', function (): void {
 } );
 
 /**
- * AC-1: a non-positive count never decreases the counter.
+ * AC-1: a non-positive count never decreases the counter — and writes nothing
+ * (a no-op fires no update_user_meta hooks), returning the current total.
  */
-test( 'recordWin never decreases the counter', function (): void {
+test( 'recordWin never decreases the counter and does not write on a non-positive count', function (): void {
 	Functions\when( 'get_user_meta' )->justReturn( '5' );
-	Functions\expect( 'update_user_meta' )->once()->with( 7, 'ink_tier_win_count', 5 );
+	Functions\expect( 'update_user_meta' )->never();
 
 	expect( Api::recordWin( 7, -3 ) )->toBe( 5 );
+	expect( Api::recordWin( 7, 0 ) )->toBe( 5 );
+} );
+
+/**
+ * AC-1/AC-2: accumulation starts from the floored (non-negative) base, so a
+ * negative stored value does not drag the new total below the added wins.
+ */
+test( 'recordWin accumulates from a floored base when the stored value is negative', function (): void {
+	Functions\when( 'get_user_meta' )->justReturn( '-3' );
+	Functions\expect( 'update_user_meta' )->once()->with( 42, 'ink_tier_win_count', 2 );
+
+	expect( Api::recordWin( 42, 2 ) )->toBe( 2 );
 } );

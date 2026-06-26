@@ -53,6 +53,12 @@ Kernel\Schema::register( Tiers\PromotionLog::TABLE, array( Tiers\PromotionLog::c
 register_activation_hook( INK_CORE_FILE, array( Kernel\Activation::class, 'activate' ) );
 register_deactivation_hook( INK_CORE_FILE, array( Kernel\Activation::class, 'deactivate' ) );
 
+// Run pending custom-table schema upgrades for an in-place plugin update: the
+// activation hook fires only on (re)activation, so a table added in a later
+// release would be missing on an upgraded site until reactivation. admin_init
+// keeps the dbDelta off the front-end request path; dbDelta is idempotent.
+add_action( 'admin_init', array( Kernel\Activation::class, 'maybeUpgrade' ) );
+
 // Boot the Kernel once WordPress and all plugins are loaded. The Kernel is the
 // single place later stories register their module bootstraps.
 add_action( 'plugins_loaded', Kernel\Plugin::boot( ... ) );

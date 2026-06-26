@@ -71,6 +71,12 @@ final class Api {
 	 * the Kernel `Tier` + this module's log + WordPress; it never references
 	 * `Ink\Entitlement`.
 	 *
+	 * If the audit append fails to persist (e.g. the `ink_tier_history` table is
+	 * missing on an un-upgraded install, or a DB error), the promotion itself
+	 * still stands but the failure is surfaced — the `ink/tier_promotion_log_failed`
+	 * monitoring seam fires and, under `WP_DEBUG`, a developer warning is emitted —
+	 * rather than the FR-12 audit row being dropped silently.
+	 *
 	 * @param int    $user_id      The writer whose grade changes.
 	 * @param Tier   $to           The target grade.
 	 * @param int    $actor_id     The acting staff user id, or 0 for the automatic engine.
@@ -98,7 +104,31 @@ final class Api {
 		// toward the next Gradering restarts at the new grade.
 		update_user_meta( $user_id, Tier::WIN_COUNT_META_KEY, 0 );
 
-		PromotionLog::record( $user_id, $from, $to, $actor_id, $reason, $challenge_id );
+		$logged = PromotionLog::record( $user_id, $from, $to, $actor_id, $reason, $challenge_id );
+
+		if ( false === $logged ) {
+			/**
+			 * Fires when a committed Gradering change could NOT persist its
+			 * append-only audit row (FR-12) — the promotion stands, but the
+			 * history is incomplete. A monitoring/alerting seam so the loss is
+			 * observable rather than silent.
+			 *
+			 * @param int  $user_id      The writer.
+			 * @param Tier $from         The previous grade.
+			 * @param Tier $to           The new grade.
+			 * @param int  $actor_id     The acting staff id, or 0 for the automatic engine.
+			 * @param int  $challenge_id The linked challenge id (0 = none).
+			 */
+			do_action( 'ink/tier_promotion_log_failed', $user_id, $from, $to, $actor_id, $challenge_id ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- INK ink/... event-surface convention (AD).
+
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				wp_trigger_error(
+					__METHOD__,
+					sprintf( 'Gradering audit row failed to persist for user %d (the ink_tier_history table may be missing on an un-upgraded install).', $user_id ),
+					E_USER_WARNING
+				);
+			}
+		}
 
 		/**
 		 * Fires after a writer's Gradering changes (the seam for the Story 5.10
@@ -124,13 +154,16 @@ final class Api {
 	 *
 	 * Reads `ink_tier_win_count` (Story 5.7), defaulting to 0 for an unset/junk
 	 * value — the typed read path consumers use instead of raw `get_user_meta`.
+	 * The count is floored at 0 on read so a negative stored value (a manual DB
+	 * edit, or a legacy pre-`absint` value) can never leak a negative count into
+	 * the accumulator or the Story 5.8 threshold comparison.
 	 *
 	 * @param int $user_id The writer.
 	 */
 	public static function winCountForUser( int $user_id ): int {
 		$raw = get_user_meta( $user_id, Tier::WIN_COUNT_META_KEY, true );
 
-		return is_scalar( $raw ) ? (int) $raw : 0;
+		return is_scalar( $raw ) ? max( 0, (int) $raw ) : 0;
 	}
 
 	/**
@@ -140,14 +173,22 @@ final class Api {
 	 * trigger a promotion — that is the Story 5.8 engine (which calls this, then
 	 * compares against {@see Tier::isAutoPromotable()} + the 5/15 thresholds, then
 	 * calls {@see self::promote()}). A non-positive `$count` never decreases the
-	 * counter.
+	 * counter and writes nothing — the current total is returned untouched, so a
+	 * no-op call fires no `update_user_meta` hooks.
 	 *
 	 * @param int $user_id The writer.
 	 * @param int $count   The number of wins to add (default 1).
 	 * @return int The new accumulated total.
 	 */
 	public static function recordWin( int $user_id, int $count = 1 ): int {
-		$new = self::winCountForUser( $user_id ) + max( 0, $count );
+		$current = self::winCountForUser( $user_id );
+		$add     = max( 0, $count );
+
+		if ( 0 === $add ) {
+			return $current;
+		}
+
+		$new = $current + $add;
 
 		update_user_meta( $user_id, Tier::WIN_COUNT_META_KEY, $new );
 
@@ -231,8 +272,10 @@ final class Api {
 	 * segmentation primitive (Story 5.5).
 	 *
 	 * A `get_users()` meta filter on the single-source `ink_writer_tier` key
-	 * (never raw SQL), merged with optional caller args (e.g. `number`, `paged`).
-	 * The Epic-8 Ontdek filters consume this.
+	 * (never raw SQL). Optional caller args (e.g. `number`, `paged`) are merged,
+	 * but the grade filter and `fields => 'ID'` are authoritative — a caller
+	 * cannot override `meta_key`/`meta_value`/`fields`. Returns positive int IDs
+	 * only. The Epic-8 Ontdek filters consume this.
 	 *
 	 * @param Tier                 $tier The grade to filter by.
 	 * @param array<string, mixed> $args Optional extra `WP_User_Query` args.
@@ -241,21 +284,26 @@ final class Api {
 	public static function usersByGrade( Tier $tier, array $args = array() ): array {
 		// Filtering writers by their Gradering meta is the intended query; the
 		// slow-query advisory is accepted (the result set is staff/discovery-scoped
-		// and callers pass paging args).
+		// and callers pass paging args). Caller `$args` go FIRST so the grade
+		// filter + `fields => 'ID'` are authoritative and cannot be overridden
+		// (a caller passing `fields => 'all'` would otherwise return WP_User
+		// objects that the int cast below mangles).
 		$users = get_users(
 			array_merge(
+				$args,
 				array(
 					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 					'meta_key'   => Tier::META_KEY,
 					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 					'meta_value' => $tier->value,
 					'fields'     => 'ID',
-				),
-				$args
+				)
 			)
 		);
 
-		return array_map( 'intval', (array) $users );
+		$ids = array_map( 'intval', (array) $users );
+
+		return array_values( array_filter( $ids, static fn ( int $id ): bool => $id > 0 ) );
 	}
 
 	/**

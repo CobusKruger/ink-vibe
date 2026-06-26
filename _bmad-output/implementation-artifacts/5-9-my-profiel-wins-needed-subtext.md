@@ -4,7 +4,7 @@ baseline_commit: 0b8ed0201509a5e81b6056ddde9a62b1f380fea2
 
 # Story 5.9: My Profiel "wins needed" subtext
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -92,3 +92,9 @@ claude-opus-4-8 (BMAD dev-story loop)
 ### Change Log
 
 - 2026-06-26 — Story 5.9 implemented (create-story → dev-story). `progressFor()` + `winsNeededSubtext()` (`_n()` Afrikaans, hidden at Goud/Meester) + theme bridge. My Profiel placement deferred to 9.4. 331 passed / 1 skipped; cs/stan clean; deptrac no new edge. Status → review.
+
+## Review Findings (code review 2026-06-26, Group C: 5.4+5.5+5.9+5.10)
+
+_3-layer adversarial review. Single-source `THRESHOLDS` (no re-typed 5/15), `_n()` arg order + glossary copy (afrikaans-terms.md:74), null at terminal grades, guarded/escaped bridge — all confirmed. Residual item below._
+
+- [x] [Review][Defer] At/above-threshold `winsNeededSubtext()` shows "1 ... nodig" (clamp masks promotion-pending) [`PromotionEngine.php` progressFor] — deferred, low-likelihood: `max(1, wins - count)` means a writer whose stored count already meets/exceeds the threshold (a non-reset counter — a manual DB edit, a legacy pre-5.7 value, or a future direct `recordWin` path that doesn't promote) reads "1 top 3 uitslag nodig" instead of surfacing "promotion pending / 0 needed". `promote()` resets the counter on every promotion, so the normal path can't reach this; the clamp is documented-defensive. Revisit (return null, or a distinct "pending" state) if a non-reset accumulation path is introduced.

@@ -62,6 +62,35 @@ test( 'usersByGrade merges caller args', function (): void {
 } );
 
 /**
+ * Review patch (Group C): caller args cannot override the grade filter or fields —
+ * the grade filter + `fields => 'ID'` are authoritative.
+ */
+test( 'usersByGrade does not let caller args override the grade filter', function (): void {
+	$captured = array();
+	Functions\when( 'get_users' )->alias(
+		function ( array $args ) use ( &$captured ): array {
+			$captured = $args;
+			return array();
+		}
+	);
+
+	Api::usersByGrade( Tier::Goud, array( 'meta_key' => 'evil', 'meta_value' => 'silwer', 'fields' => 'all' ) );
+
+	expect( $captured['meta_key'] )->toBe( 'ink_writer_tier' );
+	expect( $captured['meta_value'] )->toBe( 'goud' );
+	expect( $captured['fields'] )->toBe( 'ID' );
+} );
+
+/**
+ * Review patch (Group C): non-positive / empty ids are dropped from the result.
+ */
+test( 'usersByGrade drops non-positive ids', function (): void {
+	Functions\when( 'get_users' )->justReturn( array( '0', '5', '', '12' ) );
+
+	expect( Api::usersByGrade( Tier::Goud ) )->toBe( array( 5, 12 ) );
+} );
+
+/**
  * AC-1: winnerLabel composes "{period} {Grade}-wenner".
  */
 test( 'winnerLabel composes the period, grade and wenner', function (): void {

@@ -4,7 +4,7 @@ baseline_commit: 81e7e2b695324e4d767af58663e6da19fa971ca9
 
 # Story 5.4: Gradering display on profiles
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -97,3 +97,9 @@ claude-opus-4-8 (BMAD dev-story loop)
 ### Change Log
 
 - 2026-06-26 — Story 5.4 implemented (create-story → dev-story). Reusable Gradering badge: `GraderingView` presenter + `Api::gradingView()` + guarded theme bridge + token CSS (Meester → primary #EA4015, a11y text+mark). Template placement deferred to 9.4. 325 passed / 1 skipped; cs/stan clean; deptrac no new edge. Status → review.
+
+## Review Findings (code review 2026-06-26, Group C: 5.4+5.5+5.9+5.10)
+
+_3-layer adversarial review. Three-layer/conflation clean; theme bridges thin + guarded + escaped; Meester=primary (not danger) + a11y text label confirmed correct. Residual item below._
+
+- [x] [Review][Decision→Patch] **APPLIED 2026-06-26** (removed `colorToken()` + its test case; `cssModifier()` + the `.ink-gradering--meester` CSS remain the single source of the Meester=primary rule; docblock updated) — `GraderingView::colorToken()` is dead code asserting non-existent theme tokens — `colorToken()` returns `$tier->value` (`'brons'`/`'silwer'`/`'goud'`) for non-Meester grades, implying theme tokens `--wp--preset--color--brons|silwer|goud` that **do not exist** in `theme.json` (only `primary` + `.ink-gradering--meester` are defined). The badge bridge renders the class from `cssModifier()` and never calls `colorToken()`, so the method is unused outside its own unit test — and the Meester=primary decision actually lives in the CSS literal `.ink-gradering--meester{color:var(--wp--preset--color--primary)}`, NOT in `colorToken()` (contradicting the Dev-Notes "encoded once in colorToken()"). Today's behaviour is fine (text-label a11y holds; Meester=primary holds; other grades render uncoloured text, which the spec permits). Decide: (a) remove `colorToken()` + its test as dead/misleading; (b) keep it for Story 9.4 to reconcile (defer); (c) add `brons/silwer/goud` presets + wire the bridge to use it (per-grade colour). [`GraderingView.php`, `theme.json`, `functions.php`]

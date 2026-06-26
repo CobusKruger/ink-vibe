@@ -94,6 +94,25 @@ test( 'promote supports a manual set to Meester', function (): void {
 } );
 
 /**
+ * Audit durability: when the append-only log row fails to persist (e.g. the
+ * table is missing on an un-upgraded install), the promotion still stands but
+ * the loss is surfaced via the ink/tier_promotion_log_failed monitoring seam
+ * rather than being dropped silently.
+ */
+test( 'promote fires the audit-failure seam when the log row does not persist', function (): void {
+	Functions\when( 'get_user_meta' )->justReturn( 'brons' );
+	Functions\when( 'update_user_meta' )->justReturn( true );
+	Functions\when( 'wp_trigger_error' )->justReturn( null );
+	$GLOBALS['wpdb']->shouldReceive( 'insert' )->once()->andReturn( false ); // audit insert fails.
+
+	Actions\expectDone( 'ink/tier_promoted' )->once();
+	Actions\expectDone( 'ink/tier_promotion_log_failed' )->once()->with( 42, Tier::Brons, Tier::Silwer, 3, 0 );
+
+	// The promotion itself still stands.
+	expect( Api::promote( 42, Tier::Silwer, 3, 'Bevordering', 0 ) )->toBeTrue();
+} );
+
+/**
  * AC-2: actor_id defaults to 0 (the automatic engine).
  */
 test( 'promote defaults the actor to 0 (system)', function (): void {

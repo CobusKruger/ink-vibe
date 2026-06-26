@@ -66,7 +66,9 @@ test( 'schemaSql is dbDelta-compatible with all columns and keys', function (): 
  * GMT timestamp, and an explicit format array.
  */
 test( 'record inserts the row with grades as backing strings and a format array', function (): void {
-	Functions\when( 'current_time' )->justReturn( '2026-06-25 07:30:00' );
+	// Assert the GMT flag (second arg `true`) is passed — the audit timestamp
+	// must be stored in GMT, not site-local time.
+	Functions\expect( 'current_time' )->once()->with( 'mysql', true )->andReturn( '2026-06-25 07:30:00' );
 
 	$GLOBALS['wpdb']->shouldReceive( 'insert' )
 		->once()
@@ -124,7 +126,7 @@ test( 'record returns false when the insert fails', function (): void {
 test( 'forUser runs a prepared query and maps rows to typed entries', function (): void {
 	$GLOBALS['wpdb']->shouldReceive( 'prepare' )
 		->once()
-		->with( Mockery::pattern( '/WHERE user_id = %d ORDER BY created_at DESC/' ), 42 )
+		->with( Mockery::pattern( '/WHERE user_id = %d ORDER BY created_at DESC, id DESC/' ), 42 )
 		->andReturn( 'PREPARED' );
 
 	$GLOBALS['wpdb']->shouldReceive( 'get_results' )

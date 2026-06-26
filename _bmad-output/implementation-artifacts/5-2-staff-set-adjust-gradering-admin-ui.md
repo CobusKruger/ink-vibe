@@ -4,7 +4,7 @@ baseline_commit: 3fe8b510feff44d211fc81110412edb580e967a1
 
 # Story 5.2: Staff set/adjust Gradering admin UI
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -111,3 +111,12 @@ claude-opus-4-8 (BMAD dev-story loop)
 ### Change Log
 
 - 2026-06-26 — Story 5.2 implemented (create-story → dev-story, after 5.3). `Tiers\Api::promote()` sole write path (meta + normalised promoted_at + log append + `ink/tier_promoted` event) and the `MANAGE_TIERS`-gated `AdminProfile` set/adjust UI. Closed three Story-2.3 deferrals. 305 passed / 1 skipped (+11); cs/stan clean; deptrac no new edge. Status → review.
+
+## Review Findings (code review 2026-06-26, Group B: 5.2+5.8)
+
+_3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor). The `$_POST` admin security surface verified CLEAN: nonce-before-use, `MANAGE_TIERS` re-checked in the save handler, full `wp_unslash`+sanitise on every field, no raw superglobal, all output escaped, conflation-clean. All ACs evidenced. Residual items below._
+
+- [x] [Review][Patch] **APPLIED 2026-06-26** — `save()` records `actor_id = 0` when `get_current_user_id()` returns 0 — `actor_id = 0` is the documented sentinel for the **automatic engine** (5.8), so a manual staff change made in a context where no user id resolves (e.g. a CLI/cron-driven `edit_user_profile_update` where `MANAGE_TIERS` passes but `get_current_user_id()` is 0) is permanently mis-logged as a system promotion in the append-only `graderingsgeskiedenis` (FR-12) — uncorrectable (no update/delete API). Low real-world likelihood (interactive admin saves always have a non-zero user), but the audit-integrity fix is cheap. Fix: in the manual save path, bail when the actor resolves to 0. [`AdminProfile.php` save → `Api::promote(..., get_current_user_id(), ...)`]
+- [x] [Review][Patch] **APPLIED 2026-06-26** (`isLinkableChallenge()` drops a non-uitdaging/unpublished id to 0) — `save()` does not re-validate `challenge_id` is a published `uitdaging` — the render restricts the `<select>` to published `uitdaging` posts, but `save()` trusts the posted value through `absint()` only. A tampered POST with a valid-looking positive id (a `page`, an `attachment`, another writer's draft, or a non-existent id) is written verbatim into the audit `challenge_id` and the `ink/tier_promoted` event payload — classic select-tampering. Fix: verify the id is a published `uitdaging` (or 0) before passing to `promote()`. [`AdminProfile.php` save]
+- [x] [Review][Patch] **APPLIED 2026-06-26** (`REASON_MAX_LENGTH = 500`, server-side `mb_substr` + `maxlength` attr; closes the Group A reason-length defer) — `reason` length is uncapped vs the `text` audit column — `sanitize_text_field` imposes no length limit; an over-length reason truncates (non-strict MySQL) or fails the insert (strict mode → the audit-failure seam fires, promotion stands without a row). Resolves the Group A defer that pointed reason-length validation here. Fix: cap server-side + add a `maxlength` to the input. [`AdminProfile.php` save + render]
+- [x] [Review][Defer] `promote()` does not verify `$user_id` exists [`Api.php`] — deferred, low-impact: `forUser()` returns Brons for an unknown user, so a non-no-op `promote()` could write orphan usermeta + an audit row for a phantom user. Both callers (the admin screen, and the 12A.3 engine ingestion — not built) supply real user ids; revisit if a programmatic caller can pass unvalidated ids.

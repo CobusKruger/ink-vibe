@@ -56,18 +56,6 @@ test( 'isMeester is true only for Meester', function (): void {
 } );
 
 /**
- * AC-1: the colour token is `primary` for Meester (#EA4015, not danger) and the
- * grade value for every other grade.
- */
-test( 'colorToken is primary for Meester and the grade value otherwise', function (): void {
-	Functions\when( 'get_user_meta' )->justReturn( 'meester' );
-	expect( Api::gradingView( 1 )->colorToken() )->toBe( 'primary' );
-
-	Functions\when( 'get_user_meta' )->justReturn( 'goud' );
-	expect( Api::gradingView( 1 )->colorToken() )->toBe( 'goud' );
-} );
-
-/**
  * AC-2: an unset writer defaults to Brons (via forUser).
  */
 test( 'gradingView defaults an unset writer to Brons', function (): void {

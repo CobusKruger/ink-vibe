@@ -4,7 +4,7 @@ baseline_commit: a10ddb369d6a592a5c04fff549977baa970d7fc3
 
 # Story 5.5: Gradering in discovery & winners
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -92,3 +92,11 @@ claude-opus-4-8 (BMAD dev-story loop)
 ### Change Log
 
 - 2026-06-26 — Story 5.5 implemented (create-story → dev-story). `usersByGrade()` filter/segmentation primitive + `winnerLabel()` ("Oktober Goud-wenner") + the `wenner` registry term. Ontdek/winner surfaces deferred to Epic 8/12. 342 passed / 1 skipped; cs/stan clean; deptrac no new edge. Status → review.
+
+## Review Findings (code review 2026-06-26, Group C: 5.4+5.5+5.9+5.10)
+
+_3-layer adversarial review. `get_users()` (no raw SQL), single-source `Tier::META_KEY`, glossary-backed `wenner`, conflation-clean — all confirmed. Residual items below._
+
+- [x] [Review][Patch] **APPLIED 2026-06-26** (caller `$args` now merged FIRST so the grade filter + `fields=>'ID'` win; result `array_filter`ed to positive ints; 2 new tests + docblock) — `usersByGrade()` caller args can clobber the grade filter + non-positive IDs survive — `array_merge( array(meta_key, meta_value, fields), $args )` puts `$args` LAST, so a caller passing `meta_key`/`meta_value`/`fields` silently overrides the grade filter; in particular `fields => 'all'` makes `get_users()` return `WP_User` objects that `array_map('intval', …)` then mangles to bogus ints (with a warning). Fix: lock the required keys AFTER `$args` (`array_merge( $args, array(meta_key, meta_value, fields) )`) so the grade filter is authoritative, and `array_filter` the result to positive ints. [`Api.php` usersByGrade]
+- [x] [Review][Defer] `winnerLabel('')` emits a leading space (`" Goud-wenner"`) [`Api.php`] — deferred: the Epic-12 winner surface (not built) supplies the `$period`; the primitive's contract is "caller supplies a non-empty period". Trivial `trim()` guard if it ever matters.
+- [x] [Review][Defer] `wenner` registry key vs glossary slug `winner` [`Terms.php`, `afrikaans-terms.md:102`] — deferred: the registry adds the key as `'wenner'` (the Afrikaans label), but afrikaans-terms.md records the machine slug as `winner`. Functionally correct (`Terms::label('wenner')` resolves, and the grade keys are likewise Afrikaans), but verify the registry-key convention (slug vs label) with the glossary author before more terms follow the pattern.

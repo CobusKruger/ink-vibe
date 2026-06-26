@@ -93,23 +93,90 @@ test( 'Ink\\Entitlement references neither Ink\\Tiers nor the tier meta keys', f
 } );
 
 /**
- * AC-1: the ONLY production writer of `ink_writer_tier` lives under src/Tiers
- * (the `Tiers::promote()` sole write path). No other module writes the grade;
- * Content/UserMeta only REGISTERS it (via register_meta, the Kernel-owned key).
+ * AC-1: only sanctioned writers persist a tier meta key.
+ *
+ * The sole writer of tier CHANGES is `Ink\Tiers\Api::promote()`. The ONE other
+ * sanctioned writer is `Ink\Accounts\Registration` — it materialises the `brons`
+ * DEFAULT at `user_register` (Story 3.3); it cannot route through `promote()`,
+ * which no-ops a `brons → brons` set. Every other module is forbidden from
+ * writing a tier meta key.
+ *
+ * Scans CODE ONLY (comments stripped) for `update_user_meta` co-occurring with a
+ * tier grade/promoted-at/win-count key (literal OR a single-source constant), so
+ * a stringly-typed leak (`'ink_writer_tier'`) is caught alongside the typed one.
  */
-test( 'the only ink_writer_tier writer is in Ink\\Tiers', function (): void {
-	$modules = glob( ABSPATH . 'wp-content/plugins/ink-core/src/*', GLOB_ONLYDIR );
+test( 'only Tiers and the Accounts registration default-setter write a tier meta key', function (): void {
+	// Tier meta-key markers: the literals + the Kernel/UserMeta constants the
+	// production writers actually use (Tiers\Api::promote() uses Tier::META_KEY /
+	// PROMOTED_AT_META_KEY / WIN_COUNT_META_KEY; Accounts\Registration uses
+	// UserMeta::WRITER_TIER).
+	$tier_markers = array(
+		'ink_writer_tier',
+		'ink_tier_promoted_at',
+		'ink_tier_win_count',
+		'WRITER_TIER',
+		'TIER_PROMOTED_AT',
+		'PROMOTED_AT_META_KEY',
+		'WIN_COUNT_META_KEY',
+		'Tier::META_KEY',
+	);
 
-	foreach ( $modules as $dir ) {
-		foreach ( (array) glob( $dir . '/*.php' ) as $file ) {
-			$src = (string) file_get_contents( $file );
+	// Module-relative paths permitted to write a tier meta key.
+	$allowed = array( 'Tiers', 'Accounts/Registration.php' );
 
-			// A write is update_user_meta( …, <tier key> ). Only Tiers may do it.
-			if ( false !== strpos( $src, 'update_user_meta' ) && false !== strpos( $src, 'WIN_COUNT_META_KEY' ) ) {
-				expect( basename( $dir ) )->toBe( 'Tiers' );
+	// All src PHP: top-level, module, and one nested level (so a future subdir
+	// cannot silently escape the scan).
+	$base  = ABSPATH . 'wp-content/plugins/ink-core/src';
+	$files = array_merge(
+		(array) glob( $base . '/*.php' ),
+		(array) glob( $base . '/*/*.php' ),
+		(array) glob( $base . '/*/*/*.php' )
+	);
+
+	expect( $files )->not->toBeEmpty();
+
+	$writers = array();
+
+	foreach ( $files as $file ) {
+		$code = ink_code_only( $file );
+
+		if ( false === strpos( $code, 'update_user_meta' ) ) {
+			continue;
+		}
+
+		$writes_tier = false;
+		foreach ( $tier_markers as $marker ) {
+			if ( false !== strpos( $code, $marker ) ) {
+				$writes_tier = true;
+				break;
 			}
 		}
+
+		if ( ! $writes_tier ) {
+			continue;
+		}
+
+		$rel = substr( $file, strpos( $file, '/src/' ) + 5 );
+
+		$sanctioned = false;
+		foreach ( $allowed as $allow ) {
+			if ( $rel === $allow || str_starts_with( $rel, $allow . '/' ) ) {
+				$sanctioned = true;
+				break;
+			}
+		}
+
+		$writers[] = $rel;
+
+		// An unsanctioned module writing a tier meta key fails here (with $rel).
+		expect( $sanctioned )->toBeTrue();
 	}
+
+	// Non-vacuous: the scan must actually have found the known writers
+	// (Tiers\Api + Accounts\Registration), else a path/marker regression has
+	// silently disabled the guardrail.
+	expect( $writers )->toContain( 'Tiers/Api.php' );
+	expect( $writers )->toContain( 'Accounts/Registration.php' );
 } );
 
 /**
@@ -139,8 +206,14 @@ test( 'a membership-state transition never writes the writer tier', function ():
 	);
 
 	// Activation path needs these; the toggle stays OFF so no mail is sent.
+	// get_userdata is asserted (not merely stubbed) so the test PROVES the
+	// active-transition handler body actually executed past its early return into
+	// sendActivationEmail() — i.e. the negative tier-write assertions below are a
+	// real regression guard, not a vacuous pass on an empty array.
 	Functions\when( 'get_option' )->justReturn( array() );
-	Functions\when( 'get_userdata' )->justReturn( new \WP_User( 7, 'lid@ink.test', 'Jan', 'jan' ) );
+	Functions\expect( 'get_userdata' )
+		->atLeast()->once()
+		->andReturn( new \WP_User( 7, 'lid@ink.test', 'Jan', 'jan' ) );
 
 	$activation = new PurchaseActivation();
 	$membership = ink_guardrail_membership( 7 );
@@ -155,6 +228,9 @@ test( 'a membership-state transition never writes the writer tier', function ():
 		$activation->onMembershipStatusChanged( $membership, $transition[0], $transition[1] );
 	}
 
+	// The handler writes no tier meta on any membership-state transition (it only
+	// sends the activation email). A future regression adding a tier write here
+	// would surface in $written_keys.
 	expect( $written_keys )->not->toContain( 'ink_writer_tier' );
 	expect( $written_keys )->not->toContain( 'ink_tier_promoted_at' );
 	expect( $written_keys )->not->toContain( 'ink_tier_win_count' );

@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-25
+last_updated: 2026-06-26
 # epic-5 started 2026-06-25; 5-1 → review (create-story + dev-story, Gradering data-model: Tier enum default/isManualOnly/isAutoPromotable + Kernel-owned meta-key single source + typed default-safe Tiers\Api::forUser() closing the 2.3 deferral; tests 283 passed/1 skipped +13, cs/stan clean, deptrac no new edge, Entitlement⟂Tiers holds)
 # 5-3 → review (create-story + dev-story, built BEFORE 5.2 as the log substrate; ink_tier_history custom table — FIRST ink-core custom table — via Kernel Schema registry registered at include time for activation correctness; PromotionLog::record()/forUser() + PromotionLogEntry value object; first $wpdb unit-test pattern; tests 294 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
 # 5-2 → review (create-story + dev-story; Tiers\Api::promote() SOLE write path — meta + normalised promoted_at + PromotionLog append + FIRST ink-core do_action 'ink/tier_promoted' event seam for 5.10; MANAGE_TIERS-gated AdminProfile set/adjust user-profile UI (2nd sanctioned $_POST site); closed 3 Story-2.3 deferrals (MANAGE_TIERS grant verified, per-target scope decided = global editorial cap, promoted_at format normalised); Tiers module wired into bootstrap; tests 305 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
@@ -126,17 +126,17 @@ development_status:
 
   # Epic 5: Writer Gradering (Brons / Silwer / Goud / Meester)
   # epic-5 started 2026-06-25; loop via full BMAD create-story → dev-story → tests → commit.
-  epic-5: in-progress
-  5-1-gradering-data-model: review
-  5-2-staff-set-adjust-gradering-admin-ui: review
-  5-3-promotion-log-history-graderingsgeskiedenis: review  # built before 5.2 (log substrate dependency)
-  5-4-gradering-display-on-profiles: review
-  5-5-gradering-in-discovery-winners: review
-  5-6-gradering-lidmaatskap-guardrails: review  # built last (codifies conflation rule across 5.1-5.10)
-  5-7-win-count-meta-reset-on-promotion: review  # built before 5.8 (counter dependency)
-  5-8-automatic-promotion-engine: review
-  5-9-my-profiel-wins-needed-subtext: review
-  5-10-promotion-congratulation-email: review
+  epic-5: done  # all 10 stories done via full BMAD loop + 4-group adversarial code review (2026-06-26); epic-5-retrospective optional
+  5-1-gradering-data-model: done
+  5-2-staff-set-adjust-gradering-admin-ui: done  # code review 2026-06-26 (Group B) — actor-0 guard + challenge re-validation + reason cap applied
+  5-3-promotion-log-history-graderingsgeskiedenis: done  # built before 5.2 (log substrate dependency); code review 2026-06-26 (Group A) — audit-durability + test patches applied
+  5-4-gradering-display-on-profiles: done  # code review 2026-06-26 (Group C) — removed dead colorToken()
+  5-5-gradering-in-discovery-winners: done  # code review 2026-06-26 (Group C) — usersByGrade arg-override hardening
+  5-6-gradering-lidmaatskap-guardrails: done  # built last (codifies conflation rule across 5.1-5.10); code review 2026-06-26 (Group D) — sole-writer guardrail strengthened (Tiers+Registration), behavioural test de-vacuumed, spec prose corrected
+  5-7-win-count-meta-reset-on-promotion: done  # built before 5.8 (counter dependency); code review 2026-06-26 (Group A) — win-count floor + no-op-guard patches applied
+  5-8-automatic-promotion-engine: done  # code review 2026-06-26 (Group B) — terminal-grade no-accumulate patch applied
+  5-9-my-profiel-wins-needed-subtext: done  # code review 2026-06-26 (Group C) — clean, 1 defer
+  5-10-promotion-congratulation-email: done  # code review 2026-06-26 (Group C) — clean, 2 defers
   epic-5-retrospective: optional
 
   # Epic 6: Submission workflow (custom)

@@ -4,7 +4,7 @@ baseline_commit: fbf68590cdd41ae2e1ba173154b39a4668628199
 
 # Story 5.8: Automatic promotion engine
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -95,3 +95,11 @@ claude-opus-4-8 (BMAD dev-story loop)
 ### Change Log
 
 - 2026-06-26 — Story 5.8 implemented (create-story → dev-story). `PromotionEngine` (5/15 thresholds, Goud/Meester terminal, system actor, one-step-per-call) + `Api::awardWins()` facade. 318 passed / 1 skipped; cs/stan clean; deptrac no new edge. Status → review.
+
+## Review Findings (code review 2026-06-26, Group B: 5.2+5.8)
+
+_3-layer adversarial review (Blind Hunter + Edge Case Hunter + Acceptance Auditor). Engine threshold logic verified correct (5/15 boundaries, Goud/Meester terminal, one-step-per-call, conflation-clean). Residual items below._
+
+- [x] [Review][Decision→Patch] **APPLIED 2026-06-26** (`award()` now returns at the terminal-grade check BEFORE `recordWin()`; new test asserts no meta write for a terminal grade) — Terminal-grade (Goud/Meester) win count accumulates unbounded — `award()` calls `recordWin()` BEFORE the terminal-grade early return, so a Goud/Meester writer's `ink_tier_win_count` is incremented and persisted on every award but never reset (only `promote()` resets it, and terminal grades never promote). Dev Notes (5.8) document this as "harmless" (the 5.9 subtext hides it), but Blind + Edge Hunter both flag the silently-growing junk value (a meaningless ever-increasing number any future stats surface would read). Decide: accept-as-documented (no change) vs patch (move `recordWin()` after the terminal check, so wins aren't accumulated for non-auto-promotable grades). [`PromotionEngine.php` award()]
+- [x] [Review][Defer] Large-batch `award()` overshoot discards surplus wins [`PromotionEngine.php`] — deferred, spec-intentional: `award($id, 100)` on a Brons writer promotes one step and resets to 0, losing the surplus past the first threshold. "One step per call" is the documented spec intent (no Brons→Goud skip); batch-award semantics (whether a backlog should promote multiple steps) are owned by the not-yet-built R2 ingestion caller (Story 12A.3). Revisit when 12A.3 is designed.
+- [x] [Review][Defer] `awardWins()` is not idempotent on `$challenge_id` re-runs [`PromotionEngine.php`] — deferred: there is no dedupe on the challenge link, so a retry/replay of the same challenge result double-counts wins. Idempotency is the caller's (Story 12A.3) concern by spec design (the engine's contract is "caller supplies the win count"). Record as a known seam risk for 12A.3.

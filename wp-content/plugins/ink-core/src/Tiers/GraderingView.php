@@ -45,17 +45,11 @@ final class GraderingView {
 
 	/**
 	 * The single-source CSS modifier for the badge (the grade backing value),
-	 * e.g. `meester` → `.ink-gradering--meester`.
+	 * e.g. `meester` → `.ink-gradering--meester`. The theme maps the Meester
+	 * modifier to the brand `primary` token in `theme.json` (the single place the
+	 * Meester colour lives); other grades render the text label uncoloured.
 	 */
 	public function cssModifier(): string {
 		return $this->tier->value;
-	}
-
-	/**
-	 * The theme colour-token name for this grade: `primary` for Meester (#EA4015),
-	 * otherwise the grade value (the per-grade gold/silver/bronze token).
-	 */
-	public function colorToken(): string {
-		return $this->isMeester ? 'primary' : $this->tier->value;
 	}
 }

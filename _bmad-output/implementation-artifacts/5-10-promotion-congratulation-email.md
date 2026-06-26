@@ -4,7 +4,7 @@ baseline_commit: 0171b2ef8f2d6f9111eed1fdfa811e7a63d67d62
 
 # Story 5.10: Promotion congratulation email
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -97,3 +97,10 @@ claude-opus-4-8 (BMAD dev-story loop)
 ### Change Log
 
 - 2026-06-26 — Story 5.10 implemented (create-story → dev-story; final Epic-5 story). `PromotionEmails` Notifications consumer — two Afrikaans-source congratulation templates (toggle OFF), sent on auto-promotion (actor 0) to Silwer/Goud via the 1.12 store; `Tiers → Notifications` deptrac edge added. 338 passed / 1 skipped; cs/stan clean; deptrac no new violation. Status → review.
+
+## Review Findings (code review 2026-06-26, Group C: 5.4+5.5+5.9+5.10)
+
+_3-layer adversarial review. `actor_id===0` auto-only gate, Silwer/Goud match (Brons/Meester send nothing), recipient resolution, toggle fail-safe OFF, glossary copy (afrikaans-terms.md:213), and the acyclic `Tiers→Notifications` deptrac edge — all confirmed correct. Residual items below._
+
+- [x] [Review][Defer] Blank email if the toggle override is ON but the template is unregistered [`PromotionEmails.php` + Notifications 1.12] — deferred, Notifications-layer hardening: under a cross-module bootstrap load-order edge ("first wiring wins"), a stored `enabled=true` override could let `Notifier::send` proceed with empty subject/body. Production wires register+subscribe on the same instance and the toggle is OFF by default, so this is speculative; the fix (suppress send when the template is unregistered even under an enabled-override) belongs in the 1.12 Notifier, not Tiers.
+- [x] [Review][Defer] `onTierPromoted()` has no idempotency guard (double-fire → two emails) [`PromotionEmails.php`] — deferred: `promote()` no-ops on `from===to` so a single promotion fires once synchronously today. Revisit (a "already congratulated for this grade" guard) if the event ever becomes async/retried (e.g. Action Scheduler ingestion in 12A.3).
