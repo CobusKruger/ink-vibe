@@ -17,11 +17,17 @@ $ink_skryf_types = isset( $ink_skryf['types'] ) && is_array( $ink_skryf['types']
 $ink_skryf_in    = function_exists( 'ink_foundation_is_member_logged_in' ) && ink_foundation_is_member_logged_in();
 
 // Per-type supporting descriptions + body placeholders (theme presentation copy).
-$ink_skryf_desc = array(
+$ink_skryf_desc       = array(
 	'gedig'   => __( 'Druk emosies uit deur vers, ritme en beelding.', 'ink-foundation' ),
 	'storie'  => __( 'Skep \'n vertelling met karakters, intrige en betekenis.', 'ink-foundation' ),
 	'artikel' => __( 'Deel \'n essay, besinning of joernalistieke stuk.', 'ink-foundation' ),
 );
+$ink_skryf_ph         = array(
+	'gedig'   => __( "Begin jou gedig hier...\n\nWenk: Gebruik reëlbreuke om jou verse te struktureer.", 'ink-foundation' ),
+	'storie'  => __( "Begin jou storie hier...\n\nWenk: Kortverhale is gewoonlik tussen 1 000 en 7 500 woorde.", 'ink-foundation' ),
+	'artikel' => __( "Begin met 'n sterk openingsreël...\n\nWenk: Begin met die idee, grond dit dan in 'n storie.", 'ink-foundation' ),
+);
+$ink_skryf_first_slug = isset( $ink_skryf_types[0]['slug'] ) ? (string) $ink_skryf_types[0]['slug'] : 'gedig';
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"720px"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
@@ -52,7 +58,7 @@ $ink_skryf_desc = array(
 				}
 				?>
 				<label class="ink-skryf-type">
-					<input type="radio" name="<?php echo esc_attr( $ink_skryf['field_type'] ); ?>" value="<?php echo esc_attr( $ink_slug ); ?>"<?php echo $ink_first ? ' checked' : ''; ?> />
+					<input type="radio" name="<?php echo esc_attr( $ink_skryf['field_type'] ); ?>" value="<?php echo esc_attr( $ink_slug ); ?>"<?php echo $ink_first ? ' checked' : ''; ?> data-counter-mode="<?php echo esc_attr( isset( $ink_type['counter_mode'] ) ? (string) $ink_type['counter_mode'] : 'words' ); ?>" data-placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_slug ] ?? '' ); ?>" />
 					<span class="ink-skryf-type__label"><?php echo esc_html( $ink_label ); ?></span>
 					<?php if ( isset( $ink_skryf_desc[ $ink_slug ] ) ) : ?>
 						<span class="ink-skryf-type__desc"><?php echo esc_html( $ink_skryf_desc[ $ink_slug ] ); ?></span>
@@ -71,7 +77,8 @@ $ink_skryf_desc = array(
 
 		<p class="ink-skryf-field">
 			<label for="ink-skryf-body"><?php echo esc_html__( 'Jou werk', 'ink-foundation' ); ?></label>
-			<textarea id="ink-skryf-body" name="<?php echo esc_attr( $ink_skryf['field_body'] ); ?>" rows="16" placeholder="<?php echo esc_attr__( 'Begin hier...', 'ink-foundation' ); ?>" required></textarea>
+			<textarea id="ink-skryf-body" name="<?php echo esc_attr( $ink_skryf['field_body'] ); ?>" rows="16" placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_skryf_first_slug ] ?? '' ); ?>" required></textarea>
+			<span class="ink-skryf-counter" data-words-label="<?php echo esc_attr__( 'woorde', 'ink-foundation' ); ?>" data-lines-label="<?php echo esc_attr__( 'reëls', 'ink-foundation' ); ?>" aria-live="polite"></span>
 		</p>
 
 		<?php

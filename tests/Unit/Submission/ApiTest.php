@@ -57,3 +57,17 @@ test( 'formModel lists the three submittable types with labels', function (): vo
 		expect( $type['label'] )->toBeString()->not->toBe( '' );
 	}
 } );
+
+/**
+ * Each type carries its counter mode (Story 6.2): gedig = lines+words, prose = words.
+ */
+test( 'formModel carries the per-type counter mode', function (): void {
+	$modes = array();
+	foreach ( Api::formModel()['types'] as $type ) {
+		$modes[ $type['slug'] ] = $type['counter_mode'];
+	}
+
+	expect( $modes['gedig'] )->toBe( 'lines_words' );
+	expect( $modes['storie'] )->toBe( 'words' );
+	expect( $modes['artikel'] )->toBe( 'words' );
+} );

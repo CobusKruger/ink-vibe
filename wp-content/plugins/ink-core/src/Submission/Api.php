@@ -34,15 +34,20 @@ final class Api {
 	 * (headings, button labels, placeholders) stays in the theme pattern as
 	 * `ink-foundation` strings — the model carries no markup and no logic.
 	 *
-	 * @return array{post_action:string, nonce_action:string, nonce_name:string, field_type:string, field_title:string, field_body:string, types:list<array{slug:string, label:string}>}
+	 * Each type carries its `counter_mode` (Story 6.2) so the browser counter can
+	 * show lines+words for a gedig and words-only for prose without re-defining the
+	 * rule — {@see Counters} / {@see ContentType} remain the single source.
+	 *
+	 * @return array{post_action:string, nonce_action:string, nonce_name:string, field_type:string, field_title:string, field_body:string, types:list<array{slug:string, label:string, counter_mode:string}>}
 	 */
 	public static function formModel(): array {
 		$types = array();
 
 		foreach ( SubmissionForm::submittableTypes() as $slug ) {
 			$types[] = array(
-				'slug'  => $slug,
-				'label' => Terms::label( $slug ),
+				'slug'         => $slug,
+				'label'        => Terms::label( $slug ),
+				'counter_mode' => ContentType::counterMode( $slug ),
 			);
 		}
 

@@ -50,6 +50,31 @@ function ink_foundation_register_pattern_categories(): void {
 add_action( 'init', 'ink_foundation_register_pattern_categories' );
 
 /**
+ * Enqueue the Skryf live-counter enhancement on the Skryf page only (Story 6.2).
+ *
+ * Progressive enhancement: the script gives live line/word feedback and swaps the
+ * per-type body placeholder. The authoritative counting rules live in `ink-core`
+ * ({@see \Ink\Submission\Counters}); this is only the client mirror. With JS off,
+ * the form still submits — no business logic in the theme.
+ */
+function ink_foundation_enqueue_skryf_assets(): void {
+	if ( ! function_exists( 'is_page' ) || ! is_page( 'skryf' ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-skryf-counter',
+		get_theme_file_uri( 'assets/js/skryf-counter.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_skryf_assets' );
+
+/**
  * Register the core block style variations (card / button / emphasis).
  *
  * These are token-driven presentation treatments applied to any block instance
