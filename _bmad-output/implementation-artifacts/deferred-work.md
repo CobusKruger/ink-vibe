@@ -2,6 +2,10 @@
 
 Consolidated `defer` findings from code reviews. Each item is real but not actionable in its originating story (pre-existing, by-design, or owned by a later story/epic).
 
+## Deferred from: Story 9.8 — private messaging (2026-06-26)
+
+- **Private Messaging is out of launch scope (§14.7, FL 9.8) — by design, non-blocking.** The BuddyPress `messages` component is code-enforced OFF by the Story 9.1 scope (`Ink\Social\BuddyPress::FORCED_OFF` includes `messages`; never in `SCOPED_ON`), so a cloned-DB-active messaging component is forced off regardless. No INK messaging UI/route/table/block is shipped. A standing guardrail (`tests/Unit/Social/MessagingDeferredTest.php`) fails the suite if `messages` is ever re-added to launch scope. **Revisit post-launch** — when picked up it is a `messages`-component re-enable (or an INK alternative), with its own moderation/POPIA considerations. Tracked decision, not a gap.
+
 ## Deferred from: Epic 8 code review (2026-06-26)
 
 3-layer adversarial review (Blind Hunter / Edge Case Hunter / Acceptance Auditor) of all 5 Epic-8 stories. **5 patches applied** (search LIKE double-wrap that returned zero results; "Skrywers in jou Gradering" surfacing non-writers; publish-timestamp epoch fallback; read-count preview exclusion; the 8.1 date-browse UI control). The items below are deferred (real but not actionable in this epic).
