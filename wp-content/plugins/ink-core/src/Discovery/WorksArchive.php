@@ -289,6 +289,8 @@ final class WorksArchive {
 			);
 		}
 
+		$current_year = (int) current_time( 'Y' );
+
 		return self::toHtml(
 			$cards,
 			array(
@@ -296,6 +298,8 @@ final class WorksArchive {
 				'max_pages' => (int) $query->max_num_pages,
 				'type'      => $active_type,
 				'sort'      => $active_sort,
+				'year'      => $year > 0 ? $year : null,
+				'years'     => range( $current_year, $current_year - 5 ),
 			)
 		);
 	}
@@ -348,15 +352,19 @@ final class WorksArchive {
 	/**
 	 * Build the archive HTML. Pure — Terms + escaping only.
 	 *
-	 * @param list<array{title:string, permalink:string, type:string, author:string}> $cards The works.
-	 * @param array{paged:int, max_pages:int, type?:string|null, sort?:string}        $nav   Render context.
+	 * @param list<array{title:string, permalink:string, type:string, author:string}>                            $cards The works.
+	 * @param array{paged:int, max_pages:int, type?:string|null, sort?:string, year?:int|null, years?:list<int>} $nav Render context.
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
-		$heading  = '<h1 class="ink-ontdek-werke__heading">' . esc_html( Terms::label( 'bydrae_plural' ) ) . '</h1>';
-		$controls = self::controlsHtml(
+		$heading   = '<h1 class="ink-ontdek-werke__heading">' . esc_html( Terms::label( 'bydrae_plural' ) ) . '</h1>';
+		$controls  = self::controlsHtml(
 			$nav['type'] ?? null,
 			isset( $nav['sort'] ) ? (string) $nav['sort'] : self::SORT_NUUT
+		);
+		$controls .= self::dateBrowseHtml(
+			$nav['year'] ?? null,
+			isset( $nav['years'] ) && is_array( $nav['years'] ) ? $nav['years'] : array()
 		);
 
 		if ( array() === $cards ) {
@@ -433,6 +441,47 @@ final class WorksArchive {
 		}
 
 		$html .= '</div></div>';
+
+		return $html;
+	}
+
+	/**
+	 * The date-archive browse control — "Alle datums" + a pill per year. Pure.
+	 *
+	 * Each link sets/clears the `werke_jaar` query var (resetting the page); the
+	 * active year is marked. Renders nothing without a year list (so callers that
+	 * pass no years — e.g. a sort-only context — get no date row).
+	 *
+	 * @param int|null  $active_year The active archive year, or null for all dates.
+	 * @param list<int> $years       The years to offer.
+	 * @return string
+	 */
+	public static function dateBrowseHtml( ?int $active_year, array $years ): string {
+		if ( array() === $years ) {
+			return '';
+		}
+
+		$html = '<div class="ink-ontdek-werke__datums">';
+
+		$html .= self::pill(
+			esc_url( remove_query_arg( array( self::YEAR_VAR, self::MONTH_VAR, self::PAGED_VAR ) ) ),
+			__( 'Alle datums', 'ink-core' ),
+			( null === $active_year ),
+			'ink-ontdek-werke__datum-knoppie'
+		);
+
+		foreach ( $years as $year ) {
+			$year  = (int) $year;
+			$url   = esc_url( add_query_arg( self::YEAR_VAR, $year, remove_query_arg( array( self::MONTH_VAR, self::PAGED_VAR ) ) ) );
+			$html .= self::pill(
+				$url,
+				(string) $year,
+				$year === $active_year,
+				'ink-ontdek-werke__datum-knoppie'
+			);
+		}
+
+		$html .= '</div>';
 
 		return $html;
 	}

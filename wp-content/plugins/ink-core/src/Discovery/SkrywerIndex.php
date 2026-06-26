@@ -130,7 +130,14 @@ final class SkrywerIndex {
 		// Form flag — this writer has published in this form.
 		update_user_meta( $author, self::formFlagKey( $type ), '1' );
 
-		$ts = isset( $post->post_date_gmt ) ? max( 0, (int) strtotime( (string) $post->post_date_gmt ) ) : 0;
+		// Publish time as a GMT unix timestamp; fall back to "now" when the post
+		// carries no usable GMT date (e.g. `0000-00-00` → strtotime false), so a
+		// writer is never pinned to the epoch in the recency sorts.
+		$ts = isset( $post->post_date_gmt ) ? (int) strtotime( (string) $post->post_date_gmt ) : 0;
+
+		if ( $ts <= 0 ) {
+			$ts = time();
+		}
 
 		// First publication — set ONCE (a later publish never moves it back/forward).
 		if ( '' === (string) get_user_meta( $author, self::FIRST_PUBLISH_META, true ) ) {

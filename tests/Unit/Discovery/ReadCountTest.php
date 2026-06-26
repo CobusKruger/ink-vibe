@@ -42,6 +42,7 @@ test( 'incrementAuthor adds one to the writer read total', function (): void {
 test( 'maybeCount counts a single readable-bydrae view (post + author)', function (): void {
 	Functions\when( 'is_admin' )->justReturn( false );
 	Functions\when( 'is_feed' )->justReturn( false );
+	Functions\when( 'is_preview' )->justReturn( false );
 	Functions\when( 'is_singular' )->justReturn( true );
 	Functions\when( 'get_queried_object_id' )->justReturn( 42 );
 	Functions\when( 'get_post_meta' )->justReturn( '0' );
@@ -56,6 +57,7 @@ test( 'maybeCount counts a single readable-bydrae view (post + author)', functio
 test( 'maybeCount does nothing when the view is not a singular bydrae (non-vacuous guard)', function (): void {
 	Functions\when( 'is_admin' )->justReturn( false );
 	Functions\when( 'is_feed' )->justReturn( false );
+	Functions\when( 'is_preview' )->justReturn( false );
 	Functions\when( 'is_singular' )->justReturn( false ); // e.g. an archive / page
 	Functions\expect( 'update_post_meta' )->never();
 	Functions\expect( 'update_user_meta' )->never();

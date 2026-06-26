@@ -4,9 +4,16 @@ baseline_commit: 9ba7466
 
 # Story 8.4: Search
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
+
+### Review Findings (Epic 8 code review, 2026-06-26)
+
+- [x] [Review][Patch] **CRITICAL: search returned ZERO results** — `worksQueryArgs`/`skrywersQueryArgs` passed `'%' . $folded . '%'` as the LIKE value, but `WP_Meta_Query` itself wraps a LIKE value as `'%' . esc_like($v) . '%'`, so it double-wrapped (the `%` became literal). Fixed to pass the bare folded term (WP adds the wildcards + `esc_like`, which also neutralises any `%`/`_` in the user's query). The unit tests were asserting the wrong (broken) shape — updated. [Search.php, SearchTest.php]
+- [x] [Review][Defer] Folded search indexes aren't backfilled for migrated content — owned by the scripted migration (Epic 16). See deferred-work.md.
+- [x] [Review][Defer] `fold()` omits ß/æ/ø/œ (outside the Afrikaans set; self-matches hold) — add when non-Afrikaans names prove common. See deferred-work.md.
+- [x] [Review][Dismiss] "theme" implemented as title+body (no separate `tema` field; epic AC only says title/theme) — documented product reading.
 
 ## Story
 

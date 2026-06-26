@@ -4,9 +4,15 @@ baseline_commit: 2c8311c
 
 # Story 8.2: Ontdek — bydraes tab
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
+
+### Review Findings (Epic 8 code review, 2026-06-26)
+
+- [x] [Review][Defer] The "Mees geliefd"/"Opspraakwekkend" meta-ordered sorts drop pre-existing/migrated works that lack `ink_reaksie_telling`/`ink_trending_score` — denorm backfill owned by the scripted migration (Epic 16); `TrendingScore::recomputeAll` seeds daily for going-forward content. See deferred-work.md.
+- [x] [Review][Defer] Sort labels (Nuut/Opspraakwekkend/Mees geliefd/Alles) are inline `__()` source literals — copy-debt to ratify into the Terms registry on the next copy pass. See deferred-work.md.
+- [x] [Review][Dismiss] Trending empty until first daily run — disclosed; `maybeSchedule` runs at `time()` so first run is near-immediate; "Mees geliefd" works live.
 
 ## Story
 

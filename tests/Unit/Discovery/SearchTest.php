@@ -42,8 +42,9 @@ test( 'worksQueryArgs matches the folded term LIKE against the works index, publ
 	expect( $args['post_type'] )->toBe( array( PostTypes::GEDIG, PostTypes::STORIE, PostTypes::ARTIKEL ) );
 	expect( $args['post_status'] )->toBe( 'publish' );
 	expect( $args['posts_per_page'] )->toBe( 12 );
+	// Bare term — WP_Meta_Query wraps the LIKE value with `%…%` + esc_like itself.
 	expect( $args['meta_query'][0] )->toBe(
-		array( 'key' => SearchIndex::WORKS_META, 'value' => '%reen%', 'compare' => 'LIKE' )
+		array( 'key' => SearchIndex::WORKS_META, 'value' => 'reen', 'compare' => 'LIKE' )
 	);
 } );
 
@@ -53,7 +54,7 @@ test( 'skrywersQueryArgs matches the folded term LIKE against the skrywer index 
 	expect( $args['fields'] )->toBe( 'ID' );
 	expect( $args['number'] )->toBe( 12 );
 	expect( $args['meta_query'][0] )->toBe(
-		array( 'key' => SearchIndex::SKRYWER_META, 'value' => '%anna%', 'compare' => 'LIKE' )
+		array( 'key' => SearchIndex::SKRYWER_META, 'value' => 'anna', 'compare' => 'LIKE' )
 	);
 } );
 

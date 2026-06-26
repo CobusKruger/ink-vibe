@@ -4,9 +4,16 @@ baseline_commit: 6223d0d
 
 # Story 8.5: Discovery surfaces
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
+
+### Review Findings (Epic 8 code review, 2026-06-26)
+
+- [x] [Review][Patch] "Skrywers in jou Gradering" surfaced arbitrary NON-writers — because Brons is the default tier for every member, `usersByGrade(Brons)` returned all members. Added a writer-EXISTS (`ink_skrywer_eerste_publikasie`) clause so the surface lists writers only. [DiscoverySurfaces.php]
+- [x] [Review][Defer] Sort/surface labels are inline `__()` source literals (not Terms-registry keys) — copy-debt to ratify; verify "Onlangs aktief" is human-authored. See deferred-work.md.
+- [x] [Review][Dismiss] `writersLikeArgs` empty-forms `include => [0]` path is dead for the rendered route (render only calls it for actual writers) and correctly matches no users.
+- [x] [Review][Confirm] "Unread-by-you" deferral (AC #8) verified legitimate by the Acceptance Auditor — genuinely needs per-user read history that doesn't exist; documented; no misleading proxy shipped.
 
 ## Story
 

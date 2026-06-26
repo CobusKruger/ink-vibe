@@ -44,7 +44,7 @@ final class ReadCount {
 	 * Count a view when the main request is a single readable bydrae.
 	 */
 	public function maybeCount(): void {
-		if ( is_admin() || is_feed() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+		if ( is_admin() || is_feed() || is_preview() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
 			return;
 		}
 

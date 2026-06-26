@@ -186,7 +186,18 @@ final class DiscoverySurfaces {
 	public static function inGraderingIds( int $user_id, int $limit ): array {
 		$ids = TiersApi::usersByGrade(
 			TiersApi::forUser( $user_id ),
-			array( 'number' => $limit + 1 )
+			array(
+				'number'     => $limit + 1,
+				// Writers only — Brons is the DEFAULT tier for every member, so without
+				// this the surface would list arbitrary non-writers at the same grade.
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- bounded, discovery-scoped peer query on indexed denorm meta.
+				'meta_query' => array(
+					array(
+						'key'     => SkrywerIndex::FIRST_PUBLISH_META,
+						'compare' => 'EXISTS',
+					),
+				),
+			)
 		);
 
 		return array_slice( self::excludeId( $ids, $user_id ), 0, $limit );

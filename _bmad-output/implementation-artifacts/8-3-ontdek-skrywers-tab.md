@@ -4,9 +4,17 @@ baseline_commit: 66e7002
 
 # Story 8.3: Ontdek — skrywers tab
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
+
+### Review Findings (Epic 8 code review, 2026-06-26)
+
+- [x] [Review][Patch] `SkrywerIndex::onTransition` stored `0` (epoch) when `post_date_gmt` was missing/invalid, mis-ranking the writer forever in recency sorts — now falls back to `time()`. [SkrywerIndex.php]
+- [x] [Review][Patch] `ReadCount::maybeCount` counted preview requests — added `is_preview()` to the guard. [ReadCount.php]
+- [x] [Review][Defer] Skrywers tab + "Meeste gelees" drop pre-existing/migrated writers lacking the denorm meta — one-shot backfill owned by the scripted migration (Epic 16). See deferred-work.md.
+- [x] [Review][Defer] Read-count increment is a non-atomic read-modify-write (lost updates) — owned by the Story-18.x read-count hardening (with bot/dedup). See deferred-work.md.
+- [x] [Review][Dismiss] `publish→publish` edit re-writes `laaste_publikasie` to the same `post_date` (idempotent; "recently active = recently published" is the documented definition).
 
 ## Story
 

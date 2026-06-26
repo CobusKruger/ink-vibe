@@ -177,6 +177,24 @@ test( 'controlsHtml marks the active type and sort and preserves the other dimen
 	expect( $filtered )->toContain( 'Mees geliefd' );
 } );
 
+test( 'dateBrowseHtml renders Alle datums + a pill per year and marks the active year', function (): void {
+	ink_archive_render_stubs();
+
+	$html = WorksArchive::dateBrowseHtml( 2025, array( 2026, 2025, 2024 ) );
+
+	expect( $html )->toContain( 'ink-ontdek-werke__datums' );
+	expect( $html )->toContain( 'Alle datums' );
+	expect( $html )->toContain( '2026' );
+	expect( $html )->toContain( '2025' );
+	expect( $html )->toContain( '2024' );
+	expect( $html )->toContain( 'is-active' );      // the active year (2025)
+	expect( $html )->toContain( 'aria-current="true"' );
+} );
+
+test( 'dateBrowseHtml renders nothing without a year list', function (): void {
+	expect( WorksArchive::dateBrowseHtml( null, array() ) )->toBe( '' );
+} );
+
 test( 'toHtml renders prev/next only when there is more than one page', function (): void {
 	ink_archive_render_stubs();
 

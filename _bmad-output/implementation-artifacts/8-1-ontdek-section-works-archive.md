@@ -4,9 +4,15 @@ baseline_commit: af61b73
 
 # Story 8.1: Ontdek section + works archive
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
+
+### Review Findings (Epic 8 code review, 2026-06-26)
+
+- [x] [Review][Patch] AC#3 date/archive browse had no UI affordance (engine was URL-only) — added `WorksArchive::dateBrowseHtml()` (Alle datums + year pills, active marked, wired into the block + token styles). [WorksArchive.php]
+- [x] [Review][Defer] Works "Mees geliefd" sort drops pre-existing/migrated works lacking `ink_reaksie_telling` (meta-join) — backfill owned by the scripted migration (Epic 16). See deferred-work.md.
+- [x] [Review][Dismiss] No `ster_gradering` URL change (verified the derived slug preserves `/ster-gradering/`).
 
 ## Story
 

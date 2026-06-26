@@ -47,6 +47,7 @@ last_updated: 2026-06-26
 # 5-5 → review (create-story + dev-story; Tiers discovery/winner primitives — Api::usersByGrade() (get_users meta filter, no raw SQL) + Api::winnerLabel() ('Oktober Goud-wenner') + 'wenner' Terms term (glossary-first, lowercase); Ontdek/winner surfaces deferred to Epic 8/12; tests 342 passed/1 skipped, cs/stan clean, deptrac no new edge)
 # 5-6 → review (create-story + dev-story, FINAL Epic-5 story; conflation-rule guardrail TESTS — structural code-only scan (Tiers⊥Entitlement both directions + no tier-meta leak into Entitlement + sole tier writer in Tiers) + behavioural test (membership transitions never write ink_writer_tier); tests-only, NO production change (codebase already clean); tests 346 passed/1 skipped, stan clean, deptrac Entitlement⟂Tiers holds AD-8)
 # EPIC 5 COMPLETE: all 10 stories (5.1-5.10) → review via the full BMAD loop (create-story → dev-story → tests pass → commit). 270→346 unit tests (+76), zero regressions throughout. epic-5-retrospective (optional) is the formal close step.
+# EPIC 8 COMPLETE 2026-06-26: all 5 stories (8.1-8.5) done via the full BMAD loop (create-story → dev-story → tests/gates → commit), then a 3-layer adversarial code review (Blind/Edge/Acceptance). Ontdek = Discovery module activated: works archive (8.1) + date-browse; bydraes tab type-filter + Nuut/Opspraakwekkend/Mees-geliefd sorts on AD-7 denormalized reaction-total + Action-Scheduler trending (8.2); skrywers tab WP_User_Query + genre filter + Meeste-gelees/Nuwe-stemme + per-writer denorm + read-count (8.3); diacritic-insensitive search via folded index (8.4); personalised surfaces — new voices / recently active / soos jy / in jou Gradering (8.5). Both deferred Epic-2 items CLOSED (2.2 ster_gradering slug single-source in 8.1; 2.5 term-image wp_attachment_is_image in 8.3). 496→568 unit tests (+72). Code review: 5 patches applied (CRITICAL: search LIKE double-wrap returned zero results; "in jou Gradering" surfaced non-writers; publish-ts epoch fallback; read-count preview exclusion; 8.1 date-browse UI). Deferred: discovery-denorm backfill for migrated content → Epic 16 migration; read-count atomicity + unread-by-you → Epic 18/9. conflation-clean throughout (Discovery→Tiers display-only, zero Entitlement). epic-8-retrospective (optional) is the formal close step.
 # epic-2 started 2026-06-21; 2-1 → review 2026-06-21
 # epic-2 retrospective completed 2026-06-22
 # epic-3 started 2026-06-22; 3-1 → done (code review) 2026-06-22; 3-3 → done 2026-06-22; 3-4 → done (research spike) 2026-06-22; 3-6 → done (code review) 2026-06-22; 3-5 → done (code review) 2026-06-22
@@ -185,12 +186,12 @@ development_status:
   epic-7-retrospective: optional
 
   # Epic 8: Discovery (Ontdek)
-  epic-8: in-progress
-  8-1-ontdek-section-works-archive: review
-  8-2-ontdek-bydraes-tab: review
-  8-3-ontdek-skrywers-tab: review
-  8-4-search: review
-  8-5-discovery-surfaces: review
+  epic-8: done
+  8-1-ontdek-section-works-archive: done
+  8-2-ontdek-bydraes-tab: done
+  8-3-ontdek-skrywers-tab: done
+  8-4-search: done
+  8-5-discovery-surfaces: done
   epic-8-retrospective: optional
 
   # Epic 9: Community & social

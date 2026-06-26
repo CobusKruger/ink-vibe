@@ -85,7 +85,10 @@ final class Search {
 			'meta_query'          => array(
 				array(
 					'key'     => SearchIndex::WORKS_META,
-					'value'   => '%' . $folded . '%',
+					// Bare term: WP_Meta_Query wraps a LIKE value as `'%' . esc_like($v) . '%'`
+					// itself — pre-wrapping here would double-wrap (the `%` become literal,
+					// matching nothing) and esc_like neutralises any `%`/`_` in the term.
+					'value'   => $folded,
 					'compare' => 'LIKE',
 				),
 			),
@@ -107,7 +110,8 @@ final class Search {
 			'meta_query' => array(
 				array(
 					'key'     => SearchIndex::SKRYWER_META,
-					'value'   => '%' . $folded . '%',
+					// Bare term — WP_Meta_Query adds the `%…%` + esc_like (see worksQueryArgs).
+					'value'   => $folded,
 					'compare' => 'LIKE',
 				),
 			),
