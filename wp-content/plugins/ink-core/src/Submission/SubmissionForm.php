@@ -204,6 +204,7 @@ class SubmissionForm {
 		}
 
 		$this->attachFeaturedImage( (int) $post_id );
+		$this->attachMedia( (int) $post_id );
 
 		$this->redirect( $this->formUrl( 'konsep-gestoor' ) );
 	}
@@ -241,6 +242,40 @@ class SubmissionForm {
 		}
 
 		set_post_thumbnail( $post_id, (int) $attachment_id );
+	}
+
+	/**
+	 * Attach an OPTIONAL audio/video file to the new bydrae (Story 6.5).
+	 *
+	 * Mirrors {@see attachFeaturedImage()}: bails silently when no usable
+	 * audio/video file was uploaded; any failure is non-fatal. On success the
+	 * uploaded media's attachment id is stored on the bydrae as
+	 * {@see MediaAttachment::META_KEY} (not a thumbnail). Nonce already verified.
+	 *
+	 * @param int $post_id The freshly created bydrae id.
+	 */
+	protected function attachMedia( int $post_id ): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified in handlePost() before this runs.
+		if ( ! isset( $_FILES[ MediaAttachment::FIELD ] ) || ! is_array( $_FILES[ MediaAttachment::FIELD ] ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- $_FILES metadata is read through Upload's is_scalar guards; media_handle_upload performs the authoritative MIME validation.
+		$file = wp_unslash( $_FILES[ MediaAttachment::FIELD ] );
+
+		if ( ! Upload::isPresent( $file ) || ! MediaAttachment::isAudioVideo( $file ) ) {
+			return;
+		}
+
+		$this->ensureMediaStack();
+
+		$attachment_id = $this->mediaHandleUpload( MediaAttachment::FIELD, $post_id );
+
+		if ( is_wp_error( $attachment_id ) || 0 === (int) $attachment_id ) {
+			return;
+		}
+
+		update_post_meta( $post_id, MediaAttachment::META_KEY, (int) $attachment_id );
 	}
 
 	/**

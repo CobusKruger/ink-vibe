@@ -33,5 +33,6 @@ final class Module implements ModuleContract {
 	 */
 	public function register(): void {
 		( new SubmissionForm() )->register();
+		( new MediaAttachment() )->register();
 	}
 }

@@ -86,6 +86,11 @@ $ink_skryf_first_slug = isset( $ink_skryf_types[0]['slug'] ) ? (string) $ink_skr
 			<input type="file" id="ink-skryf-image" name="<?php echo esc_attr( $ink_skryf['field_image'] ?? 'ink_submission_featured_image' ); ?>" accept="image/*" />
 		</p>
 
+		<p class="ink-skryf-field">
+			<label for="ink-skryf-media"><?php echo esc_html__( 'Klank/video (opsioneel)', 'ink-foundation' ); ?></label>
+			<input type="file" id="ink-skryf-media" name="<?php echo esc_attr( $ink_skryf['field_media'] ?? 'ink_submission_media' ); ?>" accept="audio/*,video/*" />
+		</p>
+
 		<?php
 		if ( function_exists( 'ink_foundation_skryf_form_fields' ) ) {
 			ink_foundation_skryf_form_fields();
