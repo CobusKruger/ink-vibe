@@ -156,6 +156,11 @@ final class Terms {
 			'plaas'                     => __( 'Plaas', 'ink-core' ), // Recurring authored submit verb (Skryf + Gemeenskapsreaksie).
 			'leeslys'                   => __( 'Leeslys', 'ink-core' ), // Story 7.7 (glossary line 151).
 
+			// Social — follow graph (Story 9.2, glossary lines 152-154, 187-188).
+			'volg'                      => __( 'Volg', 'ink-core' ),
+			'volg_tans'                 => __( 'Volg tans', 'ink-core' ),
+			'volg_nie_meer'             => __( 'Volg nie meer nie', 'ink-core' ),
+
 			// Sections.
 			'biblioteek'                => __( 'Biblioteek', 'ink-core' ),
 			'opleiding'                 => __( 'Opleiding', 'ink-core' ),

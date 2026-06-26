@@ -40,6 +40,12 @@ class Module implements ModuleContract {
 		if ( $this->buddyPressActive() ) {
 			add_filter( 'bp_active_components', array( BuddyPress::class, 'scopeComponents' ) );
 		}
+
+		// Story 9.2: the asymmetric follow graph — REST write path + toggle block.
+		// The store + counts are stateless statics reached through the Api facade;
+		// the table DDL is registered with the Kernel Schema in the bootstrap.
+		( new FollowController() )->register();
+		( new FollowToggle() )->register();
 	}
 
 	/**

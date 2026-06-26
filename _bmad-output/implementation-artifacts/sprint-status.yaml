@@ -197,7 +197,7 @@ development_status:
   # Epic 9: Community & social
   epic-9: in-progress
   9-1-buddypress-scoped-config: review
-  9-2-follow-graph-asymmetric: backlog
+  9-2-follow-graph-asymmetric: review
   9-3-following-feed: backlog
   9-4-custom-profile-templates: backlog
   9-5-pinned-selected-works: backlog
