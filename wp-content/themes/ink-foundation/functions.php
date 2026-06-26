@@ -161,6 +161,42 @@ function ink_foundation_enqueue_gemeenskapsreaksie(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_gemeenskapsreaksie' );
 
 /**
+ * Enqueue the leeslys save-toggle client on a single work (Story 7.7, FR-29).
+ *
+ * The ink/leeslys-knoppie block server-renders the toggle in its saved state;
+ * this thin client flips it through the `ink/v1/leeslys` REST endpoint and shows
+ * the human-authored confirmation toast. The two toast strings are authored
+ * Afrikaans (ui-copy-translations.md 155/156), localised verbatim.
+ */
+function ink_foundation_enqueue_leeslys(): void {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'gedig', 'storie', 'artikel' ) ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-leeslys',
+		get_theme_file_uri( 'assets/js/leeslys.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+
+	wp_localize_script(
+		'ink-foundation-leeslys',
+		'inkLeeslys',
+		array(
+			'restUrl'     => esc_url_raw( rest_url( 'ink/v1/leeslys' ) ),
+			'nonce'       => wp_create_nonce( 'wp_rest' ),
+			'savedText'   => __( 'Gestoor na jou leeslys', 'ink-foundation' ),
+			'removedText' => __( 'Verwyder van jou leeslys', 'ink-foundation' ),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_leeslys' );
+
+/**
  * Register the core block style variations (card / button / emphasis).
  *
  * These are token-driven presentation treatments applied to any block instance

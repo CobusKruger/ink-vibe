@@ -43,6 +43,8 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 			<!-- wp:post-date {"fontSize":"sm","textColor":"muted-text"} /-->
 		</div>
 		<!-- /wp:group -->
+
+		<!-- wp:ink/leeslys-knoppie /-->
 	</div>
 	<!-- /wp:group -->
 </section>

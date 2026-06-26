@@ -44,7 +44,8 @@ final class Module implements ModuleContract {
 		( new ResponsesList() )->register();
 		( new ContextualPrompts() )->register();
 		( new SuggestedReads() )->register();
-
-		// Reserved: leeslys lands later in Epic 7.
+		( new ReadingListController() )->register();
+		( new ReadingListToggle() )->register();
+		( new ReadingList() )->register();
 	}
 }

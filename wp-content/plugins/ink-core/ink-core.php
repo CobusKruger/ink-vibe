@@ -3,7 +3,7 @@
  * Plugin Name:       INK Core
  * Plugin URI:        https://ink.org.za/
  * Description:       INK se kern-besigheidslogika: inhoudsmodelle, lidmaatskap-toegang, Gradering, indiening, leesbetrokkenheid, uitdagings, borge en kennisgewings. Die enigste plek vir INK-besigheidsreëls (drie-laag-skeiding).
- * Version:           0.1.1
+ * Version:           0.1.2
  * Requires at least: 7.0
  * Requires PHP:      8.3
  * Author:            INK
@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
  * `ink_core_db_version` option so later modules' dbDelta migrations can compare
  * and upgrade.
  */
-const VERSION = '0.1.1';
+const VERSION = '0.1.2';
 
 // Path / URL constants — no hardcoded URLs anywhere; resolved from this file.
 define( 'INK_CORE_VERSION', VERSION );
@@ -48,6 +48,7 @@ require_once INK_CORE_PATH . 'src/autoload.php';
 // root, outside deptrac's src/ scan, so no tracked edge is created.
 Kernel\Schema::register( Tiers\PromotionLog::TABLE, array( Tiers\PromotionLog::class, 'schemaSql' ) ); // Story 5.3: graderingsgeskiedenis audit log.
 Kernel\Schema::register( Engagement\ReactionStore::TABLE, array( Engagement\ReactionStore::class, 'schemaSql' ) ); // Story 7.3: line-reaction table.
+Kernel\Schema::register( Engagement\ReadingListStore::TABLE, array( Engagement\ReadingListStore::class, 'schemaSql' ) ); // Story 7.7: leeslys table.
 
 // Activation / deactivation: versioned-DB-option, schema registry install,
 // rewrite-rule flush, and PHP/WP minimum-version guard.

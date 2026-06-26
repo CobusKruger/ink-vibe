@@ -150,6 +150,7 @@ final class Terms {
 			'insig'                     => __( 'Insig', 'ink-core' ),
 			'voorstel'                  => __( 'Voorstel', 'ink-core' ),
 			'plaas'                     => __( 'Plaas', 'ink-core' ), // Recurring authored submit verb (Skryf + Gemeenskapsreaksie).
+			'leeslys'                   => __( 'Leeslys', 'ink-core' ), // Story 7.7 (glossary line 151).
 
 			// Sections.
 			'biblioteek'                => __( 'Biblioteek', 'ink-core' ),
