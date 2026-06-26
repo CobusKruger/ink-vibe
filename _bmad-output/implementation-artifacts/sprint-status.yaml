@@ -160,7 +160,14 @@ development_status:
   6-7-draft-publish-states: done
   6-8-submission-entitlement-gate: done
   6-9-remove-legacy-edit-link-filter: done
-  epic-6-retrospective: optional
+  # epic-6-retrospective completed 2026-06-26 (epic-6-retro-2026-06-26.md). All 4
+  # Epic-5 actions addressed — incl. the is_scalar debt (Epic-2 #2) PAID DOWN at
+  # kickoff after slipping 3 retros, and skryfwerk added (Epic-2 #3). 4 actions:
+  # promote the 2 candidate rules (cross-story durability + non-vacuous guardrails)
+  # into project-context.md; codify a theme-pattern i18n convention; make 7.2 render
+  # 6.3's verbatim structure; submission anti-spam guard owned → 18.10. No epic
+  # update required; Epic 7 (Reading & engagement) clear to start.
+  epic-6-retrospective: done
 
   # Epic 7: Reading & engagement
   epic-7: backlog
