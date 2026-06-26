@@ -36,5 +36,8 @@ final class Module implements ModuleContract {
 	public function register(): void {
 		( new WorksArchive() )->register();
 		( new TrendingScore() )->register();
+		( new SkrywerIndex() )->register();
+		( new ReadCount() )->register();
+		( new SkrywersTab() )->register();
 	}
 }

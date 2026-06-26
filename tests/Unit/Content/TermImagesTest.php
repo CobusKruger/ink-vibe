@@ -102,13 +102,26 @@ test( 'term image meta is single integer, show_in_rest, absint-sanitised and gat
 } );
 
 /**
- * AC-4: imageId() reads the native meta and casts to int (0 when unset).
+ * AC-4: imageId() reads the native meta and casts to int (0 when unset). Story 8.3
+ * adds consume-point validation: a non-image / missing id reads as 0.
  */
-test( 'imageId returns the stored attachment id as an int', function (): void {
+test( 'imageId returns the stored attachment id when it is a real image', function (): void {
 	Functions\when( 'get_term_meta' )->justReturn( '7' );
+	Functions\when( 'wp_attachment_is_image' )->justReturn( true );
 	expect( TermImages::imageId( 123 ) )->toBe( 7 );
 
 	Functions\when( 'get_term_meta' )->justReturn( '' );
+	expect( TermImages::imageId( 123 ) )->toBe( 0 );
+} );
+
+/**
+ * Story 8.3 (closes 2.5 deferral): a stale / deleted / non-image id is rejected
+ * at the consume point so it never renders a broken image. Non-vacuous — a valid
+ * image id above DOES return.
+ */
+test( 'imageId returns 0 for a stored id that is not an image attachment', function (): void {
+	Functions\when( 'get_term_meta' )->justReturn( '999' );
+	Functions\when( 'wp_attachment_is_image' )->justReturn( false );
 	expect( TermImages::imageId( 123 ) )->toBe( 0 );
 } );
 
@@ -117,6 +130,7 @@ test( 'imageId returns the stored attachment id as an int', function (): void {
  */
 test( 'Api facade exposes the term-image surface', function (): void {
 	Functions\when( 'get_term_meta' )->justReturn( '42' );
+	Functions\when( 'wp_attachment_is_image' )->justReturn( true );
 	expect( Api::termImageId( 5 ) )->toBe( 42 );
 	expect( Api::termImageTaxonomies() )->toBe( TermImages::imageTaxonomyList() );
 } );

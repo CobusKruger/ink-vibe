@@ -29,6 +29,12 @@ use Brain\Monkey\Functions;
 
 beforeEach( function (): void {
 	Monkey\setUp();
+	// `StorefrontSuppression::isStorefrontRequest()` guards with
+	// `function_exists( 'is_admin' ) && is_admin()`. Once ANY earlier test in the
+	// process defines `is_admin` (Brain Monkey can't un-define it), that guard
+	// stops short-circuiting and calls `is_admin()` — so stub it explicitly to the
+	// normal front-end value rather than relying on it being undefined.
+	Functions\when( 'is_admin' )->justReturn( false );
 } );
 
 /**

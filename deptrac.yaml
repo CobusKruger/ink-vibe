@@ -125,8 +125,15 @@ deptrac:
             # DENORMALIZED reaction-total meta-key contract via the Engagement Api
             # facade (`Api::reactionTotalMetaKey()`). A real, non-circular cross-
             # module Api-facade dependency (Engagement depends only on Kernel/Content,
-            # never back on Discovery). No Entitlement/Tiers edge.
+            # never back on Discovery).
             - Engagement
+            # Story 8.3: the skrywers tab reads each writer's Gradering for DISPLAY
+            # via `Ink\Tiers\Api::forUser()` (AD-7 "tier from user-meta"). A real,
+            # non-circular cross-module Api-facade dependency — display only,
+            # NEVER gates discovery on a tier, and carries zero Ink\Entitlement
+            # (THE conflation rule is untouched: Discovery sorts/filters on form +
+            # read/recency, never on tier).
+            - Tiers
         Challenges:
             - Kernel
         Sponsors:

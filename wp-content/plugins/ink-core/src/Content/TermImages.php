@@ -72,11 +72,19 @@ final class TermImages {
 	 * The attachment ID of a term's image, or 0 if none. The cross-module read
 	 * surface (exposed via {@see Content\Api::termImageId()}).
 	 *
+	 * Validates the stored attachment (Story 8.3, closing the 2.5 deferral): the
+	 * save path `absint`s any positive integer, so a stale / deleted / non-image
+	 * id could otherwise render a broken `<img>` on a discovery / training surface.
+	 * `wp_attachment_is_image()` gates that at the consume point, so a non-image id
+	 * reads as "no image" (0).
+	 *
 	 * @param int $term_id The term.
 	 * @return int Attachment ID, or 0.
 	 */
 	public static function imageId( int $term_id ): int {
-		return (int) get_term_meta( $term_id, self::META_KEY, true );
+		$id = (int) get_term_meta( $term_id, self::META_KEY, true );
+
+		return ( $id > 0 && wp_attachment_is_image( $id ) ) ? $id : 0;
 	}
 
 	/**

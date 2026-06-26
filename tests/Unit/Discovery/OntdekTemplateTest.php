@@ -46,4 +46,6 @@ test( 'the Ontdek pattern carries the Bydraes/Skrywers tab scaffold and embeds t
 
 	// The works archive is the server-rendered ink-core block.
 	expect( $markup )->toContain( 'wp:ink/ontdek-werke' );
+	// Story 8.3: the Skrywers tab embeds the skrywers server block.
+	expect( $markup )->toContain( 'wp:ink/ontdek-skrywers' );
 } );
