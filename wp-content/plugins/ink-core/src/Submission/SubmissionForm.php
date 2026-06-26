@@ -182,9 +182,12 @@ class SubmissionForm {
 			? sanitize_text_field( wp_unslash( $_POST[ self::FIELD_TITLE ] ) )
 			: '';
 
-		$body = isset( $_POST[ self::FIELD_BODY ] ) && is_scalar( $_POST[ self::FIELD_BODY ] )
-			? wp_kses_post( wp_unslash( $_POST[ self::FIELD_BODY ] ) )
-			: '';
+		$body = '';
+
+		if ( isset( $_POST[ self::FIELD_BODY ] ) && is_scalar( $_POST[ self::FIELD_BODY ] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- ProseSanitizer::sanitize() wraps wp_kses() (Story 6.3 strict allowlist); the sniff cannot see through the wrapper.
+			$body = ProseSanitizer::sanitize( (string) wp_unslash( $_POST[ self::FIELD_BODY ] ) );
+		}
 
 		$postarr = $this->buildDraft( $type, $title, $body, $user_id );
 

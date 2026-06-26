@@ -128,7 +128,7 @@ test( 'handlePost inserts a draft bydrae on a valid submission', function (): vo
 	Functions\when( 'wp_unslash' )->returnArg( 1 );
 	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
 	Functions\when( 'sanitize_key' )->returnArg( 1 );
-	Functions\when( 'wp_kses_post' )->returnArg( 1 );
+	Functions\when( 'wp_kses' )->returnArg( 1 );
 	Functions\when( 'wp_verify_nonce' )->justReturn( 1 );
 	Functions\when( 'is_wp_error' )->alias( static fn( $thing ): bool => $thing instanceof \WP_Error );
 
