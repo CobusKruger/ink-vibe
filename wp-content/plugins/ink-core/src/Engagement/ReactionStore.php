@@ -188,4 +188,40 @@ final class ReactionStore {
 
 		return is_array( $rows ) ? array_values( $rows ) : array();
 	}
+
+	/**
+	 * A work's reaction totals, aggregated across all its lines (Story 7.8).
+	 *
+	 * Normalised to every {@see Reaction} value (a reaction with no rows → 0), so
+	 * the count surfaces always have a complete, ordered map.
+	 *
+	 * @param int $post_id The work.
+	 * @return array<string, int> Reaction value → total count.
+	 */
+	public static function countsForPost( int $post_id ): array {
+		global $wpdb;
+
+		$table = self::tableName();
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT reaction, COUNT(*) AS total FROM {$table} WHERE post_id = %d GROUP BY reaction",
+				$post_id
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		$counts = array_fill_keys( Reaction::values(), 0 );
+
+		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
+			$reaction = Reaction::tryFrom( (string) $row->reaction );
+
+			if ( null !== $reaction ) {
+				$counts[ $reaction->value ] = (int) $row->total;
+			}
+		}
+
+		return $counts;
+	}
 }

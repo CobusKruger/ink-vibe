@@ -114,3 +114,29 @@ test( 'forPost returns an empty list when there are no reactions', function (): 
 
 	expect( ReactionStore::forPost( 999 ) )->toBe( array() );
 } );
+
+test( 'countsForPost aggregates per reaction and normalises every reaction to a count', function (): void {
+	$GLOBALS['wpdb']->shouldReceive( 'prepare' )
+		->once()
+		->with( Mockery::pattern( '/SELECT reaction, COUNT\(\*\) AS total FROM wp_ink_line_reactions WHERE post_id = %d GROUP BY reaction/' ), 42 )
+		->andReturn( 'PREPARED' );
+
+	// Only hartjie + wow have rows; duim_op has none.
+	$GLOBALS['wpdb']->shouldReceive( 'get_results' )->once()->with( 'PREPARED' )->andReturn(
+		array(
+			(object) array( 'reaction' => 'hartjie', 'total' => '342' ),
+			(object) array( 'reaction' => 'wow', 'total' => '5' ),
+		)
+	);
+
+	$counts = ReactionStore::countsForPost( 42 );
+
+	expect( $counts )->toBe( array( 'hartjie' => 342, 'duim_op' => 0, 'wow' => 5 ) ); // normalised, duim_op → 0
+} );
+
+test( 'countsForPost returns all-zero counts when there are no reactions', function (): void {
+	$GLOBALS['wpdb']->shouldReceive( 'prepare' )->andReturn( 'PREPARED' );
+	$GLOBALS['wpdb']->shouldReceive( 'get_results' )->andReturn( null );
+
+	expect( ReactionStore::countsForPost( 999 ) )->toBe( array( 'hartjie' => 0, 'duim_op' => 0, 'wow' => 0 ) );
+} );

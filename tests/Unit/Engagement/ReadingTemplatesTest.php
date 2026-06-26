@@ -124,6 +124,12 @@ test( 'every reading pattern embeds the leeslys save toggle, and the profile sur
 	expect( $ink_read( 'patterns/profile-summary.php' ) )->toContain( 'wp:ink/leeslys' );
 } );
 
+test( 'every reading pattern embeds the reaction-totals (resonance counts) block', function () use ( $ink_read ): void {
+	foreach ( array( 'reading-storie.php', 'reading-artikel.php', 'reading-gedig.php' ) as $pattern ) {
+		expect( $ink_read( 'patterns/' . $pattern ) )->toContain( 'wp:ink/reaksie-tellers' );
+	}
+} );
+
 test( 'every reading pattern shows the contextual prompt before the response form', function () use ( $ink_read ): void {
 	foreach ( array( 'reading-storie.php', 'reading-artikel.php', 'reading-gedig.php' ) as $pattern ) {
 		$markup = $ink_read( 'patterns/' . $pattern );

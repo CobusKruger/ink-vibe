@@ -47,5 +47,6 @@ final class Module implements ModuleContract {
 		( new ReadingListController() )->register();
 		( new ReadingListToggle() )->register();
 		( new ReadingList() )->register();
+		( new ReactionTotals() )->register();
 	}
 }

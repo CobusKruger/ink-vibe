@@ -44,6 +44,8 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 		</div>
 		<!-- /wp:group -->
 
+		<!-- wp:ink/reaksie-tellers /-->
+
 		<!-- wp:ink/leeslys-knoppie /-->
 	</div>
 	<!-- /wp:group -->
