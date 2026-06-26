@@ -48,4 +48,6 @@ test( 'the Ontdek pattern carries the Bydraes/Skrywers tab scaffold and embeds t
 	expect( $markup )->toContain( 'wp:ink/ontdek-werke' );
 	// Story 8.3: the Skrywers tab embeds the skrywers server block.
 	expect( $markup )->toContain( 'wp:ink/ontdek-skrywers' );
+	// Story 8.4: the search block sits at the top of the hub.
+	expect( $markup )->toContain( 'wp:ink/ontdek-soek' );
 } );

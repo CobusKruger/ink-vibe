@@ -39,5 +39,7 @@ final class Module implements ModuleContract {
 		( new SkrywerIndex() )->register();
 		( new ReadCount() )->register();
 		( new SkrywersTab() )->register();
+		( new SearchIndex() )->register();
+		( new Search() )->register();
 	}
 }
