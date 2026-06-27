@@ -56,6 +56,8 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 	<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"768px"}} -->
 	<div class="wp-block-group">
 		<!-- wp:post-content {"lock":{"move":true,"remove":true}} /-->
+
+		<!-- wp:ink/opleiding-verwant /-->
 	</div>
 	<!-- /wp:group -->
 </section>

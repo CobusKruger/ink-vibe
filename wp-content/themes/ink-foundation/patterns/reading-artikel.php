@@ -63,6 +63,8 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 		<!-- wp:ink/gemeenskapsreaksies /-->
 
 		<!-- wp:ink/verwante-stukke /-->
+
+		<!-- wp:ink/opleiding-verwant /-->
 	</div>
 	<!-- /wp:group -->
 </section>
