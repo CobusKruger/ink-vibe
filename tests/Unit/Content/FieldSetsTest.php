@@ -154,3 +154,60 @@ test( 'Api facade exposes the field meta-key surface', function (): void {
 	expect( Api::fieldMetaKeys() )->toBe( FieldSets::metaKeys() );
 	expect( FieldSets::metaKeys() )->toHaveCount( 12 );
 } );
+
+/**
+ * Story 12.3 (deferred from Epic 2): the meta-box save path now enforces the per-CPT
+ * editorial capability — a user with edit_post but WITHOUT ink_manage_challenges can
+ * no longer write uitdaging meta via the meta box (matching the REST auth_callback).
+ */
+test( 'save denies an uitdaging meta write when the per-CPT cap is missing', function (): void {
+	$_POST = array(
+		'ink_content_fieldsets_nonce' => 'n',
+		'ink_uitdaging_theme'      => 'Herfs',
+	);
+	Functions\when( 'wp_unslash' )->returnArg( 1 );
+	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+	Functions\when( 'wp_verify_nonce' )->justReturn( true );
+	Functions\when( 'wp_is_post_autosave' )->justReturn( false );
+	Functions\when( 'wp_is_post_revision' )->justReturn( false );
+	// edit_post → true, but the editorial cap ink_manage_challenges → false.
+	Functions\when( 'current_user_can' )->alias(
+		fn ( string $cap ): bool => 'edit_post' === $cap
+	);
+
+	Functions\expect( 'update_post_meta' )->never();
+
+	$post            = new \WP_Post();
+	$post->post_type = 'uitdaging';
+	( new FieldSets() )->save( 42, $post );
+
+	expect( true )->toBeTrue();
+
+	unset( $_POST );
+} );
+
+/**
+ * Story 12.3: with BOTH edit_post and the per-CPT cap, the meta-box save writes.
+ */
+test( 'save writes uitdaging meta when both edit_post and the per-CPT cap are held', function (): void {
+	$_POST = array(
+		'ink_content_fieldsets_nonce' => 'n',
+		'ink_uitdaging_theme'      => 'Herfs',
+	);
+	Functions\when( 'wp_unslash' )->returnArg( 1 );
+	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+	Functions\when( 'wp_verify_nonce' )->justReturn( true );
+	Functions\when( 'wp_is_post_autosave' )->justReturn( false );
+	Functions\when( 'wp_is_post_revision' )->justReturn( false );
+	Functions\when( 'current_user_can' )->justReturn( true );
+
+	Functions\expect( 'update_post_meta' )->once()->with( 42, 'ink_uitdaging_theme', 'Herfs' );
+
+	$post            = new \WP_Post();
+	$post->post_type = 'uitdaging';
+	( new FieldSets() )->save( 42, $post );
+
+	expect( true )->toBeTrue();
+
+	unset( $_POST );
+} );

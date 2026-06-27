@@ -208,6 +208,16 @@ final class FieldSets {
 			return;
 		}
 
+		// Capability reconciliation (Story 12.3, deferred from Epic 2 review): the
+		// REST write path gates the meta on the per-CPT editorial capability via the
+		// register_post_meta auth_callback (current_user_can($cap)); enforce the SAME
+		// capability here so the classic/meta-box save path cannot bypass the editorial
+		// gate with only edit_post. The cap is granted to admin+editor at activation
+		// (Story 3.3 Capabilities::grantToEditor), so editorial roles keep write access.
+		if ( ! current_user_can( $definitions[ $post->post_type ]['cap'] ) ) {
+			return;
+		}
+
 		foreach ( $definitions[ $post->post_type ]['fields'] as $field ) {
 			$key = $field['key'];
 
@@ -289,7 +299,7 @@ final class FieldSets {
 					),
 					array(
 						'key'      => self::UITDAGING_DEADLINE,
-						'label'    => __( 'Sperdatum', 'ink-core' ),
+						'label'    => __( 'Sluitingsdatum', 'ink-core' ),
 						'type'     => 'string',
 						'input'    => 'datetime-local',
 						'sanitize' => array( self::class, 'sanitizeDate' ),

@@ -72,3 +72,9 @@ if ( ! class_exists( 'WP_Error' ) ) {
 if ( ! class_exists( 'WP_Term' ) ) {
 	require_once __DIR__ . '/stubs/class-wp-term.php';
 }
+
+// Likewise a minimal WP_Post double: Story 12.3's Content\FieldSets::save() type-hints
+// WP_Post and reads $post->post_type, so the symbol must exist for its unit tests.
+if ( ! class_exists( 'WP_Post' ) ) {
+	require_once __DIR__ . '/stubs/class-wp-post.php';
+}
