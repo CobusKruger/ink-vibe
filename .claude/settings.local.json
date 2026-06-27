@@ -4,6 +4,7 @@
       "Bash(git *)",
       "Bash(python3 *)",
       "Bash(grep *)",
+      "Bash(find *)",
       "Bash(echo *)",
       "Bash(tail *)",
       "Bash(head *)",
