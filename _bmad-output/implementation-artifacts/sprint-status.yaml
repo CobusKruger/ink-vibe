@@ -293,7 +293,7 @@ development_status:
   # epic-13 started 2026-06-27; full BMAD loop (create-story → dev-story → tests → commit).
   epic-13: in-progress
   13-1-inkpols-uitgawe-model: review
-  13-2-issue-archive-by-year: backlog
+  13-2-issue-archive-by-year: review
   13-3-pdf-viewing: backlog
   13-4-back-catalogue-migration: backlog
   epic-13-retrospective: optional
