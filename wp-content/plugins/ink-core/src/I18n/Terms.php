@@ -157,8 +157,13 @@ final class Terms {
 			// Story 12.2: challenge theme/tema + list-page countdown labels.
 			'tema'                      => __( 'Tema', 'ink-core' ),
 			'uitdaging_sluit_vandag'    => __( 'Sluit vandag', 'ink-core' ),
+			// Story 13.2: the InkPols magazine brand (proper noun — "die naam bly soos
+			// is, dit is 'n handelsmerk") single-sources the archive heading.
+			'inkpols'                   => __( 'InkPols', 'ink-core' ),
 			'inkpols_uitgawe'           => __( 'Uitgawe', 'ink-core' ),
 			'inkpols_uitgawe_plural'    => __( 'Uitgawes', 'ink-core' ),
+			// Story 13.3: the direct-PDF fallback button (glossary "lees die uitgawe").
+			'inkpols_lees_uitgawe'      => __( 'Lees die uitgawe', 'ink-core' ),
 			'borg'                      => __( 'Borg', 'ink-core' ),
 			'borg_plural'               => __( 'Borge', 'ink-core' ),
 

@@ -63,6 +63,10 @@ deptrac:
           collectors:
             - type: classNameRegex
               value: '#^Ink\\Sponsors\\.*#'
+        - name: InkPols
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\InkPols\\.*#'
         - name: Notifications
           collectors:
             - type: classNameRegex
@@ -199,6 +203,17 @@ deptrac:
             - Tiers
         Sponsors:
             - Kernel
+        InkPols:
+            - Kernel
+            # Story 13.1: the InkPols read-model (Issue) + facade (Api) read the
+            # migration-load-bearing single sources `Ink\Content\PostTypes::INKPOLS_UITGAWE`
+            # (the issue CPT slug) and `Ink\Content\FieldSets` (the five issue meta-key
+            # constants — issue date/volume/cover/PDF/teaser). A real, non-circular
+            # cross-module dependency on the slug/meta registry — mirrors the
+            # Challenges->Content (12.1), Library->Content (10.1) and Discovery->Content
+            # (8.1) edges. No Entitlement/Tiers edge (modelling/viewing an issue is open;
+            # conflation-clean).
+            - Content
         Notifications:
             - Kernel
             # Story 9.9: the in-app kennisgewing sources fan out to the work
