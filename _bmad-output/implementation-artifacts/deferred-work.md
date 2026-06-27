@@ -2,6 +2,14 @@
 
 Consolidated `defer` findings from code reviews. Each item is real but not actionable in its originating story (pre-existing, by-design, or owned by a later story/epic).
 
+## Deferred from: Epic 10 — Library (Biblioteek) (2026-06-27)
+
+Stories 10.2/10.3/10.4 are marked **(deferred)** / non-blocking **in the epic itself** (epics.md §9.4 gap — the broader biblioteek-organisation analysis is deferred pending product decisions on how the library is organised). Per the `9.8`/`9.10` deferral-story precedent, these are **recorded, not built** — the BMAD-faithful treatment of an explicitly-deferred story. They stay tracked here and are picked up with the §9.4 analysis post-launch. The Story 10.1 `Ink\Library\Archive` (which mirrors `Discovery\WorksArchive`) is the extension substrate for all three, so each future build is incremental — no new module/architecture.
+
+- **10.2 Date / archive browsing** [FL 10.2, §9.4 gap] — year/month browse of `biblioteek_item`. **Port-from source:** `WorksArchive::dateClause()`/`dateBrowseHtml()`/`YEAR_VAR`/`MONTH_VAR` (add a `date_query` to `Library\Archive::queryArgs()` + a year-pill control to `toHtml()`). Non-blocking; not built.
+- **10.3 Pagination** [FL 10.3, §9.4 gap] — **basic navigability already ships** in Story 10.1 (prev/next over `WP_Query` `max_num_pages` via `biblioteek_bladsy`). Only the richer numbered-pages / load-more UX is deferred; extend `Library\Archive::paginationHtml()` (the `PAGED_VAR`/`pageUrl()` plumbing is in place). Non-blocking.
+- **10.4 Author filter** [FL 10.4, §9.4 gap] — filter the library by writer. **Extension points:** a WP_Query `author`/`author_name` arg in `Library\Archive::queryArgs()` (derived from native `post_author` — never per-item manual linking, Principle 8) + the `filterHtml()`/`pill()` control idiom. Non-blocking; not built.
+
 ## Deferred from: Epic 9 code review (2026-06-27)
 
 3-layer adversarial review (Blind Hunter / Edge Case Hunter / Acceptance Auditor) of all 12 Epic-9 stories. **5 patches applied** (the HIGH false-expiry-alert via a post-gate event; republish re-announce guard; @mention punctuation lookbehind; onComment non-published guard; removed a non-existent BP mark-all call). The load-bearing guarantees were verified intact by the Acceptance Auditor (FR-40 public/private split, conflation rule, held-for-moderation, R7/R8 graceful degradation). The items below are deferred (real but not actionable in this epic).
