@@ -133,7 +133,7 @@ test( 'toHtml renders the heading, search and a card per item, escaping every va
 	expect( $html )->not->toContain( 'ink-opleiding__blaai' );
 } );
 
-test( 'featuredHtml renders the Uitgelig strip with a card per featured item, and nothing when empty', function (): void {
+test( 'featuredHtml renders "Die redakteur se rak" shelf with a card per item, and nothing when empty', function (): void {
 	ink_opleiding_render_stubs();
 
 	$featured = array(
@@ -141,8 +141,9 @@ test( 'featuredHtml renders the Uitgelig strip with a card per featured item, an
 	);
 
 	$html = Hub::featuredHtml( $featured );
-	expect( $html )->toContain( 'ink-opleiding__uitgelig' );
-	expect( $html )->toContain( 'Uitgelig' );
+	expect( $html )->toContain( 'ink-opleiding__rak' );
+	expect( $html )->toContain( 'Die redakteur se rak' );
+	expect( $html )->toContain( 'Drie stukke om mee te begin.' );
 	expect( $html )->toContain( 'Begin hier' );
 
 	expect( Hub::featuredHtml( array() ) )->toBe( '' );
@@ -221,15 +222,29 @@ test( 'toHtml renders prev/next only when there is more than one page', function
 	expect( $first )->not->toContain( 'ink-opleiding__vorige' );
 } );
 
-test( 'toHtml shows the empty-state line (with controls, not a blank section) when nothing matches', function (): void {
+test( 'a filtered view that matches nothing shows the broaden-your-search empty state + clear-filters link', function (): void {
 	ink_opleiding_render_stubs();
 
 	$html = Hub::toHtml( array(), array(), array(), array( 'paged' => 1, 'max_pages' => 0, 'vaardigheid' => null, 'search' => 'niksgevind' ) );
 
-	// Non-vacuous: heading + search still render, plus the composed empty-state line.
+	// Non-vacuous: heading + search still render, plus the filtered empty state.
 	expect( $html )->toContain( 'Opleiding' );
 	expect( $html )->toContain( 'ink-opleiding__soek' );
-	expect( $html )->toContain( 'Geen' );
+	expect( $html )->toContain( 'Probeer \'n ander soekterm' );
+	expect( $html )->toContain( 'Vee filters uit' );
 	expect( $html )->toContain( 'ink-opleiding__leeg' );
+	expect( $html )->not->toContain( 'ink-opleiding__list' );
+} );
+
+test( 'an unfiltered hub with no content shows the empty-shelf line (no clear-filters link)', function (): void {
+	ink_opleiding_render_stubs();
+
+	$html = Hub::toHtml( array(), array(), array(), array( 'paged' => 1, 'max_pages' => 0, 'vaardigheid' => null, 'search' => '' ) );
+
+	expect( $html )->toContain( 'Opleiding' );
+	expect( $html )->toContain( 'Nog niks op hierdie rak nie.' );
+	expect( $html )->toContain( 'ink-opleiding__leeg' );
+	// No filter is being applied → no clear-filters affordance.
+	expect( $html )->not->toContain( 'Vee filters uit' );
 	expect( $html )->not->toContain( 'ink-opleiding__list' );
 } );

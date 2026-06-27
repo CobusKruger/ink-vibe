@@ -290,11 +290,11 @@ final class Hub {
 			. self::filterHtml( $facets, $nav['vaardigheid'] ?? null );
 
 		if ( array() === $cards ) {
-			/* translators: %s: the Opleiding label. */
-			$empty = sprintf( __( 'Geen %s gevind nie.', 'ink-core' ), Terms::label( 'opleiding' ) );
+			$is_filtered = ( null !== ( $nav['vaardigheid'] ?? null ) )
+				|| ( '' !== ( isset( $nav['search'] ) ? (string) $nav['search'] : '' ) );
 
 			return '<section class="ink-opleiding">' . $heading . $controls
-				. '<p class="ink-opleiding__leeg">' . esc_html( $empty ) . '</p></section>';
+				. self::emptyStateHtml( $is_filtered ) . '</section>';
 		}
 
 		$html = '<section class="ink-opleiding">' . $heading . $controls . '<ul class="ink-opleiding__list">';
@@ -312,11 +312,14 @@ final class Hub {
 	}
 
 	/**
-	 * The featured strip — an "Uitgelig" lead-in + a card per featured item. Pure.
+	 * "Die redakteur se rak" — the curated entry-point shelf. Pure.
 	 *
-	 * Renders nothing without featured items (filtered/paged views pass none).
+	 * The recency-driven 3-piece shelf ("Drie stukke om mee te begin.") — guided
+	 * starting places, curated automatically by recency (NEVER per-item manual
+	 * editorial linking, Principle 8). Renders nothing without items (filtered/paged
+	 * views pass none — the shelf shows only on the unfiltered first page).
 	 *
-	 * @param list<array{title:string, permalink:string, author:string}> $featured The featured items.
+	 * @param list<array{title:string, permalink:string, author:string}> $featured The shelf items.
 	 * @return string
 	 */
 	public static function featuredHtml( array $featured ): string {
@@ -324,12 +327,13 @@ final class Hub {
 			return '';
 		}
 
-		$html = '<div class="ink-opleiding__uitgelig">'
-			. '<h2 class="ink-opleiding__uitgelig-titel">' . esc_html__( 'Uitgelig', 'ink-core' ) . '</h2>'
-			. '<ul class="ink-opleiding__uitgelig-lys">';
+		$html = '<div class="ink-opleiding__rak">'
+			. '<h2 class="ink-opleiding__rak-titel">' . esc_html__( 'Die redakteur se rak', 'ink-core' ) . '</h2>'
+			. '<p class="ink-opleiding__rak-onderskrif">' . esc_html__( 'Drie stukke om mee te begin.', 'ink-core' ) . '</p>'
+			. '<ul class="ink-opleiding__rak-lys">';
 
 		foreach ( $featured as $card ) {
-			$html .= self::cardHtml( $card, 'ink-opleiding__uitgelig-item' );
+			$html .= self::cardHtml( $card, 'ink-opleiding__rak-item' );
 		}
 
 		return $html . '</ul></div>';
@@ -397,6 +401,30 @@ final class Hub {
 		}
 
 		return $html . '</div>';
+	}
+
+	/**
+	 * The context-aware empty state. Pure — escaping + URL builder only.
+	 *
+	 * A filtered view (active facet or search) that matches nothing invites the
+	 * reader to broaden — "Probeer 'n ander soekterm of blaai deur alle artikels."
+	 * plus a "Vee filters uit" link that clears every browse var back to the clean
+	 * hub. An unfiltered hub with no content shows "Nog niks op hierdie rak nie."
+	 *
+	 * @param bool $is_filtered Whether a facet or search is active.
+	 * @return string
+	 */
+	private static function emptyStateHtml( bool $is_filtered ): string {
+		if ( ! $is_filtered ) {
+			return '<p class="ink-opleiding__leeg">' . esc_html__( 'Nog niks op hierdie rak nie.', 'ink-core' ) . '</p>';
+		}
+
+		$clear_url = (string) remove_query_arg( array( self::VAARDIGHEID_VAR, self::SEARCH_VAR, self::PAGED_VAR ) );
+
+		return '<div class="ink-opleiding__leeg">'
+			. '<p class="ink-opleiding__leeg-teks">' . esc_html__( 'Probeer \'n ander soekterm of blaai deur alle artikels.', 'ink-core' ) . '</p>'
+			. '<a class="ink-opleiding__leeg-skoon" href="' . esc_url( $clear_url ) . '">' . esc_html__( 'Vee filters uit', 'ink-core' ) . '</a>'
+			. '</div>';
 	}
 
 	/**
