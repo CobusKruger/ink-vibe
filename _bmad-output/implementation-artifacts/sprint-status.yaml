@@ -224,7 +224,7 @@ development_status:
   10-3-pagination-deferred: done              # prev/next ships in 10.1; numbered/load-more deferred (§9.4)
   10-4-author-filter-deferred: done           # recorded deferral (§9.4 gap, non-blocking)
   10-5-winner-challenge-linkage: review
-  10-6-biblioteek-auto-update-on-win-r4-stub: backlog
+  10-6-biblioteek-auto-update-on-win-r4-stub: review
   epic-10-retrospective: optional
 
   # Epic 11: Training (Opleiding)
