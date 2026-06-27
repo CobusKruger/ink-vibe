@@ -117,6 +117,8 @@ final class Terms {
 
 			// Writer Gradering (the progression system + grades).
 			'gradering'                 => __( 'Gradering', 'ink-core' ),
+			// Story 12.7: the Gradering audit-trail (tier-history) heading.
+			'graderingsgeskiedenis'     => __( 'Graderingsgeskiedenis', 'ink-core' ),
 			'brons'                     => __( 'Brons', 'ink-core' ),
 			'silwer'                    => __( 'Silwer', 'ink-core' ),
 			'goud'                      => __( 'Goud', 'ink-core' ),

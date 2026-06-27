@@ -37,5 +37,6 @@ final class Module implements ModuleContract {
 		( new SinglePage() )->register();
 		( new Archive() )->register();
 		( new Entry() )->register();
+		( new PromotionHistory() )->register();
 	}
 }

@@ -215,6 +215,21 @@ final class Api {
 	}
 
 	/**
+	 * The writer's full graderingsgeskiedenis (tier-history), newest first.
+	 *
+	 * The facade read over the append-only audit log (Story 5.3) — each entry carries
+	 * its optional linked challenge id ({@see PromotionLogEntry::$challengeId}). The
+	 * audit-trail display (Story 12.7) consumes this through the facade so it never
+	 * reaches into the {@see PromotionLog} table directly.
+	 *
+	 * @param int $user_id The writer.
+	 * @return list<PromotionLogEntry> Newest-first audit records.
+	 */
+	public static function historyFor( int $user_id ): array {
+		return PromotionLog::forUser( $user_id );
+	}
+
+	/**
 	 * The presentation-ready view of a writer's Gradering (Story 5.4).
 	 *
 	 * The single source for profile display: the typed grade ({@see self::forUser()}),
