@@ -178,6 +178,17 @@ deptrac:
             - Content
         Challenges:
             - Kernel
+            # Story 12.1: the uitdaging single-page surface reads the
+            # migration-load-bearing single sources `Ink\Content\PostTypes`
+            # (UITDAGING + readableTypes), `Ink\Content\Taxonomies::UITDAGINGSRONDTE`,
+            # `Ink\Content\ChallengeRound` (the round-slug join key) and
+            # `Ink\Content\FieldSets` (the deadline meta key). A real, non-circular
+            # cross-module dependency on the slug/meta registry — mirrors the
+            # Library->Content (10.1), Submission->Content (6.1) and Discovery->Content
+            # (8.1) edges. No Entitlement/Tiers edge at 12.1 (viewing a published
+            # challenge is open; conflation-clean). The SAST deadline boundary lives in
+            # `Ink\Kernel\Sast` (Kernel — already an allowed dep).
+            - Content
         Sponsors:
             - Kernel
         Notifications:

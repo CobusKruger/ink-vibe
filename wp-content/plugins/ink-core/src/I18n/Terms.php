@@ -142,6 +142,13 @@ final class Terms {
 			'opleiding_artikel_plural'  => __( 'Hulpbronartikels', 'ink-core' ),
 			'uitdaging'                 => __( 'Uitdaging', 'ink-core' ),
 			'uitdaging_plural'          => __( 'Uitdagings', 'ink-core' ),
+			// Story 12.1: challenge single-page surface (glossary lines 124-125).
+			'sluitingsdatum'            => __( 'Sluitingsdatum', 'ink-core' ),
+			'inskrywing'                => __( 'Inskrywing', 'ink-core' ),
+			'inskrywing_plural'         => __( 'Inskrywings', 'ink-core' ),
+			// Story 12.1: open/closed challenge state + entries-list heading.
+			'uitdaging_oop'             => __( 'Oop', 'ink-core' ),
+			'uitdaging_gesluit'         => __( 'Gesluit', 'ink-core' ),
 			'inkpols_uitgawe'           => __( 'Uitgawe', 'ink-core' ),
 			'inkpols_uitgawe_plural'    => __( 'Uitgawes', 'ink-core' ),
 			'borg'                      => __( 'Borg', 'ink-core' ),

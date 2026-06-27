@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-27
+last_updated: 2026-06-27  # epic-12 started; 12-1 ready-for-dev
 # epic-5 started 2026-06-25; 5-1 → review (create-story + dev-story, Gradering data-model: Tier enum default/isManualOnly/isAutoPromotable + Kernel-owned meta-key single source + typed default-safe Tiers\Api::forUser() closing the 2.3 deferral; tests 283 passed/1 skipped +13, cs/stan clean, deptrac no new edge, Entitlement⟂Tiers holds)
 # 5-3 → review (create-story + dev-story, built BEFORE 5.2 as the log substrate; ink_tier_history custom table — FIRST ink-core custom table — via Kernel Schema registry registered at include time for activation correctness; PromotionLog::record()/forUser() + PromotionLogEntry value object; first $wpdb unit-test pattern; tests 294 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
 # 5-2 → review (create-story + dev-story; Tiers\Api::promote() SOLE write path — meta + normalised promoted_at + PromotionLog append + FIRST ink-core do_action 'ink/tier_promoted' event seam for 5.10; MANAGE_TIERS-gated AdminProfile set/adjust user-profile UI (2nd sanctioned $_POST site); closed 3 Story-2.3 deferrals (MANAGE_TIERS grant verified, per-target scope decided = global editorial cap, promoted_at format normalised); Tiers module wired into bootstrap; tests 305 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
@@ -253,8 +253,9 @@ development_status:
   epic-11-retrospective: done  # completed 2026-06-27 (epic-11-retro-2026-06-27.md) — honoured the Epic-10 "don't skip" carry-forward; third formal retro in a row
 
   # Epic 12: Challenges (Uitdagings) & winners
-  epic-12: backlog
-  12-1-uitdaging-single-page: backlog
+  epic-12: in-progress
+  # 12-1 → review (create-story + dev-story; Challenges\SinglePage = ink/uitdaging-besonderhede server block: deadline + Oop/Gesluit status (Kernel\Sast inclusive end-of-day-SAST) + inskrywings list (round tax_query via ChallengeRound::slugFor); editorial brief via core post-content; single-uitdaging.html + reading-uitdaging.php; module registered in ink-core.php; deptrac Challenges->Content edge ADDED (mirrors Library/Discovery 10.1/8.1), conflation-clean (zero Tiers/Entitlement); tests 765 passed/2 skipped +11, cs/stan clean, deptrac no new edge)
+  12-1-uitdaging-single-page: review
   12-2-uitdagings-list-page: backlog
   12-3-challenge-metadata: backlog
   12-4-entry-capture: backlog

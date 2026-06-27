@@ -14,24 +14,26 @@ use Ink\Kernel\Module as ModuleContract;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Challenges module — RESERVED extension point for Epic 12 / 12A.
+ * Challenges module — the Uitdagings section (Epic 12).
  *
- * Will own challenge entry (open-window + per-type cap + tier snapshot),
- * per-tier pools and placement records, EntryID collation, the R1 judge-email
- * composer, the R2 paste-text results parser → winners post, and the
- * winner→promotion write (via the Tiers `Api` facade only — never writing
- * `ink_writer_tier` directly). It READS Gradering for pools via the Tiers Api
- * facade and reads the `Tier` value type from the shared Kernel
- * (`Ink\Kernel\Tier`). NOTHING is implemented at 1.7.
+ * Owns the challenge reader surfaces and competition machinery: the single-page
+ * deadline/status + entries list ({@see SinglePage}, Story 12.1) and the rest of the
+ * epic (list page, entry capture, Gradering pools, placement records). It READS
+ * Gradering for pools via the Tiers `Api` facade and reads the `Tier` value type from
+ * the shared Kernel (`Ink\Kernel\Tier`) — never writing `ink_writer_tier` directly
+ * (THE conflation rule). Viewing published challenges is open (no Entitlement edge).
  *
  * @package Ink\Core
  */
 final class Module implements ModuleContract {
 
 	/**
-	 * Register this module's hooks. No-op until Epic 12.
+	 * Register this module's hooks.
+	 *
+	 * Dispatched once by the Kernel on `init`. Delegates to each collaborator so this
+	 * bootstrap stays thin (the Library/Discovery house style).
 	 */
 	public function register(): void {
-		// Reserved: entry, pools, placements, collation, winners land in Epic 12.
+		( new SinglePage() )->register();
 	}
 }

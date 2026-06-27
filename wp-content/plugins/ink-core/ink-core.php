@@ -89,5 +89,6 @@ add_action(
 		Kernel\Plugin::instance()->addModule( 'social', new Social\Module() );
 		Kernel\Plugin::instance()->addModule( 'library', new Library\Module() );
 		Kernel\Plugin::instance()->addModule( 'training', new Training\Module() );
+		Kernel\Plugin::instance()->addModule( 'challenges', new Challenges\Module() );
 	}
 );
