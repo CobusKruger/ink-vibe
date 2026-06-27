@@ -189,6 +189,14 @@ deptrac:
             # challenge is open; conflation-clean). The SAST deadline boundary lives in
             # `Ink\Kernel\Sast` (Kernel — already an allowed dep).
             - Content
+            # Story 12.4: the entry-time Gradering snapshot (Challenges\Entry) reads the
+            # writer's grade via the Tiers Api facade (`Ink\Tiers\Api::forUser`) to record
+            # the judging pool on the entry — the module charter's documented "READS
+            # Gradering for pools via the Tiers Api facade" dependency. Display/record
+            # only: Challenges NEVER writes `ink_writer_tier` (that stays in Tiers\Api),
+            # and carries zero Ink\Entitlement (THE conflation rule holds — the pool is
+            # Gradering, never lidmaatskap). Mirrors the Discovery->Tiers (8.3) edge.
+            - Tiers
         Sponsors:
             - Kernel
         Notifications:

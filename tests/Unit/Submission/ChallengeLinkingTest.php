@@ -88,6 +88,10 @@ test( 'link writes the round term only for open ticked challenges, deduped', fun
 		protected function assign( int $post_id, int $term_id ): void {
 			$this->assigned[] = array( $post_id, $term_id );
 		}
+
+		protected function entryCountFor( int $post_id, int $uitdaging_id ): int {
+			return 0; // no prior entries — the per-type cap is exercised separately.
+		}
 	};
 
 	$linker->openMap = array(
@@ -100,6 +104,48 @@ test( 'link writes the round term only for open ticked challenges, deduped', fun
 
 	expect( $linked )->toBe( array( 11, 33 ) ); // closed/dupe/invalid dropped
 	expect( $linker->assigned )->toBe( array( array( 5, 1011 ), array( 5, 1033 ) ) );
+} );
+
+test( 'withinCap allows up to three entries of a type and refuses the fourth', function (): void {
+	expect( ChallengeLinking::withinCap( 0 ) )->toBeTrue();
+	expect( ChallengeLinking::withinCap( 2 ) )->toBeTrue();
+	expect( ChallengeLinking::withinCap( 3 ) )->toBeFalse(); // already at the cap
+	expect( ChallengeLinking::withinCap( 4 ) )->toBeFalse();
+} );
+
+test( 'link refuses to link a 4th entry of a type already at the per-type cap', function (): void {
+	$linker = new class() extends ChallengeLinking {
+		/** @var list<array{0:int,1:int}> */
+		public array $assigned = array();
+		/** @var array<int, int> */
+		public array $counts = array();
+
+		public function isOpen( int $uitdaging_id, ?\DateTimeInterface $now = null ): bool {
+			return true;
+		}
+
+		protected function resolveRoundTerm( int $uitdaging_id ): int {
+			return 1000 + $uitdaging_id;
+		}
+
+		protected function assign( int $post_id, int $term_id ): void {
+			$this->assigned[] = array( $post_id, $term_id );
+		}
+
+		protected function entryCountFor( int $post_id, int $uitdaging_id ): int {
+			return $this->counts[ $uitdaging_id ] ?? 0;
+		}
+	};
+
+	$linker->counts = array(
+		11 => 3, // already at the cap — the new entry must NOT be linked
+		33 => 2, // room for one more — linked
+	);
+
+	$linked = $linker->link( 5, array( 11, 33 ) );
+
+	expect( $linked )->toBe( array( 33 ) );
+	expect( $linker->assigned )->toBe( array( array( 5, 1033 ) ) );
 } );
 
 test( 'openChallenges returns only the open published uitdagings', function (): void {

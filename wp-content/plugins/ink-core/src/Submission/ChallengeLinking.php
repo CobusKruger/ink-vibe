@@ -47,6 +47,22 @@ class ChallengeLinking {
 	public const FIELD = 'ink_submission_uitdagings';
 
 	/**
+	 * The maximum entries of a given content type, per author, per uitdaging (FR-48).
+	 */
+	public const MAX_ENTRIES_PER_TYPE = 3;
+
+	/**
+	 * Whether another entry of a type is allowed given the author's existing count
+	 * of that type in the round (Story 12.4, FR-48). Pure.
+	 *
+	 * @param int $existing The author's existing entries of this type in this round.
+	 * @return bool
+	 */
+	public static function withinCap( int $existing ): bool {
+		return $existing < self::MAX_ENTRIES_PER_TYPE;
+	}
+
+	/**
 	 * The open published uitdagings, for the Skryf tick boxes.
 	 *
 	 * @param \DateTimeInterface|null $now Pinned "now" (tests); defaults to SAST now.
@@ -116,6 +132,13 @@ class ChallengeLinking {
 				continue;
 			}
 
+			// Per-type cap (Story 12.4, FR-48): at most 3 entries of this content type,
+			// per author, per uitdaging. A 4th of the type is not linked (the bydrae
+			// still saves; only the round link is refused).
+			if ( ! self::withinCap( $this->entryCountFor( $post_id, $uid ) ) ) {
+				continue;
+			}
+
 			$term_id = $this->resolveRoundTerm( $uid );
 
 			if ( $term_id > 0 ) {
@@ -124,7 +147,55 @@ class ChallengeLinking {
 			}
 		}
 
+		// Entry-time Gradering snapshot seam (Story 12.4): a runtime hook, so the
+		// snapshot (Ink\Challenges\Entry) can read the writer's Gradering for the
+		// judging pool WITHOUT Submission ever referencing Ink\Tiers (THE conflation
+		// rule). The firer uses the literal; the listener owns the HOOK constant
+		// (mirrors Tiers\Api → Tiers\PromotionEmails::HOOK).
+		if ( array() !== $linked ) {
+			do_action( 'ink/uitdaging_entry_linked', $post_id, $linked ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- INK ink/... event-surface convention (AD).
+		}
+
 		return $linked;
+	}
+
+	/**
+	 * The author's EXISTING entries of the same content type already linked to this
+	 * round (excludes the post being linked now). Overridable seam for tests.
+	 *
+	 * @param int $post_id      The bydrae being linked.
+	 * @param int $uitdaging_id The round's uitdaging id.
+	 * @return int
+	 */
+	protected function entryCountFor( int $post_id, int $uitdaging_id ): int {
+		$type   = (string) get_post_type( $post_id );
+		$author = (int) get_post_field( 'post_author', $post_id );
+
+		if ( '' === $type || $author <= 0 ) {
+			return 0;
+		}
+
+		$existing = get_posts(
+			array(
+				'post_type'        => $type,
+				'author'           => $author,
+				'post_status'      => array( 'publish', 'pending', 'draft', 'future' ),
+				'fields'           => 'ids',
+				'numberposts'      => self::MAX_ENTRIES_PER_TYPE + 1,
+				'post__not_in'     => array( $post_id ),
+				'suppress_filters' => false,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- a single bounded round-slug facet to enforce the per-type entry cap; not a listing query.
+				'tax_query'        => array(
+					array(
+						'taxonomy' => Taxonomies::UITDAGINGSRONDTE,
+						'field'    => 'slug',
+						'terms'    => ChallengeRound::slugFor( $uitdaging_id ),
+					),
+				),
+			)
+		);
+
+		return is_array( $existing ) ? count( $existing ) : 0;
 	}
 
 	/**

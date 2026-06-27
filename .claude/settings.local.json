@@ -73,7 +73,8 @@
       "Bash(/Users/cobus/Development/ink-vibe/vendor/bin/phpcs --report=summary)",
       "Bash(awk *)",
       "Bash(php *)",
-      "Bash(echo clean *)"
+      "Bash(echo clean *)",
+      "Bash(perl -0pi -e 's/- \\\\[ \\\\] \\(Task [2-7]\\)/- [x] $1/g' _bmad-output/implementation-artifacts/12-4-entry-capture.md)"
     ],
     "defaultMode": "acceptEdits"
   },

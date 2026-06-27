@@ -117,6 +117,30 @@ test( 'genre and vaardigheid are shared across bydraes and training', function (
 } );
 
 /**
+ * AD-5 (Story 12.4, deferred from Epic 2 review): `uitdagingsrondte` and
+ * `ster_gradering` attach to the ENTRY / works object types (the bydraes + the
+ * winning-works library item), NOT to the `uitdaging` CPT — the entry record is
+ * authoritative, the uitdaging is the round container. A regression that attached
+ * either taxonomy to `uitdaging` (or dropped a bydrae) fails here loudly.
+ */
+test( 'uitdagingsrondte and ster_gradering attach to entries/works, never the uitdaging CPT', function (): void {
+	$registered = ink_capture_registered_taxonomies();
+
+	$works = array_merge( PostTypes::bydraeTypes(), array( PostTypes::BIBLIOTEEK_ITEM ) );
+
+	foreach ( array( 'uitdagingsrondte', 'ster_gradering' ) as $tax ) {
+		$object_types = $registered[ $tax ]['object_types'];
+
+		foreach ( $works as $work ) {
+			expect( $object_types )->toContain( $work );
+		}
+
+		// The round/grading taxonomies must NOT be attached to the round container.
+		expect( $object_types )->not->toContain( PostTypes::UITDAGING );
+	}
+} );
+
+/**
  * AC-2: `object_types` are sourced from PostTypes — every target is a real
  * registered CPT slug (no stray/typo'd literals).
  */
