@@ -88,11 +88,9 @@ final class Issue {
 	 * @return string
 	 */
 	public function year(): string {
-		if ( 1 === preg_match( '/^(\d{4})-\d{2}-\d{2}/', $this->issueDate, $m ) ) {
-			return $m[1];
-		}
+		$date = $this->normalisedDate();
 
-		return '';
+		return '' !== $date ? substr( $date, 0, 4 ) : '';
 	}
 
 	/**
@@ -100,23 +98,27 @@ final class Issue {
 	 *
 	 * Mirrors {@see \Ink\Challenges\SinglePage::formatDeadline()}: localised via
 	 * `wp_date()` when available, with a deterministic `Y-m-d` `gmdate` fallback so
-	 * the unit suite (no `wp_date`) stays green.
+	 * the unit suite (no `wp_date`) stays green. The timestamp is anchored at noon
+	 * UTC so a site timezone offset can never shift the rendered calendar day
+	 * across a month/year boundary (R13 review).
 	 *
 	 * @return string
 	 */
 	public function displayDate(): string {
-		if ( '' === $this->issueDate ) {
+		$date = $this->normalisedDate();
+
+		if ( '' === $date ) {
 			return '';
 		}
 
-		$timestamp = strtotime( $this->issueDate );
+		$timestamp = strtotime( $date . ' 12:00:00 UTC' );
 
 		if ( false === $timestamp ) {
 			return '';
 		}
 
 		if ( function_exists( 'wp_date' ) ) {
-			$format    = function_exists( 'get_option' ) ? (string) get_option( 'date_format', 'j F Y' ) : 'j F Y';
+			$format    = function_exists( 'get_option' ) ? Scalar::asString( get_option( 'date_format', 'j F Y' ), 'j F Y' ) : 'j F Y';
 			$formatted = wp_date( '' !== $format ? $format : 'j F Y', $timestamp );
 
 			if ( is_string( $formatted ) && '' !== $formatted ) {
@@ -125,6 +127,30 @@ final class Issue {
 		}
 
 		return gmdate( 'Y-m-d', $timestamp );
+	}
+
+	/**
+	 * The issue date as a REAL `Y-m-d` calendar date, or '' when absent/malformed.
+	 *
+	 * The single trust point for the date: it requires the `Y-m-d` shape AND a real
+	 * calendar date (`checkdate`), so a well-shaped-but-invalid value (`2026-02-30`,
+	 * `2026-13-01` — both pass {@see \Ink\Content\FieldSets::sanitizeDate}, which
+	 * only checks the shape) is treated as undated CONSISTENTLY by both
+	 * {@see year()} and {@see displayDate()} rather than one grouping it and the
+	 * other shifting/blanking it (R13 review).
+	 *
+	 * @return string
+	 */
+	private function normalisedDate(): string {
+		if ( 1 !== preg_match( '/^(\d{4})-(\d{2})-(\d{2})/', $this->issueDate, $m ) ) {
+			return '';
+		}
+
+		if ( ! checkdate( (int) $m[2], (int) $m[3], (int) $m[1] ) ) {
+			return '';
+		}
+
+		return $m[1] . '-' . $m[2] . '-' . $m[3];
 	}
 
 	/**

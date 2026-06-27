@@ -100,7 +100,12 @@ final class Viewer {
 			return;
 		}
 
-		wp_set_script_translations( self::SCRIPT_HANDLE, 'ink-core' );
+		// Point at the committed wp-content/languages/ dir (the translation-workflow
+		// home for surviving third-party plugins) so the flipbook .json loads from
+		// there once authored, not only the default plugin path (R13 review).
+		$path = defined( 'WP_LANG_DIR' ) ? constant( 'WP_LANG_DIR' ) : '';
+
+		wp_set_script_translations( self::SCRIPT_HANDLE, 'ink-core', $path );
 	}
 
 	/**
@@ -110,7 +115,12 @@ final class Viewer {
 	 * @return string
 	 */
 	public static function shortcodeFor( string $pdf_url ): string {
-		return '[' . self::SHORTCODE_TAG . ' pdf="' . esc_url( $pdf_url ) . '"]';
+		// esc_url_raw, not esc_url: the URL is a shortcode ATTRIBUTE consumed by the
+		// plugin's parser, not direct HTML output — esc_url would entity-encode `&`
+		// (`&#038;`) and mangle a PDF URL carrying query args (R13 review).
+		$clean = function_exists( 'esc_url_raw' ) ? esc_url_raw( $pdf_url ) : $pdf_url;
+
+		return '[' . self::SHORTCODE_TAG . ' pdf="' . $clean . '"]';
 	}
 
 	/**

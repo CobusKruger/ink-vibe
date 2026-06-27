@@ -4,7 +4,10 @@ baseline_commit: 9ddafcd
 
 # Story 13.4: Back-catalogue migration
 
-Status: review
+Status: done
+
+<!-- R13 code review (epic-13-code-review-2026-06-28.md): P2 — run() now counts created (new inserts) vs reconciled (--force matched the source marker) separately so the CLI summary never overstates inserts (ensureIssue returns {id,created}); P3 — issueDateFromName hardened: whole-word month match, first-by-string-position, plausible 19xx/20xx year only. Deferred: site-specific seam wiring (Epic 16) + findIssueForLegacy integration test (18.8). 0 unresolved HIGH/MEDIUM. -->
+
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

@@ -4,7 +4,10 @@ baseline_commit: 548b268
 
 # Story 13.2: Issue archive (by year)
 
-Status: review
+Status: done
+
+<!-- R13 code review (epic-13-code-review-2026-06-28.md): P4 — Archive::groupByYear in-year sort now breaks a same-date tie by post id DESC (migrated issues all land on Y-m-01, so same-month issues would otherwise sort unstably). 0 unresolved HIGH/MEDIUM. -->
+
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

@@ -135,7 +135,10 @@ final class Archive {
 			$within = $buckets[ $year ];
 			usort(
 				$within,
-				static fn ( Issue $a, Issue $b ): int => strcmp( $b->issueDate, $a->issueDate )
+				// Date DESC, with post id DESC as a stable tiebreak — migrated issues
+				// all land on a `Y-m-01` date, so same-month issues would otherwise
+				// sort in an undefined order (R13 review).
+				static fn ( Issue $a, Issue $b ): int => strcmp( $b->issueDate, $a->issueDate ) ?: ( $b->postId <=> $a->postId )
 			);
 
 			$groups[] = array(

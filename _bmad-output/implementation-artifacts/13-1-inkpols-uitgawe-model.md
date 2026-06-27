@@ -4,7 +4,10 @@ baseline_commit: 1fa26bb5c4703cdcface7c9e794a38a996a5dcd3
 
 # Story 13.1: inkpols_uitgawe model
 
-Status: review
+Status: done
+
+<!-- R13 code review (epic-13-code-review-2026-06-28.md): P1 — Issue.year()/displayDate() now share a checkdate-validated normalisedDate() so a well-shaped-but-invalid date (2026-02-30, 2026-13-01) is treated as undated CONSISTENTLY; P7 — displayDate() anchors the timestamp at noon UTC (no TZ day-shift) + reads date_format via Scalar::asString. 0 unresolved HIGH/MEDIUM. -->
+
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

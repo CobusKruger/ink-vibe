@@ -102,8 +102,9 @@ class Migration {
 				$summary = $this->run( isset( $assoc['force'] ) );
 				\WP_CLI::success(
 					sprintf(
-						'InkPols-uitgawes gemigreer: %d geskep, %d PDF\'s herkoppel%s.',
+						'InkPols-uitgawes gemigreer: %d geskep, %d herversoen, %d PDF\'s herkoppel%s.',
 						(int) $summary['created'],
+						(int) $summary['reconciled'],
 						(int) $summary['relinked'],
 						! empty( $summary['skipped'] ) ? ' (oorgeslaan — reeds gedoen)' : ''
 					)
@@ -128,23 +129,38 @@ class Migration {
 			return '';
 		}
 
-		// Afrikaans "Maand JJJJ" (in either order).
+		// Afrikaans "Maand JJJJ": match each month as a WHOLE WORD (no substring
+		// false-positives), pick the one appearing FIRST in the string (not the
+		// first in declaration order), and require a PLAUSIBLE 4-digit year
+		// (19xx/20xx — so a volume/issue number is not misread as a year). (R13 review.)
+		$best_pos = null;
+		$best_mm  = '';
+
 		foreach ( self::MONTHS as $label => $mm ) {
-			if ( false !== strpos( $name, $label ) && 1 === preg_match( '/(\d{4})/', $name, $y ) ) {
-				return $y[1] . '-' . $mm . '-01';
+			if ( 1 === preg_match( '/\b' . preg_quote( $label, '/' ) . '\b/', $name, $hit, PREG_OFFSET_CAPTURE ) ) {
+				$pos = (int) $hit[0][1];
+
+				if ( null === $best_pos || $pos < $best_pos ) {
+					$best_pos = $pos;
+					$best_mm  = $mm;
+				}
 			}
 		}
 
-		// Numeric YYYY-MM (or YYYY/MM).
-		if ( 1 === preg_match( '#(\d{4})[-/](\d{1,2})#', $name, $m ) ) {
+		if ( '' !== $best_mm && 1 === preg_match( '/\b((?:19|20)\d{2})\b/', $name, $y ) ) {
+			return $y[1] . '-' . $best_mm . '-01';
+		}
+
+		// Numeric YYYY-MM (or YYYY/MM), plausible year only.
+		if ( 1 === preg_match( '#\b((?:19|20)\d{2})[-/](\d{1,2})\b#', $name, $m ) ) {
 			$month = str_pad( $m[2], 2, '0', STR_PAD_LEFT );
 			if ( (int) $month >= 1 && (int) $month <= 12 ) {
 				return $m[1] . '-' . $month . '-01';
 			}
 		}
 
-		// Numeric MM/YYYY (or MM-YYYY).
-		if ( 1 === preg_match( '#(\d{1,2})[-/](\d{4})#', $name, $m ) ) {
+		// Numeric MM/YYYY (or MM-YYYY), plausible year only.
+		if ( 1 === preg_match( '#\b(\d{1,2})[-/]((?:19|20)\d{2})\b#', $name, $m ) ) {
 			$month = str_pad( $m[1], 2, '0', STR_PAD_LEFT );
 			if ( (int) $month >= 1 && (int) $month <= 12 ) {
 				return $m[2] . '-' . $month . '-01';
@@ -187,20 +203,26 @@ class Migration {
 	/**
 	 * Run the once-off migration. Idempotent unless `$force`.
 	 *
+	 * `created` counts only NEW inserts; a `--force` re-run that reconciles an
+	 * already-migrated issue (matched by the source marker) is counted under
+	 * `reconciled`, so the CLI summary never overstates inserts (R13 review).
+	 *
 	 * @param bool $force Re-run even when already completed.
-	 * @return array{skipped:bool, created:int, relinked:int}
+	 * @return array{skipped:bool, created:int, reconciled:int, relinked:int}
 	 */
 	public function run( bool $force = false ): array {
 		if ( $this->hasRun() && ! $force ) {
 			return array(
-				'skipped'  => true,
-				'created'  => 0,
-				'relinked' => 0,
+				'skipped'    => true,
+				'created'    => 0,
+				'reconciled' => 0,
+				'relinked'   => 0,
 			);
 		}
 
-		$created  = 0;
-		$relinked = 0;
+		$created    = 0;
+		$reconciled = 0;
+		$relinked   = 0;
 
 		foreach ( $this->legacyIssues() as $issue ) {
 			// Skip a malformed/empty-name issue: it would otherwise create an
@@ -209,13 +231,18 @@ class Migration {
 				continue;
 			}
 
-			$issue_id = $this->ensureIssue( $issue );
+			$result   = $this->ensureIssue( $issue );
+			$issue_id = (int) $result['id'];
 
 			if ( $issue_id <= 0 ) {
 				continue;
 			}
 
-			++$created;
+			if ( $result['created'] ) {
+				++$created;
+			} else {
+				++$reconciled;
+			}
 
 			// Month/year naming → date + volume meta.
 			$date = self::issueDateFromName( self::legacyName( $issue ) );
@@ -242,9 +269,10 @@ class Migration {
 		$this->markDone();
 
 		return array(
-			'skipped'  => false,
-			'created'  => $created,
-			'relinked' => $relinked,
+			'skipped'    => false,
+			'created'    => $created,
+			'reconciled' => $reconciled,
+			'relinked'   => $relinked,
 		);
 	}
 
@@ -281,18 +309,22 @@ class Migration {
 	 * Get-or-create the `inkpols_uitgawe` post for a legacy issue (idempotent).
 	 * Overridable seam. Reuses an issue already migrated from this source (matched
 	 * by the {@see SOURCE_LEGACY_META} marker) so a `--force` re-run reconciles
-	 * instead of inserting a duplicate (12.8 R12).
+	 * instead of inserting a duplicate (12.8 R12). Reports whether the issue was
+	 * newly created so {@see run()} counts inserts vs reconciles truthfully (R13).
 	 *
 	 * @param object $issue The legacy issue row.
-	 * @return int The issue post id, or 0 on failure.
+	 * @return array{id:int, created:bool} The issue id (0 on failure) + insert flag.
 	 */
-	protected function ensureIssue( object $issue ): int {
+	protected function ensureIssue( object $issue ): array {
 		$legacy_id = (int) ( $issue->id ?? 0 );
 
 		$existing = $this->findIssueForLegacy( $legacy_id );
 
 		if ( $existing > 0 ) {
-			return $existing;
+			return array(
+				'id'      => $existing,
+				'created' => false,
+			);
 		}
 
 		$id = $this->createIssue( self::issuePostArr( $issue ) );
@@ -301,7 +333,10 @@ class Migration {
 			update_post_meta( $id, self::SOURCE_LEGACY_META, $legacy_id );
 		}
 
-		return $id;
+		return array(
+			'id'      => $id,
+			'created' => $id > 0,
+		);
 	}
 
 	/**

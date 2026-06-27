@@ -90,6 +90,20 @@ test( 'groupByYear groups by year DESC with in-year issues sorted by date DESC',
 	expect( $groups[0]['issues'][1]->postId )->toBe( 3 );
 } );
 
+test( 'groupByYear breaks a same-date tie by post id DESC (stable order for migrated Y-m-01 dates) — R13 review', function (): void {
+	// Migration sets every issue to a `Y-m-01` date, so same-month issues collide;
+	// the comparator must apply a deterministic post-id tiebreak.
+	$issues = array(
+		ink_inkpols_issue( 3, '2026-05-01' ),
+		ink_inkpols_issue( 9, '2026-05-01' ),
+		ink_inkpols_issue( 5, '2026-05-01' ),
+	);
+
+	$groups = Archive::groupByYear( $issues );
+
+	expect( array_column( $groups[0]['issues'], 'postId' ) )->toBe( array( 9, 5, 3 ) );
+} );
+
 test( 'groupByYear puts undated issues in a trailing empty-year bucket (never dropped)', function (): void {
 	$issues = array(
 		ink_inkpols_issue( 1, '' ),          // undated

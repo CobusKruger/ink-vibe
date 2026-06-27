@@ -105,6 +105,19 @@ test( 'year returns empty string for an absent or malformed date', function (): 
 	expect( ( new Issue( 1, 't', '20-1-1', '', 0, 0, '' ) )->year() )->toBe( '' );
 } );
 
+test( 'year treats a well-shaped but INVALID calendar date as undated (R13 review)', function (): void {
+	// These pass FieldSets::sanitizeDate (shape only) but are not real dates.
+	expect( ( new Issue( 1, 't', '2026-02-30', '', 0, 0, '' ) )->year() )->toBe( '' );
+	expect( ( new Issue( 1, 't', '2026-13-01', '', 0, 0, '' ) )->year() )->toBe( '' );
+} );
+
+test( 'displayDate is CONSISTENT with year for an invalid calendar date — both treat it as undated (R13 review)', function (): void {
+	$issue = new Issue( 1, 't', '2026-02-30', '', 0, 0, '' );
+	// Neither groups it under a year nor renders a (shifted) date.
+	expect( $issue->year() )->toBe( '' );
+	expect( $issue->displayDate() )->toBe( '' );
+} );
+
 // --- displayDate ---
 
 test( 'displayDate localises the issue date via wp_date', function (): void {

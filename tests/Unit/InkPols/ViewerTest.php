@@ -23,6 +23,7 @@ beforeEach( function (): void {
 	Functions\when( '__' )->returnArg( 1 );
 	Functions\when( 'esc_html' )->returnArg( 1 );
 	Functions\when( 'esc_url' )->returnArg( 1 );
+	Functions\when( 'esc_url_raw' )->returnArg( 1 );
 } );
 
 afterEach( function (): void {
@@ -33,6 +34,14 @@ test( 'shortcodeFor builds the Real3D Flipbook shortcode with the pdf attribute'
 	$shortcode = Viewer::shortcodeFor( 'https://ink.test/inkpols-7.pdf' );
 
 	expect( $shortcode )->toBe( '[' . Viewer::SHORTCODE_TAG . ' pdf="https://ink.test/inkpols-7.pdf"]' );
+} );
+
+test( 'shortcodeFor preserves a PDF URL with query args (esc_url_raw, not entity-encoded) — R13 review', function (): void {
+	// esc_url_raw passes the raw URL through; esc_url would entity-encode & to &#038;.
+	$shortcode = Viewer::shortcodeFor( 'https://ink.test/x.pdf?ver=2&x=1' );
+
+	expect( $shortcode )->toContain( 'pdf="https://ink.test/x.pdf?ver=2&x=1"' );
+	expect( $shortcode )->not->toContain( '&#038;' );
 } );
 
 test( 'embedHtml wraps the expanded shortcode output when the flipbook is available', function (): void {

@@ -4,7 +4,10 @@ baseline_commit: 00bbe12
 
 # Story 13.3: PDF viewing
 
-Status: review
+Status: done
+
+<!-- R13 code review (epic-13-code-review-2026-06-28.md): P5 — wp_set_script_translations now passes the WP_LANG_DIR path (loads the .json from wp-content/languages/ per AC4); P6 — shortcodeFor uses esc_url_raw not esc_url (no &#038; mangling of a query-string PDF URL). Deferred: shortcode-tag/script-handle reconciliation + .json authoring + enqueue-timing (deferred-work.md). 0 unresolved HIGH/MEDIUM. -->
+
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

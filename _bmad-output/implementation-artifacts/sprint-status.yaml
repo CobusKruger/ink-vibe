@@ -291,11 +291,21 @@ development_status:
 
   # Epic 13: InkPols
   # epic-13 started 2026-06-27; full BMAD loop (create-story → dev-story → tests → commit).
+  # Epic 13 code review 2026-06-28 (epic-13-code-review-2026-06-28.md): 3-layer adversarial
+  # review of all 4 stories. All ACs met; conflation-clean (InkPols → Kernel,Content only).
+  # 7 patches applied (R13): P1 invalid-date consistency via checkdate-validated normalisedDate
+  # (year/displayDate); P2 migration created-vs-reconciled count truthfulness; P3 issueDateFromName
+  # parser hardening (whole-word month + first-by-position + plausible year); P4 same-date stable
+  # sort tiebreak; P5 wp_set_script_translations WP_LANG_DIR path; P6 shortcodeFor esc_url_raw;
+  # P7 displayDate noon-UTC anchor + Scalar date_format guard. 6 deferred (Epic 16/17/18 — flipbook
+  # plugin reconcile + JS .json authoring + migration seam wiring; + a cross-module note that 12.8
+  # shares the P2 latent overcount). 0 unresolved HIGH/MEDIUM. tests 812→865 (+53, InkPols 54 tests),
+  # cs/stan clean, deptrac no new edge, copy:scan no new debt.
   epic-13: in-progress
-  13-1-inkpols-uitgawe-model: review
-  13-2-issue-archive-by-year: review
-  13-3-pdf-viewing: review
-  13-4-back-catalogue-migration: review
+  13-1-inkpols-uitgawe-model: done
+  13-2-issue-archive-by-year: done
+  13-3-pdf-viewing: done
+  13-4-back-catalogue-migration: done
   epic-13-retrospective: optional
 
   # Epic 14: Sponsors (Borge)

@@ -46,6 +46,24 @@ test( 'issueDateFromName returns empty string for an unparseable name (no fabric
 	expect( Migration::issueDateFromName( '2018-13' ) )->toBe( '' ); // month out of range
 } );
 
+test( 'issueDateFromName requires a PLAUSIBLE year — a volume/issue number is not a year (R13 review)', function (): void {
+	// "1234" is not a 19xx/20xx year, so this must NOT fabricate 1234-05-01.
+	expect( Migration::issueDateFromName( 'Mei uitgawe 1234' ) )->toBe( '' );
+	expect( Migration::issueDateFromName( 'Mei 2018' ) )->toBe( '2018-05-01' ); // real year still parses
+} );
+
+test( 'issueDateFromName matches a month only as a whole word, not a substring (R13 review)', function (): void {
+	// No standalone month word → no match (the year alone is not enough).
+	expect( Migration::issueDateFromName( 'Bundel 2018, redakteursnota' ) )->toBe( '' );
+} );
+
+test( 'issueDateFromName picks the FIRST month by string position for a multi-month span (R13 review)', function (): void {
+	// "Junie" appears before "Julie" in the string; the earlier-in-array order
+	// must not win — position decides.
+	expect( Migration::issueDateFromName( 'Junie-Julie 2019' ) )->toBe( '2019-06-01' );
+	expect( Migration::issueDateFromName( 'Julie-Augustus 2019' ) )->toBe( '2019-07-01' );
+} );
+
 test( 'issuePostArr maps a legacy issue to a published inkpols_uitgawe', function (): void {
 	$arr = Migration::issuePostArr( (object) array( 'id' => 5, 'name' => 'Mei 2018' ) );
 
@@ -65,9 +83,9 @@ test( 'run is a no-op when the migration has already completed (idempotent)', fu
 		protected function legacyIssues(): array {
 			return array( (object) array( 'id' => 1, 'name' => 'Mei 2018' ) );
 		}
-		protected function ensureIssue( object $issue ): int {
+		protected function ensureIssue( object $issue ): array {
 			$this->ensured = true;
-			return 99;
+			return array( 'id' => 99, 'created' => true );
 		}
 	};
 
@@ -93,8 +111,8 @@ test( 'run re-links PDFs, writes date+volume meta, and marks done', function ():
 				(object) array( 'id' => 2, 'name' => 'Junie 2018', 'pdf_id' => 0 ), // no PDF
 			);
 		}
-		protected function ensureIssue( object $issue ): int {
-			return 1 === (int) $issue->id ? 101 : 102;
+		protected function ensureIssue( object $issue ): array {
+			return array( 'id' => 1 === (int) $issue->id ? 101 : 102, 'created' => true );
 		}
 		protected function setIssueMeta( int $issue_id, string $key, int|string $value ): void {
 			$this->meta[] = array( $issue_id, $key, $value );
@@ -108,6 +126,7 @@ test( 'run re-links PDFs, writes date+volume meta, and marks done', function ():
 
 	expect( $summary['skipped'] )->toBeFalse();
 	expect( $summary['created'] )->toBe( 2 );
+	expect( $summary['reconciled'] )->toBe( 0 );
 	expect( $summary['relinked'] )->toBe( 1 ); // only issue 1 had a PDF
 	expect( $migration->marked )->toBeTrue();
 
@@ -133,9 +152,9 @@ test( 'run skips a malformed empty-name legacy issue (no untitled uitgawe)', fun
 		protected function legacyIssues(): array {
 			return array( (object) array( 'id' => 1, 'name' => '   ' ) );
 		}
-		protected function ensureIssue( object $issue ): int {
+		protected function ensureIssue( object $issue ): array {
 			++$this->ensured;
-			return 50;
+			return array( 'id' => 50, 'created' => true );
 		}
 		protected function markDone(): void {}
 	};
@@ -169,7 +188,9 @@ test( 'ensureIssue reuses an existing migrated issue (--force reconciles, no dup
 	$summary = $migration->run( true ); // --force
 
 	expect( $summary['skipped'] )->toBeFalse();
-	expect( $summary['created'] )->toBe( 1 );
+	// R13 review: a reconcile is NOT counted as a create — created 0, reconciled 1.
+	expect( $summary['created'] )->toBe( 0 );
+	expect( $summary['reconciled'] )->toBe( 1 );
 	expect( $migration->createdCount )->toBe( 0 ); // reused 555, did NOT insert a duplicate
 } );
 
