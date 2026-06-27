@@ -4,6 +4,7 @@
       "Bash(git *)",
       "Bash(python3 *)",
       "Bash(grep *)",
+      "Bash(echo *)",
       "Bash(tail *)",
       "Bash(head *)",
       "Bash(wc *)",
@@ -76,7 +77,12 @@
       "Bash(echo clean *)",
       "Bash(perl -0pi -e 's/- \\\\[ \\\\] \\(Task [2-7]\\)/- [x] $1/g' _bmad-output/implementation-artifacts/12-4-entry-capture.md)",
       "Bash(perl -0pi -e 's/Status: ready-for-dev/Status: review/; s/- \\\\[ \\\\] \\(Task [1-4]\\)/- [x] $1/g' _bmad-output/implementation-artifacts/12-5-gradering-based-competition-pools.md)",
-      "Bash(echo \"checked tasks:\")"
+      "Bash(echo \"checked tasks:\")",
+      "Bash(jq -r '.permissions.allow[] | select\\(test\\(\"^Bash\\\\\\\\\\(echo \"\\)\\) | select\\(. != \"Bash\\(echo *\\)\"\\)' /Users/cobus/Development/ink-vibe/.claude/settings.local.json)",
+      "Bash(jq '.permissions.allow | length' /Users/cobus/Development/ink-vibe/.claude/settings.local.json)",
+      "Bash(perl -0pi -e 's/Status: ready-for-dev/Status: review/; s/- \\\\[ \\\\] \\(Task [1-4]\\)/- [x] $1/g' _bmad-output/implementation-artifacts/12-6-structured-placement-records.md)",
+      "Bash(perl -0pi -e 's/### File List\\\\n\\\\n### Change Log/### File List\\\\n\\\\n- `wp-content\\\\/plugins\\\\/ink-core\\\\/src\\\\/Challenges\\\\/Placements.php` \\(new\\)\\\\n- `wp-content\\\\/plugins\\\\/ink-core\\\\/src\\\\/I18n\\\\/Terms.php` \\(modified — algehele_wenner key\\)\\\\n- `tests\\\\/Unit\\\\/Challenges\\\\/PlacementsTest.php` \\(new\\)\\\\n\\\\n### Change Log/' _bmad-output/implementation-artifacts/12-6-structured-placement-records.md)",
+      "Bash(perl -0pi -e 's/### Completion Notes List\\\\n\\\\n### File List/### Completion Notes List\\\\n\\\\n- `Challenges\\\\\\\\Placements` stores rank 1\\\\/2\\\\/3 on the authoritative entry \\(`ink_entry_placement`\\) so all of 1st\\\\/2nd\\\\/3rd per pool are recorded, not only the winner. rank 1 = algehele wenner, 2-3 = wenner \\(pure isAlgeheleWenner\\\\/placementLabel\\). record\\(\\)\\\\/clear\\(\\)\\\\/placementFor\\(\\) = the 12A.3 write API; arrange\\(\\) \\(pure\\) + forRound\\(\\) \\(reuses Pools::forRound\\) = the queryable read for 5.8\\\\/SM-8.\\\\n- Conflation-clean: placements hang off the entry + Gradering pool, zero Entitlement. No new deptrac edge.\\\\n- Gates: composer test → 801 passed\\\\/2 skipped \\(+6\\); cs 0 errors; stan clean; deptrac 3 pre-existing only.\\\\n\\\\n### File List/' _bmad-output/implementation-artifacts/12-6-structured-placement-records.md)"
     ],
     "defaultMode": "acceptEdits"
   },

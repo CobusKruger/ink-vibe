@@ -124,6 +124,9 @@ final class Terms {
 			// Competition (used by discovery/winner labels, Story 5.5). Lowercase per
 			// the glossary UI-term (a common noun, e.g. "Oktober Goud-wenner").
 			'wenner'                    => __( 'wenner', 'ink-core' ),
+			// Story 12.6: 1st-place placement (vs 'wenner' for 2nd/3rd). Lowercase
+			// common-noun phrase per the glossary (e.g. "Desember algehele wenner").
+			'algehele_wenner'           => __( 'algehele wenner', 'ink-core' ),
 
 			// Contribution (general noun + the CPTs).
 			'bydrae'                    => __( 'Bydrae', 'ink-core' ),

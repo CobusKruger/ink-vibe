@@ -264,7 +264,8 @@ development_status:
   12-4-entry-capture: review
   # 12-5 → review (create-story + dev-story; Challenges\Pools — competingTiers Brons/Silwer/Goud (Tier::cases minus manual-only Meester), pure group() buckets entries by the entry-time gradering snapshot (12.4), poolLabel via Terms, thin forRound() reusing SinglePage::entriesQueryArgs; pools governed by Gradering only — conflation-clean, no Entitlement, no new deptrac edge; tests 795 passed/2 skipped +4, cs/stan clean)
   12-5-gradering-based-competition-pools: review
-  12-6-structured-placement-records: backlog
+  # 12-6 → review (create-story + dev-story; Challenges\Placements — records rank 1/2/3 on the authoritative entry (ink_entry_placement), all of 1st/2nd/3rd per pool not only the winner; rank 1=algehele wenner, 2-3=wenner (pure isAlgeheleWenner/placementLabel via Terms; algehele_wenner term added); record/clear/placementFor = 12A.3 write API; arrange() pure + forRound() (reuses Pools::forRound) = queryable read for 5.8 auto-promotion + SM-8; conflation-clean, no new deptrac edge; tests 801 passed/2 skipped +6, cs/stan clean)
+  12-6-structured-placement-records: review
   12-7-winner-gradering-promotion-link: backlog
   12-8-historical-challenge-migration: backlog
   epic-12-retrospective: optional
