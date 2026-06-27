@@ -47,6 +47,10 @@ deptrac:
           collectors:
             - type: classNameRegex
               value: '#^Ink\\Discovery\\.*#'
+        - name: Library
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Library\\.*#'
         - name: Challenges
           collectors:
             - type: classNameRegex
@@ -147,6 +151,16 @@ deptrac:
             # (THE conflation rule is untouched: Discovery sorts/filters on form +
             # read/recency, never on tier).
             - Tiers
+        Library:
+            - Kernel
+            # Story 10.1: the Biblioteek archive reads the migration-load-bearing
+            # CPT + taxonomy single sources `Ink\Content\PostTypes::BIBLIOTEEK_ITEM`
+            # + `Ink\Content\Taxonomies::GENRE`. A real, non-circular cross-module
+            # dependency on the slug registry — mirrors the Discovery->Content (8.1),
+            # Submission->Content (6.1) and Engagement->Content (7.6) edges. No
+            # Entitlement/Tiers edge (browsing published library work is open;
+            # conflation-clean).
+            - Content
         Challenges:
             - Kernel
         Sponsors:

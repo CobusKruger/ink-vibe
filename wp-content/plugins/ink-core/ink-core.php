@@ -87,5 +87,6 @@ add_action(
 			Kernel\Plugin::instance()->addModule( 'submission', new Submission\Module() );
 		Kernel\Plugin::instance()->addModule( 'discovery', new Discovery\Module() );
 		Kernel\Plugin::instance()->addModule( 'social', new Social\Module() );
+		Kernel\Plugin::instance()->addModule( 'library', new Library\Module() );
 	}
 );
