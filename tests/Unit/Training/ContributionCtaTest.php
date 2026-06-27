@@ -68,3 +68,15 @@ test( 'contributionUrl honours the ink/opleiding_bydra_url filter (the single re
 
 	expect( ContributionCta::contributionUrl() )->toBe( 'https://ink.test/dra-by/' );
 } );
+
+test( 'contributionUrl falls back to the Skryf default when a misbehaving filter returns a non-string/empty (R11)', function (): void {
+	Functions\when( 'home_url' )->alias( static fn ( string $path = '' ): string => 'https://ink.test' . $path );
+
+	// null → fallback.
+	Functions\when( 'apply_filters' )->justReturn( null );
+	expect( ContributionCta::contributionUrl() )->toBe( 'https://ink.test/skryf/' );
+
+	// empty string → fallback (no broken href).
+	Functions\when( 'apply_filters' )->justReturn( '' );
+	expect( ContributionCta::contributionUrl() )->toBe( 'https://ink.test/skryf/' );
+} );

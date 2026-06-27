@@ -70,6 +70,10 @@ final class ArchiveRender {
 			return '';
 		}
 
+		// Clamp an out-of-range page so prev/next never point beyond the last page
+		// (a hand-typed `?…_bladsy=999` would otherwise render a nonsensical link).
+		$paged = min( $paged, $max_pages );
+
 		$html = '<nav class="' . esc_attr( $css_prefix . '__blaai' ) . '">';
 
 		if ( $paged > 1 ) {

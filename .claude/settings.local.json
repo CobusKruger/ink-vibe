@@ -71,7 +71,8 @@
       "Bash(awk '/[Ee]pic 8/{f=1} f{print} /[Ee]pic 9/{if\\(f\\)exit}' _bmad-output/planning-artifacts/epics.md)",
       "Bash(/Users/cobus/Development/ink-vibe/vendor/bin/phpcbf wp-content/plugins/ink-core/src/Discovery/Search.php wp-content/plugins/ink-core/src/Discovery/SearchIndex.php wp-content/plugins/ink-core/src/Discovery/Diacritics.php)",
       "Bash(/Users/cobus/Development/ink-vibe/vendor/bin/phpcs --report=summary)",
-      "Bash(awk *)"
+      "Bash(awk *)",
+      "Bash(php *)"
     ],
     "defaultMode": "acceptEdits"
   },

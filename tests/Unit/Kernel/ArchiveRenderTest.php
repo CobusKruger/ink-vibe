@@ -112,3 +112,13 @@ test( 'pagination clamps a non-positive current page to 1', function (): void {
 	expect( $html )->not->toContain( 'ink-opleiding__vorige' );
 	expect( $html )->toContain( 'opleiding_bladsy=2' );
 } );
+
+test( 'pagination clamps an out-of-range page down to the last page (no link beyond max) (R11)', function (): void {
+	ink_archiverender_stubs();
+
+	$html = ArchiveRender::pagination( 999, 3, 'ink-opleiding', 'opleiding_bladsy' );
+	// Treated as the last page: prev to 2, never a next beyond max.
+	expect( $html )->toContain( 'ink-opleiding__vorige' );
+	expect( $html )->toContain( 'opleiding_bladsy=2' );
+	expect( $html )->not->toContain( 'ink-opleiding__volgende' );
+} );

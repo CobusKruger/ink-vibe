@@ -73,7 +73,12 @@ final class ContributionCta {
 	 * @return string
 	 */
 	public static function contributionUrl(): string {
-		return (string) apply_filters( self::URL_FILTER, home_url( '/skryf/' ) );
+		$default  = home_url( '/skryf/' );
+		$filtered = apply_filters( self::URL_FILTER, $default );
+
+		// A misbehaving filter (null / non-string / empty) must never yield a broken
+		// or fatal href — fall back to the Skryf default.
+		return ( is_string( $filtered ) && '' !== $filtered ) ? $filtered : $default;
 	}
 
 	/**

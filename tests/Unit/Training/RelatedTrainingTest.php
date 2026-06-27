@@ -87,6 +87,14 @@ test( 'queryArgs floors a non-positive limit to at least one', function (): void
 	expect( RelatedTraining::queryArgs( 0, array( 5 ), array(), 0 )['posts_per_page'] )->toBe( 1 );
 } );
 
+test( 'queryArgs with NO terms matches nothing (post__in [0]) — the FR-55 invariant in the pure layer (R11)', function (): void {
+	$args = RelatedTraining::queryArgs( 42, array(), array(), 3 );
+
+	// No clauses → never surface unrelated training, even if called directly.
+	expect( $args )->not->toHaveKey( 'tax_query' );
+	expect( $args['post__in'] )->toBe( array( 0 ) );
+} );
+
 // --- toHtml (the FR-55 surfaces / surfaces-nothing invariant) ---
 
 test( 'toHtml renders the Verwante leerhulpbronne heading + a link per related item', function (): void {

@@ -123,10 +123,16 @@ final class RelatedTraining {
 			$args['post__not_in'] = array( $exclude_id );
 		}
 
-		if ( array() !== $clauses ) {
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- bounded shared-term surfacing (FR-55); the AD-7 server-rendered cross-surface, no search plugin.
-			$args['tax_query'] = $clauses;
+		if ( array() === $clauses ) {
+			// No shared term → match NOTHING (the FR-55 invariant, enforced in the
+			// pure layer too so a direct caller can never surface unrelated training).
+			$args['post__in'] = array( 0 );
+
+			return $args;
 		}
+
+		// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- bounded shared-term surfacing (FR-55); the AD-7 server-rendered cross-surface, no search plugin.
+		$args['tax_query'] = $clauses;
 
 		return $args;
 	}
