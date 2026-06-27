@@ -42,6 +42,8 @@ test( 'the Opleiding pattern embeds the server-rendered hub block and routes its
 	expect( $markup )->toContain( "ink_foundation_term( 'opleiding'" );
 	// The hub itself is the server-rendered ink-core block.
 	expect( $markup )->toContain( 'wp:ink/opleiding-argief' );
+	// Story 11.5: the closing contribution CTA block.
+	expect( $markup )->toContain( 'wp:ink/opleiding-bydra' );
 } );
 
 test( 'the single opleiding_artikel template embeds the reading pattern within locked chrome', function () use ( $ink_read ): void {

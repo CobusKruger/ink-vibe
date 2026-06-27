@@ -24,6 +24,8 @@ $ink_opleiding_label = function_exists( 'ink_foundation_term' )
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/opleiding-argief /-->
+
+		<!-- wp:ink/opleiding-bydra /-->
 	</div>
 	<!-- /wp:group -->
 </section>

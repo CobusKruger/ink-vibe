@@ -22,7 +22,8 @@ defined( 'ABSPATH' ) || exit;
  * (featured strip + search + card grid); the `vaardigheid` faceted filter (11.2)
  * + redakteur-se-rak entry points (11.3) on the same block; at 11.4 the
  * {@see RelatedTraining} cross-surfacing block (training beside works, solely by
- * shared `genre`/`vaardigheid` terms). Later: the contribution CTA (11.5).
+ * shared `genre`/`vaardigheid` terms); at 11.5 the {@see ContributionCta} closing
+ * "Plaas 'n stuk" call to action on the hub.
  *
  * Conflation-clean: browsing published Opleiding work is open — the module reads
  * only `Ink\Content` (CPT/taxonomy slugs) + the `Terms` registry + WP core, never
@@ -41,5 +42,6 @@ final class Module implements ModuleContract {
 	public function register(): void {
 		( new Hub() )->register();
 		( new RelatedTraining() )->register();
+		( new ContributionCta() )->register();
 	}
 }
