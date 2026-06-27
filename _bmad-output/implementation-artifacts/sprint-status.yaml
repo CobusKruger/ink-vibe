@@ -192,7 +192,7 @@ development_status:
   8-3-ontdek-skrywers-tab: done
   8-4-search: done
   8-5-discovery-surfaces: done
-  epic-8-retrospective: optional
+  epic-8-retrospective: done
 
   # Epic 9: Community & social
   # Code review 2026-06-27: 3-layer adversarial review of all 12 stories. 5 patches
