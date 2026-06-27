@@ -149,6 +149,9 @@ final class Terms {
 			// Story 12.1: open/closed challenge state + entries-list heading.
 			'uitdaging_oop'             => __( 'Oop', 'ink-core' ),
 			'uitdaging_gesluit'         => __( 'Gesluit', 'ink-core' ),
+			// Story 12.2: challenge theme/tema + list-page countdown labels.
+			'tema'                      => __( 'Tema', 'ink-core' ),
+			'uitdaging_sluit_vandag'    => __( 'Sluit vandag', 'ink-core' ),
 			'inkpols_uitgawe'           => __( 'Uitgawe', 'ink-core' ),
 			'inkpols_uitgawe_plural'    => __( 'Uitgawes', 'ink-core' ),
 			'borg'                      => __( 'Borg', 'ink-core' ),

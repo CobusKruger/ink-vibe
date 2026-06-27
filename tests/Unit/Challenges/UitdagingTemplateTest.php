@@ -42,3 +42,19 @@ test( 'the reading-uitdaging pattern carries the eyebrow label via the bridge pl
 	// The server-rendered deadline/status + entries-list block.
 	expect( $markup )->toContain( 'wp:ink/uitdaging-besonderhede' );
 } );
+
+test( 'the uitdaging archive template embeds the list pattern within locked chrome', function () use ( $ink_read ): void {
+	$markup = $ink_read( 'templates/archive-uitdaging.html' );
+
+	expect( $markup )->toContain( 'wp:template-part' );        // header/footer chrome
+	expect( $markup )->toContain( 'ink-foundation/uitdaging' ); // references the archive pattern
+} );
+
+test( 'the uitdaging archive pattern routes its heading via the bridge and embeds the server-rendered list block', function () use ( $ink_read ): void {
+	$markup = $ink_read( 'patterns/uitdaging.php' );
+
+	// Heading from the terminology registry bridge (single-source, plural form).
+	expect( $markup )->toContain( "ink_foundation_term( 'uitdaging_plural'" );
+	// The list itself is the server-rendered ink-core block.
+	expect( $markup )->toContain( 'wp:ink/uitdaging-argief' );
+} );

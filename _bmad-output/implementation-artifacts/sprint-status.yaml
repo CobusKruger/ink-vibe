@@ -256,7 +256,8 @@ development_status:
   epic-12: in-progress
   # 12-1 → review (create-story + dev-story; Challenges\SinglePage = ink/uitdaging-besonderhede server block: deadline + Oop/Gesluit status (Kernel\Sast inclusive end-of-day-SAST) + inskrywings list (round tax_query via ChallengeRound::slugFor); editorial brief via core post-content; single-uitdaging.html + reading-uitdaging.php; module registered in ink-core.php; deptrac Challenges->Content edge ADDED (mirrors Library/Discovery 10.1/8.1), conflation-clean (zero Tiers/Entitlement); tests 765 passed/2 skipped +11, cs/stan clean, deptrac no new edge)
   12-1-uitdaging-single-page: review
-  12-2-uitdagings-list-page: backlog
+  # 12-2 → review (create-story + dev-story; Challenges\Archive = ink/uitdaging-argief server block: newest-first paginated card grid (Kernel\ArchiveRender::pagination), per-card server-computed countdown Nog N dae/Nog 1 dag/Sluit vandag/Gesluit off the inclusive end-of-day-SAST boundary, tema + sluitingsdatum + is-oop/is-gesluit; archive-uitdaging.html + uitdaging.php; extracted shared Challenges\Deadline parse/format used by 12.1 SinglePage too; conflation-clean, no new deptrac edge; tests 777 passed/2 skipped +12, cs/stan clean)
+  12-2-uitdagings-list-page: review
   12-3-challenge-metadata: backlog
   12-4-entry-capture: backlog
   12-5-gradering-based-competition-pools: backlog

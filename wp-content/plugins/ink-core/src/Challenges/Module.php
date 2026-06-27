@@ -35,5 +35,6 @@ final class Module implements ModuleContract {
 	 */
 	public function register(): void {
 		( new SinglePage() )->register();
+		( new Archive() )->register();
 	}
 }

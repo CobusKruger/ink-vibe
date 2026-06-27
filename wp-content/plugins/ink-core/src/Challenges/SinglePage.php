@@ -201,13 +201,12 @@ final class SinglePage {
 		}
 
 		$raw      = Scalar::asString( get_post_meta( $uitdaging_id, FieldSets::UITDAGING_DEADLINE, true ) );
-		$deadline = self::parseDeadline( $raw );
+		$deadline = Deadline::parse( $raw );
 
 		$status_html = '';
 
 		if ( $deadline instanceof \DateTimeImmutable ) {
-			$formatted   = self::formatDeadline( $deadline );
-			$status_html = self::statusHtml( $formatted, self::isOpen( $deadline ) );
+			$status_html = self::statusHtml( Deadline::format( $deadline ), self::isOpen( $deadline ) );
 		}
 
 		$query   = new \WP_Query( self::entriesQueryArgs( $uitdaging_id ) );
@@ -223,42 +222,5 @@ final class SinglePage {
 		}
 
 		return self::toHtml( $status_html, self::entriesHtml( $entries ) );
-	}
-
-	/**
-	 * Parse a stored deadline string into a SAST instant. Mirrors the Submission
-	 * writer's parse so the reader and writer agree on the stored shape (the round
-	 * model is Epic 12/12A; until then both sides share the `Y-m-d[ T]H:i(:s)` shape).
-	 *
-	 * @param string $raw The stored deadline string.
-	 * @return \DateTimeImmutable|null The parsed instant, or null when empty/invalid.
-	 */
-	private static function parseDeadline( string $raw ): ?\DateTimeImmutable {
-		if ( '' === $raw ) {
-			return null;
-		}
-
-		try {
-			return new \DateTimeImmutable( $raw, new \DateTimeZone( Sast::TIMEZONE ) );
-		} catch ( \Exception $e ) {
-			return null;
-		}
-	}
-
-	/**
-	 * Format a deadline for display, localised to the site (Afrikaans) when WordPress
-	 * is loaded; a stable `Y-m-d` fallback keeps the unit path deterministic.
-	 *
-	 * @param \DateTimeImmutable $deadline The deadline instant.
-	 * @return string
-	 */
-	private static function formatDeadline( \DateTimeImmutable $deadline ): string {
-		$sast = $deadline->setTimezone( new \DateTimeZone( Sast::TIMEZONE ) );
-
-		if ( function_exists( 'wp_date' ) ) {
-			return (string) wp_date( 'j F Y', $sast->getTimestamp() );
-		}
-
-		return $sast->format( 'Y-m-d' );
 	}
 }

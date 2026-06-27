@@ -72,7 +72,8 @@
       "Bash(/Users/cobus/Development/ink-vibe/vendor/bin/phpcbf wp-content/plugins/ink-core/src/Discovery/Search.php wp-content/plugins/ink-core/src/Discovery/SearchIndex.php wp-content/plugins/ink-core/src/Discovery/Diacritics.php)",
       "Bash(/Users/cobus/Development/ink-vibe/vendor/bin/phpcs --report=summary)",
       "Bash(awk *)",
-      "Bash(php *)"
+      "Bash(php *)",
+      "Bash(echo clean *)"
     ],
     "defaultMode": "acceptEdits"
   },
