@@ -4,7 +4,7 @@ baseline_commit: bfa8008
 
 # Story 10.1: biblioteek_item archive + single
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

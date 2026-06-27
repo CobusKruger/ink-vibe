@@ -218,13 +218,19 @@ development_status:
 
   # Epic 10: Library (Biblioteek)
   # epic-10 started 2026-06-27; full BMAD loop (create-story → dev-story → tests → commit).
+  # Code review 2026-06-27: 3-layer adversarial review (Blind/Edge/Acceptance) of the
+  # 3 BUILT stories (10.1/10.5/10.6); 10.2/10.3/10.4 verified legitimately deferred.
+  # 3 patches applied (search-form genre preservation = AC#4, all 3 layers converged;
+  # card genre badge = 10.1 AC#5; featuredArgs order assertion). Conflation rule +
+  # three-layer + Afrikaans-first + fail-safe WinnerLinkage + 10.6 stub verified intact.
+  # 0 HIGH defects remain. 3 items deferred (see deferred-work.md). Tests 680->714 (+34).
   epic-10: in-progress
-  10-1-biblioteek-item-archive-single: review
+  10-1-biblioteek-item-archive-single: done  # code review 2026-06-27 — genre-badge + search-genre-preservation patches applied
   10-2-date-archive-browsing-deferred: done   # recorded deferral (§9.4 gap, non-blocking) — see deferred-work.md
   10-3-pagination-deferred: done              # prev/next ships in 10.1; numbered/load-more deferred (§9.4)
   10-4-author-filter-deferred: done           # recorded deferral (§9.4 gap, non-blocking)
-  10-5-winner-challenge-linkage: review
-  10-6-biblioteek-auto-update-on-win-r4-stub: review
+  10-5-winner-challenge-linkage: done  # code review 2026-06-27 — clean (fail-safe linkage verified)
+  10-6-biblioteek-auto-update-on-win-r4-stub: done  # code review 2026-06-27 — clean (reserved hook invoked, body deferred)
   epic-10-retrospective: optional
 
   # Epic 11: Training (Opleiding)

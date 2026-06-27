@@ -97,6 +97,7 @@ test( 'featuredArgs requests the most-recent published items with no_found_rows'
 	expect( $args['post_status'] )->toBe( 'publish' );
 	expect( $args['posts_per_page'] )->toBe( 3 );
 	expect( $args['orderby'] )->toBe( 'date' );
+	expect( $args['order'] )->toBe( 'DESC' ); // most-recent — guards against an ASC regression.
 	expect( $args['no_found_rows'] )->toBeTrue();
 	// A non-positive count is floored to at least one.
 	expect( Archive::featuredArgs( 0 )['posts_per_page'] )->toBe( 1 );
@@ -108,8 +109,8 @@ test( 'toHtml renders the heading, controls and a card per item, escaping every 
 	ink_biblioteek_render_stubs();
 
 	$cards = array(
-		array( 'title' => 'Versamelde gedigte', 'permalink' => '/biblioteek/versamelde', 'author' => 'Lid Een' ),
-		array( 'title' => 'Die handboek', 'permalink' => '/biblioteek/handboek', 'author' => 'Lid Twee' ),
+		array( 'title' => 'Versamelde gedigte', 'permalink' => '/biblioteek/versamelde', 'author' => 'Lid Een', 'genre' => 'Poësie' ),
+		array( 'title' => 'Die handboek', 'permalink' => '/biblioteek/handboek', 'author' => 'Lid Twee', 'genre' => 'Prosa' ),
 	);
 	$genres = array(
 		array( 'slug' => 'poesie', 'name' => 'Poësie' ),
@@ -123,6 +124,8 @@ test( 'toHtml renders the heading, controls and a card per item, escaping every 
 	expect( $html )->toContain( '/biblioteek/versamelde' );
 	expect( $html )->toContain( 'Lid Een' );
 	expect( $html )->toContain( 'Die handboek' );
+	// Per-card genre badge (AC: title -> permalink, genre badge, author).
+	expect( $html )->toContain( 'ink-biblioteek__genre' );
 	// Genre filter pills + Alles.
 	expect( $html )->toContain( 'ink-biblioteek__filter' );
 	expect( $html )->toContain( 'Alles' );
@@ -132,6 +135,19 @@ test( 'toHtml renders the heading, controls and a card per item, escaping every 
 	expect( $html )->toContain( 'ink-biblioteek__soek' );
 	// Single page → no pagination nav.
 	expect( $html )->not->toContain( 'ink-biblioteek__blaai' );
+} );
+
+test( 'a card without a genre omits the badge rather than rendering an empty one', function (): void {
+	ink_biblioteek_render_stubs();
+
+	$cards = array(
+		array( 'title' => 'Sonder genre', 'permalink' => '/biblioteek/sonder', 'author' => 'Lid Een', 'genre' => '' ),
+	);
+
+	$html = Archive::toHtml( $cards, array(), array(), array( 'paged' => 1, 'max_pages' => 1, 'genre' => null, 'search' => '' ) );
+
+	expect( $html )->toContain( 'Sonder genre' );
+	expect( $html )->not->toContain( 'ink-biblioteek__genre' );
 } );
 
 test( 'featuredHtml renders the Uitgelig strip with a card per featured item, and nothing when empty', function (): void {
@@ -174,6 +190,17 @@ test( 'searchHtml echoes the current term into the input value, escaped', functi
 	expect( $html )->toContain( 'ink-biblioteek__soek' );
 	expect( $html )->toContain( 'value="handboek"' );
 	expect( $html )->toContain( 'Soek' );
+	// No active genre → no hidden genre field.
+	expect( $html )->not->toContain( 'type="hidden"' );
+} );
+
+test( 'searchHtml carries the active genre forward in a hidden field (GET form would otherwise drop it)', function (): void {
+	ink_biblioteek_render_stubs();
+
+	$html = Archive::searchHtml( 'handboek', 'poesie' );
+	expect( $html )->toContain( 'type="hidden"' );
+	expect( $html )->toContain( 'name="biblioteek_genre"' );
+	expect( $html )->toContain( 'value="poesie"' );
 } );
 
 test( 'toHtml renders prev/next only when there is more than one page', function (): void {

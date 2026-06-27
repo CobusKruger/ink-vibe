@@ -4,7 +4,7 @@ baseline_commit: bfa8008
 
 # Story 10.5: Winner ↔ challenge linkage
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

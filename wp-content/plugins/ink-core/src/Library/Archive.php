@@ -210,17 +210,40 @@ final class Archive {
 	}
 
 	/**
-	 * Map a post to a card row. Pure given the post.
+	 * Map a post to a card row (incl. its primary genre badge). Given the post.
 	 *
 	 * @param \WP_Post $post The library item.
-	 * @return array{title:string, permalink:string, author:string}
+	 * @return array{title:string, permalink:string, author:string, genre:string}
 	 */
 	private static function card( \WP_Post $post ): array {
 		return array(
 			'title'     => get_the_title( $post ),
 			'permalink' => (string) get_permalink( $post ),
 			'author'    => (string) get_the_author_meta( 'display_name', (int) $post->post_author ),
+			'genre'     => self::primaryGenre( $post ),
 		);
+	}
+
+	/**
+	 * The name of the item's first `genre` term, for the card badge. '' when none.
+	 *
+	 * @param \WP_Post $post The library item.
+	 * @return string
+	 */
+	private static function primaryGenre( \WP_Post $post ): string {
+		$terms = get_the_terms( $post, Taxonomies::GENRE );
+
+		if ( ! is_array( $terms ) ) {
+			return '';
+		}
+
+		foreach ( $terms as $term ) {
+			if ( $term instanceof \WP_Term ) {
+				return $term->name;
+			}
+		}
+
+		return '';
 	}
 
 	/**
@@ -316,16 +339,16 @@ final class Archive {
 	/**
 	 * Build the archive HTML. Pure — Terms + escaping only.
 	 *
-	 * @param list<array{title:string, permalink:string, author:string}>          $cards    The items.
-	 * @param list<array{title:string, permalink:string, author:string}>          $featured The featured strip items.
-	 * @param list<array{slug:string, name:string}>                               $genres   The genre filter terms.
-	 * @param array{paged:int, max_pages:int, genre?:string|null, search?:string} $nav Render context.
+	 * @param list<array{title:string, permalink:string, author:string, genre?:string}> $cards    The items.
+	 * @param list<array{title:string, permalink:string, author:string, genre?:string}> $featured The featured strip items.
+	 * @param list<array{slug:string, name:string}>                                     $genres   The genre filter terms.
+	 * @param array{paged:int, max_pages:int, genre?:string|null, search?:string}       $nav Render context.
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $featured, array $genres, array $nav ): string {
 		$heading  = '<h1 class="ink-biblioteek__heading">' . esc_html( Terms::label( 'biblioteek' ) ) . '</h1>';
 		$controls = self::featuredHtml( $featured )
-			. self::searchHtml( isset( $nav['search'] ) ? (string) $nav['search'] : '' )
+			. self::searchHtml( isset( $nav['search'] ) ? (string) $nav['search'] : '', $nav['genre'] ?? null )
 			. self::filterHtml( $genres, $nav['genre'] ?? null );
 
 		if ( array() === $cards ) {
@@ -352,7 +375,7 @@ final class Archive {
 	 *
 	 * Renders nothing without featured items (filtered/paged views pass none).
 	 *
-	 * @param list<array{title:string, permalink:string, author:string}> $featured The featured items.
+	 * @param list<array{title:string, permalink:string, author:string, genre?:string}> $featured The featured items.
 	 * @return string
 	 */
 	public static function featuredHtml( array $featured ): string {
@@ -372,14 +395,23 @@ final class Archive {
 	}
 
 	/**
-	 * The keyword-search form. Pure — escaping only. Preserves no other dimension
-	 * in the form action (the browser keeps the genre via the page URL on submit).
+	 * The keyword-search form. Pure — escaping only.
 	 *
-	 * @param string $term The current search term, for the input value.
+	 * A `method="get"` form replaces the whole query string on submit, so the
+	 * active genre is carried forward in a hidden field (otherwise searching while
+	 * filtered to a genre would silently reset to "Alles").
+	 *
+	 * @param string      $term         The current search term, for the input value.
+	 * @param string|null $active_genre The active genre slug to preserve, or null.
 	 * @return string
 	 */
-	public static function searchHtml( string $term ): string {
+	public static function searchHtml( string $term, ?string $active_genre = null ): string {
+		$hidden = ( null !== $active_genre && '' !== $active_genre )
+			? '<input type="hidden" name="' . esc_attr( self::GENRE_VAR ) . '" value="' . esc_attr( $active_genre ) . '" />'
+			: '';
+
 		return '<form class="ink-biblioteek__soek" role="search" method="get">'
+			. $hidden
 			. '<input type="search" class="ink-biblioteek__soek-veld" name="' . esc_attr( self::SEARCH_VAR ) . '"'
 			. ' value="' . esc_attr( $term ) . '"'
 			. ' placeholder="' . esc_attr__( 'Soek in die biblioteek…', 'ink-core' ) . '"'
@@ -427,17 +459,25 @@ final class Archive {
 	}
 
 	/**
-	 * One library card. Pure — escaping + Terms only.
+	 * One library card. Pure — escaping only.
 	 *
-	 * @param array{title:string, permalink:string, author:string} $card  The item.
-	 * @param string                                               $extra Optional extra CSS class.
+	 * Renders the item's `genre` term as the card badge (AC: title → permalink,
+	 * genre badge, author); the badge is omitted for an item with no genre term.
+	 *
+	 * @param array{title:string, permalink:string, author:string, genre?:string} $card  The item.
+	 * @param string                                                              $extra Optional extra CSS class.
 	 * @return string
 	 */
 	private static function cardHtml( array $card, string $extra = '' ): string {
 		$class = 'ink-biblioteek__item is-style-card' . ( '' !== $extra ? ' ' . $extra : '' );
+		$genre = isset( $card['genre'] ) ? (string) $card['genre'] : '';
+
+		$badge = '' !== $genre
+			? '<span class="ink-biblioteek__genre">' . esc_html( $genre ) . '</span>'
+			: '';
 
 		return '<li class="' . esc_attr( $class ) . '">'
-			. '<span class="ink-biblioteek__tipe">' . esc_html( Terms::label( 'biblioteek_item' ) ) . '</span>'
+			. $badge
 			. '<a class="ink-biblioteek__titel" href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>'
 			. '<span class="ink-biblioteek__outeur">' . esc_html( $card['author'] ) . '</span>'
 			. '</li>';
