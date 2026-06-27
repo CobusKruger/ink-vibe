@@ -24,8 +24,9 @@ defined( 'ABSPATH' ) || exit;
  *
  * The module carries the read-model ({@see Issue}) + facade ({@see Api}) plus,
  * from 13.2, the by-year archive ({@see Archive}) and single-issue metadata
- * ({@see SingleIssue}) server blocks, and from 13.3 the PDF flipbook viewer
- * ({@see Viewer}). Conflation-clean: reads only `Ink\Content` + `Ink\Kernel` +
+ * ({@see SingleIssue}) server blocks, from 13.3 the PDF flipbook viewer
+ * ({@see Viewer}), and from 13.4 the once-off back-catalogue {@see Migration}
+ * (WP-CLI only). Conflation-clean: reads only `Ink\Content` + `Ink\Kernel` +
  * WP core, never `Ink\Tiers`/`Ink\Entitlement`.
  *
  * @package Ink\Core
@@ -42,5 +43,6 @@ final class Module implements ModuleContract {
 		( new Archive() )->register();
 		( new SingleIssue() )->register();
 		( new Viewer() )->register();
+		( new Migration() )->register();
 	}
 }
