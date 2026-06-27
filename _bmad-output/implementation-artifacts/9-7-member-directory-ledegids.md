@@ -4,7 +4,7 @@ baseline_commit: 199c8b1
 
 # Story 9.7: Member directory (ledegids)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

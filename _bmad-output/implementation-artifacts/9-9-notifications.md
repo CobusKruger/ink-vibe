@@ -4,9 +4,19 @@ baseline_commit: 1af843e
 
 # Story 9.9: Notifications
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
+
+### Review Findings (Epic 9 code review, 2026-06-27)
+
+- [x] [Review][Patch][HIGH] The in-app lidmaatskap-expiry reminder subscribed to the RAW schedule hook (`HOOK_SEND_WARNING`), bypassing the live staleness re-checks the 4.8 email applies (`liveMembership`/`resolveTerm`/`shouldStillWarn`) — a renewed-early or revoked member would get a FALSE "expiring" kennisgewing once BuddyPress is live. Fixed: `LifecycleEmails::sendWarning` now fires a post-gate event `EVENT_EXPIRY_WARNED` after all gates pass + the email dispatches; `Events::onExpiryWarning` subscribes to THAT (recipient-first payload) instead of the raw hook — one schedule, two outputs, gates applied once. [LifecycleEmails.php, Events.php]
+- [x] [Review][Patch][MED] Republish re-announced "new work" to all volgelinge — `onTransition` gated only on `→publish`, so an unpublish→republish (or restore from pending/trash) re-fanned-out. Added a one-time `_ink_volg_aangekondig` post-meta sentinel so the fan-out is idempotent per post. [Events.php]
+- [x] [Review][Patch][LOW] `@mention` parser missed punctuation-attached handles (`(@anja)`, `@jan,@piet`) — switched the regex to a negative-lookbehind (`(?<![A-Za-z0-9_])@…`) that still excludes email `@`. [Events.php]
+- [x] [Review][Patch][LOW] `onComment` notified the work author off the RAW `wp_insert_comment`, so a programmatic `ink_reaksie` on a draft/trashed post could emit a kennisgewing for a non-public work — added a `'publish' === get_post_status()` guard. [Events.php]
+- [x] [Review][Patch][LOW] `markAllRead` called `bp_notifications_mark_all_notifications_by_type` — NOT a real BuddyPress function (silent no-op + a latent dual-store split). Removed it; the GMT boundary is the documented single source of truth for unread. [Kennisgewings.php]
+- [x] [Review][Defer] Fan-out scale (synchronous/unbounded → Action Scheduler), pinned-works meta atomicity, BP per-row reconciliation, the same-second boundary edge / lexical-timestamp compare, mention login-resolution, the unbuilt write-surface client JS (pre-existing), and the copy-debt label ratification — all recorded in `deferred-work.md` (owners: 18.8 / 18.x / copy worklist).
+- [x] [Review][Confirm] The Acceptance Auditor verified the load-bearing guarantees hold as the Completion Notes claim: FR-40 public/private separation, the conflation rule (no Tiers/Entitlement gating), held-for-moderation (9.6 reviews never surface unapproved), and R7/R8 graceful degradation. No HIGH/MED acceptance violations.
 
 ## Story
 

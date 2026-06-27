@@ -4,7 +4,7 @@ baseline_commit: 190f042
 
 # Story 9.5: Pinned / selected works
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

@@ -24,8 +24,11 @@ defined( 'ABSPATH' ) || exit;
  *   comment-insert; FR-44 fires off the comment hook).
  * - followed-writer new work → `transition_post_status` (publish of a readable
  *   bydrae → fan out to the author's volgelinge).
- * - lidmaatskap-expiry → the SAME Action Scheduler hook the 4.8 lifecycle emails
- *   fire on ({@see LifecycleEmails::HOOK_SEND_WARNING}) — one schedule, two outputs.
+ * - lidmaatskap-expiry → the 4.8 post-gate event ({@see LifecycleEmails::EVENT_EXPIRY_WARNED}),
+ *   fired only AFTER the lifecycle email passes every live staleness re-check — so
+ *   the in-app reminder shares the schedule AND the gates (a renewed/revoked member
+ *   never gets a false expiry alert). Subscribing to the raw schedule hook would skip
+ *   those gates.
  *
  * Deferred sources (emitter ready, source not built): uitdaging announce/deadline
  * (Epic 12 events) and the read-receipt milestone (Story 9.11 / R7) call the same
@@ -45,12 +48,18 @@ final class Events {
 	private const REAKSIE_COMMENT_TYPE = 'ink_reaksie';
 
 	/**
+	 * Post-meta sentinel: set once a work's "new work" fan-out has fired, so a
+	 * later republish never re-announces it to the author's volgelinge.
+	 */
+	public const ANNOUNCED_META = '_ink_volg_aangekondig';
+
+	/**
 	 * Subscribe the sources on `init`.
 	 */
 	public function register(): void {
 		add_action( 'wp_insert_comment', array( $this, 'onComment' ), 10, 2 );
 		add_action( 'transition_post_status', array( $this, 'onTransition' ), 10, 3 );
-		add_action( LifecycleEmails::HOOK_SEND_WARNING, array( $this, 'onExpiryWarning' ), 10, 3 );
+		add_action( LifecycleEmails::EVENT_EXPIRY_WARNED, array( $this, 'onExpiryWarning' ), 10, 3 ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- INK ink/... event-surface convention (AD-6).
 	}
 
 	/**
@@ -67,7 +76,10 @@ final class Events {
 		$post_id  = (int) ( $comment->comment_post_ID ?? 0 );
 		$actor_id = (int) ( $comment->user_id ?? 0 );
 
-		if ( $post_id <= 0 ) {
+		// Only published works notify — `wp_insert_comment` fires off the RAW insert,
+		// so a programmatic `ink_reaksie` on a draft/trashed/private post (import,
+		// tooling) must not emit a kennisgewing for a non-public work.
+		if ( $post_id <= 0 || 'publish' !== get_post_status( $post_id ) ) {
 			return;
 		}
 
@@ -108,19 +120,31 @@ final class Events {
 			return;
 		}
 
+		// Announce new work at most ONCE per post: a later unpublish→republish (or a
+		// restore from pending/trash/draft) is a non-publish→publish transition that
+		// would otherwise re-fan-out "new work" to every volgeling. A one-time
+		// post-meta sentinel makes the fan-out idempotent across re-publish cycles.
+		if ( '' !== (string) get_post_meta( $post_id, self::ANNOUNCED_META, true ) ) {
+			return;
+		}
+
+		update_post_meta( $post_id, self::ANNOUNCED_META, current_time( 'mysql', true ) );
+
 		foreach ( SocialApi::followerIdsFor( $author_id ) as $follower_id ) {
 			Kennisgewings::add( $follower_id, NotificationType::VolgWerk, $post_id, $author_id );
 		}
 	}
 
 	/**
-	 * Lidmaatskap-expiry reminder — shares the 4.8 lifecycle anchor.
+	 * Lidmaatskap-expiry reminder — fired off the 4.8 POST-GATE event
+	 * ({@see LifecycleEmails::EVENT_EXPIRY_WARNED}), so it only runs when the email
+	 * actually sent (all live staleness gates passed). Payload is recipient-first.
 	 *
-	 * @param int    $membership_id The membership (item id).
 	 * @param int    $user_id       The membership owner (recipient).
+	 * @param int    $membership_id The membership (item id).
 	 * @param string $base_key      The warning template base key (unused here).
 	 */
-	public function onExpiryWarning( int $membership_id, int $user_id, string $base_key ): void {
+	public function onExpiryWarning( int $user_id, int $membership_id, string $base_key ): void {
 		unset( $base_key );
 
 		Kennisgewings::add( $user_id, NotificationType::LidmaatskapVerval, $membership_id );
@@ -131,13 +155,15 @@ final class Events {
 	 *
 	 * Matches `@handle` tokens (letters/digits/_/-), deduped, lowercased; plain
 	 * text with no `@`, and an embedded `@` (e.g. an email address), yield none.
-	 * Trailing punctuation is excluded. (Resolution to a real user is the caller's.)
+	 * A negative lookbehind for a word char means a handle preceded by punctuation
+	 * — `(@anja)`, `@jan,@piet`, `—@kobus` — still matches, while `jan@example.com`
+	 * (preceded by `n`) does not. (Resolution to a real user is the caller's.)
 	 *
 	 * @param string $body The reaksie content.
 	 * @return list<string>
 	 */
 	public static function mentionedLogins( string $body ): array {
-		if ( ! preg_match_all( '/(?:^|\s)@([A-Za-z0-9_\-]+)/', $body, $matches ) ) {
+		if ( ! preg_match_all( '/(?<![A-Za-z0-9_])@([A-Za-z0-9_\-]+)/', $body, $matches ) ) {
 			return array();
 		}
 

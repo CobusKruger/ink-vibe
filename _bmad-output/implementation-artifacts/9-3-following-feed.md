@@ -4,7 +4,7 @@ baseline_commit: 1eddde2
 
 # Story 9.3: Following-feed
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

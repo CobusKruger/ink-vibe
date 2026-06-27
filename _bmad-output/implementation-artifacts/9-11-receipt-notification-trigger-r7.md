@@ -4,7 +4,7 @@ baseline_commit: 449930d
 
 # Story 9.11: Receipt-notification trigger (R7)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

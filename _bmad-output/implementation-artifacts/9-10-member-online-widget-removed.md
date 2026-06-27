@@ -4,7 +4,7 @@ baseline_commit: 9cc1a1a
 
 # Story 9.10: Member online widget (removed)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

@@ -4,7 +4,7 @@ baseline_commit: e9a5e75
 
 # Story 9.1: BuddyPress scoped config
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

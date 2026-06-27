@@ -129,6 +129,17 @@ class LifecycleEmails {
 	public const HOOK_SEND_WARNING = 'ink_entitlement_send_expiry_warning';
 
 	/**
+	 * Past-tense event fired AFTER {@see sendWarning()} passes every live gate and
+	 * dispatches the expiry email (AD-6 event surface). Other channels (the Story
+	 * 9.9 in-app expiry kennisgewing) subscribe to THIS — not the raw schedule hook
+	 * {@see HOOK_SEND_WARNING} — so they inherit the same staleness re-checks
+	 * (live membership, resolved term, not-revoked/expired/renewed-forward) and
+	 * never fire a false "expiring" alert to a member who renewed or was revoked.
+	 * Payload: `( int $user_id, int $membership_id, string $base_key )`.
+	 */
+	public const EVENT_EXPIRY_WARNED = 'ink/entitlement/expiry_warned';
+
+	/**
 	 * The WC Memberships hook that fires when a user-membership is SAVED — including a
 	 * renewal / end-date extension WHILE ALREADY ACTIVE (no status transition).
 	 *
@@ -506,6 +517,12 @@ class LifecycleEmails {
 			(string) $user->user_email,
 			array( 'skrywer' => $skrywer )
 		);
+
+		// (5) One schedule, two outputs: the in-app expiry kennisgewing (Story 9.9)
+		// fires off THIS post-gate event, so it shares not just the schedule but
+		// every live staleness re-check above — a renewed/revoked member never gets
+		// a false in-app expiry alert.
+		do_action( self::EVENT_EXPIRY_WARNED, $user_id, $membership_id, $base_key ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- INK ink/... event-surface convention (AD-6).
 	}
 
 	/**

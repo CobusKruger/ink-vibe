@@ -74,8 +74,14 @@ final class Kennisgewings {
 	/**
 	 * Mark every kennisgewing read for a user — by moving the boundary to now.
 	 *
-	 * Stores the GMT boundary (the race-free no-phantom-unread mechanism) and,
-	 * when BuddyPress is present, also flips BP's own flags for tidiness.
+	 * Stores the GMT boundary, which is the SINGLE source of truth for unread
+	 * (the race-free no-phantom-unread mechanism): unread is computed as
+	 * `created > boundary`, never from BP's per-row flags. We deliberately do NOT
+	 * also flip BP's own per-row state here — doing so would create a second,
+	 * divergent source. When INK renders an unread count it MUST read the boundary
+	 * (via {@see self::countUnread()}), not BP's native badge. (Reconciling BP's
+	 * own per-row flags, if a BP-native surface ever needs them, is an integration
+	 * concern for the live-BuddyPress layer, Story 18.8.)
 	 *
 	 * @param int $user_id The user.
 	 */
@@ -85,11 +91,6 @@ final class Kennisgewings {
 		}
 
 		update_user_meta( $user_id, self::MARK_META, current_time( 'mysql', true ) );
-
-		if ( function_exists( 'bp_notifications_mark_all_notifications_by_type' ) ) {
-			// Tidy BP's own state; the boundary is the source of truth for unread.
-			bp_notifications_mark_all_notifications_by_type( $user_id, NotificationType::COMPONENT );
-		}
 	}
 
 	/**

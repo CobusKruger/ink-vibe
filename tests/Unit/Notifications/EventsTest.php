@@ -15,6 +15,7 @@ namespace Ink\Tests\Unit\Notifications;
 
 use Ink\Notifications\Events;
 use Brain\Monkey;
+use Brain\Monkey\Functions;
 
 beforeEach( function (): void {
 	Monkey\setUp();
@@ -35,8 +36,15 @@ test( 'mentionedLogins finds nothing in plain text', function (): void {
 } );
 
 test( 'mentionedLogins does not treat an email address as a mention', function (): void {
-	// No leading whitespace/start before the @ in "jan@example.com".
+	// A word char ("n") precedes the @ in "jan@example.com" → not a mention.
 	expect( Events::mentionedLogins( 'Kontak jan@example.com asseblief.' ) )->toBe( array() );
+} );
+
+test( 'mentionedLogins catches punctuation-attached mentions (lookbehind), still excluding emails', function (): void {
+	// Parenthesised, comma-joined and dash-prefixed handles are all preceded by a
+	// NON-word char, so they match; the email is still excluded.
+	expect( Events::mentionedLogins( '(@anja) en @piet,@kobus —@sarie; epos jan@x.com' ) )
+		->toBe( array( 'anja', 'piet', 'kobus', 'sarie' ) );
 } );
 
 test( 'onComment ignores a non-reaksie comment (no fatal, emits nothing)', function (): void {
@@ -44,6 +52,20 @@ test( 'onComment ignores a non-reaksie comment (no fatal, emits nothing)', funct
 	$comment->comment_type = 'comment'; // a normal WP comment, not ink_reaksie
 
 	// No BP / no post-field lookups should be reached; just assert no fatal.
+	( new Events() )->onComment( 5, $comment );
+
+	expect( true )->toBeTrue();
+} );
+
+test( 'onComment ignores a reaksie on a non-published work (raw-insert guard)', function (): void {
+	Functions\when( 'get_post_status' )->justReturn( 'draft' ); // a draft/trashed work
+
+	$comment                  = new \stdClass();
+	$comment->comment_type    = 'ink_reaksie';
+	$comment->comment_post_ID = 99;
+	$comment->user_id         = 3;
+
+	// Returns before notifying any author — a non-public work emits nothing.
 	( new Events() )->onComment( 5, $comment );
 
 	expect( true )->toBeTrue();

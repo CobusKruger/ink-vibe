@@ -4,7 +4,7 @@ baseline_commit: 79c30e9
 
 # Story 9.6: Reader ratings & reviews
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

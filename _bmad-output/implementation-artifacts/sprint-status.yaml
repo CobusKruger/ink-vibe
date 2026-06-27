@@ -195,19 +195,25 @@ development_status:
   epic-8-retrospective: optional
 
   # Epic 9: Community & social
-  epic-9: in-progress
-  9-1-buddypress-scoped-config: review
-  9-2-follow-graph-asymmetric: review
-  9-3-following-feed: review
-  9-4-custom-profile-templates: review
-  9-5-pinned-selected-works: review
-  9-6-reader-ratings-reviews: review
-  9-7-member-directory-ledegids: review
-  9-8-private-messaging-deferred: review
-  9-9-notifications: review
-  9-10-member-online-widget-removed: review
-  9-11-receipt-notification-trigger-r7: review
-  9-12-read-count-surface-on-my-profiel-r8: review
+  # Code review 2026-06-27: 3-layer adversarial review of all 12 stories. 5 patches
+  # applied (HIGH false-expiry-alert → post-gate event; republish re-announce guard;
+  # @mention punctuation lookbehind; onComment non-published guard; removed a
+  # non-existent BP mark-all call). Load-bearing guarantees verified intact (FR-40
+  # public/private split, conflation rule, held-for-moderation, R7/R8 graceful
+  # degradation). 7 items deferred (see deferred-work.md). 0 HIGH defects remain.
+  epic-9: done
+  9-1-buddypress-scoped-config: done
+  9-2-follow-graph-asymmetric: done
+  9-3-following-feed: done
+  9-4-custom-profile-templates: done
+  9-5-pinned-selected-works: done
+  9-6-reader-ratings-reviews: done
+  9-7-member-directory-ledegids: done
+  9-8-private-messaging-deferred: done
+  9-9-notifications: done
+  9-10-member-online-widget-removed: done
+  9-11-receipt-notification-trigger-r7: done
+  9-12-read-count-surface-on-my-profiel-r8: done
   epic-9-retrospective: optional
 
   # Epic 10: Library (Biblioteek)

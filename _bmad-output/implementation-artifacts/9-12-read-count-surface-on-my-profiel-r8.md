@@ -4,7 +4,7 @@ baseline_commit: d40816c
 
 # Story 9.12: Read-count surface on My Profiel (R8)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

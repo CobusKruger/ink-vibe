@@ -4,7 +4,7 @@ baseline_commit: fd087fc
 
 # Story 9.4: Custom profile templates
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
