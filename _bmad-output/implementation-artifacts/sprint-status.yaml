@@ -224,14 +224,24 @@ development_status:
   # card genre badge = 10.1 AC#5; featuredArgs order assertion). Conflation rule +
   # three-layer + Afrikaans-first + fail-safe WinnerLinkage + 10.6 stub verified intact.
   # 0 HIGH defects remain. 3 items deferred (see deferred-work.md). Tests 680->714 (+34).
-  epic-10: in-progress
+  # EPIC 10 COMPLETE 2026-06-27: all 6 stories done via the full BMAD loop (3 built +
+  # 3 recorded deferrals), 3-layer adversarial code review, then the epic-10-retrospective
+  # (epic-10-retro-2026-06-27.md). Library = new Biblioteek module: archive (featured
+  # strip + genre filter + native-s search + card grid w/ genre badge) + single view
+  # (10.1); winner->challenge linkage via the uitdaging-{id} round-term, single-sourced
+  # in Content\ChallengeRound (10.5); reserved R4 auto-update hook stub for 12A.3 (10.6).
+  # Conflation-clean (Library -> Kernel,Content only). Retro actions: promote the 2
+  # uncodified testing rules (Brain-Monkey isolation + test-the-outcome) before 12A;
+  # enumerate the Epic-10 integration tail in 18.8; carry Afrikaans copy-debt to the
+  # pre-launch gate. Epic 11 (Opleiding) clear to start — Library archive is its template.
+  epic-10: done
   10-1-biblioteek-item-archive-single: done  # code review 2026-06-27 — genre-badge + search-genre-preservation patches applied
   10-2-date-archive-browsing-deferred: done   # recorded deferral (§9.4 gap, non-blocking) — see deferred-work.md
   10-3-pagination-deferred: done              # prev/next ships in 10.1; numbered/load-more deferred (§9.4)
   10-4-author-filter-deferred: done           # recorded deferral (§9.4 gap, non-blocking)
   10-5-winner-challenge-linkage: done  # code review 2026-06-27 — clean (fail-safe linkage verified)
   10-6-biblioteek-auto-update-on-win-r4-stub: done  # code review 2026-06-27 — clean (reserved hook invoked, body deferred)
-  epic-10-retrospective: optional
+  epic-10-retrospective: done  # completed 2026-06-27 (epic-10-retro-2026-06-27.md) — honoured the Epic-9 "don't skip" carry-forward
 
   # Epic 11: Training (Opleiding)
   epic-11: backlog
