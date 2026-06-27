@@ -57,4 +57,6 @@ test( 'the reading-inkpols pattern carries the eyebrow label via the bridge plus
 	expect( $markup )->toContain( 'wp:post-content' );
 	// The server-rendered issue-metadata block.
 	expect( $markup )->toContain( 'wp:ink/inkpols-besonderhede' );
+	// Story 13.3: the PDF flipbook viewer block.
+	expect( $markup )->toContain( 'wp:ink/inkpols-leser' );
 } );

@@ -162,6 +162,8 @@ final class Terms {
 			'inkpols'                   => __( 'InkPols', 'ink-core' ),
 			'inkpols_uitgawe'           => __( 'Uitgawe', 'ink-core' ),
 			'inkpols_uitgawe_plural'    => __( 'Uitgawes', 'ink-core' ),
+			// Story 13.3: the direct-PDF fallback button (glossary "lees die uitgawe").
+			'inkpols_lees_uitgawe'      => __( 'Lees die uitgawe', 'ink-core' ),
 			'borg'                      => __( 'Borg', 'ink-core' ),
 			'borg_plural'               => __( 'Borge', 'ink-core' ),
 
