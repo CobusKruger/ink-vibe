@@ -56,6 +56,15 @@ class Migration {
 	public const CLI_COMMAND = 'ink migrate-challenges';
 
 	/**
+	 * Meta key linking a migrated uitdaging back to its source legacy category id.
+	 * The get-or-create marker that makes a `--force` re-run reconcile (reuse the
+	 * existing round) instead of inserting a duplicate uitdaging (R12 review).
+	 *
+	 * @var string
+	 */
+	public const SOURCE_CATEGORY_META = 'ink_uitdaging_source_category';
+
+	/**
 	 * Register the once-off WP-CLI trigger — ONLY under WP-CLI (never a web request).
 	 */
 	public function register(): void {
@@ -130,7 +139,13 @@ class Migration {
 		$linked  = 0;
 
 		foreach ( $this->legacyCategories() as $category ) {
-			$uitdaging_id = $this->createUitdaging( self::uitdagingPostArr( $category ) );
+			// Skip a malformed/empty-name category: it would otherwise create an
+			// untitled published uitdaging that wp_insert_term then rejects (R12 review).
+			if ( '' === trim( Scalar::asString( $category->name ?? '' ) ) ) {
+				continue;
+			}
+
+			$uitdaging_id = $this->ensureUitdaging( $category );
 
 			if ( $uitdaging_id <= 0 ) {
 				continue;
@@ -174,21 +189,76 @@ class Migration {
 	/**
 	 * The legacy challenge categories to migrate. Overridable seam.
 	 *
-	 * The selection (a configured parent category / a naming convention) is
-	 * site-specific; the default returns every non-empty `category` term, which a
-	 * site override can narrow before the once-off run.
+	 * SAFE DEFAULT (R12 review): returns an EMPTY list. The legacy-challenge selection
+	 * is site-specific (a configured parent category / a naming convention), and a
+	 * blanket "migrate every `category`" default would convert ordinary blog
+	 * categories (Nuus, Uncategorized, …) into published uitdagings and mis-tag their
+	 * posts as challenge entries. A site MUST override this with the actual challenge
+	 * categories before the once-off run; an un-overridden run is a deliberate no-op.
 	 *
 	 * @return array<int, object>
 	 */
 	protected function legacyCategories(): array {
-		$terms = get_terms(
+		return array();
+	}
+
+	/**
+	 * Get-or-create the uitdaging post for a legacy category (idempotent). Overridable
+	 * seam. Reuses an uitdaging already migrated from this category (matched by the
+	 * {@see self::SOURCE_CATEGORY_META} marker) so a `--force` re-run reconciles instead
+	 * of inserting a duplicate round (R12 review).
+	 *
+	 * @param object $category The legacy category row.
+	 * @return int The uitdaging id, or 0 on failure.
+	 */
+	protected function ensureUitdaging( object $category ): int {
+		$category_id = (int) ( $category->term_id ?? 0 );
+
+		$existing = $this->findUitdagingForCategory( $category_id );
+
+		if ( $existing > 0 ) {
+			return $existing;
+		}
+
+		$id = $this->createUitdaging( self::uitdagingPostArr( $category ) );
+
+		if ( $id > 0 && $category_id > 0 ) {
+			update_post_meta( $id, self::SOURCE_CATEGORY_META, $category_id );
+		}
+
+		return $id;
+	}
+
+	/**
+	 * The id of an uitdaging already migrated from this legacy category, or 0.
+	 * Overridable seam.
+	 *
+	 * @param int $category_id The legacy category term id.
+	 * @return int
+	 */
+	protected function findUitdagingForCategory( int $category_id ): int {
+		if ( $category_id <= 0 ) {
+			return 0;
+		}
+
+		$ids = get_posts(
 			array(
-				'taxonomy'   => 'category',
-				'hide_empty' => false,
+				'post_type'        => PostTypes::UITDAGING,
+				'post_status'      => 'any',
+				'numberposts'      => 1,
+				'fields'           => 'ids',
+				'suppress_filters' => false,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- a once-off CLI migration lookup keyed on the source-category marker, not a request-path query.
+				'meta_query'       => array(
+					array(
+						'key'   => self::SOURCE_CATEGORY_META,
+						'value' => $category_id,
+					),
+				),
 			)
 		);
 
-		return is_array( $terms ) ? $terms : array();
+		return ( is_array( $ids ) && isset( $ids[0] ) ) ? (int) $ids[0] : 0;
 	}
 
 	/**

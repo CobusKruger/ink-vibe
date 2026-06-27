@@ -45,10 +45,14 @@ class PromotionHistory {
 	 * Bind the read-only render to the user-edit screen. Invoked from the Module.
 	 *
 	 * `edit_user_profile` fires when editing ANOTHER user — a redakteur viewing a
-	 * writer's audit trail (mirrors {@see \Ink\Tiers\AdminProfile}).
+	 * writer's audit trail (mirrors {@see \Ink\Tiers\AdminProfile}). `show_user_profile`
+	 * is paired so a `MANAGE_TIERS` holder also sees the audit trail on their OWN
+	 * profile screen (R12 review); the capability gate in {@see self::renderField()}
+	 * keeps it invisible to a writer viewing their own profile.
 	 */
 	public function register(): void {
 		add_action( 'edit_user_profile', array( $this, 'renderField' ) );
+		add_action( 'show_user_profile', array( $this, 'renderField' ) );
 	}
 
 	/**

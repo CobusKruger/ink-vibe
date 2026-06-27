@@ -57,7 +57,7 @@ test( 'run is a no-op when the migration has already completed (idempotent)', fu
 		protected function legacyCategories(): array {
 			return array( (object) array( 'term_id' => 1, 'name' => 'X', 'description' => '' ) );
 		}
-		protected function createUitdaging( array $postarr ): int {
+		protected function ensureUitdaging( object $category ): int {
 			$this->created = true;
 			return 99;
 		}
@@ -85,8 +85,8 @@ test( 'run creates a round per legacy category, links the pieces, and marks done
 				(object) array( 'term_id' => 2, 'name' => 'November', 'description' => '' ),
 			);
 		}
-		protected function createUitdaging( array $postarr ): int {
-			return 'Oktober' === $postarr['post_title'] ? 101 : 102;
+		protected function ensureUitdaging( object $category ): int {
+			return 'Oktober' === $category->name ? 101 : 102;
 		}
 		protected function ensureRoundTerm( int $uitdaging_id ): int {
 			return 900 + $uitdaging_id;
@@ -113,21 +113,46 @@ test( 'run creates a round per legacy category, links the pieces, and marks done
 	expect( $migration->links )->toBe( array( array( array( 11, 12 ), 1001 ), array( array( 21 ), 1002 ) ) );
 } );
 
-test( 'run with force re-runs even when already completed', function (): void {
+test( 'run skips a malformed empty-name category (no untitled uitdaging)', function (): void {
+	$migration = new class() extends Migration {
+		public int $ensured = 0;
+		public function hasRun(): bool {
+			return false;
+		}
+		protected function legacyCategories(): array {
+			return array( (object) array( 'term_id' => 1, 'name' => '   ', 'description' => '' ) );
+		}
+		protected function ensureUitdaging( object $category ): int {
+			++$this->ensured;
+			return 50;
+		}
+		protected function markDone(): void {}
+	};
+
+	$summary = $migration->run();
+
+	expect( $summary['created'] )->toBe( 0 );
+	expect( $migration->ensured )->toBe( 0 ); // empty-name category never reaches ensureUitdaging
+} );
+
+test( 'ensureUitdaging reuses an existing migrated uitdaging (R12: --force reconciles, no duplicate)', function (): void {
 	$migration = new class() extends Migration {
 		public int $createdCount = 0;
 		public function hasRun(): bool {
 			return true; // already done
 		}
 		protected function legacyCategories(): array {
-			return array( (object) array( 'term_id' => 1, 'name' => 'X', 'description' => '' ) );
+			return array( (object) array( 'term_id' => 7, 'name' => 'Oktober', 'description' => '' ) );
+		}
+		protected function findUitdagingForCategory( int $category_id ): int {
+			return 7 === $category_id ? 555 : 0; // already migrated to uitdaging 555
 		}
 		protected function createUitdaging( array $postarr ): int {
 			++$this->createdCount;
-			return 50;
+			return 999;
 		}
 		protected function ensureRoundTerm( int $uitdaging_id ): int {
-			return 1;
+			return $uitdaging_id;
 		}
 		protected function postsInCategory( int $category_id ): array {
 			return array();
@@ -138,8 +163,9 @@ test( 'run with force re-runs even when already completed', function (): void {
 		protected function markDone(): void {}
 	};
 
-	$summary = $migration->run( true );
+	$summary = $migration->run( true ); // --force
 
 	expect( $summary['skipped'] )->toBeFalse();
-	expect( $migration->createdCount )->toBe( 1 );
+	expect( $summary['created'] )->toBe( 1 );
+	expect( $migration->createdCount )->toBe( 0 ); // reused 555, did NOT insert a duplicate
 } );

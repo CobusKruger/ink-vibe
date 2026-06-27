@@ -253,23 +253,24 @@ development_status:
   epic-11-retrospective: done  # completed 2026-06-27 (epic-11-retro-2026-06-27.md) — honoured the Epic-10 "don't skip" carry-forward; third formal retro in a row
 
   # Epic 12: Challenges (Uitdagings) & winners
+  # Epic 12 code review 2026-06-27 (epic-12-code-review-2026-06-27.md): 3-layer adversarial review of all 8 stories. All ACs met + both deferred-Epic-2 items closed (12.3 MANAGE_CHALLENGES reconcile, 12.4 AD-5 attachment). 5 patches applied (R12): P1 Migration --force idempotency (get-or-create via source-category marker) + skip empty-name cats; P2 safer empty legacyCategories default; P3 bound single-page entries query (MAX_ENTRIES 500); P4 Placements::arrange deterministic + one-per-rank dedup; P5 PromotionHistory show_user_profile. 5 deferred (12A.3 placement-uniqueness/auto-promote wiring, cap concurrency race, Meester-pool UX signal, deadline time-of-day product decision, Deadline::parse rolling-date hardening). conflation-clean throughout (Challenges→Tiers read-only). tests 805→812 (+7 review tests), cs/stan clean, deptrac no new edge.
   epic-12: in-progress
   # 12-1 → review (create-story + dev-story; Challenges\SinglePage = ink/uitdaging-besonderhede server block: deadline + Oop/Gesluit status (Kernel\Sast inclusive end-of-day-SAST) + inskrywings list (round tax_query via ChallengeRound::slugFor); editorial brief via core post-content; single-uitdaging.html + reading-uitdaging.php; module registered in ink-core.php; deptrac Challenges->Content edge ADDED (mirrors Library/Discovery 10.1/8.1), conflation-clean (zero Tiers/Entitlement); tests 765 passed/2 skipped +11, cs/stan clean, deptrac no new edge)
-  12-1-uitdaging-single-page: review
+  12-1-uitdaging-single-page: done
   # 12-2 → review (create-story + dev-story; Challenges\Archive = ink/uitdaging-argief server block: newest-first paginated card grid (Kernel\ArchiveRender::pagination), per-card server-computed countdown Nog N dae/Nog 1 dag/Sluit vandag/Gesluit off the inclusive end-of-day-SAST boundary, tema + sluitingsdatum + is-oop/is-gesluit; archive-uitdaging.html + uitdaging.php; extracted shared Challenges\Deadline parse/format used by 12.1 SinglePage too; conflation-clean, no new deptrac edge; tests 777 passed/2 skipped +12, cs/stan clean)
-  12-2-uitdagings-list-page: review
+  12-2-uitdagings-list-page: done
   # 12-3 → review (create-story + dev-story; Challenges\Cadence monthly-cadence single source — SAST periodKey/periodLabel (Afrikaans months, the source winnerLabel "Oktober Goud-wenner" consumes) + named entriesFrozen judging-freeze delegating to Sast; CLOSED the deferred Epic-2 capability divergence — FieldSets::save() now also enforces the per-CPT cap (uitdaging→MANAGE_CHALLENGES, granted admin+editor at activation) matching the REST auth_callback; Sperdatum→Sluitingsdatum label; added guarded WP_Post unit stub; Cadence is Challenges->Kernel only (no new deptrac edge); tests 784 passed/2 skipped +7, cs/stan clean)
-  12-3-challenge-metadata: review
+  12-3-challenge-metadata: done
   # 12-4 → review (create-story + dev-story; per-type entry cap (max 3/type/author/uitdaging) in ChallengeLinking::link via withinCap + entryCountFor seam; entry-time Gradering snapshot decoupled from Submission via runtime hook ink/uitdaging_entry_linked → Challenges\Entry writes ink_entry_gradering (Tier->value, idempotent) — Submission stays Tiers-free (conflation rule holds); deptrac Challenges->Tiers edge ADDED (read-only Api facade, mirrors Discovery->Tiers 8.3); AD-5 deferred item CLOSED — TaxonomiesTest asserts uitdagingsrondte+ster_gradering attach to works not the uitdaging CPT; tests 791 passed/2 skipped +7, cs/stan clean)
-  12-4-entry-capture: review
+  12-4-entry-capture: done
   # 12-5 → review (create-story + dev-story; Challenges\Pools — competingTiers Brons/Silwer/Goud (Tier::cases minus manual-only Meester), pure group() buckets entries by the entry-time gradering snapshot (12.4), poolLabel via Terms, thin forRound() reusing SinglePage::entriesQueryArgs; pools governed by Gradering only — conflation-clean, no Entitlement, no new deptrac edge; tests 795 passed/2 skipped +4, cs/stan clean)
-  12-5-gradering-based-competition-pools: review
+  12-5-gradering-based-competition-pools: done
   # 12-6 → review (create-story + dev-story; Challenges\Placements — records rank 1/2/3 on the authoritative entry (ink_entry_placement), all of 1st/2nd/3rd per pool not only the winner; rank 1=algehele wenner, 2-3=wenner (pure isAlgeheleWenner/placementLabel via Terms; algehele_wenner term added); record/clear/placementFor = 12A.3 write API; arrange() pure + forRound() (reuses Pools::forRound) = queryable read for 5.8 auto-promotion + SM-8; conflation-clean, no new deptrac edge; tests 801 passed/2 skipped +6, cs/stan clean)
-  12-6-structured-placement-records: review
+  12-6-structured-placement-records: done
   # 12-7 → review (create-story + dev-story; surfaced graderingsgeskiedenis as read-only redakteur audit-trail (Challenges\PromotionHistory, MANAGE_TIERS-gated edit_user_profile section) showing from→to/reason/actor + the optional linked uitdaging as a link; added Tiers\Api::historyFor facade so Challenges consumes the audit log via facade not table; challenge resolved Challenges-side (Tiers may not depend on Content); write/link UI already existed (5.2/5.3) — 12.7 is the read/display; conflation-clean, no new deptrac edge; tests 805 passed/2 skipped +4, cs/stan clean)
-  12-7-winner-gradering-promotion-link: review
+  12-7-winner-gradering-promotion-link: done
   # 12-8 → review (create-story + dev-story; Challenges\Migration once-off idempotent DB update — each legacy category → uitdaging post + uitdagingsrondte round term (ChallengeRound::slugFor join key) + pieces re-linked (append); brief from legacy description where present, no deadline fabricated; guarded by ink_challenge_migration_done option + --force; WP-CLI-only trigger wp ink migrate-challenges (inert on web requests, no init auto-run); pure builders + overridable I/O seams; conflation-clean, no new deptrac edge; tests 810 passed/2 skipped +5, cs/stan clean)
-  12-8-historical-challenge-migration: review
+  12-8-historical-challenge-migration: done
   epic-12-retrospective: optional
 
   # Epic 12A: Challenge adjudication automation (NEW)

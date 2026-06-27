@@ -84,3 +84,19 @@ test( 'arrange groups placed entries per pool, sorted by rank, ignoring the unpl
 	$all_ids = array_merge( array_column( $by_pool['goud'], 'id' ), array_column( $by_pool['brons'], 'id' ) );
 	expect( $all_ids )->not->toContain( 13 );
 } );
+
+test( 'arrange collapses a duplicated rank to one entry (lowest id wins) — no two algehele wenners (R12)', function (): void {
+	$placed = array(
+		array( 'id' => 30, 'gradering' => 'silwer', 'rank' => 1 ),
+		array( 'id' => 20, 'gradering' => 'silwer', 'rank' => 1 ), // duplicate rank 1 — dirty data
+		array( 'id' => 40, 'gradering' => 'silwer', 'rank' => 2 ),
+	);
+
+	$silwer = Placements::arrange( $placed )['silwer'];
+
+	// Only ONE rank-1 survives, and it is the lowest id (deterministic).
+	$first_places = array_filter( $silwer, static fn ( array $r ): bool => 1 === $r['rank'] );
+	expect( $first_places )->toHaveCount( 1 );
+	expect( array_column( $silwer, 'id' ) )->toBe( array( 20, 40 ) );
+	expect( array_column( $silwer, 'rank' ) )->toBe( array( 1, 2 ) );
+} );

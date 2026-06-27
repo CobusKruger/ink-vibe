@@ -47,6 +47,17 @@ final class SinglePage {
 	public const BLOCK = 'ink/uitdaging-besonderhede';
 
 	/**
+	 * Upper bound on entries hydrated for the single-page list + the pool grouping.
+	 *
+	 * The entries list is request-rendered, so an unbounded `-1` would load every
+	 * entry of a busy round on each page view (R12 review). A generous cap keeps the
+	 * page bounded while comfortably covering a real round (≤ 3 entries/type/writer).
+	 *
+	 * @var int
+	 */
+	public const MAX_ENTRIES = 500;
+
+	/**
 	 * Register the server-rendered block on `init`.
 	 */
 	public function register(): void {
@@ -83,7 +94,7 @@ final class SinglePage {
 		$args = array(
 			'post_type'           => PostTypes::readableTypes(),
 			'post_status'         => 'publish',
-			'posts_per_page'      => -1,
+			'posts_per_page'      => self::MAX_ENTRIES,
 			'orderby'             => 'date',
 			'order'               => 'DESC',
 			'ignore_sticky_posts' => true,

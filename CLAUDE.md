@@ -2,11 +2,11 @@
 
 Project instructions for Claude Code. These apply to all sessions in this repo.
 
-## Transient files & commit messages
+## Transient & temp files
 
-- Write transient files that **git must read** — e.g. `git commit -F` message files — to the repo-local `tmp/` directory. It is gitignored (`/tmp/*` with `!/tmp/.gitkeep`), so scratch files there are never committed.
+- Write **all** transient/temporary files — scratch scripts, query files, intermediate output, diffs, `git commit -F` message files — to the repo-local `./tmp/` directory. It is gitignored (`/tmp/*` with `!/tmp/.gitkeep`), so nothing there is ever committed. This applies to **every** agent (main session and subagents) working in this repo.
+- Do **not** use `$CLAUDE_JOB_DIR/tmp`, `$TMPDIR`, `/tmp`, or any other location for scratch. `./tmp/` is the single supported temp directory. (In this sandboxed repo `/tmp` and `$CLAUDE_JOB_DIR/tmp` shell-writes are blocked anyway — see [[shell-write-deny-artifact-trees]] context.)
 - For multi-line commit messages, write the message to `tmp/commit-msg.txt` and run `git commit -F tmp/commit-msg.txt`. Do **not** use heredoc `-m "$(cat <<'EOF' … EOF)"` — the heredoc/angle-bracket text trips the zsh `<N-M>` glob permission heuristic and forces an approval prompt.
-- Purely ephemeral scratch that git never needs may go to the session/job temp dir instead; reserve repo `tmp/` for things git reads or that should be repo-local.
 
 ## Commit messages
 

@@ -167,8 +167,34 @@ final class Placements {
 		}
 
 		foreach ( $by_pool as $pool => $rows ) {
-			usort( $rows, static fn ( array $a, array $b ): int => $a['rank'] <=> $b['rank'] );
-			$by_pool[ $pool ] = $rows;
+			// Deterministic order: by rank, then by entry id (so ties never depend on
+			// incidental query order). Then collapse to one entry per rank per pool —
+			// a defensive guard so dirty ingestion (two rank-1s in a pool) can never
+			// surface two "algehele wenners" downstream; the lowest-id placement wins
+			// the slot (R12 review — the canonical one-per-rank invariant lives here,
+			// the authoritative dedup is the 12A.3 ingestion's responsibility).
+			usort(
+				$rows,
+				static function ( array $a, array $b ): int {
+					$by_rank = $a['rank'] <=> $b['rank'];
+
+					return 0 !== $by_rank ? $by_rank : ( $a['id'] <=> $b['id'] );
+				}
+			);
+
+			$seen   = array();
+			$unique = array();
+
+			foreach ( $rows as $row ) {
+				if ( isset( $seen[ $row['rank'] ] ) ) {
+					continue;
+				}
+
+				$seen[ $row['rank'] ] = true;
+				$unique[]             = $row;
+			}
+
+			$by_pool[ $pool ] = $unique;
 		}
 
 		return $by_pool;
