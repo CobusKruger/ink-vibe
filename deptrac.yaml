@@ -51,6 +51,10 @@ deptrac:
           collectors:
             - type: classNameRegex
               value: '#^Ink\\Library\\.*#'
+        - name: Training
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Training\\.*#'
         - name: Challenges
           collectors:
             - type: classNameRegex
@@ -160,6 +164,17 @@ deptrac:
             # Submission->Content (6.1) and Engagement->Content (7.6) edges. No
             # Entitlement/Tiers edge (browsing published library work is open;
             # conflation-clean).
+            - Content
+        Training:
+            - Kernel
+            # Story 11.1: the Opleiding hub reads the migration-load-bearing CPT
+            # single source `Ink\Content\PostTypes::OPLEIDING_ARTIKEL` (and, from
+            # Story 11.2, the `vaardigheid`/`genre` taxonomy slugs). A real,
+            # non-circular cross-module dependency on the slug registry — mirrors
+            # the Library->Content (10.1) and Discovery->Content (8.1) edges. No
+            # Entitlement/Tiers edge (browsing published training is open;
+            # conflation-clean). The shared pill/pagination/request-read primitives
+            # live in `Ink\Kernel\ArchiveRender` (Kernel — already an allowed dep).
             - Content
         Challenges:
             - Kernel

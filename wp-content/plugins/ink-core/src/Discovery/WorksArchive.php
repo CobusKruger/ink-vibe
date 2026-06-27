@@ -11,6 +11,7 @@ namespace Ink\Discovery;
 
 use Ink\Content\PostTypes;
 use Ink\Engagement\Api as EngagementApi;
+use Ink\Kernel\ArchiveRender;
 use Ink\I18n\Terms;
 
 defined( 'ABSPATH' ) || exit;
@@ -257,11 +258,11 @@ final class WorksArchive {
 	 * @return string
 	 */
 	public static function render(): string {
-		$paged    = self::requestInt( self::PAGED_VAR, 1 );
-		$year     = self::requestInt( self::YEAR_VAR, 0 );
-		$month    = self::requestInt( self::MONTH_VAR, 0 );
-		$type_raw = self::requestKey( self::TYPE_VAR );
-		$sort_raw = self::requestKey( self::SORT_VAR );
+		$paged    = ArchiveRender::requestInt( self::PAGED_VAR, 1 );
+		$year     = ArchiveRender::requestInt( self::YEAR_VAR, 0 );
+		$month    = ArchiveRender::requestInt( self::MONTH_VAR, 0 );
+		$type_raw = ArchiveRender::requestKey( self::TYPE_VAR );
+		$sort_raw = ArchiveRender::requestKey( self::SORT_VAR );
 
 		// Normalise to the active values the controls highlight (and the query uses).
 		$active_type = in_array( $type_raw, self::readableTypes(), true ) ? $type_raw : null;
@@ -309,51 +310,6 @@ final class WorksArchive {
 	}
 
 	/**
-	 * Read an absint browse input (custom query var, falling back to GET).
-	 *
-	 * Read-only navigation (idempotent GET — the listing never mutates state), so
-	 * no nonce applies; `filter_input()` reads GET without touching the superglobal
-	 * and sanitises to digits before `absint()`.
-	 *
-	 * @param string $key      The query-var / GET key.
-	 * @param int    $fallback Returned when the input is absent.
-	 * @return int
-	 */
-	private static function requestInt( string $key, int $fallback ): int {
-		$value = get_query_var( $key, '' );
-
-		if ( '' === $value || null === $value ) {
-			$value = filter_input( INPUT_GET, $key, FILTER_SANITIZE_NUMBER_INT );
-		}
-
-		if ( null === $value || false === $value || '' === $value ) {
-			return $fallback;
-		}
-
-		return absint( $value );
-	}
-
-	/**
-	 * Read a sanitised key-style browse input (query var, falling back to GET).
-	 *
-	 * Read-only navigation; `sanitize_key` reduces to `[a-z0-9_]` and the caller
-	 * validates against an allowlist (type / sort), so an unknown value degrades
-	 * to the default rather than reaching the query.
-	 *
-	 * @param string $key The query-var / GET key.
-	 * @return string The sanitised value, or '' when absent.
-	 */
-	private static function requestKey( string $key ): string {
-		$value = get_query_var( $key, '' );
-
-		if ( '' === $value || null === $value ) {
-			$value = filter_input( INPUT_GET, $key );
-		}
-
-		return ( is_string( $value ) && '' !== $value ) ? sanitize_key( $value ) : '';
-	}
-
-	/**
 	 * Build the archive HTML. Pure — Terms + escaping only.
 	 *
 	 * @param list<array{title:string, permalink:string, type:string, author:string}>                            $cards The works.
@@ -389,7 +345,10 @@ final class WorksArchive {
 				. '</li>';
 		}
 
-		$html .= '</ul>' . self::paginationHtml( $nav ) . '</section>';
+		$paged     = isset( $nav['paged'] ) ? (int) $nav['paged'] : 1;
+		$max_pages = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;
+
+		$html .= '</ul>' . ArchiveRender::pagination( $paged, $max_pages, 'ink-ontdek-werke', self::PAGED_VAR ) . '</section>';
 
 		return $html;
 	}
@@ -412,16 +371,16 @@ final class WorksArchive {
 		$html .= '<div class="ink-ontdek-werke__filter">';
 
 		$alles_active = ( null === $active_type );
-		$html        .= self::pill(
-			esc_url( remove_query_arg( array( self::TYPE_VAR, self::PAGED_VAR ) ) ),
+		$html        .= ArchiveRender::pill(
+			(string) remove_query_arg( array( self::TYPE_VAR, self::PAGED_VAR ) ),
 			__( 'Alles', 'ink-core' ),
 			$alles_active,
 			'ink-ontdek-werke__filter-knoppie'
 		);
 
 		foreach ( self::readableTypes() as $type ) {
-			$url   = esc_url( add_query_arg( self::TYPE_VAR, $type, remove_query_arg( self::PAGED_VAR ) ) );
-			$html .= self::pill(
+			$url   = (string) add_query_arg( self::TYPE_VAR, $type, remove_query_arg( self::PAGED_VAR ) );
+			$html .= ArchiveRender::pill(
 				$url,
 				Terms::label( $type . '_plural' ),
 				$type === $active_type,
@@ -435,8 +394,8 @@ final class WorksArchive {
 		$html .= '<div class="ink-ontdek-werke__sorteer">';
 
 		foreach ( self::allowedSorts() as $sort ) {
-			$url   = esc_url( add_query_arg( self::SORT_VAR, $sort, remove_query_arg( self::PAGED_VAR ) ) );
-			$html .= self::pill(
+			$url   = (string) add_query_arg( self::SORT_VAR, $sort, remove_query_arg( self::PAGED_VAR ) );
+			$html .= ArchiveRender::pill(
 				$url,
 				self::sortLabel( $sort ),
 				$sort === $active_sort,
@@ -467,8 +426,8 @@ final class WorksArchive {
 
 		$html = '<div class="ink-ontdek-werke__datums">';
 
-		$html .= self::pill(
-			esc_url( remove_query_arg( array( self::YEAR_VAR, self::MONTH_VAR, self::PAGED_VAR ) ) ),
+		$html .= ArchiveRender::pill(
+			(string) remove_query_arg( array( self::YEAR_VAR, self::MONTH_VAR, self::PAGED_VAR ) ),
 			__( 'Alle datums', 'ink-core' ),
 			( null === $active_year ),
 			'ink-ontdek-werke__datum-knoppie'
@@ -476,8 +435,8 @@ final class WorksArchive {
 
 		foreach ( $years as $year ) {
 			$year  = (int) $year;
-			$url   = esc_url( add_query_arg( self::YEAR_VAR, $year, remove_query_arg( array( self::MONTH_VAR, self::PAGED_VAR ) ) ) );
-			$html .= self::pill(
+			$url   = (string) add_query_arg( self::YEAR_VAR, $year, remove_query_arg( array( self::MONTH_VAR, self::PAGED_VAR ) ) );
+			$html .= ArchiveRender::pill(
 				$url,
 				(string) $year,
 				$year === $active_year,
@@ -488,23 +447,6 @@ final class WorksArchive {
 		$html .= '</div>';
 
 		return $html;
-	}
-
-	/**
-	 * One control link, marked active when selected. Pure.
-	 *
-	 * @param string $url       The escaped href.
-	 * @param string $label     The (unescaped) label.
-	 * @param bool   $is_active Whether this is the active option.
-	 * @param string $base      The base CSS class.
-	 * @return string
-	 */
-	private static function pill( string $url, string $label, bool $is_active, string $base ): string {
-		$class = $base . ( $is_active ? ' is-active' : '' );
-
-		return '<a class="' . esc_attr( $class ) . '"'
-			. ( $is_active ? ' aria-current="true"' : '' )
-			. ' href="' . $url . '">' . esc_html( $label ) . '</a>';
 	}
 
 	/**
@@ -526,46 +468,5 @@ final class WorksArchive {
 			default:
 				return __( 'Nuut', 'ink-core' );
 		}
-	}
-
-	/**
-	 * Prev/next archive-browse links — only when more than one page. Pure.
-	 *
-	 * @param array{paged:int, max_pages:int} $nav Pagination context.
-	 * @return string
-	 */
-	private static function paginationHtml( array $nav ): string {
-		$max   = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;
-		$paged = isset( $nav['paged'] ) ? max( 1, (int) $nav['paged'] ) : 1;
-
-		if ( $max <= 1 ) {
-			return '';
-		}
-
-		$html = '<nav class="ink-ontdek-werke__blaai">';
-
-		if ( $paged > 1 ) {
-			$html .= '<a class="ink-ontdek-werke__vorige" href="' . esc_url( self::pageUrl( $paged - 1 ) ) . '">'
-				. esc_html__( 'Vorige', 'ink-core' ) . '</a>';
-		}
-
-		if ( $paged < $max ) {
-			$html .= '<a class="ink-ontdek-werke__volgende" href="' . esc_url( self::pageUrl( $paged + 1 ) ) . '">'
-				. esc_html__( 'Volgende', 'ink-core' ) . '</a>';
-		}
-
-		$html .= '</nav>';
-
-		return $html;
-	}
-
-	/**
-	 * Build the URL for a given page, preserving the rest of the query string.
-	 *
-	 * @param int $page The target page.
-	 * @return string
-	 */
-	private static function pageUrl( int $page ): string {
-		return (string) add_query_arg( self::PAGED_VAR, max( 1, $page ) );
 	}
 }

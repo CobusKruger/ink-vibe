@@ -11,6 +11,7 @@ namespace Ink\Library;
 
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
+use Ink\Kernel\ArchiveRender;
 use Ink\I18n\Terms;
 
 defined( 'ABSPATH' ) || exit;
@@ -165,9 +166,9 @@ final class Archive {
 	 * @return string
 	 */
 	public static function render(): string {
-		$paged  = self::requestInt( self::PAGED_VAR, 1 );
-		$genre  = self::requestKey( self::GENRE_VAR );
-		$search = self::requestText( self::SEARCH_VAR );
+		$paged  = ArchiveRender::requestInt( self::PAGED_VAR, 1 );
+		$genre  = ArchiveRender::requestKey( self::GENRE_VAR );
+		$search = ArchiveRender::requestText( self::SEARCH_VAR );
 
 		$active_genre = '' !== $genre ? $genre : null;
 
@@ -283,60 +284,6 @@ final class Archive {
 	}
 
 	/**
-	 * Read an absint browse input (custom query var, falling back to GET). Read-only
-	 * navigation (idempotent GET — the listing never mutates state), so no nonce.
-	 *
-	 * @param string $key      The query-var / GET key.
-	 * @param int    $fallback Returned when the input is absent.
-	 * @return int
-	 */
-	private static function requestInt( string $key, int $fallback ): int {
-		$value = get_query_var( $key, '' );
-
-		if ( '' === $value || null === $value ) {
-			$value = filter_input( INPUT_GET, $key, FILTER_SANITIZE_NUMBER_INT );
-		}
-
-		if ( null === $value || false === $value || '' === $value ) {
-			return $fallback;
-		}
-
-		return absint( $value );
-	}
-
-	/**
-	 * Read a sanitised key-style browse input (query var, falling back to GET).
-	 *
-	 * @param string $key The query-var / GET key.
-	 * @return string The sanitised value, or '' when absent.
-	 */
-	private static function requestKey( string $key ): string {
-		$value = get_query_var( $key, '' );
-
-		if ( '' === $value || null === $value ) {
-			$value = filter_input( INPUT_GET, $key );
-		}
-
-		return ( is_string( $value ) && '' !== $value ) ? sanitize_key( $value ) : '';
-	}
-
-	/**
-	 * Read a sanitised free-text browse input (query var, falling back to GET).
-	 *
-	 * @param string $key The query-var / GET key.
-	 * @return string The sanitised value, or '' when absent.
-	 */
-	private static function requestText( string $key ): string {
-		$value = get_query_var( $key, '' );
-
-		if ( '' === $value || null === $value ) {
-			$value = filter_input( INPUT_GET, $key );
-		}
-
-		return ( is_string( $value ) && '' !== $value ) ? sanitize_text_field( $value ) : '';
-	}
-
-	/**
 	 * Build the archive HTML. Pure — Terms + escaping only.
 	 *
 	 * @param list<array{title:string, permalink:string, author:string, genre?:string}> $cards    The items.
@@ -365,7 +312,10 @@ final class Archive {
 			$html .= self::cardHtml( $card );
 		}
 
-		$html .= '</ul>' . self::paginationHtml( $nav ) . '</section>';
+		$paged     = isset( $nav['paged'] ) ? (int) $nav['paged'] : 1;
+		$max_pages = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;
+
+		$html .= '</ul>' . ArchiveRender::pagination( $paged, $max_pages, 'ink-biblioteek', self::PAGED_VAR ) . '</section>';
 
 		return $html;
 	}
@@ -438,16 +388,16 @@ final class Archive {
 
 		$html = '<div class="ink-biblioteek__filter">';
 
-		$html .= self::pill(
-			esc_url( remove_query_arg( array( self::GENRE_VAR, self::PAGED_VAR ) ) ),
+		$html .= ArchiveRender::pill(
+			(string) remove_query_arg( array( self::GENRE_VAR, self::PAGED_VAR ) ),
 			__( 'Alles', 'ink-core' ),
 			( null === $active_genre ),
 			'ink-biblioteek__filter-knoppie'
 		);
 
 		foreach ( $genres as $genre ) {
-			$url   = esc_url( add_query_arg( self::GENRE_VAR, $genre['slug'], remove_query_arg( self::PAGED_VAR ) ) );
-			$html .= self::pill(
+			$url   = (string) add_query_arg( self::GENRE_VAR, $genre['slug'], remove_query_arg( self::PAGED_VAR ) );
+			$html .= ArchiveRender::pill(
 				$url,
 				$genre['name'],
 				$genre['slug'] === $active_genre,
@@ -481,61 +431,5 @@ final class Archive {
 			. '<a class="ink-biblioteek__titel" href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>'
 			. '<span class="ink-biblioteek__outeur">' . esc_html( $card['author'] ) . '</span>'
 			. '</li>';
-	}
-
-	/**
-	 * One control link, marked active when selected. Pure.
-	 *
-	 * @param string $url       The escaped href.
-	 * @param string $label     The (unescaped) label.
-	 * @param bool   $is_active Whether this is the active option.
-	 * @param string $base      The base CSS class.
-	 * @return string
-	 */
-	private static function pill( string $url, string $label, bool $is_active, string $base ): string {
-		$class = $base . ( $is_active ? ' is-active' : '' );
-
-		return '<a class="' . esc_attr( $class ) . '"'
-			. ( $is_active ? ' aria-current="true"' : '' )
-			. ' href="' . $url . '">' . esc_html( $label ) . '</a>';
-	}
-
-	/**
-	 * Prev/next archive-browse links — only when more than one page. Pure.
-	 *
-	 * @param array{paged:int, max_pages:int} $nav Pagination context.
-	 * @return string
-	 */
-	private static function paginationHtml( array $nav ): string {
-		$max   = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;
-		$paged = isset( $nav['paged'] ) ? max( 1, (int) $nav['paged'] ) : 1;
-
-		if ( $max <= 1 ) {
-			return '';
-		}
-
-		$html = '<nav class="ink-biblioteek__blaai">';
-
-		if ( $paged > 1 ) {
-			$html .= '<a class="ink-biblioteek__vorige" href="' . esc_url( self::pageUrl( $paged - 1 ) ) . '">'
-				. esc_html__( 'Vorige', 'ink-core' ) . '</a>';
-		}
-
-		if ( $paged < $max ) {
-			$html .= '<a class="ink-biblioteek__volgende" href="' . esc_url( self::pageUrl( $paged + 1 ) ) . '">'
-				. esc_html__( 'Volgende', 'ink-core' ) . '</a>';
-		}
-
-		return $html . '</nav>';
-	}
-
-	/**
-	 * Build the URL for a given page, preserving the rest of the query string.
-	 *
-	 * @param int $page The target page.
-	 * @return string
-	 */
-	private static function pageUrl( int $page ): string {
-		return (string) add_query_arg( self::PAGED_VAR, max( 1, $page ) );
 	}
 }
