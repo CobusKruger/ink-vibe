@@ -65,3 +65,10 @@ if ( ! class_exists( 'WP_User' ) ) {
 if ( ! class_exists( 'WP_Error' ) ) {
 	require_once __DIR__ . '/stubs/class-wp-error.php';
 }
+
+// Likewise a minimal WP_Term double: the Library winner→challenge linkage (Story
+// 10.5) iterates `get_the_terms()` results and checks `instanceof \WP_Term` before
+// reading `$term->slug`, so the symbol must exist for its unit tests.
+if ( ! class_exists( 'WP_Term' ) ) {
+	require_once __DIR__ . '/stubs/class-wp-term.php';
+}

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Submission;
 
+use Ink\Content\ChallengeRound;
 use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
@@ -181,7 +182,7 @@ class ChallengeLinking {
 	 * @return int The round term id, or 0 on failure.
 	 */
 	protected function resolveRoundTerm( int $uitdaging_id ): int {
-		$slug     = 'uitdaging-' . $uitdaging_id;
+		$slug     = ChallengeRound::slugFor( $uitdaging_id );
 		$existing = get_term_by( 'slug', $slug, Taxonomies::UITDAGINGSRONDTE );
 
 		if ( $existing instanceof \WP_Term ) {

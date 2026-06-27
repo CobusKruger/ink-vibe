@@ -44,6 +44,8 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 			<!-- wp:post-date {"fontSize":"sm","textColor":"muted-text"} /-->
 		</div>
 		<!-- /wp:group -->
+
+		<!-- wp:ink/biblioteek-uitdaging-skakel /-->
 	</div>
 	<!-- /wp:group -->
 </section>

@@ -59,4 +59,6 @@ test( 'the reading pattern carries the eyebrow label via the bridge plus title/a
 	// Core reading blocks.
 	expect( $markup )->toContain( 'wp:post-title' );
 	expect( $markup )->toContain( 'wp:post-content' );
+	// Story 10.5: the winner→challenge linkage block.
+	expect( $markup )->toContain( 'wp:ink/biblioteek-uitdaging-skakel' );
 } );
