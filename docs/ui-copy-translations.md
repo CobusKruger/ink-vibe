@@ -479,7 +479,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | About | Oor my | Kaart-opskrif |
 | At a glance | In 'n oogopslag | Kaart-opskrif |
 | Posts *(statistiek-etiket)* | Bydraes | Oorweeg ook "[N] stories · [N] gedigte · [N] artikels" in die uitgebreide oorsig |
-| Friends *(statistiek-etiket)* | Vriende | |
+| Following *(statistiek-etiket)* | Wie ek volg | Vervang die ou "Vriende"-statistiek (volg-besluit; vriend afgeskaf → volg/volgeling), in lyn met die "Wie ek volg"-blad |
 | Unread *(statistiek-etiket)* | Ongelees | |
 | Inkwell Member · renews [date] | INK-lid · hernieu [datum] | |
 | Recent activity | Onlangse aktiwiteit | Kaart-opskrif |

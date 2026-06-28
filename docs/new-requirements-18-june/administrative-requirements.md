@@ -80,7 +80,7 @@ In order to do so, it will have to retrieve all the stored EntryIDs and match th
 Once confirmed that all entries in all categories have been identified and have been accounted for in both the winners lists and the commentary, do the following:
 
 1. Generate a post to announce the challenge winners and congratulate them. This must be done using a template that may be configured from time to time. Push this post to a featured position on the home page (usually the right-hand entry above the fold). At the bottom of this post, give a full index of entries for each category, with a link to each entry.
-2. For each entry, add a comment (marked "Terugvoer van die moderator) containing the full text of the judges' commentary for that work. ASIDE: On the writer profile page (Skrywersprofiel) that comment will only display for the post if the writer has enabled it to.
+2. For each entry, add a comment (marked "Terugvoer van die moderator) containing the full text of the judges' commentary for that work. ASIDE: On the public writer profile page (Skrywerprofiel) that comment will only display for the post if the writer has enabled it to.
 3. For each entry, we need to update the Biblioteek page for that writer. Since the Biblioteek area still need proper analysis, this must be noted as a requirement, but not fleshed out until we address the entire biblioteek. This is the same as requirement R4.
 4. Each entry must then be updated to mark it as a challenge winner. When the entry is then featured anywhere on the website, it must carry a banner (there is a Lovable design for this) to announce its status as winner. To clarify, for a December challenge, the winners must be indicated as follows:
     * Any entry that finished second or third must be identified as "Desember wenner" with text and icon color identifying it as Goud, Silwer or Brons. This is the same whether the entry is a Gedig, Story, or Artikel.
@@ -107,7 +107,7 @@ It is also important to note that a writer may place multiple times in the top 3
 
 This information is stored on the writer's profile.
 
-On the public profile (Skrywersprofiel), the status is simply reflected as Brons, Silwer or Goud. On the writer's private page, there is a line of text directly below the gradering to show how many wins are needed to reach the next gradering. For example:
+On the public profile (Skrywerprofiel), the status is simply reflected as Brons, Silwer or Goud. On the writer's private page, there is a line of text directly below the gradering to show how many wins are needed to reach the next gradering. For example:
     * Brons, with the subtext, "4 top 3 uitslae nodig om Silwer te bereik"
     * Silwer, with the subtext, "8 top 3 uitslae nodig om Goud te bereik"
     * Goud will have no subtext, because there is no next level to be promoted to.
@@ -166,6 +166,6 @@ Aside from the regular analytics (or perhaps built from it), we still need to sh
 
 ### Terminology refinements
 
-1. Whenever the terms "public profile" and "private profile" these refer, respectively, to the writer's public profile (shown to other people) and the Skrywersprofiel page, shown only to the writer.
+1. Whenever the terms "public profile" and "private profile" are used, they refer, respectively, to the writer's **Skrywerprofiel** (the PUBLIC profile, shown to other people) and the **My Profiel** page (the PRIVATE page, shown only to the writer). *(Reconciled per G1, 2026-06-20 — `afrikaans-terms.md` is the source of truth: Skrywerprofiel = public, My Profiel = private. The pre-G1 wording mapped the private page to "Skrywersprofiel"; that naming is retired.)*
 2. Any reference in provided documents to a membership, subscription or intekening refers to the writer's "lidmaatskap". And members are referred to as 'n "lid" (singular) or "lede" (plural). There should also be a distinction between a gratis lid (unpaid member), who has an account and is free to read, comment, follow, and maintain a reading list, and a betaalde lid (paid member, or subscriber) who may additionally post and access all the training material. For P2, we may want to explore teaser material to try to convert gratis leded to betaalde lede.
 3. Any reference to a writer's tier or level refers to the Gradering.
