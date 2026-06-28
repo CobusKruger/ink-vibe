@@ -18,10 +18,12 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Sponsors module facade — the sole public cross-module surface (AD-1).
  *
- * Other modules reach Sponsors through this facade, never into its internals. At
- * 14.1 it exposes the sponsor read-model ({@see sponsorFor()}) and the canonical
- * set of sponsor meta keys ({@see metaKeys()}, delegating to the {@see FieldSets}
- * single source). Conflation-clean — no Tiers/Entitlement.
+ * Other modules reach Sponsors through this facade, never into its internals. It
+ * exposes the sponsor read-model ({@see sponsorFor()}), the canonical set of
+ * sponsor meta keys ({@see metaKeys()}, delegating to the {@see FieldSets} single
+ * source), and — from 14.2 — the campaign-window surfaces ({@see activeSponsors()}
+ * / {@see featuredSponsor()}, delegating to {@see Campaign}). Conflation-clean — no
+ * Tiers/Entitlement.
  *
  * @package Ink\Core
  */
@@ -63,5 +65,28 @@ final class Api {
 			FieldSets::BORG_END_DATE,
 			FieldSets::BORG_PLACEMENT,
 		);
+	}
+
+	/**
+	 * All sponsors currently within their campaign window (Story 14.2). Delegates to
+	 * {@see Campaign}. The recognition section (14.4) consumes this.
+	 *
+	 * @param \DateTimeImmutable|null $now The instant to test; defaults to SAST now.
+	 * @return list<Sponsor>
+	 */
+	public static function activeSponsors( ?\DateTimeImmutable $now = null ): array {
+		return Campaign::activeSponsors( $now );
+	}
+
+	/**
+	 * The single sponsor to feature right now — the daily-rotated pick from the active
+	 * set, or null when none is active (Story 14.2). Delegates to {@see Campaign}. The
+	 * homepage strip (14.3) consumes this.
+	 *
+	 * @param \DateTimeImmutable|null $now The instant; defaults to SAST now.
+	 * @return Sponsor|null
+	 */
+	public static function featuredSponsor( ?\DateTimeImmutable $now = null ): ?Sponsor {
+		return Campaign::featured( $now );
 	}
 }

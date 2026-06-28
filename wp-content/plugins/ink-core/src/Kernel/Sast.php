@@ -68,6 +68,58 @@ final class Sast {
 	}
 
 	/**
+	 * The start-of-day SAST instant for a given date's SAST calendar day.
+	 *
+	 * The exact mirror of {@see endOfDay()} but pinned to `00:00:00` — the inclusive
+	 * LOWER bound of a SAST calendar day. Resolves the date's calendar day in SAST
+	 * (NOT UTC — an instant early in the UTC day may still be the previous SAST day
+	 * given the +2 offset) and returns `00:00:00` on that SAST day as a UTC-normalised
+	 * immutable instant. Used by {@see isWithinDayRange()} for the campaign-start side
+	 * of a sponsor window (Story 14.2), the symmetric partner of the AD-2/AD-3
+	 * end-of-day boundary.
+	 *
+	 * @param \DateTimeInterface $date Any instant; only its SAST calendar day matters.
+	 * @return \DateTimeImmutable The 00:00:00-SAST instant of that SAST day.
+	 */
+	public static function startOfDay( \DateTimeInterface $date ): \DateTimeImmutable {
+		$sast = new \DateTimeZone( self::TIMEZONE );
+
+		$inSast = \DateTimeImmutable::createFromInterface( $date )->setTimezone( $sast );
+
+		return $inSast->setTime( 0, 0, 0 );
+	}
+
+	/**
+	 * Whether "now" falls within an inclusive `[startOfDay($start) … endOfDay($end)]`
+	 * SAST window — the two-sided analogue of {@see isThroughEndOfDay()}.
+	 *
+	 * Both boundaries are INCLUSIVE and computed in SAST: `now >= startOfDay($start)`
+	 * (when `$start` is given) AND `now <= endOfDay($end)` (when `$end` is given). A
+	 * **null** bound means unbounded on that side — so `($start=null, $end=null)` is
+	 * always within range (an evergreen window). When `$start == $end` the window is
+	 * that single SAST day's `00:00:00 … 23:59:59`. All operands compare as absolute
+	 * instants, so a mix of UTC- and SAST-typed inputs compares correctly.
+	 *
+	 * @param \DateTimeInterface|null $start The inclusive start date, or null (no lower bound).
+	 * @param \DateTimeInterface|null $end   The inclusive end date, or null (no upper bound).
+	 * @param \DateTimeInterface|null $now   The instant to test; defaults to {@see now()}.
+	 * @return bool True when within the (inclusive) window.
+	 */
+	public static function isWithinDayRange( ?\DateTimeInterface $start, ?\DateTimeInterface $end, ?\DateTimeInterface $now = null ): bool {
+		$now ??= self::now();
+
+		if ( null !== $start && $now < self::startOfDay( $start ) ) {
+			return false;
+		}
+
+		if ( null !== $end && $now > self::endOfDay( $end ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * The current instant, timezone-aware.
 	 *
 	 * Prefers WordPress's `current_datetime()` (site-timezone-aware) when WordPress is

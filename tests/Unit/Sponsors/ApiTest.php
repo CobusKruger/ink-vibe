@@ -62,3 +62,83 @@ test( 'sponsorFor returns null for a non-positive id without touching get_post_t
 	expect( Api::sponsorFor( 0 ) )->toBeNull();
 	expect( Api::sponsorFor( -3 ) )->toBeNull();
 } );
+
+// --- Story 14.2: campaign-window delegation (via the WP_Query stub) ---
+
+/**
+ * Stage WP_Query to return $count borg posts (ids 1..$count) with the given window
+ * meta, so the Api → Campaign → WP wrapper path runs end-to-end without a real DB.
+ *
+ * @param array<int, array{start: string, end: string}> $windows Per-post campaign windows.
+ */
+function ink_sponsors_stage_query( array $windows ): void {
+	$posts = array();
+	$meta  = array();
+
+	foreach ( $windows as $i => $window ) {
+		$id              = $i + 1;
+		$post            = new \WP_Post();
+		$post->ID        = $id;
+		$post->post_type = \Ink\Content\PostTypes::BORG;
+		$posts[]         = $post;
+
+		$meta[ $id ] = array(
+			FieldSets::BORG_START_DATE => $window['start'],
+			FieldSets::BORG_END_DATE   => $window['end'],
+		);
+	}
+
+	\WP_Query::$ink_test_posts = $posts;
+
+	Functions\when( 'get_the_title' )->justReturn( 'Borg' );
+	Functions\when( 'get_post_meta' )->alias(
+		static fn ( int $id, string $key, bool $single = false ) => $meta[ $id ][ $key ] ?? ''
+	);
+}
+
+afterEach( function (): void {
+	\WP_Query::$ink_test_posts = array();
+} );
+
+test( 'activeSponsors delegates to Campaign and returns only in-window sponsors', function (): void {
+	$now = new \DateTimeImmutable( '2026-06-22 12:00:00', new \DateTimeZone( 'Africa/Johannesburg' ) );
+	ink_sponsors_stage_query(
+		array(
+			array( 'start' => '2026-06-01', 'end' => '2026-06-30' ), // active
+			array( 'start' => '2026-01-01', 'end' => '2026-01-31' ), // expired
+			array( 'start' => '', 'end' => '' ),                     // evergreen → active
+		)
+	);
+
+	$active = Api::activeSponsors( $now );
+
+	expect( $active )->toHaveCount( 2 );
+	expect( $active[0]->postId )->toBe( 1 );
+	expect( $active[1]->postId )->toBe( 3 );
+} );
+
+test( 'featuredSponsor delegates to Campaign and returns null when none is active', function (): void {
+	$now = new \DateTimeImmutable( '2026-06-22 12:00:00', new \DateTimeZone( 'Africa/Johannesburg' ) );
+	ink_sponsors_stage_query(
+		array(
+			array( 'start' => '2026-01-01', 'end' => '2026-01-31' ), // expired
+		)
+	);
+
+	expect( Api::featuredSponsor( $now ) )->toBeNull();
+} );
+
+test( 'featuredSponsor returns one of the active sponsors when several are active', function (): void {
+	$now = new \DateTimeImmutable( '2026-06-22 12:00:00', new \DateTimeZone( 'Africa/Johannesburg' ) );
+	ink_sponsors_stage_query(
+		array(
+			array( 'start' => '', 'end' => '' ),
+			array( 'start' => '', 'end' => '' ),
+		)
+	);
+
+	$featured = Api::featuredSponsor( $now );
+
+	expect( $featured )->toBeInstanceOf( Sponsor::class );
+	expect( in_array( $featured->postId, array( 1, 2 ), true ) )->toBeTrue();
+} );

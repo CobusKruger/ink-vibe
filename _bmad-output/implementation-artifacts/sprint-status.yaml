@@ -320,7 +320,7 @@ development_status:
   # Epic 14: Sponsors (Borge)
   epic-14: in-progress
   14-1-borg-cpt: review
-  14-2-scheduling-rotation-logic: backlog
+  14-2-scheduling-rotation-logic: review
   14-3-homepage-sponsor-placement: backlog
   14-4-sponsor-recognition-page: backlog
   epic-14-retrospective: optional
