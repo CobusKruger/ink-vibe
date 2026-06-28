@@ -354,7 +354,7 @@ development_status:
   # Epic 17: Afrikaans-first & localisation (execution + QA)
   epic-17: in-progress
   17-1-apply-approved-ui-copy: review
-  17-2-residual-plugin-afrikaans-pass: backlog
+  17-2-residual-plugin-afrikaans-pass: review
   17-3-terminology-reconciliation-reopened-by-g1: backlog
   17-4-no-english-leakage-qa-gate: backlog
   epic-17-retrospective: optional

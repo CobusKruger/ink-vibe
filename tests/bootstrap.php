@@ -39,6 +39,13 @@ defined( 'ARRAY_A' ) || define( 'ARRAY_A', 'ARRAY_A' );
 defined( 'ARRAY_N' ) || define( 'ARRAY_N', 'ARRAY_N' );
 defined( 'OBJECT' ) || define( 'OBJECT', 'OBJECT' );
 
+// Translation-loading seams (Story 17.2). `WP_LANG_DIR` is core's committed
+// `wp-content/languages/` home that the third-party plugin `.po/.mo/.json` load
+// from; `INK_CORE_FILE` is the plugin main-file path `plugin_basename()` resolves
+// against in `Ink\Kernel\I18n::load()`. Sentinel values for the mocked unit suite.
+defined( 'WP_LANG_DIR' ) || define( 'WP_LANG_DIR', dirname( __DIR__ ) . '/wp-content/languages' );
+defined( 'INK_CORE_FILE' ) || define( 'INK_CORE_FILE', dirname( __DIR__ ) . '/wp-content/plugins/ink-core/ink-core.php' );
+
 $ink_autoload = __DIR__ . '/../vendor/autoload.php';
 
 if ( ! is_readable( $ink_autoload ) ) {
