@@ -93,5 +93,6 @@ add_action(
 		Kernel\Plugin::instance()->addModule( 'inkpols', new InkPols\Module() );
 		Kernel\Plugin::instance()->addModule( 'sponsors', new Sponsors\Module() );
 		Kernel\Plugin::instance()->addModule( 'forms', new Forms\Module() );
+		Kernel\Plugin::instance()->addModule( 'migration', new Migration\Module() );
 	}
 );

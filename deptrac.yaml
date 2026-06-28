@@ -75,6 +75,10 @@ deptrac:
           collectors:
             - type: classNameRegex
               value: '#^Ink\\Forms\\.*#'
+        - name: Migration
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Migration\\.*#'
     ruleset:
         # Kernel is the shared base — depends on no other module.
         Kernel: ~
@@ -236,3 +240,34 @@ deptrac:
             - Entitlement
         Forms:
             - Kernel
+        Migration:
+            # Epic 16: the once-off, WP-CLI-only migration toolkit. Story 16.1's
+            # DbSanitiser touches only `$wpdb` + WP options (zero INK deps); the
+            # Module bootstrap implements the `Ink\Kernel\Module` contract. Later
+            # migration stories EXTEND this allowlist as real cross-module reads
+            # appear (e.g. Content's CPT/taxonomy single sources for post
+            # reclassification, the Tiers/Social Api facades) — the documented
+            # "extend a module's allowlist as real usage appears" path. No
+            # Entitlement<->Tiers coupling is ever introduced here.
+            - Kernel
+            # Story 16.3: the tier CSV import writes each writer's baseline grade
+            # through `Ink\Tiers\Api::importBaselineGrade()` — the sanctioned,
+            # Tiers-owned tier-write path (THE conflation guardrail keeps tier
+            # writes inside Ink\Tiers). A real, non-circular cross-module Api-facade
+            # dependency; Tiers depends only on Kernel/Notifications, never back on
+            # Migration. NO Entitlement edge (tier != subscription).
+            - Tiers
+            # Story 16.5: the post → CPT reclassification reads the
+            # migration-load-bearing CPT slug single source `Ink\Content\PostTypes`
+            # (GEDIG/STORIE/ARTIKEL/SKRYFWERK/INKPOLS_UITGAWE + archive bases). A
+            # real, non-circular cross-module dependency on the slug registry —
+            # mirrors the Submission/Discovery/Library/Challenges -> Content edges.
+            # No Entitlement/Tiers gate (reclassification is structural).
+            - Content
+            # Story 16.9: the BuddyPress friendship → follow transform writes the
+            # asymmetric follow graph through the canonical `Ink\Social\FollowStore`
+            # (follow is custom in ink-core; BP Friend Connections are OFF). A real,
+            # non-circular cross-module dependency on the follow store — Social
+            # depends only on Kernel/Content/Tiers, never back on Migration. No
+            # Entitlement/Tiers gate (the social graph is open).
+            - Social

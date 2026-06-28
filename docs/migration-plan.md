@@ -327,8 +327,10 @@ Any post or page that moves to a new URL needs a redirect from the old URL. Give
 | `/biblioteek/[slug]/` | `/biblioteek/[slug]/` (may stay) | High |
 | `/opleiding/[slug]/` | `/opleiding/[slug]/` (may stay) | Medium |
 | `/biblioteek/projek-wenners/[tier]/[slug]/` | new library URL | Medium |
-| InkPols post URLs | new InkPols issue URL | Low |
+| `/inkpols/[slug]/` (legacy `inkpols` CPT) | `/inkpols/[slug]/` (`inkpols_uitgawe`, archive base `inkpols` — kept) | Low |
 | Challenge post URLs | new challenge URL | Low |
+
+**Archive-URL prefixes kept unchanged** (no redirect needed for the archive base, only for moved singles): `/biblioteek/` (`biblioteek_item`), `/opleiding/` (`opleiding_artikel`), and `/inkpols/` (`inkpols_uitgawe`). The `inkpols_uitgawe` CPT registers its archive at the `inkpols` base (`PostTypes::definitions()`), so legacy `/inkpols/` issue URLs map onto the same prefix; the `inkpols`→`inkpols_uitgawe` post-type rename (Story 16.5) preserves the slug, and `PostReclassifier` records each issue's pre-rename permalink for the Story 16.7 301.
 
 **Recommendation:** keep the `/biblioteek/` and `/opleiding/` slug prefixes unchanged if possible. This preserves the high-value archive URLs and reduces redirect volume significantly.
 

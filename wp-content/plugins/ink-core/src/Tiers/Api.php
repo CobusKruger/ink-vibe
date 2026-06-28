@@ -151,6 +151,26 @@ final class Api {
 	}
 
 	/**
+	 * Set a writer's baseline Gradering during the once-off brownfield migration
+	 * (Story 16.3) — the sanctioned, Tiers-owned tier write for the CSV import.
+	 *
+	 * This is a baseline SET, NOT a promotion: it writes ONLY {@see Tier::META_KEY}
+	 * — no `promoted_at`, no win-count reset, no `PromotionLog` audit row, and it
+	 * fires no `ink/tier_promoted` event (a migration baseline is not a writer's
+	 * achievement). It exists so the migration imports tiers through the Tiers
+	 * facade (THE conflation guardrail: tier writes stay inside `Ink\Tiers`)
+	 * rather than poking `ink_writer_tier` from the Migration layer directly.
+	 *
+	 * Idempotent: re-setting the same grade is a harmless meta overwrite.
+	 *
+	 * @param int  $user_id The writer.
+	 * @param Tier $tier    The baseline grade to set.
+	 */
+	public static function importBaselineGrade( int $user_id, Tier $tier ): void {
+		update_user_meta( $user_id, Tier::META_KEY, $tier->value );
+	}
+
+	/**
 	 * The writer's current accumulated top-3 win count toward the next Gradering.
 	 *
 	 * Reads `ink_tier_win_count` (Story 5.7), defaulting to 0 for an unset/junk
