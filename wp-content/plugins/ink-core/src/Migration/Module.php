@@ -25,8 +25,9 @@ defined( 'ABSPATH' ) || exit;
  * ({@see LibraryTrainingMigrator}, 16.6), 301 redirect generation + serving
  * ({@see RedirectGenerator}, 16.7), fresh navigation rebuild
  * ({@see NavigationRebuilder}, 16.8), BuddyPress friendship → follow transform
- * ({@see FollowGraphMigration}, 16.9) and — as the epic progresses — the
- * remaining migration steps.
+ * ({@see FollowGraphMigration}, 16.9), read-only media verification
+ * ({@see MediaVerifier}, 16.10) and — as the epic progresses — the remaining
+ * migration steps.
  * The migration *commands* are **WP-CLI-only** (never a web request): the
  * mutating ones once-off + idempotent (the `Ink\Challenges\Migration` /
  * `Ink\InkPols\Migration` shape), the verification ones read-only and naturally
@@ -58,5 +59,6 @@ final class Module implements ModuleContract {
 		( new RedirectGenerator() )->register();
 		( new NavigationRebuilder() )->register();
 		( new FollowGraphMigration() )->register();
+		( new MediaVerifier() )->register();
 	}
 }
