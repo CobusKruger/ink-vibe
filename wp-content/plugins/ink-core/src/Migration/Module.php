@@ -20,8 +20,9 @@ defined( 'ABSPATH' ) || exit;
  * onto the new model: DB sanitise ({@see DbSanitiser}, 16.1), user role
  * reassignment ({@see UserReclassifier}, 16.2), writer-tier CSV import
  * ({@see TierImport}, 16.3), read-only subscription verification
- * ({@see SubscriptionVerifier}, 16.4) and — as the epic progresses — post
- * reclassification, redirect generation, and the remaining migration steps.
+ * ({@see SubscriptionVerifier}, 16.4), post → CPT reclassification
+ * ({@see PostReclassifier}, 16.5) and — as the epic progresses — redirect
+ * generation and the remaining migration steps.
  * Every command is **WP-CLI-only** (never a web request); the mutating ones are
  * once-off + idempotent (the `Ink\Challenges\Migration` / `Ink\InkPols\Migration`
  * shape), and the verification commands are read-only and naturally re-runnable.
@@ -45,5 +46,6 @@ final class Module implements ModuleContract {
 		( new UserReclassifier() )->register();
 		( new TierImport() )->register();
 		( new SubscriptionVerifier() )->register();
+		( new PostReclassifier() )->register();
 	}
 }

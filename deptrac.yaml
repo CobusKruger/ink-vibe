@@ -257,3 +257,10 @@ deptrac:
             # dependency; Tiers depends only on Kernel/Notifications, never back on
             # Migration. NO Entitlement edge (tier != subscription).
             - Tiers
+            # Story 16.5: the post → CPT reclassification reads the
+            # migration-load-bearing CPT slug single source `Ink\Content\PostTypes`
+            # (GEDIG/STORIE/ARTIKEL/SKRYFWERK/INKPOLS_UITGAWE + archive bases). A
+            # real, non-circular cross-module dependency on the slug registry —
+            # mirrors the Submission/Discovery/Library/Challenges -> Content edges.
+            # No Entitlement/Tiers gate (reclassification is structural).
+            - Content
