@@ -22,11 +22,15 @@ defined( 'ABSPATH' ) || exit;
  * ({@see TierImport}, 16.3), read-only subscription verification
  * ({@see SubscriptionVerifier}, 16.4), post → CPT reclassification
  * ({@see PostReclassifier}, 16.5), library/training sub-path migration
- * ({@see LibraryTrainingMigrator}, 16.6) and — as the epic progresses — redirect
- * generation and the remaining migration steps.
- * Every command is **WP-CLI-only** (never a web request); the mutating ones are
- * once-off + idempotent (the `Ink\Challenges\Migration` / `Ink\InkPols\Migration`
- * shape), and the verification commands are read-only and naturally re-runnable.
+ * ({@see LibraryTrainingMigrator}, 16.6), 301 redirect generation + serving
+ * ({@see RedirectGenerator}, 16.7) and — as the epic progresses — the remaining
+ * migration steps.
+ * The migration *commands* are **WP-CLI-only** (never a web request): the
+ * mutating ones once-off + idempotent (the `Ink\Challenges\Migration` /
+ * `Ink\InkPols\Migration` shape), the verification ones read-only and naturally
+ * re-runnable. The sole runtime surface is `RedirectGenerator`'s `template_redirect`
+ * handler, which SERVES the migration 301s on every front-end request (its build
+ * step stays CLI-only).
  *
  * Conflation-clean: the migration commands read `$wpdb` + `Ink\Content` + WP core
  * only — they never couple `Ink\Tiers` to `Ink\Entitlement`.
@@ -49,5 +53,6 @@ final class Module implements ModuleContract {
 		( new SubscriptionVerifier() )->register();
 		( new PostReclassifier() )->register();
 		( new LibraryTrainingMigrator() )->register();
+		( new RedirectGenerator() )->register();
 	}
 }
