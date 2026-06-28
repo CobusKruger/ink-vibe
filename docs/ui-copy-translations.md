@@ -30,7 +30,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| A sanctuary for writers and readers, fostering meaningful literary connections since 2018. | 'n Tuiste vir skrywers en lesers, wat sinvolle literêre bande smee sedert 2018. | Stigtingsjaar (2018) word nog met die stigter bevestig — nie 'n blokkeerder nie; behou 2018 voorlopig |
+| A sanctuary for writers and readers, fostering meaningful literary connections since 2018. | 'n Tuiste vir skrywers en lesers, wat sinvolle literêre bande smee sedert 2018. | Stigtingsjaar 2018 is toegepas (Storie 17.1) in `oor-ink.php` + voettekst; nog met die stigter te bevestig — 'n latere eenreël-redigering, nie 'n blokkeerder nie |
 | **Explore** | **Ontdek** | Voettekstkopie |
 | Latest Stories | Jongste bydraes | |
 | Poetry Collection | Gedigversameling | |
@@ -338,7 +338,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | How we treat each other | Hoe ons mekaar behandel | Boskrif-etiket |
 | Community principles | Gemeenskapsbeginsels | H2 |
 | Critique with care | Gee terugvoer met sorg | Beginsel-opskrif |
-| Feedback is a gift. We praise specifically, suggest gently, and never punch down. | Terugvoer is 'n gawe. Ons prys spesifiek, stel saggies voor, en trep nooit op mense nie. | |
+| Feedback is a gift. We praise specifically, suggest gently, and never punch down. | Terugvoer is 'n gawe. Ons prys spesifiek, stel saggies voor, en trap nooit op mense nie. | |
 | Read generously | Lees grootmoedig | |
 | Every piece here took courage to publish. Begin with what's working. | Elke stuk hier het moed gekos om te publiseer. Begin met wat werk. | |
 | Writers and readers, equal partners | Skrywers en lesers, gelyke vennote | |
@@ -351,7 +351,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Engels | Afrikaans | Notas |
 |---|---|---|
 | Ready to join Inkwell? | Gereed om by INK aan te sluit? | H2 |
-| It's free, it's nonprofit, and it's quietly becoming the best place online to read and be read. | Dit is gratis, dit is niewinsgericht, en dit word stilletjies die beste plek aanlyn om te lees en gelees te word. | |
+| It's free, it's nonprofit, and it's quietly becoming the best place online to read and be read. | Dit is gratis, dit is niewinsgerig, en dit word stilletjies die beste plek aanlyn om te lees en gelees te word. | |
 | Create your account | Skep jou rekening | Primêre knoppie |
 | Look around first | Kyk eers rond | Sekondêre knoppie |
 
@@ -479,7 +479,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | About | Oor my | Kaart-opskrif |
 | At a glance | In 'n oogopslag | Kaart-opskrif |
 | Posts *(statistiek-etiket)* | Bydraes | Oorweeg ook "[N] stories · [N] gedigte · [N] artikels" in die uitgebreide oorsig |
-| Friends *(statistiek-etiket)* | Vriende | |
+| Following *(statistiek-etiket)* | Wie ek volg | Vervang die ou "Vriende"-statistiek (volg-besluit; vriend afgeskaf → volg/volgeling), in lyn met die "Wie ek volg"-blad |
 | Unread *(statistiek-etiket)* | Ongelees | |
 | Inkwell Member · renews [date] | INK-lid · hernieu [datum] | |
 | Recent activity | Onlangse aktiwiteit | Kaart-opskrif |

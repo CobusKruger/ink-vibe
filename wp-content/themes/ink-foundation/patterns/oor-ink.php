@@ -9,10 +9,11 @@
  * already-built ink-foundation/borg-erkenning sponsor section (which wraps the
  * server-rendered ink/borg-erkenning block — the sanctioned ink-core seam). No new
  * sponsor logic, no post queries here. All prose is human-authored Afrikaans
- * (ui-copy-translations.md) — never AI-translated. Org-detail values use the
- * clearly-marked [stigtingsjaar] / [regstatus] placeholders (project-context "Org
- * placeholders" rule) pending real values at a pre-launch content gate — never any
- * US nonprofit legal-status wording.
+ * (ui-copy-translations.md) — never AI-translated. Org details resolved (Story 17.1):
+ * founding year = 2018 (provisional per ui-copy-translations.md L33, pending final
+ * founder confirmation — a one-line later edit, not a blocker); legal status uses the
+ * confirmed generic non-profit framing with no legal-registration detail and never
+ * any US nonprofit legal-status wording (project-context "Org placeholders" rule).
  *
  * @package Ink\Foundation
  */
@@ -34,7 +35,7 @@
 		<!-- /wp:paragraph -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-md-font-size">'n Tuiste vir skrywers en lesers, wat sinvolle literêre bande smee sedert [stigtingsjaar].</p>
+		<p class="has-muted-text-color has-text-color has-md-font-size">'n Tuiste vir skrywers en lesers, wat sinvolle literêre bande smee sedert 2018.</p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
@@ -50,7 +51,7 @@
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md"} -->
-		<p class="has-md-font-size">INK is 'n niewinsgerigte gemeenskapsorganisasie. Regstatus: [regstatus]. Gestig in [stigtingsjaar].</p>
+		<p class="has-md-font-size">INK is 'n niewinsgerigte gemeenskapsorganisasie, gestig in 2018.</p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->

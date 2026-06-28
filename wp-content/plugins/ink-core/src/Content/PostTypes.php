@@ -341,6 +341,9 @@ final class PostTypes {
 	 * @return array<string, string>
 	 */
 	private static function labels( string $singularKey, string $pluralKey ): array {
+		self::assertTermKey( $singularKey );
+		self::assertTermKey( $pluralKey );
+
 		$singular = Terms::label( $singularKey );
 		$plural   = Terms::label( $pluralKey );
 
@@ -378,6 +381,28 @@ final class PostTypes {
 			'item_published'        => sprintf( __( '%s gepubliseer.', 'ink-core' ), $singular ),
 			/* translators: %s: the singular content-type label. */
 			'item_updated'          => sprintf( __( '%s opgedateer.', 'ink-core' ), $singular ),
+		);
+	}
+
+	/**
+	 * Assert a CPT-label concept key is registered before it is composed into
+	 * labels (Story 17.4 — deferred Epic 2 review). A missing/typo'd key would
+	 * otherwise let `Terms::label()` fail safe to the raw machine key (e.g.
+	 * `storie_plural`) and ship it as a visible CPT label. This surfaces the
+	 * developer error in dev/CI via `_doing_it_wrong`; production stays fail-safe
+	 * (no fatal) with the English-leak scan/crawl as the runtime backstop.
+	 *
+	 * @param string $key Terminology concept key.
+	 */
+	private static function assertTermKey( string $key ): void {
+		if ( Terms::has( $key ) ) {
+			return;
+		}
+
+		_doing_it_wrong(
+			__METHOD__,
+			sprintf( 'CPT label uses unregistered terminology key "%s" — fix the definition or add the glossary term.', esc_html( $key ) ),
+			'ink-core 17.4'
 		);
 	}
 }

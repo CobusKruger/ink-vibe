@@ -224,6 +224,18 @@ final class Terms {
 	 * @return string The label, or the key itself if unregistered.
 	 */
 	public static function label( string $key ): string {
+		// Called-before-`init` guard (Story 17.4): the controlled-vocabulary labels
+		// are `__()` literals resolved via the text domain loaded on `init`; calling
+		// before `init` returns the untranslated source and trips `_doing_it_wrong`
+		// on WP 6.7+. Surface the misuse in dev/CI without fataling in production.
+		if ( ! did_action( 'init' ) ) {
+			_doing_it_wrong(
+				__METHOD__,
+				sprintf( 'terminology label "%s" requested before the `init` hook; labels resolve on init.', esc_html( $key ) ),
+				'ink-core 17.4'
+			);
+		}
+
 		$map = self::map();
 
 		if ( ! array_key_exists( $key, $map ) ) {

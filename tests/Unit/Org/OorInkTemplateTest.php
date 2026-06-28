@@ -11,8 +11,10 @@
  * Non-vacuous: chrome + the mission H1 are asserted first, so a blank/missing file
  * fails loudly rather than passing the embed and content guards on emptiness.
  *
- * Pre-launch content guard (AC #2): clearly-marked org placeholders are present AND no
- * US "501(c)(3)" wording leaks.
+ * Org-detail guard (Story 17.1, AC #2): the org placeholders are RESOLVED — founding
+ * year 2018 is applied, the legal status uses the confirmed generic non-profit framing
+ * with no legal-registration detail, the `[stigtingsjaar]`/`[regstatus]` markers are
+ * gone, and no US "501(c)(3)" wording leaks.
  *
  * @package Ink\Tests
  */
@@ -54,14 +56,19 @@ test( 'the Oor INK pattern shows mission, contact, sponsors and org pages', func
 	expect( $markup )->toContain( '/gemeenskap' );
 } );
 
-test( 'the Oor INK page uses org placeholders and never US legal wording (pre-launch gate)', function () use ( $ink_read ): void {
+test( 'the Oor INK page has resolved org details and never US legal wording (Story 17.1)', function () use ( $ink_read ): void {
 	$markup = $ink_read( 'patterns/oor-ink.php' );
 
-	// Clearly-marked org-detail placeholders are present (AC #2).
-	expect( $markup )->toContain( '[stigtingsjaar]' );
-	expect( $markup )->toContain( '[regstatus]' );
+	// Org placeholders are RESOLVED, not present (AC #2).
+	expect( $markup )->not->toContain( '[stigtingsjaar]' );
+	expect( $markup )->not->toContain( '[regstatus]' );
 
-	// The US nonprofit wording must NEVER appear.
+	// Founding year 2018 is applied, with the generic non-profit framing.
+	expect( $markup )->toContain( '2018' );
+	expect( $markup )->toContain( 'niewinsgerigte gemeenskapsorganisasie' );
+
+	// No legal-registration detail leaks; US nonprofit wording must NEVER appear.
+	expect( $markup )->not->toContain( 'Regstatus:' );
 	expect( $markup )->not->toContain( '501(c)(3)' );
 	expect( $markup )->not->toContain( '501(c)' );
 } );

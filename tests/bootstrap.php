@@ -39,6 +39,62 @@ defined( 'ARRAY_A' ) || define( 'ARRAY_A', 'ARRAY_A' );
 defined( 'ARRAY_N' ) || define( 'ARRAY_N', 'ARRAY_N' );
 defined( 'OBJECT' ) || define( 'OBJECT', 'OBJECT' );
 
+// Translation-loading seams (Story 17.2). `WP_LANG_DIR` is core's committed
+// `wp-content/languages/` home that the third-party plugin `.po/.mo/.json` load
+// from; `INK_CORE_FILE` is the plugin main-file path `plugin_basename()` resolves
+// against in `Ink\Kernel\I18n::load()`. Sentinel values for the mocked unit suite.
+defined( 'WP_LANG_DIR' ) || define( 'WP_LANG_DIR', dirname( __DIR__ ) . '/wp-content/languages' );
+defined( 'INK_CORE_FILE' ) || define( 'INK_CORE_FILE', dirname( __DIR__ ) . '/wp-content/plugins/ink-core/ink-core.php' );
+
+// Dev-time guard doubles (Story 17.4). WordPress is not loaded for the unit suite,
+// so the registry-robustness guards (`Terms::label` before-`init`, `PostTypes`/
+// `Taxonomies` unregistered-key, `Bindings::resolve` misconfigured-binding) call
+// `did_action()`/`_doing_it_wrong()` against these inspectable doubles rather than
+// Brain Monkey stubs (which, once defined, persist process-wide and would make
+// `function_exists()` guards leak across tests). `did_action` reports fired hooks
+// (default: `init` fired → guards stay silent for the 1000+ existing tests);
+// `_doing_it_wrong` records calls. Reset both with `ink_reset_guard_spies()`.
+$GLOBALS['ink_test_fired_hooks']   = array( 'init' => 1 );
+$GLOBALS['ink_test_doing_it_wrong'] = array();
+
+if ( ! function_exists( 'ink_reset_guard_spies' ) ) {
+	/**
+	 * Reset the Story 17.4 guard doubles to defaults (init fired, no warnings).
+	 */
+	function ink_reset_guard_spies(): void {
+		$GLOBALS['ink_test_fired_hooks']    = array( 'init' => 1 );
+		$GLOBALS['ink_test_doing_it_wrong'] = array();
+	}
+}
+
+if ( ! function_exists( 'did_action' ) ) {
+	/**
+	 * Test double: number of times an action hook has "fired".
+	 *
+	 * @param string $hook_name Hook name.
+	 */
+	function did_action( string $hook_name ): int {
+		// Unseeded hooks default to NOT fired (R17 review): only hooks explicitly
+		// seeded in $GLOBALS['ink_test_fired_hooks'] report as fired, so a future
+		// guard that checks a different hook can't pass spuriously. `init` is seeded
+		// to 1 by ink_reset_guard_spies(), so the before-`init` guard stays silent.
+		return (int) ( $GLOBALS['ink_test_fired_hooks'][ $hook_name ] ?? 0 );
+	}
+}
+
+if ( ! function_exists( '_doing_it_wrong' ) ) {
+	/**
+	 * Test double: record a `_doing_it_wrong` developer-error call for assertion.
+	 *
+	 * @param string $function_name The offending function.
+	 * @param string $message       The diagnostic message.
+	 * @param string $version       The version the misuse was flagged in.
+	 */
+	function _doing_it_wrong( $function_name, $message, $version ): void {
+		$GLOBALS['ink_test_doing_it_wrong'][] = array( (string) $function_name, (string) $message, (string) $version );
+	}
+}
+
 $ink_autoload = __DIR__ . '/../vendor/autoload.php';
 
 if ( ! is_readable( $ink_autoload ) ) {

@@ -267,7 +267,7 @@
 					<!-- /wp:heading -->
 
 					<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-					<p class="has-muted-text-color has-text-color has-md-font-size">Terugvoer is 'n gawe. Ons prys spesifiek, stel saggies voor, en trep nooit op mense nie.</p>
+					<p class="has-muted-text-color has-text-color has-md-font-size">Terugvoer is 'n gawe. Ons prys spesifiek, stel saggies voor, en trap nooit op mense nie.</p>
 					<!-- /wp:paragraph -->
 				</div>
 				<!-- /wp:group -->
@@ -337,7 +337,7 @@
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"align":"center","fontSize":"lg","textColor":"muted-text"} -->
-		<p class="has-text-align-center has-muted-text-color has-text-color has-lg-font-size">Dit is gratis, dit is niewinsgericht, en dit word stilletjies die beste plek aanlyn om te lees en gelees te word.</p>
+		<p class="has-text-align-center has-muted-text-color has-text-color has-lg-font-size">Dit is gratis, dit is niewinsgerig, en dit word stilletjies die beste plek aanlyn om te lees en gelees te word.</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:buttons {"lock":{"move":true,"remove":true},"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->

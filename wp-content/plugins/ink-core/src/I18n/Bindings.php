@@ -60,13 +60,29 @@ final class Bindings {
 	 * Resolve a binding to its glossary label.
 	 *
 	 * The bound block escapes the returned value at render, per the Block
-	 * Bindings contract; this returns the raw label by key.
+	 * Bindings contract.
+	 *
+	 * Misconfigured-binding guard (Story 17.4 — deferred Epic 2 review): a missing
+	 * or unregistered `key` renders NOTHING (empty string) rather than leaking the
+	 * raw machine key (e.g. `genre_plural`) to a visitor; the misuse is surfaced in
+	 * dev/CI via `_doing_it_wrong`. A valid key resolves to its label exactly as
+	 * before.
 	 *
 	 * @param array<string, mixed> $source_args The block's binding `args` (expects `key`).
-	 * @return string The label for the requested key, or the key if unregistered.
+	 * @return string The label for the requested key, or '' for a missing/unknown key.
 	 */
 	public static function resolve( array $source_args ): string {
 		$key = isset( $source_args['key'] ) ? (string) $source_args['key'] : '';
+
+		if ( '' === $key || ! Terms::has( $key ) ) {
+			_doing_it_wrong(
+				__METHOD__,
+				sprintf( 'ink/term binding has a missing or unregistered key "%s"; rendering nothing.', esc_html( $key ) ),
+				'ink-core 17.4'
+			);
+
+			return '';
+		}
 
 		return Terms::label( $key );
 	}

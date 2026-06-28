@@ -4,8 +4,33 @@
   },
   "permissions": {
     "allow": [
-      "Bash(python3 _bmad/scripts/resolve_customization.py *)",
-      "Bash(python3 /Users/cobus/Development/ink-vibe/_bmad/scripts/resolve_customization.py *)"
+      "Bash(git *)",
+      "Bash(python3 *)",
+      "Bash(composer *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(ls *)",
+      "Bash(echo *)",
+      "Bash(tail *)",
+      "Bash(head *)",
+      "Bash(wc *)",
+      "Bash(cut *)",
+      "Bash(sort *)",
+      "Bash(uniq *)",
+      "Bash(vendor/bin/pest *)",
+      "Bash(./vendor/bin/pest *)",
+      "Bash(vendor/bin/phpcs *)",
+      "Bash(./vendor/bin/phpcs *)",
+      "Bash(vendor/bin/phpstan *)",
+      "Bash(./vendor/bin/phpstan *)",
+      "Bash(php -l *)",
+      "Bash(php --version)",
+      "WebSearch",
+      "WebFetch(domain:docs.bmad-method.org)",
+      "WebFetch(domain:api.anthropic.com)",
+      "WebFetch(domain:http-intake.logs.us5.datadoghq.com)",
+      "Skill(update-config)",
+      "Skill(fewer-permission-prompts)"
     ]
   },
   "hooks": {
