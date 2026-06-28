@@ -21,7 +21,8 @@ defined( 'ABSPATH' ) || exit;
  * reassignment ({@see UserReclassifier}, 16.2), writer-tier CSV import
  * ({@see TierImport}, 16.3), read-only subscription verification
  * ({@see SubscriptionVerifier}, 16.4), post → CPT reclassification
- * ({@see PostReclassifier}, 16.5) and — as the epic progresses — redirect
+ * ({@see PostReclassifier}, 16.5), library/training sub-path migration
+ * ({@see LibraryTrainingMigrator}, 16.6) and — as the epic progresses — redirect
  * generation and the remaining migration steps.
  * Every command is **WP-CLI-only** (never a web request); the mutating ones are
  * once-off + idempotent (the `Ink\Challenges\Migration` / `Ink\InkPols\Migration`
@@ -47,5 +48,6 @@ final class Module implements ModuleContract {
 		( new TierImport() )->register();
 		( new SubscriptionVerifier() )->register();
 		( new PostReclassifier() )->register();
+		( new LibraryTrainingMigrator() )->register();
 	}
 }
