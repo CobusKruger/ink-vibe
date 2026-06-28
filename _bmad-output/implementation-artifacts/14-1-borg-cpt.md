@@ -4,7 +4,10 @@ baseline_commit: 3c78a6f8c0a1740c4d6bde664f639d95968e7c13
 
 # Story 14.1: borg CPT
 
-Status: review
+Status: done
+
+<!-- R14 code review (epic-14-code-review-2026-06-28.md): 0 HIGH/MEDIUM. Cap reconciliation confirmed closed + non-vacuously tested; conflation-clean (Sponsors -> Content only). No 14.1 patches. -->
+
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

@@ -4,7 +4,10 @@ baseline_commit: 1c16256891a6dc57ec14033ca7ce9f2ab62f5363
 
 # Story 14.2: Scheduling / rotation logic
 
-Status: review
+Status: done
+
+<!-- R14 code review (epic-14-code-review-2026-06-28.md): 0 HIGH/MEDIUM. 2 LOW patches — inverted window (start>end) made an intentional fail-closed contract + pinning test; rotation docblock softened (within-day stability holds for a constant active set). Deferred: per-request WP_Query caching (Epic 18), MAX_SPONSORS=100 cap (documented product bound). -->
+
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

@@ -4,7 +4,10 @@ baseline_commit: ec0ce5dadd05901defa1a28a1adba708a0b8d765
 
 # Story 14.3: Homepage sponsor placement
 
-Status: review
+Status: done
+
+<!-- R14 code review (epic-14-code-review-2026-06-28.md): 0 HIGH/MEDIUM. 1 LOW patch — added the AC-5 "no content-hook" guardrail test (tests/Unit/Sponsors/ModuleTest.php) that Task 6 specified but had not been written; invariant already held by construction. -->
+
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

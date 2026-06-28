@@ -75,6 +75,16 @@ test( 'isActive treats a single-day campaign (start==end) as that whole day', fu
 	expect( Campaign::isActive( $sponsor, ink_sast_now( '2026-06-23 00:00:00' ) ) )->toBeFalse();
 } );
 
+test( 'isActive treats an inverted window (start after end) as never active — fail-closed, no silent swap (R14)', function (): void {
+	// A transposed-date typo: start 2026-06-30, end 2026-06-01.
+	$sponsor = ink_sponsor_with_window( '2026-06-30', '2026-06-01' );
+
+	// Never active — not in June, not on either endpoint, not between the swapped dates.
+	expect( Campaign::isActive( $sponsor, ink_sast_now( '2026-06-15 12:00:00' ) ) )->toBeFalse();
+	expect( Campaign::isActive( $sponsor, ink_sast_now( '2026-06-30 12:00:00' ) ) )->toBeFalse();
+	expect( Campaign::isActive( $sponsor, ink_sast_now( '2026-06-01 12:00:00' ) ) )->toBeFalse();
+} );
+
 test( 'isActive honours open bounds: open-start, open-end, and evergreen (both empty)', function (): void {
 	$now = ink_sast_now( '2026-06-22 12:00:00' );
 

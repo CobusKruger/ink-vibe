@@ -77,6 +77,11 @@ final class Campaign {
 	 * bound; BOTH empty ⇒ an evergreen sponsor (always active). A single-day campaign
 	 * (start == end) is active for that whole SAST day.
 	 *
+	 * An INVERTED window (start after end, e.g. a transposed-date typo) is never
+	 * active — the dates are evaluated literally, fail-closed, NOT silently swapped
+	 * (guessing the editor's intent would be worse than the sponsor visibly not
+	 * showing). R14 code-review: this behaviour is intentional and pinned by a test.
+	 *
 	 * @param Sponsor                 $sponsor The sponsor read-model.
 	 * @param \DateTimeImmutable|null $now     The instant to test; defaults to SAST now.
 	 * @return bool
@@ -124,9 +129,12 @@ final class Campaign {
 	/**
 	 * Pick the featured sponsor from an active set by the daily rotation cursor. Pure.
 	 *
-	 * `$active[ dayIndex mod count ]` — deterministic and stable within a day, cycling
-	 * through the set day by day. Negative-safe modulo (defensive; `dayIndex` is
-	 * non-negative for any post-1970 instant). Returns null for an empty set.
+	 * `$active[ dayIndex mod count ]` — deterministic and, for a CONSTANT active set,
+	 * stable within a SAST day while cycling through the set day by day. (When the
+	 * active-set membership changes mid-day — a campaign opening/closing — the
+	 * positional slots remap, so the featured pick may change; acceptable for the
+	 * few-sponsors reality. R14 review note.) Negative-safe modulo (defensive;
+	 * `dayIndex` is non-negative for any post-1970 instant). Returns null for an empty set.
 	 *
 	 * @param list<Sponsor> $active   The active sponsors (already filtered).
 	 * @param int           $dayIndex The rotation cursor from {@see dayIndex()}.

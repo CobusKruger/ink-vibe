@@ -4,7 +4,10 @@ baseline_commit: bec16aee9012cfe70c2fdd6f481b77f4cc251823
 
 # Story 14.4: Sponsor recognition page
 
-Status: review
+Status: done
+
+<!-- R14 code review (epic-14-code-review-2026-06-28.md): 0 HIGH/MEDIUM. No 14.4 patches. Confirmed: all active sponsors shown, copy verbatim from the registry, always-renders/grid-degrades, shared SponsorLink. Deferred: MAX_SPONSORS=100 cap vs "every active sponsor" (documented product bound). -->
+
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
