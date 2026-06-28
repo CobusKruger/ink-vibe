@@ -4,7 +4,7 @@ baseline_commit: c7e6a40
 
 # Story 16.11: Options carry-forward (selective)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

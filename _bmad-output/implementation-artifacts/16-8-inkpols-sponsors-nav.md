@@ -4,7 +4,7 @@ baseline_commit: c7e6a40
 
 # Story 16.8: InkPols / sponsors / nav
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

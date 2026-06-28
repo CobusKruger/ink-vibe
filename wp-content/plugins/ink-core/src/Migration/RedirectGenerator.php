@@ -185,6 +185,13 @@ class RedirectGenerator {
 	 * Serve a 301 when the current request path matches the stored map. Runtime.
 	 */
 	public function maybeRedirect(): void {
+		// Only rescue a request that would otherwise 404 (R16 review): the map holds
+		// MOVED (now-dead) paths, so a live page whose path happens to match a stale
+		// map key must never be hijacked.
+		if ( ! $this->isMissing() ) {
+			return;
+		}
+
 		$map = $this->loadMap();
 
 		if ( array() === $map ) {
@@ -269,6 +276,13 @@ class RedirectGenerator {
 	 * @return string
 	 */
 	protected function currentPermalink( int $post_id ): string {
+		// Only a PUBLISHED post has a real public permalink (R16 review). A trashed
+		// or draft post yields a `?p=`/trash URL — never a valid 301 target — so
+		// return '' and let buildRedirectMap() drop it.
+		if ( 'publish' !== get_post_status( $post_id ) ) {
+			return '';
+		}
+
 		$url = get_permalink( $post_id );
 
 		return is_string( $url ) ? $url : '';
@@ -292,6 +306,16 @@ class RedirectGenerator {
 		$map = get_option( self::OPTION_MAP, array() );
 
 		return is_array( $map ) ? $map : array();
+	}
+
+	/**
+	 * Whether the current request resolved to a 404 (a dead URL to rescue).
+	 * Overridable seam.
+	 *
+	 * @return bool
+	 */
+	protected function isMissing(): bool {
+		return is_404();
 	}
 
 	/**

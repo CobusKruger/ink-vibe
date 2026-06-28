@@ -106,7 +106,10 @@ class OptionsCarryForward {
 		$carry = array();
 
 		foreach ( self::allowedOptions() as $key ) {
-			if ( array_key_exists( $key, $legacy ) ) {
+			// Only carry scalar legacy values (R16 review): the allowlist is
+			// scalar-only options, so a non-scalar (array/serialized) value is junk
+			// — casting it to string would yield "Array" + a PHP notice.
+			if ( array_key_exists( $key, $legacy ) && is_scalar( $legacy[ $key ] ) ) {
 				$carry[ $key ] = (string) $legacy[ $key ];
 			}
 		}

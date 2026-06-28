@@ -336,19 +336,19 @@ development_status:
   epic-15-retrospective: done
 
   # Epic 16: Migration & redirects
-  epic-16: in-progress
-  16-1-db-clone-sanitise: review
-  16-2-user-import-role-reassignment: review
-  16-3-tier-csv-import: review
-  16-4-subscription-verification: review
-  16-5-post-cpt-reclassification: review
-  16-6-library-training-migration: review
-  16-7-redirect-generation: review
-  16-8-inkpols-sponsors-nav: review
-  16-9-buddypress-data-friendship-follow: review
-  16-10-media-verification: review
-  16-11-options-carry-forward-selective: review
-  16-12-wpbakery-shortcode-cleanup: review
+  epic-16: done
+  16-1-db-clone-sanitise: done
+  16-2-user-import-role-reassignment: done
+  16-3-tier-csv-import: done
+  16-4-subscription-verification: done
+  16-5-post-cpt-reclassification: done
+  16-6-library-training-migration: done
+  16-7-redirect-generation: done
+  16-8-inkpols-sponsors-nav: done
+  16-9-buddypress-data-friendship-follow: done
+  16-10-media-verification: done
+  16-11-options-carry-forward-selective: done
+  16-12-wpbakery-shortcode-cleanup: done
   epic-16-retrospective: optional
 
   # Epic 17: Afrikaans-first & localisation (execution + QA)

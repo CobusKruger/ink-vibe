@@ -4,7 +4,7 @@ baseline_commit: c7e6a40
 
 # Story 16.6: Library/training migration
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

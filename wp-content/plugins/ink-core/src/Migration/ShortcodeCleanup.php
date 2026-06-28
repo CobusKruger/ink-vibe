@@ -84,7 +84,12 @@ class ShortcodeCleanup {
 	 * @return string
 	 */
 	public static function stripVcShortcodes( string $content ): string {
-		$cleaned = preg_replace( '/\[\/?vc_[^\]]*\]/', '', $content );
+		// Match `[vc_…]` / `[/vc_…]` where the body is any run of: non-`]`/quote
+		// chars, OR a "…"/'…' quoted attribute value (which MAY contain `]`). This
+		// stops the tag from being truncated at a `]` inside an attribute value
+		// (R16 review — a truncated tag would leave orphaned text in persisted
+		// content), while still leaving non-`vc_` shortcodes untouched.
+		$cleaned = preg_replace( '/\[\/?vc_(?:[^\]"\']|"[^"]*"|\'[^\']*\')*\]/', '', $content );
 
 		return is_string( $cleaned ) ? $cleaned : $content;
 	}

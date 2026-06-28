@@ -4,7 +4,7 @@ baseline_commit: c7e6a40
 
 # Story 16.2: User import + role reassignment
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

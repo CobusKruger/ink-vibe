@@ -153,3 +153,46 @@ test( 'run maps posts, renames inkpols, skips monthly_challenge, records source 
 	expect( $migration->flushes )->toBe( 1 ); // flushed exactly once, after the loop
 	expect( $migration->marked )->toBeTrue();
 } );
+
+test( 'run leaves /biblioteek/ and /opleiding/ flat posts to Story 16.6 (R16 — order-independent, no 301 loss)', function (): void {
+	$migration = new class() extends PostReclassifier {
+		/** @var list<int> */
+		public array $set = array();
+		/** @var list<int> */
+		public array $recorded = array();
+
+		public function hasRun(): bool {
+			return false;
+		}
+		protected function legacyPosts(): array {
+			return array(
+				(object) array( 'id' => 1, 'post_type' => 'post', 'category_slugs' => array( 'gedig' ), 'url' => 'https://ink.test/my-gedig/' ),
+				(object) array( 'id' => 2, 'post_type' => 'post', 'category_slugs' => array( 'gedig' ), 'url' => 'https://ink.test/biblioteek/wen/g/' ), // library → skip
+				(object) array( 'id' => 3, 'post_type' => 'post', 'category_slugs' => array( 'artikel' ), 'url' => 'https://ink.test/opleiding/skryf/les/' ), // training → skip
+			);
+		}
+		protected function categorySlugsFor( object $post ): array {
+			return (array) ( $post->category_slugs ?? array() );
+		}
+		protected function recordSourceUrl( int $post_id ): void {
+			$this->recorded[] = $post_id;
+		}
+		protected function setPostType( int $post_id, string $type ): void {
+			$this->set[] = $post_id;
+		}
+		protected function existingPageSlugs(): array {
+			return array();
+		}
+		protected function flushRewrites(): void {}
+		protected function markDone(): void {}
+	};
+
+	$summary = $migration->run();
+
+	// Only the non-prefixed post 1 is reassigned; the library/training posts are skipped.
+	expect( $summary['reassigned'] )->toBe( 1 );
+	expect( $summary['skipped'] )->toBe( 2 );
+	expect( $migration->set )->toBe( array( 1 ) );
+	// Their SOURCE_URL_META is NOT overwritten with a post-rename permalink here.
+	expect( $migration->recorded )->toBe( array( 1 ) );
+} );

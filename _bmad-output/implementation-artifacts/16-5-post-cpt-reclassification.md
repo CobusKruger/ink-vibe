@@ -4,7 +4,7 @@ baseline_commit: c7e6a40
 
 # Story 16.5: Post → CPT reclassification
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

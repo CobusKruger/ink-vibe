@@ -67,6 +67,15 @@ test( 'filterCarryForward forces the af locale even when legacy carries no WPLAN
 	expect( $carry['WPLANG'] )->toBe( 'af' );
 } );
 
+test( 'filterCarryForward drops a non-scalar legacy value rather than casting it to "Array" (R16)', function (): void {
+	$carry = OptionsCarryForward::filterCarryForward(
+		array( 'blogname' => array( 'unexpected', 'array' ) ) // junk non-scalar value
+	);
+
+	expect( $carry )->not->toHaveKey( 'blogname' ); // dropped, not cast to "Array"
+	expect( $carry['WPLANG'] )->toBe( 'af' );       // locale still forced
+} );
+
 // --- orchestration over seams ---
 
 test( 'run is a no-op when the carry-forward has already completed (idempotent)', function (): void {

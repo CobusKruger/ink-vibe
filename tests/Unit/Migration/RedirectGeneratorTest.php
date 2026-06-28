@@ -127,9 +127,12 @@ test( 'build stores the changed-URL map and reports the count', function (): voi
 
 // --- serve over seams ---
 
-test( 'maybeRedirect issues a 301 to the mapped target on a match', function (): void {
+test( 'maybeRedirect issues a 301 to the mapped target on a match (404 request)', function (): void {
 	$gen = new class() extends RedirectGenerator {
 		public ?string $redirected = null;
+		protected function isMissing(): bool {
+			return true; // the old URL now 404s.
+		}
 		protected function loadMap(): array {
 			return array( '/my-gedig' => 'https://ink.test/gedig/my-gedig/' );
 		}
@@ -146,9 +149,34 @@ test( 'maybeRedirect issues a 301 to the mapped target on a match', function ():
 	expect( $gen->redirected )->toBe( 'https://ink.test/gedig/my-gedig/' );
 } );
 
+test( 'maybeRedirect NEVER hijacks a live (non-404) URL even when its path matches a stale map key', function (): void {
+	$gen = new class() extends RedirectGenerator {
+		public bool $redirected = false;
+		protected function isMissing(): bool {
+			return false; // a live page resolved — do not redirect.
+		}
+		protected function loadMap(): array {
+			return array( '/my-gedig' => 'https://ink.test/gedig/my-gedig/' );
+		}
+		protected function requestPath(): string {
+			return '/my-gedig/';
+		}
+		protected function doRedirect( string $target ): void {
+			$this->redirected = true;
+		}
+	};
+
+	$gen->maybeRedirect();
+
+	expect( $gen->redirected )->toBeFalse();
+} );
+
 test( 'maybeRedirect is a no-op on a miss, an empty map, or a self-target (loop guard)', function (): void {
 	$miss = new class() extends RedirectGenerator {
 		public bool $redirected = false;
+		protected function isMissing(): bool {
+			return true;
+		}
 		protected function loadMap(): array {
 			return array( '/a' => 'https://ink.test/b/' );
 		}
@@ -164,6 +192,9 @@ test( 'maybeRedirect is a no-op on a miss, an empty map, or a self-target (loop 
 
 	$empty = new class() extends RedirectGenerator {
 		public bool $redirected = false;
+		protected function isMissing(): bool {
+			return true;
+		}
 		protected function loadMap(): array {
 			return array();
 		}
@@ -179,6 +210,9 @@ test( 'maybeRedirect is a no-op on a miss, an empty map, or a self-target (loop 
 
 	$loop = new class() extends RedirectGenerator {
 		public bool $redirected = false;
+		protected function isMissing(): bool {
+			return true;
+		}
 		protected function loadMap(): array {
 			return array( '/a' => 'https://ink.test/a/' ); // target path == request path
 		}

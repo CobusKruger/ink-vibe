@@ -38,6 +38,11 @@ test( 'stripVcShortcodes removes vc tags but keeps the inner content', function 
 
 	// vc tag with attributes
 	expect( ShortcodeCleanup::stripVcShortcodes( '[vc_row css=".vc_custom_1{}"]X[/vc_row]' ) )->toBe( 'X' );
+
+	// R16 review: a `]` INSIDE a quoted attribute value must not truncate the tag
+	// (otherwise orphaned text like `b"]` would survive into persisted content).
+	expect( ShortcodeCleanup::stripVcShortcodes( '[vc_btn title="a]b"]Klik[/vc_btn]' ) )->toBe( 'Klik' );
+	expect( ShortcodeCleanup::stripVcShortcodes( "[vc_row js='x]y']Z[/vc_row]" ) )->toBe( 'Z' );
 } );
 
 test( 'stripVcShortcodes leaves non-vc shortcodes and plain content untouched (non-vacuous)', function (): void {

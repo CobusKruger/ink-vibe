@@ -154,8 +154,16 @@ test( 'deleteTransients escapes each prefix with esc_like and deletes via prepar
 	$wpdb->shouldReceive( 'prepare' )->andReturnUsing(
 		static fn ( string $sql, $arg ): string => "PREPARED:{$arg}"
 	);
-	// Each of the four prefixes drives one DELETE; affected-rows summed.
-	$wpdb->shouldReceive( 'query' )->times( 4 )->andReturn( 10, 0, 2, 0 );
+	// Capture every query so we can assert the ESCAPED LIKE actually reaches it
+	// (non-vacuous: the test would fail if esc_like were dropped or the wrong
+	// prefix used), not merely that the affected-rows sum is right.
+	$queried = array();
+	$wpdb->shouldReceive( 'query' )->times( 4 )->andReturnUsing(
+		static function ( string $sql ) use ( &$queried ): int {
+			$queried[] = $sql;
+			return array( 10, 0, 2, 0 )[ count( $queried ) - 1 ] ?? 0;
+		}
+	);
 
 	$sanitiser = new class() extends DbSanitiser {
 		public function publicDeleteTransients(): int {
@@ -164,6 +172,11 @@ test( 'deleteTransients escapes each prefix with esc_like and deletes via prepar
 	};
 
 	expect( $sanitiser->publicDeleteTransients() )->toBe( 12 );
+
+	// The first DELETE bound the esc_like-escaped `_transient_` prefix (literal
+	// underscores, trailing %), confining the LIKE to the transient namespace.
+	expect( $queried[0] )->toContain( '\\_transient\\_%' );
+	expect( $queried )->toHaveCount( 4 );
 
 	unset( $GLOBALS['wpdb'] );
 } );

@@ -243,6 +243,17 @@ class PostReclassifier {
 				continue;
 			}
 
+			// R16 review: a `/biblioteek/` or `/opleiding/` flat post belongs to
+			// Story 16.6 (LibraryTrainingMigrator). Skip it here so the two commands
+			// are disjoint REGARDLESS of run order — otherwise whichever runs second
+			// re-records SOURCE_URL_META with the already-changed permalink and the
+			// 301 is silently lost. Library/training migration is the authoritative
+			// owner of the kept-prefix content.
+			if ( 'post' === $type && null !== LibraryTrainingMigrator::cptForPath( (string) ( $post->url ?? '' ) ) ) {
+				++$skipped;
+				continue;
+			}
+
 			$rename = self::renamedPostType( $type );
 
 			if ( null !== $rename ) {
@@ -340,6 +351,7 @@ class PostReclassifier {
 				'id'             => $id,
 				'post_type'      => (string) get_post_type( $id ),
 				'category_slugs' => $slugs,
+				'url'            => (string) get_permalink( $id ),
 			);
 		}
 
@@ -364,6 +376,13 @@ class PostReclassifier {
 	 * @param int $post_id The post id.
 	 */
 	protected function recordSourceUrl( int $post_id ): void {
+		// Write-once: never overwrite an already-recorded source permalink (R16
+		// review) — a `--force` re-run after a later slug edit, or a sibling
+		// migrator that already recorded it, must not clobber the original 301 source.
+		if ( '' !== (string) get_post_meta( $post_id, self::SOURCE_URL_META, true ) ) {
+			return;
+		}
+
 		$url = get_permalink( $post_id );
 
 		if ( is_string( $url ) && '' !== $url ) {

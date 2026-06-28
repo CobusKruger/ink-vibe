@@ -280,6 +280,12 @@ class LibraryTrainingMigrator {
 	 * @param int $post_id The post id.
 	 */
 	protected function recordSourceUrl( int $post_id ): void {
+		// Write-once (R16 review): never clobber an already-recorded source permalink
+		// (a `--force` re-run, or PostReclassifier having recorded it first).
+		if ( '' !== (string) get_post_meta( $post_id, PostReclassifier::SOURCE_URL_META, true ) ) {
+			return;
+		}
+
 		$url = get_permalink( $post_id );
 
 		if ( is_string( $url ) && '' !== $url ) {
