@@ -166,6 +166,9 @@ final class Terms {
 			'inkpols_lees_uitgawe'      => __( 'Lees die uitgawe', 'ink-core' ),
 			'borg'                      => __( 'Borg', 'ink-core' ),
 			'borg_plural'               => __( 'Borge', 'ink-core' ),
+			// Story 14.3/14.4: the sponsor-strip eyebrow + recognition-section title
+			// (glossary line 171 "Die borgskapsblad → Ons borge"; ui-copy line 103).
+			'borge_blad_titel'          => __( 'Ons borge', 'ink-core' ),
 
 			// Engagement — structured community responses (Story 7.4, glossary line 157).
 			'gemeenskapsreaksie'        => __( 'Gemeenskapsreaksie', 'ink-core' ),

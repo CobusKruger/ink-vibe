@@ -23,10 +23,10 @@ defined( 'ABSPATH' ) || exit;
  * were built over their Epic-2 CPTs.
  *
  * The module carries the read-model ({@see Sponsor}) + facade ({@see Api}) from
- * 14.1; the campaign-window scheduler/rotation lands in 14.2, the homepage strip
- * in 14.3, and the recognition section in 14.4 — those stories add the render
- * hooks here. Conflation-clean: reads only `Ink\Content` + `Ink\Kernel` + WP
- * core, never `Ink\Tiers`/`Ink\Entitlement`.
+ * 14.1, the campaign-window scheduler/rotation ({@see Campaign}) from 14.2, and the
+ * homepage sponsor strip ({@see HomepageStrip}) server block from 14.3; the
+ * recognition section lands in 14.4. Conflation-clean: reads only `Ink\Content` +
+ * `Ink\Kernel` + WP core, never `Ink\Tiers`/`Ink\Entitlement`.
  *
  * @package Ink\Core
  */
@@ -35,11 +35,11 @@ final class Module implements ModuleContract {
 	/**
 	 * Register this module's hooks.
 	 *
-	 * A deliberate no-op at 14.1 — the read-model ({@see Sponsor}) and facade
-	 * ({@see Api}) are stateless reads with nothing to hook. The homepage strip
-	 * (14.3) and recognition section (14.4) add render hooks here.
+	 * Registers the homepage sponsor-strip server block (14.3). The read-model
+	 * ({@see Sponsor}), facade ({@see Api}) and scheduler ({@see Campaign}) are
+	 * stateless reads consumed on demand — they have nothing to hook.
 	 */
 	public function register(): void {
-		// Read-model + facade only at 14.1; render hooks land in 14.3/14.4.
+		( new HomepageStrip() )->register();
 	}
 }
