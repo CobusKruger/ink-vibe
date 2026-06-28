@@ -58,6 +58,25 @@ test( 'label returns singular and plural CPT labels', function (): void {
 } );
 
 /**
+ * Story 14.3/14.4: the sponsor-strip eyebrow + recognition-section title resolve to
+ * the glossary-authored "Ons borge" (single-sourced for both surfaces).
+ */
+test( 'label returns the glossary-authored sponsor section title', function (): void {
+	expect( Terms::label( 'borge_blad_titel' ) )->toBe( 'Ons borge' );
+} );
+
+/**
+ * Story 14.4: the recognition-section heading, thank-you body and CTA resolve to the
+ * ui-copy-authored Afrikaans (verbatim, never re-translated).
+ */
+test( 'label returns the authored recognition-section copy', function (): void {
+	expect( Terms::label( 'borge_afdeling_titel' ) )->toBe( 'Moontlik gemaak deur' );
+	expect( Terms::label( 'word_borg' ) )->toBe( "Word 'n borg" );
+	expect( Terms::label( 'borge_beskrywing' ) )
+		->toBe( "As 'n niewinsgerigte organisasie steun ons op die gulhartigheid van ons borge om hierdie gemeenskap te laat floreer. Dankie dat jy in die krag van woorde glo." );
+} );
+
+/**
  * AC-1: taxonomy keys resolve to their UI-term labels.
  */
 test( 'label returns taxonomy labels', function (): void {

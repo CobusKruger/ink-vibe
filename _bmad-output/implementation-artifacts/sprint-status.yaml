@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-28  # epic-13 (InkPols) COMPLETE — 4/4 done, reviewed (R13), retro'd
+last_updated: 2026-06-28  # epic-14 (Sponsors) COMPLETE — 4/4 done, reviewed (R14), retro'd (6th formal retro)
 # epic-5 started 2026-06-25; 5-1 → review (create-story + dev-story, Gradering data-model: Tier enum default/isManualOnly/isAutoPromotable + Kernel-owned meta-key single source + typed default-safe Tiers\Api::forUser() closing the 2.3 deferral; tests 283 passed/1 skipped +13, cs/stan clean, deptrac no new edge, Entitlement⟂Tiers holds)
 # 5-3 → review (create-story + dev-story, built BEFORE 5.2 as the log substrate; ink_tier_history custom table — FIRST ink-core custom table — via Kernel Schema registry registered at include time for activation correctness; PromotionLog::record()/forUser() + PromotionLogEntry value object; first $wpdb unit-test pattern; tests 294 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
 # 5-2 → review (create-story + dev-story; Tiers\Api::promote() SOLE write path — meta + normalised promoted_at + PromotionLog append + FIRST ink-core do_action 'ink/tier_promoted' event seam for 5.10; MANAGE_TIERS-gated AdminProfile set/adjust user-profile UI (2nd sanctioned $_POST site); closed 3 Story-2.3 deferrals (MANAGE_TIERS grant verified, per-target scope decided = global editorial cap, promoted_at format normalised); Tiers module wired into bootstrap; tests 305 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
@@ -318,12 +318,12 @@ development_status:
   epic-13-retrospective: done
 
   # Epic 14: Sponsors (Borge)
-  epic-14: backlog
-  14-1-borg-cpt: backlog
-  14-2-scheduling-rotation-logic: backlog
-  14-3-homepage-sponsor-placement: backlog
-  14-4-sponsor-recognition-page: backlog
-  epic-14-retrospective: optional
+  epic-14: done
+  14-1-borg-cpt: done
+  14-2-scheduling-rotation-logic: done
+  14-3-homepage-sponsor-placement: done
+  14-4-sponsor-recognition-page: done
+  epic-14-retrospective: done
 
   # Epic 15: Organisation pages & contact
   epic-15: backlog

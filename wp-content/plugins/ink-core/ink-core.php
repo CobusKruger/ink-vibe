@@ -91,5 +91,6 @@ add_action(
 		Kernel\Plugin::instance()->addModule( 'training', new Training\Module() );
 		Kernel\Plugin::instance()->addModule( 'challenges', new Challenges\Module() );
 		Kernel\Plugin::instance()->addModule( 'inkpols', new InkPols\Module() );
+		Kernel\Plugin::instance()->addModule( 'sponsors', new Sponsors\Module() );
 	}
 );

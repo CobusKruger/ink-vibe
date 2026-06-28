@@ -132,7 +132,7 @@ class Migration {
 		// Afrikaans "Maand JJJJ": match each month as a WHOLE WORD (no substring
 		// false-positives), pick the one appearing FIRST in the string (not the
 		// first in declaration order), and require a PLAUSIBLE 4-digit year
-		// (19xx/20xx — so a volume/issue number is not misread as a year). (R13 review.)
+		// (19xx/20xx — so a volume/issue number is not misread as a year) (R13 review).
 		$best_pos = null;
 		$best_mm  = '';
 

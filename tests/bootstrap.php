@@ -78,3 +78,10 @@ if ( ! class_exists( 'WP_Term' ) ) {
 if ( ! class_exists( 'WP_Post' ) ) {
 	require_once __DIR__ . '/stubs/class-wp-post.php';
 }
+
+// Likewise a minimal WP_Query double: Story 14.2's Sponsors\Campaign::activeSponsors()
+// constructs `new WP_Query( … )` and iterates `$query->posts`, so the symbol must exist
+// for the thin WP wrapper (and the Api delegation through it) to be unit-exercised.
+if ( ! class_exists( 'WP_Query' ) ) {
+	require_once __DIR__ . '/stubs/class-wp-query.php';
+}

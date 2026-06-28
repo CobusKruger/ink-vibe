@@ -142,3 +142,97 @@ test( 'now prefers the WordPress current_datetime clock when WordPress is loaded
 
 	expect( Sast::now()->format( \DateTimeInterface::ATOM ) )->toBe( $wpNow->format( \DateTimeInterface::ATOM ) );
 } );
+
+// --- startOfDay (Story 14.2 — the inclusive lower bound, the mirror of endOfDay) ---
+
+/**
+ * Story 14.2: start of day is 00:00:00 SAST = 22:00:00 UTC the PREVIOUS day on the
+ * date's SAST calendar day. The exact mirror of endOfDay; assert both the SAST
+ * wall-clock and the underlying UTC instant so a regression to UTC-based maths is caught.
+ */
+test( 'startOfDay returns 00:00:00 SAST = 22:00:00 UTC (previous day) on the SAST calendar day', function (): void {
+	$date = new \DateTimeImmutable( '2026-06-22 09:00:00', new \DateTimeZone( 'Africa/Johannesburg' ) );
+
+	$sod = Sast::startOfDay( $date );
+
+	$sast = $sod->setTimezone( new \DateTimeZone( 'Africa/Johannesburg' ) );
+	expect( $sast->format( 'Y-m-d H:i:s' ) )->toBe( '2026-06-22 00:00:00' );
+
+	// 00:00:00 SAST is 22:00:00 UTC on the previous calendar day (UTC+2 offset).
+	$utc = $sod->setTimezone( new \DateTimeZone( 'UTC' ) );
+	expect( $utc->format( 'Y-m-d H:i:s' ) )->toBe( '2026-06-21 22:00:00' );
+} );
+
+/**
+ * Story 14.2: startOfDay resolves the calendar day in SAST, not UTC. An instant that
+ * is still the 21st in UTC but already the 22nd in SAST must yield the 22nd's
+ * start-of-day SAST (the +2 offset is load-bearing).
+ */
+test( 'startOfDay resolves the calendar day in SAST not UTC (offset is load-bearing)', function (): void {
+	// 2026-06-21 22:30:00 UTC == 2026-06-22 00:30:00 SAST.
+	$instant = new \DateTimeImmutable( '2026-06-21 22:30:00', new \DateTimeZone( 'UTC' ) );
+
+	$sod  = Sast::startOfDay( $instant );
+	$sast = $sod->setTimezone( new \DateTimeZone( 'Africa/Johannesburg' ) );
+
+	expect( $sast->format( 'Y-m-d H:i:s' ) )->toBe( '2026-06-22 00:00:00' );
+} );
+
+// --- isWithinDayRange (Story 14.2 — the two-sided inclusive campaign window) ---
+
+/**
+ * Story 14.2: inclusive at BOTH ends. The instant just before start-of-day is out;
+ * at the start boundary and at the end boundary it is in; just after end-of-day it is out.
+ */
+test( 'isWithinDayRange is inclusive at both the start and end SAST boundaries', function (): void {
+	$sast  = new \DateTimeZone( 'Africa/Johannesburg' );
+	$start = new \DateTimeImmutable( '2026-06-22 00:00:00', $sast );
+	$end   = new \DateTimeImmutable( '2026-06-25 00:00:00', $sast );
+
+	$beforeStart = new \DateTimeImmutable( '2026-06-21 23:59:59', $sast );
+	$atStart     = new \DateTimeImmutable( '2026-06-22 00:00:00', $sast );
+	$atEnd       = new \DateTimeImmutable( '2026-06-25 23:59:59', $sast );
+	$afterEnd    = new \DateTimeImmutable( '2026-06-26 00:00:00', $sast );
+
+	expect( Sast::isWithinDayRange( $start, $end, $beforeStart ) )->toBeFalse();
+	expect( Sast::isWithinDayRange( $start, $end, $atStart ) )->toBeTrue();
+	expect( Sast::isWithinDayRange( $start, $end, $atEnd ) )->toBeTrue();
+	expect( Sast::isWithinDayRange( $start, $end, $afterEnd ) )->toBeFalse();
+} );
+
+/**
+ * Story 14.2: a single-day campaign (start == end) is active for that whole SAST day
+ * (00:00:00 … 23:59:59) and out the day before/after.
+ */
+test( 'isWithinDayRange treats start==end as that single SAST day in full', function (): void {
+	$sast = new \DateTimeZone( 'Africa/Johannesburg' );
+	$day  = new \DateTimeImmutable( '2026-06-22 00:00:00', $sast );
+
+	expect( Sast::isWithinDayRange( $day, $day, new \DateTimeImmutable( '2026-06-22 00:00:00', $sast ) ) )->toBeTrue();
+	expect( Sast::isWithinDayRange( $day, $day, new \DateTimeImmutable( '2026-06-22 23:59:59', $sast ) ) )->toBeTrue();
+	expect( Sast::isWithinDayRange( $day, $day, new \DateTimeImmutable( '2026-06-21 23:59:59', $sast ) ) )->toBeFalse();
+	expect( Sast::isWithinDayRange( $day, $day, new \DateTimeImmutable( '2026-06-23 00:00:00', $sast ) ) )->toBeFalse();
+} );
+
+/**
+ * Story 14.2: a null bound is unbounded on that side — open-start (active up to the
+ * end), open-end (active from the start onward), and both-open (always active).
+ */
+test( 'isWithinDayRange treats a null bound as unbounded on that side', function (): void {
+	$sast = new \DateTimeZone( 'Africa/Johannesburg' );
+	$now  = new \DateTimeImmutable( '2026-06-22 12:00:00', $sast );
+
+	$past   = new \DateTimeImmutable( '2026-06-01 00:00:00', $sast );
+	$future = new \DateTimeImmutable( '2026-12-31 00:00:00', $sast );
+
+	// Open start, end in the future → in range.
+	expect( Sast::isWithinDayRange( null, $future, $now ) )->toBeTrue();
+	// Open start, end in the past → out.
+	expect( Sast::isWithinDayRange( null, $past, $now ) )->toBeFalse();
+	// Start in the past, open end → in range.
+	expect( Sast::isWithinDayRange( $past, null, $now ) )->toBeTrue();
+	// Start in the future, open end → out.
+	expect( Sast::isWithinDayRange( $future, null, $now ) )->toBeFalse();
+	// Both open → always in range (evergreen).
+	expect( Sast::isWithinDayRange( null, null, $now ) )->toBeTrue();
+} );
