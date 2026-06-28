@@ -203,6 +203,15 @@ deptrac:
             - Tiers
         Sponsors:
             - Kernel
+            # Story 14.1: the Sponsors read-model (Sponsor) + facade (Api) read the
+            # migration-load-bearing single sources `Ink\Content\PostTypes::BORG`
+            # (the sponsor CPT slug) and `Ink\Content\FieldSets` (the five sponsor
+            # meta-key constants — link/tier/start/end/placement). A real, non-circular
+            # cross-module dependency on the slug/meta registry — mirrors the
+            # InkPols->Content (13.1), Challenges->Content (12.1) and Library->Content
+            # (10.1) edges. No Entitlement/Tiers edge (managing/viewing a sponsor is
+            # editorial, never gated; conflation-clean).
+            - Content
         InkPols:
             - Kernel
             # Story 13.1: the InkPols read-model (Issue) + facade (Api) read the

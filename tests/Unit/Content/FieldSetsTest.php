@@ -211,3 +211,86 @@ test( 'save writes uitdaging meta when both edit_post and the per-CPT cap are he
 
 	unset( $_POST );
 } );
+
+/**
+ * Story 14.1 (deferred from Epic 2): the borg meta-box save path enforces the
+ * per-CPT editorial capability — a user with edit_post but WITHOUT
+ * ink_manage_sponsors cannot write borg meta via the meta box, closing the
+ * REST-vs-meta-box capability divergence (the REST auth_callback already gates on
+ * MANAGE_SPONSORS). Locks the generic 12.3 fix against a borg regression.
+ */
+test( 'save denies a borg meta write when the per-CPT cap (ink_manage_sponsors) is missing', function (): void {
+	$_POST = array(
+		'ink_content_fieldsets_nonce' => 'n',
+		'ink_borg_tier'               => 'Goud',
+	);
+	Functions\when( 'wp_unslash' )->returnArg( 1 );
+	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+	Functions\when( 'wp_verify_nonce' )->justReturn( true );
+	Functions\when( 'wp_is_post_autosave' )->justReturn( false );
+	Functions\when( 'wp_is_post_revision' )->justReturn( false );
+	// edit_post → true, but the editorial cap ink_manage_sponsors → false.
+	Functions\when( 'current_user_can' )->alias(
+		fn ( string $cap ): bool => 'edit_post' === $cap
+	);
+
+	Functions\expect( 'update_post_meta' )->never();
+
+	$post            = new \WP_Post();
+	$post->post_type = 'borg';
+	( new FieldSets() )->save( 42, $post );
+
+	expect( true )->toBeTrue();
+
+	unset( $_POST );
+} );
+
+/**
+ * Story 14.1: with BOTH edit_post and ink_manage_sponsors, the borg meta-box save
+ * writes — proving the denial above is non-vacuous (the write WOULD happen with
+ * the cap).
+ */
+test( 'save writes borg meta when both edit_post and ink_manage_sponsors are held', function (): void {
+	$_POST = array(
+		'ink_content_fieldsets_nonce' => 'n',
+		'ink_borg_tier'               => 'Goud',
+	);
+	Functions\when( 'wp_unslash' )->returnArg( 1 );
+	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+	Functions\when( 'wp_verify_nonce' )->justReturn( true );
+	Functions\when( 'wp_is_post_autosave' )->justReturn( false );
+	Functions\when( 'wp_is_post_revision' )->justReturn( false );
+	Functions\when( 'current_user_can' )->justReturn( true );
+
+	Functions\expect( 'update_post_meta' )->once()->with( 42, 'ink_borg_tier', 'Goud' );
+
+	$post            = new \WP_Post();
+	$post->post_type = 'borg';
+	( new FieldSets() )->save( 42, $post );
+
+	expect( true )->toBeTrue();
+
+	unset( $_POST );
+} );
+
+/**
+ * Story 14.1: the borg field-set is wired to the MANAGE_SPONSORS editorial cap
+ * (the single source the save path + REST auth_callback both read), and that cap
+ * is in the activation grant set — so the cap reconciliation is structurally
+ * closed, not just behaviourally.
+ */
+test( 'borg field-set uses the MANAGE_SPONSORS cap and it is in the activation grant set', function (): void {
+	$registered = ink_capture_registered_fields();
+
+	// Every captured borg field's auth_callback gates on ink_manage_sponsors:
+	// with the cap → writable, without → not. (auth_callback === current_user_can($cap).)
+	Functions\when( 'current_user_can' )->alias(
+		fn ( string $cap ): bool => \Ink\Kernel\Capabilities::MANAGE_SPONSORS === $cap
+	);
+	foreach ( array( 'ink_borg_link', 'ink_borg_tier', 'ink_borg_start_date', 'ink_borg_end_date', 'ink_borg_placement' ) as $key ) {
+		$auth = $registered[ "borg::{$key}" ]['args']['auth_callback'];
+		expect( $auth() )->toBeTrue();
+	}
+
+	expect( \Ink\Kernel\Capabilities::all() )->toContain( \Ink\Kernel\Capabilities::MANAGE_SPONSORS );
+} );
