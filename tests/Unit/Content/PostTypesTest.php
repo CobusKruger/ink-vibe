@@ -56,6 +56,7 @@ beforeEach( function (): void {
 	Monkey\setUp();
 	// gettext passthrough: the registry's Afrikaans source literal is returned.
 	Functions\when( '__' )->returnArg( 1 );
+	Functions\when( 'esc_html' )->returnArg( 1 );  // guard-message escaping (Story 17.4)
 } );
 
 afterEach( function (): void {
@@ -197,6 +198,32 @@ test( 'composed admin labels interpolate the registry noun', function (): void {
 	expect( $registered['gedig']['labels']['add_new_item'] )->toBe( 'Voeg nuwe Gedig by' );
 	expect( $registered['gedig']['labels']['edit_item'] )->toBe( 'Wysig Gedig' );
 	expect( $registered['storie']['labels']['search_items'] )->toBe( 'Soek Stories' );
+} );
+
+/**
+ * Story 17.4 (deferred Epic 2 review): the real CPT definitions all use registered
+ * terminology keys, so registering them must NOT trip the `Terms::has()` guard.
+ * Non-vacuous counterpart to the bad-key test below.
+ */
+test( 'registering the real CPTs never trips the unregistered-key guard', function (): void {
+	ink_reset_guard_spies();
+
+	ink_capture_registered_post_types();
+
+	expect( $GLOBALS['ink_test_doing_it_wrong'] )->toHaveCount( 0 );
+} );
+
+/**
+ * Story 17.4: a typo'd/unregistered concept key is caught by `_doing_it_wrong`
+ * (dev/CI), so it can never silently ship a raw machine key as a CPT label.
+ */
+test( 'an unregistered CPT label key trips _doing_it_wrong', function (): void {
+	ink_reset_guard_spies();
+
+	$assert = new \ReflectionMethod( PostTypes::class, 'assertTermKey' );
+	$assert->invoke( null, 'storie_plural_typo' );
+
+	expect( $GLOBALS['ink_test_doing_it_wrong'] )->toHaveCount( 1 );
 } );
 
 /**

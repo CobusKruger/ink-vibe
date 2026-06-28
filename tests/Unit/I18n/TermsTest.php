@@ -31,6 +31,7 @@ beforeEach( function (): void {
 	Monkey\setUp();
 	// gettext passthrough: the registry's Afrikaans source literal is returned.
 	Functions\when( '__' )->returnArg( 1 );
+	Functions\when( 'esc_html' )->returnArg( 1 );  // guard-message escaping (Story 17.4)
 } );
 
 afterEach( function (): void {
@@ -151,6 +152,32 @@ test( 'has reports whether a key is registered', function (): void {
  */
 test( 'label fails safe for an unknown key by returning the key', function (): void {
 	expect( Terms::label( 'no_such_concept' ) )->toBe( 'no_such_concept' );
+} );
+
+/**
+ * Story 17.4: calling `label()` before the `init` hook is a developer error (the
+ * text domain is not loaded yet; WP 6.7+ trips `_doing_it_wrong` for early
+ * translation). The guard surfaces it — but never fatals, and still returns the
+ * label (here, the source literal under the `__()` passthrough).
+ */
+test( 'label warns when called before init', function (): void {
+	ink_reset_guard_spies();
+	$GLOBALS['ink_test_fired_hooks']['init'] = 0;  // init has NOT fired
+
+	expect( Terms::label( 'membership' ) )->toBe( 'Lidmaatskap' );  // still returns the label, no fatal
+	expect( $GLOBALS['ink_test_doing_it_wrong'] )->toHaveCount( 1 );
+
+	ink_reset_guard_spies();
+} );
+
+/**
+ * Non-vacuous counterpart: once `init` has fired, the guard is silent.
+ */
+test( 'label does NOT warn once init has fired', function (): void {
+	ink_reset_guard_spies();  // default: init fired
+
+	expect( Terms::label( 'membership' ) )->toBe( 'Lidmaatskap' );
+	expect( $GLOBALS['ink_test_doing_it_wrong'] )->toHaveCount( 0 );
 } );
 
 /**

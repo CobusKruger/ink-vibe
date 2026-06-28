@@ -60,6 +60,7 @@ beforeEach( function (): void {
 	Monkey\setUp();
 	// gettext passthrough: the registry's Afrikaans source literal is returned.
 	Functions\when( '__' )->returnArg( 1 );
+	Functions\when( 'esc_html' )->returnArg( 1 );  // guard-message escaping (Story 17.4)
 } );
 
 afterEach( function (): void {
@@ -194,6 +195,31 @@ test( 'composed admin labels interpolate the registry noun', function (): void {
 	expect( $registered['genre']['args']['labels']['add_new_item'] )->toBe( 'Voeg nuwe Genre by' );
 	expect( $registered['genre']['args']['labels']['search_items'] )->toBe( 'Soek Genres' );
 	expect( $registered['vaardigheid']['args']['labels']['edit_item'] )->toBe( 'Wysig Vaardigheidsarea' );
+} );
+
+/**
+ * Story 17.4 (deferred Epic 2 review): the real taxonomy definitions all use
+ * registered terminology keys, so registering them must NOT trip the guard.
+ */
+test( 'registering the real taxonomies never trips the unregistered-key guard', function (): void {
+	ink_reset_guard_spies();
+
+	ink_capture_registered_taxonomies();
+
+	expect( $GLOBALS['ink_test_doing_it_wrong'] )->toHaveCount( 0 );
+} );
+
+/**
+ * Story 17.4: a typo'd/unregistered taxonomy concept key is caught by
+ * `_doing_it_wrong`, never silently shipping a raw machine key as a label.
+ */
+test( 'an unregistered taxonomy label key trips _doing_it_wrong', function (): void {
+	ink_reset_guard_spies();
+
+	$assert = new \ReflectionMethod( Taxonomies::class, 'assertTermKey' );
+	$assert->invoke( null, 'genre_plural_typo' );
+
+	expect( $GLOBALS['ink_test_doing_it_wrong'] )->toHaveCount( 1 );
 } );
 
 /**

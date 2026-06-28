@@ -83,6 +83,44 @@ plugins active and migrated data:
 - `Ink\I18n\Terms` — single-source Afrikaans UI-label registry (`TermsTest`, 11
   tests) — keeps INK-owned custom strings out of the leak surface entirely.
 
+## Standing English-leak gate (NFR-1, Story 17.4)
+
+Gate D requires a **standing** (re-running) automated check that no English reaches
+the front end — not a one-time build check. It has two layers:
+
+### Layer 1 — static subset (runs in CI today)
+- `composer copy:scan` (`tools/leak-scan/scan-placeholders.php`, CI `quality` job) —
+  a ratchet over `placeholder-baseline.json` that FAILS on any *new* unauthored-copy
+  placeholder in live code. Launch target: baseline empty.
+- **Registry-label robustness (Story 17.4 — folded in):** a missing/typo'd
+  terminology concept key can no longer silently ship a raw machine key (e.g.
+  `genre_plural`) or a blank as a label. The CPT registrar (`PostTypes`), taxonomy
+  registrar (`Taxonomies`), and the `ink/term` Block Bindings (`Bindings::resolve`)
+  assert `Terms::has()` and surface a misconfiguration via `_doing_it_wrong` in
+  dev/CI; `Bindings::resolve` renders **nothing** (never the raw key) for a bad
+  binding; `Terms::label()` warns if called before `init`. These guards are the
+  source-level catch for raw-key/blank-label leaks; unit tests prove each.
+
+### Layer 2 — live page-crawl + `wp i18n` counts (CI + cron standing gate)
+Needs a running site, so it is owned by the staging/CI buildout (**Story 18.8 owns
+CI wiring**), run on a schedule and after ungated core/plugin updates:
+- **Crawl key front-end pages** — home, lidmaatskap, a `gedig`/`storie`/`artikel`
+  single, skrywerprofiel, my-profiel, uitdagings, biblioteek, opleiding, inkpols,
+  oor-ink, kontak, auth flows, cart/checkout — and assert no English word reaches a
+  visitor (against the defined allowlist of proper nouns / brand terms / unavoidable
+  technical tokens).
+- **`wp i18n make-pot` + untranslated-count scan** over the surviving plugins'
+  domains to catch strings with no committed Afrikaans `.po/.mo`.
+- **Scope = the §12 leak vectors above**, including the **12A.0 form-letter store**
+  (the randomized post-receipt / R7 message variants — each human-authored), and the
+  surviving-plugin transactional emails.
+- **Admin stays English (§14.14)** — the crawl asserts the front end is Afrikaans;
+  the wp-admin chrome is intentionally English and is NOT a leak (the `ink-core`
+  admin labels are Afrikaans-source via the registry).
+- **Re-runs after ungated updates** — minor/security/host-forced plugin or core
+  updates that bypass staging are caught here; new English strings are then authored
+  on staging, committed, and redeployed.
+
 ## Status — pre-launch staging + human gate
 
 The `.po/.mo/.json` **content** is the irreducible deliverable that cannot be

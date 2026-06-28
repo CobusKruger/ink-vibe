@@ -205,6 +205,9 @@ final class Taxonomies {
 	 * @return array<string, string>
 	 */
 	private static function labels( string $singularKey, string $pluralKey ): array {
+		self::assertTermKey( $singularKey );
+		self::assertTermKey( $pluralKey );
+
 		$singular = Terms::label( $singularKey );
 		$plural   = Terms::label( $pluralKey );
 
@@ -243,6 +246,28 @@ final class Taxonomies {
 			'add_or_remove_items'        => sprintf( __( 'Voeg %s by of verwyder', 'ink-core' ), $plural ),
 			/* translators: %s: the plural taxonomy label. */
 			'choose_from_most_used'      => sprintf( __( 'Kies uit die mees gebruikte %s', 'ink-core' ), $plural ),
+		);
+	}
+
+	/**
+	 * Assert a taxonomy-label concept key is registered before it is composed into
+	 * labels (Story 17.4 — deferred Epic 2 review). Mirrors
+	 * {@see PostTypes::assertTermKey()}: a missing/typo'd key would otherwise let
+	 * `Terms::label()` fail safe to the raw machine key (e.g. `genre_plural`) and
+	 * ship it as a visible taxonomy label. Surfaces the error in dev/CI via
+	 * `_doing_it_wrong`; production stays fail-safe with the leak scan as backstop.
+	 *
+	 * @param string $key Terminology concept key.
+	 */
+	private static function assertTermKey( string $key ): void {
+		if ( Terms::has( $key ) ) {
+			return;
+		}
+
+		_doing_it_wrong(
+			__METHOD__,
+			sprintf( 'Taxonomy label uses unregistered terminology key "%s" — fix the definition or add the glossary term.', esc_html( $key ) ),
+			'ink-core 17.4'
 		);
 	}
 }

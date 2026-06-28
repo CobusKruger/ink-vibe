@@ -356,7 +356,7 @@ development_status:
   17-1-apply-approved-ui-copy: review
   17-2-residual-plugin-afrikaans-pass: review
   17-3-terminology-reconciliation-reopened-by-g1: review
-  17-4-no-english-leakage-qa-gate: backlog
+  17-4-no-english-leakage-qa-gate: review
   epic-17-retrospective: optional
 
   # Epic 18: SEO, security & performance
