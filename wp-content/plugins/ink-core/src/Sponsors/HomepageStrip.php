@@ -90,42 +90,19 @@ final class HomepageStrip {
 		}
 
 		$label = Terms::label( 'borge_blad_titel' );
-		$logo  = $sponsor->logoUrl( 'medium' );
 
-		// The visible content: the logo when present, else the sponsor name as text.
-		$inner = '' !== $logo
-			? '<img class="ink-borg-strook__logo" src="' . esc_url( $logo ) . '" alt="' . esc_attr( $sponsor->name ) . '" />'
-			: '<span class="ink-borg-strook__naam">' . esc_html( $sponsor->name ) . '</span>';
-
-		// The link target: external link first, then the sponsor's own permalink.
-		$href = '' !== $sponsor->link ? $sponsor->link : self::permalink( $sponsor->postId );
-
-		if ( '' !== $sponsor->link ) {
-			$inner = '<a class="ink-borg-strook__skakel" href="' . esc_url( $href )
-				. '" target="_blank" rel="noopener sponsored">' . $inner . '</a>';
-		} elseif ( '' !== $href ) {
-			$inner = '<a class="ink-borg-strook__skakel" href="' . esc_url( $href ) . '">' . $inner . '</a>';
-		}
+		// The linked logo/name is the shared 14.4 SponsorLink piece (single source for
+		// the link-target decision); this surface keeps its own BEM namespace.
+		$inner = SponsorLink::html(
+			$sponsor,
+			'ink-borg-strook__logo',
+			'ink-borg-strook__naam',
+			'ink-borg-strook__skakel'
+		);
 
 		return '<aside class="ink-borg-strook" aria-label="' . esc_attr( $label ) . '">'
 			. '<p class="ink-borg-strook__etiket">' . esc_html( $label ) . '</p>'
 			. $inner
 			. '</aside>';
-	}
-
-	/**
-	 * The sponsor's own permalink, or '' when unavailable. Guarded for the unit suite.
-	 *
-	 * @param int $post_id The sponsor post id.
-	 * @return string
-	 */
-	private static function permalink( int $post_id ): string {
-		if ( $post_id <= 0 || ! function_exists( 'get_permalink' ) ) {
-			return '';
-		}
-
-		$url = get_permalink( $post_id );
-
-		return is_string( $url ) ? $url : '';
 	}
 }

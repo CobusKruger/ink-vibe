@@ -23,10 +23,10 @@ defined( 'ABSPATH' ) || exit;
  * were built over their Epic-2 CPTs.
  *
  * The module carries the read-model ({@see Sponsor}) + facade ({@see Api}) from
- * 14.1, the campaign-window scheduler/rotation ({@see Campaign}) from 14.2, and the
- * homepage sponsor strip ({@see HomepageStrip}) server block from 14.3; the
- * recognition section lands in 14.4. Conflation-clean: reads only `Ink\Content` +
- * `Ink\Kernel` + WP core, never `Ink\Tiers`/`Ink\Entitlement`.
+ * 14.1, the campaign-window scheduler/rotation ({@see Campaign}) from 14.2, the
+ * homepage sponsor strip ({@see HomepageStrip}) from 14.3, and the Oor INK sponsor
+ * recognition section ({@see RecognitionSection}) from 14.4. Conflation-clean: reads
+ * only `Ink\Content` + `Ink\Kernel` + WP core, never `Ink\Tiers`/`Ink\Entitlement`.
  *
  * @package Ink\Core
  */
@@ -35,11 +35,12 @@ final class Module implements ModuleContract {
 	/**
 	 * Register this module's hooks.
 	 *
-	 * Registers the homepage sponsor-strip server block (14.3). The read-model
-	 * ({@see Sponsor}), facade ({@see Api}) and scheduler ({@see Campaign}) are
-	 * stateless reads consumed on demand — they have nothing to hook.
+	 * Registers the homepage sponsor-strip (14.3) + Oor INK recognition-section (14.4)
+	 * server blocks. The read-model ({@see Sponsor}), facade ({@see Api}) and scheduler
+	 * ({@see Campaign}) are stateless reads consumed on demand — nothing to hook.
 	 */
 	public function register(): void {
 		( new HomepageStrip() )->register();
+		( new RecognitionSection() )->register();
 	}
 }
