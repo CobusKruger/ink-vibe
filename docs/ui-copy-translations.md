@@ -30,7 +30,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| A sanctuary for writers and readers, fostering meaningful literary connections since 2018. | 'n Tuiste vir skrywers en lesers, wat sinvolle literêre bande smee sedert 2018. | Stigtingsjaar (2018) word nog met die stigter bevestig — nie 'n blokkeerder nie; behou 2018 voorlopig |
+| A sanctuary for writers and readers, fostering meaningful literary connections since 2018. | 'n Tuiste vir skrywers en lesers, wat sinvolle literêre bande smee sedert 2018. | Stigtingsjaar 2018 is toegepas (Storie 17.1) in `oor-ink.php` + voettekst; nog met die stigter te bevestig — 'n latere eenreël-redigering, nie 'n blokkeerder nie |
 | **Explore** | **Ontdek** | Voettekstkopie |
 | Latest Stories | Jongste bydraes | |
 | Poetry Collection | Gedigversameling | |

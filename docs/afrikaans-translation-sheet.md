@@ -53,7 +53,7 @@ AF: Nee. Lidmaatskap hernieu nie outomaties nie. Ons sal jou laat weet 'n week v
 
 LID-FAQ-A3
 EN: You pay securely with PayFast, in South African rand.
-AF: Betaling word veiling hanteer deur PayFast. Ons sien nooit jou kaartbesonderhede nie.
+AF: Betaling word veilig hanteer deur PayFast. Ons sien nooit jou kaartbesonderhede nie.
 
 LID-CTA
 EN: Choose a plan above to start your membership.
@@ -97,7 +97,7 @@ AF: Jou lidmaatskap is nou aktief
 
 EMAIL-ACTIVATE-BODY
 EN: Hello {skrywer}, your membership is now active. Thank you for supporting INK.
-AF: Hallo {skrywer}! You lidmaatskap is nou aktief. Dankie dat jy vir INK ondersteun.
+AF: Hallo {skrywer}! Jou lidmaatskap is nou aktief. Dankie dat jy vir INK ondersteun.
 
 EMAIL-1MONTH-SUBJECT
 EN: Your membership expires soon
