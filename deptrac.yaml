@@ -264,3 +264,10 @@ deptrac:
             # mirrors the Submission/Discovery/Library/Challenges -> Content edges.
             # No Entitlement/Tiers gate (reclassification is structural).
             - Content
+            # Story 16.9: the BuddyPress friendship → follow transform writes the
+            # asymmetric follow graph through the canonical `Ink\Social\FollowStore`
+            # (follow is custom in ink-core; BP Friend Connections are OFF). A real,
+            # non-circular cross-module dependency on the follow store — Social
+            # depends only on Kernel/Content/Tiers, never back on Migration. No
+            # Entitlement/Tiers gate (the social graph is open).
+            - Social
