@@ -17,9 +17,10 @@ defined( 'ABSPATH' ) || exit;
  * Migration module — the once-off brownfield migration toolkit (Epic 16).
  *
  * Houses the scripted, ordered migration commands that move the cloned INK site
- * onto the new model: DB sanitise ({@see DbSanitiser}, 16.1) and — as the epic
- * progresses — user/role reassignment, tier CSV import, post reclassification,
- * redirect generation, and the remaining migration steps. Every command is a
+ * onto the new model: DB sanitise ({@see DbSanitiser}, 16.1), user role
+ * reassignment ({@see UserReclassifier}, 16.2) and — as the epic progresses —
+ * tier CSV import, post reclassification, redirect generation, and the remaining
+ * migration steps. Every command is a
  * once-off, idempotent, **WP-CLI-only** operation (never a web request), the
  * shape established by `Ink\Challenges\Migration` / `Ink\InkPols\Migration`.
  *
@@ -39,5 +40,6 @@ final class Module implements ModuleContract {
 	 */
 	public function register(): void {
 		( new DbSanitiser() )->register();
+		( new UserReclassifier() )->register();
 	}
 }
