@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-28  # epic-14 (Sponsors) COMPLETE — 4/4 done, reviewed (R14), retro'd (6th formal retro)
+last_updated: 2026-06-28  # epic-15 (Org pages) COMPLETE — 6/6 done, reviewed (R15, 0 HIGH), retro'd (7th formal retro)
 # epic-5 started 2026-06-25; 5-1 → review (create-story + dev-story, Gradering data-model: Tier enum default/isManualOnly/isAutoPromotable + Kernel-owned meta-key single source + typed default-safe Tiers\Api::forUser() closing the 2.3 deferral; tests 283 passed/1 skipped +13, cs/stan clean, deptrac no new edge, Entitlement⟂Tiers holds)
 # 5-3 → review (create-story + dev-story, built BEFORE 5.2 as the log substrate; ink_tier_history custom table — FIRST ink-core custom table — via Kernel Schema registry registered at include time for activation correctness; PromotionLog::record()/forUser() + PromotionLogEntry value object; first $wpdb unit-test pattern; tests 294 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
 # 5-2 → review (create-story + dev-story; Tiers\Api::promote() SOLE write path — meta + normalised promoted_at + PromotionLog append + FIRST ink-core do_action 'ink/tier_promoted' event seam for 5.10; MANAGE_TIERS-gated AdminProfile set/adjust user-profile UI (2nd sanctioned $_POST site); closed 3 Story-2.3 deferrals (MANAGE_TIERS grant verified, per-target scope decided = global editorial cap, promoted_at format normalised); Tiers module wired into bootstrap; tests 305 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
@@ -326,14 +326,14 @@ development_status:
   epic-14-retrospective: done
 
   # Epic 15: Organisation pages & contact
-  epic-15: backlog
-  15-1-tuisblad: backlog
-  15-2-gemeenskap-page: backlog
-  15-3-oor-ink: backlog
-  15-4-kontak: backlog
-  15-5-footer-social-links: backlog
-  15-6-winners-post-featured-slot-featured-feed-ordering-r2: backlog
-  epic-15-retrospective: optional
+  epic-15: in-progress
+  15-1-tuisblad: done
+  15-2-gemeenskap-page: done
+  15-3-oor-ink: done
+  15-4-kontak: done
+  15-5-footer-social-links: done
+  15-6-winners-post-featured-slot-featured-feed-ordering-r2: done
+  epic-15-retrospective: done
 
   # Epic 16: Migration & redirects
   epic-16: backlog

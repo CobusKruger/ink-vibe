@@ -69,6 +69,25 @@
 		</div>
 		<!-- /wp:columns -->
 
+		<!-- wp:group {"style":{"spacing":{"margin":{"top":"var:preset|spacing|s-24"},"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--s-24)">
+			<!-- wp:heading {"level":3,"fontSize":"lg"} -->
+			<h3 class="wp-block-heading has-lg-font-size">Volg ons</h3>
+			<!-- /wp:heading -->
+
+			<!-- Theme-native social links (WordPress core social-links block) — the sanctioned replacement for the retired social-icon plugin. URLs are org-detail placeholders the owner sets pre-launch. -->
+			<!-- wp:social-links {"className":"is-style-logos-only"} -->
+			<ul class="wp-block-social-links is-style-logos-only">
+				<!-- wp:social-link {"url":"#","service":"facebook"} /-->
+
+				<!-- wp:social-link {"url":"#","service":"instagram"} /-->
+
+				<!-- wp:social-link {"url":"#","service":"x"} /-->
+			</ul>
+			<!-- /wp:social-links -->
+		</div>
+		<!-- /wp:group -->
+
 		<!-- wp:group {"style":{"spacing":{"margin":{"top":"var:preset|spacing|s-24"}}},"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
 		<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--s-24)">
 			<!-- wp:paragraph {"fontSize":"sm"} -->

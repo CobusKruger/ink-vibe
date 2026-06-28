@@ -173,6 +173,15 @@ Die reël is eenvoudig: **kies een term per konsep en hou by daardie term.**
 
 ---
 
+### Webwerf-chroom (voettekst)
+
+| Konsep | UI-term (Afrikaans) | Kode-ID / sleutel | Notas |
+|---|---|---|---|
+| Die voettekst | **voettekst** | — | Die voetstuk van die webwerf (`footer-main`-patroon). |
+| Skakels na INK se sosiale media | **Sosiale skakels** | — | Afdelingkop in die voettekst: "Volg ons". Gebruik die WP-kern `social-links`-blok (nie 'n inprop nie). Die platform-URL's is organisasie-besonderhede wat die eienaar voor bekendstelling stel. |
+
+---
+
 ## Deel 2: UI-aksietale
 
 Hierdie woorde en frases verskyn as knoppies, skakels en toestandsboodskappe. Gebruik hulle konsekwent.
