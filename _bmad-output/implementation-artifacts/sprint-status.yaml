@@ -349,7 +349,7 @@ development_status:
   16-10-media-verification: done
   16-11-options-carry-forward-selective: done
   16-12-wpbakery-shortcode-cleanup: done
-  epic-16-retrospective: optional
+  epic-16-retrospective: done
 
   # Epic 17: Afrikaans-first & localisation (execution + QA)
   epic-17: backlog
