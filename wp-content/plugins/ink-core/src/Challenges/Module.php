@@ -39,5 +39,6 @@ final class Module implements ModuleContract {
 		( new Entry() )->register();
 		( new PromotionHistory() )->register();
 		( new Migration() )->register();
+		( new FeaturedWinners() )->register();
 	}
 }
