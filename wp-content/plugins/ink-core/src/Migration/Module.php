@@ -18,9 +18,9 @@ defined( 'ABSPATH' ) || exit;
  *
  * Houses the scripted, ordered migration commands that move the cloned INK site
  * onto the new model: DB sanitise ({@see DbSanitiser}, 16.1), user role
- * reassignment ({@see UserReclassifier}, 16.2) and — as the epic progresses —
- * tier CSV import, post reclassification, redirect generation, and the remaining
- * migration steps. Every command is a
+ * reassignment ({@see UserReclassifier}, 16.2), writer-tier CSV import
+ * ({@see TierImport}, 16.3) and — as the epic progresses — post reclassification,
+ * redirect generation, and the remaining migration steps. Every command is a
  * once-off, idempotent, **WP-CLI-only** operation (never a web request), the
  * shape established by `Ink\Challenges\Migration` / `Ink\InkPols\Migration`.
  *
@@ -41,5 +41,6 @@ final class Module implements ModuleContract {
 	public function register(): void {
 		( new DbSanitiser() )->register();
 		( new UserReclassifier() )->register();
+		( new TierImport() )->register();
 	}
 }

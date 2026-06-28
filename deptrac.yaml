@@ -250,3 +250,10 @@ deptrac:
             # "extend a module's allowlist as real usage appears" path. No
             # Entitlement<->Tiers coupling is ever introduced here.
             - Kernel
+            # Story 16.3: the tier CSV import writes each writer's baseline grade
+            # through `Ink\Tiers\Api::importBaselineGrade()` — the sanctioned,
+            # Tiers-owned tier-write path (THE conflation guardrail keeps tier
+            # writes inside Ink\Tiers). A real, non-circular cross-module Api-facade
+            # dependency; Tiers depends only on Kernel/Notifications, never back on
+            # Migration. NO Entitlement edge (tier != subscription).
+            - Tiers

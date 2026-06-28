@@ -86,3 +86,27 @@ test( 'forUser() reads the single ink_writer_tier meta by user id', function ():
 
 	expect( Api::forUser( 7 ) )->toBe( Tier::Goud );
 } );
+
+/**
+ * Story 16.3: the migration baseline-set writes ONLY the grade meta — no
+ * promoted_at, no win-count reset, no audit log, no event (a baseline is not a
+ * promotion). The sanctioned Tiers-owned tier-write the CSV import routes through.
+ */
+test( 'importBaselineGrade writes only the grade meta (no promoted_at/win-count/log/event)', function (): void {
+	Functions\expect( 'update_user_meta' )
+		->once()
+		->with( 55, Tier::META_KEY, 'silwer' );
+
+	// Exactly one meta write — promoted_at + win-count are NEVER touched.
+	Functions\expect( 'update_user_meta' )
+		->never()
+		->with( 55, Tier::PROMOTED_AT_META_KEY, \Mockery::any() );
+	Functions\expect( 'update_user_meta' )
+		->never()
+		->with( 55, Tier::WIN_COUNT_META_KEY, \Mockery::any() );
+
+	Api::importBaselineGrade( 55, Tier::Silwer );
+
+	// No promotion event fired (a migration baseline is not an achievement).
+	expect( Monkey\Actions\did( 'ink/tier_promoted' ) )->toBe( 0 );
+} );
