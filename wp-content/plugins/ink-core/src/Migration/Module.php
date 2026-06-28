@@ -23,8 +23,9 @@ defined( 'ABSPATH' ) || exit;
  * ({@see SubscriptionVerifier}, 16.4), post → CPT reclassification
  * ({@see PostReclassifier}, 16.5), library/training sub-path migration
  * ({@see LibraryTrainingMigrator}, 16.6), 301 redirect generation + serving
- * ({@see RedirectGenerator}, 16.7) and — as the epic progresses — the remaining
- * migration steps.
+ * ({@see RedirectGenerator}, 16.7), fresh navigation rebuild
+ * ({@see NavigationRebuilder}, 16.8) and — as the epic progresses — the
+ * remaining migration steps.
  * The migration *commands* are **WP-CLI-only** (never a web request): the
  * mutating ones once-off + idempotent (the `Ink\Challenges\Migration` /
  * `Ink\InkPols\Migration` shape), the verification ones read-only and naturally
@@ -54,5 +55,6 @@ final class Module implements ModuleContract {
 		( new PostReclassifier() )->register();
 		( new LibraryTrainingMigrator() )->register();
 		( new RedirectGenerator() )->register();
+		( new NavigationRebuilder() )->register();
 	}
 }
