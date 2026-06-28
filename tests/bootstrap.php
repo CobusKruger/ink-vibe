@@ -74,7 +74,11 @@ if ( ! function_exists( 'did_action' ) ) {
 	 * @param string $hook_name Hook name.
 	 */
 	function did_action( string $hook_name ): int {
-		return (int) ( $GLOBALS['ink_test_fired_hooks'][ $hook_name ] ?? 1 );
+		// Unseeded hooks default to NOT fired (R17 review): only hooks explicitly
+		// seeded in $GLOBALS['ink_test_fired_hooks'] report as fired, so a future
+		// guard that checks a different hook can't pass spuriously. `init` is seeded
+		// to 1 by ink_reset_guard_spies(), so the before-`init` guard stays silent.
+		return (int) ( $GLOBALS['ink_test_fired_hooks'][ $hook_name ] ?? 0 );
 	}
 }
 

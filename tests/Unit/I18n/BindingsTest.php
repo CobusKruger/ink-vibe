@@ -25,6 +25,7 @@ beforeEach( function (): void {
 	Monkey\setUp();
 	Functions\when( '__' )->returnArg( 1 );
 	Functions\when( 'esc_html' )->returnArg( 1 );  // guard-message escaping (Story 17.4)
+	ink_reset_guard_spies();                       // clean guard-spy state each test (R17)
 } );
 
 afterEach( function (): void {

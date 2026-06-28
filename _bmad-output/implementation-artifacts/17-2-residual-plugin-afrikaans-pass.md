@@ -4,7 +4,7 @@ baseline_commit: f5d3d39
 
 # Story 17.2: Residual plugin Afrikaans pass
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

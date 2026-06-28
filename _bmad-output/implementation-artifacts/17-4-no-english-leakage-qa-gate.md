@@ -4,7 +4,7 @@ baseline_commit: 4f41edb
 
 # Story 17.4: No-English-leakage QA gate
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -85,6 +85,15 @@ so that no English reaches the front end. (NFR-1)
 - [Source: wp-content/plugins/ink-core/src/Content/Taxonomies.php:207] (taxonomy labels)
 - [Source: tools/leak-scan/scan-placeholders.php] (static subset — keep)
 - [Source: docs/i18n-leak-vectors.md] (17.2 — extend with the standing-gate runbook)
+
+### Review Findings (R17, 2026-06-28)
+
+Epic 17 code review (Blind Hunter + Edge Case Hunter + Acceptance Auditor). **Zero HIGH, zero correctness defects; all ACs satisfied.** Two test-harness robustness patches (applied):
+
+- [x] [Review][Patch] Reset guard spies in `beforeEach`, not via trailing in-test reset [tests/Unit/I18n/TermsTest.php, BindingsTest.php, Content/PostTypesTest.php, Content/TaxonomiesTest.php] — a before-init test that fails before its trailing `ink_reset_guard_spies()` would leak `init=0` into the shared process. Fixed: each guard-test file resets in `beforeEach` for a guaranteed clean start.
+- [x] [Review][Patch] `did_action` double defaults unseeded hooks to NOT fired [tests/bootstrap.php] — changed `?? 1` → `?? 0` so only explicitly-seeded hooks report fired (`init` is seeded to 1 by `ink_reset_guard_spies()`); a future wrong-hook refactor can no longer pass spuriously.
+
+Dismissed (5): guards confirmed correct + tests non-vacuous (Blind Hunter); `oor-ink.php` inert literal markup; before-init contract safe; `oor-ink.php` literal prose vs gettext is within-AC by Story 15.3 convention; `.claude/settings*.json` permission churn is harmless harness config (noted, not Epic 17 logic).
 
 ## Dev Agent Record
 

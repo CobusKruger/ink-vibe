@@ -4,7 +4,7 @@ baseline_commit: 6e8b837
 
 # Story 17.1: Apply approved UI copy
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

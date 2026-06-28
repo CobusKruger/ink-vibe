@@ -4,7 +4,7 @@ baseline_commit: de2ee63
 
 # Story 17.3: Terminology reconciliation (reopened by G1)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
