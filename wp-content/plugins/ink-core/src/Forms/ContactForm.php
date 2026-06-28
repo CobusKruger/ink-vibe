@@ -71,9 +71,10 @@ final class ContactForm {
 	/**
 	 * The query-arg notice slug used to message the visitor after a round-trip.
 	 */
-	public const NOTICE_ARG     = 'ink_kontak';
-	public const NOTICE_SENT    = 'gestuur';
-	public const NOTICE_INVALID = 'fout';
+	public const NOTICE_ARG       = 'ink_kontak';
+	public const NOTICE_SENT      = 'gestuur';
+	public const NOTICE_INVALID   = 'fout';
+	public const NOTICE_SEND_FAIL = 'stuur-fout';
 
 	/**
 	 * Register the Kontak hooks. Invoked once from {@see Module::register()}.
@@ -142,6 +143,9 @@ final class ContactForm {
 		} elseif ( self::NOTICE_INVALID === $notice ) {
 			$html .= '<p class="ink-kontak-vorm__notice ink-kontak-vorm__notice--fout" role="alert">'
 				. esc_html__( 'Maak seker jou naam, e-pos en boodskap is ingevul.', 'ink-core' ) . '</p>';
+		} elseif ( self::NOTICE_SEND_FAIL === $notice ) {
+			$html .= '<p class="ink-kontak-vorm__notice ink-kontak-vorm__notice--fout" role="alert">'
+				. esc_html__( 'Ons kon nie jou boodskap stuur nie. Probeer asseblief weer.', 'ink-core' ) . '</p>';
 		}
 
 		$html .= $nonce_field
@@ -254,9 +258,13 @@ final class ContactForm {
 			return;
 		}
 
-		$this->send( $name, $email, $subject, $message );
+		// Report the truth: only claim "gestuur" when the message was actually
+		// accepted for delivery. A disabled toggle, an empty admin_email, or a
+		// wp_mail transport failure must NOT show success (the message would be
+		// silently lost). The honeypot path above is the deliberate exception.
+		$sent = $this->send( $name, $email, $subject, $message );
 
-		$this->redirect( $this->formUrl( self::NOTICE_SENT ) );
+		$this->redirect( $this->formUrl( $sent ? self::NOTICE_SENT : self::NOTICE_SEND_FAIL ) );
 	}
 
 	/**
@@ -284,9 +292,13 @@ final class ContactForm {
 			return false;
 		}
 
-		$line   = '' === trim( $subject ) ? __( 'Kontakboodskap van INK', 'ink-core' ) : $subject;
-		$body   = $name . ' <' . $email . '>' . "\n\n" . $message;
-		$header = 'Reply-To: ' . $name . ' <' . $email . '>';
+		$line = '' === trim( $subject ) ? __( 'Kontakboodskap van INK', 'ink-core' ) : $subject;
+		$body = $name . ' <' . $email . '>' . "\n\n" . $message;
+
+		// RFC 5322 quoted display-name: the sanitisers already strip CR/LF (no header
+		// injection), but a name with commas / angle brackets / quotes would otherwise
+		// form a malformed Reply-To. Quote it and strip any residual double-quotes.
+		$header = 'Reply-To: "' . str_replace( '"', '', $name ) . '" <' . $email . '>';
 
 		return (bool) wp_mail( $recipient, $line, $body, array( $header ) );
 	}

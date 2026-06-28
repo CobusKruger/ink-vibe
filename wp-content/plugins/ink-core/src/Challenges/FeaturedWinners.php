@@ -123,7 +123,23 @@ final class FeaturedWinners {
 			}
 		);
 
-		return $rows;
+		// Collapse to one entry per rank — a defensive guard so a dirty payload (two
+		// rank-1s) can never surface two "algehele wenners" in the slot; the lowest-id
+		// placement wins. Mirrors the canonical one-per-rank invariant in
+		// {@see Placements::arrange()}; authoritative dedup remains 12A.3's ingestion.
+		$seen   = array();
+		$unique = array();
+
+		foreach ( $rows as $row ) {
+			if ( isset( $seen[ $row['rank'] ] ) ) {
+				continue;
+			}
+
+			$seen[ $row['rank'] ] = true;
+			$unique[]             = $row;
+		}
+
+		return $unique;
 	}
 
 	/**
@@ -163,11 +179,15 @@ final class FeaturedWinners {
 					: 'ink-wenner-kollig__item';
 
 				$html .= '<li class="' . esc_attr( $item_class ) . '">'
-					. '<span class="ink-wenner-kollig__plek">' . esc_html( $winner['label'] ) . '</span> ';
+					. '<span class="ink-wenner-kollig__plek">' . esc_html( $winner['label'] ) . '</span> '
+					. '<span class="ink-wenner-kollig__naam">' . esc_html( $winner['title'] ) . '</span>';
 
-				$html .= '' !== $winner['url']
-					? '<a class="ink-wenner-kollig__skakel" href="' . esc_url( $winner['url'] ) . '">' . esc_html( $winner['title'] ) . '</a>'
-					: '<span class="ink-wenner-kollig__naam">' . esc_html( $winner['title'] ) . '</span>';
+				// "Lees die volledige storie" read-more link to the winning work (ui-copy
+				// line 83). Rendered only when the entry has a permalink — never a dead link.
+				if ( '' !== $winner['url'] ) {
+					$html .= ' <a class="ink-wenner-kollig__skakel" href="' . esc_url( $winner['url'] ) . '">'
+						. esc_html__( 'Lees die volledige storie', 'ink-core' ) . '</a>';
+				}
 
 				$html .= '</li>';
 			}

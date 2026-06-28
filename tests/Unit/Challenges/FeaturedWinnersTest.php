@@ -52,7 +52,7 @@ test( 'order puts the algehele wenner (rank 1) first, ahead of ordinary wenners'
 	expect( $ordered[1]['is_algehele_wenner'] )->toBeFalse();
 } );
 
-test( 'order breaks ties deterministically by ascending id', function (): void {
+test( 'order resolves a same-rank tie deterministically to the lowest id (one per rank)', function (): void {
 	$ordered = FeaturedWinners::order(
 		array(
 			array( 'id' => 55, 'rank' => 2, 'title' => 'B' ),
@@ -60,7 +60,8 @@ test( 'order breaks ties deterministically by ascending id', function (): void {
 		)
 	);
 
-	expect( array_column( $ordered, 'id' ) )->toBe( array( 11, 55 ) );
+	// One-per-rank: the lowest-id placement wins the rank slot deterministically.
+	expect( array_column( $ordered, 'id' ) )->toBe( array( 11 ) );
 } );
 
 test( 'order drops rows with no id or a non-placement rank', function (): void {
@@ -107,4 +108,24 @@ test( 'toHtml renders the announcement linked + winners in algehele-wenner-first
 
 	// The algehele wenner item carries its distinguishing modifier class.
 	expect( $html )->toContain( 'ink-wenner-kollig__item--algehele' );
+
+	// Each placed work carries a "Lees die volledige storie" read-more link (ui-copy 83).
+	expect( $html )->toContain( 'Lees die volledige storie' );
+} );
+
+test( 'order collapses duplicate ranks so there is never a second algehele wenner', function (): void {
+	$ordered = FeaturedWinners::order(
+		array(
+			array( 'id' => 11, 'rank' => 1, 'title' => 'Eerste-een' ),
+			array( 'id' => 12, 'rank' => 1, 'title' => 'Eerste-twee' ),
+			array( 'id' => 20, 'rank' => 2, 'title' => 'Tweede' ),
+		)
+	);
+
+	// Only one rank-1 survives (the lowest id), so the slot can never show two
+	// algehele wenners even if 12A ingestion feeds a dirty payload.
+	$rank_ones = array_filter( $ordered, static fn ( array $r ): bool => 1 === $r['rank'] );
+	expect( $rank_ones )->toHaveCount( 1 );
+	expect( $ordered[0]['id'] )->toBe( 11 );
+	expect( $ordered )->toHaveCount( 2 );
 } );
