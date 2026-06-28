@@ -340,7 +340,7 @@ development_status:
   16-1-db-clone-sanitise: review
   16-2-user-import-role-reassignment: review
   16-3-tier-csv-import: review
-  16-4-subscription-verification: backlog
+  16-4-subscription-verification: review
   16-5-post-cpt-reclassification: backlog
   16-6-library-training-migration: backlog
   16-7-redirect-generation: backlog
