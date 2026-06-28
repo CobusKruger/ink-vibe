@@ -338,7 +338,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | How we treat each other | Hoe ons mekaar behandel | Boskrif-etiket |
 | Community principles | Gemeenskapsbeginsels | H2 |
 | Critique with care | Gee terugvoer met sorg | Beginsel-opskrif |
-| Feedback is a gift. We praise specifically, suggest gently, and never punch down. | Terugvoer is 'n gawe. Ons prys spesifiek, stel saggies voor, en trep nooit op mense nie. | |
+| Feedback is a gift. We praise specifically, suggest gently, and never punch down. | Terugvoer is 'n gawe. Ons prys spesifiek, stel saggies voor, en trap nooit op mense nie. | |
 | Read generously | Lees grootmoedig | |
 | Every piece here took courage to publish. Begin with what's working. | Elke stuk hier het moed gekos om te publiseer. Begin met wat werk. | |
 | Writers and readers, equal partners | Skrywers en lesers, gelyke vennote | |
@@ -351,7 +351,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Engels | Afrikaans | Notas |
 |---|---|---|
 | Ready to join Inkwell? | Gereed om by INK aan te sluit? | H2 |
-| It's free, it's nonprofit, and it's quietly becoming the best place online to read and be read. | Dit is gratis, dit is niewinsgericht, en dit word stilletjies die beste plek aanlyn om te lees en gelees te word. | |
+| It's free, it's nonprofit, and it's quietly becoming the best place online to read and be read. | Dit is gratis, dit is niewinsgerig, en dit word stilletjies die beste plek aanlyn om te lees en gelees te word. | |
 | Create your account | Skep jou rekening | Primêre knoppie |
 | Look around first | Kyk eers rond | Sekondêre knoppie |
 
