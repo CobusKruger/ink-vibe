@@ -189,3 +189,4 @@ here just so nothing is hidden.
 
 - `auth-register.php` — register-form field/validation microcopy cluster
 - `auth-forgot-password.php` — reset-form field/validation microcopy cluster
+- `Ink\Forms\ContactForm` (`ink/kontak-vorm` block) — Kontak-form validation/success microcopy cluster (Story 15.4; the visible field labels + the two notices already render in Afrikaans)
