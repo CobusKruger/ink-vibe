@@ -27,8 +27,8 @@ defined( 'ABSPATH' ) || exit;
  * ({@see NavigationRebuilder}, 16.8), BuddyPress friendship → follow transform
  * ({@see FollowGraphMigration}, 16.9), read-only media verification
  * ({@see MediaVerifier}, 16.10), selective options carry-forward
- * ({@see OptionsCarryForward}, 16.11) and — as the epic progresses — the
- * remaining migration steps.
+ * ({@see OptionsCarryForward}, 16.11) and WPBakery `[vc_*]` shortcode cleanup
+ * ({@see ShortcodeCleanup}, 16.12) — the full Epic-16 migration toolkit.
  * The migration *commands* are **WP-CLI-only** (never a web request): the
  * mutating ones once-off + idempotent (the `Ink\Challenges\Migration` /
  * `Ink\InkPols\Migration` shape), the verification ones read-only and naturally
@@ -62,5 +62,6 @@ final class Module implements ModuleContract {
 		( new FollowGraphMigration() )->register();
 		( new MediaVerifier() )->register();
 		( new OptionsCarryForward() )->register();
+		( new ShortcodeCleanup() )->register();
 	}
 }
