@@ -370,5 +370,5 @@ development_status:
   18-7-update-governance-i18n-resilience: review
   18-8-full-test-suite-buildout: review
   18-9-analytics-provider-selection-r8: review
-  18-10-registration-anti-spam-hardening-r6: backlog
+  18-10-registration-anti-spam-hardening-r6: review
   epic-18-retrospective: optional

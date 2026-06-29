@@ -54,6 +54,25 @@ origin layer is in code.
 10. **PCI scope:** PayFast is **off-site** (redirect/hosted) — INK never sees or
     stores card data, keeping PCI scope to SAQ-A. Never add an on-site card form.
 
+## Registration anti-spam (Story 18.10, R6)
+
+`Ink\Accounts\RegistrationGuard` is the always-on registration anti-abuse surface
+(part of this security stack), layered around the optional pending-approval state
+(Story 3.6, `Ink\Accounts\Approval`):
+
+- **Honeypot + submit timing** — built in; a filled hidden field or a sub-3-second
+  submission is blocked (no config needed).
+- **Challenge (Cloudflare Turnstile)** — wire it: render the Turnstile widget on the
+  registration form and verify the token server-side, returning the verdict through
+  `add_filter( 'ink_registration_challenge_passed', /* bool */, 10, 1 )`. Until wired,
+  the gate defaults to pass (never blocks legitimate signups prematurely). Turnstile
+  is the natural fit since Cloudflare is already the edge.
+- **Per-IP rate-limit** — built in (≤ 5 attempts / 15 min per IP, via a transient).
+- **Blocked-attempt analytics** — `do_action( 'ink/registration_blocked', $reason, $ip )`
+  fires on every block; hook it to your logging/analytics (18.9) for visibility.
+- **Optional pending-approval (3.6)** — enable `ink_account_approval_enabled` to add a
+  manual approval queue on top (off by default; never the launch default).
+
 ## Deliberate decisions (do NOT reverse without review)
 
 - **Loginizer / WordFence NOT used.** Cloudflare (edge login rule + origin lock) +
