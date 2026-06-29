@@ -41,5 +41,6 @@ final class Module implements ModuleContract {
 		( new Migration() )->register();
 		( new FeaturedWinners() )->register();
 		( new CollationPage() )->register();
+		( new IngestionPage() )->register();
 	}
 }
