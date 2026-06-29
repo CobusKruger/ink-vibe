@@ -361,14 +361,14 @@ development_status:
 
   # Epic 18: SEO, security & performance
   epic-18: in-progress
-  18-1-rank-math-config-cpt-schema: review
-  18-2-redirect-integrity: review
-  18-3-security-stack-layered: review
-  18-4-moderation-report-path: review
-  18-5-caching-layer: review
-  18-6-production-hygiene: review
-  18-7-update-governance-i18n-resilience: review
-  18-8-full-test-suite-buildout: review
-  18-9-analytics-provider-selection-r8: review
-  18-10-registration-anti-spam-hardening-r6: review
+  18-1-rank-math-config-cpt-schema: done
+  18-2-redirect-integrity: done
+  18-3-security-stack-layered: done
+  18-4-moderation-report-path: done
+  18-5-caching-layer: done
+  18-6-production-hygiene: done
+  18-7-update-governance-i18n-resilience: done
+  18-8-full-test-suite-buildout: done
+  18-9-analytics-provider-selection-r8: done
+  18-10-registration-anti-spam-hardening-r6: done
   epic-18-retrospective: optional

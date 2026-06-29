@@ -4,7 +4,7 @@ baseline_commit: ef775c1
 
 # Story 18.10: Registration anti-spam hardening (R6)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

@@ -4,7 +4,7 @@ baseline_commit: ef775c1
 
 # Story 18.9: Analytics-provider selection (R8)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

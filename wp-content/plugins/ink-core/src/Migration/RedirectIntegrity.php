@@ -90,13 +90,21 @@ class RedirectIntegrity {
 					$flattened = self::flatten( $map );
 					$this->storeMap( $flattened );
 					$after = self::audit( $flattened );
-					\WP_CLI::success(
-						sprintf(
-							'Kettings platgemaak. Oorblywende kettings: %d, lusse: %d.',
-							count( $after['chains'] ),
-							count( $after['loops'] )
-						)
-					);
+
+					// A cycle (or an over-long chain) is left on its original target by
+					// flatten() — report honestly rather than claim a clean fix.
+					if ( ! $after['ok'] ) {
+						\WP_CLI::warning(
+							sprintf(
+								'Kettings platgemaak, maar %d ketting(s) + %d lus(se) bly oor (siklusse — los met die hand op).',
+								count( $after['chains'] ),
+								count( $after['loops'] )
+							)
+						);
+						return;
+					}
+
+					\WP_CLI::success( 'Kettings platgemaak — aanstuurkaart is nou heel.' );
 					return;
 				}
 

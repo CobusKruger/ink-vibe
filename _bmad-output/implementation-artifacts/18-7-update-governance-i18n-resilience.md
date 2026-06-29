@@ -4,7 +4,7 @@ baseline_commit: ef775c1
 
 # Story 18.7: Update governance & i18n resilience
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

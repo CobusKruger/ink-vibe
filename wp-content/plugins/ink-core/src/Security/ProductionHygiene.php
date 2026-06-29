@@ -73,7 +73,8 @@ class ProductionHygiene {
 				unset( $args, $assoc );
 
 				if ( ! $this->isProduction() ) {
-					\WP_CLI::log( 'Nie ’n produksie-omgewing nie — hierdie kontrole is net vir produksie.' );
+					\WP_CLI::log( 'Nie ’n produksie-omgewing nie — hierdie kontrole is net vir produksie. (Geen aksie.)' );
+					return;
 				}
 
 				$found = self::forbiddenActive( $this->activePlugins(), $this->forbiddenSet() );

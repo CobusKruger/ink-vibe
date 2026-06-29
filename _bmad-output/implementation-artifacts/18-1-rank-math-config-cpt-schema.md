@@ -4,7 +4,7 @@ baseline_commit: ef775c1
 
 # Story 18.1: Rank Math config + CPT schema
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

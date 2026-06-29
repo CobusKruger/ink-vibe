@@ -40,7 +40,7 @@ final class Analytics {
 	 *
 	 * @var list<string>
 	 */
-	private const BOT_MARKERS = array( 'bot', 'crawl', 'spider', 'slurp', 'curl', 'wget', 'headless', 'preview' );
+	private const BOT_MARKERS = array( 'bot', 'crawl', 'spider', 'slurp', 'curl', 'wget', 'headless' );
 
 	/**
 	 * Whether an obvious bot/crawler sent this request. Pure.

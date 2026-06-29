@@ -161,6 +161,23 @@ test( 'guard adds a WP_Error and fires the blocked-attempt action for a bot', fu
 	$guard->guard( $errors );
 } );
 
+test( 'attemptCount skips the rate-limit (returns 0, no transient read) when no IP resolves', function (): void {
+	// R1 review fix: an empty IP must NOT collapse into one shared global bucket.
+	Functions\expect( 'get_transient' )->never();
+
+	$guard = new class() extends RegistrationGuard {
+		protected function requesterIp(): string {
+			return '';
+		}
+		// Expose the protected seam for the assertion.
+		public function publicAttemptCount(): int {
+			return $this->attemptCount();
+		}
+	};
+
+	expect( $guard->publicAttemptCount() )->toBe( 0 );
+} );
+
 test( 'guard returns the errors untouched for a clean human registration', function (): void {
 	Functions\when( '__' )->returnArg( 1 );
 	Functions\when( 'apply_filters' )->returnArg( 2 );

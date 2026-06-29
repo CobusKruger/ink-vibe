@@ -225,18 +225,35 @@ class RegistrationGuard {
 	 * The requester IP (the rate-limit key). Overridable seam.
 	 */
 	protected function requesterIp(): string {
-		if ( ! isset( $_SERVER['REMOTE_ADDR'] ) || ! is_scalar( $_SERVER['REMOTE_ADDR'] ) ) {
-			return '';
+		// Behind Cloudflare the origin's REMOTE_ADDR is the edge IP (shared by ALL
+		// visitors) — rate-limiting on it would lock everyone out together. Prefer
+		// Cloudflare's real-client-IP header, fall back to REMOTE_ADDR, and let a
+		// deployment override the resolution (e.g. a different edge) via the filter.
+		$candidates = array( 'HTTP_CF_CONNECTING_IP', 'REMOTE_ADDR' );
+		$ip         = '';
+
+		foreach ( $candidates as $key ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- read-only rate-limit key; sanitised on the next line.
+			if ( isset( $_SERVER[ $key ] ) && is_scalar( $_SERVER[ $key ] ) ) {
+				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised here.
+				$ip = sanitize_text_field( wp_unslash( $_SERVER[ $key ] ) );
+				break;
+			}
 		}
 
-		// Read-only rate-limit key; behind Cloudflare the trusted client IP is resolved at the edge.
-		return sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+		return (string) apply_filters( 'ink_registration_client_ip', $ip );
 	}
 
 	/**
 	 * The recent attempt count for this requester. Overridable seam (transient).
 	 */
 	protected function attemptCount(): int {
+		// No resolvable IP → no per-IP rate-limit (never collapse every IP-less
+		// request into one shared global bucket that would lock everyone out).
+		if ( '' === $this->requesterIp() ) {
+			return 0;
+		}
+
 		$count = get_transient( $this->rateKey() );
 
 		return is_numeric( $count ) ? (int) $count : 0;
@@ -246,8 +263,11 @@ class RegistrationGuard {
 	 * Record this attempt against the rate-limit window. Overridable seam.
 	 */
 	protected function recordAttempt(): void {
-		$key = $this->rateKey();
-		set_transient( $key, $this->attemptCount() + 1, self::WINDOW_SECONDS );
+		if ( '' === $this->requesterIp() ) {
+			return; // no IP → nothing to rate-limit against.
+		}
+
+		set_transient( $this->rateKey(), $this->attemptCount() + 1, self::WINDOW_SECONDS );
 	}
 
 	/**
