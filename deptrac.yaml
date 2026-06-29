@@ -83,6 +83,10 @@ deptrac:
           collectors:
             - type: classNameRegex
               value: '#^Ink\\Seo\\.*#'
+        - name: Security
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Security\\.*#'
     ruleset:
         # Kernel is the shared base — depends on no other module.
         Kernel: ~
@@ -285,3 +289,9 @@ deptrac:
             # Library->Content (10.1) and Submission->Content (6.1) edges. No
             # Entitlement/Tiers edge (SEO schema is never gated; conflation-clean).
             - Content
+        Security:
+            # Story 18.3: origin-side hardening (xmlrpc off, username-enumeration
+            # block, version-disclosure removal) + the staff-2FA coverage audit.
+            # Pure decisions + WP hooks only; no domain reads. Kernel-only — no
+            # Entitlement/Tiers edge (hardening is never gated; conflation-clean).
+            - Kernel

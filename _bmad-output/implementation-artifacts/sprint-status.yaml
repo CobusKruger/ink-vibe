@@ -363,7 +363,7 @@ development_status:
   epic-18: in-progress
   18-1-rank-math-config-cpt-schema: review
   18-2-redirect-integrity: review
-  18-3-security-stack-layered: backlog
+  18-3-security-stack-layered: review
   18-4-moderation-report-path: backlog
   18-5-caching-layer: backlog
   18-6-production-hygiene: backlog
