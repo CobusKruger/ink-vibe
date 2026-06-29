@@ -32,6 +32,14 @@ test( 'composeTitle prefixes the uitdaging title, with a fallback', function ():
 	expect( WinnersPost::composeTitle( '   ' ) )->toBe( 'Wenneraankondiging' );
 } );
 
+test( 'composeTitle carries the cadence period when supplied (monthly vs annual)', function (): void {
+	// Story 12B.1: the period makes the round cadence observable in the announcement.
+	expect( WinnersPost::composeTitle( 'Herfs', 'Desember 2026' ) )->toBe( 'Wenners: Desember 2026 — Herfs' ); // monthly
+	expect( WinnersPost::composeTitle( 'Herfs', '2026' ) )->toBe( 'Wenners: 2026 — Herfs' );                   // annual
+	// Empty period preserves the prior form (a round with no deadline set).
+	expect( WinnersPost::composeTitle( 'Herfs', '' ) )->toBe( 'Wenners: Herfs' );
+} );
+
 test( 'composeBody renders the frame then the ordered winner links', function (): void {
 	$entries = array(
 		array( 'label' => 'algehele wenner', 'title' => 'Maanlig', 'url' => 'https://ink.test/maanlig' ),
@@ -76,6 +84,9 @@ test( 'generate composes + inserts an announcement and links it to the round', f
 		protected function uitdagingTitle( int $uitdaging_id ): string {
 			return 'Mei-uitdaging';
 		}
+		protected function roundPeriod( int $uitdaging_id ): string {
+			return ''; // no deadline set → period-less title (isolates the meta reads)
+		}
 		protected function entryView( int $post_id ): array {
 			return array( 'title' => 'Werk ' . $post_id, 'url' => 'https://ink.test/' . $post_id );
 		}
@@ -96,6 +107,50 @@ test( 'generate composes + inserts an announcement and links it to the round', f
 	expect( $captured['title'] )->toBe( 'Wenners: Mei-uitdaging' );
 	expect( $captured['body'] )->toContain( 'Baie geluk!' );
 	expect( $captured['body'] )->toContain( 'Werk 10' );
+} );
+
+test( 'generate carries the round cadence period into the announcement title (annual reuse, production path)', function (): void {
+	// Story 12B.1: the REAL proof the annual cadence is reused by the winners machinery —
+	// generate() resolves the round period via roundPeriod() (→ Cadence::periodLabelFor)
+	// and folds it into the published title. An annual round reads "Wenners: 2026 — …".
+	Functions\when( 'update_post_meta' )->justReturn( true );
+
+	$make = function ( string $period ): array {
+		$captured = array();
+		$wp       = new class( $captured, $period ) extends WinnersPost {
+			public array $cap;
+			public string $period;
+			public function __construct( array &$cap, string $period ) {
+				$this->cap    = &$cap;
+				$this->period = $period;
+			}
+			protected function existingPostFor( int $uitdaging_id ): int {
+				return 0;
+			}
+			protected function bodyFrame(): string {
+				return 'Baie geluk!';
+			}
+			protected function uitdagingTitle( int $uitdaging_id ): string {
+				return 'Jaarkompetisie';
+			}
+			protected function roundPeriod( int $uitdaging_id ): string {
+				return $this->period;
+			}
+			protected function entryView( int $post_id ): array {
+				return array( 'title' => 'Werk ' . $post_id, 'url' => 'u' );
+			}
+			protected function insertPost( string $title, string $body ): int {
+				$this->cap = array( 'title' => $title );
+				return 900;
+			}
+		};
+		$wp->generate( 7, array( array( 'post_id' => 10, 'rank' => 1, 'author_id' => 100 ) ) );
+		return $captured;
+	};
+
+	// Annual round → year period; monthly round → month-year period. Same machinery, cadence-driven.
+	expect( $make( '2026' )['title'] )->toBe( 'Wenners: 2026 — Jaarkompetisie' );
+	expect( $make( 'Desember 2026' )['title'] )->toBe( 'Wenners: Desember 2026 — Jaarkompetisie' );
 } );
 
 test( 'generate is idempotent — an existing announcement is returned, not re-posted (non-vacuous)', function (): void {

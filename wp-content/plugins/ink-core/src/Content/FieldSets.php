@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Content;
 
+use Ink\Kernel\CadenceType;
 use Ink\Kernel\Capabilities;
 use Ink\I18n\Terms;
 use WP_Post;
@@ -52,6 +53,7 @@ final class FieldSets {
 	// Challenge meta keys.
 	public const UITDAGING_THEME    = 'ink_uitdaging_theme';
 	public const UITDAGING_DEADLINE = 'ink_uitdaging_deadline';
+	public const UITDAGING_CADENCE  = 'ink_uitdaging_cadence';
 
 	// Sponsor meta keys.
 	public const BORG_LINK       = 'ink_borg_link';
@@ -159,6 +161,30 @@ final class FieldSets {
 					esc_attr( $key ),
 					esc_textarea( (string) $value )
 				);
+			} elseif ( 'select' === $field['input'] ) {
+				$options  = (array) ( $field['options'] ?? array() );
+				$selected = (string) $value;
+
+				// A stored value outside the option set (legacy/junk written before the
+				// field existed) falls back to the first option, so the rendered selection
+				// matches the effective (sanitiser-coerced) value rather than showing
+				// nothing selected.
+				if ( array() !== $options && ! array_key_exists( $selected, $options ) ) {
+					$selected = (string) array_key_first( $options );
+				}
+
+				printf( '<select id="%1$s" name="%2$s">', esc_attr( $id ), esc_attr( $key ) );
+
+				foreach ( $options as $opt_value => $opt_label ) {
+					printf(
+						'<option value="%1$s"%2$s>%3$s</option>',
+						esc_attr( (string) $opt_value ),
+						selected( $selected, (string) $opt_value, false ),
+						esc_html( (string) $opt_label )
+					);
+				}
+
+				echo '</select>';
 			} else {
 				printf(
 					'<input type="%1$s" id="%2$s" name="%3$s" value="%4$s" class="regular-text" />',
@@ -241,7 +267,7 @@ final class FieldSets {
 	 * Terms key for the box title, and the field list. Keyed by {@see PostTypes}
 	 * slug constants (never re-typed literals).
 	 *
-	 * @return array<string, array{cap: string, term: string, fields: list<array{key: string, label: string, type: string, input: string, sanitize: callable}>}>
+	 * @return array<string, array{cap: string, term: string, fields: list<array{key: string, label: string, type: string, input: string, sanitize: callable, options?: array<string, string>}>}>
 	 */
 	private static function definitions(): array {
 		return array(
@@ -304,6 +330,17 @@ final class FieldSets {
 						'input'    => 'datetime-local',
 						'sanitize' => array( self::class, 'sanitizeDate' ),
 					),
+					array(
+						'key'      => self::UITDAGING_CADENCE,
+						'label'    => __( 'Kadens', 'ink-core' ),
+						'type'     => 'string',
+						'input'    => 'select',
+						'options'  => array(
+							CadenceType::Maandeliks->value => __( 'Maandeliks', 'ink-core' ),
+							CadenceType::Jaarliks->value   => __( 'Jaarliks', 'ink-core' ),
+						),
+						'sanitize' => array( self::class, 'sanitizeCadence' ),
+					),
 				),
 			),
 			PostTypes::BORG            => array(
@@ -365,5 +402,19 @@ final class FieldSets {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Sanitize a `uitdaging` cadence to a valid {@see CadenceType} backing value.
+	 *
+	 * Coerces any input through {@see CadenceType::fromMeta()} so only `maandeliks`
+	 * or `jaarliks` is ever persisted; junk/empty folds to the monthly default —
+	 * the single source for the value set, never an inline literal here (Story 12B.1).
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return string A valid cadence backing value (`maandeliks`/`jaarliks`).
+	 */
+	public static function sanitizeCadence( $value ): string {
+		return CadenceType::fromMeta( is_scalar( $value ) ? (string) $value : null )->value;
 	}
 }

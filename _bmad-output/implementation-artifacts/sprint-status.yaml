@@ -1,5 +1,5 @@
 # generated: 2026-06-20
-# last_updated: 2026-06-20
+# last_updated: 2026-06-29
 # project: ink-vibe
 # project_key: NOKEY
 # tracking_system: file-system
@@ -285,9 +285,21 @@ development_status:
   epic-12a-retrospective: done  # completed 2026-06-29 (epic-12a-retro-2026-06-29.md) — 11th consecutive formal retro. Closed Epic-12 readiness flags #2/#3/Meester/biblioteek. Carry: per-category read-model reconciliation (D1), deadline time-of-day owner decision, copy-debt 7.x–12A.x, 18.8 adjudication integration tail.
 
   # Epic 12B: Annual competition management (NEW, P2)
-  epic-12b: backlog
-  12b-1-annual-competition-management: backlog
-  epic-12b-retrospective: optional
+  # EPIC 12B COMPLETE 2026-06-29: the single story (12B.1) done via the full BMAD loop
+  # (create-story → dev-story → tests → commit), R12B 3-layer adversarial code review
+  # (epic-12b-code-review-2026-06-29.md), then the epic-12b-retrospective (12th consecutive).
+  # Annual cadence as configuration over the 12A pipeline: new Kernel\CadenceType enum
+  # (maandeliks/jaarliks), cadence-aware Challenges\Cadence (annual period ⇒ year), per-uitdaging
+  # cadence meta + meta-box select in Content\FieldSets (default monthly). R12B caught + FIXED a
+  # HIGH (the cadence was stranded — no production consumer; reuse test vacuous): WinnersPost::generate
+  # now folds the cadence-aware period into the announcement title (annual "Wenners: 2026 — …"),
+  # proven via a production-path test. Tests 1184→1201. 0 unresolved HIGH/MED. 12B closes the
+  # deferred backlog — the full roadmap (1–18 + 12A + 12B) is complete. Carry: 🔴 D1 per-Gradering
+  # read-collapse (now OVERDUE — was "before 12B"); REST enum-schema (M1, deferred); deadline
+  # time-of-day owner decision; copy-debt now 7.x–12B.x; pre-existing cs cleanup (IngestionPage:368).
+  epic-12b: done
+  12b-1-annual-competition-management: done
+  epic-12b-retrospective: done
 
   # Epic 13: InkPols
   # epic-13 started 2026-06-27; full BMAD loop (create-story → dev-story → tests → commit).

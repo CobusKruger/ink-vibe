@@ -178,6 +178,18 @@ APPROVAL-BTN-REJECT
 EN: Reject *(button)*
 AF: Verwerp
 
+CADENCE-FIELD-LABEL
+EN: Cadence *(admin field label on a uitdaging — monthly vs annual competition)*
+AF: Kadens
+
+CADENCE-OPT-MONTHLY
+EN: Monthly *(cadence option)*
+AF: Maandeliks
+
+CADENCE-OPT-ANNUAL
+EN: Annual *(cadence option — the yearly competition)*
+AF: Jaarliks
+
 ---
 
 ## 8. Not yet concrete — no action needed from you
