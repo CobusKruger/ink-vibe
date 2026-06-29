@@ -80,16 +80,39 @@ jobs:
       - name: Pest (integration suite — real WP via wp-env)
         run: composer test:integration
 
+      # Live English-leak gate, Layer 2 (NFR-1, Story 17.4 carry-forward): crawl the
+      # key front-end pages on the running wp-env site + scan rendered HTML. The
+      # static Layer-1 ratchet (copy:scan) ran in `quality`; this is the runtime layer.
+      - name: Live English-leak scan (NFR-1 Layer 2 — page crawl)
+        run: php tools/leak-scan/scan-rendered.php http://localhost:8888
+
   e2e:
-    name: Playwright E2E (deferred to Story 18.8)
+    name: Playwright E2E (critical journey — PayFast sandbox)
     runs-on: ubuntu-latest
     needs: quality
-    # Placeholder only. The full E2E pyramid + critical journeys
-    # (register → PayFast sandbox → submit → publish → react → renew) land in
-    # Story 18.8 (NFR-9). The static subset of the English-leak scan (NFR-1,
-    # tools/leak-scan/scan-placeholders.php — placeholder-marker ratchet) already
-    # runs in the `quality` job above; the full page-crawl + `wp i18n` gate
-    # becomes a standing CI + cron gate in Story 17.4 / Epic 18.
-    if: false
+    # Risk-based depth (NFR-9): the E2E smoke journey runs on main (and PRs targeting
+    # main). PayFast uses the SANDBOX only — never the live ZAR gateway.
+    if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
+    env:
+      PAYFAST_MODE: sandbox
     steps:
-      - run: echo "Playwright E2E suite is built in Story 18.8."
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Node dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Start wp-env (WordPress 7.0 / PHP 8.3)
+        run: npx --yes @wordpress/env@11.8.0 start
+
+      - name: Playwright E2E smoke (register → PayFast sandbox → submit → publish → read → renew)
+        run: npm run test:e2e:smoke
+        env:
+          WP_BASE_URL: http://localhost:8888

@@ -17,8 +17,9 @@ defined( 'ABSPATH' ) || exit;
  * Drives the skrywers tab's "Meeste gelees" sort (and reading analytics, AD-7):
  * the post's `_ink_read_count` and the author's
  * {@see SkrywerIndex::READ_TOTAL_META} are bumped when a reader opens a published
- * bydrae. Per-request increment — bot-filtering + per-user/session dedup are an
- * analytics-hardening concern (Epic 18 / 18.9), deliberately out of scope here.
+ * bydrae. Story 18.9 routes the recording through {@see Analytics}: bot/self-view
+ * filtering (the hardening 8.3 deferred) plus a vetted-plugin provider hand-off
+ * (the counter here is the fallback when no analytics provider is wired).
  *
  * Conflation-clean: post/user-meta only; zero `Ink\Tiers`/`Ink\Entitlement`.
  *
@@ -58,13 +59,34 @@ final class ReadCount {
 			return;
 		}
 
-		self::incrementPost( $post_id );
-
 		$author = (int) get_post_field( 'post_author', $post_id );
 
-		if ( $author > 0 ) {
-			self::incrementAuthor( $author );
+		// Story 18.9: filter bots + the author's own self-view before recording, then
+		// hand the view to the vetted analytics provider (or the ink-core fallback
+		// counter inside Analytics::recordView when no provider is wired).
+		if ( ! Analytics::shouldRecordView( $this->userAgent(), $this->viewerId(), $author ) ) {
+			return;
 		}
+
+		Analytics::recordView( $post_id, $author );
+	}
+
+	/**
+	 * The request user-agent. Overridable seam.
+	 */
+	protected function userAgent(): string {
+		if ( ! isset( $_SERVER['HTTP_USER_AGENT'] ) || ! is_scalar( $_SERVER['HTTP_USER_AGENT'] ) ) {
+			return '';
+		}
+
+		return sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) );
+	}
+
+	/**
+	 * The current viewer's user id (0 when anonymous). Overridable seam.
+	 */
+	protected function viewerId(): int {
+		return (int) get_current_user_id();
 	}
 
 	/**

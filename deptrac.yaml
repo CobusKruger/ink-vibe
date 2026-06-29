@@ -79,6 +79,18 @@ deptrac:
           collectors:
             - type: classNameRegex
               value: '#^Ink\\Migration\\.*#'
+        - name: Seo
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Seo\\.*#'
+        - name: Security
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Security\\.*#'
+        - name: Cache
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Cache\\.*#'
     ruleset:
         # Kernel is the shared base — depends on no other module.
         Kernel: ~
@@ -271,3 +283,26 @@ deptrac:
             # depends only on Kernel/Content/Tiers, never back on Migration. No
             # Entitlement/Tiers gate (the social graph is open).
             - Social
+        Seo:
+            - Kernel
+            # Story 18.1: the Rank Math schema seo seam maps each reader-facing
+            # CPT to its schema `@type`, reading the migration-load-bearing slug
+            # single source `Ink\Content\PostTypes::readableTypes()`
+            # (GEDIG/STORIE/ARTIKEL). A real, non-circular cross-module dependency
+            # on the slug registry — mirrors the Discovery->Content (8.1),
+            # Library->Content (10.1) and Submission->Content (6.1) edges. No
+            # Entitlement/Tiers edge (SEO schema is never gated; conflation-clean).
+            - Content
+        Security:
+            # Story 18.3: origin-side hardening (xmlrpc off, username-enumeration
+            # block, version-disclosure removal) + the staff-2FA coverage audit.
+            # Pure decisions + WP hooks only; no domain reads. Kernel-only — no
+            # Entitlement/Tiers edge (hardening is never gated; conflation-clean).
+            - Kernel
+        Cache:
+            # Story 18.5: page-cache bypass for INK's dynamic surfaces. Uses two
+            # decoupled seams (the generic `ink_` admin-post prefix + the
+            # `ink_cache_bypass` filter) so it never reads Forms/Discovery/Social
+            # constants — Kernel-only, no Entitlement/Tiers edge (caching is never
+            # gated; conflation-clean).
+            - Kernel

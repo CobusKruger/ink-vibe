@@ -29,7 +29,11 @@ defined( 'ABSPATH' ) || exit;
  *    `user_register` when enabled, the `wp_authenticate_user` login gate, and
  *    the admin approval-queue screen to goedkeur/verwerp) — {@see Approval}
  *    (Story 3.6). It is never the launch default; when OFF, signup stays exactly
- *    as frictionless as today (UJ-1).
+ *    as frictionless as today (UJ-1);
+ *  - the ALWAYS-ON registration anti-abuse baseline + hardening (honeypot, submit
+ *    timing, a Cloudflare-Turnstile challenge seam, per-IP rate-limiting and
+ *    blocked-attempt analytics) on the registration endpoint — {@see RegistrationGuard}
+ *    (Story 18.10, the security stack's registration surface around the 3.6 pending state).
  * WordPress owns the auth MECHANISM (credential storage, sessions, lost-password
  * tokens) — this module hooks it, never reimplements it. The Afrikaans auth +
  * onboarding SCREENS are presentation and live in the `ink-foundation` theme;
@@ -52,12 +56,7 @@ defined( 'ABSPATH' ) || exit;
  * and the leeslys `ink_reading_list` (Story 7.7 / `Ink\Engagement`) — onboarding
  * only PROMPTS toward them and degrades gracefully, building no table / REST
  * write; the reader/writer intent gate (Story 3.2 — REMOVED; no intent flag is
- * stored); the always-on anti-spam baseline (Story 3.4 decided it — Turnstile,
- * email double-opt-in, honeypot/timing — layers 1–4, NOT built here) and the
- * edge rate-limiting / IP-reputation / Patchstack / Turnstile-tuning /
- * blocked-attempt-analytics HARDENING around the pending state (Story 18.10) —
- * the 3.6 toggle + pending state + approval queue themselves are owned above by
- * {@see Approval}; social-login OAuth itself (the
+ * stored); social-login OAuth itself (the
  * vetted plugin's job — this module only exposes the availability seam); the
  * Lidmaatskap purchase flow (Epic 4); the My Profiel / Skrywerprofiel pages
  * (Epic 9); the promotion engine / full editorial-role policy (Epic 5).
@@ -85,5 +84,6 @@ final class Module implements ModuleContract {
 		( new Registration() )->register();
 		( new Onboarding() )->register();
 		( new Approval() )->register();
+		( new RegistrationGuard() )->register();
 	}
 }

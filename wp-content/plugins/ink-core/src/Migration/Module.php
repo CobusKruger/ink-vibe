@@ -58,6 +58,7 @@ final class Module implements ModuleContract {
 		( new PostReclassifier() )->register();
 		( new LibraryTrainingMigrator() )->register();
 		( new RedirectGenerator() )->register();
+		( new RedirectIntegrity() )->register();
 		( new NavigationRebuilder() )->register();
 		( new FollowGraphMigration() )->register();
 		( new MediaVerifier() )->register();
