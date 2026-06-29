@@ -4,7 +4,7 @@ baseline_commit: 63fd7d87371d998b8f7211c35d298b731a55f18d
 
 # Story 12A.1: EntryID data model (R1 linchpin)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

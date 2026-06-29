@@ -246,7 +246,9 @@ class ModeratorFeedback {
 			)
 		);
 
-		return is_int( $id ) ? $id : 0;
+		// wp_insert_comment returns int|false; guard the false case, never is_int (the
+		// success id can arrive as a numeric string on some installs) — R12A review.
+		return false === $id ? 0 : (int) $id;
 	}
 
 	/**

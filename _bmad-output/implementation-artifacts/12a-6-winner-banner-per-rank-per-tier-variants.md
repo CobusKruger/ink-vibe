@@ -4,7 +4,7 @@ baseline_commit: 623951ecdd272482a6240c8569b371423d12136b
 
 # Story 12A.6: Winner banner — per-rank / per-tier variants
 
-Status: review
+Status: done
 
 ## Story
 

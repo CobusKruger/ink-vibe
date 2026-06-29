@@ -147,3 +147,53 @@ test( 'IngestionPage::analyse resolves matched EntryIDs to post ids and reports 
 	expect( $analysis['report']['entries_without_commentary'] )->toBe( array( 'Gedig 2' ) );
 	expect( $analysis['report']['all_winners_identified'] )->toBeTrue();
 } );
+
+test( 'commit refuses an empty-winner commit and leaves the round re-runnable (R12A)', function (): void {
+	$ing = ink_test_ingestion();
+
+	$result = $ing->commit( 7, array(), array() );
+
+	expect( $result['committed'] )->toBeFalse();
+	expect( $result['reason'] )->toBe( 'geen_wenners' );
+	// Nothing written, NOT marked committed — the round can still be committed later.
+	expect( $ing->committed_flag )->toBeFalse();
+	expect( $ing->placements )->toBe( array() );
+} );
+
+test( 'commit dedupes a duplicated post_id so an entry places + is awarded once (R12A)', function (): void {
+	$ing = ink_test_ingestion();
+
+	// Same entry (post 10) appears twice — a dirty/direct payload.
+	$winners = array(
+		array( 'post_id' => 10, 'rank' => 1, 'author_id' => 100 ),
+		array( 'post_id' => 10, 'rank' => 2, 'author_id' => 100 ),
+	);
+
+	$result = $ing->commit( 7, $winners, array() );
+
+	expect( $result['placed'] )->toBe( 1 );               // one placement, not two
+	expect( $ing->placements )->toBe( array( array( 10, 1 ) ) ); // first occurrence wins
+	expect( $ing->awarded )->toBe( array( 100 => 1 ) );   // one win, not two
+} );
+
+test( 'analyse keys rank-uniqueness on the STORED gradering, not the pasted header (flag #1, R12A)', function (): void {
+	$page = new class() extends IngestionPage {
+		protected function entriesFor( int $uitdaging_id ): array {
+			// BOTH entries are really in the Brons pool (stored gradering = brons).
+			return array(
+				array( 'id' => 10, 'entry_id' => 'Gedig 1', 'author_id' => 100, 'title' => 'A', 'gradering' => 'brons' ),
+				array( 'id' => 11, 'entry_id' => 'Gedig 2', 'author_id' => 200, 'title' => 'B', 'gradering' => 'brons' ),
+			);
+		}
+	};
+
+	// The paste mis-states the second winner's pool ("Silwer Gedigte") — a typo'd header.
+	// Both are rank-1 Gedigte in the SAME real (Brons) pool, so it MUST be flagged.
+	$text = "WENNERS\nBrons Gedigte\n1ste: Gedig 1\nSilwer Gedigte\n1ste: Gedig 2";
+
+	$analysis = $page->analyse( 7, $text );
+
+	// Authoritative grade (brons for both) collapses them to one slot → duplicate caught.
+	expect( $analysis['report']['duplicates'] )->toContain( 'brons|gedig|1' );
+	expect( \Ink\Challenges\Coverage::blocksCommit( $analysis['report'] ) )->toBeTrue();
+} );

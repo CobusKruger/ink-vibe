@@ -4,7 +4,7 @@ baseline_commit: 3c4099648899ea1bd531091bce515a6315aa8042
 
 # Story 12A.7: Featured-feed ordering
 
-Status: review
+Status: done
 
 ## Story
 

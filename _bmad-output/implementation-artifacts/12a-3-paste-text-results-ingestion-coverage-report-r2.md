@@ -4,7 +4,7 @@ baseline_commit: 823ff550f6107cd585c4d28b74429f28e3963a90
 
 # Story 12A.3: Paste-text results ingestion + coverage report (R2)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

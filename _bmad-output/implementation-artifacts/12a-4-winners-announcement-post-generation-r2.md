@@ -4,7 +4,7 @@ baseline_commit: 03f41d0a875f1005198f6220e1dc89d3d5a7f93b
 
 # Story 12A.4: Winners-announcement post generation (R2)
 
-Status: review
+Status: done
 
 ## Story
 

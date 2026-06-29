@@ -78,6 +78,21 @@ class Ingestion {
 			return $result;
 		}
 
+		// Defensive: one placement per entry (an entry can't win twice). Dropping a
+		// duplicated post_id here means a dirty/direct caller can never double-place or
+		// double-award — the rank-uniqueness invariant is enforced at the gate (Coverage),
+		// but commit no longer TRUSTS its input is clean (R12A review).
+		$winners = self::uniqueByPost( $winners );
+
+		// Guard the empty commit: with no winners there is nothing to write, and marking
+		// the round done would publish an empty announcement AND permanently lock the round
+		// (isCommitted → reeds_gepleeg) so the real results could never be committed. Leave
+		// it un-committed and re-runnable (R12A review).
+		if ( array() === $winners ) {
+			$result['reason'] = 'geen_wenners';
+			return $result;
+		}
+
 		// AC-5 order. (1) winners post, (2) moderator feedback (reserved seams → 0).
 		$result['post_id']  = $this->commitWinnersPost( $uitdaging_id, $winners );
 		$result['feedback'] = $this->commitModeratorFeedback( $uitdaging_id, $commentary );
@@ -110,6 +125,33 @@ class Ingestion {
 	 */
 	public function isCommitted( int $uitdaging_id ): bool {
 		return '' !== (string) get_post_meta( $uitdaging_id, self::COMMIT_DONE_META, true );
+	}
+
+	/**
+	 * Dedupe winners to one row per entry (first occurrence wins). Pure.
+	 *
+	 * An entry cannot legitimately place twice; collapsing duplicates here means a dirty
+	 * or direct (non-UI) caller can never double-record a placement or double-award a win.
+	 *
+	 * @param list<array{post_id:int, rank:int, author_id:int}> $winners The winners.
+	 * @return list<array{post_id:int, rank:int, author_id:int}>
+	 */
+	private static function uniqueByPost( array $winners ): array {
+		$seen   = array();
+		$unique = array();
+
+		foreach ( $winners as $winner ) {
+			$post_id = (int) ( $winner['post_id'] ?? 0 );
+
+			if ( $post_id <= 0 || isset( $seen[ $post_id ] ) ) {
+				continue;
+			}
+
+			$seen[ $post_id ] = true;
+			$unique[]         = $winner;
+		}
+
+		return $unique;
 	}
 
 	/**

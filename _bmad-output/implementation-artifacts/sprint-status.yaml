@@ -275,13 +275,13 @@ development_status:
 
   # Epic 12A: Challenge adjudication automation (NEW)
   epic-12a: in-progress
-  12a-1-entryid-data-model-r1-linchpin: review
-  12a-2-judge-email-collation-tool-r1: review
-  12a-3-paste-text-results-ingestion-coverage-report-r2: review
-  12a-4-winners-announcement-post-generation-r2: review
-  12a-5-moderator-feedback-comment-type-writer-display-toggle-r2: review
-  12a-6-winner-banner-per-rank-per-tier-variants: review
-  12a-7-featured-feed-ordering: review
+  12a-1-entryid-data-model-r1-linchpin: done
+  12a-2-judge-email-collation-tool-r1: done
+  12a-3-paste-text-results-ingestion-coverage-report-r2: done
+  12a-4-winners-announcement-post-generation-r2: done
+  12a-5-moderator-feedback-comment-type-writer-display-toggle-r2: done
+  12a-6-winner-banner-per-rank-per-tier-variants: done
+  12a-7-featured-feed-ordering: done
   epic-12a-retrospective: optional
 
   # Epic 12B: Annual competition management (NEW, P2)

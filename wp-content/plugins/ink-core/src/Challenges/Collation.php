@@ -174,7 +174,15 @@ final class Collation {
 		$name = trim( $author_name );
 
 		if ( '' !== $name ) {
-			$content = str_ireplace( $name, '', $content );
+			// Word-boundaried removal (R12A review): a blunt str_ireplace would scrub the
+			// name as a SUBSTRING — a short display name ("An", "Roos", "Son") would be
+			// excised from inside the work's own words, corrupting the judged text. Match
+			// whole-word/phrase occurrences only.
+			$replaced = preg_replace( '/\b' . preg_quote( $name, '/' ) . '\b/iu', '', $content );
+
+			if ( null !== $replaced ) {
+				$content = $replaced;
+			}
 		}
 
 		$lines = preg_split( '/\R/', $content );

@@ -82,7 +82,25 @@ class IngestionPage {
 		$map     = self::storedMap( $entries );
 		$parsed  = ResultsParser::parse( $text );
 
-		$report = Coverage::report( $parsed['winners'], $parsed['commentary'], array_keys( $map ) );
+		// Rank-uniqueness must key on the AUTHORITATIVE pool — the entry's stored
+		// Gradering snapshot — NOT the pasted header grade (which a typo'd/omitted header
+		// could mis-state, letting two real-pool rank-1s slip past the gate). For every
+		// matched winner, override the parsed grade with the stored gradering before
+		// reconciliation; unmatched winners keep their parsed grade (flagged unknown
+		// anyway). R12A review (readiness flag #1 — the authoritative invariant).
+		$authoritative = array();
+
+		foreach ( $parsed['winners'] as $winner ) {
+			$entry_id = (string) ( $winner['entry_id'] ?? '' );
+
+			if ( isset( $map[ $entry_id ] ) && '' !== $map[ $entry_id ]['gradering'] ) {
+				$winner['grade'] = $map[ $entry_id ]['gradering'];
+			}
+
+			$authoritative[] = $winner;
+		}
+
+		$report = Coverage::report( $authoritative, $parsed['commentary'], array_keys( $map ) );
 
 		$winners = array();
 
@@ -122,8 +140,8 @@ class IngestionPage {
 	/**
 	 * Build the EntryID-string → {post_id, author_id, title} map for a round. Pure.
 	 *
-	 * @param list<array{id:int, entry_id:string, author_id:int, title:string}> $entries The round entries.
-	 * @return array<string, array{post_id:int, author_id:int, title:string}>
+	 * @param list<array{id:int, entry_id:string, author_id:int, title:string, gradering:string}> $entries The round entries.
+	 * @return array<string, array{post_id:int, author_id:int, title:string, gradering:string}>
 	 */
 	public static function storedMap( array $entries ): array {
 		$map = array();
@@ -139,6 +157,7 @@ class IngestionPage {
 				'post_id'   => (int) ( $entry['id'] ?? 0 ),
 				'author_id' => (int) ( $entry['author_id'] ?? 0 ),
 				'title'     => (string) ( $entry['title'] ?? '' ),
+				'gradering' => (string) ( $entry['gradering'] ?? '' ),
 			);
 		}
 
@@ -149,7 +168,7 @@ class IngestionPage {
 	 * The round's numbered entries as ingestion rows. Overridable seam (testability).
 	 *
 	 * @param int $uitdaging_id The round.
-	 * @return list<array{id:int, entry_id:string, author_id:int, title:string}>
+	 * @return list<array{id:int, entry_id:string, author_id:int, title:string, gradering:string}>
 	 */
 	protected function entriesFor( int $uitdaging_id ): array {
 		if ( $uitdaging_id <= 0 ) {
@@ -171,6 +190,7 @@ class IngestionPage {
 				'entry_id'  => EntryId::entryIdFor( $id ),
 				'author_id' => (int) $post->post_author,
 				'title'     => (string) get_the_title( $post ),
+				'gradering' => Scalar::asString( get_post_meta( $id, Entry::GRADERING_META_KEY, true ) ),
 			);
 		}
 
@@ -295,9 +315,15 @@ class IngestionPage {
 			return;
 		}
 
-		$message = 'reeds_gepleeg' === ( $result['reason'] ?? '' )
-			? __( 'Hierdie uitdaging se uitslae is reeds gepleeg (niks is weer geskryf nie).', 'ink-core' )
-			: __( 'Die uitslae kon nie gepleeg word nie.', 'ink-core' );
+		$reason = (string) ( $result['reason'] ?? '' );
+
+		if ( 'reeds_gepleeg' === $reason ) {
+			$message = __( 'Hierdie uitdaging se uitslae is reeds gepleeg (niks is weer geskryf nie).', 'ink-core' );
+		} elseif ( 'geen_wenners' === $reason ) {
+			$message = __( 'Geen geldige wenners is opgespoor nie — niks is gepleeg nie. Die uitdaging bly oop vir \'n regstelling.', 'ink-core' );
+		} else {
+			$message = __( 'Die uitslae kon nie gepleeg word nie.', 'ink-core' );
+		}
 
 		echo '<div class="notice notice-warning"><p>' . esc_html( $message ) . '</p></div>';
 	}

@@ -4,7 +4,7 @@ baseline_commit: 9e4489bcb97f95aa5020c51e69692a6eb77b5e82
 
 # Story 12A.2: Judge-email collation tool (R1)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

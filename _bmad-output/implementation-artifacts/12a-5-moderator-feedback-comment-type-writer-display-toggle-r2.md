@@ -4,7 +4,7 @@ baseline_commit: 18bca5a5503d223055e9c76957ac45d3f1ed24ae
 
 # Story 12A.5: Moderator-feedback comment type + writer display toggle (R2)
 
-Status: review
+Status: done
 
 ## Story
 

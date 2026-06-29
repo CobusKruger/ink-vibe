@@ -205,7 +205,11 @@ final class ResultsParser {
 	 * @return int
 	 */
 	private static function rankIn( string $line ): int {
-		if ( 1 === preg_match( '/^\s*([123])\s*(?:ste|de|e)?\s*[:.\)]/i', $line, $m ) ) {
+		// Accept "1:" / "1." / "1)" (punctuation) OR an ordinal form "1ste" / "2de" /
+		// "3de" even WITHOUT trailing punctuation (R12A review — "1ste Gedig 3" was
+		// silently dropped). A bare "1 Gedig" (no ordinal, no punctuation) is still NOT a
+		// rank line, so a prose line like "3 gedigte is ingedien" never false-matches.
+		if ( 1 === preg_match( '/^\s*([123])(?:(?:ste|de|e)\s*[:.\)]?|\s*[:.\)])/i', $line, $m ) ) {
 			return (int) $m[1];
 		}
 
