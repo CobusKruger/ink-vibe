@@ -31,5 +31,6 @@ final class Module implements ModuleContract {
 	 */
 	public function register(): void {
 		( new ContactForm() )->register();
+		( new ReportForm() )->register();
 	}
 }
