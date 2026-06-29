@@ -98,5 +98,6 @@ add_action(
 		Kernel\Plugin::instance()->addModule( 'seo', new Seo\Module() );
 		Kernel\Plugin::instance()->addModule( 'security', new Security\Module() );
 		Kernel\Plugin::instance()->addModule( 'cache', new Cache\Module() );
+		Kernel\Plugin::instance()->addModule( 'i18n', new I18n\Module() );
 	}
 );

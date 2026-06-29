@@ -367,7 +367,7 @@ development_status:
   18-4-moderation-report-path: review
   18-5-caching-layer: review
   18-6-production-hygiene: review
-  18-7-update-governance-i18n-resilience: backlog
+  18-7-update-governance-i18n-resilience: review
   18-8-full-test-suite-buildout: backlog
   18-9-analytics-provider-selection-r8: backlog
   18-10-registration-anti-spam-hardening-r6: backlog
