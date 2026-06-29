@@ -274,8 +274,8 @@ development_status:
   epic-12-retrospective: done  # completed 2026-06-27 (epic-12-retro-2026-06-27.md) — 4th formal retro in a row; CLOSED the 🔴 carry-forward (promoted the 2 testing rules — Brain-Monkey isolation + test-the-outcome — into project-context.md before the 12A trigger). Epic 12 = 8/8 built, tests 754→812 (+58), review 5 patches/0 HIGH shipped. New Ink\Challenges module over the Epic-2 uitdaging CPT; closed 2 deferred-Epic-2 items (12.3 cap reconcile, 12.4 AD-5). Carry to 12A: enforce placement rank-uniqueness at ingestion (12A.3), wire placements→awardWins (R3), deadline time-of-day owner decision, Meester-entry submission signal; copy-debt now 7.x-12.x (pre-launch gate); consume the Library R4 ink/biblioteek_wen_bywerking hook at 12A.3; don't skip the 12A retro.
 
   # Epic 12A: Challenge adjudication automation (NEW)
-  epic-12a: backlog
-  12a-1-entryid-data-model-r1-linchpin: backlog
+  epic-12a: in-progress
+  12a-1-entryid-data-model-r1-linchpin: review
   12a-2-judge-email-collation-tool-r1: backlog
   12a-3-paste-text-results-ingestion-coverage-report-r2: backlog
   12a-4-winners-announcement-post-generation-r2: backlog
@@ -326,7 +326,7 @@ development_status:
   epic-14-retrospective: done
 
   # Epic 15: Organisation pages & contact
-  epic-15: in-progress
+  epic-15: done  # all 6 stories + retrospective done (merged c7e6a40); flag corrected from stale in-progress 2026-06-29
   15-1-tuisblad: done
   15-2-gemeenskap-page: done
   15-3-oor-ink: done
