@@ -20,8 +20,10 @@ defined( 'ABSPATH' ) || exit;
  * 2FA (a plugin), staging-gated updates and host malware scanning are external —
  * see docs/security-stack-runbook.md. This module owns only what genuinely belongs
  * at the origin: surface reduction ({@see Hardening} — xmlrpc off, username
- * enumeration blocked, version disclosure removed) and the 2FA-coverage audit
- * ({@see TwoFactorAudit}) that verifies "staff 2FA in place" actually holds.
+ * enumeration blocked, version disclosure removed), the 2FA-coverage audit
+ * ({@see TwoFactorAudit}) that verifies "staff 2FA in place" actually holds, and the
+ * standing production-hygiene audit ({@see ProductionHygiene}, Story 18.6 — catches
+ * staging/authoring-only plugins left active on production).
  *
  * THE conflation rule (AD-1): references neither Tiers nor Entitlement — hardening
  * is never gated on membership or Gradering.
@@ -36,5 +38,6 @@ final class Module implements ModuleContract {
 	public function register(): void {
 		( new Hardening() )->register();
 		( new TwoFactorAudit() )->register();
+		( new ProductionHygiene() )->register();
 	}
 }
