@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ink\Challenges;
 
+use Ink\Content\FieldSets;
+use Ink\Kernel\Scalar;
 use Ink\Notifications\Api as Notifications;
 use Ink\Notifications\Template;
 
@@ -76,18 +78,31 @@ class WinnersPost {
 	/**
 	 * The announcement title for a round. Pure.
 	 *
+	 * Carries the round's cadence period (Story 12B.1) when supplied: a monthly round
+	 * reads "Wenners: Desember 2026 — {tema}" and an annual round "Wenners: 2026 —
+	 * {tema}", so the published announcement is the production surface where the
+	 * cadence (monthly vs annual) becomes observable. An empty period keeps the prior
+	 * "Wenners: {tema}" form (a round with no deadline set yet).
+	 *
 	 * @param string $uitdaging_title The producing uitdaging's title.
+	 * @param string $period          The cadence period label (e.g. "Desember 2026" / "2026"); '' to omit.
 	 * @return string
 	 */
-	public static function composeTitle( string $uitdaging_title ): string {
-		$title = trim( $uitdaging_title );
+	public static function composeTitle( string $uitdaging_title, string $period = '' ): string {
+		$title  = trim( $uitdaging_title );
+		$period = trim( $period );
 
 		if ( '' === $title ) {
 			return __( 'Wenneraankondiging', 'ink-core' );
 		}
 
-		/* translators: %s: the uitdaging title. */
-		return sprintf( __( 'Wenners: %s', 'ink-core' ), $title );
+		if ( '' === $period ) {
+			/* translators: %s: the uitdaging title. */
+			return sprintf( __( 'Wenners: %s', 'ink-core' ), $title );
+		}
+
+		/* translators: 1: the cadence period (e.g. "Desember 2026" / "2026"); 2: the uitdaging title. */
+		return sprintf( __( 'Wenners: %1$s — %2$s', 'ink-core' ), $period, $title );
 	}
 
 	/**
@@ -181,7 +196,7 @@ class WinnersPost {
 			);
 		}
 
-		$title   = self::composeTitle( $this->uitdagingTitle( $uitdaging_id ) );
+		$title   = self::composeTitle( $this->uitdagingTitle( $uitdaging_id ), $this->roundPeriod( $uitdaging_id ) );
 		$body    = self::composeBody( $this->bodyFrame(), $entries );
 		$post_id = $this->insertPost( $title, $body );
 
@@ -352,5 +367,22 @@ class WinnersPost {
 	 */
 	protected function uitdagingTitle( int $uitdaging_id ): string {
 		return (string) get_the_title( $uitdaging_id );
+	}
+
+	/**
+	 * A round's cadence period label (Story 12B.1) — resolves the round's deadline +
+	 * its cadence (monthly/annual) into the period the announcement title carries.
+	 * '' when no deadline is set yet (the title then omits the period). Overridable
+	 * seam (isolates the deadline/cadence meta reads).
+	 *
+	 * @param int $uitdaging_id The round.
+	 * @return string
+	 */
+	protected function roundPeriod( int $uitdaging_id ): string {
+		$deadline = Deadline::parse(
+			Scalar::asString( get_post_meta( $uitdaging_id, FieldSets::UITDAGING_DEADLINE, true ) )
+		);
+
+		return null === $deadline ? '' : Cadence::periodLabelFor( $uitdaging_id, $deadline );
 	}
 }

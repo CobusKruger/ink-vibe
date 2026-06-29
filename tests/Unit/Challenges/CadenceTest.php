@@ -15,8 +15,6 @@ namespace Ink\Tests\Unit\Challenges;
 use Ink\Challenges\Cadence;
 use Ink\Kernel\CadenceType;
 use Ink\Content\FieldSets;
-use Ink\Tiers\Api as TiersApi;
-use Ink\Kernel\Tier;
 use Brain\Monkey;
 use Brain\Monkey\Functions;
 
@@ -118,14 +116,6 @@ test( 'periodKeyFor / periodLabelFor resolve the round cadence then derive the p
 	expect( Cadence::periodLabelFor( 9, $deadline ) )->toBe( 'Desember 2026' ); // monthly default
 } );
 
-test( 'the annual period flows unchanged through the winner-label machinery', function (): void {
-	// __ stubbed so Terms::label returns its glossary literal (Goud / wenner).
-	Functions\when( '__' )->returnArg( 1 );
-
-	$deadline = new \DateTimeImmutable( '2026-12-31 12:00:00', new \DateTimeZone( 'Africa/Johannesburg' ) );
-	$period   = Cadence::periodLabel( $deadline, CadenceType::Jaarliks );
-
-	// The winners machinery (Tiers\Api::winnerLabel) is reused verbatim — only the
-	// period differs from the monthly cadence ("Desember 2026 Goud-wenner").
-	expect( TiersApi::winnerLabel( Tier::Goud, $period ) )->toBe( '2026 Goud-wenner' );
-} );
+// The production-path proof that the annual cadence is actually reused by the winners
+// machinery lives in WinnersPostTest ('generate carries the round cadence period into
+// the announcement title') — `WinnersPost::roundPeriod()` calls `periodLabelFor()`.

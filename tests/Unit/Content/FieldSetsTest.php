@@ -201,6 +201,34 @@ test( 'the uitdaging cadence field renders a select with both options, stored va
 } );
 
 /**
+ * Story 12B.1: a stored cadence value outside the option set (legacy/junk) renders the
+ * first option (maandeliks) selected — so the displayed selection matches the effective
+ * sanitiser-coerced value rather than showing nothing selected.
+ */
+test( 'the cadence select falls back to the first option when the stored value is junk', function (): void {
+	Functions\when( 'wp_nonce_field' )->justReturn( '' );
+	Functions\when( 'esc_attr' )->returnArg( 1 );
+	Functions\when( 'esc_html' )->returnArg( 1 );
+	Functions\when( 'esc_textarea' )->returnArg( 1 );
+	Functions\when( 'get_post_meta' )->alias(
+		fn ( $id, string $key, bool $single ) => 'ink_uitdaging_cadence' === $key ? 'rubbish' : ''
+	);
+	Functions\when( 'selected' )->alias(
+		fn ( $a, $b, $echo = true ): string => (string) $a === (string) $b ? ' selected' : ''
+	);
+
+	$post     = new \WP_Post();
+	$post->ID = 7;
+
+	ob_start();
+	( new FieldSets() )->renderBox( $post, array( 'args' => array( 'cpt' => 'uitdaging' ) ) );
+	$html = (string) ob_get_clean();
+
+	expect( $html )->toContain( '<option value="maandeliks" selected>Maandeliks</option>' ); // junk → first option
+	expect( $html )->toContain( '<option value="jaarliks">Jaarliks</option>' );              // not selected
+} );
+
+/**
  * Story 12B.1: the meta-box save path persists a cadence selection through the
  * field's sanitiser (junk folds to monthly) — non-vacuous given the cap is held.
  */

@@ -4,7 +4,7 @@ baseline_commit: d99cd0c080d291261e7268fd1197d64adee76d51
 
 # Story 12B.1: Annual competition management
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -110,7 +110,8 @@ claude-opus-4-8
 
 - `wp-content/plugins/ink-core/src/Kernel/CadenceType.php` (NEW — Kernel-owned cadence value set)
 - `wp-content/plugins/ink-core/src/Challenges/Cadence.php` (modified — cadence-aware periodKey/periodLabel + forUitdaging/periodKeyFor/periodLabelFor)
-- `wp-content/plugins/ink-core/src/Content/FieldSets.php` (modified — UITDAGING_CADENCE meta + select field def + renderBox select branch + sanitizeCadence)
+- `wp-content/plugins/ink-core/src/Content/FieldSets.php` (modified — UITDAGING_CADENCE meta + select field def + renderBox select branch w/ out-of-set fallback + sanitizeCadence)
+- `wp-content/plugins/ink-core/src/Challenges/WinnersPost.php` (modified — R12B: period-aware composeTitle + roundPeriod seam; folds the cadence period into the announcement title)
 - `tests/Unit/Kernel/CadenceTypeTest.php` (NEW — CadenceType enum tests)
 - `tests/Unit/Challenges/CadenceTest.php` (modified — annual cadence + resolver + pipeline-reuse tests)
 - `tests/Unit/Content/FieldSetsTest.php` (modified — cadence field/sanitiser/select-render/save tests; metaKeys count 12→13)
@@ -121,4 +122,17 @@ claude-opus-4-8
 
 ### Change Log
 
-- 2026-06-29 — Story 12B.1 implemented: annual competition cadence as configuration over the 12A pipeline. New Kernel `CadenceType` enum (`maandeliks`/`jaarliks`), cadence-aware `Challenges\Cadence` (annual period ⇒ year), per-`uitdaging` cadence meta + meta-box select in `Content\FieldSets` (default monthly). No pipeline class changed; no new front-end copy (annual winner label "2026 Goud-wenner"). 15 unit tests (suite 1184→1199). Glossary + translation-sheet rows for the cadence labels. R12A D1 read-collapse inherited, not addressed (flagged). cs/stan/deptrac/copy:scan: no new issues.
+- 2026-06-29 — Story 12B.1 implemented: annual competition cadence as configuration over the 12A pipeline. New Kernel `CadenceType` enum (`maandeliks`/`jaarliks`), cadence-aware `Challenges\Cadence` (annual period ⇒ year), per-`uitdaging` cadence meta + meta-box select in `Content\FieldSets` (default monthly). No new front-end copy. 15 unit tests (suite 1184→1199). Glossary + translation-sheet rows for the cadence labels. R12A D1 read-collapse inherited, not addressed (flagged). cs/stan/deptrac/copy:scan: no new issues.
+- 2026-06-29 — R12B code review (3-layer adversarial; `epic-12b-code-review-2026-06-29.md`). Two HIGH findings (raised by both Edge Case Hunter + Acceptance Auditor): the cadence was stranded (no production consumer of the period) and the reuse test was vacuous. **Both FIXED:** `WinnersPost::generate()` now folds the cadence-aware period into the announcement title via a period-aware `composeTitle` (annual ⇒ "Wenners: 2026 — …", monthly ⇒ "Wenners: Desember 2026 — …"); the vacuous `winnerLabel` test was replaced by a production-path `WinnersPostTest` proof. One LOW fixed (select first-option fallback for an out-of-set stored value). Deferred: REST enum-schema discoverability (M1, sanitiser already enforces correctness) + the pre-existing R12A D1 read-collapse. 0 unresolved HIGH/MED. Suite 1199→1201; cs/stan/deptrac/copy:scan still clean (no new edge). Status → done.
+
+### Senior Developer Review (AI)
+
+**Outcome:** Approved after fixes. R12B (2026-06-29), 3-layer adversarial review. Full report: `epic-12b-code-review-2026-06-29.md`.
+
+**Review Follow-ups (AI):**
+
+- [x] [Review][Patch][HIGH] Wire the cadence period into a production surface — annual cadence was stranded (no consumer). `WinnersPost::generate()` → period-aware `composeTitle`. [src/Challenges/WinnersPost.php]
+- [x] [Review][Patch][HIGH] Replace the vacuous `winnerLabel` reuse test with a production-path proof. [tests/Unit/Challenges/WinnersPostTest.php, CadenceTest.php]
+- [x] [Review][Patch][LOW] `select` render falls back to the first option for an out-of-set stored value. [src/Content/FieldSets.php]
+- [ ] [Review][Defer][MED] Advertise the cadence value set in the REST meta schema (`enum`) — sanitiser already enforces correctness; discoverability only. [src/Content/FieldSets.php]
+- [x] [Review][Defer][LOW] R12A D1 per-Gradering read-collapse — pre-existing, independent of cadence; remains the standing pre-launch follow-up.

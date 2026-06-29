@@ -162,10 +162,20 @@ final class FieldSets {
 					esc_textarea( (string) $value )
 				);
 			} elseif ( 'select' === $field['input'] ) {
+				$options  = (array) ( $field['options'] ?? array() );
 				$selected = (string) $value;
+
+				// A stored value outside the option set (legacy/junk written before the
+				// field existed) falls back to the first option, so the rendered selection
+				// matches the effective (sanitiser-coerced) value rather than showing
+				// nothing selected.
+				if ( array() !== $options && ! array_key_exists( $selected, $options ) ) {
+					$selected = (string) array_key_first( $options );
+				}
+
 				printf( '<select id="%1$s" name="%2$s">', esc_attr( $id ), esc_attr( $key ) );
 
-				foreach ( (array) ( $field['options'] ?? array() ) as $opt_value => $opt_label ) {
+				foreach ( $options as $opt_value => $opt_label ) {
 					printf(
 						'<option value="%1$s"%2$s>%3$s</option>',
 						esc_attr( (string) $opt_value ),
