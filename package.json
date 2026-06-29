@@ -1,0 +1,17 @@
+{
+  "name": "ink-vibe-e2e",
+  "version": "0.1.0",
+  "private": true,
+  "description": "INK end-to-end (Playwright) + wp-env harness — Story 18.8 (NFR-9). PayFast SANDBOX only, never the live gateway.",
+  "scripts": {
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test --grep @smoke"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@wordpress/e2e-test-utils-playwright": "^1.16.0",
+    "@wordpress/env": "^11.8.0"
+  }
+}

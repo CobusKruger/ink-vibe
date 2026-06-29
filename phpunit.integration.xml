@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Integration-suite PHPUnit / Pest configuration (NFR-9, Story 18.8).
+
+    SEPARATE from phpunit.xml because the integration suite boots a REAL WordPress
+    via the wp-env WP test library (tests/Integration/bootstrap.php), whereas the
+    unit suite uses the Brain-Monkey mock bootstrap (tests/bootstrap.php). Run inside
+    wp-env: `npx @wordpress/env start` then `composer test:integration`.
+
+    Output strictness is relaxed (real WP legitimately emits notices/output) but
+    failOnWarning stays on so a genuine integration warning fails CI.
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/Integration/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.integration.cache"
+         failOnWarning="true"
+         beStrictAboutOutputDuringTests="false">
+    <testsuites>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>wp-content/plugins/ink-core/src</directory>
+        </include>
+    </source>
+</phpunit>

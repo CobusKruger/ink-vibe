@@ -48,7 +48,7 @@
     "scripts": {
         "test": "pest",
         "test:unit": "pest --testsuite=Unit",
-        "test:integration": "pest --testsuite=Integration",
+        "test:integration": "pest -c phpunit.integration.xml",
         "stan": "phpstan analyse --memory-limit=1G",
         "cs": "phpcs",
         "cs:fix": "phpcbf",
