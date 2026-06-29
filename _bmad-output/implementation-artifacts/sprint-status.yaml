@@ -276,7 +276,7 @@ development_status:
   # Epic 12A: Challenge adjudication automation (NEW)
   epic-12a: in-progress
   12a-1-entryid-data-model-r1-linchpin: review
-  12a-2-judge-email-collation-tool-r1: backlog
+  12a-2-judge-email-collation-tool-r1: review
   12a-3-paste-text-results-ingestion-coverage-report-r2: backlog
   12a-4-winners-announcement-post-generation-r2: backlog
   12a-5-moderator-feedback-comment-type-writer-display-toggle-r2: backlog
