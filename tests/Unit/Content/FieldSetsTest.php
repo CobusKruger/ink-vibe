@@ -95,6 +95,7 @@ test( 'each CPT registers its expected field keys', function (): void {
 	// Challenge.
 	expect( $keys )->toContain( 'ink_uitdaging_theme' );
 	expect( $keys )->toContain( 'ink_uitdaging_deadline' );
+	expect( $keys )->toContain( 'ink_uitdaging_cadence' );
 	// Sponsor.
 	expect( $keys )->toContain( 'ink_borg_link' );
 	expect( $keys )->toContain( 'ink_borg_tier' );
@@ -152,7 +153,78 @@ test( 'captured sanitize callbacks coerce field values', function (): void {
  */
 test( 'Api facade exposes the field meta-key surface', function (): void {
 	expect( Api::fieldMetaKeys() )->toBe( FieldSets::metaKeys() );
-	expect( FieldSets::metaKeys() )->toHaveCount( 12 );
+	expect( FieldSets::metaKeys() )->toHaveCount( 13 );
+} );
+
+/**
+ * Story 12B.1 (R9): the cadence field sanitiser coerces any input to a valid
+ * CadenceType backing value — `jaarliks`/`maandeliks` kept, junk/empty folds to the
+ * monthly default (so a round is never accidentally annual).
+ */
+test( 'the uitdaging cadence sanitiser coerces to a valid cadence, defaulting to monthly', function (): void {
+	$registered = ink_capture_registered_fields();
+
+	$cadence_sanitize = $registered['uitdaging::ink_uitdaging_cadence']['args']['sanitize_callback'];
+	expect( call_user_func( $cadence_sanitize, 'jaarliks' ) )->toBe( 'jaarliks' );
+	expect( call_user_func( $cadence_sanitize, 'maandeliks' ) )->toBe( 'maandeliks' );
+	expect( call_user_func( $cadence_sanitize, 'rubbish' ) )->toBe( 'maandeliks' );
+	expect( call_user_func( $cadence_sanitize, '' ) )->toBe( 'maandeliks' );
+} );
+
+/**
+ * Story 12B.1: the cadence field renders a <select> offering both cadences, with the
+ * stored value preselected — the redakteur's annual/monthly switch.
+ */
+test( 'the uitdaging cadence field renders a select with both options, stored value selected', function (): void {
+	Functions\when( 'wp_nonce_field' )->justReturn( '' );
+	Functions\when( 'esc_attr' )->returnArg( 1 );
+	Functions\when( 'esc_html' )->returnArg( 1 );
+	Functions\when( 'esc_textarea' )->returnArg( 1 );
+	Functions\when( 'get_post_meta' )->alias(
+		fn ( $id, string $key, bool $single ) => 'ink_uitdaging_cadence' === $key ? 'jaarliks' : ''
+	);
+	Functions\when( 'selected' )->alias(
+		fn ( $a, $b, $echo = true ): string => (string) $a === (string) $b ? ' selected' : ''
+	);
+
+	$post     = new \WP_Post();
+	$post->ID = 7;
+	$box      = array( 'args' => array( 'cpt' => 'uitdaging' ) );
+
+	ob_start();
+	( new FieldSets() )->renderBox( $post, $box );
+	$html = (string) ob_get_clean();
+
+	expect( $html )->toContain( '<select id="field_ink_uitdaging_cadence" name="ink_uitdaging_cadence">' );
+	expect( $html )->toContain( '<option value="maandeliks">Maandeliks</option>' );
+	expect( $html )->toContain( '<option value="jaarliks" selected>Jaarliks</option>' ); // stored value preselected
+} );
+
+/**
+ * Story 12B.1: the meta-box save path persists a cadence selection through the
+ * field's sanitiser (junk folds to monthly) — non-vacuous given the cap is held.
+ */
+test( 'save writes the uitdaging cadence through the cadence sanitiser', function (): void {
+	$_POST = array(
+		'ink_content_fieldsets_nonce' => 'n',
+		'ink_uitdaging_cadence'       => 'jaarliks',
+	);
+	Functions\when( 'wp_unslash' )->returnArg( 1 );
+	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+	Functions\when( 'wp_verify_nonce' )->justReturn( true );
+	Functions\when( 'wp_is_post_autosave' )->justReturn( false );
+	Functions\when( 'wp_is_post_revision' )->justReturn( false );
+	Functions\when( 'current_user_can' )->justReturn( true );
+
+	Functions\expect( 'update_post_meta' )->once()->with( 42, 'ink_uitdaging_cadence', 'jaarliks' );
+
+	$post            = new \WP_Post();
+	$post->post_type = 'uitdaging';
+	( new FieldSets() )->save( 42, $post );
+
+	expect( true )->toBeTrue();
+
+	unset( $_POST );
 } );
 
 /**
