@@ -94,5 +94,6 @@ add_action(
 		Kernel\Plugin::instance()->addModule( 'sponsors', new Sponsors\Module() );
 		Kernel\Plugin::instance()->addModule( 'forms', new Forms\Module() );
 		Kernel\Plugin::instance()->addModule( 'migration', new Migration\Module() );
+		Kernel\Plugin::instance()->addModule( 'seo', new Seo\Module() );
 	}
 );

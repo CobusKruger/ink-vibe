@@ -79,6 +79,10 @@ deptrac:
           collectors:
             - type: classNameRegex
               value: '#^Ink\\Migration\\.*#'
+        - name: Seo
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Seo\\.*#'
     ruleset:
         # Kernel is the shared base — depends on no other module.
         Kernel: ~
@@ -271,3 +275,13 @@ deptrac:
             # depends only on Kernel/Content/Tiers, never back on Migration. No
             # Entitlement/Tiers gate (the social graph is open).
             - Social
+        Seo:
+            - Kernel
+            # Story 18.1: the Rank Math schema seo seam maps each reader-facing
+            # CPT to its schema `@type`, reading the migration-load-bearing slug
+            # single source `Ink\Content\PostTypes::readableTypes()`
+            # (GEDIG/STORIE/ARTIKEL). A real, non-circular cross-module dependency
+            # on the slug registry — mirrors the Discovery->Content (8.1),
+            # Library->Content (10.1) and Submission->Content (6.1) edges. No
+            # Entitlement/Tiers edge (SEO schema is never gated; conflation-clean).
+            - Content
