@@ -84,6 +84,21 @@ final class Api {
 	}
 
 	/**
+	 * The resolved (merge-applied) BODY of a registered form-letter template — WITHOUT
+	 * sending. The read path for a consumer that composes a document FROM a form-letter
+	 * template rather than emailing it (Story 12A.4: the wenneraankondiging post body is
+	 * framed by the `ink_wenneraankondiging` template). Honours admin body overrides + the
+	 * whitelisted greeting merge, exactly like {@see send()} — it just returns the text.
+	 *
+	 * @param string                    $key     Template/event key.
+	 * @param array<string, int|string> $context Optional merge context.
+	 * @return string The resolved body ('' for an unregistered key).
+	 */
+	public static function templateBody( string $key, array $context = array() ): string {
+		return ( new MergeResolver() )->resolve( self::store()->body( $key ), $context );
+	}
+
+	/**
 	 * Create an in-app kennisgewing (Story 9.9; guarded — no-op without BuddyPress).
 	 *
 	 * @param int              $user_id  The recipient.

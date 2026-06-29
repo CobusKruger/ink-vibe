@@ -143,6 +143,51 @@ final class FeaturedWinners {
 	}
 
 	/**
+	 * Order the featured FEED: algehele wenner(s) first, then ordinary wenners (Story
+	 * 12A.7, FR-50-R2). Pure, deterministic — by rank then ascending id.
+	 *
+	 * Unlike {@see order()} (the single-spotlight dedup), this keeps EVERY valid winner:
+	 * the 12A.3 per-(Gradering × category) pools produce one algehele wenner PER category,
+	 * and the feed must list them all (collapsing to one-per-rank would hide them). This
+	 * is the ordering that "drives the home featured ordering" (15.6) without losing winners.
+	 *
+	 * @param list<array{id?:int, rank?:int, title?:string, url?:string}> $winners The winner rows.
+	 * @return list<array{id:int, rank:int, title:string, url:string, is_algehele_wenner:bool, label:string}>
+	 */
+	public static function orderFeed( array $winners ): array {
+		$rows = array();
+
+		foreach ( $winners as $winner ) {
+			$rank = (int) ( $winner['rank'] ?? 0 );
+			$id   = (int) ( $winner['id'] ?? 0 );
+
+			if ( $id <= 0 || ! Placements::isValidRank( $rank ) ) {
+				continue;
+			}
+
+			$rows[] = array(
+				'id'                 => $id,
+				'rank'               => $rank,
+				'title'              => (string) ( $winner['title'] ?? '' ),
+				'url'                => (string) ( $winner['url'] ?? '' ),
+				'is_algehele_wenner' => Placements::isAlgeheleWenner( $rank ),
+				'label'              => Placements::placementLabel( $rank ),
+			);
+		}
+
+		usort(
+			$rows,
+			static function ( array $a, array $b ): int {
+				$by_rank = $a['rank'] <=> $b['rank'];
+
+				return 0 !== $by_rank ? $by_rank : ( $a['id'] <=> $b['id'] );
+			}
+		);
+
+		return $rows;
+	}
+
+	/**
 	 * Build the featured-slot HTML. Pure (escaping + Placements labels only).
 	 *
 	 * Collapses to '' when there is no announcement title (no current wenneraankondiging)
@@ -160,8 +205,10 @@ final class FeaturedWinners {
 			return '';
 		}
 
-		$url     = (string) ( $featured['url'] ?? '' );
-		$winners = self::order( is_array( $featured['winners'] ?? null ) ? $featured['winners'] : array() );
+		$url = (string) ( $featured['url'] ?? '' );
+		// 12A.7: render the full feed (every winner, algehele wenner(s) first), not the
+		// single-spotlight dedup — the per-category pools (12A.3) have one algehele wenner each.
+		$winners = self::orderFeed( is_array( $featured['winners'] ?? null ) ? $featured['winners'] : array() );
 
 		$heading = '' !== $url
 			? '<a href="' . esc_url( $url ) . '">' . esc_html( $title ) . '</a>'

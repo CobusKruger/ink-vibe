@@ -129,3 +129,50 @@ test( 'order collapses duplicate ranks so there is never a second algehele wenne
 	expect( $ordered[0]['id'] )->toBe( 11 );
 	expect( $ordered )->toHaveCount( 2 );
 } );
+
+// --- orderFeed(): the FEED keeps every winner, algehele wenner(s) first (Story 12A.7) ---
+
+test( 'orderFeed puts the algehele wenner first, ahead of ordinary wenners', function (): void {
+	$feed = FeaturedWinners::orderFeed(
+		array(
+			array( 'id' => 30, 'rank' => 3, 'title' => 'Derde' ),
+			array( 'id' => 10, 'rank' => 1, 'title' => 'Algehele' ),
+			array( 'id' => 20, 'rank' => 2, 'title' => 'Tweede' ),
+		)
+	);
+
+	expect( array_column( $feed, 'rank' ) )->toBe( array( 1, 2, 3 ) );
+	expect( $feed[0]['is_algehele_wenner'] )->toBeTrue();
+} );
+
+test( 'orderFeed PRESERVES multiple algehele wenners (one per category pool) — unlike order()', function (): void {
+	// Two rank-1s = the algehele wenner of two different (Gradering × category) pools.
+	$winners = array(
+		array( 'id' => 12, 'rank' => 1, 'title' => 'Gedig-wenner' ),
+		array( 'id' => 11, 'rank' => 1, 'title' => 'Storie-wenner' ),
+		array( 'id' => 20, 'rank' => 2, 'title' => 'Tweede' ),
+	);
+
+	// Non-vacuous: order() WOULD collapse the two rank-1s to one...
+	expect( FeaturedWinners::order( $winners ) )->toHaveCount( 2 );
+
+	// ...but the FEED keeps both algehele wenners, ordered (lowest id first), then the wenner.
+	$feed = FeaturedWinners::orderFeed( $winners );
+	expect( $feed )->toHaveCount( 3 );
+	expect( array_column( $feed, 'id' ) )->toBe( array( 11, 12, 20 ) );
+	$rank_ones = array_filter( $feed, static fn ( array $r ): bool => 1 === $r['rank'] );
+	expect( $rank_ones )->toHaveCount( 2 );
+} );
+
+test( 'orderFeed drops rows with no id or a non-placement rank', function (): void {
+	$feed = FeaturedWinners::orderFeed(
+		array(
+			array( 'id' => 0, 'rank' => 1 ),
+			array( 'id' => 7, 'rank' => 0 ),
+			array( 'id' => 9, 'rank' => 1 ),
+		)
+	);
+
+	expect( $feed )->toHaveCount( 1 );
+	expect( $feed[0]['id'] )->toBe( 9 );
+} );

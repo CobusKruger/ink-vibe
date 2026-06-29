@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-29  # epic-18 (SEO, security & performance) COMPLETE — 10/10 done, reviewed (R18, 0 HIGH unresolved, 4 patches), retro'd (10th formal retro). Final planned epic.
+last_updated: 2026-06-29  # epic-12A (Challenge adjudication automation) COMPLETE — 7/7 done, R12A review (0 unresolved HIGH/MED, 6 patches), 11th retro, MERGED to main. (epic-18 was the final PLANNED epic; 12A was the deferred adjudication backlog epic.)
 # epic-5 started 2026-06-25; 5-1 → review (create-story + dev-story, Gradering data-model: Tier enum default/isManualOnly/isAutoPromotable + Kernel-owned meta-key single source + typed default-safe Tiers\Api::forUser() closing the 2.3 deferral; tests 283 passed/1 skipped +13, cs/stan clean, deptrac no new edge, Entitlement⟂Tiers holds)
 # 5-3 → review (create-story + dev-story, built BEFORE 5.2 as the log substrate; ink_tier_history custom table — FIRST ink-core custom table — via Kernel Schema registry registered at include time for activation correctness; PromotionLog::record()/forUser() + PromotionLogEntry value object; first $wpdb unit-test pattern; tests 294 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
 # 5-2 → review (create-story + dev-story; Tiers\Api::promote() SOLE write path — meta + normalised promoted_at + PromotionLog append + FIRST ink-core do_action 'ink/tier_promoted' event seam for 5.10; MANAGE_TIERS-gated AdminProfile set/adjust user-profile UI (2nd sanctioned $_POST site); closed 3 Story-2.3 deferrals (MANAGE_TIERS grant verified, per-target scope decided = global editorial cap, promoted_at format normalised); Tiers module wired into bootstrap; tests 305 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
@@ -274,15 +274,15 @@ development_status:
   epic-12-retrospective: done  # completed 2026-06-27 (epic-12-retro-2026-06-27.md) — 4th formal retro in a row; CLOSED the 🔴 carry-forward (promoted the 2 testing rules — Brain-Monkey isolation + test-the-outcome — into project-context.md before the 12A trigger). Epic 12 = 8/8 built, tests 754→812 (+58), review 5 patches/0 HIGH shipped. New Ink\Challenges module over the Epic-2 uitdaging CPT; closed 2 deferred-Epic-2 items (12.3 cap reconcile, 12.4 AD-5). Carry to 12A: enforce placement rank-uniqueness at ingestion (12A.3), wire placements→awardWins (R3), deadline time-of-day owner decision, Meester-entry submission signal; copy-debt now 7.x-12.x (pre-launch gate); consume the Library R4 ink/biblioteek_wen_bywerking hook at 12A.3; don't skip the 12A retro.
 
   # Epic 12A: Challenge adjudication automation (NEW)
-  epic-12a: backlog
-  12a-1-entryid-data-model-r1-linchpin: backlog
-  12a-2-judge-email-collation-tool-r1: backlog
-  12a-3-paste-text-results-ingestion-coverage-report-r2: backlog
-  12a-4-winners-announcement-post-generation-r2: backlog
-  12a-5-moderator-feedback-comment-type-writer-display-toggle-r2: backlog
-  12a-6-winner-banner-per-rank-per-tier-variants: backlog
-  12a-7-featured-feed-ordering: backlog
-  epic-12a-retrospective: optional
+  epic-12a: done  # 7/7 built + R12A 3-layer review (6 patches, 0 unresolved HIGH/MED) + 11th retro; MERGED to main 2026-06-29. Editorial-automation pillar: EntryID→collation→ingestion+dekkingsverslag→idempotent commit (winners post + moderator-feedback comment type + placements + auto-promotion + biblioteek hook) → banners + featured feed. Tests 1124→1184. Follow-up: per-Gradering read-collapse vs per-category winners (deferred-work.md D1).
+  12a-1-entryid-data-model-r1-linchpin: done
+  12a-2-judge-email-collation-tool-r1: done
+  12a-3-paste-text-results-ingestion-coverage-report-r2: done
+  12a-4-winners-announcement-post-generation-r2: done
+  12a-5-moderator-feedback-comment-type-writer-display-toggle-r2: done
+  12a-6-winner-banner-per-rank-per-tier-variants: done
+  12a-7-featured-feed-ordering: done
+  epic-12a-retrospective: done  # completed 2026-06-29 (epic-12a-retro-2026-06-29.md) — 11th consecutive formal retro. Closed Epic-12 readiness flags #2/#3/Meester/biblioteek. Carry: per-category read-model reconciliation (D1), deadline time-of-day owner decision, copy-debt 7.x–12A.x, 18.8 adjudication integration tail.
 
   # Epic 12B: Annual competition management (NEW, P2)
   epic-12b: backlog
@@ -326,7 +326,7 @@ development_status:
   epic-14-retrospective: done
 
   # Epic 15: Organisation pages & contact
-  epic-15: in-progress
+  epic-15: done  # all 6 stories + retrospective done (merged c7e6a40); flag corrected from stale in-progress 2026-06-29
   15-1-tuisblad: done
   15-2-gemeenskap-page: done
   15-3-oor-ink: done

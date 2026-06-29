@@ -537,6 +537,33 @@ if ( ! function_exists( 'ink_foundation_gradering_badge' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ink_foundation_wenner_banier' ) ) {
+	/**
+	 * The accessible winner banner for a placed work (Story 12A.6, C9).
+	 *
+	 * Presentation glue only: reads the placement + per-tier banner markup from the
+	 * `ink-core` Challenges presenter ({@see \Ink\Challenges\WinnerBanner::forPost()}),
+	 * which carries the algehele-wenner/wenner variant + the `ink-gradering--{tier}`
+	 * colour convention (Meester → `primary` #EA4015) and pairs colour with a real text
+	 * label (a11y — never colour-only). A non-placed work yields ''.
+	 *
+	 * `class_exists`-guarded so the theme degrades to '' when `ink-core` is inactive —
+	 * never a fatal. All placement logic lives in `ink-core` (three-layer separation).
+	 *
+	 * @param int $post_id The entry (bydrae) post id (0 → current post).
+	 * @return string The banner HTML, or '' when ink-core is inactive / the work didn't place.
+	 */
+	function ink_foundation_wenner_banier( int $post_id = 0 ): string {
+		if ( ! class_exists( 'Ink\\Challenges\\WinnerBanner' ) ) {
+			return '';
+		}
+
+		$post_id = $post_id > 0 ? $post_id : (int) get_the_ID();
+
+		return \Ink\Challenges\WinnerBanner::forPost( $post_id );
+	}
+}
+
 if ( ! function_exists( 'ink_foundation_gradering_wins_needed' ) ) {
 	/**
 	 * The private-My-Profiel "wins needed" subtext (Story 5.9, FR-14 / R3).
