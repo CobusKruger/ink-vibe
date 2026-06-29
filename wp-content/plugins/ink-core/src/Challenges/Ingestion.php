@@ -166,17 +166,17 @@ class Ingestion {
 	// --- Overridable side-effect seams (the Brain-Monkey isolation rule) ---------------
 
 	/**
-	 * Reserved seam: generate the wenneraankondiging post (Story 12A.4). No-op here.
+	 * Generate the wenneraankondiging post (Story 12A.4). Overridable seam.
 	 *
-	 * Documented reserved stub (the 10.6 {@see AutoUpdate} precedent): the commit ORDER
-	 * is established now; 12A.4 fills the body and returns the created post id.
+	 * Filled by Story 12A.4: delegates to {@see WinnersPost::generate()} (idempotent —
+	 * returns the existing announcement for a round rather than double-posting).
 	 *
 	 * @param int                                               $uitdaging_id The round.
 	 * @param list<array{post_id:int, rank:int, author_id:int}> $winners      The winners.
-	 * @return int The created post id (0 = none yet — reserved).
+	 * @return int The created (or existing) announcement post id.
 	 */
 	protected function commitWinnersPost( int $uitdaging_id, array $winners ): int {
-		return 0;
+		return ( new WinnersPost() )->generate( $uitdaging_id, $winners );
 	}
 
 	/**

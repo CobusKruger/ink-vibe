@@ -217,6 +217,14 @@ deptrac:
             # and carries zero Ink\Entitlement (THE conflation rule holds — the pool is
             # Gradering, never lidmaatskap). Mirrors the Discovery->Tiers (8.3) edge.
             - Tiers
+            # Story 12A.4: the winners-announcement post (Challenges\WinnersPost) frames its
+            # body from a Story-1.12 form-letter Notifications Template, read via the
+            # Notifications Api facade (registerTemplate + templateBody) — the documented
+            # AD-9 form-letter consumer (the Template class names 12A.4 a consumer). A real,
+            # non-circular cross-module Api-facade dependency (Notifications depends only on
+            # Kernel, never back on Challenges). Mirrors the Tiers->Notifications (5.10) and
+            # Entitlement->Notifications (4.8) edges. Conflation-clean: no Entitlement.
+            - Notifications
         Sponsors:
             - Kernel
             # Story 14.1: the Sponsors read-model (Sponsor) + facade (Api) read the
