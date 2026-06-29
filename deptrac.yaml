@@ -87,6 +87,10 @@ deptrac:
           collectors:
             - type: classNameRegex
               value: '#^Ink\\Security\\.*#'
+        - name: Cache
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Cache\\.*#'
     ruleset:
         # Kernel is the shared base — depends on no other module.
         Kernel: ~
@@ -294,4 +298,11 @@ deptrac:
             # block, version-disclosure removal) + the staff-2FA coverage audit.
             # Pure decisions + WP hooks only; no domain reads. Kernel-only — no
             # Entitlement/Tiers edge (hardening is never gated; conflation-clean).
+            - Kernel
+        Cache:
+            # Story 18.5: page-cache bypass for INK's dynamic surfaces. Uses two
+            # decoupled seams (the generic `ink_` admin-post prefix + the
+            # `ink_cache_bypass` filter) so it never reads Forms/Discovery/Social
+            # constants — Kernel-only, no Entitlement/Tiers edge (caching is never
+            # gated; conflation-clean).
             - Kernel
