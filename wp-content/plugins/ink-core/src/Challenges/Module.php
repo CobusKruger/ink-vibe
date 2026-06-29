@@ -43,5 +43,6 @@ final class Module implements ModuleContract {
 		( new CollationPage() )->register();
 		( new IngestionPage() )->register();
 		( new WinnersPost() )->register();
+		( new ModeratorFeedback() )->register();
 	}
 }

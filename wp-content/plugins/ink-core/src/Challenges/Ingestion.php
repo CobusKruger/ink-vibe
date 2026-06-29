@@ -180,14 +180,17 @@ class Ingestion {
 	}
 
 	/**
-	 * Reserved seam: write the Terugvoer van die moderator comments (Story 12A.5). No-op.
+	 * Write the Terugvoer van die moderator comments (Story 12A.5). Overridable seam.
+	 *
+	 * Filled by Story 12A.5: delegates to {@see ModeratorFeedback::recordForRound()}
+	 * (one `ink_moderator_terugvoer` comment per entry; idempotent).
 	 *
 	 * @param int                                                 $uitdaging_id The round.
 	 * @param list<array{post_id:int, title:string, text:string}> $commentary   The commentary.
-	 * @return int The number of feedback comments written (0 = reserved).
+	 * @return int The number of feedback comments written.
 	 */
 	protected function commitModeratorFeedback( int $uitdaging_id, array $commentary ): int {
-		return 0;
+		return ( new ModeratorFeedback() )->recordForRound( $uitdaging_id, $commentary );
 	}
 
 	/**
