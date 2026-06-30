@@ -138,6 +138,7 @@ final class ResponseStore {
 				'type'       => self::COMMENT_TYPE,
 				'status'     => 'approve',
 				'count'      => true,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- a single bounded per-post typed-reaction count; the commentmeta join is the efficient path to an accurate count of only validly-typed Gemeenskapsreaksies (the PHP-filter alternative would load every comment row). Comments-per-work are naturally bounded.
 				'meta_query' => array(
 					array(
 						'key'     => self::META_TYPE,

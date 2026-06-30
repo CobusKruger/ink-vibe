@@ -365,7 +365,12 @@ class IngestionPage {
 	 */
 	private function postedConfirmed(): bool {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- the nonce is verified in render() before the commit; this reads the confirm tick.
-		return isset( $_POST['bevestig'] ) && is_scalar( $_POST['bevestig'] ) && '1' === (string) wp_unslash( $_POST['bevestig'] );
+		if ( ! isset( $_POST['bevestig'] ) || ! is_scalar( $_POST['bevestig'] ) ) {
+			return false;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- see above.
+		return '1' === sanitize_key( wp_unslash( $_POST['bevestig'] ) );
 	}
 
 	/**
