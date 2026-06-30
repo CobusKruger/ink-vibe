@@ -112,11 +112,28 @@ test( 'every field is single, show_in_rest, sanitised and auth-gated', function 
 
 	foreach ( $registered as $id => $entry ) {
 		expect( $entry['args']['single'] )->toBeTrue();
-		expect( $entry['args']['show_in_rest'] )->toBeTrue();
+		// REST-aware: either the plain boolean opt-in, or a constrained schema array
+		// (a field may advertise an `enum`/typed schema; Item 2 added one for cadence).
+		$show_in_rest = $entry['args']['show_in_rest'];
+		expect( true === $show_in_rest || ( is_array( $show_in_rest ) && isset( $show_in_rest['schema'] ) ) )->toBeTrue();
 		expect( $entry['args'] )->toHaveKey( 'sanitize_callback' );
 		expect( $entry['args']['auth_callback'] )->toBeCallable();
 		expect( $entry['args'] )->toHaveKey( 'default' );
 	}
+} );
+
+/**
+ * Item 2 (M1): the cadence meta advertises a constrained REST schema — `type: string`
+ * with an `enum` of exactly the CadenceType backing values — so a REST writer is
+ * validated against the closed set the sanitiser enforces, not just silently coerced.
+ */
+test( 'the uitdaging cadence meta advertises a closed enum REST schema', function (): void {
+	$registered = ink_capture_registered_fields();
+
+	$schema = $registered['uitdaging::ink_uitdaging_cadence']['args']['show_in_rest'];
+	expect( $schema )->toBeArray();
+	expect( $schema['schema']['type'] )->toBe( 'string' );
+	expect( $schema['schema']['enum'] )->toBe( array( 'maandeliks', 'jaarliks' ) );
 } );
 
 /**
