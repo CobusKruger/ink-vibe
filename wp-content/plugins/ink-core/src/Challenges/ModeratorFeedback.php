@@ -220,9 +220,9 @@ class ModeratorFeedback {
 			return;
 		}
 
-		// An unchecked checkbox posts nothing → OFF; checked → '1'.
+		// An unchecked checkbox posts nothing → OFF; checked → '1' (nonce verified above).
 		$enabled = isset( $_POST[ self::DISPLAY_META ] ) && is_scalar( $_POST[ self::DISPLAY_META ] )
-			&& '1' === (string) wp_unslash( $_POST[ self::DISPLAY_META ] );
+			&& '1' === sanitize_key( wp_unslash( $_POST[ self::DISPLAY_META ] ) );
 
 		update_user_meta( $user_id, self::DISPLAY_META, $enabled );
 	}

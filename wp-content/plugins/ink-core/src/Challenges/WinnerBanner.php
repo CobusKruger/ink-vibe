@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  * Renders the winner banner with per-rank (algehele wenner vs wenner) and per-tier
  * (Brons/Silwer/Goud/Meester) variants (Story 12A.6, C9).
  *
- * a11y (no colour-only encoding): the banner pairs its colour with a real TEXT label and
+ * A11y (no colour-only encoding): the banner pairs its colour with a real TEXT label and
  * an `aria-hidden` mark glyph, so the placement is conveyed by text — not colour alone —
  * mirroring the Story-5.4 gradering badge. Colour reuses the established
  * `.ink-gradering--{tier}` convention (theme.json maps `--meester` to `primary #EA4015`);

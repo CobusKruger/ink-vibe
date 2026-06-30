@@ -111,6 +111,7 @@ final class SuggestedReads {
 			'posts_per_page'      => $limit,
 			'ignore_sticky_posts' => true,
 			'no_found_rows'       => true,
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- bounded shared-term related-reads surfacing; the AD-7 server-rendered cross-surface (LIMIT-capped, no_found_rows, no search plugin). The tax_query is intrinsic to "related by shared term".
 			'tax_query'           => $tax_query,
 		);
 	}
