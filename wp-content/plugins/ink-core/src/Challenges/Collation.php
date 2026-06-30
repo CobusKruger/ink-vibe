@@ -12,6 +12,7 @@ namespace Ink\Challenges;
 use Ink\Content\PostTypes;
 use Ink\I18n\Terms;
 use Ink\Kernel\Scalar;
+use Ink\Kernel\Tier;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -28,9 +29,10 @@ defined( 'ABSPATH' ) || exit;
  * Gradering order is {@see Pools::competingTiers()} (brons, silwer, goud). The EntryID
  * is assigned IN that order, so "→ EntryID" is the within-(type, grade) id tiebreak.
  *
- * Meester is **non-competing** (manual-only/terminal — {@see Pools::competingTiers()}
- * excludes it), so a Meester (or empty-snapshot) entry is dropped from the numbered
- * judge pools here: a Meester entry is never pool-judged.
+ * Meester is an **elevated Goud member** ({@see Tier::competitionTier()}): it forms no
+ * pool of its own but is judged WITHIN the Goud pool, so a Meester entry is ordered
+ * among the Goud entries rather than dropped. Only an empty/unknown-snapshot entry
+ * (no valid {@see Tier}) forms no judge pool and is excluded.
  *
  * Conflation-clean: reads the Gradering snapshot value only (never `ink_writer_tier`,
  * never `Ink\Entitlement`).
@@ -61,12 +63,27 @@ final class Collation {
 	}
 
 	/**
+	 * The competition pool a Gradering snapshot is judged in — the entry's own grade,
+	 * except Meester which folds into Goud ({@see Tier::competitionTier()}). An
+	 * empty/unknown snapshot has no valid {@see Tier} and returns '' (no pool). Pure.
+	 *
+	 * @param string $gradering The entry-time Gradering snapshot value.
+	 * @return string The pool grade's backing value, or '' when there is no valid grade.
+	 */
+	private static function poolOf( string $gradering ): string {
+		$tier = Tier::tryFrom( $gradering );
+
+		return null !== $tier ? $tier->competitionTier()->value : '';
+	}
+
+	/**
 	 * Order a round's entries for EntryID assignment: type → Gradering → id. Pure.
 	 *
-	 * Entries of a non-competing Gradering (Meester) or an empty/unknown snapshot, an
-	 * unknown type, or a non-positive id are EXCLUDED — they form no judge pool. The
-	 * within-(type, grade) tiebreak is ascending id, so order never depends on
-	 * incidental query order and the assigned EntryID is deterministic.
+	 * Entries with an empty/unknown snapshot (no valid grade), an unknown type, or a
+	 * non-positive id are EXCLUDED — they form no judge pool. A Meester entry is NOT
+	 * excluded: it is judged in the Goud pool ({@see self::poolOf()}), so it sorts among
+	 * the Goud entries. The within-(type, grade) tiebreak is ascending id, so order
+	 * never depends on incidental query order and the assigned EntryID is deterministic.
 	 *
 	 * @param list<array{id:int, type:string, gradering:string}> $entries The round entries.
 	 * @return list<array{id:int, type:string, gradering:string}>
@@ -82,7 +99,7 @@ final class Collation {
 			$type      = Scalar::asString( $entry['type'] ?? '' );
 			$gradering = Scalar::asString( $entry['gradering'] ?? '' );
 
-			if ( $id <= 0 || ! isset( $type_order[ $type ] ) || ! isset( $grade_order[ $gradering ] ) ) {
+			if ( $id <= 0 || ! isset( $type_order[ $type ] ) || ! isset( $grade_order[ self::poolOf( $gradering ) ] ) ) {
 				continue;
 			}
 
@@ -102,7 +119,9 @@ final class Collation {
 					return $by_type;
 				}
 
-				$by_grade = $grade_order[ $a['gradering'] ] <=> $grade_order[ $b['gradering'] ];
+				// Sort by the pool the entry competes in (Meester → Goud), so a Meester
+				// entry is ordered among the Goud entries, then id-tiebroken.
+				$by_grade = $grade_order[ self::poolOf( $a['gradering'] ) ] <=> $grade_order[ self::poolOf( $b['gradering'] ) ];
 
 				return 0 !== $by_grade ? $by_grade : ( $a['id'] <=> $b['id'] );
 			}

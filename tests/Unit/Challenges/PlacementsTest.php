@@ -133,6 +133,23 @@ test( 'arrange keeps BOTH category rank-1s of one Gradering — the D1 read-coll
 	expect( $algehele )->toHaveCount( 2 );
 } );
 
+test( 'arrange folds a Meester placement into the (Goud × category) pool — Item 3', function (): void {
+	// Meester is an elevated Goud member: a Meester podium shares the Goud pool, so a
+	// Meester-Gedig algehele wenner and a Goud-Gedig 2nd land in the SAME goud|gedig pool.
+	$placed = array(
+		array( 'id' => 70, 'gradering' => 'meester', 'category' => 'gedig', 'rank' => 1 ), // Meester → Goud
+		array( 'id' => 71, 'gradering' => 'goud', 'category' => 'gedig', 'rank' => 2 ),
+	);
+
+	$by_pool = Placements::arrange( $placed );
+
+	expect( $by_pool )->toHaveKey( 'goud|gedig' );
+	expect( $by_pool )->not->toHaveKey( 'meester|gedig' );
+	expect( array_column( $by_pool['goud|gedig'], 'id' ) )->toBe( array( 70, 71 ) );
+	expect( array_column( $by_pool['goud|gedig'], 'rank' ) )->toBe( array( 1, 2 ) );
+	expect( $by_pool['goud|gedig'][0]['is_algehele_wenner'] )->toBeTrue(); // the Meester rank-1
+} );
+
 test( 'arrange STILL collapses two rank-1s in the SAME (Gradering × category) — the guard is preserved', function (): void {
 	// Two rank-1s in the SAME category of the same Gradering is dirty data — the defensive
 	// one-per-rank guard must still collapse it (lowest id wins), even category-scoped.
