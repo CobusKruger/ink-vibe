@@ -88,13 +88,20 @@ final class FieldSets {
 			$cap = $def['cap'];
 
 			foreach ( $def['fields'] as $field ) {
+				// A field may advertise a constrained REST schema (e.g. an `enum`) so the
+				// REST surface matches what the sanitiser actually persists; absent that,
+				// `show_in_rest` stays the plain boolean (the unconstrained-string default).
+				$show_in_rest = isset( $field['rest_schema'] )
+					? array( 'schema' => $field['rest_schema'] )
+					: true;
+
 				register_post_meta(
 					$cpt,
 					$field['key'],
 					array(
 						'single'            => true,
 						'type'              => $field['type'],
-						'show_in_rest'      => true,
+						'show_in_rest'      => $show_in_rest,
 						'default'           => 'integer' === $field['type'] ? 0 : '',
 						'sanitize_callback' => $field['sanitize'],
 						'auth_callback'     => static fn (): bool => current_user_can( $cap ),
@@ -331,15 +338,22 @@ final class FieldSets {
 						'sanitize' => array( self::class, 'sanitizeDate' ),
 					),
 					array(
-						'key'      => self::UITDAGING_CADENCE,
-						'label'    => __( 'Kadens', 'ink-core' ),
-						'type'     => 'string',
-						'input'    => 'select',
-						'options'  => array(
+						'key'         => self::UITDAGING_CADENCE,
+						'label'       => __( 'Kadens', 'ink-core' ),
+						'type'        => 'string',
+						'input'       => 'select',
+						'options'     => array(
 							CadenceType::Maandeliks->value => __( 'Maandeliks', 'ink-core' ),
 							CadenceType::Jaarliks->value   => __( 'Jaarliks', 'ink-core' ),
 						),
-						'sanitize' => array( self::class, 'sanitizeCadence' ),
+						'sanitize'    => array( self::class, 'sanitizeCadence' ),
+						// REST advertises the same closed value set the sanitiser enforces
+						// (maandeliks/jaarliks) — the CadenceType backing values, the single
+						// source — so a REST writer is constrained, not just silently coerced.
+						'rest_schema' => array(
+							'type' => 'string',
+							'enum' => CadenceType::values(),
+						),
 					),
 				),
 			),
