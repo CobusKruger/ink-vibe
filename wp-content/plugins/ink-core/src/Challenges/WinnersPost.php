@@ -326,7 +326,13 @@ class WinnersPost {
 	}
 
 	/**
-	 * The placed entries (rank 1–3) for a round, flattened. Overridable seam.
+	 * The placed entries (rank 1–3) for a round, flattened across every pool. Overridable
+	 * seam.
+	 *
+	 * {@see Placements::forRound()} buckets per (Gradering × category) since the D1
+	 * read-collapse fix, so flattening here surfaces EVERY category's podium (a Goud-Gedig
+	 * algehele wenner AND a Goud-Storie algehele wenner both appear) — the home featured
+	 * feed ({@see FeaturedWinners::orderFeed()}) then lists them all.
 	 *
 	 * @param int $uitdaging_id The round.
 	 * @return list<array{id:int, rank:int}>
