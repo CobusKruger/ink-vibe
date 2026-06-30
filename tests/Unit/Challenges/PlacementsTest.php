@@ -100,3 +100,51 @@ test( 'arrange collapses a duplicated rank to one entry (lowest id wins) — no 
 	expect( array_column( $silwer, 'id' ) )->toBe( array( 20, 40 ) );
 	expect( array_column( $silwer, 'rank' ) )->toBe( array( 1, 2 ) );
 } );
+
+test( 'arrange keeps BOTH category rank-1s of one Gradering — the D1 read-collapse regression', function (): void {
+	// Goud has a Gedig algehele wenner AND a Storie algehele wenner. Before the D1 fix the
+	// pool was keyed on gradering alone, so the two LEGITIMATE rank-1s collided and one was
+	// silently dropped. They must now BOTH survive — in separate (Gradering × category) pools.
+	$placed = array(
+		array( 'id' => 10, 'gradering' => 'goud', 'category' => 'gedig', 'rank' => 1 ),  // Goud-Gedig algehele wenner
+		array( 'id' => 11, 'gradering' => 'goud', 'category' => 'storie', 'rank' => 1 ), // Goud-Storie algehele wenner
+		array( 'id' => 12, 'gradering' => 'goud', 'category' => 'gedig', 'rank' => 2 ),  // Goud-Gedig wenner
+	);
+
+	$by_pool = Placements::arrange( $placed );
+
+	// Two distinct Goud pools — one per category — each keyed via Pools::poolKey.
+	expect( $by_pool )->toHaveKey( 'goud|gedig' );
+	expect( $by_pool )->toHaveKey( 'goud|storie' );
+
+	// BOTH algehele wenners survive (the regression that proves D1 is fixed).
+	expect( array_column( $by_pool['goud|gedig'], 'id' ) )->toBe( array( 10, 12 ) );
+	expect( array_column( $by_pool['goud|gedig'], 'rank' ) )->toBe( array( 1, 2 ) );
+	expect( $by_pool['goud|gedig'][0]['is_algehele_wenner'] )->toBeTrue();
+
+	expect( array_column( $by_pool['goud|storie'], 'id' ) )->toBe( array( 11 ) );
+	expect( $by_pool['goud|storie'][0]['is_algehele_wenner'] )->toBeTrue();
+
+	// Across both categories there are TWO algehele wenners, not one (non-vacuous).
+	$algehele = array_merge(
+		array_filter( $by_pool['goud|gedig'], static fn ( array $r ): bool => $r['is_algehele_wenner'] ),
+		array_filter( $by_pool['goud|storie'], static fn ( array $r ): bool => $r['is_algehele_wenner'] )
+	);
+	expect( $algehele )->toHaveCount( 2 );
+} );
+
+test( 'arrange STILL collapses two rank-1s in the SAME (Gradering × category) — the guard is preserved', function (): void {
+	// Two rank-1s in the SAME category of the same Gradering is dirty data — the defensive
+	// one-per-rank guard must still collapse it (lowest id wins), even category-scoped.
+	$placed = array(
+		array( 'id' => 30, 'gradering' => 'goud', 'category' => 'gedig', 'rank' => 1 ),
+		array( 'id' => 20, 'gradering' => 'goud', 'category' => 'gedig', 'rank' => 1 ), // duplicate within same pool
+		array( 'id' => 40, 'gradering' => 'goud', 'category' => 'gedig', 'rank' => 2 ),
+	);
+
+	$pool = Placements::arrange( $placed )['goud|gedig'];
+
+	$first_places = array_filter( $pool, static fn ( array $r ): bool => 1 === $r['rank'] );
+	expect( $first_places )->toHaveCount( 1 );
+	expect( array_column( $pool, 'id' ) )->toBe( array( 20, 40 ) ); // lowest-id rank-1 wins
+} );

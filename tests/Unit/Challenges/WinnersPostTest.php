@@ -199,6 +199,41 @@ test( 'featured builds the slot payload from the latest announcement + its place
 	expect( $payload['winners'][0] )->toBe( array( 'id' => 10, 'rank' => 1, 'title' => 'Werk 10', 'url' => 'https://ink.test/10' ) );
 } );
 
+test( 'featured surfaces EVERY category winner in the home payload — the D1 read-collapse outcome', function (): void {
+	// The round's placed entries (post the per-(Gradering × category) grouping) carry TWO
+	// algehele wenners of one Gradering: a Gedig rank-1 and a Storie rank-1. The home slot
+	// payload must include BOTH — featured() must not collapse them back to one rank-1.
+	Functions\when( 'get_post_meta' )->justReturn( 7 );
+	Functions\when( 'get_the_title' )->justReturn( 'Wenners: Mei' );
+	Functions\when( 'get_permalink' )->justReturn( 'https://ink.test/wenners-mei' );
+
+	$wp = new class() extends WinnersPost {
+		protected function latestAnnouncement(): int {
+			return 900;
+		}
+		protected function placedEntries( int $uitdaging_id ): array {
+			// As flattened from Placements::forRound across the goud|gedig + goud|storie pools.
+			return array(
+				array( 'id' => 10, 'rank' => 1 ), // Goud-Gedig algehele wenner
+				array( 'id' => 11, 'rank' => 1 ), // Goud-Storie algehele wenner
+				array( 'id' => 12, 'rank' => 2 ), // Goud-Gedig wenner
+			);
+		}
+		protected function entryView( int $post_id ): array {
+			return array( 'title' => 'Werk ' . $post_id, 'url' => 'https://ink.test/' . $post_id );
+		}
+	};
+
+	$payload = $wp->featured( null );
+
+	// All three placements reach the slot payload (non-vacuous: the two rank-1s coexist).
+	expect( $payload['winners'] )->toHaveCount( 3 );
+	expect( array_column( $payload['winners'], 'id' ) )->toBe( array( 10, 11, 12 ) );
+
+	$rank_ones = array_filter( $payload['winners'], static fn ( array $w ): bool => 1 === $w['rank'] );
+	expect( $rank_ones )->toHaveCount( 2 ); // both category algehele wenners survive
+} );
+
 test( 'featured collapses (returns the incoming value) when there is no announcement', function (): void {
 	$wp = new class() extends WinnersPost {
 		protected function latestAnnouncement(): int {

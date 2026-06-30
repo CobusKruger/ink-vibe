@@ -21,7 +21,10 @@ defined( 'ABSPATH' ) || exit;
  * as {@see self::PLACEMENT_META_KEY} — so all of 1st, 2nd AND 3rd are stored per pool,
  * not only the single winner (FR-50). The pool is the entry's entry-time Gradering
  * snapshot ({@see Entry::GRADERING_META_KEY}, Story 12.4/12.5), so placements are
- * per-Gradering-per-round automatically.
+ * per-Gradering-per-round automatically. The read grouping ({@see self::arrange()}) is
+ * additionally keyed by category ({@see Pools::poolKey()}) so the one-per-rank guard
+ * scopes per (Gradering × category) and per-category winners are not collapsed away
+ * (the D1 read-collapse fix).
  *
  * Rank semantics (glossary): rank 1 = **algehele wenner** ("[Maand] algehele wenner");
  * ranks 2–3 = **wenner** ("[Maand] wenner"). {@see self::record()}/{@see self::clear()}
@@ -139,26 +142,32 @@ final class Placements {
 	/**
 	 * Group placed entries per pool, sorted by rank. Pure.
 	 *
-	 * Entries with a non-placement rank (0 / out of 1–3) are excluded. Within a pool
-	 * the placements are ordered by rank (1st, 2nd, 3rd) and each carries its
+	 * Entries with a non-placement rank (0 / out of 1–3) are excluded. The pool is keyed
+	 * on (Gradering × category) ({@see Pools::poolKey()}) so the one-per-rank collapse
+	 * scopes WITHIN a category: a Goud-Gedig rank-1 and a Goud-Storie rank-1 are two
+	 * legitimate algehele wenners and BOTH survive (the D1 read-collapse fix). Two rank-1s
+	 * in the SAME (Gradering × category) still collapse to one — the defensive guard. A
+	 * category-less row degrades to a Gradering-only key (the prior 12.6 contract). Within
+	 * a pool the placements are ordered by rank (1st, 2nd, 3rd) and each carries its
 	 * algehele-wenner flag + label.
 	 *
-	 * @param list<array{id:int, gradering:string, rank:int}> $placed The candidate entries.
+	 * @param list<array{id:int, gradering:string, rank:int, category?:string}> $placed The candidate entries.
 	 * @return array<string, list<array{id:int, rank:int, is_algehele_wenner:bool, label:string}>>
 	 */
 	public static function arrange( array $placed ): array {
 		$by_pool = array();
 
 		foreach ( $placed as $entry ) {
-			$rank = (int) ( $entry['rank'] ?? 0 );
-			$id   = (int) ( $entry['id'] ?? 0 );
-			$pool = Scalar::asString( $entry['gradering'] ?? '' );
+			$rank      = (int) ( $entry['rank'] ?? 0 );
+			$id        = (int) ( $entry['id'] ?? 0 );
+			$gradering = Scalar::asString( $entry['gradering'] ?? '' );
+			$category  = Scalar::asString( $entry['category'] ?? '' );
 
-			if ( $id <= 0 || '' === $pool || ! self::isValidRank( $rank ) ) {
+			if ( $id <= 0 || '' === $gradering || ! self::isValidRank( $rank ) ) {
 				continue;
 			}
 
-			$by_pool[ $pool ][] = array(
+			$by_pool[ Pools::poolKey( $gradering, $category ) ][] = array(
 				'id'                 => $id,
 				'rank'               => $rank,
 				'is_algehele_wenner' => self::isAlgeheleWenner( $rank ),
@@ -169,10 +178,11 @@ final class Placements {
 		foreach ( $by_pool as $pool => $rows ) {
 			// Deterministic order: by rank, then by entry id (so ties never depend on
 			// incidental query order). Then collapse to one entry per rank per pool —
-			// a defensive guard so dirty ingestion (two rank-1s in a pool) can never
-			// surface two "algehele wenners" downstream; the lowest-id placement wins
-			// the slot (R12 review — the canonical one-per-rank invariant lives here,
-			// the authoritative dedup is the 12A.3 ingestion's responsibility).
+			// a defensive guard so dirty ingestion (two rank-1s in ONE (Gradering ×
+			// category) pool) can never surface two "algehele wenners" downstream; the
+			// lowest-id placement wins the slot (R12 review — the canonical one-per-rank
+			// invariant lives here, scoped per category since D1; the authoritative dedup
+			// is the 12A.3 ingestion's responsibility).
 			usort(
 				$rows,
 				static function ( array $a, array $b ): int {
@@ -211,10 +221,13 @@ final class Placements {
 		$placed = array();
 
 		foreach ( Pools::forRound( $uitdaging_id ) as $pool => $entry_ids ) {
+			list( $gradering, $category ) = Pools::splitPoolKey( (string) $pool );
+
 			foreach ( $entry_ids as $entry_id ) {
 				$placed[] = array(
 					'id'        => (int) $entry_id,
-					'gradering' => (string) $pool,
+					'gradering' => $gradering,
+					'category'  => $category,
 					'rank'      => self::placementFor( (int) $entry_id ),
 				);
 			}

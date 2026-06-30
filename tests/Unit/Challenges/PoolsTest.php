@@ -64,6 +64,33 @@ test( 'group excludes entries with an empty or non-competing gradering (e.g. mee
 	expect( $pools )->not->toHaveKey( 'rubbish' );
 } );
 
+test( 'group keys on (Gradering × category) when entries carry a category — the D1 fix', function (): void {
+	// One Goud Gedig + one Goud Storie + one Goud Gedig: the two categories form two
+	// distinct pools within Goud, so a per-category podium is never collapsed away.
+	$entries = array(
+		array( 'id' => 1, 'gradering' => 'goud', 'category' => 'gedig' ),
+		array( 'id' => 2, 'gradering' => 'goud', 'category' => 'storie' ),
+		array( 'id' => 3, 'gradering' => 'goud', 'category' => 'gedig' ),
+		array( 'id' => 4, 'gradering' => 'brons', 'category' => 'gedig' ),
+	);
+
+	$pools = Pools::group( $entries );
+
+	expect( $pools['goud|gedig'] )->toBe( array( 1, 3 ) );
+	expect( $pools['goud|storie'] )->toBe( array( 2 ) );
+	expect( $pools['brons|gedig'] )->toBe( array( 4 ) );
+	// The collapsed Gradering-only key must NOT exist when a category is present.
+	expect( $pools )->not->toHaveKey( 'goud' );
+} );
+
+test( 'poolKey / splitPoolKey round-trip (Gradering × category, and category-less)', function (): void {
+	expect( Pools::poolKey( 'goud', 'gedig' ) )->toBe( 'goud|gedig' );
+	expect( Pools::poolKey( 'goud' ) )->toBe( 'goud' ); // category-less degrades to Gradering-only
+
+	expect( Pools::splitPoolKey( 'goud|gedig' ) )->toBe( array( 'goud', 'gedig' ) );
+	expect( Pools::splitPoolKey( 'goud' ) )->toBe( array( 'goud', '' ) );
+} );
+
 test( 'poolLabel returns the Gradering label for a tier', function (): void {
 	expect( Pools::poolLabel( Tier::Goud ) )->toBe( 'Goud' );
 	expect( Pools::poolLabel( Tier::Brons ) )->toBe( 'Brons' );
