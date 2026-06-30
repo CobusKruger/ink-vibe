@@ -144,8 +144,42 @@ test( 'captured sanitize callbacks coerce field values', function (): void {
 	expect( call_user_func( $date_sanitize, '2026-06-21' ) )->toBe( '2026-06-21' );
 	expect( call_user_func( $date_sanitize, 'nonsense' ) )->toBe( '' );
 
+	// Item 1 (date-only deadlines): a bare date is kept; a legacy datetime shape is
+	// TRUNCATED to its date portion (the time-of-day is supplied by the SAST boundary,
+	// never stored); junk drops to ''.
 	$deadline_sanitize = $registered['uitdaging::ink_uitdaging_deadline']['args']['sanitize_callback'];
-	expect( call_user_func( $deadline_sanitize, '2026-06-21T18:00' ) )->toBe( '2026-06-21T18:00' );
+	expect( call_user_func( $deadline_sanitize, '2026-06-21' ) )->toBe( '2026-06-21' );
+	expect( call_user_func( $deadline_sanitize, '2026-06-21T18:00' ) )->toBe( '2026-06-21' );
+	expect( call_user_func( $deadline_sanitize, '2026-06-21 18:00:00' ) )->toBe( '2026-06-21' );
+	expect( call_user_func( $deadline_sanitize, 'nonsense' ) )->toBe( '' );
+} );
+
+/**
+ * Item 1 (date-only deadlines): the deadline field renders a plain `date` input — no
+ * time-of-day component — so a redakteur sets only the calendar day (the SAST
+ * end-of-day boundary supplies the time).
+ */
+test( 'the uitdaging deadline field renders a date input (no time-of-day)', function (): void {
+	Functions\when( 'wp_nonce_field' )->justReturn( '' );
+	Functions\when( 'esc_attr' )->returnArg( 1 );
+	Functions\when( 'esc_html' )->returnArg( 1 );
+	Functions\when( 'esc_textarea' )->returnArg( 1 );
+	Functions\when( 'get_post_meta' )->alias(
+		fn ( $id, string $key, bool $single ) => 'ink_uitdaging_deadline' === $key ? '2026-10-31' : ''
+	);
+	Functions\when( 'selected' )->alias(
+		fn ( $a, $b, $echo = true ): string => (string) $a === (string) $b ? ' selected' : ''
+	);
+
+	$post     = new \WP_Post();
+	$post->ID = 7;
+
+	ob_start();
+	( new FieldSets() )->renderBox( $post, array( 'args' => array( 'cpt' => 'uitdaging' ) ) );
+	$html = (string) ob_get_clean();
+
+	expect( $html )->toContain( '<input type="date" id="field_ink_uitdaging_deadline" name="ink_uitdaging_deadline" value="2026-10-31"' );
+	expect( $html )->not->toContain( 'type="datetime-local"' );
 } );
 
 /**

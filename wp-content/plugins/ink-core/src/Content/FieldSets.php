@@ -327,7 +327,7 @@ final class FieldSets {
 						'key'      => self::UITDAGING_DEADLINE,
 						'label'    => __( 'Sluitingsdatum', 'ink-core' ),
 						'type'     => 'string',
-						'input'    => 'datetime-local',
+						'input'    => 'date',
 						'sanitize' => array( self::class, 'sanitizeDate' ),
 					),
 					array(
@@ -388,17 +388,24 @@ final class FieldSets {
 	}
 
 	/**
-	 * Sanitise a date / datetime-local string: keep `Y-m-d`, `Y-m-d\TH:i` and
-	 * `Y-m-d H:i(:s)` shapes, drop anything else to an empty string.
+	 * Sanitise a date string to a date-only `Y-m-d` value.
+	 *
+	 * INK dates — including the uitdaging deadline — are DATE ONLY: the time-of-day
+	 * never matters because the SAST end-of-day boundary supplies it ({@see
+	 * \Ink\Kernel\Sast::endOfDay()}; a deadline is valid through 23:59:59 SAST on its
+	 * calendar day). A bare `Y-m-d` is kept; a legacy/submitted datetime shape
+	 * (`Y-m-d\TH:i` or `Y-m-d H:i(:s)`) is gracefully TRUNCATED to its date portion so
+	 * a value carried over from the old datetime-local input never persists a spurious
+	 * time. Anything else drops to an empty string.
 	 *
 	 * @param mixed $value Incoming value.
-	 * @return string A valid date string, or ''.
+	 * @return string A valid `Y-m-d` date string, or ''.
 	 */
 	public static function sanitizeDate( $value ): string {
 		$value = sanitize_text_field( (string) $value );
 
-		if ( 1 === preg_match( '/^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2})?)?$/', $value ) ) {
-			return $value;
+		if ( 1 === preg_match( '/^(\d{4}-\d{2}-\d{2})([ T]\d{2}:\d{2}(:\d{2})?)?$/', $value, $matches ) ) {
+			return $matches[1];
 		}
 
 		return '';
