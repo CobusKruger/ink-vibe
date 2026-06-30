@@ -617,7 +617,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Engels | Afrikaans | Notas |
 |---|---|---|
 | Social divider line ("Or continue with") | Of gebruik eerder | Gerender slegs as 'n sosiale-aanmeld-inprop aktief is |
-| POPIA consent note (social sign-in shares basic profile data) | As jy 'n sosiale media-rekening gebruik, sien INK sekere basiese besonderhede. | POPIA-toestemmingsnota |
+| POPIA consent note (social sign-in shares basic profile data) | As jy 'n sosiale media-rekening gebruik, sien INK jou basiese besonderhede. | POPIA-toestemmingsnota |
 | Privacy-policy link label | Privaatheidsbeleid | Skakel na die privaatheidsblad (`get_privacy_policy_url()` met `/privaatheidsbeleid`-terugval — die werklike blad is 'n voor-lansering inhoud-hek) |
 
 ### Rekening-goedkeuring backstop (R6 — Storie 3.6, af by verstek)
@@ -634,7 +634,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Reject result notice ("account rejected") | Jou rekening is afgekeur. | Redakteur-statusboodskap ná verwerping |
 | Error result notice (action could not complete) | Iets het foutgegaan. | Redakteur-statusboodskap by 'n mislukte handeling |
 | Approval email (subject + body) | Onderwerp: Jou INK rekening is goedgekeur · Liggaam: Hallo {skrywer}. Jou rekening is goedgekeur. Jy kan nou inteken en begin skryf. | Transaksionele e-pos ná goedkeuring; stuur-skakelaar AF |
-| Rejection email (subject + body) | Onderwerp: Omtrent jou INK rekeningaansoek · Liggaam: Hallo {skrywer}. Jou rekeningaansoek is ongelukkig afgekeur. | Transaksionele e-pos ná verwerping; stuur-skakelaar AF |
+| Rejection email (subject + body) | Onderwerp: Aangaande jou INK rekeningaansoek · Liggaam: Hallo {skrywer}. Jou rekeningaansoek is ongelukkig afgekeur. | Transaksionele e-pos ná verwerping; stuur-skakelaar AF |
 
 ### Onboarding (Storie 3.3, ná registrasie)
 
@@ -754,3 +754,33 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Discover writers | Ontdek skrywers | Knoppie |
 | Activity from your follows | Aktiwiteit van wie jy volg | H2 |
 | [Name] started following you | [Naam] volg jou nou | Kennisgewing |
+
+## Sync 2026-06-30 — Kontak & outentisering-mikrokopie
+
+Clears the last `[NEEDS HUMAN AFRIKAANS]` markers (auth + Kontak clusters). Authored
+microcopy beyond the already-rendered field labels: field hints, a privacy note, and
+per-field validation notices. Wired into the live code; leak-scan baseline lowered.
+
+### Kontak-vorm (`Ink\Forms\ContactForm`, `ink/kontak-vorm` blok — Storie 15.4)
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Subject (optional) | Onderwerp (opsioneel) | Etiket vir die enigste opsionele veld |
+| Tell us how we can help. | Hoe ons kan help? | Wenk onder die boodskap-veld (`aria-describedby`) |
+| We use your details only to reply to this message. | Ons gebruik jou besonderhede net om op hierdie boodskap te antwoord. | Privaatheidsnota onder die vorm |
+| Please enter your name. | Vul asseblief jou naam in. | Per-veld valideringsboodskap (`fout-naam`) |
+| Please enter a valid email address. | Vul asseblief 'n geldige e-posadres in. | Per-veld valideringsboodskap (`fout-epos`) |
+| Please enter a message. | Vul asseblief 'n boodskap in. | Per-veld valideringsboodskap (`fout-boodskap`) |
+
+### Registreer-vorm (`patterns/auth-register.php`)
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Choose a username — other members will see this. | Kies 'n gebruikersnaam — ander lede sal dit sien. | Wenk onder gebruikersnaam-veld |
+| We'll send your sign-in details to this address. | Ons stuur jou intekenbesonderhede na hierdie adres. | Wenk onder e-pos-veld |
+
+### Wagwoord-herstel-vorm (`patterns/auth-forgot-password.php`)
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Enter the email or username linked to your account. | Vul die e-pos of gebruikersnaam in wat aan jou rekening gekoppel is. | Wenk onder die veld |

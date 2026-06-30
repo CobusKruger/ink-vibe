@@ -10,8 +10,7 @@
  * — auth is USED, never reimplemented; the `lostpassword_form` action is fired so
  * core/plugins inject their own fields. The reset e-mail itself is Afrikaansed in
  * ink-core (Story 3.1 `retrieve_password_title` / `_message` filters). All copy is
- * Afrikaans; field/microcopy not yet curated in ui-copy-translations.md (the
- * documented auth-form copy gap) is marked [NEEDS HUMAN AFRIKAANS].
+ * Afrikaans, curated in docs/ui-copy-translations.md (label + the field hint).
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"480px"}} -->
@@ -31,13 +30,13 @@
 		<form name="lostpasswordform" class="ink-auth-form" action="<?php echo esc_url( site_url( 'wp-login.php?action=lostpassword', 'login_post' ) ); ?>" method="post">
 			<p class="ink-auth-field">
 				<label for="user_login"><?php echo esc_html__( 'E-pos of gebruikersnaam', 'ink-foundation' ); ?></label>
-				<input type="text" name="user_login" id="user_login" autocapitalize="off" autocorrect="off" autocomplete="username" required="required" />
+				<input type="text" name="user_login" id="user_login" autocapitalize="off" autocorrect="off" autocomplete="username" aria-describedby="user_login-wenk" required="required" />
+				<span class="ink-auth-hint" id="user_login-wenk"><?php echo esc_html__( 'Vul die e-pos of gebruikersnaam in wat aan jou rekening gekoppel is.', 'ink-foundation' ); ?></span>
 			</p>
 			<?php do_action( 'lostpassword_form' ); ?>
 			<p class="ink-auth-submit">
 				<button type="submit" name="wp-submit" class="wp-element-button"><?php echo esc_html__( 'Herstel wagwoord', 'ink-foundation' ); ?></button>
 			</p>
-			<span class="ink-needs-human-af" hidden>[NEEDS HUMAN AFRIKAANS] — auth-form field labels / validation copy not yet authored in ui-copy-translations.md.</span>
 		</form>
 		<!-- /wp:html -->
 

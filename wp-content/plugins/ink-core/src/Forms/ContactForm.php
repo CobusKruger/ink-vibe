@@ -30,9 +30,9 @@ defined( 'ABSPATH' ) || exit;
  * contact form is never gated on membership or the writer Gradering.
  *
  * House style: thin {@see render()} (supplies the nonce + admin-post URL + notice from
- * WordPress) + pure {@see toHtml()} (escaping only). Copy is Afrikaans-as-source via
- * gettext; the not-yet-curated Kontak microcopy carries the standing human-copy-pending
- * marker (the unauthored-copy workflow; see docs/afrikaans-copy-worklist.md).
+ * WordPress) + pure {@see toHtml()} (escaping only). All copy is Afrikaans-as-source via
+ * gettext, curated in docs/ui-copy-translations.md (labels, field hints, the privacy
+ * note, and the per-field validation notices).
  *
  * @package Ink\Core
  */
@@ -75,6 +75,15 @@ final class ContactForm {
 	public const NOTICE_SENT      = 'gestuur';
 	public const NOTICE_INVALID   = 'fout';
 	public const NOTICE_SEND_FAIL = 'stuur-fout';
+
+	/**
+	 * Per-field validation notice slugs — surfaced so the visitor sees exactly which
+	 * field needs attention, instead of one collapsed "vul alles in" message. Mapped
+	 * from the {@see validate()} error code by {@see invalidNotice()}.
+	 */
+	public const NOTICE_INVALID_NAME    = 'fout-naam';
+	public const NOTICE_INVALID_EMAIL   = 'fout-epos';
+	public const NOTICE_INVALID_MESSAGE = 'fout-boodskap';
 
 	/**
 	 * Register the Kontak hooks. Invoked once from {@see Module::register()}.
@@ -135,18 +144,8 @@ final class ContactForm {
 	 * @return string
 	 */
 	public static function toHtml( string $nonce_field, string $action_url, string $notice = '' ): string {
-		$html = '<form class="ink-kontak-vorm" method="post" action="' . esc_url( $action_url ) . '">';
-
-		if ( self::NOTICE_SENT === $notice ) {
-			$html .= '<p class="ink-kontak-vorm__notice ink-kontak-vorm__notice--ok" role="status">'
-				. esc_html__( 'Dankie, jou boodskap is gestuur.', 'ink-core' ) . '</p>';
-		} elseif ( self::NOTICE_INVALID === $notice ) {
-			$html .= '<p class="ink-kontak-vorm__notice ink-kontak-vorm__notice--fout" role="alert">'
-				. esc_html__( 'Maak seker jou naam, e-pos en boodskap is ingevul.', 'ink-core' ) . '</p>';
-		} elseif ( self::NOTICE_SEND_FAIL === $notice ) {
-			$html .= '<p class="ink-kontak-vorm__notice ink-kontak-vorm__notice--fout" role="alert">'
-				. esc_html__( 'Ons kon nie jou boodskap stuur nie. Probeer asseblief weer.', 'ink-core' ) . '</p>';
-		}
+		$html  = '<form class="ink-kontak-vorm" method="post" action="' . esc_url( $action_url ) . '">';
+		$html .= self::noticeHtml( $notice );
 
 		$html .= $nonce_field
 			. '<input type="hidden" name="action" value="' . esc_attr( self::POST_ACTION ) . '" />'
@@ -157,22 +156,83 @@ final class ContactForm {
 				. esc_html__( 'E-pos', 'ink-core' ) . '</label>'
 				. '<input type="email" id="' . esc_attr( self::FIELD_EMAIL ) . '" name="' . esc_attr( self::FIELD_EMAIL ) . '" required="required" /></p>'
 			. '<p class="ink-kontak-vorm__veld"><label for="' . esc_attr( self::FIELD_SUBJECT ) . '">'
-				. esc_html__( 'Onderwerp', 'ink-core' ) . '</label>'
+				. esc_html__( 'Onderwerp (opsioneel)', 'ink-core' ) . '</label>'
 				. '<input type="text" id="' . esc_attr( self::FIELD_SUBJECT ) . '" name="' . esc_attr( self::FIELD_SUBJECT ) . '" /></p>'
 			. '<p class="ink-kontak-vorm__veld"><label for="' . esc_attr( self::FIELD_MESSAGE ) . '">'
 				. esc_html__( 'Boodskap', 'ink-core' ) . '</label>'
-				. '<textarea id="' . esc_attr( self::FIELD_MESSAGE ) . '" name="' . esc_attr( self::FIELD_MESSAGE ) . '" rows="6" required="required"></textarea></p>'
+				. '<span class="ink-kontak-vorm__wenk" id="' . esc_attr( self::FIELD_MESSAGE ) . '-wenk">'
+					. esc_html__( 'Hoe ons kan help?', 'ink-core' ) . '</span>'
+				. '<textarea id="' . esc_attr( self::FIELD_MESSAGE ) . '" name="' . esc_attr( self::FIELD_MESSAGE ) . '" rows="6" required="required" aria-describedby="' . esc_attr( self::FIELD_MESSAGE ) . '-wenk"></textarea></p>'
 			// Honeypot: visually hidden, must stay empty. A filled value is a bot.
 			. '<p class="ink-kontak-vorm__hp" aria-hidden="true" style="position:absolute;left:-9999px;">'
 				. '<label for="' . esc_attr( self::FIELD_HONEYPOT ) . '">' . esc_html__( 'Los hierdie veld leeg', 'ink-core' ) . '</label>'
 				. '<input type="text" id="' . esc_attr( self::FIELD_HONEYPOT ) . '" name="' . esc_attr( self::FIELD_HONEYPOT ) . '" tabindex="-1" autocomplete="off" /></p>'
+			. '<p class="ink-kontak-vorm__privaatheid">'
+				. esc_html__( 'Ons gebruik jou besonderhede net om op hierdie boodskap te antwoord.', 'ink-core' ) . '</p>'
 			. '<p class="ink-kontak-vorm__stuur"><button type="submit" class="wp-element-button">'
-				. esc_html__( 'Stuur boodskap', 'ink-core' ) . '</button></p>'
-			// Standing copy-debt marker: the Kontak micro/validation/success copy is not
-			// yet curated in ui-copy-translations.md (see docs/afrikaans-copy-worklist.md).
-			. '<span class="ink-needs-human-af" hidden>[NEEDS HUMAN AFRIKAANS] — Kontak form labels / validation / success copy not yet authored in ui-copy-translations.md.</span>';
+				. esc_html__( 'Stuur boodskap', 'ink-core' ) . '</button></p>';
 
 		return $html . '</form>';
+	}
+
+	/**
+	 * The result-notice markup for a notice slug ('' when the slug is unknown/empty).
+	 * Pure (gettext + escaping only). Each error notice carries `role="alert"`; the
+	 * success notice `role="status"`.
+	 *
+	 * @param string $notice The notice slug (one of the NOTICE_* constants).
+	 * @return string
+	 */
+	private static function noticeHtml( string $notice ): string {
+		switch ( $notice ) {
+			case self::NOTICE_SENT:
+				return self::notice( 'ok', 'status', esc_html__( 'Dankie, jou boodskap is gestuur.', 'ink-core' ) );
+			case self::NOTICE_INVALID:
+				return self::notice( 'fout', 'alert', esc_html__( 'Maak seker jou naam, e-pos en boodskap is ingevul.', 'ink-core' ) );
+			case self::NOTICE_INVALID_NAME:
+				return self::notice( 'fout', 'alert', esc_html__( 'Vul asseblief jou naam in.', 'ink-core' ) );
+			case self::NOTICE_INVALID_EMAIL:
+				return self::notice( 'fout', 'alert', esc_html__( 'Vul asseblief \'n geldige e-posadres in.', 'ink-core' ) );
+			case self::NOTICE_INVALID_MESSAGE:
+				return self::notice( 'fout', 'alert', esc_html__( 'Vul asseblief \'n boodskap in.', 'ink-core' ) );
+			case self::NOTICE_SEND_FAIL:
+				return self::notice( 'fout', 'alert', esc_html__( 'Ons kon nie jou boodskap stuur nie. Probeer asseblief weer.', 'ink-core' ) );
+			default:
+				return '';
+		}
+	}
+
+	/**
+	 * A notice `<p>` with the variant class + ARIA role. Pure ($text is pre-escaped).
+	 *
+	 * @param string $variant The notice variant suffix (`ok` / `fout`).
+	 * @param string $role    The ARIA live role (`status` / `alert`).
+	 * @param string $text    The already-escaped notice text.
+	 * @return string
+	 */
+	private static function notice( string $variant, string $role, string $text ): string {
+		return '<p class="ink-kontak-vorm__notice ink-kontak-vorm__notice--' . $variant . '" role="' . $role . '">'
+			. $text . '</p>';
+	}
+
+	/**
+	 * Map a {@see validate()} failure to its per-field notice slug. Pure — an
+	 * unrecognised code falls back to the collapsed {@see NOTICE_INVALID}.
+	 *
+	 * @param WP_Error $error The validation error.
+	 * @return string The notice slug to surface.
+	 */
+	public static function invalidNotice( WP_Error $error ): string {
+		switch ( $error->get_error_code() ) {
+			case 'ink_kontak_missing_name':
+				return self::NOTICE_INVALID_NAME;
+			case 'ink_kontak_invalid_email':
+				return self::NOTICE_INVALID_EMAIL;
+			case 'ink_kontak_missing_message':
+				return self::NOTICE_INVALID_MESSAGE;
+			default:
+				return self::NOTICE_INVALID;
+		}
 	}
 
 	/**
@@ -254,7 +314,7 @@ final class ContactForm {
 		$valid = $this->validate( $name, $email, $subject, $message );
 
 		if ( is_wp_error( $valid ) ) {
-			$this->redirect( $this->formUrl( self::NOTICE_INVALID ) );
+			$this->redirect( $this->formUrl( self::invalidNotice( $valid ) ) );
 			return;
 		}
 

@@ -81,7 +81,7 @@ AF: Of gebruik eerder
 
 SOCIAL-CONSENT
 EN: By continuing with a social account, you share basic profile information with INK.
-AF: As jy 'n sosiale media-rekening gebruik, sien INK sekere basiese besonderhede.
+AF: As jy 'n sosiale media-rekening gebruik, sien INK jou basiese besonderhede.
 
 SOCIAL-PRIVACY-LINK
 EN: Privacy policy
@@ -157,7 +157,7 @@ AF: Hallo {skrywer}. Jou rekening is goedgekeur. Jy kan nou inteken en begin skr
 
 APPROVAL-EMAIL-REJECT-SUBJECT
 EN: About your INK account application
-AF: Omtrent jou INK rekeningaansoek
+AF: Aangaande jou INK rekeningaansoek
 
 APPROVAL-EMAIL-REJECT-BODY
 EN: Hello {skrywer}, your account application was not approved.
@@ -192,13 +192,51 @@ AF: Jaarliks
 
 ---
 
-## 8. Not yet concrete — no action needed from you
+## 8. Auth & Kontak microcopy — ✅ WIRED (2026-06-30)
 
-These two markers stand in for auth-form field/validation microcopy that isn't a
-discrete sentence yet (the visible field labels already render in Afrikaans). I'll
-scope them with you only if/when those messages are actually authored — listed
-here just so nothing is hidden.
+Your approved `AF:` lines below are now live: wired into the form code, recorded in
+`docs/ui-copy-translations.md` (Sync 2026-06-30), and the leak-scan baseline lowered
+to **empty** (all 8 markers cleared — `composer copy:scan` reports zero placeholders).
+Kept here as the record of what was authored.
 
-- `auth-register.php` — register-form field/validation microcopy cluster
-- `auth-forgot-password.php` — reset-form field/validation microcopy cluster
-- `Ink\Forms\ContactForm` (`ink/kontak-vorm` block) — Kontak-form validation/success microcopy cluster (Story 15.4; the visible field labels + the two notices already render in Afrikaans)
+### 8a. Kontak form (`Ink\Forms\ContactForm`, Story 15.4)
+
+KONTAK-SUBJECT-OPTIONAL
+EN: Subject (optional)
+AF: Onderwerp (opsioneel)
+
+KONTAK-MSG-HINT
+EN: Tell us how we can help.
+AF: Hoe ons kan help?
+
+KONTAK-PRIVACY
+EN: We use your details only to reply to this message.
+AF: Ons gebruik jou besonderhede net om op hierdie boodskap te antwoord.
+
+KONTAK-ERR-NAME
+EN: Please enter your name.
+AF: Vul asseblief jou naam in.
+
+KONTAK-ERR-EMAIL
+EN: Please enter a valid email address.
+AF: Vul asseblief 'n geldige e-posadres in.
+
+KONTAK-ERR-MESSAGE
+EN: Please enter a message.
+AF: Vul asseblief 'n boodskap in.
+
+### 8b. Register form (`auth-register.php`)
+
+AUTH-REG-USERNAME-HINT
+EN: Choose a username — other members will see this.
+AF: Kies 'n gebruikersnaam — ander lede sal dit sien.
+
+AUTH-REG-EMAIL-HINT
+EN: We'll send your sign-in details to this address.
+AF: Ons stuur jou intekenbesonderhede na hierdie adres.
+
+### 8c. Password-reset form (`auth-forgot-password.php`)
+
+AUTH-FORGOT-HINT
+EN: Enter the email or username linked to your account.
+AF: Vul die e-pos of gebruikersnaam in wat aan jou rekening gekoppel is.

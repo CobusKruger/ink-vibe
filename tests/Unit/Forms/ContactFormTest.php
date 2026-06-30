@@ -103,3 +103,37 @@ test( 'toHtml shows the send-failure notice (not success) for the send-fail slug
 	expect( $fail )->toContain( 'ink-kontak-vorm__notice--fout' );
 	expect( $fail )->not->toContain( 'ink-kontak-vorm__notice--ok' );
 } );
+
+// --- invalidNotice(): each validation code surfaces its own per-field notice ---
+
+test( 'invalidNotice maps each validation error code to its per-field notice slug', function (): void {
+	expect( ContactForm::invalidNotice( new \WP_Error( 'ink_kontak_missing_name', 'x' ) ) )->toBe( ContactForm::NOTICE_INVALID_NAME );
+	expect( ContactForm::invalidNotice( new \WP_Error( 'ink_kontak_invalid_email', 'x' ) ) )->toBe( ContactForm::NOTICE_INVALID_EMAIL );
+	expect( ContactForm::invalidNotice( new \WP_Error( 'ink_kontak_missing_message', 'x' ) ) )->toBe( ContactForm::NOTICE_INVALID_MESSAGE );
+} );
+
+test( 'invalidNotice falls back to the collapsed notice for an unknown code', function (): void {
+	expect( ContactForm::invalidNotice( new \WP_Error( 'iets_anders', 'x' ) ) )->toBe( ContactForm::NOTICE_INVALID );
+} );
+
+// --- toHtml(): the authored microcopy renders (field hints, privacy note, per-field errors) ---
+
+test( 'toHtml renders the authored field hints and the privacy note', function (): void {
+	$html = ContactForm::toHtml( '', '' );
+
+	expect( $html )->toContain( 'Onderwerp (opsioneel)' );
+	expect( $html )->toContain( 'Hoe ons kan help?' );
+	expect( $html )->toContain( 'Ons gebruik jou besonderhede net om op hierdie boodskap te antwoord.' );
+	// The message hint is wired to the textarea for assistive tech.
+	expect( $html )->toContain( 'aria-describedby="' . ContactForm::FIELD_MESSAGE . '-wenk"' );
+} );
+
+test( 'toHtml surfaces the specific per-field validation message for each field notice', function (): void {
+	expect( ContactForm::toHtml( '', '', ContactForm::NOTICE_INVALID_NAME ) )->toContain( 'Vul asseblief jou naam in.' );
+	expect( ContactForm::toHtml( '', '', ContactForm::NOTICE_INVALID_EMAIL ) )->toContain( "Vul asseblief 'n geldige e-posadres in." );
+	expect( ContactForm::toHtml( '', '', ContactForm::NOTICE_INVALID_MESSAGE ) )->toContain( "Vul asseblief 'n boodskap in." );
+
+	// Each is an alert-role error notice, never the success styling.
+	expect( ContactForm::toHtml( '', '', ContactForm::NOTICE_INVALID_NAME ) )->toContain( 'ink-kontak-vorm__notice--fout' );
+	expect( ContactForm::toHtml( '', '', ContactForm::NOTICE_INVALID_NAME ) )->not->toContain( 'ink-kontak-vorm__notice--ok' );
+} );

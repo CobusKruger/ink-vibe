@@ -472,7 +472,7 @@ final class Approval {
 		Notifications::registerTemplate(
 			new Template(
 				self::REJECTED_TEMPLATE_KEY,
-				__( 'Omtrent jou INK rekeningaansoek', 'ink-core' ),
+				__( 'Aangaande jou INK rekeningaansoek', 'ink-core' ),
 				__( 'Hallo {skrywer}. Jou rekeningaansoek is ongelukkig afgekeur.', 'ink-core' ),
 				false
 			)
