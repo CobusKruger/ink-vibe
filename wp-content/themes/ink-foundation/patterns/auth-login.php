@@ -51,7 +51,7 @@
 			if ( '' === $ink_privacy_url ) {
 				$ink_privacy_url = home_url( '/privaatheidsbeleid' );
 			}
-			echo esc_html__( 'As jy \'n sosiale media-rekening gebruik, sien INK sekere basiese besonderhede.', 'ink-foundation' );
+			echo esc_html__( 'As jy \'n sosiale media-rekening gebruik, sien INK jou basiese besonderhede.', 'ink-foundation' );
 			printf(
 				' <a href="%1$s">%2$s</a>',
 				esc_url( $ink_privacy_url ),

@@ -13,8 +13,8 @@
  * the plugin is available, and emits nothing otherwise. A socially- OR e-mail-
  * registered account lands at Brons / gratis lid through the SAME user_register
  * path (Story 3.1) — no OAuth / defaults logic lives in this theme file.
- * All copy is Afrikaans; field/microcopy not yet curated in ui-copy-translations.md
- * (the documented auth-form copy gap) is marked [NEEDS HUMAN AFRIKAANS].
+ * All copy is Afrikaans, curated in docs/ui-copy-translations.md (labels + the
+ * username/e-pos field hints).
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"480px"}} -->
@@ -30,21 +30,22 @@
 		<!-- /wp:paragraph -->
 
 		<!-- wp:html -->
-		<?php // Renders WordPress's OWN registration handler in-theme (Afrikaans, single-column) — auth is used, not rebuilt. Field/label copy not yet in ui-copy-translations.md is flagged for human authoring. ?>
+		<?php // Renders WordPress's OWN registration handler in-theme (Afrikaans, single-column) — auth is used, not rebuilt. ?>
 		<form name="registerform" class="ink-auth-form" action="<?php echo esc_url( site_url( 'wp-login.php?action=register', 'login_post' ) ); ?>" method="post" novalidate="novalidate">
 			<p class="ink-auth-field">
 				<label for="user_login"><?php echo esc_html__( 'Gebruikersnaam', 'ink-foundation' ); ?></label>
-				<input type="text" name="user_login" id="user_login" autocapitalize="off" autocorrect="off" autocomplete="username" required="required" />
+				<input type="text" name="user_login" id="user_login" autocapitalize="off" autocorrect="off" autocomplete="username" aria-describedby="user_login-wenk" required="required" />
+				<span class="ink-auth-hint" id="user_login-wenk"><?php echo esc_html__( "Kies 'n gebruikersnaam — ander lede sal dit sien.", 'ink-foundation' ); ?></span>
 			</p>
 			<p class="ink-auth-field">
 				<label for="user_email"><?php echo esc_html__( 'E-pos', 'ink-foundation' ); ?></label>
-				<input type="email" name="user_email" id="user_email" autocomplete="email" required="required" />
+				<input type="email" name="user_email" id="user_email" autocomplete="email" aria-describedby="user_email-wenk" required="required" />
+				<span class="ink-auth-hint" id="user_email-wenk"><?php echo esc_html__( 'Ons stuur jou intekenbesonderhede na hierdie adres.', 'ink-foundation' ); ?></span>
 			</p>
 			<?php do_action( 'register_form' ); ?>
 			<p class="ink-auth-submit">
 				<button type="submit" name="wp-submit" class="wp-element-button"><?php echo esc_html__( 'Registreer', 'ink-foundation' ); ?></button>
 			</p>
-			<span class="ink-needs-human-af" hidden>[NEEDS HUMAN AFRIKAANS] — auth-form field labels / validation copy not yet authored in ui-copy-translations.md.</span>
 		</form>
 		<!-- /wp:html -->
 <?php if ( function_exists( 'ink_foundation_social_login_available' ) && ink_foundation_social_login_available() ) : ?>
@@ -73,7 +74,7 @@
 			if ( '' === $ink_privacy_url ) {
 				$ink_privacy_url = home_url( '/privaatheidsbeleid' );
 			}
-			echo esc_html__( 'As jy \'n sosiale media-rekening gebruik, sien INK sekere basiese besonderhede.', 'ink-foundation' );
+			echo esc_html__( 'As jy \'n sosiale media-rekening gebruik, sien INK jou basiese besonderhede.', 'ink-foundation' );
 			printf(
 				' <a href="%1$s">%2$s</a>',
 				esc_url( $ink_privacy_url ),
