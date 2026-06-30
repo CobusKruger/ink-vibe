@@ -11,6 +11,7 @@ namespace Ink\Challenges;
 
 use Ink\I18n\Terms;
 use Ink\Kernel\Scalar;
+use Ink\Kernel\Tier;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -147,9 +148,10 @@ final class Placements {
 	 * scopes WITHIN a category: a Goud-Gedig rank-1 and a Goud-Storie rank-1 are two
 	 * legitimate algehele wenners and BOTH survive (the D1 read-collapse fix). Two rank-1s
 	 * in the SAME (Gradering × category) still collapse to one — the defensive guard. A
-	 * category-less row degrades to a Gradering-only key (the prior 12.6 contract). Within
-	 * a pool the placements are ordered by rank (1st, 2nd, 3rd) and each carries its
-	 * algehele-wenner flag + label.
+	 * category-less row degrades to a Gradering-only key (the prior 12.6 contract). A
+	 * Meester placement folds into the Goud pool ({@see Tier::competitionTier()}) — an
+	 * elevated Goud member shares the Goud podium. Within a pool the placements are
+	 * ordered by rank (1st, 2nd, 3rd) and each carries its algehele-wenner flag + label.
 	 *
 	 * @param list<array{id:int, gradering:string, rank:int, category?:string}> $placed The candidate entries.
 	 * @return array<string, list<array{id:int, rank:int, is_algehele_wenner:bool, label:string}>>
@@ -163,11 +165,15 @@ final class Placements {
 			$gradering = Scalar::asString( $entry['gradering'] ?? '' );
 			$category  = Scalar::asString( $entry['category'] ?? '' );
 
-			if ( $id <= 0 || '' === $gradering || ! self::isValidRank( $rank ) ) {
+			// Resolve to the pool the entry competes in: Meester folds into Goud
+			// (elevated Goud member); empty/junk has no valid Tier and is dropped.
+			$entry_tier = Tier::tryFrom( $gradering );
+
+			if ( $id <= 0 || null === $entry_tier || ! self::isValidRank( $rank ) ) {
 				continue;
 			}
 
-			$by_pool[ Pools::poolKey( $gradering, $category ) ][] = array(
+			$by_pool[ Pools::poolKey( $entry_tier->competitionTier()->value, $category ) ][] = array(
 				'id'                 => $id,
 				'rank'               => $rank,
 				'is_algehele_wenner' => self::isAlgeheleWenner( $rank ),

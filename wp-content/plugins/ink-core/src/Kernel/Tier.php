@@ -90,6 +90,24 @@ enum Tier: string {
 	}
 
 	/**
+	 * The competition pool this grade competes in.
+	 *
+	 * `Meester` is an *elevated Goud member* — it does not form its own monthly
+	 * competition pool but competes WITHIN the Goud pool, fully eligible to take a
+	 * Goud podium slot (recognition for published/distinguished authors, not a
+	 * separate tier). Every other grade competes in its own pool. Pure value logic
+	 * — the single source for the grade→pool mapping that {@see \Ink\Challenges\Pools},
+	 * {@see \Ink\Challenges\Placements} and {@see \Ink\Challenges\Collation} share, so
+	 * the "Meester competes as Goud" rule is never duplicated as an inline literal.
+	 *
+	 * The conflation rule holds: this is Gradering-only value logic, never
+	 * `Ink\Entitlement`.
+	 */
+	public function competitionTier(): self {
+		return self::Meester === $this ? self::Goud : $this;
+	}
+
+	/**
 	 * Whether the automatic promotion engine (Story 5.8) may promote FROM this
 	 * grade.
 	 *

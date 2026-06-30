@@ -48,6 +48,17 @@ test( 'isManualOnly() is true only for Meester', function (): void {
 } );
 
 /**
+ * Item 3 (Meester → Goud): Meester is an elevated Goud member — it competes in the
+ * Goud pool; every other grade competes in its own pool.
+ */
+test( 'competitionTier() folds Meester into Goud and leaves the others unchanged', function (): void {
+	expect( Tier::Meester->competitionTier() )->toBe( Tier::Goud );
+	expect( Tier::Goud->competitionTier() )->toBe( Tier::Goud );
+	expect( Tier::Silwer->competitionTier() )->toBe( Tier::Silwer );
+	expect( Tier::Brons->competitionTier() )->toBe( Tier::Brons );
+} );
+
+/**
  * AC-1: only Brons and Silwer participate in auto-promotion; Goud and Meester
  * are terminal for the engine (Meester is also never auto-PRODUCED — manual-only).
  */

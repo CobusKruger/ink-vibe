@@ -29,23 +29,24 @@ afterEach( function (): void {
 	Monkey\tearDown();
 } );
 
-test( 'sortForAssignment orders by type then Gradering then id, dropping Meester and empty', function (): void {
+test( 'sortForAssignment orders by type then Gradering then id; Meester competes in Goud, empty dropped', function (): void {
 	$entries = array(
 		array( 'id' => 50, 'type' => 'storie', 'gradering' => 'brons' ),
 		array( 'id' => 10, 'type' => 'gedig', 'gradering' => 'goud' ),
 		array( 'id' => 11, 'type' => 'gedig', 'gradering' => 'brons' ),
 		array( 'id' => 12, 'type' => 'gedig', 'gradering' => 'brons' ),
-		array( 'id' => 99, 'type' => 'gedig', 'gradering' => 'meester' ), // non-competing — dropped
+		array( 'id' => 99, 'type' => 'gedig', 'gradering' => 'meester' ), // elevated Goud member — judged in Goud
 		array( 'id' => 98, 'type' => 'gedig', 'gradering' => '' ),        // no snapshot — dropped
 	);
 
 	$sorted = Collation::sortForAssignment( $entries );
 	$ids    = array_column( $sorted, 'id' );
 
-	// gedig (brons 11, brons 12, goud 10) before storie (brons 50); Meester/empty absent.
-	expect( $ids )->toBe( array( 11, 12, 10, 50 ) );
-	expect( $ids )->not->toContain( 99 );
-	expect( $ids )->not->toContain( 98 );
+	// gedig (brons 11, brons 12, then the Goud pool: goud 10 + meester 99 by id) before
+	// storie (brons 50). Meester folds into the Goud pool; only the empty snapshot drops.
+	expect( $ids )->toBe( array( 11, 12, 10, 99, 50 ) );
+	expect( $ids )->toContain( 99 );      // Meester is judged (in Goud), not dropped
+	expect( $ids )->not->toContain( 98 ); // empty snapshot still forms no pool
 } );
 
 test( 'computeAssignments numbers each type from 1 in sort order', function (): void {
@@ -171,8 +172,10 @@ test( 'collateRound reports empty for a round with no competing entries', functi
 
 	$page = new class() extends CollationPage {
 		protected function entriesFor( int $uitdaging_id ): array {
+			// An empty/unknown snapshot forms no judge pool (Meester would now compete
+			// in Goud, so it can no longer stand in for a non-competing entry).
 			return array(
-				array( 'id' => 99, 'type' => 'gedig', 'gradering' => 'meester', 'title' => 'X', 'content' => 'Y', 'author_name' => 'Z' ),
+				array( 'id' => 98, 'type' => 'gedig', 'gradering' => '', 'title' => 'X', 'content' => 'Y', 'author_name' => 'Z' ),
 			);
 		}
 

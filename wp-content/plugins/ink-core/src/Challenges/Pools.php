@@ -22,7 +22,10 @@ defined( 'ABSPATH' ) || exit;
  * Brons, Silwer vs Silwer, Goud vs Goud (FR-49). The pool is taken from the
  * **entry-time** Gradering snapshot ({@see Entry::GRADERING_META_KEY}, Story 12.4),
  * NOT the writer's live grade — so a promotion after entry never moves an entry
- * between pools. Meester (manual-only, terminal) forms no monthly competition pool.
+ * between pools. Meester is an ELEVATED GOUD MEMBER: it forms no pool of its own but
+ * competes WITHIN the Goud pool ({@see Tier::competitionTier()}), eligible to take a
+ * Goud podium slot — a Meester·Gedig entry buckets into `goud|gedig` alongside the
+ * Goud·Gedig entries.
  *
  * THE conflation rule: pools are governed by Gradering ({@see Tier}) ONLY. There is
  * zero `Ink\Entitlement` here — a paid/free lidmaatskap never affects the pool. The
@@ -41,10 +44,12 @@ defined( 'ABSPATH' ) || exit;
 final class Pools {
 
 	/**
-	 * The competition pools, in grade order: Brons, Silwer, Goud. Pure.
+	 * The DISTINCT competition pools, in grade order: Brons, Silwer, Goud. Pure.
 	 *
-	 * Derived from {@see Tier} — every grade EXCEPT the manual-only/terminal Meester,
-	 * which does not form a monthly competition pool.
+	 * One pool per grade that forms its own pool — every grade EXCEPT Meester, which
+	 * is an elevated Goud member and competes WITHIN the Goud pool rather than forming
+	 * its own ({@see Tier::competitionTier()} folds it into Goud). So Meester is absent
+	 * here as a distinct pool, yet Meester entries DO compete — see {@see self::group()}.
 	 *
 	 * @return list<Tier>
 	 */
@@ -52,7 +57,7 @@ final class Pools {
 		return array_values(
 			array_filter(
 				Tier::cases(),
-				static fn ( Tier $tier ): bool => ! $tier->isManualOnly()
+				static fn ( Tier $tier ): bool => $tier === $tier->competitionTier()
 			)
 		);
 	}
@@ -107,8 +112,10 @@ final class Pools {
 	/**
 	 * Bucket entries into competition pools by entry-time gradering × category. Pure.
 	 *
-	 * Entries whose snapshot is empty, junk, or a non-competing grade (Meester) are
-	 * excluded — they do not enter a competition pool. Pool insertion order follows
+	 * Entries whose snapshot is empty or junk (no valid {@see Tier}) are excluded — they
+	 * do not enter a competition pool. A Meester entry is NOT excluded: it competes in
+	 * the Goud pool ({@see Tier::competitionTier()}), so it buckets under the Goud key
+	 * (a Meester·Gedig entry lands in `goud|gedig`). Pool insertion order follows
 	 * {@see self::competingTiers()} (Brons, Silwer, Goud); within a grade the categories
 	 * appear in first-seen order. When an entry carries a non-empty `category` the pool
 	 * is keyed on {@see self::poolKey()} (Gradering × category); a category-less entry
@@ -128,11 +135,20 @@ final class Pools {
 				$category  = Scalar::asString( $entry['category'] ?? '' );
 				$id        = (int) ( $entry['id'] ?? 0 );
 
-				if ( $id <= 0 || $gradering !== $tier->value ) {
+				if ( $id <= 0 ) {
 					continue;
 				}
 
-				$pools[ self::poolKey( $gradering, $category ) ][] = $id;
+				// Resolve the entry to the pool it COMPETES in: Meester folds into Goud
+				// (elevated Goud member), every other grade is its own pool. Empty/junk
+				// snapshots have no valid Tier and form no pool.
+				$entry_tier = Tier::tryFrom( $gradering );
+
+				if ( null === $entry_tier || $entry_tier->competitionTier() !== $tier ) {
+					continue;
+				}
+
+				$pools[ self::poolKey( $tier->value, $category ) ][] = $id;
 			}
 		}
 
