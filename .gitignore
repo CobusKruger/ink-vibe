@@ -24,3 +24,7 @@ wp-content/plugins/ink-core/vendor/
 # Scratch space for transient files (e.g. git commit -F message files). Contents ignored; dir kept.
 /tmp/*
 !/tmp/.gitkeep
+
+*.csv
+*.xlsx
+docs/data-cleanup/**

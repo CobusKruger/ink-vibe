@@ -19,7 +19,9 @@ This `README.md` is the entry point and index for the planning work. As new plan
 ### Entry point
 
 - [initiation.md](./initiation.md)
-  Master summary and project initiation document. Synthesises all planning work, indexes every other file, and gives step-by-step guidance for building the site using BMAD 6. **Start here.**
+  Master summary and project initiation document. Synthesises all planning work, indexes every other file, and gives step-by-step guidance for building the site using BMAD 6. **Start here** for planning context.
+- [staging-setup-guide.md](./staging-setup-guide.md)
+  **The definitive, step-by-step runbook for standing up a fully-functioning INK site in staging** — from empty WordPress to a working site: provision the environment, load a fresh production database, deploy `ink-core` + `ink-foundation`, install/prune the exact plugin set, run the 15-command migration toolkit in order, configure plugins, and verify. **Start here to build the site.**
 
 ### Core planning set
 
