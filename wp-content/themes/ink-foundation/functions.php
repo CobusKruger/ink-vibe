@@ -434,6 +434,65 @@ function ink_foundation_register_block_styles(): void {
 		)
 	);
 
+	// INK header (Epic 19, §1) — the site-wide sticky header treatment. Applied
+	// to the header pattern's outer group. Header CSS CANNOT live in home.css
+	// (front-page-only); the header renders on every page, so its sticky /
+	// translucent-surface / backdrop-blur / bottom-border / 64px-row / nav
+	// hover+underline+focus treatment ships here as a block-style inline_style
+	// (loads site-wide). Token-only (Gate A); the surface/95 translucency uses
+	// the color-mix convention with an opaque `surface` fallback first (§0.7).
+	register_block_style(
+		'core/group',
+		array(
+			'name'         => 'ink-header',
+			'label'        => __( 'INK kopstuk', 'ink-foundation' ),
+			'inline_style' => '.wp-block-group.is-style-ink-header{'
+				. 'position:sticky;'
+				. 'top:0;'
+				. 'z-index:50;'
+				. 'background-color:var(--wp--preset--color--surface);'
+				. 'background-color:color-mix(in srgb, var(--wp--preset--color--surface) 95%, transparent);'
+				. '-webkit-backdrop-filter:blur(4px);'
+				. 'backdrop-filter:blur(4px);'
+				. 'border-bottom:1px solid var(--wp--preset--color--border);'
+				. '}'
+				. '.wp-block-group.is-style-ink-header .ink-header-row{'
+				. 'min-height:64px;'
+				. '}'
+				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content{'
+				. 'position:relative;'
+				. 'color:var(--wp--preset--color--muted-text);'
+				. 'transition:color .15s ease;'
+				. '}'
+				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content::after{'
+				. 'content:"";'
+				. 'position:absolute;'
+				. 'left:0;'
+				. 'bottom:-2px;'
+				. 'width:0;'
+				. 'height:2px;'
+				. 'background-color:var(--wp--preset--color--primary);'
+				. 'transition:width .3s ease;'
+				. '}'
+				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:hover,'
+				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:focus-visible{'
+				. 'color:var(--wp--preset--color--text);'
+				. '}'
+				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:hover::after,'
+				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:focus-visible::after{'
+				. 'width:100%;'
+				. '}'
+				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:focus-visible{'
+				. 'outline:2px solid var(--wp--preset--color--primary);'
+				. 'outline-offset:2px;'
+				. '}'
+				. '@media (prefers-reduced-motion:reduce){'
+				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content,'
+				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content::after{transition:none;}'
+				. '}',
+		)
+	);
+
 	// Emphasis: an accented call-out treatment (left rule + tinted background).
 	register_block_style(
 		'core/group',

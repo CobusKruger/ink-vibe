@@ -3,35 +3,55 @@
  * Title: Held-seksie
  * Slug: ink-foundation/hero
  * Categories: featured, ink-foundation
+ * Description: Tuisblad-held (Epic 19, Storie 19.2, §2) — twee-kolom-uitleg (≥1024px: inhoud links, uitdaging-kaart regs) met kenteken-pil, gradiënt-opskrif en die plus-patroon-tekstuur. Enkel-kolom onder 1024px via home.css. Presentasie alleen (drie-laag-skeiding): geen besigheidslogika nie.
+ *
+ * The RIGHT column is a working slot (`.ink-hero-aside`) that renders the existing
+ * huidige-uitdaging teaser as-is; Storie 19.3 replaces it with the styled dynamic
+ * challenge card. Copy is authored Afrikaans (docs/ui-copy-translations.md — Held
+ * rows), via the `ink-foundation` text domain; never AI-translated. The gradient
+ * accent phrase is split into an inline `.ink-text-gradient` span (§0.3); the
+ * segments stay individually translatable.
+ *
+ * @package Ink\Foundation
  */
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide">
-		<!-- wp:paragraph {"style":{"typography":{"fontStyle":"normal","fontWeight":"600","textTransform":"uppercase","letterSpacing":"0.08em"}},"fontSize":"sm","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-sm-font-size" style="font-style:normal;font-weight:600;letter-spacing:0.08em;text-transform:uppercase">Waar woorde lesers vind</p>
-		<!-- /wp:paragraph -->
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-hero-texture","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-hero-texture" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+	<!-- wp:group {"align":"wide","className":"ink-hero-grid ink-animate-fade-up","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-48"}},"layout":{"type":"grid","columnCount":2}} -->
+	<div class="wp-block-group alignwide ink-hero-grid ink-animate-fade-up">
+		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group">
+			<!-- wp:paragraph {"className":"ink-hero-badge","fontSize":"sm"} -->
+			<p class="ink-hero-badge has-sm-font-size"><?php esc_html_e( 'Waar woorde lesers vind', 'ink-foundation' ); ?></p>
+			<!-- /wp:paragraph -->
 
-		<!-- wp:heading {"level":1,"fontSize":"3xl"} -->
-		<h1 class="wp-block-heading has-3xl-font-size">Stories wat verdien om gelees en gekoester te word</h1>
-		<!-- /wp:heading -->
+			<!-- wp:heading {"level":1,"fontSize":"hero","style":{"typography":{"fontStyle":"normal","fontWeight":"600"}}} -->
+			<h1 class="wp-block-heading has-hero-font-size" style="font-style:normal;font-weight:600"><?php esc_html_e( 'Stories wat verdien om', 'ink-foundation' ); ?> <span class="ink-text-gradient"><?php esc_html_e( 'gelees en gekoester', 'ink-foundation' ); ?></span> <?php esc_html_e( 'te word', 'ink-foundation' ); ?></h1>
+			<!-- /wp:heading -->
 
-		<!-- wp:paragraph {"fontSize":"lg"} -->
-		<p class="has-lg-font-size">Sluit aan by 'n lewendige gemeenskap van skrywers en lesers met 'n passie vir Afrikaanse letterkunde.</p>
-		<!-- /wp:paragraph -->
+			<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
+			<p class="has-muted-text-color has-text-color has-md-font-size"><?php esc_html_e( 'Sluit aan by \'n lewendige gemeenskap van skrywers en lesers met \'n passie vir Afrikaanse letterkunde.', 'ink-foundation' ); ?></p>
+			<!-- /wp:paragraph -->
 
-		<!-- wp:buttons {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
-		<div class="wp-block-buttons">
-			<!-- wp:button {"backgroundColor":"primary","textColor":"surface-alt"} -->
-			<div class="wp-block-button"><a class="wp-block-button__link has-surface-alt-color has-primary-background-color has-text-color has-background wp-element-button" href="/lees">Begin lees</a></div>
-			<!-- /wp:button -->
+			<!-- wp:buttons {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
+			<div class="wp-block-buttons">
+				<!-- wp:button {"className":"is-style-ink-primary ink-btn-lg ink-btn-icon"} -->
+				<div class="wp-block-button is-style-ink-primary ink-btn-lg ink-btn-icon"><a class="wp-block-button__link wp-element-button" href="/lees"><?php echo ink_foundation_icon( '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted theme-authored inline SVG icon (§0.9). ?><?php esc_html_e( 'Begin lees', 'ink-foundation' ); ?></a></div>
+				<!-- /wp:button -->
 
-			<!-- wp:button {"className":"is-style-outline","textColor":"primary"} -->
-			<div class="wp-block-button is-style-outline"><a class="wp-block-button__link has-primary-color has-text-color wp-element-button" href="/skryf">Deel jou werk</a></div>
-			<!-- /wp:button -->
+				<!-- wp:button {"className":"is-style-ink-outline ink-btn-lg ink-btn-icon"} -->
+				<div class="wp-block-button is-style-ink-outline ink-btn-lg ink-btn-icon"><a class="wp-block-button__link wp-element-button" href="/skryf"><?php esc_html_e( 'Deel jou werk', 'ink-foundation' ); ?><?php echo ink_foundation_icon( '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted theme-authored inline SVG icon (§0.9). ?></a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
 		</div>
-		<!-- /wp:buttons -->
+		<!-- /wp:group -->
+
+		<!-- wp:group {"className":"ink-hero-aside","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group ink-hero-aside">
+			<!-- wp:pattern {"slug":"ink-foundation/huidige-uitdaging"} /-->
+		</div>
+		<!-- /wp:group -->
 	</div>
 	<!-- /wp:group -->
 </section>

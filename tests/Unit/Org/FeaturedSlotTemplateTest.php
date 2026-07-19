@@ -23,11 +23,12 @@ test( 'the Tuisblad embeds the winners featured slot before the featured-works g
 	// The featured-slot block is embedded.
 	expect( $markup )->toContain( 'wp:ink/wenner-kollig' );
 
-	// Page-map position: after the challenge teaser, before Uitgesoekte werke.
-	$uitdaging = strpos( $markup, 'ink-foundation/huidige-uitdaging' );
-	$slot      = strpos( $markup, 'wp:ink/wenner-kollig' );
-	$featured  = strpos( $markup, 'ink-foundation/featured-grid' );
+	// Page-map position: after the hero (whose right column now carries the challenge
+	// teaser, Story 19.2), before Uitgesoekte werke.
+	$hero     = strpos( $markup, 'ink-foundation/hero' );
+	$slot     = strpos( $markup, 'wp:ink/wenner-kollig' );
+	$featured = strpos( $markup, 'ink-foundation/featured-grid' );
 
-	expect( $uitdaging )->toBeLessThan( $slot );
+	expect( $hero )->toBeLessThan( $slot );
 	expect( $slot )->toBeLessThan( $featured );
 } );
