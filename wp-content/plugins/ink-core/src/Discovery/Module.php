@@ -43,5 +43,6 @@ final class Module implements ModuleContract {
 		( new Search() )->register();
 		( new DiscoverySurfaces() )->register();
 		( new ReadCountSurface() )->register();
+		( new FeaturedStream() )->register();
 	}
 }

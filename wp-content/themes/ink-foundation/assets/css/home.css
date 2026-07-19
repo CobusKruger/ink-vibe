@@ -629,6 +629,239 @@
 	}
 }
 
+/* ── §6 Featured bydraes — "Die redakteur se keuse" ──────────────────────────────
+   The ink-core `ink/uitgesoekte-bydraes` block emits the WHOLE section (header +
+   asymmetric grid + cards) and its own `.ink-uitgesoekte-bydraes*` markup; the theme
+   styles it here. Read-time + engagement counts are ink-core-owned values — the theme
+   only paints them. The block collapses entirely when the feed is empty, so there is
+   no empty-state rule to write. TOKENS ONLY (Gate A). */
+.ink-uitgesoekte-bydraes {
+	padding: var(--wp--preset--spacing--s-64) var(--wp--preset--spacing--s-24);
+}
+
+.ink-uitgesoekte-bydraes__houer {
+	max-width: var(--wp--style--global--wide-size);
+	margin-inline: auto;
+}
+
+/* Section header (items-end justify-between): eyebrow + serif title on the left, the
+   "Sien alle werke" link on the right (hidden < 768px per §6). */
+.ink-uitgesoekte-bydraes__kop {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--wp--preset--spacing--s-24);
+	margin-bottom: var(--wp--preset--spacing--s-32);
+}
+
+.ink-uitgesoekte-bydraes__boskrif {
+	margin: 0;
+	color: var(--wp--preset--color--primary);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.ink-uitgesoekte-bydraes__titel {
+	margin: var(--wp--preset--spacing--s-8) 0 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--3xl);
+	font-weight: var(--wp--custom--font-weight--semibold);
+	line-height: var(--wp--custom--line-height--tight);
+}
+
+@media (min-width: 768px) {
+	.ink-uitgesoekte-bydraes__titel {
+		font-size: var(--wp--preset--font-size--4xl);
+	}
+}
+
+.ink-uitgesoekte-bydraes__alles {
+	flex-shrink: 0;
+	color: var(--wp--preset--color--primary);
+	font-size: var(--wp--preset--font-size--md);
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.ink-uitgesoekte-bydraes__alles:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+	.ink-uitgesoekte-bydraes__alles {
+		display: none;
+	}
+}
+
+/* Asymmetric grid (§6): single column < 768px; 2-col ≥ 768px with the featured
+   (first) card spanning both — via core Grid semantics (per-child column span),
+   NOT core/columns. */
+.ink-uitgesoekte-bydraes__rooster {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: var(--wp--preset--spacing--s-24);
+}
+
+@media (min-width: 768px) {
+	.ink-uitgesoekte-bydraes__rooster {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.ink-uitgesoekte-bydraes__kaart--uitgesoek {
+		grid-column: span 2;
+	}
+}
+
+/* Card — the is-style-ink-card recipe (surface-alt / 12px / border / shadow.sm) with a
+   reduced-motion-safe hover-lift, replicated on the block's own class (§0.5 / §6). */
+.ink-uitgesoekte-bydraes__kaart {
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--xl);
+	box-shadow: var(--wp--preset--shadow--sm);
+	padding: var(--wp--preset--spacing--s-24);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ink-uitgesoekte-bydraes__kaart:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+.ink-uitgesoekte-bydraes__kaart-inhoud {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-8);
+	height: 100%;
+}
+
+.ink-uitgesoekte-bydraes__meta-top {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+}
+
+.ink-uitgesoekte-bydraes__pil {
+	display: inline-flex;
+	align-items: center;
+	padding: var(--wp--preset--spacing--s-4) var(--wp--preset--spacing--s-12);
+	border-radius: var(--wp--custom--radius--full);
+	background-color: var(--wp--preset--color--secondary);
+	color: var(--wp--preset--color--text);
+	font-size: var(--wp--preset--font-size--xs);
+	font-weight: var(--wp--custom--font-weight--medium);
+}
+
+.ink-uitgesoekte-bydraes__leestyd {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-4);
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--xs);
+}
+
+.ink-uitgesoekte-bydraes__leestyd .ink-icon {
+	width: 12px;
+	height: 12px;
+}
+
+.ink-uitgesoekte-bydraes__werk {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--xl);
+	font-weight: var(--wp--custom--font-weight--semibold);
+	line-height: var(--wp--custom--line-height--tight);
+}
+
+.ink-uitgesoekte-bydraes__werk a {
+	color: var(--wp--preset--color--text);
+	text-decoration: none;
+	transition: color 0.15s ease;
+}
+
+.ink-uitgesoekte-bydraes__werk a:hover,
+.ink-uitgesoekte-bydraes__werk a:focus-visible {
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-uitgesoekte-bydraes__uittreksel {
+	margin: 0;
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: var(--wp--custom--line-height--relaxed);
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/* Featured (first) card: spans two columns, larger title + un-clamped excerpt. */
+.ink-uitgesoekte-bydraes__kaart--uitgesoek .ink-uitgesoekte-bydraes__werk {
+	font-size: var(--wp--preset--font-size--2xl);
+}
+
+.ink-uitgesoekte-bydraes__kaart--uitgesoek .ink-uitgesoekte-bydraes__uittreksel {
+	font-size: var(--wp--preset--font-size--md);
+	-webkit-line-clamp: initial;
+	line-clamp: initial;
+	overflow: visible;
+}
+
+.ink-uitgesoekte-bydraes__voet {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--wp--preset--spacing--s-16);
+	margin-top: auto;
+	padding-top: var(--wp--preset--spacing--s-16);
+}
+
+.ink-uitgesoekte-bydraes__outeur {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+.ink-uitgesoekte-bydraes__foto {
+	width: 32px;
+	height: 32px;
+	border-radius: var(--wp--custom--radius--full);
+	object-fit: cover;
+}
+
+.ink-uitgesoekte-bydraes__outeur-naam {
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+}
+
+.ink-uitgesoekte-bydraes__tellers {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-16);
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+.ink-uitgesoekte-bydraes__teller {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-uitgesoekte-bydraes__kaart {
+		transition: none;
+	}
+
+	.ink-uitgesoekte-bydraes__kaart:hover {
+		transform: none;
+	}
+}
+
 /* ── §0.6 prefers-reduced-motion base (covers ALL motion, not just fade) ─────────
    Disable fade-up, hover-lift translate, hover scale, and underline-slide for
    users who ask for reduced motion. (The is-style-ink-card hover-lift carries its
