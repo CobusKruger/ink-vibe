@@ -194,6 +194,441 @@
 	gap: var(--wp--preset--spacing--s-8);
 }
 
+/* ── §3 Weekly-challenge card (ink/huidige-uitdaging block) ──────────────────────
+   The ink-core `ink/huidige-uitdaging` block emits its own `.ink-huidige-uitdaging*`
+   markup in two variants — COMPACT (hero right column, §3) and KENMERK (feature band,
+   §5). The theme owns only the token styling here (three-layer separation). The COMPACT
+   card replicates the is-style-ink-card recipe (surface-alt / 12px / border / shadow.sm
+   / reduced-motion hover-lift) rather than wrapping the COLLAPSING block in a static
+   is-style-ink-card group (which would show an empty card when no challenge is open). */
+.ink-huidige-uitdaging {
+	position: relative;
+	overflow: hidden;
+	display: block;
+	height: 100%;
+}
+
+.ink-huidige-uitdaging__hoek {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 0;
+	pointer-events: none;
+	background-color: var(--wp--preset--color--surface);
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 5%, transparent);
+}
+
+.ink-huidige-uitdaging__inhoud {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+.ink-huidige-uitdaging__kop {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--s-8);
+}
+
+/* UPPERCASE 12px/600 type badge (Sparkles). Text darkened toward `text` so the small
+   uppercase badge clears the readability floor (a11y — primary-on-primary/10 ~3.6:1). */
+.ink-huidige-uitdaging__kenteken {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-4);
+	padding: var(--wp--preset--spacing--s-4) var(--wp--preset--spacing--s-12);
+	border-radius: var(--wp--custom--radius--full);
+	background-color: var(--wp--preset--color--secondary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
+	color: var(--wp--preset--color--primary);
+	color: color-mix(in srgb, var(--wp--preset--color--primary) 72%, var(--wp--preset--color--text));
+	font-size: var(--wp--preset--font-size--xs);
+	font-weight: var(--wp--custom--font-weight--semibold);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.ink-huidige-uitdaging__meta-datum,
+.ink-huidige-uitdaging__meta-item {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-4);
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-huidige-uitdaging__meta-datum {
+	font-size: var(--wp--preset--font-size--xs);
+}
+
+.ink-huidige-uitdaging__titel {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-weight: var(--wp--custom--font-weight--semibold);
+	line-height: var(--wp--custom--line-height--tight);
+	color: var(--wp--preset--color--text);
+}
+
+.ink-huidige-uitdaging__uittreksel {
+	margin: 0;
+	color: var(--wp--preset--color--muted-text);
+	line-height: var(--wp--custom--line-height--relaxed);
+}
+
+/* CTA — the ink-primary recipe (primary fill / surface-alt text / Lora / shadow.md,
+   40px), full-width below 640px (§3). The block emits its own class so it collapses
+   with the block; the recipe mirrors is-style-ink-primary. */
+.ink-huidige-uitdaging__aksie {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--wp--preset--spacing--s-8);
+	align-self: flex-start;
+	min-height: 40px;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-16);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface-alt);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	text-decoration: none;
+	box-shadow: var(--wp--preset--shadow--md);
+	transition: background-color 0.15s ease;
+}
+
+.ink-huidige-uitdaging__aksie:hover {
+	background-color: var(--wp--preset--color--primary-light);
+}
+
+.ink-huidige-uitdaging__aksie:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+@media (max-width: 639px) {
+	.ink-huidige-uitdaging__aksie {
+		align-self: stretch;
+		width: 100%;
+	}
+}
+
+/* COMPACT variant (§3) — is-style-ink-card recipe + a 96px rounded-bl corner tint. */
+.ink-huidige-uitdaging--kompak {
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--xl);
+	box-shadow: var(--wp--preset--shadow--sm);
+	padding: var(--wp--preset--spacing--s-24);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ink-huidige-uitdaging--kompak:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+.ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__hoek {
+	width: var(--wp--preset--spacing--s-96);
+	height: var(--wp--preset--spacing--s-96);
+	border-bottom-left-radius: var(--wp--preset--spacing--s-64);
+}
+
+.ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__titel {
+	font-size: var(--wp--preset--font-size--2xl);
+}
+
+.ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__uittreksel {
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+@media (min-width: 768px) {
+	.ink-huidige-uitdaging--kompak {
+		padding: var(--wp--preset--spacing--s-32);
+	}
+
+	.ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__uittreksel {
+		font-size: var(--wp--preset--font-size--md);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-huidige-uitdaging--kompak {
+		transition: none;
+	}
+
+	.ink-huidige-uitdaging--kompak:hover {
+		transform: none;
+	}
+
+	.ink-huidige-uitdaging__aksie {
+		transition: none;
+	}
+}
+
+/* ── §5 Feature band: Uitdaging feature card + Winner card ───────────────────────
+   Two-column grid ≥1024px (stack below — WP grid columnCount does not auto-collapse),
+   over a calm secondary/30 band. Both cards are collapsing ink-core blocks. */
+.ink-feature-band {
+	background-color: var(--wp--preset--color--surface);
+	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 30%, transparent);
+}
+
+.ink-feature-grid {
+	align-items: stretch;
+}
+
+@media (max-width: 1023px) {
+	.ink-feature-grid {
+		grid-template-columns: 1fr !important;
+	}
+}
+
+/* KENMERK variant (§5 Uitdaging card) — surface-alt, 16px, shadow.md, Trophy tile +
+   eyebrow, 128px rounded-bl-full corner. */
+.ink-huidige-uitdaging--kenmerk {
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--2xl);
+	box-shadow: var(--wp--preset--shadow--md);
+	padding: var(--wp--preset--spacing--s-32);
+}
+
+.ink-huidige-uitdaging--kenmerk .ink-huidige-uitdaging__hoek {
+	width: calc(var(--wp--preset--spacing--s-64) * 2);
+	height: calc(var(--wp--preset--spacing--s-64) * 2);
+	border-bottom-left-radius: var(--wp--custom--radius--full);
+}
+
+.ink-huidige-uitdaging__ikoon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--wp--preset--spacing--s-8);
+	border-radius: var(--wp--custom--radius--lg);
+	background-color: var(--wp--preset--color--secondary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-huidige-uitdaging__boskrif {
+	color: var(--wp--preset--color--primary);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+}
+
+.ink-huidige-uitdaging--kenmerk .ink-huidige-uitdaging__titel {
+	font-size: var(--wp--preset--font-size--3xl);
+}
+
+.ink-huidige-uitdaging--kenmerk .ink-huidige-uitdaging__uittreksel {
+	font-size: var(--wp--preset--font-size--md);
+}
+
+.ink-huidige-uitdaging__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--s-24);
+}
+
+.ink-huidige-uitdaging__meta-item {
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+/* ── §5 Winner card (ink/wenner-kollig block, upgraded DOM) ──────────────────────
+   Gradient gold/10 → gold-muted/20 (135°, bright → muted), 16px, 1px gold-muted/30
+   border, NO shadow, Crown watermark. Eyebrow set in `text` — NOT gold-on-gold
+   (a11y: gold text on gold ground ≈ 1.8:1). Rank is always TEXT + Crown icon. */
+.ink-wenner-kollig {
+	display: block;
+	height: 100%;
+}
+
+.ink-wenner-kollig__titel {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-wenner-kollig__titel a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.ink-wenner-kollig__titel a:hover,
+.ink-wenner-kollig__titel a:focus-visible {
+	color: var(--wp--preset--color--text);
+}
+
+.ink-wenner-kollig__kaarte {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-24);
+}
+
+.ink-wenner-kollig__kaart {
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-16);
+	padding: var(--wp--preset--spacing--s-32);
+	border-radius: var(--wp--custom--radius--2xl);
+	border: 1px solid var(--wp--preset--color--gold-muted);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--gold-muted) 30%, transparent);
+}
+
+.ink-wenner-kollig__kaart--goud-gradient {
+	background-color: var(--wp--preset--color--surface-alt);
+	background-image: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--wp--preset--color--gold) 10%, transparent),
+		color-mix(in srgb, var(--wp--preset--color--gold-muted) 20%, transparent)
+	);
+}
+
+.ink-wenner-kollig__kaart > *:not(.ink-wenner-kollig__watermerk) {
+	position: relative;
+	z-index: 1;
+}
+
+.ink-wenner-kollig__watermerk {
+	position: absolute;
+	top: calc(-1 * var(--wp--preset--spacing--s-16));
+	right: calc(-1 * var(--wp--preset--spacing--s-16));
+	z-index: 0;
+	pointer-events: none;
+	color: var(--wp--preset--color--gold-muted);
+	color: color-mix(in srgb, var(--wp--preset--color--gold) 20%, transparent);
+}
+
+.ink-wenner-kollig__watermerk .ink-icon {
+	width: var(--wp--preset--spacing--s-96);
+	height: var(--wp--preset--spacing--s-96);
+}
+
+.ink-wenner-kollig__rang {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--semibold);
+	color: var(--wp--preset--color--text);
+}
+
+.ink-wenner-kollig__rang-merk {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--wp--preset--spacing--s-8);
+	border-radius: var(--wp--custom--radius--lg);
+	background-color: var(--wp--preset--color--secondary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 20%, transparent);
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-wenner-kollig__werk {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--2xl);
+	font-weight: var(--wp--custom--font-weight--semibold);
+	line-height: var(--wp--custom--line-height--tight);
+	color: var(--wp--preset--color--text);
+}
+
+.ink-wenner-kollig__werk a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.ink-wenner-kollig__werk a:hover,
+.ink-wenner-kollig__werk a:focus-visible {
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-wenner-kollig__aanhaling {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-style: italic;
+	color: var(--wp--preset--color--muted-text);
+	line-height: var(--wp--custom--line-height--relaxed);
+}
+
+.ink-wenner-kollig__outeur {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+.ink-wenner-kollig__foto {
+	width: var(--wp--preset--spacing--s-48);
+	height: var(--wp--preset--spacing--s-48);
+	border-radius: var(--wp--custom--radius--full);
+	object-fit: cover;
+	border: 2px solid var(--wp--preset--color--gold-muted);
+	border: 2px solid color-mix(in srgb, var(--wp--preset--color--gold-muted) 30%, transparent);
+}
+
+.ink-wenner-kollig__outeur-besonderhede {
+	display: flex;
+	flex-direction: column;
+}
+
+.ink-wenner-kollig__outeur-naam {
+	font-weight: var(--wp--custom--font-weight--medium);
+	color: var(--wp--preset--color--text);
+}
+
+.ink-wenner-kollig__wenne {
+	font-size: var(--wp--preset--font-size--sm);
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* Read-more — a gold-outline button (Lovable winner CTA). */
+.ink-wenner-kollig__skakel {
+	display: inline-flex;
+	align-items: center;
+	align-self: flex-start;
+	min-height: 40px;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-16);
+	border-radius: var(--wp--custom--radius--md);
+	border: 1px solid var(--wp--preset--color--gold-muted);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--gold-muted) 30%, transparent);
+	background-color: transparent;
+	color: var(--wp--preset--color--text);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	text-decoration: none;
+	transition: background-color 0.15s ease;
+}
+
+.ink-wenner-kollig__skakel:hover {
+	background-color: var(--wp--preset--color--secondary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 10%, transparent);
+}
+
+.ink-wenner-kollig__skakel:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-wenner-kollig__skakel {
+		transition: none;
+	}
+}
+
 /* ── §0.6 prefers-reduced-motion base (covers ALL motion, not just fade) ─────────
    Disable fade-up, hover-lift translate, hover scale, and underline-slide for
    users who ask for reduced motion. (The is-style-ink-card hover-lift carries its

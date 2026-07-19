@@ -4,20 +4,22 @@
  *
  * The Tuisblad is the FSE `front-page.html` template assembled from theme patterns:
  * the `hero` pattern (a two-column split whose LEFT column carries the single page
- * <h1> and whose RIGHT column hosts the `huidige-uitdaging` challenge slot), then
- * the `featured-grid`, `borg-strook` and `cta-band` patterns within locked
- * header/footer chrome. Story 19.2 moved the hero into a PHP pattern (`hero.php`)
- * so its copy can go through the `ink-foundation` text domain and carry inline SVG
- * icons — an `.html` template cannot run gettext — and folded the challenge teaser
- * into the hero's right column. These files are read off disk and asserted on their
- * block markup — no WordPress runtime needed.
+ * <h1> and whose RIGHT column hosts the `ink/huidige-uitdaging` challenge card), then
+ * the §5 feature band, the `featured-grid`, `borg-strook` and `cta-band` patterns
+ * within locked header/footer chrome. Story 19.2 moved the hero into a PHP pattern
+ * (`hero.php`) so its copy can go through the `ink-foundation` text domain and carry
+ * inline SVG icons — an `.html` template cannot run gettext. Story 19.3 replaced the
+ * static challenge teaser with the dynamic `ink/huidige-uitdaging` block (the open
+ * challenge + all per-uitdaging data now live in `ink-core`, three-layer separation),
+ * embedded in the hero aside (compact) and the feature band (feature). These files are
+ * read off disk and asserted on their block markup — no WordPress runtime needed.
  *
  * Non-vacuous: positive structural markers (chrome, the hero reference, the hero's
  * <h1>, real block content) are asserted first, so a blank/missing file fails
  * loudly rather than passing the embed and ordering checks on emptiness.
  *
- * Presentation-only guard: the home challenge teaser is a STATIC entry-point (AC #2/#5),
- * so it must NOT embed a server-rendered `ink/` business-logic block.
+ * Three-layer guard: the challenge data comes ONLY from the `ink/huidige-uitdaging`
+ * ink-core block — the theme embeds it and runs no query of its own.
  *
  * @package Ink\Tests
  */
@@ -51,8 +53,9 @@ test( 'the Tuisblad assembles hero, challenge, featured works, sponsors and CTA 
 	expect( substr_count( $hero, 'wp:heading {"level":1' ) )->toBe( 1 );
 	expect( $markup )->not->toContain( 'wp:heading {"level":1' );
 
-	// The challenge slot is folded into the hero's right column (19.2, §2/§3 AC).
-	expect( $hero )->toContain( 'ink-foundation/huidige-uitdaging' );
+	// The challenge card (dynamic ink-core block, compact) sits in the hero's right
+	// column (19.3, §3 AC).
+	expect( $hero )->toContain( 'wp:ink/huidige-uitdaging' );
 
 	// The remaining assembled sections are referenced from the template (AC #1, #6).
 	foreach ( array(
@@ -77,22 +80,31 @@ test( 'the Tuisblad sections render in the required order: hero -> featured -> s
 	expect( $borge )->toBeLessThan( $cta );
 } );
 
-test( 'the hero right column hosts the challenge teaser before the featured-works grid', function () use ( $ink_read ): void {
+test( 'the hero right column hosts the challenge card in its aside', function () use ( $ink_read ): void {
 	$hero = $ink_read( 'patterns/hero.php' );
 
-	// Non-vacuous: the hero really carries the two-column grid + the challenge slot.
+	// Non-vacuous: the hero really carries the two-column grid + the aside slot.
 	expect( $hero )->toContain( 'ink-hero-grid' );
-	expect( $hero )->toContain( 'ink-foundation/huidige-uitdaging' );
+	expect( $hero )->toContain( 'ink-hero-aside' );
+
+	// The compact challenge card is the dynamic ink-core block (19.3, §3).
+	expect( $hero )->toContain( 'wp:ink/huidige-uitdaging {"variant":"kompak"}' );
 } );
 
-test( 'the home challenge teaser is a static entry-point, not a business-logic surface', function () use ( $ink_read ): void {
-	$markup = $ink_read( 'patterns/huidige-uitdaging.php' );
+test( 'the challenge card is a dynamic ink-core block, not a theme-side query (three-layer)', function () use ( $ink_read ): void {
+	$hero      = $ink_read( 'patterns/hero.php' );
+	$template  = $ink_read( 'templates/front-page.html' );
 
-	// Non-vacuous: the teaser is real (a heading + a button to the archive).
-	expect( $markup )->toContain( 'wp:heading' );
-	expect( $markup )->toContain( '/uitdagings' );
+	// Non-vacuous: the challenge data comes from the server-rendered ink-core block,
+	// embedded in BOTH the hero aside (compact) and the §5 feature band (feature).
+	expect( $hero )->toContain( 'wp:ink/huidige-uitdaging' );
+	expect( $template )->toContain( 'wp:ink/huidige-uitdaging {"variant":"kenmerk"}' );
 
-	// Presentation-only (three-layer): NO server-rendered ink-core block, NO WP_Query.
-	expect( $markup )->not->toContain( 'wp:ink/' );
-	expect( $markup )->not->toContain( 'WP_Query' );
+	// Three-layer: the theme runs no query/computation of its own for the challenge.
+	expect( $hero )->not->toContain( 'WP_Query' );
+	expect( $template )->not->toContain( 'WP_Query' );
+
+	// The old static teaser pattern is gone (replaced by the dynamic block).
+	$path = dirname( __DIR__, 3 ) . '/wp-content/themes/ink-foundation/patterns/huidige-uitdaging.php';
+	expect( file_exists( $path ) )->toBeFalse();
 } );

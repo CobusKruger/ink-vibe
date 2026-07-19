@@ -86,7 +86,7 @@ test( 'toHtml COLLAPSES to empty markup when there is no announcement (12A not y
 
 // --- toHtml(): renders the announcement + ordered winners when populated ---
 
-test( 'toHtml renders the announcement linked + winners in algehele-wenner-first order', function (): void {
+test( 'toHtml renders the announcement linked + winner CARDS in algehele-wenner-first order', function (): void {
 	$html = FeaturedWinners::toHtml(
 		array(
 			'title'   => 'Junie-uitslae',
@@ -103,14 +103,81 @@ test( 'toHtml renders the announcement linked + winners in algehele-wenner-first
 	expect( $html )->toContain( 'Junie-uitslae' );
 	expect( $html )->toContain( 'href="https://ink.test/wenneraankondiging/junie"' );
 
+	// The upgraded DOM emits card articles, not a flat <ul>/<li> list (§5).
+	expect( $html )->toContain( 'ink-wenner-kollig__kaart' );
+	expect( $html )->toContain( '<article' );
+	expect( $html )->not->toContain( 'ink-wenner-kollig__lys' );
+
+	// Rank is conveyed by TEXT (the placement label), not colour alone (a11y).
+	expect( $html )->toContain( 'ink-wenner-kollig__rang-teks' );
+
+	// Each work title is an h3 linked to its permalink.
+	expect( $html )->toContain( '<h3 class="ink-wenner-kollig__werk">' );
+
 	// Algehele wenner's work appears before the ordinary wenner's work.
 	expect( strpos( $html, 'Algehele werk' ) )->toBeLessThan( strpos( $html, 'Tweede werk' ) );
 
-	// The algehele wenner item carries its distinguishing modifier class.
-	expect( $html )->toContain( 'ink-wenner-kollig__item--algehele' );
+	// The algehele wenner card carries its distinguishing modifier + the gradient hook.
+	expect( $html )->toContain( 'ink-wenner-kollig__kaart--algehele' );
+	expect( $html )->toContain( 'ink-wenner-kollig__kaart--goud-gradient' );
 
 	// Each placed work carries a "Lees die volledige storie" read-more link (ui-copy 83).
 	expect( $html )->toContain( 'Lees die volledige storie' );
+} );
+
+test( 'toHtml renders the optional card fields (avatar with alt, quote, author) when the seam supplies them', function (): void {
+	$html = FeaturedWinners::toHtml(
+		array(
+			'title'   => 'Desember-uitslae',
+			'url'     => 'https://ink.test/w/dec',
+			'winners' => array(
+				array(
+					'id'         => 10,
+					'rank'       => 1,
+					'title'      => 'Die laaste lig',
+					'url'        => 'https://ink.test/w/1',
+					'month'      => 'Desember',
+					'author'     => 'Sarah Mitchell',
+					'quote'      => 'Die kers flikker teen die ruit...',
+					'avatar_url' => 'https://ink.test/avatar.jpg',
+					'avatar_alt' => 'Sarah Mitchell',
+					'win_label'  => '3de wen',
+				),
+			),
+		)
+	);
+
+	// Quote is a blockquote; author + avatar (with alt) + win_label all render.
+	expect( $html )->toContain( '<blockquote class="ink-wenner-kollig__aanhaling">' );
+	expect( $html )->toContain( 'Die kers flikker' );
+	expect( $html )->toContain( 'ink-wenner-kollig__foto' );
+	expect( $html )->toContain( 'alt="Sarah Mitchell"' );
+	expect( $html )->toContain( 'Sarah Mitchell' );
+	expect( $html )->toContain( '3de wen' );
+
+	// The eyebrow joins month + "algehele wenner" with a SPACE for the algehele wenner.
+	expect( $html )->toContain( 'Desember algehele wenner' );
+} );
+
+test( 'toHtml OMITS the optional card sub-parts gracefully when the seam supplies only id/rank/title/url', function (): void {
+	$html = FeaturedWinners::toHtml(
+		array(
+			'title'   => 'Mei-uitslae',
+			'url'     => 'https://ink.test/w/mei',
+			'winners' => array(
+				array( 'id' => 10, 'rank' => 1, 'title' => 'Werk sonder besonderhede', 'url' => 'https://ink.test/w/1' ),
+			),
+		)
+	);
+
+	// Non-vacuous: the card itself renders...
+	expect( $html )->toContain( 'ink-wenner-kollig__kaart' );
+	expect( $html )->toContain( 'Werk sonder besonderhede' );
+
+	// ...but no quote / author block / avatar chrome when the seam did not supply them.
+	expect( $html )->not->toContain( 'ink-wenner-kollig__aanhaling' );
+	expect( $html )->not->toContain( 'ink-wenner-kollig__outeur' );
+	expect( $html )->not->toContain( 'ink-wenner-kollig__foto' );
 } );
 
 test( 'order collapses duplicate ranks so there is never a second algehele wenner', function (): void {

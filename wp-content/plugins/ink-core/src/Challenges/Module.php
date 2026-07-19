@@ -40,6 +40,7 @@ final class Module implements ModuleContract {
 		( new PromotionHistory() )->register();
 		( new Migration() )->register();
 		( new FeaturedWinners() )->register();
+		( new CurrentChallenge() )->register();
 		( new CollationPage() )->register();
 		( new IngestionPage() )->register();
 		( new WinnersPost() )->register();

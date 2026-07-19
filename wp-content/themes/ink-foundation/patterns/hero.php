@@ -5,10 +5,17 @@
  * Categories: featured, ink-foundation
  * Description: Tuisblad-held (Epic 19, Storie 19.2, §2) — twee-kolom-uitleg (≥1024px: inhoud links, uitdaging-kaart regs) met kenteken-pil, gradiënt-opskrif en die plus-patroon-tekstuur. Enkel-kolom onder 1024px via home.css. Presentasie alleen (drie-laag-skeiding): geen besigheidslogika nie.
  *
- * The RIGHT column is a working slot (`.ink-hero-aside`) that renders the existing
- * huidige-uitdaging teaser as-is; Storie 19.3 replaces it with the styled dynamic
- * challenge card. Copy is authored Afrikaans (docs/ui-copy-translations.md — Held
- * rows), via the `ink-foundation` text domain; never AI-translated. The gradient
+ * The RIGHT column (`.ink-hero-aside`) hosts the styled dynamic challenge card —
+ * the `ink/huidige-uitdaging` block in its COMPACT variant (Storie 19.3, §3). All
+ * per-uitdaging data + the open-challenge query live in `ink-core` (three-layer
+ * separation); the block collapses to nothing when no challenge is open, so the aside
+ * simply shows empty (no placeholder teaser). Its card styling (`is-style-ink-card`
+ * recipe — surface-alt / 12px / border / shadow.sm / reduced-motion hover-lift, plus
+ * the decorative corner tint + badge) is applied in `home.css` on the block's own
+ * `.ink-huidige-uitdaging--kompak` markup — replicated there rather than wrapping the
+ * COLLAPSING block in a static `is-style-ink-card` group (which would show an empty
+ * card when no challenge is open). Copy is authored Afrikaans (docs/ui-copy-translations.md
+ * — Held rows), via the `ink-foundation` text domain; never AI-translated. The gradient
  * accent phrase is split into an inline `.ink-text-gradient` span (§0.3); the
  * segments stay individually translatable.
  *
@@ -49,7 +56,7 @@
 
 		<!-- wp:group {"className":"ink-hero-aside","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group ink-hero-aside">
-			<!-- wp:pattern {"slug":"ink-foundation/huidige-uitdaging"} /-->
+			<!-- wp:ink/huidige-uitdaging {"variant":"kompak"} /-->
 		</div>
 		<!-- /wp:group -->
 	</div>

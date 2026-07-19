@@ -4,8 +4,18 @@
 <main class="wp-block-group alignfull" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
 	<!-- wp:pattern {"slug":"ink-foundation/hero"} /-->
 
-	<!-- Wenneraankondiging featured slot (Story 15.6). Collapses to nothing until 12A.4/12A.7 supply the latest announcement via the ink_home_featured_winner filter. -->
-	<!-- wp:ink/wenner-kollig /-->
+	<!-- Kenmerk-strook (Story 19.3, §5): the current-challenge FEATURE card + the Wenneraankondiging winner card, two columns ≥1024px (stack below, via home.css). Both are collapsing ink-core blocks — each renders nothing when there is no open challenge / no live winner (graceful, no placeholder). The winner slot stays between the hero and the featured-works grid (Story 15.6 page-map). -->
+	<!-- wp:group {"tagName":"section","align":"full","className":"ink-feature-band","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+	<section class="wp-block-group alignfull ink-feature-band" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+		<!-- wp:group {"align":"wide","className":"ink-feature-grid","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-32"}},"layout":{"type":"grid","columnCount":2}} -->
+		<div class="wp-block-group alignwide ink-feature-grid">
+			<!-- wp:ink/huidige-uitdaging {"variant":"kenmerk"} /-->
+
+			<!-- wp:ink/wenner-kollig /-->
+		</div>
+		<!-- /wp:group -->
+	</section>
+	<!-- /wp:group -->
 
 	<!-- wp:pattern {"slug":"ink-foundation/featured-grid"} /-->
 
