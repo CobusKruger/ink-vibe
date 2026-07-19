@@ -493,6 +493,89 @@ function ink_foundation_register_block_styles(): void {
 		)
 	);
 
+	// INK footer (Epic 19, §10) — the site-wide footer treatment. Like the header,
+	// the footer renders on EVERY page, so its treatment CANNOT live in home.css
+	// (front-page-only): the secondary/30 band, 1px top border, 80px top margin, the
+	// 4-column grid that collapses to one column < 768px, the brand row, the muted
+	// link columns (hover -> text), and the bottom bar + filled-terracotta heart all
+	// ship here as a block-style inline_style (loads site-wide). Token-only (Gate A);
+	// the secondary/30 tint uses the color-mix convention with an opaque `secondary`
+	// fallback first (§0.7).
+	register_block_style(
+		'core/group',
+		array(
+			'name'         => 'ink-footer',
+			'label'        => __( 'INK voetstuk', 'ink-foundation' ),
+			'inline_style' => '.wp-block-group.is-style-ink-footer{'
+				. 'background-color:var(--wp--preset--color--secondary);'
+				. 'background-color:color-mix(in srgb, var(--wp--preset--color--secondary) 30%, transparent);'
+				. 'border-top:1px solid var(--wp--preset--color--border);'
+				. 'margin-top:var(--wp--preset--spacing--s-80);'
+				. '}'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-kolomme{'
+				. 'display:grid;'
+				. 'grid-template-columns:1fr;'
+				. 'gap:var(--wp--preset--spacing--s-32);'
+				. '}'
+				. '@media (min-width:768px){'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-kolomme{grid-template-columns:repeat(4, 1fr);}'
+				. '}'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-handelsmerk{'
+				. 'display:flex;'
+				. 'flex-direction:column;'
+				. 'gap:var(--wp--preset--spacing--s-16);'
+				. '}'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-veer{'
+				. 'display:inline-flex;'
+				. 'color:var(--wp--preset--color--primary);'
+				. '}'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-blurb{'
+				. 'margin:0;'
+				. 'line-height:var(--wp--custom--line-height--relaxed);'
+				. '}'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-kolom h3{'
+				. 'margin:0 0 var(--wp--preset--spacing--s-16);'
+				. 'font-family:var(--wp--preset--font-family--heading);'
+				. '}'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-lys{'
+				. 'list-style:none;'
+				. 'margin:0;'
+				. 'padding:0;'
+				. 'display:flex;'
+				. 'flex-direction:column;'
+				. 'gap:var(--wp--preset--spacing--s-8);'
+				. '}'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-lys a{'
+				. 'color:var(--wp--preset--color--muted-text);'
+				. 'font-size:var(--wp--preset--font-size--sm);'
+				. 'text-decoration:none;'
+				. 'transition:color .15s ease;'
+				. '}'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-lys a:hover,'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-lys a:focus-visible{'
+				. 'color:var(--wp--preset--color--text);'
+				. '}'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-onderbalk{'
+				. 'margin-top:var(--wp--preset--spacing--s-40);'
+				. 'padding-top:var(--wp--preset--spacing--s-24);'
+				. 'border-top:1px solid var(--wp--preset--color--border);'
+				. 'gap:var(--wp--preset--spacing--s-16);'
+				. '}'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-hart{'
+				. 'display:inline-flex;'
+				. 'align-items:center;'
+				. 'gap:var(--wp--preset--spacing--s-4);'
+				. 'margin:0;'
+				. '}'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-hart__ikoon{'
+				. 'color:var(--wp--preset--color--primary);'
+				. '}'
+				. '@media (prefers-reduced-motion:reduce){'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-lys a{transition:none;}'
+				. '}',
+		)
+	);
+
 	// Emphasis: an accented call-out treatment (left rule + tinted background).
 	register_block_style(
 		'core/group',

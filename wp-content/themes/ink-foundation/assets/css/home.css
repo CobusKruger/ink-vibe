@@ -123,6 +123,27 @@
 	width: 100%;
 }
 
+/* Shared hover motion helpers (§0.5 / §0.6). ink-hover-scale = the Lovable
+   `hover:scale-105` used by the §7 borg chips; ink-hover-lift = the card lift used
+   where a block can't carry the is-style-ink-card style. BOTH are disabled under
+   prefers-reduced-motion by the base at the foot of this file. */
+.ink-hover-scale {
+	transition: transform 0.15s ease;
+}
+
+.ink-hover-scale:hover {
+	transform: scale(1.05);
+}
+
+.ink-hover-lift {
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ink-hover-lift:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
 /* ── §0.1 Button sizing utilities (optional per-instance sizing helpers) ─────────
    Button SIZE is NOT a block style (register_block_style is a single radio axis).
    Locked patterns bake size per-instance, or use these utilities. Each sets
@@ -859,6 +880,273 @@
 
 	.ink-uitgesoekte-bydraes__kaart:hover {
 		transform: none;
+	}
+}
+
+/* ── §7 Borg (sponsor) strip — ink/borg-strook block, per-tier chips ─────────────
+   The ink-core `ink/borg-strook` block emits the WHOLE section (eyebrow + serif h2 +
+   intro + per-tier chips + "Word 'n borg" CTA) and COLLAPSES when no sponsor is active;
+   the theme styles its `.ink-borg-strook*` markup here (front-page-only — a home
+   section). TOKENS ONLY (Gate A). The tier chips tint their token with color-mix,
+   opaque fallback first (§0.7). */
+.ink-borg-band {
+	background-color: var(--wp--preset--color--surface);
+	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 20%, transparent);
+}
+
+.ink-borg-strook {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+/* Centred sage eyebrow (UPPERCASE, tracked). */
+.ink-borg-strook__etiket {
+	margin: 0;
+	color: var(--wp--preset--color--accent);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.ink-borg-strook__titel {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--2xl);
+	font-weight: var(--wp--custom--font-weight--semibold);
+	line-height: var(--wp--custom--line-height--tight);
+	color: var(--wp--preset--color--text);
+}
+
+@media (min-width: 768px) {
+	.ink-borg-strook__titel {
+		font-size: var(--wp--preset--font-size--3xl);
+	}
+}
+
+.ink-borg-strook__beskrywing {
+	margin: 0;
+	max-width: 36rem;
+	color: var(--wp--preset--color--muted-text);
+	line-height: var(--wp--custom--line-height--relaxed);
+}
+
+/* Chip row — wraps (multiple sponsors), centred. */
+.ink-borg-strook__rooster {
+	list-style: none;
+	margin: var(--wp--preset--spacing--s-8) 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-24);
+}
+
+/* Per-tier chip: px-6 py-3 rounded-lg, tier-tinted background/border. */
+.ink-borg-strook__chip {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-24);
+	border-radius: var(--wp--custom--radius--lg);
+	border: 1px solid transparent;
+	font-family: var(--wp--preset--font-family--heading);
+	font-weight: var(--wp--custom--font-weight--medium);
+}
+
+/* goud = goud/10 bg + goud/20 border; a touch larger (text-lg). */
+.ink-borg-strook__chip--goud {
+	background-color: var(--wp--preset--color--secondary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--goud) 10%, transparent);
+	border-color: var(--wp--preset--color--goud);
+	border-color: color-mix(in srgb, var(--wp--preset--color--goud) 20%, transparent);
+	font-size: var(--wp--preset--font-size--lg);
+}
+
+/* silwer = secondary bg + border. */
+.ink-borg-strook__chip--silwer {
+	background-color: var(--wp--preset--color--secondary);
+	border-color: var(--wp--preset--color--border);
+	font-size: var(--wp--preset--font-size--md);
+}
+
+/* brons = muted/50 bg (the neutral default). */
+.ink-borg-strook__chip--brons {
+	background-color: var(--wp--preset--color--secondary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--muted-text) 50%, transparent);
+	font-size: var(--wp--preset--font-size--md);
+}
+
+/* The sponsor logo/name inside a chip. */
+.ink-borg-strook__logo {
+	display: block;
+	max-height: var(--wp--preset--spacing--s-32);
+	width: auto;
+}
+
+.ink-borg-strook__skakel {
+	display: inline-flex;
+	align-items: center;
+	color: inherit;
+	text-decoration: none;
+}
+
+.ink-borg-strook__naam {
+	color: var(--wp--preset--color--text);
+}
+
+/* "Word 'n borg" CTA — the is-style-ink-sage-outline recipe (accent border/text,
+   hover fill). Emitted by the block, so the recipe is replicated on its own class. */
+.ink-borg-strook__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	min-height: 44px;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-32);
+	border: 2px solid var(--wp--preset--color--accent);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: transparent;
+	color: var(--wp--preset--color--accent);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--md);
+	font-weight: var(--wp--custom--font-weight--medium);
+	text-decoration: none;
+	transition: all 0.15s ease;
+}
+
+.ink-borg-strook__cta:hover {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+.ink-borg-strook__cta:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+.ink-borg-strook__cta-ikoon {
+	width: 1rem;
+	height: 1rem;
+	flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-borg-strook__cta {
+		transition: none;
+	}
+}
+
+/* ── §8 CTA band — terracotta gradient ──────────────────────────────────────────
+   A rounded gradient band (primary → primary-light, 135°), centred, with two faint
+   decorative circles. surface-alt text throughout; the body is at FULL surface-alt
+   (not /80) so it clears the readability floor over the terracotta ground (a11y).
+   TOKENS ONLY (Gate A); "white" = the surface-alt token. */
+.ink-cta-band {
+	position: relative;
+	overflow: hidden;
+	padding: var(--wp--preset--spacing--s-40);
+	border-radius: var(--wp--custom--radius--3xl);
+	background-image: linear-gradient(
+		135deg,
+		var(--wp--preset--color--primary),
+		var(--wp--preset--color--primary-light)
+	);
+	text-align: center;
+}
+
+@media (min-width: 768px) {
+	.ink-cta-band {
+		padding: var(--wp--preset--spacing--s-64);
+	}
+}
+
+/* Two faint decorative circles (256px TL, 192px BR), aria-hidden, behind content. */
+.ink-cta-band__sirkel {
+	position: absolute;
+	z-index: 0;
+	border-radius: var(--wp--custom--radius--full);
+	background-color: var(--wp--preset--color--surface-alt);
+	background-color: color-mix(in srgb, var(--wp--preset--color--surface-alt) 5%, transparent);
+	pointer-events: none;
+}
+
+.ink-cta-band__sirkel--links {
+	top: 0;
+	left: 0;
+	width: calc(var(--wp--preset--spacing--s-64) * 4);
+	height: calc(var(--wp--preset--spacing--s-64) * 4);
+	transform: translate(-50%, -50%);
+}
+
+.ink-cta-band__sirkel--regs {
+	right: 0;
+	bottom: 0;
+	width: calc(var(--wp--preset--spacing--s-64) * 3);
+	height: calc(var(--wp--preset--spacing--s-64) * 3);
+	transform: translate(50%, 50%);
+}
+
+.ink-cta-band__inhoud {
+	position: relative;
+	z-index: 1;
+}
+
+/* Body at FULL surface-alt + max 672px, centred (a11y contrast floor). */
+.ink-cta-band__teks {
+	max-width: 42rem;
+	margin-inline: auto;
+}
+
+/* Two xl buttons (48px, 8px radius, px-10). Primary = surface-alt fill / primary text;
+   secondary = surface-alt outline + surface-alt text. Both carry a focus ring. */
+.ink-cta-band .ink-cta-band__knoppie .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--wp--preset--spacing--s-8);
+	min-height: 48px;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-40);
+	border-radius: var(--wp--custom--radius--lg);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--lg);
+	transition: all 0.15s ease;
+}
+
+.ink-cta-band .ink-cta-band__knoppie--primer .wp-block-button__link {
+	background-color: var(--wp--preset--color--surface-alt);
+	color: var(--wp--preset--color--primary);
+	border: 0;
+}
+
+.ink-cta-band .ink-cta-band__knoppie--primer .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--surface-alt);
+	opacity: 0.9;
+}
+
+.ink-cta-band .ink-cta-band__knoppie--sekonder .wp-block-button__link {
+	background-color: transparent;
+	color: var(--wp--preset--color--surface-alt);
+	border: 2px solid var(--wp--preset--color--surface-alt);
+}
+
+.ink-cta-band .ink-cta-band__knoppie--sekonder .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--surface-alt);
+	background-color: color-mix(in srgb, var(--wp--preset--color--surface-alt) 10%, transparent);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+.ink-cta-band .ink-cta-band__knoppie .wp-block-button__link:focus-visible {
+	outline: 2px solid var(--wp--preset--color--surface-alt);
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-cta-band .ink-cta-band__knoppie .wp-block-button__link {
+		transition: none;
 	}
 }
 

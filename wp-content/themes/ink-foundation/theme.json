@@ -47,6 +47,7 @@
         { "slug": "s-16", "name": "16", "size": "1rem" },
         { "slug": "s-24", "name": "24", "size": "1.5rem" },
         { "slug": "s-32", "name": "32", "size": "2rem" },
+        { "slug": "s-40", "name": "40", "size": "2.5rem" },
         { "slug": "s-48", "name": "48", "size": "3rem" },
         { "slug": "s-64", "name": "64", "size": "4rem" },
         { "slug": "s-80", "name": "80", "size": "5rem" },
@@ -132,6 +133,7 @@
         "lg": "8px",
         "xl": "12px",
         "2xl": "16px",
+        "3xl": "24px",
         "full": "9999px"
       },
       "lineHeight": {
