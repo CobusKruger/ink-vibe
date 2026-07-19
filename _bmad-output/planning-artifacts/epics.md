@@ -2247,6 +2247,80 @@ So that signup abuse is curbed. (FR-3a, R6)
 
 ---
 
+## Epic 19: Theme visual-fidelity rework (NEW — 2026-07-19)
+
+Re-express the signed-off **theme visual-fidelity spec** (`ux-designs/ux-ink-vibe-2026-06-15/theme-fidelity-spec.md`, `status: final`) in WordPress primitives. The `ink-foundation` theme was built to the design *tokens* but never to a composition *contract*; the Tuisblad renders as a plain single-column stack instead of the Lovable editorial layout. This epic rebuilds the home page + shared primitives (buttons, cards, badges, background texture, animations) to high fidelity, adds the missing enqueued stylesheet, and wires the three dynamic sections to real `ink-core` data with graceful collapse. **No business logic enters the theme** — §3/§5/§6 dynamic data come from `ink-core` seams (read-time + counts computed in `ink-core`, never the theme). **Build order:** 19.1 foundations first (everything depends on it); then 19.2/19.3/19.4; then 19.5 polish. Within 19.3 and 19.4, build the `ink-core` data seam (a collapsing dynamic block) *before* its theme presentation. Reworks Epic 15's Tuisblad (15.1) presentation and extends Epic 12A's `ink/wenner-kollig` block — neither is reverted.
+
+### Story 19.1: Foundations — button styles, type ramp, tokens, icon & tint conventions, home.css
+
+As a theme developer,
+I want the shared visual primitives and the CSS delivery mechanism in place,
+So that every later home-page story builds on a correct, token-driven base. (§0, NFR-2/NFR-5)
+
+**Acceptance Criteria:**
+
+**Given** the fidelity spec §0
+**When** foundations are built
+**Then** `theme.json` gains `styles.elements.button` (radius ≤ 8px, terracotta fill, `surface-alt` text, Lora) + `core/button` block styles `is-style-ink-primary`/`-outline`/`-sage`/`-sage-outline` (hover + `:focus-visible` ring via `inline_style`); button **size is baked per-instance** in locked patterns (sm/default/lg/xl padding + font-size + min-height), never a block style
+**And** fontSize presets `4xl` (36px) + `5xl` (48px) + a fluid `hero` preset (30→48px) are added; tier/gold palette tokens `brons` #A6754C, `silwer` #9AA3AD, `goud` #C9B88A + a bright `gold` #E8B130 (winner-gradient top stop only) are registered
+**And** an inline-SVG icon convention (16px `currentColor`, `aria-hidden`, accessible labels where meaning-bearing), a `color-mix()` alpha-tint convention (opaque fallback first; no `hsl(var/a)`), the plus-pattern data-URI, `fade-up`/`underline-slide` keyframes, and a `prefers-reduced-motion` base (disables all transforms) are established
+**And** a versioned `assets/css/home.css` is enqueued via `wp_enqueue_style`, gated to the front page, mirroring the existing script-enqueue pattern.
+
+### Story 19.2: Hero — two-column split, badge, gradient heading, plus-pattern
+
+As a visitor,
+I want the hero to match the designed editorial layout,
+So that the home page reads as intended. (§1, §2)
+
+**Acceptance Criteria:**
+
+**Given** §2 (and §1 header)
+**When** the hero is built
+**Then** it is a two-column `core/group` Grid ≥1024px (content left, challenge card right), single column below; the badge pill (`primary`/10 via `color-mix`, 14px/500, sentence case, contrast ≥ floor) is present; the h1 is fluid 30→48px/600/1.25 with an inline `.ink-text-gradient` accent phrase (`@supports` + solid fallback); two `lg` buttons per §0.1; the plus-pattern texture sits behind the section (`aria-hidden`, never intercepts clicks); a single visible `h1`
+**And** the sticky header renders `Begin skryf` as `is-style-ink-primary` with the terracotta feather glyph, underline-slide nav links + focus ring, collapsing to a hamburger < 768px.
+
+### Story 19.3: Cards — hero challenge card + Uitdaging & Winner feature cards (presentation + ink-core data)
+
+As a visitor,
+I want the challenge and winner cards rendered as designed with real data,
+So that the home page surfaces live editorial moments. (§3, §5, §11)
+
+**Acceptance Criteria:**
+
+**Given** §3 + §5
+**When** the cards are built
+**Then** a new `ink/huidige-uitdaging` dynamic block (thin `render` + pure `toHtml` + data seam + graceful collapse, house style per `FeaturedWinners`/`HomepageStrip`) supplies the current open uitdaging (title, prompt excerpt, deadline), and the theme renders it in the hero right column (12px radius, 1px border, `surface-alt`, `shadow.sm`, hover-lift reduced-motion-safe, decorative `rounded-bl` corner `aria-hidden`, UPPERCASE type badge + deadline meta)
+**And** the `ink/wenner-kollig` block (Epic 12A) is upgraded to emit the card DOM — avatar (with alt), `<blockquote>` quote, rank label (text + Crown icon), `goud`/`gold-muted` gradient token classes — behind its existing `ink_home_featured_winner` seam (12A ingestion/commit path unchanged); the theme styles the Winner card (§5, Crown watermark, **eyebrow in `text`/`muted-text` — never gold-on-gold**, rank always text+icon) and the Uitdaging feature card (§5, 16px radius, `shadow.md`, Trophy eyebrow, `rounded-bl-full` corner)
+**And** per-rank "[Maand] algehele wenner" (1st) vs "[Maand] wenner" (2nd/3rd), algehele-first; **no live data → each section collapses gracefully** (no placeholder); no theme-side computation.
+
+### Story 19.4: Featured bydraes — asymmetric grid + real featured stream (presentation + ink-core data)
+
+As a visitor,
+I want "Die redakteur se keuse" to show real featured works,
+So that the home page reflects live editorial curation. (§6, §11)
+
+**Acceptance Criteria:**
+
+**Given** §6
+**When** the section is built
+**Then** an `ink-core` featured-stream surface (block or `core/query` provider) yields real featured `gedig`/`storie`/`artikel` with **read-time computed from word count in `ink-core`** + engagement counts as `ink-core`-owned values (no theme-side computation), and the theme renders a `core/group` Grid with the featured card spanning 2 columns (asymmetric, per-child `columnSpan`), each card `rounded-xl` 12px + hover-lift (reduced-motion-safe), category pill, read-time, avatar (alt) + author, and reaksie counts (Heart/MessageCircle) with `_n()` af plurals + accessible labels
+**And** the UPPERCASE terracotta eyebrow + 30/36px title + focusable "Sien alle werke" header; title hover → terracotta; card titles `h3`; no "Titel van die werk"/`href="#"` reaches output; **empty feed → the section hides entirely** (owner decision).
+
+### Story 19.5: Polish — CTA gradient, footer 4-col, borg chips, animations
+
+As a visitor,
+I want the remaining home sections finished to fidelity,
+So that the whole page is consistent. (§7, §8, §10, §0.6)
+
+**Acceptance Criteria:**
+
+**Given** §7/§8/§10/§0.6
+**When** polish is applied
+**Then** the CTA band is a terracotta gradient (`rounded-3xl` 24px, 40/64px padding, two faint decorative circles `aria-hidden`, `surface-alt` heading up to 48px, body at full `surface-alt` for contrast, two `xl` buttons with focus rings); the footer is 4-column ≥768px (`secondary`/30 bg, top border, filled-terracotta heart, Afrikaans org placeholders — never US "501(c)(3)"); the borg strip renders per-tier chips + sage eyebrow + "Word 'n borg" sage-outline CTA when ≥1 active `borg` (collapses when none), logos have alt text and `hover:scale-105` is reduced-motion-safe
+**And** `fade-up` + `underline-slide` animations fire once on mount and are fully reduced-motion-gated.
+
+---
+
 ## Cross-cutting acceptance criteria (apply to every epic)
 
 1. **Three-layer compliance** — no business logic in the theme.

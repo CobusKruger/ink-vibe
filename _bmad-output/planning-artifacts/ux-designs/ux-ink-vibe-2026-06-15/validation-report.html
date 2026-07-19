@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UX Design Validation: INK Theme Visual-Fidelity Spec</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --surface: #ffffff;
+    --border: #e7e5e4;
+    --text: #1c1917;
+    --muted: #78716c;
+
+    --verdict-strong: #16a34a;
+    --verdict-adequate: #65a30d;
+    --verdict-thin: #d97706;
+    --verdict-broken: #dc2626;
+
+    --sev-low: #64748b;
+    --sev-medium: #ca8a04;
+    --sev-high: #ea580c;
+    --sev-critical: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  header.report-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .title .subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .counts { text-align: right; font-size: 12px; color: var(--muted); font-family: ui-monospace, "SF Mono", Menlo, monospace; white-space: nowrap; }
+  .counts .c-crit { color: var(--sev-critical); font-weight: 600; }
+  .counts .c-high { color: var(--sev-high); font-weight: 600; }
+  .counts .c-med { color: var(--sev-medium); }
+  .counts .c-low { color: var(--sev-low); }
+
+  .synthesis {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--sev-high);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    font-size: 15.5px;
+  }
+  .synthesis p { margin: 0 0 10px; }
+  .synthesis p:last-child { margin-bottom: 0; }
+  .synthesis ol { margin: 6px 0 10px; padding-left: 22px; }
+  .synthesis li { margin-bottom: 4px; }
+
+  .dimension-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .dim-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .dim-card .dim-name { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .dim-card .dim-verdict { font-size: 14px; font-weight: 600; }
+
+  section.dimension, section.reviewer-section { margin-bottom: 14px; }
+  section.dimension details, section.reviewer-section details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  section summary {
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  section summary::-webkit-details-marker { display: none; }
+  section summary::before {
+    content: "▸";
+    display: inline-block;
+    color: var(--muted);
+    transition: transform 0.15s ease;
+  }
+  section details[open] summary::before { transform: rotate(90deg); }
+  section summary h2 {
+    display: inline;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    flex: 1;
+  }
+  .verdict-pill {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: white;
+  }
+  .verdict-strong { background: var(--verdict-strong); }
+  .verdict-adequate { background: var(--verdict-adequate); }
+  .verdict-thin { background: var(--verdict-thin); }
+  .verdict-broken { background: var(--verdict-broken); }
+
+  .dim-body { padding: 4px 20px 18px; }
+  .dim-judgment { color: var(--text); font-size: 14.5px; }
+  .dim-judgment p { margin: 0 0 10px; }
+
+  .findings-list { padding: 0 20px 4px; }
+  article.finding {
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+  }
+  article.finding:first-child { border-top: none; }
+  article.finding header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .badge {
+    font-size: 10.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .badge-sev-low { background: rgba(100, 116, 139, 0.12); color: var(--sev-low); }
+  .badge-sev-medium { background: rgba(202, 138, 4, 0.14); color: var(--sev-medium); }
+  .badge-sev-high { background: rgba(234, 88, 12, 0.14); color: var(--sev-high); }
+  .badge-sev-critical { background: rgba(220, 38, 38, 0.14); color: var(--sev-critical); }
+  .finding-title { margin: 0; font-size: 15px; font-weight: 500; flex: 1; min-width: 200px; }
+  .finding-location { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; color: var(--muted); }
+  .finding-note, .finding-fix { margin-top: 6px; font-size: 14px; }
+  .finding-fix strong { color: var(--muted); font-weight: 500; }
+
+  .reviewer-source {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  .mechanical {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 24px;
+    font-size: 14px;
+  }
+  .mechanical h3 { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .mechanical ul { margin: 0; padding-left: 20px; }
+  .mechanical li { margin-bottom: 4px; color: var(--text); }
+
+  footer.report-footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  footer .meta { display: flex; gap: 24px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="report-header">
+      <div class="title">
+        <h1>INK Theme Visual-Fidelity Spec — UX Design Validation Report</h1>
+        <div class="subtitle">theme-fidelity-spec.md (draft) · DESIGN.md + EXPERIENCE.md (final)</div>
+      </div>
+      <div class="counts">
+        <div><span class="c-crit">1 critical</span></div>
+        <div><span class="c-high">8 high</span></div>
+        <div><span class="c-med">18 medium</span></div>
+        <div><span class="c-low">~20 low</span></div>
+        <div style="margin-top:6px;">4 lenses</div>
+      </div>
+    </header>
+
+    <div class="synthesis">
+      <p><strong>Accept with fixes — the spec is sound; the gaps cluster in three fixable seams, not in the pixel work.</strong> The fidelity lens spot-checked ~70 discrete values against the <code>ink-lovable</code> source and found them overwhelmingly correct; every "current gap" claim matched the actual theme code; and §11's dynamic-data honesty holds up against <code>ink-core</code>. The rubric confirms the contract is source-extractable and internally disciplined. The spec is a trustworthy build contract — but <em>not yet buildable as written</em> in three places:</p>
+      <ol>
+        <li><strong>Token layer:</strong> the winner card depends on <code>goud</code>/<code>brons</code>/<code>silwer</code> tokens that exist in DESIGN.md frontmatter but were never added to <code>theme.json</code>; the spec wrongly states <code>goud</code> is present. (Convergent: rubric + fidelity, HIGH.)</li>
+        <li><strong>Cross-layer coupling:</strong> the winner card, current-uitdaging card, featured stream, and stats row need <code>ink-core</code> data/markup; the winner card needs an <code>ink/wenner-kollig</code> <strong>markup upgrade (Epic 12A)</strong>, not just theme CSS.</li>
+        <li><strong>Mechanism friction:</strong> button <em>size</em> can't be a block style, buttons need an icon system the theme lacks, and <code>core/columns</code> won't hit the 1024/768 splits. All buildable — but the naive path walls.</li>
+      </ol>
+      <p>Accessibility adds one <strong>critical</strong> legibility breach (gold-on-gold winner eyebrow ≈ 1.8:1) plus floor-completeness gaps (focus states, reduced-motion scope, alt-text scope, several sub-4.5:1 pairs). None of this invalidates the spec — it's a strong draft that needs one revision pass before promotion to <code>final</code> and Epic 19 build.</p>
+    </div>
+
+    <div class="dimension-summary">
+      <div class="dim-card"><div class="dim-name">1. Flow coverage</div><div class="dim-verdict" style="color: var(--verdict-strong)">Strong</div></div>
+      <div class="dim-card"><div class="dim-name">2. Token completeness</div><div class="dim-verdict" style="color: var(--verdict-adequate)">Adequate</div></div>
+      <div class="dim-card"><div class="dim-name">3. Component coverage</div><div class="dim-verdict" style="color: var(--verdict-adequate)">Adequate</div></div>
+      <div class="dim-card"><div class="dim-name">4. State coverage</div><div class="dim-verdict" style="color: var(--verdict-strong)">Strong</div></div>
+      <div class="dim-card"><div class="dim-name">5. Visual reference coverage</div><div class="dim-verdict" style="color: var(--verdict-adequate)">Adequate</div></div>
+      <div class="dim-card"><div class="dim-name">6. Bloat &amp; overspecification</div><div class="dim-verdict" style="color: var(--verdict-strong)">Strong</div></div>
+      <div class="dim-card"><div class="dim-name">7. Inheritance discipline</div><div class="dim-verdict" style="color: var(--verdict-strong)">Strong</div></div>
+      <div class="dim-card"><div class="dim-name">8. Shape fit</div><div class="dim-verdict" style="color: var(--verdict-strong)">Strong</div></div>
+    </div>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>1. Flow coverage</h2><span class="verdict-pill verdict-strong">Strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>UJ-1…UJ-6 each carry a named protagonist, numbered steps, an explicit Climax and Resolution. Admin multi-step flows delegate to Epic 12A ACs (a documented boundary). The Epic 19 theme rebuild is a build task with no user journey, correctly carrying none.</p></div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">UJ-2 has no inline payment-failed branch</h3><span class="finding-location">EXPERIENCE.md:205-210</span></header><div class="finding-note">UJ-2 routes through PayFast but never references the "Jou betaling het misluk" state (which lives only in State Patterns).</div><div class="finding-fix"><strong>Fix:</strong> add a one-line failure branch to UJ-2 cross-referencing the payment-failed state.</div></article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details open>
+        <summary><h2>2. Token completeness</h2><span class="verdict-pill verdict-adequate">Adequate</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>Every DESIGN.md YAML token carries a hex and every in-prose <code>{token}</code> reference resolves. The break is between the spec's stated token universe and the actual production source of truth (theme.json), which lacks the tier + hero-scale presets the spec relies on.</p></div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Tier tokens goud/brons/silwer absent from theme.json; spec mis-states goud as present</h3><span class="finding-location">spec §5 AC + Open Decision #1 vs theme.json palette</span></header><div class="finding-note">Only <code>gold-muted</code> exists; the C9 tier tokens are DESIGN.md frontmatter only. The Lovable winner card is a two-stop bright-gold→muted gradient, so with only the muted token it collapses. No AC adds them. <em>(Convergent with fidelity HIGH.)</em></div><div class="finding-fix"><strong>Fix:</strong> correct the note; add a §0 AC to register brons/silwer/goud + a bright-gold top-stop as theme.json presets before §5 builds; confirm brons/silwer hex against Lovable.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">No "add tier-colour presets" AC anywhere</h3><span class="finding-location">spec §0 / §5</span></header><div class="finding-note">fontSize 4xl/5xl additions are covered by §0.2 ACs, but the tier-colour presets have no "add to theme.json" AC.</div><div class="finding-fix"><strong>Fix:</strong> add them to the §0 foundations AC list alongside the fontSize additions.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">brons/silwer hex tagged [ASSUMPTION value]</h3><span class="finding-location">DESIGN.md:37-38</span></header><div class="finding-note">The winner-card + Gradering rank colours rest on unconfirmed values.</div><div class="finding-fix"><strong>Fix:</strong> confirm both against the Lovable source before Epic 19 build.</div></article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>3. Component coverage</h2><span class="verdict-pill verdict-adequate">Adequate</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>Buttons, cards, line-highlight, Gradering indicator, and Winner banner trace to both spines (the last is a strong three-way trace). Pills/hero/challenge-card/story-card/CTA/footer are compositions specced in the fidelity spec and referenced (not duplicated) in the spines.</p></div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">Stats row exists in only one of three files</h3><span class="finding-location">spec §4</span></header><div class="finding-note">No DESIGN.md.Components or EXPERIENCE.md Component Patterns entry, and data source undecided — the weakest trace in the set.</div><div class="finding-fix"><strong>Fix:</strong> add a one-line stats behavioral entry (static vs ink-core provider) or scope it explicitly as a fidelity-only static primitive.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">Story-card behavior scattered across EXPERIENCE rows</h3><span class="finding-location">spec §6</span></header><div class="finding-note">Counts-without-verbs, _n() plurals, read-time live in separate rows rather than one card entry.</div><div class="finding-fix"><strong>Fix:</strong> acceptable as-is; optionally consolidate under a "Werkkaart" row.</div></article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>4. State coverage</h2><span class="verdict-pill verdict-strong">Strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>Empty/loading/success/error/permission-denied/pending-approval/expired/editorial-review all covered with verbatim Afrikaans copy; THE CONFLATION RULE stated as two state machines. The spec adds "collapse gracefully" empty states for every dynamic home section with a "no placeholder ever reaches production" AC.</p></div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">Loading state remains [ASSUMPTION]</h3><span class="finding-location">EXPERIENCE.md:132</span></header><div class="finding-note">Acceptable and flagged; unresolved after the fidelity pass.</div><div class="finding-fix"><strong>Fix:</strong> none required; carry forward as a known assumption.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">No explicit empty copy for an empty featured feed</h3><span class="finding-location">spec §6 vs EXPERIENCE.md:131</span></header><div class="finding-note">"Nog niks op hierdie rak nie" is scoped to Biblioteek/Opleiding.</div><div class="finding-fix"><strong>Fix:</strong> confirm whether the home featured section hides entirely or shows an empty line.</div></article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details open>
+        <summary><h2>5. Visual reference coverage</h2><span class="verdict-pill verdict-adequate">Adequate</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>No mockups/wireframes/imports dirs exist (confirmed); the decision log states the Lovable source + fidelity spec are the authoritative reference, and both comparison PNGs are present. The reference basis is adequately stated — but one stale pointer contradicts it.</p></div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">Orphan mockups/ reference in EXPERIENCE.md</h3><span class="finding-location">EXPERIENCE.md:74</span></header><div class="finding-note">"Composition reference: mocks in mockups/" — the dir doesn't exist and no mocks were rendered (contradicts the decision log). A consumer following it finds nothing.</div><div class="finding-fix"><strong>Fix:</strong> replace with the real reference basis (Lovable @5618f39 + the two theme-redevelopment PNGs + theme-fidelity-spec.md).</div></article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>6. Bloat &amp; overspecification</h2><span class="verdict-pill verdict-strong">Strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>The pixel-level detail is justified — it exists precisely because tokens-only fidelity failed — and consistently uses token slugs / <code>color-mix()</code> rather than hardcoded hex. Tables are used where tables belong.</p></div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">Mild button-sizing/radii duplication across DESIGN.md + spec</h3><span class="finding-location">DESIGN.md Components vs spec §9</span></header><div class="finding-note">Mitigated by DESIGN.md delegating exact values to the spec.</div><div class="finding-fix"><strong>Fix:</strong> none required; keep DESIGN.md to principles, §9 owns the numbers.</div></article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>7. Inheritance discipline</h2><span class="verdict-pill verdict-strong">Strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>Glossary verbatim-consistent across all three files; component names identical across sections/files; Meester = <code>primary</code> (never danger) holds across DESIGN.md, EXPERIENCE.md, and the theme.json css string; EXPERIENCE.md appearance refs resolve to DESIGN.md.</p></div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">Spec sources use absolute machine-specific paths</h3><span class="finding-location">theme-fidelity-spec.md sources</span></header><div class="finding-note"><code>/Users/cobus/Development/ink-lovable</code> rather than the {placeholder} convention — not portable.</div><div class="finding-fix"><strong>Fix:</strong> express as a repo-relative/placeholder reference + the pinned commit @5618f39.</div></article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details open>
+        <summary><h2>8. Shape fit</h2><span class="verdict-pill verdict-strong">Strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>DESIGN.md follows canonical section order; EXPERIENCE.md carries all required defaults and earns its extensions; the fidelity spec is well-formed and names the [ASSUMPTION]s it supersedes (#6, #7). One status incoherence.</p></div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">Final spines cite a draft spec</h3><span class="finding-location">DESIGN.md/EXPERIENCE.md sources vs spec status</span></header><div class="finding-note">A consumer extracting from the "final" spines may treat draft-authority values (breakpoints, per-component pixels) as ratified.</div><div class="finding-fix"><strong>Fix:</strong> promote the spec to final on sign-off, or annotate the spine refs as "(draft — provisional until Epic 19 sign-off)".</div></article>
+        </div>
+      </details>
+    </section>
+
+    <!-- Extra reviewers -->
+
+    <section class="reviewer-section">
+      <details open>
+        <summary><h2>Fidelity &amp; traceability review</h2><span class="reviewer-source">review-fidelity.md · accept with fixes · 0c/1h/3m/5l</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>~70 values spot-checked against the Lovable source — overwhelmingly correct to the pixel/token. Every "current gap" claim matched the theme code; §11 dynamic-data honesty confirmed against ink-core. Blocking issues are all in the token layer.</p></div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Winner-card gold gradient cannot be built from tokens</h3><span class="finding-location">spec §5 + Open Decision #1 vs theme.json:24 + ChallengeSection.tsx:48</span></header><div class="finding-note">Only <code>gold-muted</code> exists; the Lovable card is a two-stop bright-gold→muted gradient. "Add no bright-gold token" collapses the defining gradient.</div><div class="finding-fix"><strong>Fix:</strong> add a bright-gold (goud) preset for the top stop, or resolve the gradient to gold-muted + warning; stop asserting goud already exists.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">Primary-button shadow mis-mapped (sm vs md)</h3><span class="finding-location">spec §0.1 + §9 vs button.tsx:19 / theme.json:116-117</span></header><div class="finding-note">Lovable <code>literary</code> uses shadow-soft = theme.json <code>md</code>, but the ACs specify <code>shadow-sm</code> (the flatter card shadow). §0.1 prose already says "shadow-soft" — internally inconsistent.</div><div class="finding-fix"><strong>Fix:</strong> change to <code>shadow-md</code> in §0.1 and §9.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">Spec hardcodes white (#fff), breaking its own no-hardcode rule</h3><span class="finding-location">spec §0.1/§8/§9</span></header><div class="finding-note">theme.json has no pure-white token; DESIGN.md already designates <code>surface-alt</code> for button text.</div><div class="finding-fix"><strong>Fix:</strong> route "white" to <code>surface-alt</code> or a named on-primary preset.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">No focus-state ACs anywhere</h3><span class="finding-location">spec §0/§1/§9 vs button.tsx:8 + EXPERIENCE a11y floor</span></header><div class="finding-note">Hover states specced meticulously; focus rings omitted. <em>(Convergent with accessibility HIGH.)</em></div><div class="finding-fix"><strong>Fix:</strong> add a visible focus-ring AC (2px primary + offset) on buttons and nav/card links.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-low">low</span><h3 class="finding-title">"full-pill" root-cause phrasing imprecise; type-ramp 2px drift; §4 placeholder numbers; §7 sponsor chips under-specified; logo feather not required by any AC</h3><span class="finding-location">spec §0.1 / §0.2 / §4 / §7 / §1</span></header><div class="finding-note">Five low items — see review-fidelity.md for detail.</div><div class="finding-fix"><strong>Fix:</strong> soften "full-pill" and confirm the pill source; note the 32-vs-30px section-title step; mark stats numbers placeholder; add per-tier chip metrics; add a feather-glyph AC (+ wordmark weight 600).</div></article>
+        </div>
+      </details>
+    </section>
+
+    <section class="reviewer-section">
+      <details open>
+        <summary><h2>WP/FSE buildability review</h2><span class="reviewer-source">review-buildability.md · buildable with friction · 0c/3h/8m/5l</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>Nothing infeasible on WP 7.0+; the spec is WP-aware (routes data to ink-core, correct enqueue + token discipline). But four mechanisms wall if a story assumes the naive path, and two are cross-layer (ink-core), not pure theme.</p></div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Winner card visual coupled to ink-core block output</h3><span class="finding-location">spec §5 vs FeaturedWinners::toHtml()</span></header><div class="finding-note">The block emits a flat <code>&lt;h2&gt;+&lt;ul&gt;</code>; theme CSS can't invent the avatar/quote/crown DOM.</div><div class="finding-fix"><strong>Fix:</strong> upgrade the ink-core block markup (Epic 12A) behind its existing seam; theme supplies token styling only.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Buttons need icons; theme has no icon system</h3><span class="finding-location">spec §2/§3/§5/§8/§9</span></header><div class="finding-note">Zero inline SVG in patterns; core/button has no icon support.</div><div class="finding-fix"><strong>Fix:</strong> establish an inline-SVG convention in 19-1 (hand-placed in locked patterns; emitted by ink-core PHP in dynamic sections).</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Button size can't be a block style</h3><span class="finding-location">spec §0.1/§9</span></header><div class="finding-note">register_block_style is a single radio axis; size × variant can't combine. "Height" isn't a button property.</div><div class="finding-fix"><strong>Fix:</strong> keep variant as the block style; bake size per-instance in locked patterns via spacing/typography supports.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">core/columns stacks at fixed ~782px, not 1024/768; asymmetric grid not achievable</h3><span class="finding-location">spec §2/§6</span></header><div class="finding-note">The hero 1024px split, the featured 768px split, and the span-based asymmetry aren't expressible with plain columns.</div><div class="finding-fix"><strong>Fix:</strong> use core/group Grid layout (6.3+) with columnSpan + home.css media queries.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">background-clip:text on a heading sub-phrase can't be an editor block style; hsl(var/a) tints not viable; no home CSS layer exists</h3><span class="finding-location">spec §0.3 / token-note #2 / §0 note</span></header><div class="finding-note">Three mechanism corrections bundled — the accent must be an inline element; color-mix replaces hsl(var/a); §0.3-0.6 all depend on an enqueued stylesheet that doesn't exist yet.</div><div class="finding-fix"><strong>Fix:</strong> inline <code>.ink-text-gradient</code> in the locked pattern (@supports fallback); standardise on color-mix + opaque fallback; enqueue versioned home.css gated to front page (correctly first in 19-1).</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">§3 current-uitdaging + §4/§6 data need ink-core; no theme-side computation</h3><span class="finding-location">spec §3/§4/§6/§11</span></header><div class="finding-note">huidige-uitdaging.php is static; read-time + counts must not be computed in the theme (three-layer rule).</div><div class="finding-fix"><strong>Fix:</strong> add an <code>ink/huidige-uitdaging</code> dynamic block; featured via core/query or ink-core block; counts/read-time are ink-core-owned; make "no theme-side computation" explicit in ACs.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">Story slicing under-specifies the ink-core dependency</h3><span class="finding-location">spec 19-1..19-5</span></header><div class="finding-note">19-3 (winner) and 19-4 (featured) can't reach "real data" ACs until the ink-core seams land; §5 needs a cross-epic 12A markup change. Run before providers → they ship no live data silently.</div><div class="finding-fix"><strong>Fix:</strong> split each dynamic section into presentation vs data-wiring stories; make §3/§5 ink-core work explicit blockers, not parallel; land icon + color-mix conventions in 19-1.</div></article>
+        </div>
+      </details>
+    </section>
+
+    <section class="reviewer-section">
+      <details open>
+        <summary><h2>Accessibility review</h2><span class="reviewer-source">review-accessibility.md · conditional pass (NFR-5 floor) · 1c/4h/6m/3l</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>Judged against the NFR-5 readability floor (no formal WCAG AA claim for v1; WCAG failures flagged as info). The spec nails the headline commitment — rank is always colour + text + icon, never colour-alone — but omits several things the floor itself names.</p></div></div>
+        <div class="findings-list">
+          <article class="finding"><header><span class="badge badge-sev-critical">critical</span><h3 class="finding-title">Gold eyebrow on gold-tinted winner card ≈ 1.8:1</h3><span class="finding-location">spec §5</span></header><div class="finding-note">Gold text on a pale-gold ground is genuinely illegible — a readability-floor breach, not just a WCAG note.</div><div class="finding-fix"><strong>Fix:</strong> let the Crown icon + tint carry the "gold moment"; set the eyebrow/rank words in text/muted-text.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Pale badge pill ≈ 3.6:1</h3><span class="finding-location">spec §2 hero badge, §3 type badge</span></header><div class="finding-note">Terracotta on primary/10 fails 4.5:1; the 12px uppercase badge (small text) is most at risk.</div><div class="finding-fix"><strong>Fix:</strong> darken the pill text or deepen the pill background.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Keyboard focus states unspecified for every WP target</h3><span class="finding-location">spec §0/§1/§9</span></header><div class="finding-note">Lovable's focus-visible:ring-2 never made it into any AC; the floor requires visible focus.</div><div class="finding-fix"><strong>Fix:</strong> add focus-ring ACs on buttons/nav/card-links.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">prefers-reduced-motion scoped only to §0.6 "optional" animations</h3><span class="finding-location">spec §0.5/§0.6/§3/§6/§7</span></header><div class="finding-note">Doesn't cover the mandated hover-lift or hover:scale-105.</div><div class="finding-fix"><strong>Fix:</strong> widen the AC to disable all transforms (lift/scale/slide/fade).</div></article>
+          <article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Alt text required only for borg logos</h3><span class="finding-location">spec §7 vs §5/§6</span></header><div class="finding-note">Author avatars and featured images uncovered.</div><div class="finding-fix"><strong>Fix:</strong> require alt on featured images + avatars; aria-hide decorative shapes/watermarks/plus-pattern.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">Contrast cluster below 4.5:1</h3><span class="finding-location">spec §5/§7/§8/§10</span></header><div class="finding-note">White on terracotta ≈ 4.0:1 (~3.1:1 on primary-light hover); muted-text on cream ≈ 4.0:1; white/80 on CTA gradient ≈ 3.4:1; sage-as-text ≈ 4.2:1.</div><div class="finding-fix"><strong>Fix:</strong> darken muted-text on cream; raise CTA body to white/100; avoid sage/gold as body text.</div></article>
+          <article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">Heading levels unassigned; decorative not aria-hidden; count icons unlabelled; sub-44px CTAs</h3><span class="finding-location">spec §5/§6/§8</span></header><div class="finding-note">Skip/duplicate-h1 risk; reaction-count icons carry meaning with no label; 36-40px primary CTAs under the 44px comfortable mobile target (clears WCAG 2.5.8's 24px min).</div><div class="finding-fix"><strong>Fix:</strong> assign explicit heading order; aria-hide decorative; label counts ("342 hartjies"); ensure ~44px mobile CTAs via padding.</div></article>
+        </div>
+      </details>
+    </section>
+
+    <div class="mechanical">
+      <h3>Mechanical notes</h3>
+      <ul>
+        <li>theme.json present slugs: primary, primary-light, secondary, accent, accent-light, surface, surface-alt, text, muted-text, success, warning, danger, border, highlight, highlight-foreground, gold-muted. <strong>Absent:</strong> gold, goud, brons, silwer, and fontSizes 4xl / 5xl.</li>
+        <li>theme.json css string styles .ink-gradering / .ink-wenner-banier using <code>primary</code> for Meester/algehele; references no brons/silwer/goud tokens (consistent with their absence).</li>
+        <li>Run folder contains: .decision-log.md, DESIGN.md, EXPERIENCE.md, theme-fidelity-spec.md, and the four review-*.md. No mockups/, wireframes/, imports/, .working/.</li>
+        <li>Resolving companion refs: docs/theme-fidelity-rework-plan.md, docs/theme-redevelopment/design-lovable.png + design-staging.png.</li>
+        <li>Convergent findings (raised by ≥2 lenses): tier/gold token gap (rubric + fidelity, HIGH); missing focus-state ACs (accessibility HIGH + fidelity MEDIUM); color-mix over hsl(var/a) (buildability + fidelity).</li>
+      </ul>
+    </div>
+
+    <footer class="report-footer">
+      <div class="meta">
+        <span>Rubric: review-rubric.md · review-fidelity.md · review-buildability.md · review-accessibility.md</span>
+        <span>Generated: 2026-07-19T20:56:49+02:00</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

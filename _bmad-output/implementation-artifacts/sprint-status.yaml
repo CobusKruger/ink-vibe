@@ -35,7 +35,8 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-29  # epic-12A (Challenge adjudication automation) COMPLETE — 7/7 done, R12A review (0 unresolved HIGH/MED, 6 patches), 11th retro, MERGED to main. (epic-18 was the final PLANNED epic; 12A was the deferred adjudication backlog epic.)
+last_updated: 2026-07-19  # Epic 19 (Theme visual-fidelity rework) added as backlog via Correct-Course (sprint-change-proposal-2026-07-19.md, 5-story slice approved).
+# earlier: 2026-06-29  # epic-12A (Challenge adjudication automation) COMPLETE — 7/7 done, R12A review (0 unresolved HIGH/MED, 6 patches), 11th retro, MERGED to main. (epic-18 was the final PLANNED epic; 12A was the deferred adjudication backlog epic.)
 # epic-5 started 2026-06-25; 5-1 → review (create-story + dev-story, Gradering data-model: Tier enum default/isManualOnly/isAutoPromotable + Kernel-owned meta-key single source + typed default-safe Tiers\Api::forUser() closing the 2.3 deferral; tests 283 passed/1 skipped +13, cs/stan clean, deptrac no new edge, Entitlement⟂Tiers holds)
 # 5-3 → review (create-story + dev-story, built BEFORE 5.2 as the log substrate; ink_tier_history custom table — FIRST ink-core custom table — via Kernel Schema registry registered at include time for activation correctness; PromotionLog::record()/forUser() + PromotionLogEntry value object; first $wpdb unit-test pattern; tests 294 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
 # 5-2 → review (create-story + dev-story; Tiers\Api::promote() SOLE write path — meta + normalised promoted_at + PromotionLog append + FIRST ink-core do_action 'ink/tier_promoted' event seam for 5.10; MANAGE_TIERS-gated AdminProfile set/adjust user-profile UI (2nd sanctioned $_POST site); closed 3 Story-2.3 deferrals (MANAGE_TIERS grant verified, per-target scope decided = global editorial cap, promoted_at format normalised); Tiers module wired into bootstrap; tests 305 passed/1 skipped +11, cs/stan clean, deptrac no new edge)
@@ -384,3 +385,14 @@ development_status:
   18-9-analytics-provider-selection-r8: done
   18-10-registration-anti-spam-hardening-r6: done
   epic-18-retrospective: done
+
+  # Epic 19: Theme visual-fidelity rework (NEW — 2026-07-19, Correct-Course; sprint-change-proposal-2026-07-19.md APPROVED)
+  # Five-story slice (owner-approved): ink-core data-wiring folded into 19-3 (cards) + 19-4 (featured).
+  # Reworks Epic 15 Tuisblad (15.1) presentation + extends Epic 12A ink/wenner-kollig block (neither reverted).
+  # Build order: 19-1 (foundations, blocks all) → 19-2, 19-3, 19-4 → 19-5. Within 19-3/19-4 build the ink-core seam before presentation.
+  epic-19: backlog
+  19-1-foundations-button-styles-type-ramp-tokens-home-css: backlog
+  19-2-hero-two-column-split-badge-gradient-plus-pattern: backlog
+  19-3-cards-challenge-uitdaging-winner: backlog
+  19-4-featured-bydraes-asymmetric-grid-real-stream: backlog
+  19-5-polish-cta-footer-borg-chips-animations: backlog
