@@ -21,7 +21,11 @@
         { "slug": "border", "name": "Border", "color": "#E8E4DC" },
         { "slug": "highlight", "name": "Highlight", "color": "#FFE066" },
         { "slug": "highlight-foreground", "name": "Highlight Foreground", "color": "#1A1D21" },
-        { "slug": "gold-muted", "name": "Gold Muted", "color": "#C9B88A" }
+        { "slug": "gold-muted", "name": "Gold Muted", "color": "#C9B88A" },
+        { "slug": "brons", "name": "Brons", "color": "#A6754C" },
+        { "slug": "silwer", "name": "Silwer", "color": "#9AA3AD" },
+        { "slug": "goud", "name": "Goud", "color": "#C9B88A" },
+        { "slug": "gold", "name": "Gold (bright)", "color": "#E8B130" }
       ]
     },
     "layout": {
@@ -106,7 +110,10 @@
         { "name": "LG", "slug": "lg", "size": "1.125rem", "fluid": false },
         { "name": "XL", "slug": "xl", "size": "1.25rem", "fluid": false },
         { "name": "2XL", "slug": "2xl", "size": "1.5rem", "fluid": { "min": "1.25rem", "max": "1.5rem" } },
-        { "name": "3XL", "slug": "3xl", "size": "2rem", "fluid": { "min": "1.5rem", "max": "2rem" } }
+        { "name": "3XL", "slug": "3xl", "size": "2rem", "fluid": { "min": "1.5rem", "max": "2rem" } },
+        { "name": "4XL", "slug": "4xl", "size": "2.25rem", "fluid": false },
+        { "name": "5XL", "slug": "5xl", "size": "3rem", "fluid": false },
+        { "name": "Hero", "slug": "hero", "size": "clamp(1.875rem, 1.2rem + 3vw, 3rem)", "fluid": false }
       ],
       "lineHeight": true
     },
@@ -137,6 +144,11 @@
         "medium": "500",
         "semibold": "600",
         "bold": "700"
+      },
+      "ink": {
+        "pattern": {
+          "plus": "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
+        }
       }
     }
   },
@@ -192,6 +204,18 @@
             "text": "var:preset|color|accent"
           }
         }
+      },
+      "button": {
+        "border": {
+          "radius": "var:custom|radius|md"
+        },
+        "color": {
+          "background": "var:preset|color|primary",
+          "text": "var:preset|color|surface-alt"
+        },
+        "typography": {
+          "fontFamily": "var:preset|font-family|display"
+        }
       }
     },
     "typography": {
@@ -212,7 +236,7 @@
       },
       "core/button": {
         "typography": {
-          "fontFamily": "var:preset|font-family|ui"
+          "fontFamily": "var:preset|font-family|display"
         }
       },
       "core/navigation-link": {

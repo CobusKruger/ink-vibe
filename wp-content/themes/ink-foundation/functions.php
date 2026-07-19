@@ -197,6 +197,34 @@ function ink_foundation_enqueue_leeslys(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_leeslys' );
 
 /**
+ * Enqueue the home (Tuisblad) stylesheet on the front page only (Epic 19, §0.8).
+ *
+ * The theme.json `css` string only carries the ink-core widget styles; the
+ * home-page shared primitives that need @keyframes / ::before / gradient-clip
+ * (fade-up, underline-slide, the .ink-hero-texture plus-pattern layer, the
+ * .ink-text-gradient accent, the ink-btn-* sizing utilities, and the
+ * prefers-reduced-motion base) live in a real enqueued stylesheet. Gated to the
+ * front page, mirroring the script-enqueue pattern above and versioned to the
+ * theme so cache-busting rides the theme version. Presentation only — no
+ * business logic (three-layer separation holds).
+ */
+function ink_foundation_enqueue_home_assets(): void {
+	if ( ! function_exists( 'is_front_page' ) || ! is_front_page() ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_style(
+		'ink-foundation-home',
+		get_theme_file_uri( 'assets/css/home.css' ),
+		array(),
+		(string) $theme->get( 'Version' )
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_home_assets' );
+
+/**
  * Register the core block style variations (card / button / emphasis).
  *
  * These are token-driven presentation treatments applied to any block instance
@@ -249,6 +277,159 @@ function ink_foundation_register_block_styles(): void {
 			'label'        => __( 'Pil', 'ink-foundation' ),
 			'inline_style' => '.wp-block-button.is-style-pill .wp-block-button__link{'
 				. 'border-radius:var(--wp--custom--radius--full);'
+				. '}',
+		)
+	);
+
+	// INK button variants (Epic 19, §0.1 / §9). Colour/border/radius/font +
+	// :hover + a visible :focus-visible ring (2px primary + 2px offset, a11y) are
+	// carried on the block-style inline_style so they load site-wide (not only on
+	// the front page). Button SIZE is NOT a block style (register_block_style is a
+	// single radio axis, so size x variant can't combine) — size is baked
+	// per-instance in the locked patterns, or via the ink-btn-* utilities in
+	// home.css. Radius is capped at radius.md (6px) / radius.lg (8px) — never a
+	// pill. Token-only (Gate A); all colour/type resolves to --wp--preset--*.
+	//
+	// is-style-ink-primary — literary: primary fill / surface-alt text / shadow.md,
+	// hover -> primary-light.
+	register_block_style(
+		'core/button',
+		array(
+			'name'         => 'ink-primary',
+			'label'        => __( 'INK primêr', 'ink-foundation' ),
+			'inline_style' => '.wp-block-button.is-style-ink-primary .wp-block-button__link{'
+				. 'background-color:var(--wp--preset--color--primary);'
+				. 'color:var(--wp--preset--color--surface-alt);'
+				. 'font-family:var(--wp--preset--font-family--display);'
+				. 'border:0;'
+				. 'border-radius:var(--wp--custom--radius--md);'
+				. 'box-shadow:var(--wp--preset--shadow--md);'
+				. 'transition:all .15s ease;'
+				. '}'
+				. '.wp-block-button.is-style-ink-primary .wp-block-button__link:hover{'
+				. 'background-color:var(--wp--preset--color--primary-light);'
+				. '}'
+				. '.wp-block-button.is-style-ink-primary .wp-block-button__link:focus-visible{'
+				. 'outline:2px solid var(--wp--preset--color--primary);'
+				. 'outline-offset:2px;'
+				. '}'
+				. '.wp-block-button.is-style-ink-primary .wp-block-button__link:disabled{'
+				. 'opacity:.5;'
+				. '}',
+		)
+	);
+
+	// is-style-ink-outline — 2px primary border / primary text, hover -> fill
+	// primary + surface-alt text.
+	register_block_style(
+		'core/button',
+		array(
+			'name'         => 'ink-outline',
+			'label'        => __( 'INK omlyn', 'ink-foundation' ),
+			'inline_style' => '.wp-block-button.is-style-ink-outline .wp-block-button__link{'
+				. 'background-color:transparent;'
+				. 'color:var(--wp--preset--color--primary);'
+				. 'font-family:var(--wp--preset--font-family--display);'
+				. 'border:2px solid var(--wp--preset--color--primary);'
+				. 'border-radius:var(--wp--custom--radius--md);'
+				. 'transition:all .15s ease;'
+				. '}'
+				. '.wp-block-button.is-style-ink-outline .wp-block-button__link:hover{'
+				. 'background-color:var(--wp--preset--color--primary);'
+				. 'color:var(--wp--preset--color--surface-alt);'
+				. '}'
+				. '.wp-block-button.is-style-ink-outline .wp-block-button__link:focus-visible{'
+				. 'outline:2px solid var(--wp--preset--color--primary);'
+				. 'outline-offset:2px;'
+				. '}'
+				. '.wp-block-button.is-style-ink-outline .wp-block-button__link:disabled{'
+				. 'opacity:.5;'
+				. '}',
+		)
+	);
+
+	// is-style-ink-sage — accent (sage) fill / surface-alt text, hover ->
+	// accent-light (used by the §7 borg strip CTA).
+	register_block_style(
+		'core/button',
+		array(
+			'name'         => 'ink-sage',
+			'label'        => __( 'INK salie', 'ink-foundation' ),
+			'inline_style' => '.wp-block-button.is-style-ink-sage .wp-block-button__link{'
+				. 'background-color:var(--wp--preset--color--accent);'
+				. 'color:var(--wp--preset--color--surface-alt);'
+				. 'font-family:var(--wp--preset--font-family--display);'
+				. 'border:0;'
+				. 'border-radius:var(--wp--custom--radius--md);'
+				. 'box-shadow:var(--wp--preset--shadow--md);'
+				. 'transition:all .15s ease;'
+				. '}'
+				. '.wp-block-button.is-style-ink-sage .wp-block-button__link:hover{'
+				. 'background-color:var(--wp--preset--color--accent-light);'
+				. '}'
+				. '.wp-block-button.is-style-ink-sage .wp-block-button__link:focus-visible{'
+				. 'outline:2px solid var(--wp--preset--color--primary);'
+				. 'outline-offset:2px;'
+				. '}'
+				. '.wp-block-button.is-style-ink-sage .wp-block-button__link:disabled{'
+				. 'opacity:.5;'
+				. '}',
+		)
+	);
+
+	// is-style-ink-sage-outline — 2px accent border / accent text, hover -> fill
+	// accent + surface-alt text.
+	register_block_style(
+		'core/button',
+		array(
+			'name'         => 'ink-sage-outline',
+			'label'        => __( 'INK salie omlyn', 'ink-foundation' ),
+			'inline_style' => '.wp-block-button.is-style-ink-sage-outline .wp-block-button__link{'
+				. 'background-color:transparent;'
+				. 'color:var(--wp--preset--color--accent);'
+				. 'font-family:var(--wp--preset--font-family--display);'
+				. 'border:2px solid var(--wp--preset--color--accent);'
+				. 'border-radius:var(--wp--custom--radius--md);'
+				. 'transition:all .15s ease;'
+				. '}'
+				. '.wp-block-button.is-style-ink-sage-outline .wp-block-button__link:hover{'
+				. 'background-color:var(--wp--preset--color--accent);'
+				. 'color:var(--wp--preset--color--surface-alt);'
+				. '}'
+				. '.wp-block-button.is-style-ink-sage-outline .wp-block-button__link:focus-visible{'
+				. 'outline:2px solid var(--wp--preset--color--primary);'
+				. 'outline-offset:2px;'
+				. '}'
+				. '.wp-block-button.is-style-ink-sage-outline .wp-block-button__link:disabled{'
+				. 'opacity:.5;'
+				. '}',
+		)
+	);
+
+	// INK card (Epic 19, §0.5) — bordered, soft-shadowed surface with a
+	// reduced-motion-safe hover-lift (translateY(-4px) + shadow.lg). Distinct from
+	// the plain `is-style-card` (no lift). Used by the hero challenge card + the
+	// featured story cards (19.3 / 19.4). Token-only (Gate A).
+	register_block_style(
+		'core/group',
+		array(
+			'name'         => 'ink-card',
+			'label'        => __( 'INK-kaart', 'ink-foundation' ),
+			'inline_style' => '.wp-block-group.is-style-ink-card{'
+				. 'background-color:var(--wp--preset--color--surface-alt);'
+				. 'border:1px solid var(--wp--preset--color--border);'
+				. 'border-radius:var(--wp--custom--radius--xl);'
+				. 'box-shadow:var(--wp--preset--shadow--sm);'
+				. 'padding:var(--wp--preset--spacing--s-24);'
+				. 'transition:transform .3s ease, box-shadow .3s ease;'
+				. '}'
+				. '.wp-block-group.is-style-ink-card:hover{'
+				. 'transform:translateY(-4px);'
+				. 'box-shadow:var(--wp--preset--shadow--lg);'
+				. '}'
+				. '@media (prefers-reduced-motion:reduce){'
+				. '.wp-block-group.is-style-ink-card{transition:none;}'
+				. '.wp-block-group.is-style-ink-card:hover{transform:none;}'
 				. '}',
 		)
 	);
@@ -658,5 +839,41 @@ if ( ! function_exists( 'ink_foundation_social_login_buttons' ) ) {
 		// AND hook this action — with the filter true but nothing hooked (a
 		// misconfiguration) the divider/consent chrome shows without buttons.
 		do_action( \Ink\Accounts\SocialLogin::BUTTONS_ACTION );
+	}
+}
+
+if ( ! function_exists( 'ink_foundation_icon' ) ) {
+	/**
+	 * Render an inline SVG icon — the shared theme icon convention (Epic 19, §0.9).
+	 *
+	 * The Lovable design carries a Lucide icon on nearly every button and card.
+	 * The theme has no icon *system*: icons are hand-placed inline `<svg>` inside
+	 * the button/card flex row (locked static patterns), or emitted by the
+	 * `ink-core` block PHP in the dynamic sections. This helper standardises the
+	 * markup so every hand-placed icon follows the same rules:
+	 *
+	 * - 16px (`size-4`), `stroke:currentColor` (Lucide icons are stroke-drawn, so
+	 *   they inherit the button/link text colour), `fill:none`, viewBox `0 0 24 24`.
+	 * - **Decorative by default** — `aria-hidden="true"` + `focusable="false"` so
+	 *   assistive tech skips it (the adjacent visible label carries the meaning).
+	 * - **Meaning-bearing icons** (a reaction count with no adjacent text, an
+	 *   icon-only control) pass a non-empty `$label`; the icon then gets
+	 *   `role="img"` + a `<title>` and is exposed to AT.
+	 *
+	 * This is presentation infrastructure — inert markup, no business logic
+	 * (three-layer separation holds). `$paths` is trusted theme-authored SVG inner
+	 * markup (path/circle/line elements), NOT user input.
+	 *
+	 * @param string $paths Inner SVG markup (e.g. Lucide `<path .../>` elements).
+	 * @param string $label Accessible label; empty (default) = decorative.
+	 * @return string The inline `<svg>` string.
+	 */
+	function ink_foundation_icon( string $paths, string $label = '' ): string {
+		$open  = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ink-icon"';
+		$open .= '' !== $label
+			? sprintf( ' role="img" aria-label="%1$s"><title>%1$s</title>', esc_attr( $label ) )
+			: ' aria-hidden="true" focusable="false">';
+
+		return $open . $paths . '</svg>';
 	}
 }

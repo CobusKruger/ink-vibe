@@ -1,0 +1,177 @@
+/**
+ * INK Foundation — home (Tuisblad) stylesheet.
+ *
+ * Epic 19 (theme visual-fidelity rework), Story 19.1 foundations. Enqueued on the
+ * FRONT PAGE ONLY via ink_foundation_enqueue_home_assets() (functions.php, §0.8).
+ * Holds the shared home-page primitives that need @keyframes / ::before /
+ * background-clip — things theme.json elements/blocks and register_block_style()
+ * inline_style can't express as cleanly. Presentation only; no business logic.
+ *
+ * TOKENS ONLY (Gate A): every colour / spacing / radius / type value resolves to a
+ * theme.json custom property (--wp--preset--* / --wp--custom--*). No raw hex, no
+ * raw px for design values. "White" = the `surface-alt` token, never #fff.
+ *
+ * ── color-mix() alpha-tint convention (site-wide, §0.7 / token-note 2) ──────────
+ * The palette tokens are OPAQUE hex, so you cannot channel-split them
+ * (`hsl(var/a)` does NOT work here). To tint a token, use color-mix() and ALWAYS
+ * declare an opaque fallback FIRST for older engines:
+ *
+ *     background-color: var(--wp--preset--color--secondary);            // fallback
+ *     background-color: color-mix(in srgb,
+ *         var(--wp--preset--color--primary) 10%, transparent);          // tint
+ *
+ * (Concrete tint recipes — badge pill, winner-card gradient, corner tints — are
+ * applied in the later stories 19.2–19.5; this comment is the shared rule.)
+ *
+ * ── icon convention (§0.9) ──────────────────────────────────────────────────────
+ * Icons are inline <svg> (16px, stroke:currentColor, aria-hidden unless
+ * meaning-bearing) — see ink_foundation_icon() in functions.php. `.ink-icon`
+ * below normalises their box.
+ */
+
+/* Inline icon box (see ink_foundation_icon()). Sits in the button/link flex row,
+   inherits the text colour, never shrinks. */
+.ink-icon {
+	display: inline-block;
+	width: 1rem;
+	height: 1rem;
+	flex-shrink: 0;
+	vertical-align: middle;
+}
+
+/* ── §0.3 Two-tone gradient heading accent ──────────────────────────────────────
+   Clip a 135° primary → primary-light gradient to the accent phrase's text.
+   Solid `primary` fallback declared first; the clip only applies where supported. */
+.ink-text-gradient {
+	color: var(--wp--preset--color--primary);
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+	.ink-text-gradient {
+		background-image: linear-gradient(
+			135deg,
+			var(--wp--preset--color--primary),
+			var(--wp--preset--color--primary-light)
+		);
+		-webkit-background-clip: text;
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+		color: transparent;
+	}
+}
+
+/* ── §0.4 Plus-pattern background texture ────────────────────────────────────────
+   Decorative tiled plus/cross layer behind the hero. The data-URI comes from the
+   --wp--custom--ink--pattern--plus token (theme.json settings.custom). The layer
+   is absolutely positioned at opacity .03, below content, and NEVER intercepts
+   clicks; it is aria-hidden in markup (added by the hero pattern in 19.2). */
+.ink-hero-texture {
+	position: relative;
+	overflow: hidden;
+}
+
+.ink-hero-texture::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	opacity: 0.03;
+	pointer-events: none;
+	background-image: var(--wp--custom--ink--pattern--plus);
+}
+
+.ink-hero-texture > * {
+	position: relative;
+	z-index: 1;
+}
+
+/* ── §0.6 Animations ─────────────────────────────────────────────────────────────
+   fade-up fires once on mount (CSS-only, no scroll triggers); underline-slide is
+   the nav / "Sien alle werke" hover underline (2px terracotta, 0 → 100%). */
+@keyframes ink-fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.ink-animate-fade-up {
+	animation: ink-fade-up 0.6s ease-out forwards;
+}
+
+.ink-underline-slide {
+	position: relative;
+}
+
+.ink-underline-slide::after {
+	content: "";
+	position: absolute;
+	bottom: -2px;
+	left: 0;
+	width: 0;
+	height: 2px;
+	background-color: var(--wp--preset--color--primary);
+	transition: width 0.3s ease;
+}
+
+.ink-underline-slide:hover::after,
+.ink-underline-slide:focus-visible::after {
+	width: 100%;
+}
+
+/* ── §0.1 Button sizing utilities (optional per-instance sizing helpers) ─────────
+   Button SIZE is NOT a block style (register_block_style is a single radio axis).
+   Locked patterns bake size per-instance, or use these utilities. Each sets
+   min-height + padding + font-size per the §9 reference table; radius comes from
+   the ink button block style (md 6px), except xl which steps up to lg (8px). */
+.wp-block-button.ink-btn-sm .wp-block-button__link {
+	min-height: 36px;
+	padding-left: var(--wp--preset--spacing--s-12);
+	padding-right: var(--wp--preset--spacing--s-12);
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+.wp-block-button.ink-btn-lg .wp-block-button__link {
+	min-height: 44px;
+	padding-left: var(--wp--preset--spacing--s-32);
+	padding-right: var(--wp--preset--spacing--s-32);
+	font-size: var(--wp--preset--font-size--md);
+}
+
+.wp-block-button.ink-btn-xl .wp-block-button__link {
+	min-height: 48px;
+	padding-left: var(--wp--preset--spacing--s-48);
+	padding-right: var(--wp--preset--spacing--s-48);
+	font-size: var(--wp--preset--font-size--lg);
+	border-radius: var(--wp--custom--radius--lg);
+}
+
+/* ── §0.6 prefers-reduced-motion base (covers ALL motion, not just fade) ─────────
+   Disable fade-up, hover-lift translate, hover scale, and underline-slide for
+   users who ask for reduced motion. (The is-style-ink-card hover-lift carries its
+   own reduced-motion guard in its block-style inline_style so it holds site-wide.) */
+@media (prefers-reduced-motion: reduce) {
+	.ink-animate-fade-up {
+		animation: none;
+		opacity: 1;
+		transform: none;
+	}
+
+	.ink-underline-slide::after {
+		transition: none;
+	}
+
+	.ink-hover-scale,
+	.ink-hover-lift {
+		transition: none !important;
+	}
+
+	.ink-hover-scale:hover,
+	.ink-hover-lift:hover {
+		transform: none !important;
+	}
+}
