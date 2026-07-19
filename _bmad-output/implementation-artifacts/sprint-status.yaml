@@ -390,9 +390,16 @@ development_status:
   # Five-story slice (owner-approved): ink-core data-wiring folded into 19-3 (cards) + 19-4 (featured).
   # Reworks Epic 15 Tuisblad (15.1) presentation + extends Epic 12A ink/wenner-kollig block (neither reverted).
   # Build order: 19-1 (foundations, blocks all) → 19-2, 19-3, 19-4 → 19-5. Within 19-3/19-4 build the ink-core seam before presentation.
-  epic-19: backlog
-  19-1-foundations-button-styles-type-ramp-tokens-home-css: backlog
-  19-2-hero-two-column-split-badge-gradient-plus-pattern: backlog
-  19-3-cards-challenge-uitdaging-winner: backlog
-  19-4-featured-bydraes-asymmetric-grid-real-stream: backlog
-  19-5-polish-cta-footer-borg-chips-animations: backlog
+  # 2026-07-19: all 5 stories implemented (one subagent each), gated, committed on feat/epic-19-theme-fidelity.
+  #   Commits: 19-1 5b31981, 19-2 eaa507d, 19-3 cf45989, 19-4 cea20e0, 19-5 cd67a20. Unit suite 1250 passed/1 skip/0 fail;
+  #   phpcs/phpstan clean; deptrac no new edges; copy:scan 0 debt; no Afrikaans placeholders introduced.
+  #   New ink-core blocks: ink/huidige-uitdaging (Challenges\CurrentChallenge), ink/uitgesoekte-bydraes (Discovery\FeaturedStream);
+  #   ink/wenner-kollig (Challenges\FeaturedWinners) upgraded to card DOM; ink/borg-strook now per-tier chips.
+  #   Status = review (dev-complete + gated); awaiting 3-layer code review then retro before epic→done + merge (merge needs sandbox off).
+  #   Deviation for review: §1 nav collapses at core's ~600px, not the spec's 768px (core has no knob; documented). brons chip uses muted-text/50.
+  epic-19: in-progress
+  19-1-foundations-button-styles-type-ramp-tokens-home-css: review
+  19-2-hero-two-column-split-badge-gradient-plus-pattern: review
+  19-3-cards-challenge-uitdaging-winner: review
+  19-4-featured-bydraes-asymmetric-grid-real-stream: review
+  19-5-polish-cta-footer-borg-chips-animations: review
