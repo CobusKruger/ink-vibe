@@ -61,9 +61,16 @@ final class Viewer {
 
 	/**
 	 * Register the server-rendered block + the guarded script-translation wiring.
+	 *
+	 * `registerBlock()` is called DIRECTLY (not via a nested `add_action( 'init', … )`):
+	 * this method is itself invoked from {@see Module::register()}, which the Kernel
+	 * already dispatches on `init`, so a second `add_action( 'init', … )` from within
+	 * that running hook would never fire. `registerScriptTranslations()` genuinely
+	 * defers to a later, not-yet-fired hook (`wp_enqueue_scripts`), so it stays wired
+	 * via `add_action()`.
 	 */
 	public function register(): void {
-		add_action( 'init', array( self::class, 'registerBlock' ) );
+		self::registerBlock();
 		add_action( 'wp_enqueue_scripts', array( self::class, 'registerScriptTranslations' ), 20 );
 	}
 

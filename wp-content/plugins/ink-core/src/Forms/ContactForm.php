@@ -89,12 +89,16 @@ final class ContactForm {
 	 * Register the Kontak hooks. Invoked once from {@see Module::register()}.
 	 *
 	 * Both `admin_post_` (logged-in) and `admin_post_nopriv_` (anonymous) are bound —
-	 * a contact form must be reachable by any besoeker.
+	 * a contact form must be reachable by any besoeker. `registerBlock()` is called
+	 * DIRECTLY here (not via a nested `add_action( 'init', … )`): this method is
+	 * itself invoked from {@see Module::register()}, which the Kernel already
+	 * dispatches on `init`, so a second `add_action( 'init', … )` from within that
+	 * running hook would never fire.
 	 */
 	public function register(): void {
 		add_action( 'admin_post_' . self::POST_ACTION, array( $this, 'handlePost' ) );
 		add_action( 'admin_post_nopriv_' . self::POST_ACTION, array( $this, 'handlePost' ) );
-		add_action( 'init', array( self::class, 'registerBlock' ) );
+		self::registerBlock();
 	}
 
 	/**

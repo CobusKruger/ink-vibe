@@ -103,10 +103,14 @@ final class CurrentChallenge {
 	private const ICON_ARROW    = '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>';
 
 	/**
-	 * Register the server-rendered block on `init`.
+	 * Register the server-rendered block.
+	 *
+	 * Invoked from {@see Module::register()}, which the Kernel already dispatches
+	 * on `init` — so `registerBlock()` is called DIRECTLY here rather than nesting
+	 * a second `add_action( 'init', … )` from within the running `init` hook.
 	 */
 	public function register(): void {
-		add_action( 'init', array( self::class, 'registerBlock' ) );
+		self::registerBlock();
 	}
 
 	/**

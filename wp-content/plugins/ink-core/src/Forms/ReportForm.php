@@ -77,10 +77,15 @@ final class ReportForm {
 
 	/**
 	 * Register the report hooks. Logged-in only (no `nopriv`).
+	 *
+	 * `registerBlock()` is called DIRECTLY (not via a nested `add_action( 'init', … )`):
+	 * this method is itself invoked from {@see Module::register()}, which the Kernel
+	 * already dispatches on `init`, so a second `add_action( 'init', … )` from within
+	 * that running hook would never fire.
 	 */
 	public function register(): void {
 		add_action( 'admin_post_' . self::POST_ACTION, array( $this, 'handlePost' ) );
-		add_action( 'init', array( self::class, 'registerBlock' ) );
+		self::registerBlock();
 	}
 
 	/**

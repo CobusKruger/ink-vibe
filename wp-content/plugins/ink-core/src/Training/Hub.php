@@ -88,10 +88,14 @@ final class Hub {
 	private const CSS = 'ink-opleiding';
 
 	/**
-	 * Register the server-rendered block on `init`.
+	 * Register the server-rendered block.
+	 *
+	 * Invoked from {@see Module::register()}, which the Kernel already dispatches
+	 * on `init` — so `registerBlock()` is called DIRECTLY here rather than nesting
+	 * a second `add_action( 'init', … )` from within the running `init` hook.
 	 */
 	public function register(): void {
-		add_action( 'init', array( self::class, 'registerBlock' ) );
+		self::registerBlock();
 	}
 
 	/**
