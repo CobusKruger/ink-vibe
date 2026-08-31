@@ -63,10 +63,15 @@ final class TrendingScore {
 
 	/**
 	 * Wire the recompute callback + (idempotently) schedule the daily job.
+	 *
+	 * `maybeSchedule()` is called DIRECTLY (not via a nested `add_action( 'init',
+	 * … )`): this method is itself invoked from {@see Module::register()}, which
+	 * the Kernel already dispatches on `init`, so a second `add_action( 'init',
+	 * … )` from within that running hook would never fire.
 	 */
 	public function register(): void {
 		add_action( self::HOOK_RECOMPUTE, array( self::class, 'recomputeAll' ) );
-		add_action( 'init', array( self::class, 'maybeSchedule' ) );
+		self::maybeSchedule();
 	}
 
 	/**
