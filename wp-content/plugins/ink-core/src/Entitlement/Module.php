@@ -143,9 +143,14 @@ final class Module implements ModuleContract {
 	 * check + the Action-Scheduler/WC availability seams + the fail-safe-OFF per-term
 	 * toggles, so wiring it unconditionally is safe on a WC / Action-Scheduler-absent
 	 * install (graceful no-op, no fatal).
+	 *
+	 * `registerSettings()` is called DIRECTLY (not via a nested `add_action(
+	 * 'init', … )`): this method is itself invoked from the Kernel's module
+	 * dispatch, which already runs on `init`, so a second `add_action( 'init',
+	 * … )` from within that running hook would never fire.
 	 */
 	public function register(): void {
-		add_action( 'init', array( $this, 'registerSettings' ) );
+		$this->registerSettings();
 
 		( new PurchaseActivation() )->register();
 		( new StorefrontSuppression() )->register();
