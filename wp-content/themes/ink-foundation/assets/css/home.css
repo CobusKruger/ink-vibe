@@ -411,7 +411,7 @@
 .ink-huidige-uitdaging--kenmerk {
 	background-color: var(--wp--preset--color--surface-alt);
 	border: 1px solid var(--wp--preset--color--border);
-	border-radius: var(--wp--custom--radius--2xl);
+	border-radius: var(--wp--custom--radius--xxl);
 	box-shadow: var(--wp--preset--shadow--md);
 	padding: var(--wp--preset--spacing--s-32);
 }
@@ -499,7 +499,7 @@
 	flex-direction: column;
 	gap: var(--wp--preset--spacing--s-16);
 	padding: var(--wp--preset--spacing--s-32);
-	border-radius: var(--wp--custom--radius--2xl);
+	border-radius: var(--wp--custom--radius--xxl);
 	border: 1px solid var(--wp--preset--color--gold-muted);
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--gold-muted) 30%, transparent);
 }
@@ -1048,7 +1048,7 @@
 	position: relative;
 	overflow: hidden;
 	padding: var(--wp--preset--spacing--s-40);
-	border-radius: var(--wp--custom--radius--3xl);
+	border-radius: var(--wp--custom--radius--xxxl);
 	background-image: linear-gradient(
 		135deg,
 		var(--wp--preset--color--primary),
