@@ -17,6 +17,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * The QA/component-gallery page slug (Phase 2, Theme Visual-Fidelity rework —
+ * `docs/theme-fidelity-rework-plan.md`, workstream B).
+ *
+ * A single source for the page-template auto-match (`templates/page-{slug}.html`),
+ * the fixture-data filter gate ({@see ink_foundation_is_qa_gallery()}) and the
+ * home-asset enqueue condition below — every place that needs to know "is this
+ * the QA gallery page" reads this one constant. See `patterns/qa-bloks.php` for
+ * the full extensibility pattern future fidelity-pass agents should follow.
+ */
+if ( ! defined( 'INK_FOUNDATION_QA_GALLERY_SLUG' ) ) {
+	define( 'INK_FOUNDATION_QA_GALLERY_SLUG', 'qa-bloks' );
+}
+
+/**
  * Load the `ink-foundation` text domain so the theme's own presentation strings
  * resolve (Story 1.10 — theme half of the i18n scaffolding).
  *
@@ -207,9 +221,20 @@ add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_leeslys' );
  * front page, mirroring the script-enqueue pattern above and versioned to the
  * theme so cache-busting rides the theme version. Presentation only — no
  * business logic (three-layer separation holds).
+ *
+ * Also loads on the QA/component gallery page ({@see INK_FOUNDATION_QA_GALLERY_SLUG})
+ * — that page renders the SAME home-page dynamic blocks (`ink/huidige-uitdaging`,
+ * `ink/wenner-kollig`, `ink/uitgesoekte-bydraes`, `ink/borg-strook`) with fixture
+ * data, so it needs the same stylesheet those blocks' markup is styled by. Any
+ * future gallery addition that needs a DIFFERENT page's conditionally-enqueued
+ * CSS must extend that page's own enqueue condition the same way (see
+ * `patterns/qa-bloks.php` for the pattern).
  */
 function ink_foundation_enqueue_home_assets(): void {
-	if ( ! function_exists( 'is_front_page' ) || ! is_front_page() ) {
+	$is_front = function_exists( 'is_front_page' ) && is_front_page();
+	$is_qa    = function_exists( 'is_page' ) && is_page( INK_FOUNDATION_QA_GALLERY_SLUG );
+
+	if ( ! $is_front && ! $is_qa ) {
 		return;
 	}
 
@@ -223,6 +248,203 @@ function ink_foundation_enqueue_home_assets(): void {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_home_assets' );
+
+/**
+ * === QA/component gallery — fixture-data pattern ===
+ *
+ * (Phase 2, Theme Visual-Fidelity rework — `docs/theme-fidelity-rework-plan.md`,
+ * workstream B.) Several of INK's dynamic blocks need real WordPress content/data
+ * to render anything — but nothing was seeded on the live site, so their visual
+ * fidelity could never be checked. The QA gallery page
+ * (`/` . INK_FOUNDATION_QA_GALLERY_SLUG, template `templates/page-qa-bloks.html`,
+ * content `patterns/qa-bloks.php`) is a persistent, repo-tracked page that embeds
+ * those blocks and feeds them realistic fixture data — a real committed template,
+ * reusable by every future fidelity pass, not a throwaway.
+ *
+ * TWO fixture techniques are used, depending on whether the block's `ink-core`
+ * class exposes a data-seam filter:
+ *
+ * 1. FILTER SEAM (preferred). Several blocks already read their payload through an
+ *    `apply_filters()` seam with a live-query fallback (house style — see e.g.
+ *    {@see \Ink\Challenges\CurrentChallenge::DATA_FILTER}). Hook that filter here,
+ *    gated by {@see ink_foundation_is_qa_gallery()} so the fixture data can NEVER
+ *    leak into a real page's rendering of the same block — every callback below
+ *    returns the untouched `$data` argument (falling through to the block's own
+ *    live/default behaviour) on every OTHER page. This is the pattern to reach for
+ *    first: check the block's PHP class for a `*_FILTER` constant before seeding
+ *    real content.
+ * 2. REAL SEEDED WP CONTENT. When a block has no filter seam (e.g. the sponsor
+ *    strip, `ink/borg-strook`, reads directly from `Campaign::activeSponsors()`
+ *    with no seam to hook), the only option is real fixture posts living in this
+ *    site's database — NOT tracked by git. Each such fixture is titled with the
+ *    `QA FIXTURE — ` prefix so it is unmistakable in wp-admin lists and can never
+ *    be confused with real editorial content. See the commit/session notes for
+ *    exactly what was seeded.
+ *
+ * TO ADD YOUR OWN PAGE'S HARD-TO-REACH BLOCK to this gallery in a future fidelity
+ * pass: (a) check its `ink-core` class for a `*_FILTER` data seam — if one exists,
+ * add a gated callback here following the three examples below; (b) if none
+ * exists, seed real fixture WP content via wp-admin (browser), title-prefixed
+ * `QA FIXTURE — `, and note it in your session report (it's DB state, not
+ * git-tracked, and future sessions need to know it exists); (c) add your block to
+ * `patterns/qa-bloks.php` with a clear section heading identifying it; (d) if your
+ * block's styling lives in a conditionally-enqueued stylesheet (like `home.css`
+ * below), extend that stylesheet's enqueue condition to also fire on the QA
+ * gallery page, exactly as {@see ink_foundation_enqueue_home_assets()} does.
+ */
+
+/**
+ * Whether the current request is rendering the QA/component gallery page.
+ *
+ * The single gate every fixture-filter callback below checks FIRST — fixture data
+ * must never leak into a real page's rendering of these blocks. `is_page()` is
+ * safe to call here: every callback only runs from inside block rendering
+ * (`do_blocks()`/`render_block()`), which happens well after the main query has
+ * resolved.
+ */
+function ink_foundation_is_qa_gallery(): bool {
+	return function_exists( 'is_page' ) && is_page( INK_FOUNDATION_QA_GALLERY_SLUG );
+}
+
+/**
+ * Fixture payload for `ink/huidige-uitdaging` (the weekly-challenge card, both the
+ * compact hero-aside variant and the larger feature variant — same payload, the
+ * block's own `variant` attribute picks the markup). Hooks
+ * `Ink\Challenges\CurrentChallenge::DATA_FILTER`; shape per that class's
+ * {@see \Ink\Challenges\CurrentChallenge::resolveCurrent()} payload.
+ *
+ * @param mixed $data The filter's incoming value (null unless another filter
+ *                     already supplied a payload).
+ * @return mixed
+ */
+function ink_foundation_qa_fixture_current_challenge( mixed $data ): mixed {
+	if ( ! ink_foundation_is_qa_gallery() ) {
+		return $data;
+	}
+
+	return array(
+		'title'       => 'QA FIXTURE — Skryf ’n brief aan jou toekomstige self',
+		'url'         => '#qa-fixture-huidige-uitdaging',
+		'excerpt'     => 'Hierdie week nooi ons jou om ’n brief te skryf aan wie jy oor tien jaar hoop om te wees. Verken hoop, vrees en die pad wat voorlê — enige genre werk.',
+		'deadline'    => '30 September 2026',
+		'eyebrow'     => 'September-uitdaging',
+		'entry_count' => 24,
+	);
+}
+add_filter( 'ink_home_current_challenge', 'ink_foundation_qa_fixture_current_challenge' ); // Ink\Challenges\CurrentChallenge::DATA_FILTER.
+
+/**
+ * Fixture payload for `ink/wenner-kollig` (the winner spotlight). Hooks
+ * `Ink\Challenges\FeaturedWinners::FEATURED_FILTER`; shape per that class's
+ * {@see \Ink\Challenges\FeaturedWinners::orderFeed()} docblock.
+ *
+ * @param mixed $data The filter's incoming value (null unless another filter
+ *                     already supplied a payload).
+ * @return mixed
+ */
+function ink_foundation_qa_fixture_featured_winner( mixed $data ): mixed {
+	if ( ! ink_foundation_is_qa_gallery() ) {
+		return $data;
+	}
+
+	return array(
+		'title'   => 'QA FIXTURE — Augustus-wenneraankondiging',
+		'url'     => '#qa-fixture-wenner-kollig',
+		'winners' => array(
+			array(
+				'id'        => 900001,
+				'rank'      => 1,
+				'title'     => 'Die Laaste Reën',
+				'url'       => '#qa-fixture-winner-1',
+				'month'     => 'Augustus',
+				'author'    => 'M. van der Merwe',
+				'quote'     => 'Elke druppel het ’n storie gedra wat ek nooit geweet het ek moes vertel nie.',
+				'win_label' => '2de wen',
+			),
+			array(
+				'id'     => 900002,
+				'rank'   => 2,
+				'title'  => 'Skadu’s van Somer',
+				'url'    => '#qa-fixture-winner-2',
+				'month'  => 'Augustus',
+				'author' => 'J. Botha',
+			),
+			array(
+				'id'     => 900003,
+				'rank'   => 3,
+				'title'  => 'Die Huis op die Hoek',
+				'url'    => '#qa-fixture-winner-3',
+				'month'  => 'Augustus',
+				'author' => 'L. Naidoo',
+			),
+		),
+	);
+}
+add_filter( 'ink_home_featured_winner', 'ink_foundation_qa_fixture_featured_winner' ); // Ink\Challenges\FeaturedWinners::FEATURED_FILTER.
+
+/**
+ * Fixture payload for `ink/uitgesoekte-bydraes` ("Die redakteur se keuse" featured
+ * stream — one spanning featured card + three standard cards). Hooks
+ * `Ink\Discovery\FeaturedStream::DATA_FILTER`; shape per that class's
+ * {@see \Ink\Discovery\FeaturedStream::resolveStream()} payload.
+ *
+ * @param mixed $data The filter's incoming value (null unless another filter
+ *                     already supplied a payload).
+ * @return mixed
+ */
+function ink_foundation_qa_fixture_featured_stream( mixed $data ): mixed {
+	if ( ! ink_foundation_is_qa_gallery() ) {
+		return $data;
+	}
+
+	return array(
+		array(
+			'title'          => 'QA FIXTURE — Die Wind Onthou',
+			'url'            => '#qa-fixture-bydrae-1',
+			'category'       => 'Gedig',
+			'read_minutes'   => 3,
+			'excerpt'        => '’n Meditasie oor herinnering, geskryf in die stilte tussen twee reënseisoene.',
+			'author'         => 'Anika Pretorius',
+			'avatar_url'     => '',
+			'hart_count'     => 128,
+			'response_count' => 14,
+		),
+		array(
+			'title'          => 'QA FIXTURE — Ligte in die Karoo',
+			'url'            => '#qa-fixture-bydrae-2',
+			'category'       => 'Storie',
+			'read_minutes'   => 7,
+			'excerpt'        => 'ʼn Reisende musikant vind onverwagte vriendskap in ’n klein Karoo-dorpie.',
+			'author'         => 'Dawid Coetzee',
+			'avatar_url'     => '',
+			'hart_count'     => 76,
+			'response_count' => 9,
+		),
+		array(
+			'title'          => 'QA FIXTURE — Vaders en Seuns',
+			'url'            => '#qa-fixture-bydrae-3',
+			'category'       => 'Artikel',
+			'read_minutes'   => 5,
+			'excerpt'        => 'ʼn Eerlike blik op drie generasies mans en die woorde wat hulle nooit vir mekaar gesê het nie.',
+			'author'         => 'Zanele Khumalo',
+			'avatar_url'     => '',
+			'hart_count'     => 54,
+			'response_count' => 6,
+		),
+		array(
+			'title'          => 'QA FIXTURE — Die Klavier wat Nooit Speel Nie',
+			'url'            => '#qa-fixture-bydrae-4',
+			'category'       => 'Storie',
+			'read_minutes'   => 4,
+			'excerpt'        => 'ʼn Erfstuk in die sitkamer word die stille getuie van ’n gesin se opgekropte hartseer.',
+			'author'         => 'Pieter Human',
+			'avatar_url'     => '',
+			'hart_count'     => 39,
+			'response_count' => 3,
+		),
+	);
+}
+add_filter( 'ink_home_featured_stream', 'ink_foundation_qa_fixture_featured_stream' ); // Ink\Discovery\FeaturedStream::DATA_FILTER.
 
 /**
  * Register the core block style variations (card / button / emphasis).
