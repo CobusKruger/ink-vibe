@@ -56,9 +56,14 @@ class ModeratorFeedback {
 
 	/**
 	 * Register the display-toggle meta + the self-service profile control.
+	 *
+	 * `registerMeta()` is called DIRECTLY (not via a nested `add_action( 'init',
+	 * … )`): this method is itself invoked from {@see Module::register()}, which
+	 * the Kernel already dispatches on `init`, so a second `add_action( 'init',
+	 * … )` from within that running hook would never fire.
 	 */
 	public function register(): void {
-		add_action( 'init', array( $this, 'registerMeta' ) );
+		$this->registerMeta();
 		add_action( 'show_user_profile', array( $this, 'renderField' ) );
 		add_action( 'edit_user_profile', array( $this, 'renderField' ) );
 		add_action( 'personal_options_update', array( $this, 'save' ) );
