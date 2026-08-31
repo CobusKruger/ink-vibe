@@ -95,6 +95,14 @@ final class FieldSets {
 					? array( 'schema' => $field['rest_schema'] )
 					: true;
 
+				// A field may declare an explicit 'default' (required whenever a
+				// `rest_schema.enum` is present, since '' / 0 is not necessarily a member
+				// of that closed value set — WordPress's own register_meta() schema
+				// validation rejects a default outside the enum). Absent that, fall back to
+				// the plain per-type default, which is always valid for an unconstrained
+				// 'integer' or 'string' field.
+				$default = $field['default'] ?? ( 'integer' === $field['type'] ? 0 : '' );
+
 				register_post_meta(
 					$cpt,
 					$field['key'],
@@ -102,7 +110,7 @@ final class FieldSets {
 						'single'            => true,
 						'type'              => $field['type'],
 						'show_in_rest'      => $show_in_rest,
-						'default'           => 'integer' === $field['type'] ? 0 : '',
+						'default'           => $default,
 						'sanitize_callback' => $field['sanitize'],
 						'auth_callback'     => static fn (): bool => current_user_can( $cap ),
 					)
@@ -274,7 +282,7 @@ final class FieldSets {
 	 * Terms key for the box title, and the field list. Keyed by {@see PostTypes}
 	 * slug constants (never re-typed literals).
 	 *
-	 * @return array<string, array{cap: string, term: string, fields: list<array{key: string, label: string, type: string, input: string, sanitize: callable, options?: array<string, string>}>}>
+	 * @return array<string, array{cap: string, term: string, fields: list<array{key: string, label: string, type: string, input: string, sanitize: callable, options?: array<string, string>, rest_schema?: array<string, mixed>, default?: mixed}>}>
 	 */
 	private static function definitions(): array {
 		return array(
@@ -354,6 +362,11 @@ final class FieldSets {
 							'type' => 'string',
 							'enum' => CadenceType::values(),
 						),
+						// Explicit — an unconstrained '' default is not a member of the
+						// `rest_schema.enum` above, and register_meta() rejects that
+						// mismatch. CadenceType::default() (monthly) is the single source,
+						// never an inline 'maandeliks' literal; mirrors CadenceType::fromMeta().
+						'default'     => CadenceType::default()->value,
 					),
 				),
 			),
