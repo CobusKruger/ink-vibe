@@ -39,7 +39,7 @@ The Lovable mockup is sufficiently complete to use as a design template. The des
 | Lidmaatskap | — | Missing | Membership acquisition/pricing page. `Profile.tsx` has renewal UI only. Needs a standalone page. Assembly work — no new design required. |
 | Oor INK | — | Missing | Static content page. Assembly work using existing components (typography, SponsorsSection pattern, media-text blocks). |
 | Kontak/Contact | — | Missing | Simple form page. Assembly work. |
-| Authentication flow | — | Missing | Login, register, forgot password. Assembly work — Input, Button, Card components all present. |
+| Authentication flow | `Auth.tsx` + `ForgotPassword.tsx` + `ResetPassword.tsx` | Reference-ready | Sign-in/sign-up tabs, forgot-password, and reset-password screens on a single centred card, plus Google/Apple social-login buttons — the design confirms the already-decided R6 social login (§14 #22 / feature 3.5). Header also gains logged-in (avatar dropdown: My Profiel / Opleiding / Meld af) vs logged-out (Meld aan / Sluit aan) states. Designed 2026-07-19. Supabase auth in the mock is prototype plumbing only — the build is WordPress-native auth. |
 
 ---
 
@@ -54,7 +54,6 @@ _Resolved 2026-06-14: the **gedig reading layout** (`PoetryReader.tsx`) and the 
 - Lidmaatskap page
 - Oor INK page
 - Kontak page
-- Authentication flow (login, register, forgot password)
 - Uitdagings list page (use Archetype B from playbook)
 
 ---

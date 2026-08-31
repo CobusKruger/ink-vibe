@@ -784,3 +784,66 @@ per-field validation notices. Wired into the live code; leak-scan baseline lower
 | Engels | Afrikaans | Notas |
 |---|---|---|
 | Enter the email or username linked to your account. | Vul die e-pos of gebruikersnaam in wat aan jou rekening gekoppel is. | Wenk onder die veld |
+
+## Sync 2026-07-19 — Outentisering-skerm (Auth / ForgotPassword / ResetPassword)
+
+*(Die Lovable-mockup het die volledige aanmeld-/registrasie-skerm ontwerp — `Auth.tsx`, `ForgotPassword.tsx`, `ResetPassword.tsx` — met sosiale aanmelding (Google/Apple), wat die reeds-besluite R6 sosiale aanmelding bevestig (§14 #22 / kenmerk 3.5). Terminologie volg `afrikaans-terms.md`: rekening skep → **Registreer**, aanmeld → **Meld aan**, afmeld → **Meld af**. Die Engels is Lovable-plekhouer; die Afrikaans is 'n werkskonsep wat doelbewus in betekenis mag afwyk. **Let op:** die mockup gebruik die handelsnaam "Inkwell" as plekhouer — die werklike naam is **INK**, so "Back to Inkwell" / "Join Inkwell" word met INK-bewoording vervang. Die Supabase-aanmelding in die mockup is prototipe-loodgieterwerk; die bou gebruik WordPress-eie outentisering.)*
+
+### Aanmeld-/registreer-skerm (`Auth.tsx`)
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Sign in | Meld aan | Oortjie + knoppie (`aanmeld` → Meld aan) |
+| Sign up | Registreer | Oortjie (`rekening skep` → Registreer) |
+| Create account | Skep rekening | Registrasie-knoppie |
+| Signing in... | Meld tans aan... | Besige knoppie-toestand |
+| Creating account... | Skep tans rekening... | Besige knoppie-toestand |
+| Email | E-pos | Veld-etiket |
+| Password | Wagwoord | Veld-etiket |
+| Forgot? | Wagwoord vergeet? | Skakel langs die wagwoord-etiket |
+| At least 8 characters. | Minstens 8 karakters. | Wenk onder wagwoord-veld |
+| or continue with | of gaan voort met | Verdeler bo die sosiale knoppies |
+| Google | Google | Sosiale-aanmeld-knoppie (eienaam) |
+| Apple | Apple | Sosiale-aanmeld-knoppie (eienaam) |
+| Welcome back | Welkom terug | Sukses-kennisgewing na aanmelding |
+| Sign in failed | Aanmelding het misluk | Fout-kennisgewing |
+| Sign up failed | Registrasie het misluk | Fout-kennisgewing |
+| Account created | Rekening geskep | Sukses-kennisgewing |
+| You're all set. | Alles is gereed. | Sukses-kennisgewing (beskrywing) |
+| ← Back to Inkwell | ← Terug na INK | Skakel onder die kaart (handelsnaam vervang) |
+
+### Wagwoord-vergeet-skerm (`ForgotPassword.tsx`)
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Reset your password | Herstel jou wagwoord | Kop |
+| We'll email you a link to set a new password. | Ons stuur vir jou 'n skakel per e-pos om 'n nuwe wagwoord te stel. | Onderskrif |
+| Send reset link | Stuur herstelskakel | Knoppie |
+| Sending... | Stuur tans... | Besige knoppie-toestand |
+| If an account exists for [email], a reset link is on its way. | As daar 'n rekening vir [e-pos] bestaan, is 'n herstelskakel op pad. | Bevestigingsboodskap (e-pos-adres ingevoeg) |
+| Back to sign in | Terug na aanmeld | Skakel |
+
+### Wagwoord-herstel-skerm (`ResetPassword.tsx`)
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Set a new password | Stel 'n nuwe wagwoord | Kop |
+| Choose a password you haven't used before. | Kies 'n wagwoord wat jy nog nie voorheen gebruik het nie. | Onderskrif |
+| New password | Nuwe wagwoord | Veld-etiket |
+| Update password | Werk wagwoord by | Knoppie |
+| Updating... | Werk tans by... | Besige knoppie-toestand |
+| Password updated | Wagwoord bygewerk | Sukses-kennisgewing |
+| You're signed in. | Jy is aangemeld. | Sukses-kennisgewing (beskrywing) |
+| This page needs a valid recovery link. Please use the link in the reset email, or request a new one. | Hierdie bladsy benodig 'n geldige herstelskakel. Gebruik asseblief die skakel in die herstel-e-pos, of versoek 'n nuwe een. | Toestand sonder geldige skakel |
+| request a new one | versoek 'n nuwe een | Inlyn-skakel binne bostaande sin |
+
+### Kopbalk aanmeld-toestande (`Header.tsx`)
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Sign in | Meld aan | Uitgetekende-toestand (ghost-knoppie) |
+| Join Inkwell | Sluit aan | Uitgetekende-toestand HRA (handelsnaam-plekhouer verwyder) |
+| My Profile | My profiel | Ingetekende-toestand keuselys |
+| Library | Opleiding | Ingetekende-toestand keuselys (amptelike seksienaam) |
+| Sign out | Meld af | Ingetekende-toestand keuselys (`afmeld` → Meld af) |
+| Start Writing | Begin skryf | Ingetekende-toestand HRA (reeds gestandaardiseer) |

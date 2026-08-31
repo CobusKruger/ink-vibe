@@ -273,10 +273,10 @@ Per-page WordPress targets are in `design-handoff/page-map.csv`. Mockup readines
 
 | Readiness | Pages |
 |---|---|
-| Reference-ready | Tuisblad, Lees (storie), **Lees (gedig)**, Uitdagings (single), Skryf, Skrywerprofiel (public), Ontdek, Gemeenskap, My Profiel (private) |
+| Reference-ready | Tuisblad, Lees (storie), **Lees (gedig)**, Uitdagings (single), Skryf, Skrywerprofiel (public), Ontdek, Gemeenskap, My Profiel (private), **Auth flows** (aanmeld/registreer/wagwoord-herstel + Google/Apple social login) |
 | Partial / layout-reference | Biblioteek (gaps: date browsing, pagination, author filter), Opleiding (uses Library layout), Uitdagings (list) |
 | Design-missing | — none remaining (gedig layout designed 2026-06-14, `PoetryReader.tsx`) |
-| Assembly-only (no new design) | Lidmaatskap, Oor INK, Kontak, Auth flows, Uitdagings list (Archetype B) |
+| Assembly-only (no new design) | Lidmaatskap, Oor INK, Kontak, Uitdagings list (Archetype B) |
 
 **Genuine design gaps requiring decisions:** (1) Biblioteek organisation/archive depth — **deferred and non-blocking**: to be detailed later; does not gate Foundation, content models, or the other epics. The Biblioteek CPT + base archive can proceed now; date/archive browsing, pagination, and author filter are finalised later. *(Gedig reading layout and profile following-feed resolved 2026-06-14 — `PoetryReader.tsx`, `Profile.tsx` Activity tab.)*
 

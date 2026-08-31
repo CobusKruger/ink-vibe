@@ -51,11 +51,11 @@
 
 | # | Feature | Layer | Pri | Notes / acceptance |
 |---|---|---|---|---|
-| 3.1 | Authentication pages | T+P | P0 | Registreer / Meld aan / Wagwoord-herstel — Afrikaans auth surfaces. Assembly-only (no mock). |
+| 3.1 | Authentication pages | T+P | P0 | Registreer / Meld aan / Wagwoord-herstel — Afrikaans auth surfaces. **Design reference-ready [2026-07-19]:** `Auth.tsx` (sign-in/sign-up tabs), `ForgotPassword.tsx`, `ResetPassword.tsx` on a single centred card. Mock's Supabase auth is prototype only — build WP-native. |
 | 3.2 | ~~Reader/writer intent capture~~ — **removed 2026-06-14** | — | — | Signup intent dropped: no reader/writer choice at registration; any lid can publish once they hold an active lidmaatskap (betaalde lid). See PRD §4.1 FR-2. |
 | 3.3 | Registration lifecycle / onboarding | K/T | P1 | Per §4: create account → complete profile (gratis lid) → prompt first social action after signup. No signup intent choice; publishing requires an active lidmaatskap (betaalde lid — Epic 4). |
 | 3.4 | **Anti-spam research spike (R6)** | — | P1 | **[2026-06-20 / R6]** Research spike FIRST (owner: "I know nothing about this") — evaluate anti-spam / account-abuse approaches before building. Gates 3.5/3.6. |
-| 3.5 | **Social login (R6)** | P | P1 | **[2026-06-20 / R6]** Social-login on, via a vetted platform plugin (hooks, not `ink-core`). Reduces signup friction (UJ-1) while curbing abuse. Auth surface gains social-login buttons. |
+| 3.5 | **Social login (R6)** | P | P1 | **[2026-06-20 / R6]** Social-login on, via a vetted platform plugin (hooks, not `ink-core`). Reduces signup friction (UJ-1) while curbing abuse. Auth surface gains social-login buttons. **Design confirms [2026-07-19]:** `Auth.tsx` shows Google + Apple buttons under an “of gaan voort met” divider (provider choice still config/plugin-driven). |
 | 3.6 | **Optional manual-approval backstop (R6)** | K/P | P1 | **[2026-06-20 / R6 / C8]** Optional, **off-by-default** "pending approval" account state + approval queue (admin screen, UX gap). Layered behind anti-spam + social login; on only if abuse warrants it. |
 
 ---

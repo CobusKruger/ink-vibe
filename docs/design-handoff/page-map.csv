@@ -14,4 +14,4 @@ gemeenskap,ink-lovable/src/pages/Community.tsx,page-gemeenskap,template+patterns
 lidmaatskap,MISSING_IN_CURRENT_LOVABLE_REPO,page-lidmaatskap,template+patterns,pricing-table;buttons;faq,woocommerce memberships,yes,cta order,assembly-only
 oor-ink,partial in ink-lovable/src/components/home/SponsorsSection.tsx,page-oor-ink,template+patterns,group;media-text;logos,page content + borg,yes,logo scaling,assembly-only
 kontak,MISSING_IN_CURRENT_LOVABLE_REPO,page-kontak,template+patterns,group;form;map,page content,yes,form layout,assembly-only
-auth,MISSING_IN_CURRENT_LOVABLE_REPO,login|register|forgot-password,template+patterns,group;form;button,wp auth,yes,single column,assembly-only
+auth,ink-lovable/src/pages/Auth.tsx + ForgotPassword.tsx + ResetPassword.tsx,login|register|forgot-password|reset-password,template+patterns,group;tabs;form;oauth-buttons;button,wp auth,yes,single centred card,reference-ready

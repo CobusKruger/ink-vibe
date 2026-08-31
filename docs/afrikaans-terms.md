@@ -203,6 +203,8 @@ Hierdie woorde en frases verskyn as knoppies, skakels en toestandsboodskappe. Ge
 | rekening skep | **Registreer** |
 | aanmeld | **Meld aan** |
 | afmeld | **Meld af** |
+| wagwoord vergeet / herstel | **Herstel wagwoord** *(skerm-kop: "Herstel jou wagwoord" / "Stel 'n nuwe wagwoord")* |
+| aanmeld met 'n sosiale rekening (R6) | **Meld aan met Google / Apple** *(sosiale aanmelding — bevestig deur die Lovable-ontwerp 2026-07-19; §14 #22)* |
 | profiel sien | **Sien profiel** |
 | deel op sosiale media | **Deel** |
 
