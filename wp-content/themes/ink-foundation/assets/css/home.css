@@ -204,7 +204,6 @@
 	background-color: var(--wp--preset--color--secondary);
 	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
 	color: var(--wp--preset--color--primary);
-	color: color-mix(in srgb, var(--wp--preset--color--primary) 72%, var(--wp--preset--color--text));
 }
 
 /* Icon-bearing buttons (§2 hero CTAs): lay the inline SVG + label on one flex row
@@ -265,7 +264,7 @@
 	background-color: var(--wp--preset--color--secondary);
 	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
 	color: var(--wp--preset--color--primary);
-	color: color-mix(in srgb, var(--wp--preset--color--primary) 72%, var(--wp--preset--color--text));
+	color: color-mix(in srgb, var(--wp--preset--color--primary) 72%, var(--wp--preset--color--ink-text));
 	font-size: var(--wp--preset--font-size--xs);
 	font-weight: var(--wp--custom--font-weight--semibold);
 	text-transform: uppercase;
@@ -289,7 +288,7 @@
 	font-family: var(--wp--preset--font-family--heading);
 	font-weight: var(--wp--custom--font-weight--semibold);
 	line-height: var(--wp--custom--line-height--tight);
-	color: var(--wp--preset--color--text);
+	color: var(--wp--preset--color--ink-text);
 }
 
 .ink-huidige-uitdaging__uittreksel {
@@ -484,7 +483,7 @@
 
 .ink-wenner-kollig__titel a:hover,
 .ink-wenner-kollig__titel a:focus-visible {
-	color: var(--wp--preset--color--text);
+	color: var(--wp--preset--color--ink-text);
 }
 
 .ink-wenner-kollig__kaarte {
@@ -542,7 +541,7 @@
 	font-family: var(--wp--preset--font-family--heading);
 	font-size: var(--wp--preset--font-size--sm);
 	font-weight: var(--wp--custom--font-weight--semibold);
-	color: var(--wp--preset--color--text);
+	color: var(--wp--preset--color--ink-text);
 }
 
 .ink-wenner-kollig__rang-merk {
@@ -562,7 +561,7 @@
 	font-size: var(--wp--preset--font-size--2xl);
 	font-weight: var(--wp--custom--font-weight--semibold);
 	line-height: var(--wp--custom--line-height--tight);
-	color: var(--wp--preset--color--text);
+	color: var(--wp--preset--color--ink-text);
 }
 
 .ink-wenner-kollig__werk a {
@@ -607,7 +606,7 @@
 
 .ink-wenner-kollig__outeur-naam {
 	font-weight: var(--wp--custom--font-weight--medium);
-	color: var(--wp--preset--color--text);
+	color: var(--wp--preset--color--ink-text);
 }
 
 .ink-wenner-kollig__wenne {
@@ -626,7 +625,7 @@
 	border: 1px solid var(--wp--preset--color--gold-muted);
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--gold-muted) 30%, transparent);
 	background-color: transparent;
-	color: var(--wp--preset--color--text);
+	color: var(--wp--preset--color--ink-text);
 	font-family: var(--wp--preset--font-family--display);
 	font-size: var(--wp--preset--font-size--sm);
 	font-weight: var(--wp--custom--font-weight--medium);
@@ -771,7 +770,7 @@
 	padding: var(--wp--preset--spacing--s-4) var(--wp--preset--spacing--s-12);
 	border-radius: var(--wp--custom--radius--full);
 	background-color: var(--wp--preset--color--secondary);
-	color: var(--wp--preset--color--text);
+	color: var(--wp--preset--color--ink-text);
 	font-size: var(--wp--preset--font-size--xs);
 	font-weight: var(--wp--custom--font-weight--medium);
 }
@@ -798,7 +797,7 @@
 }
 
 .ink-uitgesoekte-bydraes__werk a {
-	color: var(--wp--preset--color--text);
+	color: var(--wp--preset--color--ink-text);
 	text-decoration: none;
 	transition: color 0.15s ease;
 }
@@ -918,7 +917,7 @@
 	font-size: var(--wp--preset--font-size--2xl);
 	font-weight: var(--wp--custom--font-weight--semibold);
 	line-height: var(--wp--custom--line-height--tight);
-	color: var(--wp--preset--color--text);
+	color: var(--wp--preset--color--ink-text);
 }
 
 @media (min-width: 768px) {
@@ -996,7 +995,7 @@
 }
 
 .ink-borg-strook__naam {
-	color: var(--wp--preset--color--text);
+	color: var(--wp--preset--color--ink-text);
 }
 
 /* "Word 'n borg" CTA — the is-style-ink-sage-outline recipe (accent border/text,
