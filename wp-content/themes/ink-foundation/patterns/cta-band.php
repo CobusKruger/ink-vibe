@@ -20,8 +20,8 @@
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-80","bottom":"var:preset|spacing|s-80","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-80);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-80);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"className":"ink-cta-band ink-animate-fade-up","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group ink-cta-band ink-animate-fade-up">
+	<!-- wp:group {"align":"wide","className":"ink-cta-band ink-animate-fade-up","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide ink-cta-band ink-animate-fade-up">
 		<!-- wp:html -->
 		<span class="ink-cta-band__sirkel ink-cta-band__sirkel--links" aria-hidden="true"></span>
 		<span class="ink-cta-band__sirkel ink-cta-band__sirkel--regs" aria-hidden="true"></span>
