@@ -69,9 +69,14 @@ final class Onboarding {
 	 * Wires: the onboarding-state user-meta registration, and the
 	 * logged-in-only `admin-post` handler for the nonce-protected skip/complete
 	 * write. No follow/leeslys subsystem is touched here.
+	 *
+	 * `registerMeta()` is called DIRECTLY (not via a nested `add_action( 'init',
+	 * … )`): this method already runs from within `init`'s own dispatch (per the
+	 * docblock above), so a second `add_action( 'init', … )` from within that
+	 * running hook would never fire.
 	 */
 	public function register(): void {
-		add_action( 'init', array( $this, 'registerMeta' ) );
+		$this->registerMeta();
 
 		// The skip/complete write is a logged-in own-record toggle. `admin-post`
 		// (logged-in variant only — no `nopriv`) gives a nonce-protected,

@@ -187,11 +187,17 @@ test( 'markComplete no-ops for an invalid user id', function (): void {
 /**
  * AC-1: register() wires the meta registration on `init` and the nonce-protected
  * skip/complete handler on the logged-in `admin_post` action (no `nopriv`).
+ *
+ * `registerMeta()` is called DIRECTLY from register() (not re-deferred onto
+ * `init` — that nesting is fatal, since register() already runs from within
+ * `init`'s own dispatch), so this asserts `register_meta()` actually fired
+ * rather than checking for a hook registration that no longer exists.
  */
 test( 'register() hooks init and the admin-post complete handler', function (): void {
+	Functions\expect( 'register_meta' )->once();
+
 	( new Onboarding() )->register();
 
-	expect( has_action( 'init', 'Ink\Accounts\Onboarding->registerMeta()' ) )->not->toBeFalse();
 	expect(
 		has_action( 'admin_post_' . Onboarding::postAction(), 'Ink\Accounts\Onboarding->completeViaPost()' )
 	)->not->toBeFalse();
