@@ -9,7 +9,8 @@ sources:
   - {project_knowledge}/ui-copy-translations.md
   - {project_knowledge}/afrikaans-terms.md
   - {project_knowledge}/mockup-readiness-assessment.md
-updated: 2026-06-15
+  - theme-fidelity-spec.md  # [2026-07-19] resolved breakpoints + per-section behavioral fidelity
+updated: 2026-07-19
 ---
 
 # INK — Experience Spine
@@ -70,7 +71,7 @@ Top-level public nav (Afrikaans, sentence-case): **Tuis · Ontdek · Opleiding �
 
 `[NOTE]` There is **no "reader or writer?" choice** at registration (FR-2). One simple account; writing is unlocked by subscribing, not by a role pick.
 
-→ Composition reference: mocks in `mockups/` (rendered at finalize for reference-ready surfaces). Spine wins on conflict.
+→ Composition reference: **no HTML mocks were rendered** (decision log 2026-06-16 + 2026-07-19). The authoritative visual reference is the **Lovable source (`ink-lovable @ 5618f39`)**, the two comparison captures (`docs/theme-redevelopment/design-lovable.png` + `design-staging.png`), and **`theme-fidelity-spec.md`** (concrete per-component values for the Tuisblad + primitives). Spine wins on conflict.
 
 ### Admin surfaces (redakteur) — WP admin chrome (no design-system work)
 
@@ -118,7 +119,7 @@ Behavioral. Visual specs live in `DESIGN.md.Components`.
 | **Volg (follow)** | Asymmetric, one-way; no reciprocity. Toggle **Volg** ↔ **Volg tans**; counts use **volgeling/volgelinge** (never "volger"). Custom in `ink-core` (no native BP follow). Following surfaces a writer's new work in the follower's **Aktiwiteit** tab. |
 | **Submission (Skryf)** | Content-type selector → type-appropriate placeholders + counters (lines AND words for gedig; words for prose) → light editor (hard breaks, blank-line/stanza preservation, bold, italic only; line structure preserved verbatim so concrete poetry survives; no headings/tables/images/font controls) → optional featured image + optional audio/video → optional link to an open **uitdaging** → **Stoor konsep** (ungated) or **Plaas** (entitlement-gated at publish moment). |
 | **Gradering indicator (ster gradering)** | Brons/Silwer/Goud and the manual-only **Meester** Gradering shown on the public **Skrywerprofiel**, used in discovery filters and winner labels. UI never says "badge"; UI term is **Gradering**, never "tier". Per-rank/per-tier colours are paired with text/icon so rank is never conveyed by colour alone (a11y) — see `DESIGN.md`. **My Profiel (private)** additionally shows the "X top 3 uitslae nodig om [next] te bereik" subteks toward the next Gradering (R3); Meester has no such subteks (manual-only). |
-| **Winner banner** (C9) | Already designed on the home page (*The Last Light of Winter* / "Desember-wenner"). Per-rank variants: **"[Maand] algehele wenner"** for 1st-place vs **"[Maand] wenner"** for 2nd/3rd. The `algehele wenner` is ordered ahead of plain `wenner` in the featured feed. Colour tokens (Brons/Silwer/Goud) pair with text/icon — see `DESIGN.md`. |
+| **Winner banner** (C9) | Already designed on the home page (*The Last Light of Winter* / "Desember-wenner"). Per-rank variants: **"[Maand] algehele wenner"** for 1st-place vs **"[Maand] wenner"** for 2nd/3rd. The `algehele wenner` is ordered ahead of plain `wenner` in the featured feed. Colour tokens (Brons/Silwer/Goud) pair with text/icon — see `DESIGN.md`. `[v2]` The eyebrow/rank text sits on the card's bright-gold→muted gradient tint, so it is set in `text`/`muted-text` (**never gold-on-gold** ≈1.8:1); the gold moment is carried by the Crown icon + tint. Home rendering requires an `ink-core` markup upgrade to `ink/wenner-kollig` (the block currently emits a flat list) — see `theme-fidelity-spec.md` §5. |
 | **Pinned works** | A **skrywer** curates pinned works on profile (label "Vasgespeld"). |
 | **Flipbook (Real3D)** | InkPols **uitgawe** PDFs via Real3D; viewer controls are plugin JS, Afrikaans via JS `.json` translations. Known accepted exception to light-JS and accessibility goals. |
 | **Kennisgewings** | "Merk alles as gelees" marks read by **timestamp boundary** (items arriving during the action stay unread — no phantom-unread). Templates: *"[Naam] en nog [N] ander het '[titel]' liefgehad"* · *"[Naam] het terugvoer gelewer op '[titel]'"* · *"[Naam] volg jou nou"* · *"[Uitdaging] sluit oor [N] dae"*. **New (R7):** an **automatic post-receipt trigger** fires a kennisgewing (→ My Profiel) on every new **bydrae**, using a **randomized message** drawn from a stored list (not a single fixed string). |
@@ -172,13 +173,13 @@ Behavioral. Visual contrast lives in `DESIGN.md`.
 
 ## Responsive & Platform
 
-Multi-surface responsive web, desktop + mobile parity. `[ASSUMPTION]` No numeric breakpoints in source — derive from the Lovable source; the behaviors below are the contract:
+Multi-surface responsive web, desktop + mobile parity. `[RESOLVED 2026-07-19]` Numeric breakpoints — previously `[ASSUMPTION #6]` — are now lifted from the Lovable source (Tailwind defaults, uncustomised): **sm 640 · md 768 · lg 1024 · xl 1280 · 2xl 1536 px**; content max-width capped at **1400px** with a **16px** (`px-4`) side gutter. Key composition breakpoints (see `theme-fidelity-spec.md`): **nav collapses to a hamburger < 768 (md)**; **hero goes two-column ≥ 1024 (lg)**, single column below; **featured-bydraes grid goes 2-column ≥ 768 (md)** with the featured card spanning full width; **feature cards (uitdaging/winner) go two-column ≥ 1024 (lg)**; footer goes 4-column ≥ 768 (md). The behavioral contract below still holds:
 
 | Viewport | Behavior |
 |---|---|
-| Desktop | Full nav; multi-column grids (wide 1400px); reading column held at 768px regardless of viewport. |
-| Tablet | Tab strips reflow (my-profiel, ontdek); grids reduce columns; sections begin to stack. |
-| Mobile | Single column; sections stack; nav collapses; logo scales; image crops keep parity with desktop intent; reading column full-width within margins. |
+| Desktop (≥1024) | Full nav; two-column hero + multi-column grids (wide 1400px); reading column held at 768px regardless of viewport. |
+| Tablet (768–1023) | Tab strips reflow (my-profiel, ontdek); hero + feature cards single-column but featured-bydraes/footer at 2/4 columns; sections begin to stack. |
+| Mobile (<768) | Single column; sections stack; nav collapses to hamburger; logo scales; image crops keep parity with desktop intent; reading column full-width within margins. |
 
 ## Inspiration & Anti-patterns
 

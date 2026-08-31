@@ -10,7 +10,8 @@ sources:
   - {project_knowledge}/design-handoff/lovable-repo-analysis.md
   - {project_knowledge}/design-handoff/agent-brief.md
   - {project_knowledge}/mockup-readiness-assessment.md
-updated: 2026-06-15
+  - theme-fidelity-spec.md  # [2026-07-19] concrete per-component visual specs, lifted from ink-lovable @5618f39
+updated: 2026-07-19
 colors:
   # Light mode (base). Hex from design-handoff/tokens/theme-tokens.json.
   # Slug names: primary/secondary/accent/surface/surface-alt/text/muted-text are
@@ -30,12 +31,15 @@ colors:
   border: '#E8E4DC'               # warm light grey  [ASSUMPTION] slug
   highlight: '#FFE066'            # gold text-highlight (line resonance)
   highlight-foreground: '#1A1D21' # text on highlight
-  gold-muted: '#C9B88A'           # muted gold accent
+  gold-muted: '#C9B88A'           # muted gold accent (winner-card gradient bottom stop)
+  gold: '#E8B130'                 # [NEW v2] bright gold — winner-card gradient TOP stop + gold decorative moments. NOT a rank colour. Lovable `--gold`.
   # Gradering (tier) colour tokens — [NEW, Sprint Change 2026-06-20 / C9].
   # Always paired with the tier name + icon; never used as the sole rank cue (a11y).
-  brons: '#A6754C'                # [NEW] [ASSUMPTION value] warm bronze — confirm against Lovable
-  silwer: '#9AA3AD'               # [NEW] [ASSUMPTION value] cool silver-grey — confirm against Lovable
-  goud: '#C9B88A'                 # [NEW] = gold-muted (muted gold, reuses existing token value)
+  # [v2] These four tier tokens live here in the spine but were NEVER added to theme.json —
+  # theme-fidelity-spec.md §0.7 carries the AC to register brons/silwer/goud (+ bright `gold`) in theme.json (Epic 19 story 19-1).
+  brons: '#A6754C'                # [NEW] warm bronze — working default (owner-approved 2026-07-19); may refine after first demo
+  silwer: '#9AA3AD'               # [NEW] cool silver-grey — working default (owner-approved 2026-07-19); may refine after first demo
+  goud: '#C9B88A'                 # [NEW] Goud TIER colour = gold-muted (muted). Distinct from bright `gold` above.
   # Meester reuses {colors.primary} #EA4015 (brand red-orange) — NOT a new token, NOT danger.
   # Dark mode overrides (only 6 tokens redefined in source; the rest inherit — [ASSUMPTION]).
   surface-dark: '#171C1F'
@@ -77,6 +81,11 @@ typography:
     fontSize: '1rem'      # md / 16px
     fontWeight: '400'
     lineHeight: '1.5'     # normal
+  hero-display:            # [RESOLVED 2026-07-19] Tuisblad + CTA headline — larger than `display`.
+    fontFamily: 'Lora, Georgia, serif'
+    fontSize: 'clamp(1.875rem, 1.2rem + 3vw, 3rem)'  # fluid 30 → 48px (Lovable text-3xl→4xl→5xl)
+    fontWeight: '600'
+    lineHeight: '1.25'    # tight
   ui-label:
     fontFamily: 'Inter, system-ui, sans-serif'
     fontSize: '0.875rem'  # sm / 14px
@@ -167,7 +176,7 @@ Terracotta `{colors.primary}` is the brand signature — used for primary action
 
 **Lora** (serif) is the editorial voice — display and all headings. **Inter** (sans) is the functional counterpoint — body, UI labels, captions. The reading column uses `body-prose` at 18px / 1.7 line-height for sustained legibility; this is deliberately more generous than UI `body` (16px / 1.5).
 
-Production type ramp (theme.json `fontSizes`, slugs `xs`–`3xl`): 12 · 14 · 16 · 18 · 20 · 24 · 32 px. Line-heights: `tight` 1.2 · `normal` 1.5 · `relaxed` 1.7. Weights: 400 / 500 / 600 / 700.
+Production type ramp (theme.json `fontSizes`): 12 · 14 · 16 · 18 · 20 · 24 · 30 · 36 · 48 px (slugs `xs`–`5xl`). Line-heights: `tight` 1.25 · `normal` 1.5 · `relaxed` 1.625/1.7. Weights: 400 / 500 / 600 / 700. `[RESOLVED 2026-07-19]` The ramp was previously capped at `3xl` 32px — the Tuisblad hero + CTA headline need up to **48px**; add `4xl` (36px) + `5xl` (48px) presets and use the fluid **`hero-display`** role (`clamp(30px → 48px)`, weight 600, line-height 1.25) so the headline scales without a JS breakpoint. The hero accent phrase uses a 135° terracotta→primary-light gradient clipped to text. See `theme-fidelity-spec.md` §0.2–0.3.
 
 Heading case is **sentence case** ("Begin skryf", not "Begin Skryf") — Afrikaans uses fewer capitals than English. Legibility of Afrikaans prose always wins over decorative type.
 
@@ -191,11 +200,12 @@ A soft, progressive corner-radius scale: `sm` 4 · `md` 6 · `lg` 8 · `xl` 12 �
 
 ## Components
 
-`[ASSUMPTION]` The sources contain **no per-component visual token objects** — the component frontmatter above states only token references that are directly grounded (primary button on terracotta, highlight on gold, etc.). Concrete per-component visual specs (padding, state colors, focus rings, hover treatments) must be lifted from the Lovable `.tsx` source during theme build and re-expressed as WP block styles. The component **inventory** (what exists and how each behaves) lives in `EXPERIENCE.md` → Component Patterns; this section owns only their *appearance*.
+`[RESOLVED 2026-07-19]` The concrete per-component visual specs — previously deferred as `[ASSUMPTION #7]` ("lifted from Lovable `.tsx` at theme build") — have now been **lifted from the Lovable source (`ink-lovable` @ `5618f39`) with exact resolved values** and live in **`theme-fidelity-spec.md`** (padding, radii, state colours, hover treatments, sizes per section + shared primitive). That spec is the buildable contract (Epic 19); this section states the appearance principles. The component **inventory** (what exists and how each behaves) lives in `EXPERIENCE.md` → Component Patterns.
 
-Grounded visual notes:
-- **Buttons** — primary = solid terracotta fill, light text; secondary = cream fill or bordered, dark text. `{rounded.md}` corners, generous horizontal padding.
-- **Cards** (work cards, writer cards) — `surface-alt` on `border`, `{rounded.lg}`, shadow on hover only; large imagery with serif title + caption subline.
+Grounded visual notes (exact values in `theme-fidelity-spec.md`):
+- **Buttons** — base radius `{rounded.md}` **6px** (never pill; the current theme's missing `elements.button` rule is the #1 fidelity bug — buttons fall to WP core defaults). Primary (`is-style-ink-primary`, "literary") = solid terracotta fill, `{colors.surface-alt}` text, Lora, `shadow.md`, hover → `{colors.primary-light}`. Secondary (`is-style-ink-outline`) = **2px** terracotta border, terracotta text, Lora, hover → terracotta fill + `{colors.surface-alt}` text. Sizes sm/default/lg/xl = 36/40/44/48px min-height (`xl` uses `{rounded.lg}` 8px) — **size is baked per-instance, not a block style** (block styles are a single radio axis). Icons 16px, 8px gap. **Visible `:focus-visible` ring** (2px `primary` + offset) on every button + nav/card link.
+- **Cards** (work cards, challenge/winner cards) — `surface-alt` on 1px `border`; radius **`{rounded.xl}` 12px** (story/hero cards) or **`{rounded.2xl}` 16px** (feature cards); `shadow.sm` at rest, **hover-lift** = `translateY(-4px)` + `shadow.lg`, `transition .3s ease` (reduced-motion safe). Serif title + caption subline; optional decorative corner tint (`primary`/5 quarter-circle, `aria-hidden`) behind content. The Wenner card additionally carries a bright-`gold`→`gold-muted` gradient tint + Crown watermark; **rank/eyebrow text is set in `text`/`muted-text`, never gold-on-gold** (gold text on the gold tint ≈1.8:1 — a11y), with rank always paired with text + icon.
+- **Pills / eyebrow badges** — `rounded-full`; hero badge = `primary`/10 tint + `primary` text, 14px/500, sentence case; card type-badge = `primary`/10 tint, 12px/600, UPPERCASE `tracking-wide`, with a leading icon. Category pill = `secondary` bg, 12px/500. Home-page pills are bespoke (not the shadcn `Badge` primitive).
 - **Line-highlight** — gold `{colors.highlight}` background with `{colors.highlight-foreground}` text; the signature reading affordance.
 - **Gradering indicator** (Brons/Silwer/Goud/**Meester** ster-gradering) — shown on the public **Skrywerprofiel** and in discovery filters, using `{colors.brons}` / `{colors.silwer}` / `{colors.goud}` / `{colors.primary}` (Meester). The word "badge" never appears in UI copy and "tier" never appears in UI (use **Gradering**); the Gradering is *shown* with a colour **plus its name + icon** — never colour-only (a11y). Meester uses the brand red-orange, never `{colors.danger}`.
 - **Winner banner** `[NEW — C9]` — the base design already exists on the home page (*The Last Light of Winter* marked "December Winner"; Afrikaans copy "Desember-wenner"). Remaining visual work is the **per-rank variants**: **"[Maand] algehele wenner"** (1st place, more prominent) vs **"[Maand] wenner"** (2nd/3rd), each carrying the relevant Brons/Silwer/Goud colour token **paired with rank text + icon** (no colour-only rank encoding). Behaviour and featured-feed ordering live in `EXPERIENCE.md`.
