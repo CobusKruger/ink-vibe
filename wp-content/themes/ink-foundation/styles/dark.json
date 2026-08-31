@@ -13,7 +13,7 @@
         { "slug": "accent-light", "name": "Accent Light", "color": "#5C9979" },
         { "slug": "surface", "name": "Surface", "color": "#171C1F" },
         { "slug": "surface-alt", "name": "Surface Alt", "color": "#1A1D21" },
-        { "slug": "text", "name": "Text", "color": "#EAE7DF" },
+        { "slug": "ink-text", "name": "Text", "color": "#EAE7DF" },
         { "slug": "muted-text", "name": "Muted Text", "color": "#6B7280" },
         { "slug": "success", "name": "Success", "color": "#4D8066" },
         { "slug": "warning", "name": "Warning", "color": "#D4A418" },
@@ -28,7 +28,7 @@
   "styles": {
     "color": {
       "background": "var:preset|color|surface",
-      "text": "var:preset|color|text"
+      "text": "var:preset|color|ink-text"
     }
   }
 }

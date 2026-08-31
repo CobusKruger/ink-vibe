@@ -19,8 +19,8 @@
  */
 
 ?>
-<!-- wp:group {"align":"full","className":"is-style-ink-footer","templateLock":"contentOnly","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"secondary","textColor":"text","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull is-style-ink-footer has-text-color has-secondary-background-color has-background" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"align":"full","className":"is-style-ink-footer","templateLock":"contentOnly","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"secondary","textColor":"ink-text","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull is-style-ink-footer has-ink-text-color has-secondary-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","className":"ink-footer-kolomme","layout":{"type":"default"}} -->
 	<div class="wp-block-group alignwide ink-footer-kolomme">
 		<!-- Handelsmerk-kolom: veer + woordmerk + blurb + sosiale skakels. -->
@@ -32,7 +32,7 @@
 				<span class="ink-footer-veer" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" x2="2" y1="8" y2="22"/><line x1="17.5" x2="9" y1="15" y2="15"/></svg></span>
 				<!-- /wp:html -->
 
-				<!-- wp:site-title {"level":0,"fontFamily":"display","fontSize":"lg","style":{"typography":{"fontStyle":"normal","fontWeight":"600"}},"textColor":"text"} /-->
+				<!-- wp:site-title {"level":0,"fontFamily":"display","fontSize":"lg","style":{"typography":{"fontStyle":"normal","fontWeight":"600"}},"textColor":"ink-text"} /-->
 			</div>
 			<!-- /wp:group -->
 
