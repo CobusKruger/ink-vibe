@@ -390,14 +390,19 @@ test( 'approve and reject no-op for an invalid user id', function (): void {
 /**
  * AC-5: register() wires the `user_register` stamp, the WP-native login gate, the
  * meta registration, the admin-menu queue, and BOTH `admin_post` write handlers.
+ *
+ * `registerMeta()` is called DIRECTLY from register() (not re-deferred onto
+ * `init` — that nesting is fatal, since register() already runs from within
+ * `init`'s own dispatch), so this asserts `register_meta()` actually fired
+ * rather than checking for a hook registration that no longer exists.
  */
 test( 'register() wires every backstop hook', function (): void {
 	Functions\when( 'get_option' )->justReturn( array() );
 	Functions\when( 'update_option' )->justReturn( true );
+	Functions\expect( 'register_meta' )->twice();
 
 	( new Approval() )->register();
 
-	expect( has_action( 'init', 'Ink\Accounts\Approval->registerMeta()' ) )->not->toBeFalse();
 	expect( has_action( 'user_register', 'Ink\Accounts\Approval->maybeMarkPending()' ) )->not->toBeFalse();
 	expect( has_filter( 'wp_authenticate_user', 'Ink\Accounts\Approval->blockPendingLogin()' ) )->not->toBeFalse();
 	expect( has_action( 'admin_menu', 'Ink\Accounts\Approval->registerQueueScreen()' ) )->not->toBeFalse();

@@ -137,9 +137,14 @@ final class Approval {
 	 * gate) or by `current_user_can( MODERATE )` (the queue + writes) — wiring the
 	 * hooks unconditionally keeps the toggle the single master switch (flipping it
 	 * ON needs no re-bootstrap) while OFF stays fully frictionless.
+	 *
+	 * `registerMeta()` is called DIRECTLY (not via a nested `add_action( 'init',
+	 * … )`): this method already runs from within `init`'s own dispatch (per the
+	 * docblock above), so a second `add_action( 'init', … )` from within that
+	 * running hook would never fire.
 	 */
 	public function register(): void {
-		add_action( 'init', array( $this, 'registerMeta' ) );
+		$this->registerMeta();
 
 		// Task 3: stamp the pending state on new accounts (only when ON).
 		add_action( 'user_register', array( $this, 'maybeMarkPending' ), 20, 1 );
