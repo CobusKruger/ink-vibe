@@ -88,6 +88,41 @@ final class Hub {
 	private const CSS = 'ink-opleiding';
 
 	/**
+	 * Assumed reading pace (words per minute) for the card read-time estimate.
+	 *
+	 * A LOCAL copy of {@see \Ink\Discovery\ReadingTime}'s rule, not a cross-module
+	 * import — `deptrac.yaml` allows `Training` only `Kernel` + `Content`, so a
+	 * `Training -> Discovery` edge is not available. Mirrors the precedent
+	 * `ReadingTime`'s own docblock documents (its Submission-counters word-count
+	 * regex is likewise a dependency-free local copy, not a cross-module import).
+	 *
+	 * @var int
+	 */
+	private const WORDS_PER_MINUTE = 200;
+
+	/**
+	 * The decorative search-icon path (Lucide "search" glyph, §0.9 icon convention).
+	 *
+	 * @var string
+	 */
+	private const ICON_SEARCH = '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>';
+
+	/**
+	 * The decorative clock-icon path (read-time, mirrors Discovery\FeaturedStream).
+	 *
+	 * @var string
+	 */
+	private const ICON_CLOCK = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
+
+	/**
+	 * The decorative arrow-icon path (card "Lees" affordance, mirrors
+	 * Challenges\CurrentChallenge's ICON_ARROW).
+	 *
+	 * @var string
+	 */
+	private const ICON_ARROW = '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>';
+
+	/**
 	 * Register the server-rendered block.
 	 *
 	 * Invoked from {@see Module::register()}, which the Kernel already dispatches
@@ -267,41 +302,141 @@ final class Hub {
 	/**
 	 * Map a post to a card row. Given the post.
 	 *
+	 * `excerpt`/`category`/`read_minutes` mirror the {@see \Ink\Discovery\FeaturedStream}
+	 * card shape (Library-layout archetype parity, §11.1 docblock) — a trimmed excerpt,
+	 * the first `vaardigheid` term name (falling back to no pill when the item carries
+	 * none), and a read-time estimate from the body word count.
+	 *
 	 * @param \WP_Post $post The training item.
-	 * @return array{title:string, permalink:string, author:string}
+	 * @return array{title:string, permalink:string, author:string, excerpt:string, category:string, read_minutes:int}
 	 */
 	private static function card( \WP_Post $post ): array {
 		return array(
-			'title'     => get_the_title( $post ),
-			'permalink' => (string) get_permalink( $post ),
-			'author'    => (string) get_the_author_meta( 'display_name', (int) $post->post_author ),
+			'title'        => get_the_title( $post ),
+			'permalink'    => (string) get_permalink( $post ),
+			'author'       => (string) get_the_author_meta( 'display_name', (int) $post->post_author ),
+			'excerpt'      => self::excerptFor( $post ),
+			'category'     => self::categoryLabel( $post ),
+			'read_minutes' => self::readMinutes( wp_strip_all_tags( (string) $post->post_content ) ),
 		);
+	}
+
+	/**
+	 * A trimmed excerpt for the card body. Impure (WP excerpt helpers).
+	 *
+	 * @param \WP_Post $post The training item.
+	 * @return string
+	 */
+	private static function excerptFor( \WP_Post $post ): string {
+		if ( has_excerpt( $post ) ) {
+			return (string) get_the_excerpt( $post );
+		}
+
+		return (string) wp_trim_words( wp_strip_all_tags( (string) $post->post_content ), 24, '…' );
+	}
+
+	/**
+	 * The card's category pill label — the first `vaardigheid` term name, or ''
+	 * when the item carries none (the pill is then simply omitted). Impure (term
+	 * read).
+	 *
+	 * @param \WP_Post $post The training item.
+	 * @return string
+	 */
+	private static function categoryLabel( \WP_Post $post ): string {
+		$terms = get_the_terms( $post, Taxonomies::VAARDIGHEID );
+
+		if ( is_array( $terms ) ) {
+			foreach ( $terms as $term ) {
+				if ( $term instanceof \WP_Term && '' !== $term->name ) {
+					return $term->name;
+				}
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Reading-time whole minutes from a body's word count. Pure — see
+	 * {@see self::WORDS_PER_MINUTE}'s docblock for why this is a local copy.
+	 *
+	 * @param string $text The body text (markup already stripped by the caller).
+	 * @return int Whole minutes, floored at 1 for any non-empty body, 0 for none.
+	 */
+	private static function readMinutes( string $text ): int {
+		$words = (int) preg_match_all( '/\S+/u', $text );
+
+		if ( $words <= 0 ) {
+			return 0;
+		}
+
+		return max( 1, (int) ceil( $words / self::WORDS_PER_MINUTE ) );
+	}
+
+	/**
+	 * The Afrikaans read-time label for a minute count ("8 min"). Pure (formatter
+	 * only) — the invariant abbreviation doesn't inflect, mirroring
+	 * {@see \Ink\Discovery\ReadingTime::label()}.
+	 *
+	 * @param int $minutes The whole-minute estimate.
+	 * @return string e.g. "8 min". Empty string when there is no read-time.
+	 */
+	private static function readTimeLabel( int $minutes ): string {
+		if ( $minutes <= 0 ) {
+			return '';
+		}
+
+		/* translators: %d: the estimated reading time in whole minutes. */
+		return sprintf( _n( '%d min', '%d min', $minutes, 'ink-core' ), $minutes );
+	}
+
+	/**
+	 * A decorative inline Lucide icon (§0.9): 16px, currentColor, aria-hidden. Pure.
+	 * `$paths` is a trusted class-internal SVG literal (never user input). Mirrors
+	 * {@see \Ink\Discovery\FeaturedStream::icon()} (each module keeps its own copy —
+	 * no shared Kernel icon helper exists yet).
+	 *
+	 * @param string $paths The inner SVG markup.
+	 * @return string
+	 */
+	private static function icon( string $paths ): string {
+		return '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" '
+			. 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '
+			. 'class="ink-icon" aria-hidden="true" focusable="false">' . $paths . '</svg>';
 	}
 
 	/**
 	 * Build the hub HTML. Pure — Terms + escaping only.
 	 *
-	 * @param list<array{title:string, permalink:string, author:string}>                $cards    The items.
-	 * @param list<array{title:string, permalink:string, author:string}>                $featured The featured strip items.
-	 * @param list<array{slug:string, name:string}>                                     $facets   The vaardigheid facet terms.
-	 * @param array{paged:int, max_pages:int, vaardigheid?:string|null, search?:string} $nav Render context.
+	 * @param list<array{title:string, permalink:string, author:string, excerpt?:string, category?:string, read_minutes?:int}> $cards    The items.
+	 * @param list<array{title:string, permalink:string, author:string, excerpt?:string, category?:string, read_minutes?:int}> $featured The featured strip items.
+	 * @param list<array{slug:string, name:string}>                                                                           $facets   The vaardigheid facet terms.
+	 * @param array{paged:int, max_pages:int, vaardigheid?:string|null, search?:string}                                       $nav Render context.
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $featured, array $facets, array $nav ): string {
-		$heading  = '<h1 class="ink-opleiding__heading">' . esc_html( Terms::label( 'opleiding' ) ) . '</h1>';
-		$controls = self::featuredHtml( $featured )
-			. self::searchHtml( isset( $nav['search'] ) ? (string) $nav['search'] : '', $nav['vaardigheid'] ?? null )
-			. self::filterHtml( $facets, $nav['vaardigheid'] ?? null );
+		$search_term  = isset( $nav['search'] ) ? (string) $nav['search'] : '';
+		$active_facet = $nav['vaardigheid'] ?? null;
+
+		// The heading + search sit together in an intro band (Library-layout parity —
+		// mirrors Lovable's Library.tsx header section); the featured shelf, then the
+		// facet filter, follow below it.
+		$intro = '<div class="ink-opleiding__intro">'
+			. '<h1 class="ink-opleiding__heading">' . esc_html( Terms::label( 'opleiding' ) ) . '</h1>'
+			. self::searchHtml( $search_term, $active_facet )
+			. '</div>';
+
+		$controls = self::featuredHtml( $featured ) . self::filterHtml( $facets, $active_facet );
 
 		if ( array() === $cards ) {
-			$is_filtered = ( null !== ( $nav['vaardigheid'] ?? null ) )
-				|| ( '' !== ( isset( $nav['search'] ) ? (string) $nav['search'] : '' ) );
+			$is_filtered = ( null !== $active_facet ) || ( '' !== $search_term );
 
-			return '<section class="ink-opleiding">' . $heading . $controls
+			return '<section class="ink-opleiding alignwide">' . $intro . $controls
 				. self::emptyStateHtml( $is_filtered ) . '</section>';
 		}
 
-		$html = '<section class="ink-opleiding">' . $heading . $controls . '<ul class="ink-opleiding__list">';
+		$html = '<section class="ink-opleiding alignwide">' . $intro . $controls . '<ul class="ink-opleiding__list">';
 
 		foreach ( $cards as $card ) {
 			$html .= self::cardHtml( $card );
@@ -323,7 +458,7 @@ final class Hub {
 	 * editorial linking, Principle 8). Renders nothing without items (filtered/paged
 	 * views pass none — the shelf shows only on the unfiltered first page).
 	 *
-	 * @param list<array{title:string, permalink:string, author:string}> $featured The shelf items.
+	 * @param list<array{title:string, permalink:string, author:string, excerpt?:string, category?:string, read_minutes?:int}> $featured The shelf items.
 	 * @return string
 	 */
 	public static function featuredHtml( array $featured ): string {
@@ -361,6 +496,7 @@ final class Hub {
 
 		return '<form class="ink-opleiding__soek" role="search" method="get">'
 			. $hidden
+			. '<span class="ink-opleiding__soek-ikoon">' . self::icon( self::ICON_SEARCH ) . '</span>'
 			. '<input type="search" class="ink-opleiding__soek-veld" name="' . esc_attr( self::SEARCH_VAR ) . '"'
 			. ' value="' . esc_attr( $term ) . '"'
 			. ' placeholder="' . esc_attr__( 'Soek in opleiding…', 'ink-core' ) . '"'
@@ -432,18 +568,59 @@ final class Hub {
 	}
 
 	/**
-	 * One training card. Pure — escaping only.
+	 * One training card. Pure — formatters + escaping only.
 	 *
-	 * @param array{title:string, permalink:string, author:string} $card  The item.
-	 * @param string                                               $extra Optional extra CSS class.
+	 * `excerpt`/`category`/`read_minutes` are optional (a caller — e.g. the unit
+	 * tests, or a future data seam — may pass a bare `title`/`permalink`/`author`
+	 * row); each is simply omitted from the markup when absent. The "Lees" link is
+	 * a decorative, `aria-hidden`/`tabindex="-1"` duplicate of the title's own href
+	 * (a hover-reveal affordance only — the title link is the one real, focusable
+	 * path to the item, so a screen-reader/keyboard user never meets two identical
+	 * links).
+	 *
+	 * @param array{title?:string, permalink?:string, author?:string, excerpt?:string, category?:string, read_minutes?:int} $card  The item.
+	 * @param string                                                                                                        $extra Optional extra CSS class (e.g. the "rak" shelf modifier).
 	 * @return string
 	 */
 	private static function cardHtml( array $card, string $extra = '' ): string {
-		$class = 'ink-opleiding__item is-style-card' . ( '' !== $extra ? ' ' . $extra : '' );
+		$class = 'ink-opleiding__item' . ( '' !== $extra ? ' ' . $extra : '' );
+
+		$title     = (string) ( $card['title'] ?? '' );
+		$permalink = (string) ( $card['permalink'] ?? '' );
+		$author    = (string) ( $card['author'] ?? '' );
+		$excerpt   = (string) ( $card['excerpt'] ?? '' );
+		$category  = (string) ( $card['category'] ?? '' );
+		$read_time = self::readTimeLabel( (int) ( $card['read_minutes'] ?? 0 ) );
+
+		$meta = '';
+
+		if ( '' !== $category || '' !== $read_time ) {
+			$meta = '<div class="ink-opleiding__item-meta">';
+
+			if ( '' !== $category ) {
+				$meta .= '<span class="ink-opleiding__item-pil">' . esc_html( $category ) . '</span>';
+			}
+
+			if ( '' !== $read_time ) {
+				$meta .= '<span class="ink-opleiding__item-leestyd">' . self::icon( self::ICON_CLOCK )
+					. '<span>' . esc_html( $read_time ) . '</span></span>';
+			}
+
+			$meta .= '</div>';
+		}
+
+		$excerpt_html = '' !== $excerpt
+			? '<p class="ink-opleiding__item-uittreksel">' . esc_html( $excerpt ) . '</p>'
+			: '';
 
 		return '<li class="' . esc_attr( $class ) . '">'
-			. '<a class="ink-opleiding__titel" href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>'
-			. '<span class="ink-opleiding__outeur">' . esc_html( $card['author'] ) . '</span>'
-			. '</li>';
+			. $meta
+			. '<a class="ink-opleiding__titel" href="' . esc_url( $permalink ) . '">' . esc_html( $title ) . '</a>'
+			. $excerpt_html
+			. '<div class="ink-opleiding__item-voet">'
+			. '<span class="ink-opleiding__outeur">' . esc_html( $author ) . '</span>'
+			. '<a class="ink-opleiding__lees" href="' . esc_url( $permalink ) . '" tabindex="-1" aria-hidden="true">'
+			. esc_html__( 'Lees', 'ink-core' ) . self::icon( self::ICON_ARROW ) . '</a>'
+			. '</div></li>';
 	}
 }
