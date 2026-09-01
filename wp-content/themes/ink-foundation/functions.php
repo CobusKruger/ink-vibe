@@ -224,6 +224,31 @@ function ink_foundation_enqueue_leeslys(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_leeslys' );
 
 /**
+ * Enqueue the Skrywerprofiel "Deel" (share) client on an author archive.
+ *
+ * The button + its ratified Afrikaans labels are server-rendered by
+ * {@see \Ink\Social\SkrywerProfiel::toHtml()} on `data-ink-deel-*` attributes;
+ * this thin client only performs the clipboard write. Loaded only on the
+ * public skrywer profile (`is_author()`), mirroring the pattern above.
+ */
+function ink_foundation_enqueue_skrywer_deel(): void {
+	if ( ! function_exists( 'is_author' ) || ! is_author() ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-skrywer-deel',
+		get_theme_file_uri( 'assets/js/skrywer-deel.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_skrywer_deel' );
+
+/**
  * Enqueue the home (Tuisblad) stylesheet on the front page only (Epic 19, §0.8).
  *
  * The theme.json `css` string only carries the ink-core widget styles; the

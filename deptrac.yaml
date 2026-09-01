@@ -153,6 +153,14 @@ deptrac:
             # (THE conflation rule holds). Mirrors the accepted Discovery->Tiers
             # display edge (8.5). No Entitlement edge.
             - Tiers
+            # Phase-2 fidelity pass (skrywerprofiel): the profile stats strip's
+            # "hartjies" (likes) total and the curated-work cards' per-card like/
+            # comment counts read the DENORMALIZED reaction/response counts via the
+            # Engagement Api facade (`hartjieCountForPost`/`responseCountForPost`) —
+            # a real, non-circular cross-module Api-facade dependency (Engagement
+            # depends only on Kernel/Content, never back on Social). Mirrors the
+            # Discovery->Engagement (8.2) edge exactly. Display only; conflation-clean.
+            - Engagement
         Discovery:
             - Kernel
             # Story 8.1: the Ontdek works archive queries the bydrae CPT slugs from

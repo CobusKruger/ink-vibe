@@ -24,9 +24,11 @@ beforeEach( function (): void {
 	Functions\when( 'esc_html' )->returnArg( 1 );
 	Functions\when( 'esc_html__' )->returnArg( 1 );
 	Functions\when( 'esc_attr' )->returnArg( 1 );
+	Functions\when( 'esc_attr__' )->returnArg( 1 );
 	Functions\when( 'esc_url' )->returnArg( 1 );
 	Functions\when( 'number_format_i18n' )->alias( static fn ( $n, $d = 0 ): string => number_format( (float) $n, (int) $d ) );
 	Functions\when( '_n' )->alias( static fn ( string $s, string $p, int $n ): string => 1 === $n ? $s : $p );
+	Functions\when( 'home_url' )->alias( static fn ( string $path = '' ): string => 'https://nuwe-ink.local' . $path );
 } );
 
 afterEach( function (): void {
@@ -133,6 +135,202 @@ test( 'toHtml renders the empty Lesergradering state when nothing is approved (h
 
 	expect( $html )->toContain( 'ink-skrywerprofiel__lesergradering-leeg' );
 	expect( $html )->not->toContain( 'ink-skrywerprofiel__oordele' );
+} );
+
+test( 'toHtml renders the cover image only when set, with the has-omslag modifier', function (): void {
+	$withCover = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => '',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+			'cover'     => 'https://example.test/omslag.jpg',
+		)
+	);
+
+	expect( $withCover )->toContain( 'has-omslag' );
+	expect( $withCover )->toContain( 'ink-skrywerprofiel__omslag' );
+	expect( $withCover )->toContain( 'https://example.test/omslag.jpg' );
+
+	$withoutCover = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => '',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+			'cover'     => '',
+		)
+	);
+
+	expect( $withoutCover )->not->toContain( 'has-omslag' );
+	expect( $withoutCover )->not->toContain( 'ink-skrywerprofiel__omslag' );
+} );
+
+test( 'toHtml renders genre pills, joined date and the stats strip from real data', function (): void {
+	$html = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => '',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+			'joined'    => 'Aangesluit April 2024',
+			'genres'    => array( 'Gedig', 'Storie' ),
+			'works'     => array(
+				'total' => 5,
+				'items' => array(
+					array( 'label' => 'Storie', 'count' => 3 ),
+					array( 'label' => 'Gedig', 'count' => 2 ),
+				),
+			),
+			'hartjies'  => 120,
+			'aggregate' => array( 'count' => 4, 'average' => 4.5 ),
+		)
+	);
+
+	expect( $html )->toContain( 'Aangesluit April 2024' );
+	expect( $html )->toContain( 'ink-skrywerprofiel__genre' );
+	expect( $html )->toContain( 'Gedig' );
+	expect( $html )->toContain( 'Storie' );
+	expect( $html )->toContain( 'ink-skrywerprofiel__statistieke' );
+	expect( $html )->toContain( '120' ); // hartjies total
+} );
+
+test( 'toHtml renders the accomplishments rail from real Gradering-history rows', function (): void {
+	$html = SkrywerProfiel::toHtml(
+		array(
+			'name'            => 'Anja Brand',
+			'bio'             => '',
+			'avatar'          => '',
+			'badge'           => '',
+			'volgeling'       => '0 volgelinge',
+			'volg'            => '',
+			'accomplishments' => array(
+				array( 'label' => 'Silwer', 'detail' => '12 Januarie 2026' ),
+			),
+		)
+	);
+
+	expect( $html )->toContain( 'ink-skrywerprofiel__prestasies-lys' );
+	expect( $html )->toContain( 'ink-skrywerprofiel__prestasie' );
+	expect( $html )->toContain( 'Silwer' );
+	expect( $html )->toContain( '12 Januarie 2026' );
+} );
+
+test( 'toHtml keeps the empty Prestasies shell when there is no Gradering history', function (): void {
+	$html = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => '',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+		)
+	);
+
+	expect( $html )->toContain( 'ink-skrywerprofiel__prestasies-titel' );
+	expect( $html )->not->toContain( 'ink-skrywerprofiel__prestasies-lys' );
+} );
+
+test( 'toHtml renders each pinned card\'s excerpt, age and engagement counts', function (): void {
+	$html = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => '',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+			'pinned'    => array(
+				array(
+					'title'        => 'Vlerke',
+					'permalink'    => '/vlerke',
+					'type'         => 'gedig',
+					'excerpt'      => 'n Gedig oor vlug.',
+					'daysAgo'      => '3 dae gelede',
+					'hartjies'     => 42,
+					'hartjieLabel' => '42 hartjies',
+					'gemeenskap'   => 7,
+				),
+			),
+		)
+	);
+
+	expect( $html )->toContain( 'n Gedig oor vlug.' );
+	expect( $html )->toContain( '3 dae gelede' );
+	expect( $html )->toContain( '42' );
+	expect( $html )->toContain( 'ink-skrywerprofiel__vasgespel-tellings' );
+	expect( $html )->toContain( 'Sien alle werke' );
+} );
+
+test( 'toHtml renders the Deel (share) button only when a shareUrl is present', function (): void {
+	$withShare = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => '',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+			'shareUrl'  => '/skrywer/anja-brand',
+		)
+	);
+
+	expect( $withShare )->toContain( 'ink-skrywerprofiel__deel' );
+	expect( $withShare )->toContain( '/skrywer/anja-brand' );
+
+	$withoutShare = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => '',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+			'shareUrl'  => '',
+		)
+	);
+
+	expect( $withoutShare )->not->toContain( 'ink-skrywerprofiel__deel' );
+} );
+
+test( 'toHtml renders the closing follow CTA with the writer\'s first name', function (): void {
+	$html = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => '',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '<button class="ink-volg-knoppie">Volg</button>',
+		)
+	);
+
+	expect( $html )->toContain( 'ink-skrywerprofiel__cta' );
+	expect( $html )->toContain( 'Anja' ); // first name only, matching the ratified copy
+	expect( $html )->toContain( 'Ontdek meer skrywers' );
+} );
+
+test( 'toHtml renders the "Oor [naam]" heading above the bio when a bio is present', function (): void {
+	$html = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => "'n Digter uit die Karoo.",
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+		)
+	);
+
+	expect( $html )->toContain( 'ink-skrywerprofiel__oor-titel' );
+	expect( $html )->toContain( 'Oor Anja' );
 } );
 
 test( 'the PUBLIC card renders NO private surfaces (no read counts, no wins-needed)', function (): void {
