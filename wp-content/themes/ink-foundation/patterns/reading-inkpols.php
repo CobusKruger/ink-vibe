@@ -28,7 +28,7 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 		<p class="has-accent-color has-text-color has-xs-font-size" style="font-style:normal;font-weight:600;letter-spacing:0.08em;text-transform:uppercase"><?php echo esc_html( $ink_type_label ); ?></p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:post-title {"level":1,"fontSize":"3xl"} /-->
+		<!-- wp:post-title {"level":1,"fontSize":"xxxl"} /-->
 
 		<!-- wp:ink/inkpols-besonderhede /-->
 	</div>

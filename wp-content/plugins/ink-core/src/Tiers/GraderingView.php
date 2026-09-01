@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  * A typed, presentation-ready view of a writer's Gradering (Story 5.4, FR-14).
  *
  * The single place the "Meester is special" display rule is encoded: Meester
- * renders in the brand `primary` token (#EA4015), NOT `danger` and NOT the
+ * renders in the brand `primary` token (#EC3B13), NOT `danger` and NOT the
  * gold/silver/bronze grade colours. The theme bridge ({@see \ink_foundation_gradering_badge()})
  * renders the accessible badge from this view — text label always present
  * (a11y, never colour-only) + a decorative mark.

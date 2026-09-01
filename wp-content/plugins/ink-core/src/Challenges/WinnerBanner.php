@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
  * A11y (no colour-only encoding): the banner pairs its colour with a real TEXT label and
  * an `aria-hidden` mark glyph, so the placement is conveyed by text — not colour alone —
  * mirroring the Story-5.4 gradering badge. Colour reuses the established
- * `.ink-gradering--{tier}` convention (theme.json maps `--meester` to `primary #EA4015`);
+ * `.ink-gradering--{tier}` convention (theme.json maps `--meester` to `primary #EC3B13`);
  * Brons/Silwer/Goud are class hooks pending their design-handoff swatches.
  *
  * The placement flag already lives on the entry as `ink_entry_placement` (Story 12.6);

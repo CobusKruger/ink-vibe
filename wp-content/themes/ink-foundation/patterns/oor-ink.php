@@ -26,8 +26,8 @@
 		<p class="has-muted-text-color has-text-color has-sm-font-size" style="font-style:normal;font-weight:600;letter-spacing:0.08em;text-transform:uppercase">Oor INK</p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:heading {"level":1,"fontSize":"3xl"} -->
-		<h1 class="wp-block-heading has-3xl-font-size">Ons missie</h1>
+		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
+		<h1 class="wp-block-heading has-xxxl-font-size">Ons missie</h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"lg"} -->
@@ -46,8 +46,8 @@
 <section class="wp-block-group alignfull has-surface-alt-background-color has-background" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:heading {"level":2,"fontSize":"2xl"} -->
-		<h2 class="wp-block-heading has-2xl-font-size">Ons organisasie</h2>
+		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
+		<h2 class="wp-block-heading has-xxl-font-size">Ons organisasie</h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md"} -->
@@ -62,8 +62,8 @@
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:heading {"level":2,"fontSize":"2xl"} -->
-		<h2 class="wp-block-heading has-2xl-font-size">Kontak</h2>
+		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
+		<h2 class="wp-block-heading has-xxl-font-size">Kontak</h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
@@ -88,8 +88,8 @@
 <section class="wp-block-group alignfull has-surface-alt-background-color has-background" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:heading {"level":2,"fontSize":"2xl"} -->
-		<h2 class="wp-block-heading has-2xl-font-size">Meer oor INK</h2>
+		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
+		<h2 class="wp-block-heading has-xxl-font-size">Meer oor INK</h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:list -->

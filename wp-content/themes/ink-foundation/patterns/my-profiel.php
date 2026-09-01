@@ -34,8 +34,8 @@ $ink_badge       = function_exists( 'ink_foundation_gradering_badge' )
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-32"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:heading {"level":1,"fontSize":"2xl"} -->
-		<h1 class="wp-block-heading has-2xl-font-size"><?php echo esc_html__( 'My profiel', 'ink-foundation' ); ?></h1>
+		<!-- wp:heading {"level":1,"fontSize":"xxl"} -->
+		<h1 class="wp-block-heading has-xxl-font-size"><?php echo esc_html__( 'My profiel', 'ink-foundation' ); ?></h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:group {"className":"is-style-card ink-my-profiel__gradering","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-8"}},"layout":{"type":"constrained"}} -->

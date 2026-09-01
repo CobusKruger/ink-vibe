@@ -1254,7 +1254,7 @@ if ( ! function_exists( 'ink_foundation_gradering_badge' ) ) {
 	 * badge. The grade LABEL is always rendered as text (a11y — never colour-only);
 	 * the leading mark is decorative (`aria-hidden`). Meester carries the
 	 * `ink-gradering--meester` modifier, which the theme maps to the brand
-	 * `primary` (#EA4015) token (NOT `danger`). Story 9.4 embeds this on the public
+	 * `primary` (#EC3B13) token (NOT `danger`). Story 9.4 embeds this on the public
 	 * Skrywerprofiel + private My Profiel.
 	 *
 	 * `class_exists`-guarded so the theme degrades to an empty string when
@@ -1287,7 +1287,7 @@ if ( ! function_exists( 'ink_foundation_wenner_banier' ) ) {
 	 * Presentation glue only: reads the placement + per-tier banner markup from the
 	 * `ink-core` Challenges presenter ({@see \Ink\Challenges\WinnerBanner::forPost()}),
 	 * which carries the algehele-wenner/wenner variant + the `ink-gradering--{tier}`
-	 * colour convention (Meester → `primary` #EA4015) and pairs colour with a real text
+	 * colour convention (Meester → `primary` #EC3B13) and pairs colour with a real text
 	 * label (a11y — never colour-only). A non-placed work yields ''.
 	 *
 	 * `class_exists`-guarded so the theme degrades to '' when `ink-core` is inactive —

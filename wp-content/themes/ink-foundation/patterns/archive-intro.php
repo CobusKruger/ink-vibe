@@ -13,8 +13,8 @@
 		<p class="has-muted-text-color has-text-color has-sm-font-size" style="font-style:normal;font-weight:600;letter-spacing:0.08em;text-transform:uppercase">Die INK-gemeenskap</p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:heading {"level":1,"fontSize":"3xl"} -->
-		<h1 class="wp-block-heading has-3xl-font-size">Vind 'n stuk wat jou aand verswelg, of 'n skrywer wat jou bybly.</h1>
+		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
+		<h1 class="wp-block-heading has-xxxl-font-size">Vind 'n stuk wat jou aand verswelg, of 'n skrywer wat jou bybly.</h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"lg","textColor":"muted-text"} -->

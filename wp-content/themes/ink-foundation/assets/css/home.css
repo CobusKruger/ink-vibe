@@ -188,18 +188,51 @@
 	}
 }
 
+/* Hero H1 fixed-breakpoint sizing (foundational fidelity fix, follow-up to §2):
+   Lovable's h1 is NOT fluid — it steps at 3 fixed values per Tailwind breakpoint
+   (base text-3xl / md:text-4xl / lg:text-5xl), confirmed via getComputedStyle at
+   actual widths ~500 / 768 / 1024px against
+   https://preview--quill-muse-heart.lovable.app/ (30px / 36px / 48px). Overrides
+   the shared "hero" font-size preset's clamp() for THIS element only — the new
+   "hero-sm" preset supplies the base tier, existing xxxxl/xxxxxl presets supply
+   the two step-ups. cta-band.php's CTA heading and reading-uitdaging.php's
+   post-title still use the original fluid "hero" preset, untouched. !important
+   is required: WP's global-styles generator emits `.has-hero-font-size{...}
+   !important}` for the block-support utility class, so a plain higher-specificity
+   selector here is silently outranked without it. */
+.ink-hero-grid h1.has-hero-font-size {
+	font-size: var(--wp--preset--font-size--hero-sm) !important;
+}
+
+@media (min-width: 768px) {
+	.ink-hero-grid h1.has-hero-font-size {
+		font-size: var(--wp--preset--font-size--xxxxl) !important;
+	}
+}
+
+@media (min-width: 1024px) {
+	.ink-hero-grid h1.has-hero-font-size {
+		font-size: var(--wp--preset--font-size--xxxxxl) !important;
+	}
+}
+
 /* Hero badge pill (§2): primary/10 tint, rounded-full, 14px/500, sentence case.
    Text darkened toward `text` so the small pill clears the readability floor
    (a11y — terracotta-on-primary/10 alone is ~3.6:1). color-mix tints follow the
-   opaque-fallback-first convention (§0.7 / token-note 2). */
+   opaque-fallback-first convention (§0.7 / token-note 2). Padding is 6px/16px
+   (new s-6 spacing token — Lovable's py-1.5/px-4, not the nearest existing s-8
+   step) and line-height is a fixed 1.25rem/20px (Tailwind's built-in text-sm
+   leading, not a themed unitless ratio — re-verified via getComputedStyle
+   against Lovable, not assumed). */
 .ink-hero-badge {
 	display: inline-block;
 	width: -moz-fit-content;
 	width: fit-content;
 	margin: 0;
-	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-16);
+	padding: var(--wp--preset--spacing--s-6) var(--wp--preset--spacing--s-16);
 	border-radius: var(--wp--custom--radius--full);
 	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
 	font-weight: var(--wp--custom--font-weight--medium);
 	background-color: var(--wp--preset--color--secondary);
 	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
@@ -357,7 +390,7 @@
 }
 
 .ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__titel {
-	font-size: var(--wp--preset--font-size--2-xl);
+	font-size: var(--wp--preset--font-size--xxl);
 }
 
 .ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__uittreksel {
@@ -457,7 +490,7 @@
 }
 
 .ink-huidige-uitdaging--kenmerk .ink-huidige-uitdaging__titel {
-	font-size: var(--wp--preset--font-size--3-xl);
+	font-size: var(--wp--preset--font-size--xxxl);
 }
 
 .ink-huidige-uitdaging--kenmerk .ink-huidige-uitdaging__uittreksel {
@@ -582,7 +615,7 @@
 .ink-wenner-kollig__werk {
 	margin: 0;
 	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--wp--preset--font-size--2-xl);
+	font-size: var(--wp--preset--font-size--xxl);
 	font-weight: var(--wp--custom--font-weight--semibold);
 	line-height: var(--wp--custom--line-height--tight);
 	color: var(--wp--preset--color--ink-text);
@@ -710,14 +743,14 @@
 .ink-uitgesoekte-bydraes__titel {
 	margin: var(--wp--preset--spacing--s-8) 0 0;
 	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--3-xl);
+	font-size: var(--wp--preset--font-size--xxxl);
 	font-weight: var(--wp--custom--font-weight--semibold);
 	line-height: var(--wp--custom--line-height--tight);
 }
 
 @media (min-width: 768px) {
 	.ink-uitgesoekte-bydraes__titel {
-		font-size: var(--wp--preset--font-size--4-xl);
+		font-size: var(--wp--preset--font-size--xxxxl);
 	}
 }
 
@@ -845,7 +878,7 @@
 
 /* Featured (first) card: spans two columns, larger title + un-clamped excerpt. */
 .ink-uitgesoekte-bydraes__kaart--uitgesoek .ink-uitgesoekte-bydraes__werk {
-	font-size: var(--wp--preset--font-size--2-xl);
+	font-size: var(--wp--preset--font-size--xxl);
 }
 
 .ink-uitgesoekte-bydraes__kaart--uitgesoek .ink-uitgesoekte-bydraes__uittreksel {
@@ -938,7 +971,7 @@
 .ink-borg-strook__titel {
 	margin: 0;
 	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--wp--preset--font-size--2-xl);
+	font-size: var(--wp--preset--font-size--xxl);
 	font-weight: var(--wp--custom--font-weight--semibold);
 	line-height: var(--wp--custom--line-height--tight);
 	color: var(--wp--preset--color--ink-text);
@@ -946,7 +979,7 @@
 
 @media (min-width: 768px) {
 	.ink-borg-strook__titel {
-		font-size: var(--wp--preset--font-size--3-xl);
+		font-size: var(--wp--preset--font-size--xxxl);
 	}
 }
 

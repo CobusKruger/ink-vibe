@@ -70,8 +70,8 @@ if ( empty( $ink_plans ) ) {
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:heading {"level":1,"fontSize":"3xl"} -->
-		<h1 class="wp-block-heading has-3xl-font-size"><?php echo esc_html( $ink_plan_noun ); ?></h1>
+		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
+		<h1 class="wp-block-heading has-xxxl-font-size"><?php echo esc_html( $ink_plan_noun ); ?></h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"lg","textColor":"muted-text"} -->
@@ -101,8 +101,8 @@ foreach ( $ink_plans as $ink_plan ) :
 				<h2 class="wp-block-heading has-xl-font-size"><?php echo esc_html( $ink_term_label ); ?></h2>
 				<!-- /wp:heading -->
 
-				<!-- wp:paragraph {"fontSize":"2xl","style":{"typography":{"fontWeight":"var:custom|font-weight|bold"}}} -->
-				<p class="has-2xl-font-size" style="font-weight:var(--wp--custom--font-weight--bold)">
+				<!-- wp:paragraph {"fontSize":"xxl","style":{"typography":{"fontWeight":"var:custom|font-weight|bold"}}} -->
+				<p class="has-xxl-font-size" style="font-weight:var(--wp--custom--font-weight--bold)">
 			<?php
 			if ( null !== $ink_price_display && '' !== (string) $ink_price_display ) {
 				// The display price is shaped in the ink-core read-model (PlanPresenter:
@@ -151,8 +151,8 @@ foreach ( $ink_plans as $ink_plan ) :
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:heading {"level":2,"fontSize":"2xl"} -->
-		<h2 class="wp-block-heading has-2xl-font-size"><?php echo esc_html__( 'Wat jou lidmaatskap insluit', 'ink-foundation' ); ?></h2>
+		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
+		<h2 class="wp-block-heading has-xxl-font-size"><?php echo esc_html__( 'Wat jou lidmaatskap insluit', 'ink-foundation' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:list {"className":"is-style-default","style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
@@ -179,8 +179,8 @@ foreach ( $ink_plans as $ink_plan ) :
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:heading {"level":2,"fontSize":"2xl"} -->
-		<h2 class="wp-block-heading has-2xl-font-size"><?php echo esc_html__( 'Vrae oor lidmaatskap', 'ink-foundation' ); ?></h2>
+		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
+		<h2 class="wp-block-heading has-xxl-font-size"><?php echo esc_html__( 'Vrae oor lidmaatskap', 'ink-foundation' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:details {"lock":{"move":true,"remove":true},"className":"is-style-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}}} -->
@@ -215,8 +215,8 @@ foreach ( $ink_plans as $ink_plan ) :
 <section class="wp-block-group alignfull has-ink-text-color has-secondary-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group">
-		<!-- wp:heading {"textAlign":"center","level":2,"fontSize":"3xl"} -->
-		<h2 class="wp-block-heading has-text-align-center has-3xl-font-size"><?php echo esc_html__( 'Sluit vandag by INK aan', 'ink-foundation' ); ?></h2>
+		<!-- wp:heading {"textAlign":"center","level":2,"fontSize":"xxxl"} -->
+		<h2 class="wp-block-heading has-text-align-center has-xxxl-font-size"><?php echo esc_html__( 'Sluit vandag by INK aan', 'ink-foundation' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"align":"center","fontSize":"lg","textColor":"muted-text"} -->

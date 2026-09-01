@@ -55,8 +55,8 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	$ink_done_label = function_exists( 'mb_strtolower' ) ? mb_strtolower( $ink_done_label ) : strtolower( $ink_done_label );
 	$ink_done_title = isset( $ink_skryf_success['title'] ) ? (string) $ink_skryf_success['title'] : '';
 	?>
-	<!-- wp:heading {"level":1,"fontSize":"2xl"} -->
-	<h1 class="wp-block-heading has-2xl-font-size"><?php printf( /* translators: %s: bydrae type (gedig/storie/artikel). */ esc_html__( 'Jou %s is gepubliseer', 'ink-foundation' ), esc_html( $ink_done_label ) ); ?></h1>
+	<!-- wp:heading {"level":1,"fontSize":"xxl"} -->
+	<h1 class="wp-block-heading has-xxl-font-size"><?php printf( /* translators: %s: bydrae type (gedig/storie/artikel). */ esc_html__( 'Jou %s is gepubliseer', 'ink-foundation' ), esc_html( $ink_done_label ) ); ?></h1>
 	<!-- /wp:heading -->
 
 	<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->

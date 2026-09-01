@@ -15,8 +15,8 @@
 		<p class="has-accent-color has-text-color has-xs-font-size" style="font-style:normal;font-weight:600;letter-spacing:0.08em;text-transform:uppercase">Tipe</p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:heading {"level":1,"fontSize":"3xl"} -->
-		<h1 class="wp-block-heading has-3xl-font-size">Titel van die stuk</h1>
+		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
+		<h1 class="wp-block-heading has-xxxl-font-size">Titel van die stuk</h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
@@ -47,8 +47,8 @@
 <section class="wp-block-group alignfull has-secondary-background-color has-background" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:heading {"level":2,"fontSize":"2xl"} -->
-		<h2 class="wp-block-heading has-2xl-font-size">Verwante stukke</h2>
+		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
+		<h2 class="wp-block-heading has-xxl-font-size">Verwante stukke</h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:columns {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s-24"}}}} -->

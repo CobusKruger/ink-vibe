@@ -19,12 +19,12 @@
 /* ── Intro heading — responsive size to match Lovable's text-3xl -> md:text-4xl.
    Centering itself is set on the block (textAlign/align), not here. */
 .ink-skryf-title {
-	font-size: var(--wp--preset--font-size--3xl);
+	font-size: var(--wp--preset--font-size--xxxl);
 }
 
 @media (min-width: 768px) {
 	.ink-skryf-title {
-		font-size: var(--wp--preset--font-size--4xl);
+		font-size: var(--wp--preset--font-size--xxxxl);
 	}
 }
 

@@ -11,8 +11,8 @@
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:heading {"level":1,"fontSize":"3xl"} -->
-		<h1 class="wp-block-heading has-3xl-font-size">Funksionele opskrif</h1>
+		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
+		<h1 class="wp-block-heading has-xxxl-font-size">Funksionele opskrif</h1>
 		<!-- /wp:heading -->
 	</div>
 	<!-- /wp:group -->

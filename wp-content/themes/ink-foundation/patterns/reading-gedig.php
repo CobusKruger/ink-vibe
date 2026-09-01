@@ -35,7 +35,7 @@ $ink_gedig_feather_svg = '<span aria-hidden="true" style="display:inline-flex;ve
 		<p class="ink-lees-tipe has-text-align-center has-accent-color has-text-color has-sm-font-size" style="font-style:normal;font-weight:500"><?php echo $ink_gedig_feather_svg; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, hand-authored inline SVG, no user input */ ?><?php echo esc_html( $ink_type_label ); ?></p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:post-title {"level":1,"textAlign":"center","fontSize":"4xl","style":{"typography":{"fontStyle":"italic","fontWeight":"600"}}} /-->
+		<!-- wp:post-title {"level":1,"textAlign":"center","fontSize":"xxxxl","style":{"typography":{"fontStyle":"italic","fontWeight":"600"}}} /-->
 
 		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-8"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
 		<div class="wp-block-group">

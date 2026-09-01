@@ -30,7 +30,7 @@ defined( 'ABSPATH' ) || exit;
  * ({@see self::isManualOnly()} / {@see self::isAutoPromotable()}), and the
  * Kernel-owned meta-key single source ({@see self::META_KEY}) that BOTH the
  * `Ink\Content\UserMeta` registrar and the `Ink\Tiers\Api` reader share
- * without an inter-module dependency edge. Presentation (the `primary #EA4015`
+ * without an inter-module dependency edge. Presentation (the `primary #EC3B13`
  * Meester colour token, the Afrikaans grade labels) stays OUT of the enum —
  * it is owned by Story 5.4 (theme tokens + the I18n terminology registry).
  *
