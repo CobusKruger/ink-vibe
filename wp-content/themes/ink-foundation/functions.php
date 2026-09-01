@@ -663,6 +663,24 @@ function ink_foundation_register_block_styles(): void {
 	// hover+underline+focus treatment ships here as a block-style inline_style
 	// (loads site-wide). Token-only (Gate A); the surface/95 translucency uses
 	// the color-mix convention with an opaque `surface` fallback first (§0.7).
+	//
+	// The translucent surface + backdrop-blur live on a `::before` decorative
+	// layer, NOT on `.is-style-ink-header` itself (Phase 2 fidelity pass fix):
+	// `backdrop-filter` on an element establishes a new containing block for
+	// any `position:fixed` DESCENDANT (CSS Filter Effects spec, same family as
+	// `transform`/`perspective`/`contain:paint`). WordPress core's mobile nav
+	// overlay (`.wp-block-navigation__responsive-container.is-menu-open`) is a
+	// `position:fixed` element nested inside this header, expecting to size
+	// itself against the viewport — with backdrop-filter on the header, it
+	// instead sized against the header's own ~64px-tall row, collapsing the
+	// mobile menu to an unusable 64px-tall sliver. Confirmed via live
+	// getBoundingClientRect() before/after on `nuwe-ink.local` at a 500×757
+	// viewport: {width:500,height:64} with the filter present vs the correct
+	// full-viewport {width:500,height:757} with it removed. Moving the same
+	// filter + tint onto a `::before` (which has no fixed-position descendants
+	// of its own) keeps the identical frosted-glass visual, verified pixel-
+	// identical on desktop, while leaving the real header element filter-free
+	// so its nav-overlay descendant is free to size against the viewport again.
 	register_block_style(
 		'core/group',
 		array(
@@ -672,11 +690,17 @@ function ink_foundation_register_block_styles(): void {
 				. 'position:sticky;'
 				. 'top:0;'
 				. 'z-index:50;'
+				. 'border-bottom:1px solid var(--wp--preset--color--border);'
+				. '}'
+				. '.wp-block-group.is-style-ink-header::before{'
+				. 'content:"";'
+				. 'position:absolute;'
+				. 'inset:0;'
+				. 'z-index:-1;'
 				. 'background-color:var(--wp--preset--color--surface);'
 				. 'background-color:color-mix(in srgb, var(--wp--preset--color--surface) 95%, transparent);'
 				. '-webkit-backdrop-filter:blur(4px);'
 				. 'backdrop-filter:blur(4px);'
-				. 'border-bottom:1px solid var(--wp--preset--color--border);'
 				. '}'
 				. '.wp-block-group.is-style-ink-header .ink-header-row{'
 				. 'min-height:64px;'
