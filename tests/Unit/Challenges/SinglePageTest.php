@@ -75,6 +75,12 @@ test( 'statusHtml renders the sluitingsdatum with an Oop marker while open', fun
 	expect( $html )->toContain( '31 Oktober 2026' );
 	expect( $html )->toContain( 'Oop' );
 	expect( $html )->toContain( 'is-oop' );
+	// Post-Epic-19 fidelity pass (workstream 6): an icon-led meta row + a coloured
+	// status pill, not a plain inline text line — the "date readability" risk
+	// flagged for this page in page-map.csv.
+	expect( $html )->toContain( 'ink-uitdaging__sluitingsdatum-ry' );
+	expect( $html )->toContain( 'ink-uitdaging__toestand-pil' );
+	expect( $html )->toContain( '<svg' );
 } );
 
 test( 'statusHtml renders a Gesluit marker once closed', function (): void {
@@ -117,10 +123,49 @@ test( 'entriesHtml renders a graceful empty state with no entries (no empty list
 	expect( $html )->not->toContain( '<ul' );
 } );
 
+test( 'entriesHtml renders the type-label pill, excerpt and author on a card when supplied', function (): void {
+	$html = SinglePage::entriesHtml(
+		array(
+			array(
+				'title'      => 'My gedig',
+				'permalink'  => 'https://ink.test/gedig/my-gedig',
+				'type_label' => 'Gedig',
+				'excerpt'    => 'n Kort greep uit die gedig.',
+				'author'     => 'Anna Botha',
+			),
+		)
+	);
+
+	expect( $html )->toContain( 'ink-uitdaging__inskrywing-tipe' );
+	expect( $html )->toContain( 'Gedig' );
+	expect( $html )->toContain( 'ink-uitdaging__inskrywing-uittreksel' );
+	expect( $html )->toContain( 'n Kort greep uit die gedig.' );
+	expect( $html )->toContain( 'ink-uitdaging__inskrywing-outeur' );
+	expect( $html )->toContain( 'Anna Botha' );
+} );
+
+test( 'entriesHtml omits the pill/excerpt/author elements when a card has no such data', function (): void {
+	$html = SinglePage::entriesHtml(
+		array(
+			array(
+				'title'     => 'Sy storie',
+				'permalink' => 'https://ink.test/storie/sy-storie',
+			),
+		)
+	);
+
+	expect( $html )->not->toContain( 'ink-uitdaging__inskrywing-tipe' );
+	expect( $html )->not->toContain( 'ink-uitdaging__inskrywing-uittreksel' );
+	expect( $html )->not->toContain( 'ink-uitdaging__inskrywing-outeur' );
+} );
+
 test( 'toHtml composes the status line and entries list inside the section shell', function (): void {
 	$html = SinglePage::toHtml( '<p class="ink-uitdaging__status">x</p>', '<ul class="ink-uitdaging__inskrywings"></ul>' );
 
 	expect( $html )->toContain( 'ink-uitdaging' );
 	expect( $html )->toContain( 'ink-uitdaging__status' );
 	expect( $html )->toContain( 'ink-uitdaging__inskrywings' );
+	// The anchor target for the pattern-level "Lees inskrywings" CTA button
+	// (reading-uitdaging.php) — mirrors Lovable's `href="#submissions"` jump-link.
+	expect( $html )->toContain( 'id="inskrywings"' );
 } );
