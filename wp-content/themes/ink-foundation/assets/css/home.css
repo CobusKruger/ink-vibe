@@ -390,10 +390,27 @@
 
 /* ── §5 Feature band: Uitdaging feature card + Winner card ───────────────────────
    Two-column grid ≥1024px (stack below — WP grid columnCount does not auto-collapse),
-   over a calm secondary/30 band. Both cards are collapsing ink-core blocks. */
+   over a calm secondary/30 band. Both cards are collapsing ink-core blocks. When
+   NEITHER has data (no open challenge AND no live winner — the actual state of a
+   fresh/quiet site), the band's own top/bottom padding (2x s-64 = 128px) still
+   rendered as a bare tinted gap with nothing in it — a jarring empty strip between
+   the hero and the featured-works grid, not a graceful degradation. Collapse the
+   whole band in that specific case via :has(), keyed off each block's own root
+   class rather than :empty (a whitespace-only text node between the two block
+   comments defeats :empty, but not :has()'s absence check). Two chained
+   :not(:has(...)) — NOT a :has() nested inside another :has(), which the spec
+   disallows and Chrome silently treats as an always-false/invalid selector
+   (confirmed live: the nested form parsed but never matched). Either card alone
+   still shows normally — this only hides the fully-empty case. Still
+   presentation-only (no PHP added to the static template) — three-layer
+   separation intact. */
 .ink-feature-band {
 	background-color: var(--wp--preset--color--surface);
 	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 30%, transparent);
+}
+
+.ink-feature-band:not(:has(.ink-huidige-uitdaging)):not(:has(.ink-wenner-kollig)) {
+	display: none;
 }
 
 .ink-feature-grid {
