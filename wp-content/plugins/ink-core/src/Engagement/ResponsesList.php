@@ -101,8 +101,13 @@ final class ResponsesList {
 			$type = $response['type'];
 
 			$html .= '<li class="ink-reaksies__item ink-reaksie--' . esc_attr( $type->value ) . '">'
+				. '<div class="ink-reaksies__meta">'
+				. '<span class="ink-reaksies__who">'
 				. '<span class="ink-reaksies__badge">' . esc_html( Terms::label( $type->value ) ) . '</span>'
 				. '<span class="ink-reaksies__author">' . esc_html( $response['author'] ) . '</span>'
+				. '</span>'
+				. '<span class="ink-reaksies__date">' . esc_html( self::formatDate( $response['date'] ) ) . '</span>'
+				. '</div>'
 				. '<p class="ink-reaksies__text">' . esc_html( $response['content'] ) . '</p>'
 				. '</li>';
 		}
@@ -112,6 +117,22 @@ final class ResponsesList {
 		$html .= '</section>';
 
 		return $html;
+	}
+
+	/**
+	 * Format a stored `comment_date` for display in the response list.
+	 *
+	 * Deliberately locale-free (numeric `d/m/Y`, PHP built-ins only) so this stays
+	 * a pure function — no `date_i18n()`/`get_option()` WP dependency to mock in
+	 * tests, matching this class's "Terms + escaping only" contract.
+	 *
+	 * @param string $mysqlDate The `comment_date` (`Y-m-d H:i:s`).
+	 * @return string The formatted date, or `''` if unparseable.
+	 */
+	private static function formatDate( string $mysqlDate ): string {
+		$timestamp = strtotime( $mysqlDate );
+
+		return false === $timestamp ? '' : gmdate( 'j/n/Y', $timestamp );
 	}
 
 	/**
