@@ -705,6 +705,21 @@ function ink_foundation_register_block_styles(): void {
 				. '.wp-block-group.is-style-ink-header .ink-header-row{'
 				. 'min-height:64px;'
 				. '}'
+				// Logo hover (Lovable: `transition-transform group-hover:rotate-12`
+				// on the feather icon, triggered by hovering the whole logo Link).
+				// The feather icon here is a sibling of — not wrapped by — the
+				// site-title's own <a>, so there is no single link to hover; target
+				// the shared `.ink-header-brand` lockup group instead (hovering
+				// anywhere in the lockup, icon or text, rotates the icon).
+				. '.wp-block-group.is-style-ink-header .ink-header-feather{'
+				. 'transition:transform .2s ease;'
+				. '}'
+				. '.wp-block-group.is-style-ink-header .ink-header-brand:hover .ink-header-feather{'
+				. 'transform:rotate(12deg);'
+				. '}'
+				. '@media (prefers-reduced-motion:reduce){'
+				. '.wp-block-group.is-style-ink-header .ink-header-feather{transition:none;}'
+				. '}'
 				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content{'
 				. 'position:relative;'
 				. 'color:var(--wp--preset--color--muted-text);'
