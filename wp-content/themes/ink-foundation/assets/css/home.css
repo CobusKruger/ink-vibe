@@ -561,6 +561,13 @@
 	color: var(--wp--preset--color--ink-text);
 }
 
+/* Crown icon tile: gold/20 bg + gold icon (Lovable: `bg-gold/20` + `text-gold`).
+   `color` previously stayed `primary` — copy-pasted from the analogous trophy
+   tile (`.ink-huidige-uitdaging__ikoon`, which correctly uses primary since
+   its Lovable equivalent is `text-terracotta`) without updating it to `gold`
+   for this card, so the crown rendered orange instead of amber/gold. The icon
+   is `aria-hidden="true"` (decorative; the adjacent text label carries the
+   meaning), so WCAG non-text-contrast requirements don't constrain this. */
 .ink-wenner-kollig__rang-merk {
 	display: inline-flex;
 	align-items: center;
@@ -569,7 +576,7 @@
 	border-radius: var(--wp--custom--radius--lg);
 	background-color: var(--wp--preset--color--secondary);
 	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 20%, transparent);
-	color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--gold);
 }
 
 .ink-wenner-kollig__werk {
@@ -962,7 +969,8 @@
 	gap: var(--wp--preset--spacing--s-24);
 }
 
-/* Per-tier chip: px-6 py-3 rounded-lg, tier-tinted background/border. */
+/* Per-tier chip: px-6 py-3 rounded-lg, tier-tinted background/border, plus the
+   Lovable `hover:scale-105` micro-interaction (transition-all). */
 .ink-borg-strook__chip {
 	display: inline-flex;
 	align-items: center;
@@ -972,6 +980,21 @@
 	border: 1px solid transparent;
 	font-family: var(--wp--preset--font-family--heading);
 	font-weight: var(--wp--custom--font-weight--medium);
+	transition: transform 0.15s ease;
+}
+
+.ink-borg-strook__chip:hover {
+	transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-borg-strook__chip {
+		transition: none;
+	}
+
+	.ink-borg-strook__chip:hover {
+		transform: none;
+	}
 }
 
 /* goud = goud/10 bg + goud/20 border; a touch larger (text-lg). */
@@ -990,10 +1013,18 @@
 	font-size: var(--wp--preset--font-size--md);
 }
 
-/* brons = muted/50 bg (the neutral default). */
+/* brons = muted/50 bg (the neutral default). Lovable's `--muted` token (HSL
+   35 20% 94%, a near-white warm tan — see ink-lovable/src/index.css) is a
+   PALE SURFACE color, not to be confused with `--muted-foreground` (its much
+   darker TEXT-gray counterpart, ~45% lightness). This previously tinted with
+   `muted-text` — the theme's own dark ink-text-adjacent token — producing a
+   visibly heavy grey chip instead of Lovable's near-invisible pale one
+   (confirmed side-by-side: Lovable's bronze chip barely reads as distinct
+   from the section background; the live site's did, strongly). `secondary`
+   at 50% is the closest existing INK token to Lovable's pale `--muted`. */
 .ink-borg-strook__chip--brons {
 	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--muted-text) 50%, transparent);
+	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 50%, transparent);
 	font-size: var(--wp--preset--font-size--md);
 }
 
