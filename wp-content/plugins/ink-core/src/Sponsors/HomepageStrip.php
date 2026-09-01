@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Sponsors;
 
 use Ink\I18n\Terms;
+use Ink\Kernel\QaFixture;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -28,6 +29,7 @@ defined( 'ABSPATH' ) || exit;
  * classification) stays in `ink-core`; the theme only embeds the block and paints its
  * `.ink-borg-strook*` markup. House-style split: thin {@see render()} + pure
  * {@see toHtml()}. Conflation-clean: references only `Ink\Sponsors` + `Ink\I18n\Terms`
+ * + `Ink\Kernel\QaFixture` (the shared QA-fixture predicate, {@see INCLUDE_FIXTURES_FILTER})
  * + WP core (sponsoring is editorial, never gated on tier/entitlement).
  *
  * @package Ink\Core
@@ -40,6 +42,22 @@ final class HomepageStrip {
 	 * @var string
 	 */
 	public const BLOCK = 'ink/borg-strook';
+
+	/**
+	 * Overridable seam: when a filter callback returns true, QA-fixture-titled
+	 * sponsors (see {@see \Ink\Kernel\QaFixture}) are INCLUDED in the rotation
+	 * instead of excluded (the default). {@see Campaign::activeSponsors()} has no
+	 * data-seam filter to hook (the "REAL SEEDED WP CONTENT" fixture technique,
+	 * documented in the theme's `functions.php`) — a live query has no way to know
+	 * a real seeded `QA FIXTURE — ` `borg` post is not a genuine sponsor, so without
+	 * this seam it leaks onto every real page (Epic-19 theme-fidelity rework
+	 * finding). The theme gates its own override to the QA/component gallery page
+	 * only, so the fixtures stay visible there (their whole purpose) while staying
+	 * invisible everywhere else.
+	 *
+	 * @var string
+	 */
+	public const INCLUDE_FIXTURES_FILTER = 'ink_borg_strook_include_fixtures';
 
 	/**
 	 * The canonical sponsor tiers, in descending prominence. The single source for the
@@ -84,7 +102,28 @@ final class HomepageStrip {
 	 * @return string
 	 */
 	public static function render(): string {
-		return self::toHtml( Campaign::activeSponsors() );
+		return self::toHtml( self::activeSponsors() );
+	}
+
+	/**
+	 * The active sponsors to render, with QA-fixture-titled ones excluded unless
+	 * {@see INCLUDE_FIXTURES_FILTER} is overridden true. Impure (WP_Query + filter).
+	 *
+	 * @return list<Sponsor>
+	 */
+	private static function activeSponsors(): array {
+		$sponsors = Campaign::activeSponsors();
+
+		if ( (bool) apply_filters( self::INCLUDE_FIXTURES_FILTER, false ) ) {
+			return $sponsors;
+		}
+
+		return array_values(
+			array_filter(
+				$sponsors,
+				static fn ( Sponsor $sponsor ): bool => ! QaFixture::isFixtureTitle( $sponsor->name )
+			)
+		);
 	}
 
 	/**

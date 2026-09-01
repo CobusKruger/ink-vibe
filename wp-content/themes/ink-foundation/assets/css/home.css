@@ -357,7 +357,7 @@
 }
 
 .ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__titel {
-	font-size: var(--wp--preset--font-size--2xl);
+	font-size: var(--wp--preset--font-size--2-xl);
 }
 
 .ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__uittreksel {
@@ -457,7 +457,7 @@
 }
 
 .ink-huidige-uitdaging--kenmerk .ink-huidige-uitdaging__titel {
-	font-size: var(--wp--preset--font-size--3xl);
+	font-size: var(--wp--preset--font-size--3-xl);
 }
 
 .ink-huidige-uitdaging--kenmerk .ink-huidige-uitdaging__uittreksel {
@@ -582,7 +582,7 @@
 .ink-wenner-kollig__werk {
 	margin: 0;
 	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--wp--preset--font-size--2xl);
+	font-size: var(--wp--preset--font-size--2-xl);
 	font-weight: var(--wp--custom--font-weight--semibold);
 	line-height: var(--wp--custom--line-height--tight);
 	color: var(--wp--preset--color--ink-text);
@@ -710,14 +710,14 @@
 .ink-uitgesoekte-bydraes__titel {
 	margin: var(--wp--preset--spacing--s-8) 0 0;
 	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--3xl);
+	font-size: var(--wp--preset--font-size--3-xl);
 	font-weight: var(--wp--custom--font-weight--semibold);
 	line-height: var(--wp--custom--line-height--tight);
 }
 
 @media (min-width: 768px) {
 	.ink-uitgesoekte-bydraes__titel {
-		font-size: var(--wp--preset--font-size--4xl);
+		font-size: var(--wp--preset--font-size--4-xl);
 	}
 }
 
@@ -845,7 +845,7 @@
 
 /* Featured (first) card: spans two columns, larger title + un-clamped excerpt. */
 .ink-uitgesoekte-bydraes__kaart--uitgesoek .ink-uitgesoekte-bydraes__werk {
-	font-size: var(--wp--preset--font-size--2xl);
+	font-size: var(--wp--preset--font-size--2-xl);
 }
 
 .ink-uitgesoekte-bydraes__kaart--uitgesoek .ink-uitgesoekte-bydraes__uittreksel {
@@ -938,7 +938,7 @@
 .ink-borg-strook__titel {
 	margin: 0;
 	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--wp--preset--font-size--2xl);
+	font-size: var(--wp--preset--font-size--2-xl);
 	font-weight: var(--wp--custom--font-weight--semibold);
 	line-height: var(--wp--custom--line-height--tight);
 	color: var(--wp--preset--color--ink-text);
@@ -946,7 +946,7 @@
 
 @media (min-width: 768px) {
 	.ink-borg-strook__titel {
-		font-size: var(--wp--preset--font-size--3xl);
+		font-size: var(--wp--preset--font-size--3-xl);
 	}
 }
 

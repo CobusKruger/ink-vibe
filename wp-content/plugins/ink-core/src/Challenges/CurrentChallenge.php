@@ -12,6 +12,7 @@ namespace Ink\Challenges;
 use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
 use Ink\I18n\Terms;
+use Ink\Kernel\QaFixture;
 use Ink\Kernel\Sast;
 use Ink\Kernel\Scalar;
 
@@ -177,6 +178,12 @@ final class CurrentChallenge {
 	/**
 	 * Resolve the first still-open uitdaging from the newest-first scan. Impure.
 	 *
+	 * Skips any post whose title carries the {@see QaFixture} `QA FIXTURE — `
+	 * convention — real seeded QA content (e.g. seeded for the uitdagings-list
+	 * fidelity pass) must never be mistaken for the site's live spotlighted
+	 * challenge (Epic-19 theme-fidelity rework finding: an open QA-fixture
+	 * challenge was leaking onto the Tuisblad hero + feature cards).
+	 *
 	 * @return array<string, mixed>|null
 	 */
 	private static function resolveCurrent(): ?array {
@@ -185,6 +192,10 @@ final class CurrentChallenge {
 
 		foreach ( $query->posts as $post ) {
 			if ( ! $post instanceof \WP_Post ) {
+				continue;
+			}
+
+			if ( QaFixture::isFixtureTitle( get_the_title( $post ) ) ) {
 				continue;
 			}
 

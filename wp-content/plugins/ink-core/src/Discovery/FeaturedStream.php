@@ -13,6 +13,7 @@ use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
 use Ink\Engagement\Api as EngagementApi;
 use Ink\I18n\Terms;
+use Ink\Kernel\QaFixture;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -69,6 +70,16 @@ final class FeaturedStream {
 	 * @var int
 	 */
 	public const MAX_ITEMS = 4;
+
+	/**
+	 * How many of the newest published bydraes to scan for the first {@see MAX_ITEMS}
+	 * REAL (non-QA-fixture) ones. Over-fetches beyond {@see MAX_ITEMS} so seeded QA
+	 * fixture content (see {@see QaFixture}) never crowds out real editorial work in
+	 * the displayed stream — mirrors {@see \Ink\Challenges\CurrentChallenge::SCAN_LIMIT}.
+	 *
+	 * @var int
+	 */
+	private const SCAN_LIMIT = 20;
 
 	/**
 	 * Per-request memo so repeat embeds share one query.
@@ -150,14 +161,28 @@ final class FeaturedStream {
 	/**
 	 * Resolve the newest published bydraes into fully-computed card rows. Impure.
 	 *
+	 * Scans up to {@see SCAN_LIMIT} newest bydraes, skipping any post whose title
+	 * carries the {@see QaFixture} `QA FIXTURE — ` convention, and stops once
+	 * {@see MAX_ITEMS} real rows are collected (Epic-19 theme-fidelity rework
+	 * finding: seeded QA fixture bydraes were crowding out real work in the
+	 * Tuisblad's "Uitgesoekte bydraes" stream).
+	 *
 	 * @return list<array<string, mixed>>
 	 */
 	private static function resolveStream(): array {
-		$query = new \WP_Query( self::queryArgs( self::MAX_ITEMS ) );
+		$query = new \WP_Query( self::queryArgs( self::SCAN_LIMIT ) );
 		$items = array();
 
 		foreach ( $query->posts as $post ) {
+			if ( count( $items ) >= self::MAX_ITEMS ) {
+				break;
+			}
+
 			if ( ! $post instanceof \WP_Post ) {
+				continue;
+			}
+
+			if ( QaFixture::isFixtureTitle( get_the_title( $post ) ) ) {
 				continue;
 			}
 

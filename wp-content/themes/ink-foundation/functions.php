@@ -224,6 +224,83 @@ function ink_foundation_enqueue_leeslys(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_leeslys' );
 
 /**
+ * Enqueue the vasgespelde-werke pin/unpin client on My Profiel (Story 9.5, FR-41).
+ *
+ * Root-cause fix (Phase-2 fidelity pass): `ink/vasgespel-bestuur` server-rendered
+ * `.ink-vasgespel__knoppie` buttons with no client ever wired to flip them through
+ * `ink/v1/vasgespel` — clicking fired no REST request at all. Loaded only on My
+ * Profiel, mirroring the leeslys enqueue above.
+ */
+function ink_foundation_enqueue_vasgespel(): void {
+	if ( ! function_exists( 'is_page' ) || ! is_page( 'my-profiel' ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-vasgespel',
+		get_theme_file_uri( 'assets/js/vasgespel.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+
+	wp_localize_script(
+		'ink-foundation-vasgespel',
+		'inkVasgespel',
+		array(
+			'restUrl'      => esc_url_raw( rest_url( 'ink/v1/vasgespel' ) ),
+			'nonce'        => wp_create_nonce( 'wp_rest' ),
+			'pinnedText'   => __( 'Vasgespeld', 'ink-foundation' ),
+			'unpinnedText' => __( 'Speld vas', 'ink-foundation' ),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_vasgespel' );
+
+/**
+ * Enqueue the volg/unfollow client on My Profiel + the public Skrywerprofiel
+ * (Story 9.2, FR-38).
+ *
+ * Root-cause fix (Phase-2 fidelity pass, found while wiring the "Wie ek volg"
+ * tab): `ink/volg-knoppie` server-renders `.ink-volg-knoppie` buttons with no
+ * client ever wired to flip them through `ink/v1/volg` — the same missing-JS
+ * shape as the vasgespel pin toggle above, just never previously caught because
+ * My Profiel had no "Wie ek volg" list to click an unfollow button from.
+ */
+function ink_foundation_enqueue_volg(): void {
+	$on_my_profiel   = function_exists( 'is_page' ) && is_page( 'my-profiel' );
+	$on_skrywerprofiel = function_exists( 'is_author' ) && is_author();
+
+	if ( ! $on_my_profiel && ! $on_skrywerprofiel ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-volg',
+		get_theme_file_uri( 'assets/js/volg.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+
+	wp_localize_script(
+		'ink-foundation-volg',
+		'inkVolg',
+		array(
+			'restUrl'       => esc_url_raw( rest_url( 'ink/v1/volg' ) ),
+			'nonce'         => wp_create_nonce( 'wp_rest' ),
+			'followText'    => __( 'Volg', 'ink-foundation' ),
+			'followingText' => __( 'Volg tans', 'ink-foundation' ),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_volg' );
+
+/**
  * Enqueue the Skrywerprofiel "Deel" (share) client on an author archive.
  *
  * The button + its ratified Afrikaans labels are server-rendered by
@@ -317,7 +394,14 @@ add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_home_assets' );
  *    site's database — NOT tracked by git. Each such fixture is titled with the
  *    `QA FIXTURE — ` prefix so it is unmistakable in wp-admin lists and can never
  *    be confused with real editorial content. See the commit/session notes for
- *    exactly what was seeded.
+ *    exactly what was seeded. Epic-19 theme-fidelity rework finding: a live query
+ *    has no way to tell such a fixture apart from real content, so it silently
+ *    leaked onto every real page rendering the same block — see
+ *    {@see \Ink\Kernel\QaFixture}, which every affected `ink-core` live-query class
+ *    now consults to exclude fixtures by default. `ink/borg-strook` has no filter
+ *    seam to gate a fixture-only PAYLOAD, so its exclusion is instead gated the
+ *    other way round: {@see ink_foundation_qa_fixture_include_sponsors()} turns the
+ *    exclusion back OFF, but only on this gallery page.
  *
  * TO ADD YOUR OWN PAGE'S HARD-TO-REACH BLOCK to this gallery in a future fidelity
  * pass: (a) check its `ink-core` class for a `*_FILTER` data seam — if one exists,
@@ -483,6 +567,25 @@ function ink_foundation_qa_fixture_featured_stream( mixed $data ): mixed {
 	);
 }
 add_filter( 'ink_home_featured_stream', 'ink_foundation_qa_fixture_featured_stream' ); // Ink\Discovery\FeaturedStream::DATA_FILTER.
+
+/**
+ * Fixture override for `ink/borg-strook` (the sponsor strip) — the "REAL SEEDED WP
+ * CONTENT" technique's other half. This block has no `*_FILTER` data seam (it reads
+ * `Campaign::activeSponsors()` directly), so `Ink\Sponsors\HomepageStrip` itself
+ * EXCLUDES `QA FIXTURE — ` titled sponsors from every real page by default
+ * (Epic-19 theme-fidelity rework finding: they were leaking onto the real Tuisblad).
+ * This callback is the one place that turns that exclusion back OFF, gated to the
+ * QA gallery page only, so the three real seeded fixture `borg` posts described in
+ * `patterns/qa-bloks.php` stay visible there — their whole purpose.
+ *
+ * @param mixed $include The filter's incoming value (false unless another filter
+ *                        already overrode it).
+ * @return mixed
+ */
+function ink_foundation_qa_fixture_include_sponsors( mixed $include ): mixed {
+	return ink_foundation_is_qa_gallery() ? true : $include;
+}
+add_filter( 'ink_borg_strook_include_fixtures', 'ink_foundation_qa_fixture_include_sponsors' ); // Ink\Sponsors\HomepageStrip::INCLUDE_FIXTURES_FILTER.
 
 /**
  * Register the core block style variations (card / button / emphasis).

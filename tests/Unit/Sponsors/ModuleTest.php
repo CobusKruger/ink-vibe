@@ -16,7 +16,9 @@ declare(strict_types=1);
 
 namespace Ink\Tests\Unit\Sponsors;
 
+use Ink\Sponsors\HomepageStrip;
 use Ink\Sponsors\Module;
+use Ink\Sponsors\RecognitionSection;
 use Brain\Monkey;
 use Brain\Monkey\Functions;
 
@@ -44,10 +46,23 @@ test( 'the Sponsors module registers NO content-injection hook (14.3 AC-5: no lo
 		}
 	);
 
+	// The nested-init fix (`3c71d44`): `HomepageStrip`/`RecognitionSection::register()`
+	// call `registerBlock()` DIRECTLY (Module::register() already runs from within the
+	// Kernel's own `init` dispatch) rather than nesting a second `add_action('init', ...)`
+	// — so the non-vacuous proof that `register()` ran is the direct `register_block_type()`
+	// call, not an `init` hook registration.
+	$registered = array();
+	Functions\when( 'register_block_type' )->alias(
+		static function ( string $name ) use ( &$registered ): bool {
+			$registered[] = $name;
+			return true;
+		}
+	);
+
 	( new Module() )->register();
 
-	// The strip + recognition blocks register on `init` (proves register() ran — non-vacuous).
-	expect( $hooks )->toContain( 'init' );
+	expect( $registered )->toContain( HomepageStrip::BLOCK );
+	expect( $registered )->toContain( RecognitionSection::BLOCK );
 
 	// And NOTHING binds to a content-injection channel — the surfaces are blocks,
 	// embedded only on the homepage / Oor INK, never auto-appended to content.
