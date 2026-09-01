@@ -107,6 +107,59 @@ test( 'cardHtml renders the title→permalink, tema, deadline and countdown with
 	expect( $html )->toContain( 'is-oop' );
 } );
 
+test( 'cardHtml reuses the single-page status pill and icon-led date-row classes (Post-Epic-19 fidelity pass, workstream 7)', function (): void {
+	$html = Archive::cardHtml(
+		array(
+			'title'     => 'Oktober-uitdaging',
+			'permalink' => 'https://ink.test/uitdaging/oktober',
+			'tema'      => 'Herfs',
+			'deadline'  => '31 Oktober 2026',
+			'countdown' => 'Nog 5 dae',
+			'is_open'   => true,
+		)
+	);
+
+	// Reuses SinglePage's exact status-pill/date-row classes — same colours/shape/
+	// icon treatment as the single-challenge page, not a reinvented visual language.
+	expect( $html )->toContain( 'ink-uitdaging__toestand-pil' );
+	expect( $html )->toContain( 'ink-uitdaging__sluitingsdatum-ry' );
+	expect( $html )->toContain( '<svg' );
+	expect( $html )->toContain( 'ink-uitdagings__tema-pil' );
+	expect( $html )->toContain( 'ink-uitdagings__lees' );
+} );
+
+test( 'cardHtml renders a Gesluit-coloured pill once closed', function (): void {
+	$html = Archive::cardHtml(
+		array(
+			'title'     => 'Junie-uitdaging',
+			'permalink' => 'https://ink.test/uitdaging/junie',
+			'tema'      => 'Winter',
+			'deadline'  => '1 Junie 2026',
+			'countdown' => 'Gesluit',
+			'is_open'   => false,
+		)
+	);
+
+	expect( $html )->toContain( 'is-gesluit' );
+	expect( $html )->toContain( 'Gesluit' );
+} );
+
+test( 'cardHtml omits the meta row and footer when tema/deadline/countdown are absent', function (): void {
+	$html = Archive::cardHtml(
+		array(
+			'title'     => 'Kaal kaart',
+			'permalink' => '#kaal',
+			'tema'      => '',
+			'deadline'  => '',
+			'countdown' => '',
+			'is_open'   => false,
+		)
+	);
+
+	expect( $html )->not->toContain( 'ink-uitdagings__item-meta' );
+	expect( $html )->not->toContain( 'ink-uitdagings__item-voet' );
+} );
+
 test( 'toHtml renders the heading and a card per challenge', function (): void {
 	$cards = array(
 		Archive::cardHtml(

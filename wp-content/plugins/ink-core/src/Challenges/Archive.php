@@ -59,6 +59,27 @@ final class Archive {
 	public const PAGED_VAR = 'uitdaging_bladsy';
 
 	/**
+	 * Lucide `calendar` icon path data (Post-Epic-19 fidelity pass, workstream 7) —
+	 * the SAME glyph {@see SinglePage::ICON_CALENDAR} uses for its sluitingsdatum
+	 * row, so a card here and the single-page hero read as the same visual
+	 * language. Local to this class, matching the per-class icon-constant house
+	 * style (see {@see SinglePage}'s own docblock for precedent).
+	 *
+	 * @var string
+	 */
+	private const ICON_CALENDAR = '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>';
+
+	/**
+	 * Lucide `arrow-right` icon path data — the card's hover-reveal "Lees meer"
+	 * affordance, mirroring {@see \Ink\Training\Hub::ICON_ARROW} /
+	 * {@see \Ink\Library\Archive}'s own copy of the same glyph (per-class icon
+	 * house style, no shared Kernel icon helper exists yet).
+	 *
+	 * @var string
+	 */
+	private const ICON_ARROW = '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>';
+
+	/**
 	 * Register the server-rendered block.
 	 *
 	 * Invoked from {@see Module::register()}, which the Kernel already dispatches
@@ -187,6 +208,20 @@ final class Archive {
 	/**
 	 * One challenge card. Pure — Terms + escaping only.
 	 *
+	 * Post-Epic-19 fidelity pass (workstream 7): a card-grid recipe matching the
+	 * established `Ink\Training\Hub`/`Ink\Library\Archive` archive-card language
+	 * (surface-alt / border / radius.xl / shadow.sm / hover-lift, footer border +
+	 * hover-reveal "Lees meer" affordance) — this page had NO CSS at all before
+	 * (same shape as Opleiding/Biblioteek pre-fix). The status/countdown pill and
+	 * the icon-led sluitingsdatum row deliberately REUSE the exact
+	 * `ink-uitdaging__toestand-pil` / `ink-uitdaging__sluitingsdatum-ry` classes
+	 * {@see SinglePage::statusHtml()} already established (the "date readability"
+	 * risk flagged for both pages in page-map.csv) — same colours/shape/icon
+	 * treatment as the single-challenge page, not a reinvented visual language.
+	 * The pill's TEXT is the countdown label (not a bare "Oop"/"Gesluit") — more
+	 * useful when scanning a whole grid of cards than the single-page's static
+	 * status word, while its is-oop/is-gesluit colour coding stays identical.
+	 *
 	 * @param array{title:string, permalink:string, tema?:string, deadline?:string, countdown?:string, is_open?:bool} $card The challenge.
 	 * @return string
 	 */
@@ -196,47 +231,85 @@ final class Archive {
 		$tema      = isset( $card['tema'] ) ? (string) $card['tema'] : '';
 		$deadline  = isset( $card['deadline'] ) ? (string) $card['deadline'] : '';
 		$countdown = isset( $card['countdown'] ) ? (string) $card['countdown'] : '';
+		$permalink = isset( $card['permalink'] ) ? (string) $card['permalink'] : '';
 
-		$tema_html = '' !== $tema
-			? '<span class="ink-uitdagings__tema">' . esc_html( Terms::label( 'tema' ) ) . ': ' . esc_html( $tema ) . '</span>'
-			: '';
+		$meta = '';
 
-		$deadline_html = '' !== $deadline
-			? '<span class="ink-uitdagings__sluitingsdatum">' . esc_html( Terms::label( 'sluitingsdatum' ) ) . ': '
-				. '<time>' . esc_html( $deadline ) . '</time></span>'
-			: '';
+		if ( '' !== $tema || '' !== $countdown ) {
+			$meta = '<div class="ink-uitdagings__item-meta">';
 
-		$countdown_html = '' !== $countdown
-			? '<span class="ink-uitdagings__aftel">' . esc_html( $countdown ) . '</span>'
-			: '';
+			if ( '' !== $tema ) {
+				$meta .= '<span class="ink-uitdagings__tema-pil">' . esc_html( $tema ) . '</span>';
+			}
 
-		return '<li class="ink-uitdagings__item is-style-card ' . esc_attr( $state ) . '">'
-			. '<a class="ink-uitdagings__titel" href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>'
-			. $tema_html
-			. $deadline_html
-			. $countdown_html
+			if ( '' !== $countdown ) {
+				$meta .= '<span class="ink-uitdaging__toestand-pil ' . esc_attr( $state ) . '">' . esc_html( $countdown ) . '</span>';
+			}
+
+			$meta .= '</div>';
+		}
+
+		$voet = '';
+
+		if ( '' !== $deadline ) {
+			$voet = '<div class="ink-uitdagings__item-voet">'
+				. '<span class="ink-uitdaging__sluitingsdatum-ry">'
+				. self::icon( self::ICON_CALENDAR )
+				. '<span class="ink-uitdaging__sluitingsdatum-etiket">' . esc_html( Terms::label( 'sluitingsdatum' ) ) . ': </span>'
+				. '<time class="ink-uitdaging__sluitingsdatum">' . esc_html( $deadline ) . '</time>'
+				. '</span>'
+				. '<a class="ink-uitdagings__lees" href="' . esc_url( $permalink ) . '" tabindex="-1" aria-hidden="true">'
+				. esc_html__( 'Lees meer', 'ink-core' ) . self::icon( self::ICON_ARROW )
+				. '</a>'
+				. '</div>';
+		}
+
+		return '<li class="ink-uitdagings__item ' . esc_attr( $state ) . '">'
+			. $meta
+			. '<a class="ink-uitdagings__titel" href="' . esc_url( $permalink ) . '">' . esc_html( $card['title'] ) . '</a>'
+			. $voet
 			. '</li>';
 	}
 
 	/**
+	 * A decorative inline Lucide icon (§0.9): 16px, currentColor, aria-hidden. Pure.
+	 * `$paths` is a trusted class-internal SVG literal (never user input). Mirrors
+	 * {@see SinglePage}'s own copy of the same convention (each module keeps its
+	 * own copy — no shared Kernel icon helper exists yet).
+	 *
+	 * @param string $paths The inner SVG markup.
+	 * @return string
+	 */
+	private static function icon( string $paths ): string {
+		return '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" '
+			. 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '
+			. 'class="ink-icon" aria-hidden="true" focusable="false">' . $paths . '</svg>';
+	}
+
+	/**
 	 * Build the archive HTML. Pure — Terms + escaping only.
+	 *
+	 * The intro/heading wrapper + `alignwide` class mirror `Hub::toHtml()`'s shell
+	 * (Post-Epic-19 fidelity pass, workstream 7's card-grid parity).
 	 *
 	 * @param list<string>                    $cards The pre-rendered card markup.
 	 * @param array{paged:int, max_pages:int} $nav The render context.
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
-		$heading = '<h1 class="ink-uitdagings__heading">' . esc_html( Terms::label( 'uitdaging_plural' ) ) . '</h1>';
+		$intro = '<div class="ink-uitdagings__intro">'
+			. '<h1 class="ink-uitdagings__heading">' . esc_html( Terms::label( 'uitdaging_plural' ) ) . '</h1>'
+			. '</div>';
 
 		if ( array() === $cards ) {
 			/* translators: %s: the challenges (uitdagings) label. */
 			$empty = sprintf( __( 'Geen %s gevind nie.', 'ink-core' ), Terms::label( 'uitdaging_plural' ) );
 
-			return '<section class="ink-uitdagings">' . $heading
+			return '<section class="ink-uitdagings alignwide">' . $intro
 				. '<p class="ink-uitdagings__leeg">' . esc_html( $empty ) . '</p></section>';
 		}
 
-		$html = '<section class="ink-uitdagings">' . $heading . '<ul class="ink-uitdagings__list">' . implode( '', $cards ) . '</ul>';
+		$html = '<section class="ink-uitdagings alignwide">' . $intro . '<ul class="ink-uitdagings__list">' . implode( '', $cards ) . '</ul>';
 
 		$paged     = isset( $nav['paged'] ) ? (int) $nav['paged'] : 1;
 		$max_pages = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;
