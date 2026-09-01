@@ -181,6 +181,11 @@ final class Terms {
 			'lof'                       => __( 'Lof', 'ink-core' ),
 			'insig'                     => __( 'Insig', 'ink-core' ),
 			'voorstel'                  => __( 'Voorstel', 'ink-core' ),
+			// Epic 19 lees-storie re-audit: the form's authored instruction line, curated
+			// in docs/ui-copy-translations.md ("Gemeenskapsreaksies" table, "Instruksieteks")
+			// but never wired into the render — single-sourced here so it stops being
+			// Afrikaans-copy debt sitting unused in a doc.
+			'gemeenskapsreaksie_instruksie' => __( "Deel 'n deurdagte reaksie — wat jou geraak het, wat jou verras het, of wat nog sterker kon gewees het.", 'ink-core' ),
 			'plaas'                     => __( 'Plaas', 'ink-core' ), // Recurring authored submit verb (Skryf + Gemeenskapsreaksie).
 			'leeslys'                   => __( 'Leeslys', 'ink-core' ), // Story 7.7 (glossary line 151).
 

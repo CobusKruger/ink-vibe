@@ -145,6 +145,8 @@ final class ResponsesList {
 	private static function formHtml( int $post_id ): string {
 		$html = '<form class="ink-reaksies__form" data-ink-post="' . esc_attr( (string) $post_id ) . '">';
 
+		$html .= '<p class="ink-reaksies__intro">' . esc_html( Terms::label( 'gemeenskapsreaksie_instruksie' ) ) . '</p>';
+
 		$html .= '<fieldset class="ink-reaksies__types">';
 		foreach ( ResponseType::cases() as $type ) {
 			$html .= '<label class="ink-reaksies__type"><input type="radio" name="ink_reaksie_type" value="'

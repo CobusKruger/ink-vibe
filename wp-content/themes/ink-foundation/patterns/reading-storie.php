@@ -36,7 +36,7 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 			<p class="has-muted-text-color has-text-color has-sm-font-size"><?php esc_html_e( 'deur', 'ink-foundation' ); ?></p>
 			<!-- /wp:paragraph -->
 
-			<!-- wp:post-author-name {"fontSize":"sm","textColor":"muted-text"} /-->
+			<!-- wp:post-author-name {"fontSize":"sm","textColor":"ink-text","style":{"typography":{"fontWeight":"500"}}} /-->
 
 			<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
 			<p class="has-muted-text-color has-text-color has-sm-font-size">·</p>

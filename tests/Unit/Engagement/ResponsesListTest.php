@@ -66,3 +66,11 @@ test( 'toHtml renders the typed form with all three response-type radios and a s
 	expect( $html )->toContain( 'name="ink_reaksie_content"' );
 	expect( $html )->toContain( 'Plaas' ); // submit label (from Terms)
 } );
+
+test( 'toHtml renders the authored instruction line before the type radios', function (): void {
+	$html = ResponsesList::toHtml( 42, array(), 0 );
+
+	expect( $html )->toContain( 'ink-reaksies__intro' );
+	expect( $html )->toContain( "Deel 'n deurdagte reaksie" );
+	expect( strpos( $html, 'ink-reaksies__intro' ) )->toBeLessThan( strpos( $html, 'ink-reaksies__types' ) );
+} );
