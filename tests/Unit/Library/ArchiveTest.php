@@ -39,6 +39,8 @@ function ink_biblioteek_render_stubs(): void {
 	Functions\when( 'esc_html' )->returnArg( 1 );
 	Functions\when( 'esc_url' )->returnArg( 1 );
 	Functions\when( 'esc_attr' )->returnArg( 1 );
+	// The read-time label's invariant "%d min" abbreviation (see Archive::readTimeLabel()).
+	Functions\when( '_n' )->justReturn( '%d min' );
 	Functions\when( 'remove_query_arg' )->justReturn( '/biblioteek' );
 	Functions\when( 'add_query_arg' )->alias(
 		static fn ( string $key, $value = '', $url = '' ): string => '/biblioteek?' . $key . '=' . $value
@@ -233,4 +235,55 @@ test( 'toHtml shows the empty-state line (with controls, not a blank section) wh
 	expect( $html )->toContain( 'Geen' );
 	expect( $html )->toContain( 'ink-biblioteek__leeg' );
 	expect( $html )->not->toContain( 'ink-biblioteek__list' );
+	// A genre filter is active → a "clear filters" affordance is offered.
+	expect( $html )->toContain( 'Vee filters uit' );
+} );
+
+test( 'an unfiltered empty library shows the empty-state line without a clear-filters affordance', function (): void {
+	ink_biblioteek_render_stubs();
+
+	$html = Archive::toHtml( array(), array(), array(), array( 'paged' => 1, 'max_pages' => 0, 'genre' => null, 'search' => '' ) );
+
+	expect( $html )->toContain( 'Biblioteek' );
+	expect( $html )->toContain( 'Geen' );
+	expect( $html )->toContain( 'ink-biblioteek__leeg' );
+	expect( $html )->not->toContain( 'ink-biblioteek__list' );
+	expect( $html )->not->toContain( 'Vee filters uit' );
+} );
+
+test( 'toHtml renders the alignwide class on the section — the wrapping pattern alone is not enough (Post-Epic-19 width fix)', function (): void {
+	ink_biblioteek_render_stubs();
+
+	$cards = array( array( 'title' => 'Iets', 'permalink' => '/biblioteek/iets', 'author' => 'Lid Een' ) );
+
+	$html = Archive::toHtml( $cards, array(), array(), array( 'paged' => 1, 'max_pages' => 1, 'genre' => null, 'search' => '' ) );
+	expect( $html )->toContain( 'class="ink-biblioteek alignwide"' );
+} );
+
+test( 'a card renders its excerpt, read-time and cover image, omitting each when absent', function (): void {
+	ink_biblioteek_render_stubs();
+
+	$with = array(
+		'title'        => 'Met alles',
+		'permalink'    => '/biblioteek/met-alles',
+		'author'       => 'Lid Een',
+		'excerpt'      => 'n Kort uittreksel.',
+		'read_minutes' => 4,
+		'image'        => '<img src="cover.jpg" alt="Omslag" />',
+	);
+
+	$html = Archive::toHtml( array( $with ), array(), array(), array( 'paged' => 1, 'max_pages' => 1, 'genre' => null, 'search' => '' ) );
+	expect( $html )->toContain( 'ink-biblioteek__item-uittreksel' );
+	expect( $html )->toContain( 'n Kort uittreksel.' );
+	expect( $html )->toContain( 'ink-biblioteek__item-leestyd' );
+	expect( $html )->toContain( '4 min' );
+	expect( $html )->toContain( 'ink-biblioteek__item-beeld' );
+	expect( $html )->toContain( '<img src="cover.jpg" alt="Omslag" />' );
+
+	$without = array( 'title' => 'Sonder ekstras', 'permalink' => '/biblioteek/sonder-ekstras', 'author' => 'Lid Twee' );
+
+	$bare = Archive::toHtml( array( $without ), array(), array(), array( 'paged' => 1, 'max_pages' => 1, 'genre' => null, 'search' => '' ) );
+	expect( $bare )->not->toContain( 'ink-biblioteek__item-uittreksel' );
+	expect( $bare )->not->toContain( 'ink-biblioteek__item-leestyd' );
+	expect( $bare )->not->toContain( 'ink-biblioteek__item-beeld' );
 } );
