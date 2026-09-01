@@ -735,6 +735,24 @@ function ink_foundation_register_block_styles(): void {
 				. '@media (prefers-reduced-motion:reduce){'
 				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content,'
 				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content::after{transition:none;}'
+				. '}'
+				// Mobile menu overlay (< 600px, WP core's own breakpoint for the
+				// hamburger toggle): the nav block's desktop `justifyContent:"right"`
+				// (correct for the horizontal row) was also right-aligning the
+				// STACKED overlay list, crowding every link flush against the
+				// screen edge. WP core's own overlay padding additionally computes
+				// to 0 here because it reads an unset `--wp--style--root--padding-*`
+				// custom property. Override both so the open mobile menu reads as a
+				// left-aligned, breathing-room list (matching Lovable's mobile nav
+				// panel) instead of a right-hugging column.
+				. '@media (max-width:599px){'
+				. '.wp-block-group.is-style-ink-header .wp-block-navigation__responsive-container.is-menu-open{'
+				. 'padding:var(--wp--preset--spacing--s-32) var(--wp--preset--spacing--s-24);'
+				. '}'
+				. '.wp-block-group.is-style-ink-header .wp-block-navigation__responsive-container-content,'
+				. '.wp-block-group.is-style-ink-header .wp-block-navigation__responsive-container-content .wp-block-navigation__container{'
+				. 'align-items:flex-start!important;'
+				. '}'
 				. '}',
 		)
 	);
