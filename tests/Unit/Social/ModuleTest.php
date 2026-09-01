@@ -15,9 +15,14 @@ namespace Ink\Tests\Unit\Social;
 
 use Ink\Social\Module;
 use Brain\Monkey;
+use Brain\Monkey\Functions;
 
 beforeEach( function (): void {
 	Monkey\setUp();
+	// CoverImage::register() (Phase-2 fidelity pass) registers a plain user-meta
+	// field; irrelevant to this file's BuddyPress-scoping assertions, stubbed
+	// out so register() can run end-to-end without a real WP substrate.
+	Functions\when( 'register_meta' )->justReturn( true );
 } );
 
 afterEach( function (): void {
