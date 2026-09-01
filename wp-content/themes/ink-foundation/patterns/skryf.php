@@ -28,6 +28,14 @@ $ink_skryf_ph         = array(
 	'storie'  => __( "Begin jou storie hier...\n\nWenk: Kortverhale is gewoonlik tussen 1 000 en 7 500 woorde.", 'ink-foundation' ),
 	'artikel' => __( "Begin met 'n sterk openingsreël...\n\nWenk: Begin met die idee, grond dit dan in 'n storie.", 'ink-foundation' ),
 );
+// Per-type icon (Lucide glyphs, matching the Lovable reference's type-card
+// icons exactly — feather/book-open/newspaper): theme presentation only, via
+// the shared ink_foundation_icon() convention (§0.9).
+$ink_skryf_icons      = array(
+	'gedig'   => '<path d="M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1 1z"/><path d="M16 8 2 22"/><path d="M17.5 15H9"/>',
+	'storie'  => '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+	'artikel' => '<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/>',
+);
 $ink_skryf_first_slug = isset( $ink_skryf_types[0]['slug'] ) ? (string) $ink_skryf_types[0]['slug'] : 'gedig';
 
 // Post-plaas success state (display-only; the marker comes from our own redirect).
@@ -39,7 +47,7 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	? ink_foundation_skryf_success( $ink_skryf_done_id )
 	: array();
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"720px"}} -->
+<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"896px"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 <?php if ( ! empty( $ink_skryf_success ) ) : ?>
 	<?php
@@ -71,12 +79,12 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	<p><a href="/skryf"><?php echo esc_html__( 'Skryf nog \'n stuk', 'ink-foundation' ); ?></a> · <a href="/"><?php echo esc_html__( 'Terug na tuis', 'ink-foundation' ); ?></a></p>
 	<!-- /wp:paragraph -->
 <?php else : ?>
-	<!-- wp:heading {"level":1,"fontSize":"2xl"} -->
-	<h1 class="wp-block-heading has-2xl-font-size"><?php esc_html_e( 'Deel jou woorde', 'ink-foundation' ); ?></h1>
+	<!-- wp:heading {"level":1,"textAlign":"center","className":"ink-skryf-title"} -->
+	<h1 class="wp-block-heading has-text-align-center ink-skryf-title"><?php esc_html_e( 'Deel jou woorde', 'ink-foundation' ); ?></h1>
 	<!-- /wp:heading -->
 
-	<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-	<p class="has-muted-text-color has-text-color has-md-font-size"><?php esc_html_e( 'Elke storie begin met \'n enkele woord. Begin joune hier.', 'ink-foundation' ); ?></p>
+	<!-- wp:paragraph {"align":"center","fontSize":"md","textColor":"muted-text"} -->
+	<p class="has-text-align-center has-muted-text-color has-text-color has-md-font-size"><?php esc_html_e( 'Elke storie begin met \'n enkele woord. Begin joune hier.', 'ink-foundation' ); ?></p>
 	<!-- /wp:paragraph -->
 
 	<?php if ( ! $ink_skryf_in ) : ?>
@@ -104,6 +112,9 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 				?>
 				<label class="ink-skryf-type">
 					<input type="radio" name="<?php echo esc_attr( $ink_skryf['field_type'] ); ?>" value="<?php echo esc_attr( $ink_slug ); ?>"<?php echo $ink_first ? ' checked' : ''; ?> data-counter-mode="<?php echo esc_attr( isset( $ink_type['counter_mode'] ) ? (string) $ink_type['counter_mode'] : 'words' ); ?>" data-placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_slug ] ?? '' ); ?>" />
+					<?php if ( isset( $ink_skryf_icons[ $ink_slug ] ) ) : ?>
+						<span class="ink-skryf-type__icon ink-skryf-type__icon--<?php echo esc_attr( $ink_slug ); ?>" aria-hidden="true"><?php echo ink_foundation_icon( $ink_skryf_icons[ $ink_slug ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></span>
+					<?php endif; ?>
 					<span class="ink-skryf-type__label"><?php echo esc_html( $ink_label ); ?></span>
 					<?php if ( isset( $ink_skryf_desc[ $ink_slug ] ) ) : ?>
 						<span class="ink-skryf-type__desc"><?php echo esc_html( $ink_skryf_desc[ $ink_slug ] ); ?></span>
@@ -120,18 +131,18 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 			<input type="text" id="ink-skryf-title" name="<?php echo esc_attr( $ink_skryf['field_title'] ); ?>" placeholder="<?php echo esc_attr__( 'Gee jou werk \'n titel...', 'ink-foundation' ); ?>" required />
 		</p>
 
-		<p class="ink-skryf-field">
+		<div class="ink-skryf-field ink-skryf-field--body">
 			<label for="ink-skryf-body"><?php echo esc_html__( 'Jou werk', 'ink-foundation' ); ?></label>
-			<textarea id="ink-skryf-body" name="<?php echo esc_attr( $ink_skryf['field_body'] ); ?>" rows="16" placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_skryf_first_slug ] ?? '' ); ?>" required></textarea>
 			<span class="ink-skryf-counter" data-words-label="<?php echo esc_attr__( 'woorde', 'ink-foundation' ); ?>" data-lines-label="<?php echo esc_attr__( 'reëls', 'ink-foundation' ); ?>" aria-live="polite"></span>
-		</p>
+			<textarea id="ink-skryf-body" name="<?php echo esc_attr( $ink_skryf['field_body'] ); ?>" rows="16" placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_skryf_first_slug ] ?? '' ); ?>" required></textarea>
+		</div>
 
 		<?php
 		$ink_skryf_challenges = isset( $ink_skryf['open_challenges'] ) && is_array( $ink_skryf['open_challenges'] ) ? $ink_skryf['open_challenges'] : array();
 		if ( ! empty( $ink_skryf_challenges ) ) :
 			?>
 		<fieldset class="ink-skryf-challenges">
-			<legend><?php echo esc_html__( 'Aktiewe uitdagings (opsioneel)', 'ink-foundation' ); ?></legend>
+			<legend><?php echo ink_foundation_icon( '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.937A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>' ) . esc_html__( 'Aktiewe uitdagings (opsioneel)', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__() (§0.9). ?></legend>
 			<p class="ink-skryf-challenges__hint"><?php echo esc_html__( 'Merk enige uitdagings waarop hierdie stuk reageer.', 'ink-foundation' ); ?></p>
 			<?php
 			foreach ( $ink_skryf_challenges as $ink_ch ) :
@@ -143,7 +154,7 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 				?>
 				<label class="ink-skryf-challenge">
 					<input type="checkbox" name="<?php echo esc_attr( $ink_skryf['field_challenges'] ?? 'ink_submission_uitdagings' ); ?>[]" value="<?php echo esc_attr( (string) $ink_ch_id ); ?>" />
-					<?php echo esc_html( $ink_ch_title ); ?>
+					<span><?php echo esc_html( $ink_ch_title ); ?></span>
 				</label>
 			<?php endforeach; ?>
 		</fieldset>

@@ -64,12 +64,18 @@ function ink_foundation_register_pattern_categories(): void {
 add_action( 'init', 'ink_foundation_register_pattern_categories' );
 
 /**
- * Enqueue the Skryf live-counter enhancement on the Skryf page only (Story 6.2).
+ * Enqueue the Skryf live-counter enhancement + stylesheet on the Skryf page only
+ * (Story 6.2; stylesheet added in the Theme Visual-Fidelity Phase 2 pass, page 8).
  *
  * Progressive enhancement: the script gives live line/word feedback and swaps the
  * per-type body placeholder. The authoritative counting rules live in `ink-core`
  * ({@see \Ink\Submission\Counters}); this is only the client mirror. With JS off,
  * the form still submits — no business logic in the theme.
+ *
+ * `skryf.css` carries the form's own presentation (type-selector cards, field
+ * styling, challenge checkboxes, actions) — before this the page had NO CSS
+ * anywhere and rendered as raw unstyled browser form chrome, mirroring the same
+ * gap already found and fixed on opleiding/biblioteek/uitdagings-list.
  */
 function ink_foundation_enqueue_skryf_assets(): void {
 	if ( ! function_exists( 'is_page' ) || ! is_page( 'skryf' ) ) {
@@ -84,6 +90,13 @@ function ink_foundation_enqueue_skryf_assets(): void {
 		array(),
 		(string) $theme->get( 'Version' ),
 		true
+	);
+
+	wp_enqueue_style(
+		'ink-foundation-skryf',
+		get_theme_file_uri( 'assets/css/skryf.css' ),
+		array(),
+		(string) $theme->get( 'Version' )
 	);
 }
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_skryf_assets' );

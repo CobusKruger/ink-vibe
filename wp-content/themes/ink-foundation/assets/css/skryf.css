@@ -1,0 +1,404 @@
+/**
+ * INK Foundation — Skryf (share-your-work) stylesheet.
+ *
+ * Theme visual-fidelity Phase 2, page 8 (`docs/theme-fidelity-rework-plan.md`).
+ * Before this file the Skryf form had ZERO CSS anywhere — every control (radio
+ * fieldset, title input, body textarea, challenge checkboxes, file pickers,
+ * submit buttons) rendered as raw unstyled browser chrome, the same bug shape
+ * already found and fixed on opleiding/biblioteek/uitdagings-list. Enqueued on
+ * the Skryf page ONLY via ink_foundation_enqueue_skryf_assets() (functions.php),
+ * mirroring the home.css / is-page() gating pattern.
+ *
+ * Presentation only — no business logic (three-layer separation holds).
+ * TOKENS ONLY (Gate A): every colour / spacing / radius / type value resolves
+ * to a theme.json custom property. Numbers measured directly against the live
+ * Lovable reference (`/write`) via getComputedStyle — see the plan doc's page-8
+ * tracking row for the session note.
+ */
+
+/* ── Intro heading — responsive size to match Lovable's text-3xl -> md:text-4xl.
+   Centering itself is set on the block (textAlign/align), not here. */
+.ink-skryf-title {
+	font-size: var(--wp--preset--font-size--3xl);
+}
+
+@media (min-width: 768px) {
+	.ink-skryf-title {
+		font-size: var(--wp--preset--font-size--4xl);
+	}
+}
+
+/* ── Form shell ───────────────────────────────────────────────────────────── */
+.ink-skryf-form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-16);
+	margin-top: var(--wp--preset--spacing--s-32);
+}
+
+/* Reset browser fieldset/legend chrome everywhere in the form before re-styling. */
+.ink-skryf-form fieldset {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	min-width: 0;
+}
+
+.ink-skryf-form legend {
+	padding: 0;
+	width: 100%;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	color: var(--wp--preset--color--ink-text);
+	margin-bottom: var(--wp--preset--spacing--s-16);
+}
+
+/* ── §1 Type selector — card grid (icon + label + description) ──────────────
+   Lovable's own /write flow is a two-phase picker (pick a type, THEN the rest
+   of the form appears, with a "Change type" link back). This form keeps all
+   fields visible at once with a native 3-way radio fieldset — deliberately NOT
+   reproducing the two-phase JS flow (higher risk, no functional upside for a
+   short form), but the visual language (icon circle, card, per-type colour,
+   hover/selected states) matches card-for-card. */
+.ink-skryf-types {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+@media (min-width: 640px) {
+	.ink-skryf-types {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+@media (min-width: 768px) {
+	.ink-skryf-types {
+		gap: var(--wp--preset--spacing--s-24);
+	}
+}
+
+.ink-skryf-type {
+	position: relative;
+	display: block;
+	cursor: pointer;
+	padding: var(--wp--preset--spacing--s-24);
+	border: 2px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--xl);
+	background-color: var(--wp--preset--color--surface-alt);
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ink-skryf-type:hover {
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+.ink-skryf-type:has(input:checked) {
+	border-color: var(--wp--preset--color--primary);
+	box-shadow: var(--wp--preset--shadow--md);
+}
+
+.ink-skryf-type:has(input:focus-visible) {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-skryf-type {
+		transition: none;
+	}
+}
+
+/* Native radio kept in the a11y tree + tabbable (never display:none), just
+   visually reduced to a small marker in the card's corner. */
+.ink-skryf-type input[type="radio"] {
+	position: absolute;
+	top: var(--wp--preset--spacing--s-16);
+	right: var(--wp--preset--spacing--s-16);
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	accent-color: var(--wp--preset--color--primary);
+}
+
+.ink-skryf-type__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	margin-bottom: var(--wp--preset--spacing--s-16);
+	border-radius: var(--wp--custom--radius--full);
+}
+
+.ink-skryf-type__icon .ink-icon {
+	width: 20px;
+	height: 20px;
+}
+
+/* Per-type colour: gedig = primary (feather), storie = accent/sage (book-open),
+   artikel = ink-text (newspaper) — matches Lovable's terracotta/sage/foreground
+   icon-tile recipe exactly. */
+.ink-skryf-type__icon--gedig {
+	background-color: var(--wp--preset--color--secondary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-skryf-type__icon--storie {
+	background-color: var(--wp--preset--color--secondary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--accent) 10%, transparent);
+	color: var(--wp--preset--color--accent);
+}
+
+.ink-skryf-type__icon--artikel {
+	background-color: var(--wp--preset--color--secondary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--ink-text) 10%, transparent);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-skryf-type__label {
+	display: block;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--xl);
+	font-weight: var(--wp--custom--font-weight--semibold);
+	color: var(--wp--preset--color--ink-text);
+	margin-bottom: var(--wp--preset--spacing--s-8);
+}
+
+.ink-skryf-type__desc {
+	display: block;
+	font-size: var(--wp--preset--font-size--sm);
+	color: var(--wp--preset--color--muted-text);
+	line-height: var(--wp--custom--line-height--relaxed);
+}
+
+/* ── §2 Text fields — title input + body textarea ────────────────────────── */
+.ink-skryf-field {
+	margin: 0;
+}
+
+.ink-skryf-field label {
+	display: block;
+	margin-bottom: var(--wp--preset--spacing--s-8);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-skryf-form input[type="text"],
+.ink-skryf-form input[type="file"],
+.ink-skryf-form textarea {
+	width: 100%;
+	box-sizing: border-box;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-12);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+.ink-skryf-form input[type="text"]::placeholder,
+.ink-skryf-form textarea::placeholder {
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-skryf-form input[type="text"]:focus-visible,
+.ink-skryf-form textarea:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 2px var(--wp--preset--color--surface), 0 0 0 4px var(--wp--preset--color--primary);
+}
+
+/* Body field: label + live counter share one row (Lovable "Your Poem … 0 lines
+   · 0 words"), the textarea sits full-width below (markup order: label,
+   counter, textarea). */
+.ink-skryf-field--body {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	column-gap: var(--wp--preset--spacing--s-16);
+}
+
+.ink-skryf-field--body label {
+	margin-bottom: var(--wp--preset--spacing--s-8);
+}
+
+.ink-skryf-field--body .ink-skryf-counter {
+	margin-left: auto;
+	font-size: var(--wp--preset--font-size--xs);
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-skryf-field--body textarea {
+	flex-basis: 100%;
+	min-height: 400px;
+	font-size: var(--wp--preset--font-size--md);
+	line-height: var(--wp--custom--line-height--relaxed);
+	resize: vertical;
+}
+
+/* ── §3 Active challenges — checkbox card list ────────────────────────────── */
+.ink-skryf-challenges {
+	padding: var(--wp--preset--spacing--s-16);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+	background-color: var(--wp--preset--color--surface-alt);
+}
+
+.ink-skryf-challenges legend {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	margin-bottom: var(--wp--preset--spacing--s-4);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--md);
+	font-weight: var(--wp--custom--font-weight--semibold);
+}
+
+.ink-skryf-challenges legend .ink-icon {
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-skryf-challenges__hint {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+	font-size: var(--wp--preset--font-size--sm);
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-skryf-challenge {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--wp--preset--spacing--s-12);
+	padding: var(--wp--preset--spacing--s-12);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--md);
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+}
+
+.ink-skryf-challenge + .ink-skryf-challenge {
+	margin-top: var(--wp--preset--spacing--s-8);
+}
+
+.ink-skryf-challenge:hover {
+	background-color: var(--wp--preset--color--secondary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 50%, transparent);
+}
+
+.ink-skryf-challenge input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
+	margin-top: 2px;
+	flex-shrink: 0;
+	accent-color: var(--wp--preset--color--primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-skryf-challenge {
+		transition: none;
+	}
+}
+
+/* ── §4 File pickers (INK-specific — Stories 6.4/6.5, no Lovable equivalent) ─
+   Styled to the same field convention as the title/body inputs; the native
+   file-selector-button is re-skinned to a small neutral pill rather than left
+   as raw OS chrome. */
+.ink-skryf-form input[type="file"] {
+	cursor: pointer;
+}
+
+.ink-skryf-form input[type="file"]::file-selector-button {
+	margin-right: var(--wp--preset--spacing--s-12);
+	padding: var(--wp--preset--spacing--s-4) var(--wp--preset--spacing--s-12);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--sm);
+	background-color: var(--wp--preset--color--secondary);
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xs);
+	font-weight: var(--wp--custom--font-weight--medium);
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+}
+
+.ink-skryf-form input[type="file"]::file-selector-button:hover {
+	background-color: var(--wp--preset--color--border);
+}
+
+/* ── §5 Actions — Stoor konsep (neutral) / Plaas (ink-primary recipe) ────────
+   These are raw <button>s inside wp:html (not wp:buttons blocks), so the
+   is-style-ink-primary block-style CSS doesn't reach them; the primary recipe
+   is replicated here on its own class instead (same pattern as
+   .ink-huidige-uitdaging__aksie in home.css). */
+.ink-skryf-actions {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-12);
+	margin: 0;
+}
+
+@media (min-width: 640px) {
+	.ink-skryf-actions {
+		flex-direction: row;
+		justify-content: flex-end;
+	}
+}
+
+.ink-skryf-actions button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0 var(--wp--preset--spacing--s-32);
+	border-radius: var(--wp--custom--radius--md);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--md);
+	font-weight: var(--wp--custom--font-weight--medium);
+	cursor: pointer;
+	transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.ink-skryf-actions button:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+.ink-skryf-draft {
+	border: 1px solid var(--wp--preset--color--border);
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-skryf-draft:hover {
+	background-color: var(--wp--preset--color--secondary);
+}
+
+.ink-skryf-submit {
+	border: 0;
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface-alt);
+	box-shadow: var(--wp--preset--shadow--md);
+}
+
+.ink-skryf-submit:hover {
+	background-color: var(--wp--preset--color--primary-light);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-skryf-actions button {
+		transition: none;
+	}
+}
+
+/* ── §6 Denial notice (entitlement gate, Story 6.8) ──────────────────────── */
+.ink-skryf-denial {
+	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-16);
+	border: 1px solid var(--wp--preset--color--warning);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: color-mix(in srgb, var(--wp--preset--color--warning) 10%, transparent);
+	color: var(--wp--preset--color--ink-text);
+}
