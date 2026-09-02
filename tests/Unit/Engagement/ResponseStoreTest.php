@@ -67,12 +67,14 @@ test( 'forPost maps typed responses and SKIPS a row with a missing/invalid type'
 			'comment_content' => 'Lof-teks',
 			'comment_author'  => 'Een',
 			'comment_date'    => '2026-06-26 10:00:00',
+			'user_id'         => 7,
 		),
 		(object) array(
 			'comment_ID'      => 2,
 			'comment_content' => 'Geen tipe',
 			'comment_author'  => 'Twee',
 			'comment_date'    => '2026-06-26 11:00:00',
+			'user_id'         => 8,
 		),
 	);
 
@@ -87,6 +89,7 @@ test( 'forPost maps typed responses and SKIPS a row with a missing/invalid type'
 	expect( $responses[0]['id'] )->toBe( 1 );
 	expect( $responses[0]['type'] )->toBe( ResponseType::Insig );
 	expect( $responses[0]['content'] )->toBe( 'Lof-teks' );
+	expect( $responses[0]['user_id'] )->toBe( 7 );
 } );
 
 test( 'countForPost asks for the FILTERED, TYPED ink_reaksie count, not comment_count (AD-5a)', function (): void {

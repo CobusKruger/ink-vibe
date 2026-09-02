@@ -65,6 +65,10 @@ class Module implements ModuleContract {
 		// bootstrap). Reviews are held for moderation (18.4).
 		( new RatingController() )->register();
 		( new RatingForm() )->register();
+
+		// Epic 19 lees-gedig fidelity pass: the reading-page author card (reuses
+		// FollowToggle's own markup for its Follow toggle — no new follow logic).
+		( new ReadingAuthorCard() )->register();
 	}
 
 	/**

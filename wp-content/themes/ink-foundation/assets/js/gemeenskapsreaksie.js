@@ -47,14 +47,60 @@
 		} );
 	}
 
+	// Real disable/enable wiring (Epic 19 lees-gedig fidelity pass, finding #14):
+	// the submit button is server-rendered `disabled` (the textarea starts
+	// empty); this keeps it in sync as the visitor types, so it can never be
+	// clicked while the textarea is blank — matching Lovable's own
+	// `disabled={!critiqueText.trim()}` behaviour. Previously the button stayed
+	// clickable regardless of content, a real (not just cosmetic) bug.
+	function syncSubmitState( form ) {
+		var content = form.querySelector( '[name="ink_reaksie_content"]' );
+		var button = form.querySelector( '.ink-reaksies__submit' );
+
+		if ( ! content || ! button ) {
+			return;
+		}
+
+		button.disabled = ! content.value.trim();
+	}
+
+	// The response-card Reply action (finding #16): a real, small behaviour —
+	// focus this work's response textarea — rather than a decorative dead link.
+	function initReplyButtons() {
+		var buttons = document.querySelectorAll( '.ink-reaksies__reply' );
+		Array.prototype.forEach.call( buttons, function ( button ) {
+			button.addEventListener( 'click', function () {
+				var targetId = button.getAttribute( 'data-ink-reply-target' );
+				var target = targetId ? document.getElementById( targetId ) : null;
+
+				if ( target ) {
+					target.focus();
+					target.scrollIntoView( { behavior: 'smooth', block: 'center' } );
+				}
+			} );
+		} );
+	}
+
 	function init() {
 		var forms = document.querySelectorAll( '.ink-reaksies__form' );
 		Array.prototype.forEach.call( forms, function ( form ) {
+			var content = form.querySelector( '[name="ink_reaksie_content"]' );
+
+			syncSubmitState( form );
+
+			if ( content ) {
+				content.addEventListener( 'input', function () {
+					syncSubmitState( form );
+				} );
+			}
+
 			form.addEventListener( 'submit', function ( e ) {
 				e.preventDefault();
 				submit( form );
 			} );
 		} );
+
+		initReplyButtons();
 	}
 
 	if ( 'loading' === document.readyState ) {

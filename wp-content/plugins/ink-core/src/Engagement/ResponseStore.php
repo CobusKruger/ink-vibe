@@ -86,7 +86,7 @@ final class ResponseStore {
 	 * SKIPPED — every surfaced response carries a type (AC #4).
 	 *
 	 * @param int $post_id The work.
-	 * @return list<array{id:int, type:ResponseType, content:string, author:string, date:string}>
+	 * @return list<array{id:int, type:ResponseType, content:string, author:string, date:string, user_id:int}>
 	 */
 	public static function forPost( int $post_id ): array {
 		$comments = get_comments(
@@ -113,6 +113,7 @@ final class ResponseStore {
 				'content' => (string) $comment->comment_content,
 				'author'  => (string) $comment->comment_author,
 				'date'    => (string) $comment->comment_date,
+				'user_id' => (int) $comment->user_id,
 			);
 		}
 

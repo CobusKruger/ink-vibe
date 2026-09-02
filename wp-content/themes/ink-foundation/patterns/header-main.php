@@ -15,6 +15,23 @@
  * renders at heading level 0 (a <p>, not an <h1>) so the page keeps a single visible
  * <h1> (the hero heading).
  *
+ * Row structure (Epic 19 lees-gedig re-audit, docs/theme-fidelity-audit-handoff.md
+ * §6, finding #1 — this is the site-wide header, so the fix applies everywhere,
+ * not just lees-gedig): Lovable's header row is THREE flex children (logo / nav /
+ * auth) under one `justify-content:space-between`, with the nav itself carrying no
+ * justify-content of its own (computes to the CSS-initial `normal`) and a 32px
+ * column-gap. This row used to nest the nav + the "Begin skryf" button together
+ * inside a SECOND group, so the row only ever had two flex children and the nav's
+ * own `justifyContent:"right"` pushed its links flush against the button
+ * (`justify-content:flex-end`, 24px gap) instead of reading centered in its own
+ * slot. Un-nesting them into three direct siblings of `.ink-header-row` and
+ * dropping the nav's own justifyContent (so it falls back to the initial `normal`)
+ * reproduces Lovable's computed values exactly; the column-gap is bumped from
+ * `s-24` (24px) to `s-32` (32px) to match. The nav link colour itself was
+ * re-measured fresh against Lovable and already matches (muted-foreground grey at
+ * rest, not near-black — a stale claim in an earlier, uncorrected audit pass) so
+ * it is deliberately left untouched here.
+ *
  * @package Ink\Foundation
  */
 ?>
@@ -32,26 +49,22 @@
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"flex","verticalAlignment":"center","flexWrap":"nowrap"}} -->
-		<div class="wp-block-group">
-			<!-- wp:navigation {"textColor":"muted-text","overlayTextColor":"text","overlayBackgroundColor":"surface","style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"flex","justifyContent":"right","orientation":"horizontal"}} -->
-				<!-- wp:navigation-link {"label":"Tuis","url":"/"} /-->
-				<!-- wp:navigation-link {"label":"Ontdek","url":"/ontdek"} /-->
-				<!-- wp:navigation-link {"label":"Opleiding","url":"/opleiding"} /-->
-				<!-- wp:navigation-link {"label":"Uitdagings","url":"/uitdagings"} /-->
-				<!-- wp:navigation-link {"label":"Gemeenskap","url":"/gemeenskap"} /-->
-				<!-- wp:navigation-link {"label":"My profiel","url":"/my-profiel"} /-->
-			<!-- /wp:navigation -->
+		<!-- wp:navigation {"textColor":"muted-text","overlayTextColor":"text","overlayBackgroundColor":"surface","style":{"spacing":{"blockGap":"var:preset|spacing|s-32"}},"layout":{"type":"flex","orientation":"horizontal"}} -->
+			<!-- wp:navigation-link {"label":"Tuis","url":"/"} /-->
+			<!-- wp:navigation-link {"label":"Ontdek","url":"/ontdek"} /-->
+			<!-- wp:navigation-link {"label":"Opleiding","url":"/opleiding"} /-->
+			<!-- wp:navigation-link {"label":"Uitdagings","url":"/uitdagings"} /-->
+			<!-- wp:navigation-link {"label":"Gemeenskap","url":"/gemeenskap"} /-->
+			<!-- wp:navigation-link {"label":"My profiel","url":"/my-profiel"} /-->
+		<!-- /wp:navigation -->
 
-			<!-- wp:buttons {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
-			<div class="wp-block-buttons">
-				<!-- wp:button {"className":"is-style-ink-primary","fontSize":"sm","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-8","right":"var:preset|spacing|s-12","bottom":"var:preset|spacing|s-8","left":"var:preset|spacing|s-12"}}}} -->
-				<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" href="/skryf"><?php esc_html_e( 'Begin skryf', 'ink-foundation' ); ?></a></div>
-				<!-- /wp:button -->
-			</div>
-			<!-- /wp:buttons -->
+		<!-- wp:buttons {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
+		<div class="wp-block-buttons">
+			<!-- wp:button {"className":"is-style-ink-primary","fontSize":"sm","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-8","right":"var:preset|spacing|s-12","bottom":"var:preset|spacing|s-8","left":"var:preset|spacing|s-12"}}}} -->
+			<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" href="/skryf"><?php esc_html_e( 'Begin skryf', 'ink-foundation' ); ?></a></div>
+			<!-- /wp:button -->
 		</div>
-		<!-- /wp:group -->
+		<!-- /wp:buttons -->
 	</div>
 	<!-- /wp:group -->
 </div>
