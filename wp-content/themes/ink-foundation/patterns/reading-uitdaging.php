@@ -48,8 +48,8 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 		<p class="ink-uitdaging__terug has-sm-font-size"><a href="/"><?php esc_html_e( '← Terug na tuis', 'ink-foundation' ); ?></a></p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:paragraph {"className":"ink-lees-tipe ink-uitdaging__badge","lock":{"move":true,"remove":true},"style":{"typography":{"fontStyle":"normal","fontWeight":"600","textTransform":"uppercase","letterSpacing":"0.08em"}},"fontSize":"xs","textColor":"primary"} -->
-		<p class="ink-lees-tipe ink-uitdaging__badge has-primary-color has-text-color has-xs-font-size" style="font-style:normal;font-weight:600;letter-spacing:0.08em;text-transform:uppercase"><?php echo ink_foundation_icon( '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.937A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>' ) . esc_html( $ink_type_label ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html(). ?></p>
+		<!-- wp:paragraph {"className":"ink-lees-tipe ink-uitdaging__badge","lock":{"move":true,"remove":true},"style":{"typography":{"fontStyle":"normal","fontWeight":"600","textTransform":"uppercase","letterSpacing":"0.025em"}},"fontSize":"xs","textColor":"primary"} -->
+		<p class="ink-lees-tipe ink-uitdaging__badge has-primary-color has-text-color has-xs-font-size" style="font-style:normal;font-weight:600;letter-spacing:0.025em;text-transform:uppercase"><?php echo ink_foundation_icon( '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.937A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>' ) . esc_html( $ink_type_label ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html(). ?></p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:post-title {"level":1,"fontSize":"hero"} /-->
@@ -90,9 +90,15 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 		<span class="ink-uitdaging-cta__ikoon" aria-hidden="true"><?php echo ink_foundation_icon( '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.937A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG. ?></span>
 		<!-- /wp:html -->
 
-		<!-- wp:heading {"textAlign":"center","level":2,"className":"ink-uitdaging-cta__titel","fontSize":"xxxl"} -->
-		<h2 class="wp-block-heading has-text-align-center ink-uitdaging-cta__titel has-xxxl-font-size"><?php esc_html_e( 'Jou storie wag om geskryf te word', 'ink-foundation' ); ?></h2>
+		<!-- wp:heading {"textAlign":"center","level":2,"className":"ink-uitdaging-cta__titel"} -->
+		<h2 class="wp-block-heading has-text-align-center ink-uitdaging-cta__titel"><?php esc_html_e( 'Jou storie wag om geskryf te word', 'ink-foundation' ); ?></h2>
 		<!-- /wp:heading -->
+
+		<?php if ( function_exists( 'ink_foundation_uitdaging_cta_subtitel' ) ) : ?>
+		<!-- wp:html -->
+		<?php echo ink_foundation_uitdaging_cta_subtitel( get_the_ID() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- returns self-escaped HTML from Ink\Challenges\SinglePage::ctaSubtitleHtml(). ?>
+		<!-- /wp:html -->
+		<?php endif; ?>
 
 		<!-- wp:buttons {"lock":{"move":true,"remove":true},"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}}} -->
 		<div class="wp-block-buttons">

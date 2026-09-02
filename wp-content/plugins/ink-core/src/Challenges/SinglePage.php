@@ -14,6 +14,7 @@ use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
 use Ink\I18n\Terms;
+use Ink\Kernel\QaFixture;
 use Ink\Kernel\Sast;
 use Ink\Kernel\Scalar;
 
@@ -56,6 +57,21 @@ final class SinglePage {
 	 * @var int
 	 */
 	public const MAX_ENTRIES = 500;
+
+	/**
+	 * Overridable data seam: turns QA-fixture-titled entries back ON for the
+	 * entries list (Epic-19 theme-fidelity rework finding — the entries list read
+	 * a live `WP_Query` with no gating, so a fixture-titled bydrae/storie/artikel
+	 * linked to a real round would leak into the real page). Mirrors
+	 * {@see \Ink\Training\Hub::INCLUDE_FIXTURES_FILTER} /
+	 * {@see \Ink\Library\Archive::INCLUDE_FIXTURES_FILTER}. Not currently wired to
+	 * a QA gallery embed (the block is post-context-bound, unlike the archive
+	 * blocks) — the seam exists for a future one, exclusion is simply always the
+	 * default today.
+	 *
+	 * @var string
+	 */
+	public const INCLUDE_FIXTURES_FILTER = 'ink_uitdaging_besonderhede_include_fixtures';
 
 	/**
 	 * Lucide `calendar` icon path data (Post-Epic-19 fidelity pass, workstream 6) —
@@ -144,6 +160,53 @@ final class SinglePage {
 		);
 
 		return $args;
+	}
+
+	/**
+	 * Run a `WP_Query`, excluding QA-fixture-titled posts by default (Epic-19
+	 * theme-fidelity rework finding — see {@see INCLUDE_FIXTURES_FILTER}). The
+	 * exclusion is applied at the SQL layer (a scoped `posts_where` filter, removed
+	 * immediately after) rather than by filtering `$query->posts` in PHP, mirroring
+	 * {@see \Ink\Training\Hub::runQuery()}. Impure (WP_Query + filter).
+	 *
+	 * @param array<string, mixed> $args The `WP_Query` args.
+	 * @return \WP_Query
+	 */
+	private static function runQuery( array $args ): \WP_Query {
+		if ( (bool) apply_filters( self::INCLUDE_FIXTURES_FILTER, false ) ) {
+			return new \WP_Query( $args );
+		}
+
+		$exclude_fixtures = static function ( string $where, \WP_Query $wp_query ): string {
+			global $wpdb;
+
+			return $where . $wpdb->prepare(
+				" AND {$wpdb->posts}.post_title NOT LIKE %s",
+				$wpdb->esc_like( QaFixture::TITLE_PREFIX ) . '%'
+			);
+		};
+
+		add_filter( 'posts_where', $exclude_fixtures, 10, 2 );
+		$query = new \WP_Query( $args );
+		remove_filter( 'posts_where', $exclude_fixtures, 10 );
+
+		return $query;
+	}
+
+	/**
+	 * The count of published, non-fixture entries linked to this round. Impure
+	 * (bounded WP_Query via {@see self::runQuery()}). The single source for this
+	 * count — {@see \Ink\Challenges\CurrentChallenge::entryCount()} delegates here
+	 * rather than duplicating the query.
+	 *
+	 * @param int $uitdaging_id The producing uitdaging post id.
+	 * @return int
+	 */
+	public static function entryCount( int $uitdaging_id ): int {
+		$args           = self::entriesQueryArgs( $uitdaging_id );
+		$args['fields'] = 'ids';
+
+		return count( self::runQuery( $args )->posts );
 	}
 
 	/**
@@ -264,6 +327,36 @@ final class SinglePage {
 	}
 
 	/**
+	 * The closing-CTA subtitle paragraph — "Sluit aan by N skrywers wat reeds
+	 * hierdie uitdaging verken. …". Ratified copy from `docs/ui-copy-translations.md`
+	 * ("Uitdaging-detailbladsy" section, "Sluitende oproep tot aksie"), wired in
+	 * here rather than left as unused Afrikaans copy-debt (Post-Epic-19 fidelity
+	 * pass, workstream 6 — matches the `gemeenskapsreaksie_instruksie` precedent
+	 * from the lees-storie re-audit). Pure — Terms/`__()` + escaping only.
+	 *
+	 * Renders nothing for a round with no entries yet — the sentence names real
+	 * participants, so a "0 skrywers" reading would misstate an empty round rather
+	 * than gracefully collapsing (the same empty-state convention as
+	 * {@see self::entriesHtml()}/{@see self::statusHtml()}).
+	 *
+	 * @param int $entry_count The round's published, non-fixture entry count.
+	 * @return string
+	 */
+	public static function ctaSubtitleHtml( int $entry_count ): string {
+		if ( $entry_count <= 0 ) {
+			return '';
+		}
+
+		/* translators: %d: the number of writers who already entered this challenge. */
+		$text = sprintf(
+			__( "Sluit aan by %d skrywers wat reeds hierdie uitdaging verken. Of dit 'n verfynde konsep is of 'n dapper eerste poging — jou stem hoort hier.", 'ink-core' ),
+			$entry_count
+		);
+
+		return '<p class="wp-block-paragraph has-text-align-center ink-uitdaging-cta__subtitel">' . esc_html( $text ) . '</p>';
+	}
+
+	/**
 	 * Compose the block shell from the (pre-rendered) status line + entries list. Pure.
 	 *
 	 * @param string $status_html  The status line markup (may be '').
@@ -299,7 +392,7 @@ final class SinglePage {
 			$status_html = self::statusHtml( Deadline::format( $deadline ), self::isOpen( $deadline ) );
 		}
 
-		$query   = new \WP_Query( self::entriesQueryArgs( $uitdaging_id ) );
+		$query   = self::runQuery( self::entriesQueryArgs( $uitdaging_id ) );
 		$entries = array();
 
 		foreach ( $query->posts as $post ) {

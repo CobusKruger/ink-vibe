@@ -1090,6 +1090,29 @@ if ( ! function_exists( 'ink_foundation_term' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ink_foundation_uitdaging_cta_subtitel' ) ) {
+	/**
+	 * Presentation glue: the uitdaging closing-CTA subtitle ("Sluit aan by N
+	 * skrywers…"), sourced from {@see \Ink\Challenges\SinglePage::ctaSubtitleHtml()}
+	 * (Post-Epic-19 fidelity pass, workstream 6). Reads the round's entry count via
+	 * {@see \Ink\Challenges\SinglePage::entryCount()} — no business logic in the
+	 * theme (three-layer separation holds).
+	 *
+	 * @param int $uitdaging_id The uitdaging post id (`get_the_ID()` in the pattern).
+	 * @return string Self-escaped HTML (a `<p>`), or '' when ink-core is inactive
+	 *                or the round has no entries yet.
+	 */
+	function ink_foundation_uitdaging_cta_subtitel( int $uitdaging_id ): string {
+		if ( ! class_exists( '\\Ink\\Challenges\\SinglePage' ) ) {
+			return '';
+		}
+
+		return \Ink\Challenges\SinglePage::ctaSubtitleHtml(
+			\Ink\Challenges\SinglePage::entryCount( $uitdaging_id )
+		);
+	}
+}
+
 if ( ! function_exists( 'ink_foundation_onboarding_complete' ) ) {
 	/**
 	 * Whether the current lid has completed/dismissed onboarding (Story 3.3).

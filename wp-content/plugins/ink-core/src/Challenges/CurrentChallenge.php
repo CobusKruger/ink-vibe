@@ -256,18 +256,18 @@ final class CurrentChallenge {
 	}
 
 	/**
-	 * The count of published entries linked to this round. Impure (bounded WP_Query).
+	 * The count of published, non-fixture entries linked to this round. Impure
+	 * (bounded WP_Query). Delegates to {@see SinglePage::entryCount()} — the
+	 * single source, so the tuisblad card's count and the uitdaging page's own
+	 * entries list both apply the same QA-fixture exclusion (Epic-19
+	 * theme-fidelity rework finding: this call previously queried directly,
+	 * unfiltered, inflating the count with any fixture-titled entries).
 	 *
 	 * @param int $uitdaging_id The producing uitdaging post id.
 	 * @return int
 	 */
 	private static function entryCount( int $uitdaging_id ): int {
-		$args           = SinglePage::entriesQueryArgs( $uitdaging_id );
-		$args['fields'] = 'ids';
-
-		$query = new \WP_Query( $args );
-
-		return count( $query->posts );
+		return SinglePage::entryCount( $uitdaging_id );
 	}
 
 	/**
