@@ -205,6 +205,12 @@ final class Terms {
 			'biblioteek'                => __( 'Biblioteek', 'ink-core' ),
 			'opleiding'                 => __( 'Opleiding', 'ink-core' ),
 
+			// Opleiding hub — page-specific prose (docs/ui-copy-translations.md, curated
+			// Afrikaans, "Opleiding-bladsy" section). 'opleiding' above is the eyebrow-badge
+			// label (the official section name); the H1 + intro paragraph are distinct copy.
+			'opleiding_h1'              => __( 'Artikels en gidse oor die skryfkuns.', 'ink-core' ),
+			'opleiding_intro'           => __( "'n Groeiende rak vol kort, sorgvuldige stukke oor digkuns, prosa en die redigering. Lees in enige volgorde — daar is geen sillabus nie, net jy en die bladsy.", 'ink-core' ),
+
 			// Taxonomies (singular / plural).
 			'genre'                     => __( 'Genre', 'ink-core' ),
 			'genre_plural'              => __( 'Genres', 'ink-core' ),

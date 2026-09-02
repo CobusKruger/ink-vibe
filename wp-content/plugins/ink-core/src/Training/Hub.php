@@ -12,6 +12,7 @@ namespace Ink\Training;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
 use Ink\Kernel\ArchiveRender;
+use Ink\Kernel\QaFixture;
 use Ink\I18n\Terms;
 
 defined( 'ABSPATH' ) || exit;
@@ -58,6 +59,21 @@ final class Hub {
 	 * @var int
 	 */
 	public const FEATURED = 3;
+
+	/**
+	 * Overridable seam: when a filter callback returns true, QA-fixture-titled
+	 * `opleiding_artikel` posts (see {@see QaFixture}) are INCLUDED in both the
+	 * featured shelf and the main listing instead of excluded (the default). This
+	 * block has no `*_FILTER` data seam to hook (unlike {@see \Ink\Discovery\FeaturedStream}'s
+	 * memoised array) — it reads a live `WP_Query` directly, so a fixture-titled post
+	 * leaks onto the real `/opleiding/` page exactly like {@see \Ink\Sponsors\HomepageStrip}'s
+	 * sponsor strip did before its own Epic-19 theme-fidelity fix. The theme gates its
+	 * own override to the QA/component gallery page only, mirroring
+	 * {@see \Ink\Sponsors\HomepageStrip::INCLUDE_FIXTURES_FILTER}.
+	 *
+	 * @var string
+	 */
+	public const INCLUDE_FIXTURES_FILTER = 'ink_opleiding_argief_include_fixtures';
 
 	/**
 	 * Custom paged query var — avoids colliding with WP page pagination.
@@ -121,6 +137,14 @@ final class Hub {
 	 * @var string
 	 */
 	private const ICON_ARROW = '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>';
+
+	/**
+	 * The decorative library-icon path (intro eyebrow badge; Lucide "library" glyph,
+	 * §0.9 icon convention — matches Lovable's Library.tsx eyebrow exactly).
+	 *
+	 * @var string
+	 */
+	private const ICON_LIBRARY = '<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>';
 
 	/**
 	 * Register the server-rendered block.
@@ -224,7 +248,7 @@ final class Hub {
 
 		$active_facet = '' !== $vaardigheid ? $vaardigheid : null;
 
-		$query = new \WP_Query( self::queryArgs( $paged, self::PER_PAGE, $active_facet, $search ) );
+		$query = self::runQuery( self::queryArgs( $paged, self::PER_PAGE, $active_facet, $search ) );
 
 		$cards = array();
 
@@ -240,7 +264,7 @@ final class Hub {
 		$featured = array();
 
 		if ( 1 === max( 1, $paged ) && null === $active_facet && '' === $search ) {
-			$featured_query = new \WP_Query( self::featuredArgs( self::FEATURED ) );
+			$featured_query = self::runQuery( self::featuredArgs( self::FEATURED ) );
 
 			foreach ( $featured_query->posts as $post ) {
 				if ( $post instanceof \WP_Post ) {
@@ -256,10 +280,43 @@ final class Hub {
 			array(
 				'paged'       => max( 1, $paged ),
 				'max_pages'   => (int) $query->max_num_pages,
+				'total'       => (int) $query->found_posts,
 				'vaardigheid' => $active_facet,
 				'search'      => $search,
 			)
 		);
+	}
+
+	/**
+	 * Run a `WP_Query`, excluding QA-fixture-titled posts by default (Epic-19
+	 * theme-fidelity rework finding — see {@see INCLUDE_FIXTURES_FILTER}). The
+	 * exclusion is applied at the SQL layer (a scoped `posts_where` filter, removed
+	 * immediately after) rather than by filtering `$query->posts` in PHP, so
+	 * `found_posts`/`max_num_pages` stay accurate for pagination even when fixtures
+	 * are excluded. Impure (WP_Query + filter).
+	 *
+	 * @param array<string, mixed> $args The `WP_Query` args.
+	 * @return \WP_Query
+	 */
+	private static function runQuery( array $args ): \WP_Query {
+		if ( (bool) apply_filters( self::INCLUDE_FIXTURES_FILTER, false ) ) {
+			return new \WP_Query( $args );
+		}
+
+		$exclude_fixtures = static function ( string $where, \WP_Query $wp_query ): string {
+			global $wpdb;
+
+			return $where . $wpdb->prepare(
+				" AND {$wpdb->posts}.post_title NOT LIKE %s",
+				$wpdb->esc_like( QaFixture::TITLE_PREFIX ) . '%'
+			);
+		};
+
+		add_filter( 'posts_where', $exclude_fixtures, 10, 2 );
+		$query = new \WP_Query( $args );
+		remove_filter( 'posts_where', $exclude_fixtures, 10 );
+
+		return $query;
 	}
 
 	/**
@@ -412,18 +469,25 @@ final class Hub {
 	 * @param list<array{title:string, permalink:string, author:string, excerpt?:string, category?:string, read_minutes?:int}> $cards    The items.
 	 * @param list<array{title:string, permalink:string, author:string, excerpt?:string, category?:string, read_minutes?:int}> $featured The featured strip items.
 	 * @param list<array{slug:string, name:string}>                                                                           $facets   The vaardigheid facet terms.
-	 * @param array{paged:int, max_pages:int, vaardigheid?:string|null, search?:string}                                       $nav Render context.
+	 * @param array{paged:int, max_pages:int, total?:int, vaardigheid?:string|null, search?:string}                           $nav Render context.
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $featured, array $facets, array $nav ): string {
 		$search_term  = isset( $nav['search'] ) ? (string) $nav['search'] : '';
 		$active_facet = $nav['vaardigheid'] ?? null;
 
-		// The heading + search sit together in an intro band (Library-layout parity —
-		// mirrors Lovable's Library.tsx header section); the featured shelf, then the
-		// facet filter, follow below it.
+		// The eyebrow + heading + intro + search sit together in an intro band
+		// (Library-layout parity — mirrors Lovable's Library.tsx header section); the
+		// featured shelf, then the facet filter, follow below it. The eyebrow reuses
+		// the 'opleiding' section-name label (matches the curated
+		// docs/ui-copy-translations.md mapping: "The Learning Library" -> "Opleiding");
+		// the H1 and intro paragraph are distinct authored copy ('opleiding_h1'/
+		// 'opleiding_intro').
 		$intro = '<div class="ink-opleiding__intro">'
-			. '<h1 class="ink-opleiding__heading">' . esc_html( Terms::label( 'opleiding' ) ) . '</h1>'
+			. '<p class="ink-opleiding__eyebrow">' . self::icon( self::ICON_LIBRARY )
+			. '<span>' . esc_html( Terms::label( 'opleiding' ) ) . '</span></p>'
+			. '<h1 class="ink-opleiding__heading">' . esc_html( Terms::label( 'opleiding_h1' ) ) . '</h1>'
+			. '<p class="ink-opleiding__intro-teks">' . esc_html( Terms::label( 'opleiding_intro' ) ) . '</p>'
 			. self::searchHtml( $search_term, $active_facet )
 			. '</div>';
 
@@ -436,7 +500,13 @@ final class Hub {
 				. self::emptyStateHtml( $is_filtered ) . '</section>';
 		}
 
-		$html = '<section class="ink-opleiding alignwide">' . $intro . $controls . '<ul class="ink-opleiding__list">';
+		$total        = isset( $nav['total'] ) ? (int) $nav['total'] : count( $cards );
+		$facet_name   = self::facetName( $facets, $active_facet );
+		$result_count = '<p class="ink-opleiding__telling">'
+			. esc_html( self::resultCountLabel( $total, $facet_name, $search_term ) ) . '</p>';
+
+		$html = '<section class="ink-opleiding alignwide">' . $intro . $controls
+			. $result_count . '<ul class="ink-opleiding__list">';
 
 		foreach ( $cards as $card ) {
 			$html .= self::cardHtml( $card );
@@ -448,6 +518,56 @@ final class Hub {
 		$html .= '</ul>' . ArchiveRender::pagination( $paged, $max_pages, self::CSS, self::PAGED_VAR ) . '</section>';
 
 		return $html;
+	}
+
+	/**
+	 * The active facet's display name, or '' when none is active or it isn't found
+	 * among the supplied facets. Pure.
+	 *
+	 * @param list<array{slug:string, name:string}> $facets       The vaardigheid facet terms.
+	 * @param string|null                           $active_facet The active term slug, or null.
+	 * @return string
+	 */
+	private static function facetName( array $facets, ?string $active_facet ): string {
+		if ( null === $active_facet || '' === $active_facet ) {
+			return '';
+		}
+
+		foreach ( $facets as $facet ) {
+			if ( $facet['slug'] === $active_facet ) {
+				return $facet['name'];
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * The result-count line above the grid ("N artikel(s)[ in Kategorie][ wat
+	 * ooreenstem met "soekterm"]") — Library-layout parity (Lovable's
+	 * `{filtered.length} article(s)...` line, docs/ui-copy-translations.md
+	 * "Redakteur se rak en leë toestande" row). Pure — formatting + escaping only.
+	 *
+	 * @param int    $total      The matching item count (across all pages).
+	 * @param string $facet_name The active facet's display name, or '' for none.
+	 * @param string $search     The active search term, or '' for none.
+	 * @return string
+	 */
+	private static function resultCountLabel( int $total, string $facet_name, string $search ): string {
+		/* translators: %d: the number of matching opleiding articles. */
+		$label = sprintf( _n( '%d artikel', '%d artikels', $total, 'ink-core' ), $total );
+
+		if ( '' !== $facet_name ) {
+			/* translators: %s: the active vaardigheid facet's display name. */
+			$label .= ' ' . sprintf( __( 'in %s', 'ink-core' ), $facet_name );
+		}
+
+		if ( '' !== $search ) {
+			/* translators: %s: the active search term. */
+			$label .= ' ' . sprintf( __( 'wat ooreenstem met "%s"', 'ink-core' ), $search );
+		}
+
+		return $label;
 	}
 
 	/**

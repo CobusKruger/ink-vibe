@@ -42,6 +42,9 @@ function ink_opleiding_render_stubs(): void {
 	Functions\when( 'add_query_arg' )->alias(
 		static fn ( string $key, $value = '', $url = '' ): string => '/opleiding?' . $key . '=' . $value
 	);
+	Functions\when( '_n' )->alias(
+		static fn ( string $single, string $plural, int $number ): string => 1 === $number ? $single : $plural
+	);
 }
 
 // --- queryArgs ---
@@ -131,6 +134,37 @@ test( 'toHtml renders the heading, search and a card per item, escaping every va
 	expect( $html )->toContain( 'ink-opleiding__soek' );
 	// Single page → no pagination nav.
 	expect( $html )->not->toContain( 'ink-opleiding__blaai' );
+} );
+
+test( 'toHtml renders the intro eyebrow badge, H1 and subheading (Library-layout parity)', function (): void {
+	ink_opleiding_render_stubs();
+
+	$cards = array( array( 'title' => 'Hoe om te begin', 'permalink' => '/opleiding/begin', 'author' => 'Redakteur' ) );
+
+	$html = Hub::toHtml( $cards, array(), array(), array( 'paged' => 1, 'max_pages' => 1, 'vaardigheid' => null, 'search' => '' ) );
+
+	expect( $html )->toContain( 'ink-opleiding__eyebrow' );
+	expect( $html )->toContain( 'Artikels en gidse oor die skryfkuns.' );
+	expect( $html )->toContain( 'ink-opleiding__intro-teks' );
+	expect( $html )->toContain( 'Groeiende rak vol kort, sorgvuldige stukke' );
+} );
+
+test( 'toHtml renders a result-count line, pluralised and suffixed by facet/search', function (): void {
+	ink_opleiding_render_stubs();
+
+	$card  = array( 'title' => 'Oor rym', 'permalink' => '/opleiding/rym', 'author' => 'Mentor' );
+	$one   = Hub::toHtml( array( $card ), array(), array(), array( 'paged' => 1, 'max_pages' => 1, 'total' => 1, 'vaardigheid' => null, 'search' => '' ) );
+	$many  = Hub::toHtml( array( $card, $card ), array(), array(), array( 'paged' => 1, 'max_pages' => 1, 'total' => 2, 'vaardigheid' => null, 'search' => '' ) );
+	$facet = array( array( 'slug' => 'digkuns', 'name' => 'Digkuns' ) );
+	$in    = Hub::toHtml( array( $card ), array(), $facet, array( 'paged' => 1, 'max_pages' => 1, 'total' => 1, 'vaardigheid' => 'digkuns', 'search' => '' ) );
+	$match = Hub::toHtml( array( $card ), array(), array(), array( 'paged' => 1, 'max_pages' => 1, 'total' => 1, 'vaardigheid' => null, 'search' => 'rym' ) );
+
+	expect( $one )->toContain( 'ink-opleiding__telling' );
+	expect( $one )->toContain( '1 artikel' );
+	expect( $one )->not->toContain( '1 artikels' );
+	expect( $many )->toContain( '2 artikels' );
+	expect( $in )->toContain( 'in Digkuns' );
+	expect( $match )->toContain( 'wat ooreenstem met "rym"' );
 } );
 
 test( 'featuredHtml renders "Die redakteur se rak" shelf with a card per item, and nothing when empty', function (): void {

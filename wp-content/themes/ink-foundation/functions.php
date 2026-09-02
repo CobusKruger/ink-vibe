@@ -588,6 +588,29 @@ function ink_foundation_qa_fixture_include_sponsors( mixed $include ): mixed {
 add_filter( 'ink_borg_strook_include_fixtures', 'ink_foundation_qa_fixture_include_sponsors' ); // Ink\Sponsors\HomepageStrip::INCLUDE_FIXTURES_FILTER.
 
 /**
+ * Fixture override for `ink/opleiding-argief` (the Opleiding hub) — same
+ * "turn the exclusion back on for this page only" shape as
+ * {@see ink_foundation_qa_fixture_include_sponsors()}. This block has no
+ * `*_FILTER` data seam either (a live paginated `WP_Query`,
+ * {@see \Ink\Training\Hub::runQuery()}), so `Ink\Training\Hub` itself EXCLUDES
+ * `QA FIXTURE — ` titled `opleiding_artikel` posts from every real page by
+ * default (Epic-19 theme-fidelity rework finding: with only fixture-titled
+ * `opleiding_artikel` posts existing on this dev site, 100% of the real
+ * `/opleiding/` page's content was fixture data). This callback turns that
+ * exclusion back OFF, gated to the QA gallery page only, so the three real
+ * seeded fixture `opleiding_artikel` posts stay visible here for the featured
+ * shelf + card-grid fidelity check.
+ *
+ * @param mixed $include The filter's incoming value (false unless another
+ *                        filter already overrode it).
+ * @return mixed
+ */
+function ink_foundation_qa_fixture_include_opleiding( mixed $include ): mixed {
+	return ink_foundation_is_qa_gallery() ? true : $include;
+}
+add_filter( 'ink_opleiding_argief_include_fixtures', 'ink_foundation_qa_fixture_include_opleiding' ); // Ink\Training\Hub::INCLUDE_FIXTURES_FILTER.
+
+/**
  * Register the core block style variations (card / button / emphasis).
  *
  * These are token-driven presentation treatments applied to any block instance

@@ -111,3 +111,25 @@
 	<!-- /wp:group -->
 </aside>
 <!-- /wp:group -->
+
+<!-- wp:group {"tagName":"section","align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-12"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignwide" style="padding-top:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-12)">
+	<!-- wp:heading {"level":2} -->
+	<h2 class="wp-block-heading">6. Opleiding hub — featured shelf + card grid</h2>
+	<!-- /wp:heading -->
+
+	<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
+	<p class="has-muted-text-color has-text-color has-sm-font-size"><code>ink/opleiding-argief</code> — no filter seam exists (a live paginated <code>WP_Query</code>, {@see Ink\Training\Hub::runQuery()}); the real <code>/opleiding/</code> page EXCLUDES <code>QA FIXTURE — </code> titled <code>opleiding_artikel</code> posts by default (Epic-19 theme-fidelity rework finding — the same leak class fixed on the sponsor strip). This embed turns that exclusion back on via <code>ink_opleiding_argief_include_fixtures</code>, gated to this page only, so the three real seeded <code>QA FIXTURE — </code> <code>opleiding_artikel</code> posts stay visible here for the featured shelf + card-grid fidelity check.</p>
+	<!-- /wp:paragraph -->
+</section>
+<!-- /wp:group -->
+
+<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide">
+		<!-- wp:ink/opleiding-argief /-->
+	</div>
+	<!-- /wp:group -->
+</section>
+<!-- /wp:group -->
