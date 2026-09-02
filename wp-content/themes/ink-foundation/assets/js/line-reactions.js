@@ -71,6 +71,17 @@
 					if ( data && ! data.removed && data.reaction ) {
 						btn.classList.add( 'is-active' );
 					}
+					lineEl.classList.toggle( 'has-reaksie', !! bar.querySelector( '.is-active' ) );
+
+					// A mouse click leaves the button holding real DOM focus, which
+					// keeps `:focus-within` true on the line (and so keeps every
+					// icon in the toolbar revealed, not just the selected one) until
+					// focus moves elsewhere. Release it so the reveal-on-select rule
+					// scopes back down to the persistent `.is-active` icon alone, the
+					// way it already does for :hover. Keyboard users tabbing through
+					// the toolbar are unaffected — focus moves to the next control
+					// as normal, it just doesn't linger here after a click.
+					btn.blur();
 				} ).catch( function () {
 					/* leave state unchanged on failure; the server is the source of truth */
 				} );

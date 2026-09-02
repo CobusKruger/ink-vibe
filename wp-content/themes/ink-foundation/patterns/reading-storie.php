@@ -45,10 +45,6 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 			<!-- wp:post-date {"fontSize":"sm","textColor":"muted-text"} /-->
 		</div>
 		<!-- /wp:group -->
-
-		<!-- wp:ink/reaksie-tellers /-->
-
-		<!-- wp:ink/leeslys-knoppie /-->
 	</div>
 	<!-- /wp:group -->
 </section>
@@ -57,6 +53,14 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:post-content {"className":"ink-lees-storie__prose","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"fontSize":"lg","layout":{"type":"constrained","contentSize":"672px"}} /-->
+
+	<!-- wp:group {"lock":{"move":true,"remove":true},"className":"ink-reaksie-bar"} -->
+	<div class="wp-block-group ink-reaksie-bar">
+		<!-- wp:ink/reaksie-tellers /-->
+
+		<!-- wp:ink/leeslys-knoppie /-->
+	</div>
+	<!-- /wp:group -->
 
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"margin":{"top":"var:preset|spacing|s-48"}}},"layout":{"type":"constrained","contentSize":"672px"}} -->
 	<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--s-48)">

@@ -75,10 +75,6 @@ $ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex;vert
 		<!-- wp:paragraph {"className":"ink-gedig-hint","fontSize":"sm"} -->
 		<p class="ink-gedig-hint has-sm-font-size"><?php echo $ink_gedig_heart_svg; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, hand-authored inline SVG, no user input */ ?><?php echo esc_html__( 'Merk hierdie reël', 'ink-foundation' ); ?></p>
 		<!-- /wp:paragraph -->
-
-		<!-- wp:ink/reaksie-tellers /-->
-
-		<!-- wp:ink/leeslys-knoppie /-->
 	</div>
 	<!-- /wp:group -->
 </section>
@@ -89,6 +85,14 @@ $ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex;vert
 	<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"576px"}} -->
 	<div class="wp-block-group">
 		<!-- wp:ink/gedig-body /-->
+
+		<!-- wp:group {"lock":{"move":true,"remove":true},"className":"ink-reaksie-bar"} -->
+		<div class="wp-block-group ink-reaksie-bar">
+			<!-- wp:ink/reaksie-tellers /-->
+
+			<!-- wp:ink/leeslys-knoppie /-->
+		</div>
+		<!-- /wp:group -->
 	</div>
 	<!-- /wp:group -->
 </section>
