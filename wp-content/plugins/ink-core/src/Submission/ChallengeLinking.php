@@ -13,6 +13,7 @@ use Ink\Content\ChallengeRound;
 use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
+use Ink\Kernel\QaFixture;
 use Ink\Kernel\Sast;
 use Ink\Kernel\Scalar;
 
@@ -50,6 +51,20 @@ class ChallengeLinking {
 	 * The maximum entries of a given content type, per author, per uitdaging (FR-48).
 	 */
 	public const MAX_ENTRIES_PER_TYPE = 3;
+
+	/**
+	 * Overridable data seam: turns QA-fixture-titled uitdagings back ON for the
+	 * Skryf tick-box list (Epic-19 theme-fidelity re-audit finding — the tick-box
+	 * query read published `uitdaging` posts with NO exclusion at all, so the real
+	 * `/skryf/` page's checklist showed 3 `QA FIXTURE — ` challenges alongside the
+	 * one real one). Mirrors {@see \Ink\Challenges\Archive::INCLUDE_FIXTURES_FILTER}.
+	 * Not currently wired to a QA gallery embed (this is a form field list, not an
+	 * archive block) — the seam exists for a future one, exclusion is simply
+	 * always the default today.
+	 *
+	 * @var string
+	 */
+	public const INCLUDE_FIXTURES_FILTER = 'ink_skryf_uitdagings_include_fixtures';
 
 	/**
 	 * Whether another entry of a type is allowed given the author's existing count
@@ -227,20 +242,40 @@ class ChallengeLinking {
 	}
 
 	/**
-	 * The published uitdaging posts. Overridable seam for tests.
+	 * The published uitdaging posts, excluding QA-fixture-titled ones by default
+	 * (see {@see INCLUDE_FIXTURES_FILTER}). Overridable seam for tests.
 	 *
 	 * @return array<int, object> The uitdaging posts.
 	 */
 	protected function publishedChallenges(): array {
-		return get_posts(
-			array(
-				'post_type'   => PostTypes::UITDAGING,
-				'post_status' => 'publish',
-				'numberposts' => -1,
-				'orderby'     => 'date',
-				'order'       => 'DESC',
-			)
+		$args = array(
+			'post_type'   => PostTypes::UITDAGING,
+			'post_status' => 'publish',
+			'numberposts' => -1,
+			'orderby'     => 'date',
+			'order'       => 'DESC',
 		);
+
+		if ( (bool) apply_filters( self::INCLUDE_FIXTURES_FILTER, false ) ) {
+			return get_posts( $args );
+		}
+
+		$exclude_fixtures = static function ( string $where, \WP_Query $wp_query ): string {
+			global $wpdb;
+
+			return $where . $wpdb->prepare(
+				" AND {$wpdb->posts}.post_title NOT LIKE %s",
+				$wpdb->esc_like( QaFixture::TITLE_PREFIX ) . '%'
+			);
+		};
+
+		// get_posts() defaults suppress_filters to true (unlike a bare `new WP_Query()`),
+		// which would silently no-op the posts_where filter above — explicit false needed.
+		add_filter( 'posts_where', $exclude_fixtures, 10, 2 );
+		$posts = get_posts( array_merge( $args, array( 'suppress_filters' => false ) ) );
+		remove_filter( 'posts_where', $exclude_fixtures, 10 );
+
+		return $posts;
 	}
 
 	/**

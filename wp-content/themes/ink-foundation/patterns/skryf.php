@@ -110,7 +110,7 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 					continue;
 				}
 				?>
-				<label class="ink-skryf-type">
+				<label class="ink-skryf-type ink-skryf-type--<?php echo esc_attr( $ink_slug ); ?>">
 					<input type="radio" name="<?php echo esc_attr( $ink_skryf['field_type'] ); ?>" value="<?php echo esc_attr( $ink_slug ); ?>"<?php echo $ink_first ? ' checked' : ''; ?> data-counter-mode="<?php echo esc_attr( isset( $ink_type['counter_mode'] ) ? (string) $ink_type['counter_mode'] : 'words' ); ?>" data-placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_slug ] ?? '' ); ?>" />
 					<?php if ( isset( $ink_skryf_icons[ $ink_slug ] ) ) : ?>
 						<span class="ink-skryf-type__icon ink-skryf-type__icon--<?php echo esc_attr( $ink_slug ); ?>" aria-hidden="true"><?php echo ink_foundation_icon( $ink_skryf_icons[ $ink_slug ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></span>
