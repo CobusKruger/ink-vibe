@@ -12,11 +12,22 @@
  * the `ink_foundation_term()` bridge (single-source, never a bare literal).
  * No WP comments UI — comments are disabled site-wide (Ink\Engagement\Comments,
  * Story 1.8) and the reading surface adds none.
+ *
+ * Text-highlight-reactions hint (post-Epic-19 storie fidelity pass, FR-24/26):
+ * mirrors reading-gedig's `ink-gedig-hint` pill, but with the ratified copy for
+ * THIS interaction — "Kies enige teks om jou gunsteling passasies uit te lig"
+ * (docs/ui-copy-translations.md row 421, the exact translation of Lovable's own
+ * "Select any text to highlight your favorite passages" wenk-etiket) and the
+ * `highlight`/`highlight-foreground` design tokens (unused elsewhere in the
+ * theme until now) rather than gedig's accent-green tint, matching Lovable's
+ * own `bg-highlight/20` treatment for this specific hint pill.
  */
 
 $ink_type_label = function_exists( 'ink_foundation_term' )
 	? ink_foundation_term( 'storie', 'Storie' )
 	: 'Storie';
+
+$ink_storie_highlighter_svg = '<span aria-hidden="true" style="display:inline-flex;vertical-align:-2px;margin-right:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg></span>';
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
@@ -45,6 +56,10 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 			<!-- wp:post-date {"fontSize":"sm","textColor":"muted-text"} /-->
 		</div>
 		<!-- /wp:group -->
+
+		<!-- wp:paragraph {"className":"ink-storie-hint","textAlign":"center","fontSize":"sm"} -->
+		<p class="ink-storie-hint has-text-align-center has-sm-font-size"><?php echo $ink_storie_highlighter_svg; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, hand-authored inline SVG, no user input */ ?><?php echo esc_html__( 'Kies enige teks om jou gunsteling passasies uit te lig', 'ink-foundation' ); ?></p>
+		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
 </section>

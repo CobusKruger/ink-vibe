@@ -227,6 +227,41 @@ final class ReactionStore {
 	}
 
 	/**
+	 * The distinct anchor indexes (lines for gedig, paragraphs for storie/
+	 * artikel) that carry AT LEAST ONE reaction from ANY member, for a work.
+	 *
+	 * The single-source read behind the text-highlight-reactions client's
+	 * "render the persisted tint for every visitor, not just the ephemeral
+	 * selection" requirement (post-Epic-19 storie fidelity pass): unlike
+	 * {@see self::userReaction()} (one member's own reaction), this is a public,
+	 * aggregate fact about the work — reused server-side to pre-mark the
+	 * `has-reaksie` state on page render for every reader.
+	 *
+	 * @param int $post_id The work.
+	 * @return list<int> Distinct anchor indexes with at least one reaction.
+	 */
+	public static function indexesWithReactions( int $post_id ): array {
+		global $wpdb;
+
+		if ( $post_id <= 0 ) {
+			return array();
+		}
+
+		$table = self::tableName();
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT DISTINCT line_index FROM {$table} WHERE post_id = %d",
+				$post_id
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		return is_array( $rows ) ? array_map( 'intval', $rows ) : array();
+	}
+
+	/**
 	 * A work's reaction totals, aggregated across all its lines (Story 7.8).
 	 *
 	 * Normalised to every {@see Reaction} value (a reaction with no rows → 0), so

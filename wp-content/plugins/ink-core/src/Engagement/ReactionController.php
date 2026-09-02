@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Engagement;
 
+use Ink\Content\PostTypes;
 use Ink\Kernel\Reaction;
 use WP_Error;
 use WP_REST_Request;
@@ -32,6 +33,13 @@ defined( 'ABSPATH' ) || exit;
  * a real CONTENT line, never a blank separator (the 7.2 contract enforced at the
  * write layer, not just in the display).
  *
+ * Post-Epic-19: storie/artikel selection-to-reaction reuses this SAME route and
+ * the same `line` wire field, re-purposed as a 0-based PARAGRAPH index for those
+ * two post types ({@see ProseBody::tokenize()}) rather than a physical line —
+ * {@see self::isValidAnchor()} dispatches on post type so each genre's own
+ * anchor contract is enforced without a second endpoint or a new table column.
+ *
+
  * The validation + toggle decision are pure ({@see self::validate()},
  * {@see self::decideRemoval()}); the callbacks are thin WP glue over them.
  *
@@ -118,7 +126,7 @@ final class ReactionController {
 		$reaction = sanitize_key( (string) $request->get_param( 'reaction' ) );
 		$user_id  = get_current_user_id();
 
-		$error = self::validate( $line, $reaction, Readable::isBydrae( $post_id ), self::bodyOf( $post_id ) );
+		$error = self::validate( $line, $reaction, Readable::isBydrae( $post_id ), self::bodyOf( $post_id ), self::postTypeOf( $post_id ) );
 		if ( $error instanceof WP_Error ) {
 			return $error;
 		}
@@ -173,13 +181,23 @@ final class ReactionController {
 	/**
 	 * Validate a reaction write. Pure — no WordPress state, no DB.
 	 *
-	 * @param int    $line         The submitted line index.
+	 * @param int    $line         The submitted anchor index — a physical LINE for
+	 *                             gedig ({@see GedigBody::tokenize()}), a PARAGRAPH
+	 *                             for storie/artikel ({@see ProseBody::tokenize()}).
+	 *                             Reuses the one `line_index` column/wire field for
+	 *                             both anchor kinds (a post is only ever one CPT, so
+	 *                             there is no ambiguity) rather than adding a second
+	 *                             REST route.
 	 * @param string $reactionRaw  The submitted reaction value (already sanitised).
 	 * @param bool   $postReadable Whether the target post exists and is published.
 	 * @param string $postContent  The target post's raw stored body.
+	 * @param string $postType     The target post's post type — selects the anchor
+	 *                             tokeniser (defaults to gedig, preserving the
+	 *                             original Story 7.3 call shape for existing
+	 *                             callers/tests).
 	 * @return WP_Error|null A coded Afrikaans error, or null when valid.
 	 */
-	public static function validate( int $line, string $reactionRaw, bool $postReadable, string $postContent ): ?WP_Error {
+	public static function validate( int $line, string $reactionRaw, bool $postReadable, string $postContent, string $postType = PostTypes::GEDIG ): ?WP_Error {
 		if ( ! $postReadable ) {
 			return new WP_Error( 'ink_reaksie_invalid_post', 'Hierdie werk is nie beskikbaar vir reaksies nie.' );
 		}
@@ -188,7 +206,7 @@ final class ReactionController {
 			return new WP_Error( 'ink_reaksie_invalid_reaction', 'Onbekende reaksie.' );
 		}
 
-		if ( ! self::isContentLine( $line, $postContent ) ) {
+		if ( ! self::isValidAnchor( $line, $postContent, $postType ) ) {
 			return new WP_Error( 'ink_reaksie_invalid_line', 'Mens kan net op \'n inhoudsreël reageer, nie op \'n leë reël nie.' );
 		}
 
@@ -206,6 +224,26 @@ final class ReactionController {
 	 */
 	public static function decideRemoval( ?Reaction $current, Reaction $requested ): bool {
 		return $current === $requested;
+	}
+
+	/**
+	 * Whether `$line` is a valid anchor index for `$postType`'s body — a
+	 * CONTENT-line index (not blank/out-of-range) for gedig, a paragraph index
+	 * for storie/artikel. Dispatches to the CPT-appropriate tokeniser so each
+	 * genre's own anchor contract is enforced at the write layer, never just
+	 * assumed from the display.
+	 *
+	 * @param int    $line     The submitted anchor index.
+	 * @param string $body     The raw stored body.
+	 * @param string $postType The target post's post type.
+	 * @return bool
+	 */
+	private static function isValidAnchor( int $line, string $body, string $postType ): bool {
+		if ( PostTypes::GEDIG === $postType ) {
+			return self::isContentLine( $line, $body );
+		}
+
+		return ProseBody::isParagraphIndex( $line, $body );
 	}
 
 	/**
@@ -236,5 +274,17 @@ final class ReactionController {
 		$post = $post_id > 0 ? get_post( $post_id ) : null;
 
 		return $post instanceof \WP_Post ? $post->post_content : '';
+	}
+
+	/**
+	 * The post type of a post, or '' when absent — selects the anchor tokeniser.
+	 *
+	 * @param int $post_id The post.
+	 * @return string
+	 */
+	private static function postTypeOf( int $post_id ): string {
+		$post = $post_id > 0 ? get_post( $post_id ) : null;
+
+		return $post instanceof \WP_Post ? (string) $post->post_type : '';
 	}
 }

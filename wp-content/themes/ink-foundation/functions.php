@@ -155,6 +155,72 @@ function ink_foundation_enqueue_line_reactions(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_line_reactions' );
 
 /**
+ * Enqueue the text-highlight-reactions client on a single storie (post-Epic-19
+ * storie fidelity pass, FR-24/26).
+ *
+ * The storie equivalent of {@see ink_foundation_enqueue_line_reactions()}: a lid
+ * selects arbitrary text in the prose body, a floating bar attaches the same
+ * hartjie/duim_op/wow reaction through the SAME `ink/v1/reaksie` REST endpoint
+ * (re-purposing the `line` field as a 0-based paragraph index for this CPT — see
+ * `Ink\Engagement\ReactionController`/`ProseBody`). `reactedParagraphs` is the
+ * aggregate list of paragraph indexes that already carry a reaction from ANY
+ * reader, so the persistent tint renders on page load for every visitor, not
+ * just the ephemeral selection that just reacted.
+ *
+ * artikel is NOT in scope: `docs/design-handoff/page-map.csv` lists this
+ * interaction only for lees-storie (EXPERIENCE.md's page-map has no equivalent
+ * lees-artikel row), so this stays storie-only per the product-owner directive.
+ */
+function ink_foundation_enqueue_text_highlight_reactions(): void {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( 'storie' ) ) {
+		return;
+	}
+
+	$theme   = wp_get_theme();
+	$post_id = get_the_ID();
+
+	wp_enqueue_script(
+		'ink-foundation-text-highlight-reactions',
+		get_theme_file_uri( 'assets/js/text-highlight-reactions.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+
+	wp_localize_script(
+		'ink-foundation-text-highlight-reactions',
+		'inkTextHighlightReactions',
+		array(
+			'restUrl'           => esc_url_raw( rest_url( 'ink/v1/reaksie' ) ),
+			'nonce'             => wp_create_nonce( 'wp_rest' ),
+			'postId'            => $post_id,
+			'containerSelector' => '.ink-lees-storie__prose',
+			'reactedParagraphs' => ( $post_id && class_exists( '\\Ink\\Engagement\\ReactionStore' ) )
+				? array_values( \Ink\Engagement\ReactionStore::indexesWithReactions( (int) $post_id ) )
+				: array(),
+			'reactions'         => array(
+				array(
+					'key'   => 'hartjie',
+					'label' => __( 'Hartjie', 'ink-foundation' ),
+					'glyph' => '♥',
+				),
+				array(
+					'key'   => 'duim_op',
+					'label' => __( 'Duim op', 'ink-foundation' ),
+					'glyph' => '👍',
+				),
+				array(
+					'key'   => 'wow',
+					'label' => __( 'Wow', 'ink-foundation' ),
+					'glyph' => '✨',
+				),
+			),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_text_highlight_reactions' );
+
+/**
  * Enqueue the Gemeenskapsreaksie form client on a single work (Story 7.4, FR-27).
  *
  * The ink/gemeenskapsreaksies block renders the typed response form server-side;
@@ -270,7 +336,7 @@ add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_vasgespel' );
  * My Profiel had no "Wie ek volg" list to click an unfollow button from.
  */
 function ink_foundation_enqueue_volg(): void {
-	$on_my_profiel   = function_exists( 'is_page' ) && is_page( 'my-profiel' );
+	$on_my_profiel     = function_exists( 'is_page' ) && is_page( 'my-profiel' );
 	$on_skrywerprofiel = function_exists( 'is_author' ) && is_author();
 
 	if ( ! $on_my_profiel && ! $on_skrywerprofiel ) {

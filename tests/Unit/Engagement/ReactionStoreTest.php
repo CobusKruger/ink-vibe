@@ -175,3 +175,25 @@ test( 'countsForPost returns all-zero counts when there are no reactions', funct
 
 	expect( ReactionStore::countsForPost( 999 ) )->toBe( array( 'hartjie' => 0, 'duim_op' => 0, 'wow' => 0 ) );
 } );
+
+test( 'indexesWithReactions returns the distinct anchor indexes with at least one reaction', function (): void {
+	$GLOBALS['wpdb']->shouldReceive( 'prepare' )
+		->once()
+		->with( Mockery::pattern( '/SELECT DISTINCT line_index FROM wp_ink_line_reactions WHERE post_id = %d/' ), 42 )
+		->andReturn( 'PREPARED' );
+
+	$GLOBALS['wpdb']->shouldReceive( 'get_col' )->once()->with( 'PREPARED' )->andReturn( array( '0', '2' ) );
+
+	expect( ReactionStore::indexesWithReactions( 42 ) )->toBe( array( 0, 2 ) );
+} );
+
+test( 'indexesWithReactions returns an empty list for a non-positive post id without touching the DB', function (): void {
+	expect( ReactionStore::indexesWithReactions( 0 ) )->toBe( array() );
+} );
+
+test( 'indexesWithReactions returns an empty list when the query yields no rows', function (): void {
+	$GLOBALS['wpdb']->shouldReceive( 'prepare' )->andReturn( 'PREPARED' );
+	$GLOBALS['wpdb']->shouldReceive( 'get_col' )->andReturn( null );
+
+	expect( ReactionStore::indexesWithReactions( 999 ) )->toBe( array() );
+} );
