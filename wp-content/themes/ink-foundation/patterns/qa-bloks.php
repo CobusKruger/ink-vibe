@@ -155,3 +155,25 @@
 	<!-- /wp:group -->
 </section>
 <!-- /wp:group -->
+
+<!-- wp:group {"tagName":"section","align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-12"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignwide" style="padding-top:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-12)">
+	<!-- wp:heading {"level":2} -->
+	<h2 class="wp-block-heading">8. Uitdagings argief — card grid</h2>
+	<!-- /wp:heading -->
+
+	<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
+	<p class="has-muted-text-color has-text-color has-sm-font-size"><code>ink/uitdaging-argief</code> — no filter seam exists (a live paginated <code>WP_Query</code>, {@see Ink\Challenges\Archive::runQuery()}); the real <code>/uitdaging/</code> page EXCLUDES <code>QA FIXTURE — </code> titled <code>uitdaging</code> posts by default (Epic-19 theme-fidelity re-audit finding — the same leak class already fixed on the sponsor strip, Opleiding hub and Biblioteek archive; this listing had NO exclusion at all before). This embed turns that exclusion back on via <code>ink_uitdaging_argief_include_fixtures</code>, gated to this page only, so the three real seeded <code>QA FIXTURE — </code> <code>uitdaging</code> posts stay visible here for the card-grid fidelity check.</p>
+	<!-- /wp:paragraph -->
+</section>
+<!-- /wp:group -->
+
+<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide">
+		<!-- wp:ink/uitdaging-argief /-->
+	</div>
+	<!-- /wp:group -->
+</section>
+<!-- /wp:group -->

@@ -13,6 +13,7 @@ use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
 use Ink\I18n\Terms;
 use Ink\Kernel\ArchiveRender;
+use Ink\Kernel\QaFixture;
 use Ink\Kernel\Sast;
 use Ink\Kernel\Scalar;
 
@@ -57,6 +58,20 @@ final class Archive {
 	 * @var string
 	 */
 	public const PAGED_VAR = 'uitdaging_bladsy';
+
+	/**
+	 * Overridable data seam: turns QA-fixture-titled `uitdaging` posts back ON for
+	 * this listing (Epic-19 theme-fidelity re-audit finding, workstream 7 — the
+	 * archive query had NO fixture exclusion at all, so the real `/uitdaging/` page
+	 * showed 3 QA FIXTURE cards alongside the one real published challenge; the same
+	 * leak class already fixed on the sponsor strip, Opleiding hub, Biblioteek
+	 * archive and the single-challenge entries list). Mirrors
+	 * {@see \Ink\Training\Hub::INCLUDE_FIXTURES_FILTER} /
+	 * {@see \Ink\Library\Archive::INCLUDE_FIXTURES_FILTER}.
+	 *
+	 * @var string
+	 */
+	public const INCLUDE_FIXTURES_FILTER = 'ink_uitdaging_argief_include_fixtures';
 
 	/**
 	 * Lucide `calendar` icon path data (Post-Epic-19 fidelity pass, workstream 7) —
@@ -164,13 +179,46 @@ final class Archive {
 	}
 
 	/**
+	 * Run a `WP_Query`, excluding QA-fixture-titled posts by default (Epic-19
+	 * theme-fidelity re-audit finding — see {@see INCLUDE_FIXTURES_FILTER}). The
+	 * exclusion is applied at the SQL layer (a scoped `posts_where` filter, removed
+	 * immediately after), keeping `found_posts`/`max_num_pages` accurate for
+	 * pagination even with fixtures excluded. Mirrors
+	 * {@see \Ink\Training\Hub::runQuery()} / {@see \Ink\Library\Archive::runQuery()} /
+	 * {@see \Ink\Challenges\SinglePage::runQuery()}. Impure (WP_Query + filter).
+	 *
+	 * @param array<string, mixed> $args The `WP_Query` args.
+	 * @return \WP_Query
+	 */
+	private static function runQuery( array $args ): \WP_Query {
+		if ( (bool) apply_filters( self::INCLUDE_FIXTURES_FILTER, false ) ) {
+			return new \WP_Query( $args );
+		}
+
+		$exclude_fixtures = static function ( string $where, \WP_Query $wp_query ): string {
+			global $wpdb;
+
+			return $where . $wpdb->prepare(
+				" AND {$wpdb->posts}.post_title NOT LIKE %s",
+				$wpdb->esc_like( QaFixture::TITLE_PREFIX ) . '%'
+			);
+		};
+
+		add_filter( 'posts_where', $exclude_fixtures, 10, 2 );
+		$query = new \WP_Query( $args );
+		remove_filter( 'posts_where', $exclude_fixtures, 10 );
+
+		return $query;
+	}
+
+	/**
 	 * Block render callback. Reads the page input, queries, builds cards, renders.
 	 *
 	 * @return string
 	 */
 	public static function render(): string {
 		$paged = ArchiveRender::requestInt( self::PAGED_VAR, 1 );
-		$query = new \WP_Query( self::queryArgs( $paged, self::PER_PAGE ) );
+		$query = self::runQuery( self::queryArgs( $paged, self::PER_PAGE ) );
 		$now   = Sast::now();
 
 		$cards = array();
@@ -208,10 +256,11 @@ final class Archive {
 	/**
 	 * One challenge card. Pure — Terms + escaping only.
 	 *
-	 * Post-Epic-19 fidelity pass (workstream 7): a card-grid recipe matching the
-	 * established `Ink\Training\Hub`/`Ink\Library\Archive` archive-card language
-	 * (surface-alt / border / radius.xl / shadow.sm / hover-lift, footer border +
-	 * hover-reveal "Lees meer" affordance) — this page had NO CSS at all before
+	 * Post-Epic-19 fidelity pass (workstream 7, re-audited workstream 7b): a card-grid
+	 * recipe matching the established `Ink\Training\Hub`/`Ink\Library\Archive`
+	 * archive-card language (surface-alt / border / radius.lg / shadow.sm /
+	 * hover-lift, footer border + hover-reveal "Lees meer" affordance) — this page had
+	 * NO CSS at all before
 	 * (same shape as Opleiding/Biblioteek pre-fix). The status/countdown pill and
 	 * the icon-led sluitingsdatum row deliberately REUSE the exact
 	 * `ink-uitdaging__toestand-pil` / `ink-uitdaging__sluitingsdatum-ry` classes

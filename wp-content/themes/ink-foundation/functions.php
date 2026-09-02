@@ -635,6 +635,29 @@ function ink_foundation_qa_fixture_include_biblioteek( mixed $include ): mixed {
 add_filter( 'ink_biblioteek_argief_include_fixtures', 'ink_foundation_qa_fixture_include_biblioteek' ); // Ink\Library\Archive::INCLUDE_FIXTURES_FILTER.
 
 /**
+ * Fixture override for `ink/uitdaging-argief` (the Uitdagings list) — same
+ * "turn the exclusion back on for this page only" shape as
+ * {@see ink_foundation_qa_fixture_include_biblioteek()}. This block has no
+ * `*_FILTER` data seam either (a live paginated `WP_Query`,
+ * {@see \Ink\Challenges\Archive::runQuery()}), so `Ink\Challenges\Archive` itself
+ * EXCLUDES `QA FIXTURE — ` titled `uitdaging` posts from every real page by
+ * default (Epic-19 theme-fidelity re-audit finding: the archive query had NO
+ * exclusion at all, so the real `/uitdaging/` page showed 3 QA FIXTURE cards
+ * alongside the one real published challenge). This callback turns that
+ * exclusion back OFF, gated to the QA gallery page only, so the three real
+ * seeded fixture `uitdaging` posts stay visible here for the card-grid fidelity
+ * check.
+ *
+ * @param mixed $include The filter's incoming value (false unless another
+ *                        filter already overrode it).
+ * @return mixed
+ */
+function ink_foundation_qa_fixture_include_uitdagings( mixed $include ): mixed {
+	return ink_foundation_is_qa_gallery() ? true : $include;
+}
+add_filter( 'ink_uitdaging_argief_include_fixtures', 'ink_foundation_qa_fixture_include_uitdagings' ); // Ink\Challenges\Archive::INCLUDE_FIXTURES_FILTER.
+
+/**
  * Register the core block style variations (card / button / emphasis).
  *
  * These are token-driven presentation treatments applied to any block instance
