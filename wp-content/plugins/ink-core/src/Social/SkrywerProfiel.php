@@ -12,6 +12,7 @@ namespace Ink\Social;
 use Ink\Content\PostTypes;
 use Ink\Engagement\Api as EngagementApi;
 use Ink\I18n\Terms;
+use Ink\Kernel\QaFixture;
 use Ink\Tiers\Api as TiersApi;
 use WP_Query;
 
@@ -171,16 +172,17 @@ final class SkrywerProfiel {
 	/**
 	 * The genre pills — the reader-facing bydrae types this skrywer has actually
 	 * published in (real data derived from `Content\PostTypes::readableTypes()`,
-	 * never an invented taxonomy).
+	 * never an invented taxonomy). Fixture-excluded (see {@see publishedWorkIds()}).
 	 *
 	 * @param int $author_id The skrywer.
 	 * @return list<string>
 	 */
 	private static function genreLabels( int $author_id ): array {
+		$counts = self::publishedWorkCountsByType( $author_id );
 		$labels = array();
 
 		foreach ( PostTypes::readableTypes() as $type ) {
-			if ( (int) count_user_posts( $author_id, $type, true ) > 0 ) {
+			if ( ( $counts[ $type ] ?? 0 ) > 0 ) {
 				$labels[] = Terms::label( $type );
 			}
 		}
@@ -191,17 +193,18 @@ final class SkrywerProfiel {
 	/**
 	 * The per-type published-work counts (e.g. "[N] stories · [N] gedigte ·
 	 * [N] artikels" — zero-value types omitted per the ratified copy sheet's
-	 * note 2).
+	 * note 2). Fixture-excluded (see {@see publishedWorkIds()}).
 	 *
 	 * @param int $author_id The skrywer.
 	 * @return array{total:int, items:list<array{label:string,count:int}>}
 	 */
 	private static function worksBreakdown( int $author_id ): array {
-		$items = array();
-		$total = 0;
+		$counts = self::publishedWorkCountsByType( $author_id );
+		$items  = array();
+		$total  = 0;
 
 		foreach ( PostTypes::readableTypes() as $type ) {
-			$count  = (int) count_user_posts( $author_id, $type, true );
+			$count  = $counts[ $type ] ?? 0;
 			$total += $count;
 
 			if ( $count > 0 ) {
@@ -219,7 +222,10 @@ final class SkrywerProfiel {
 	}
 
 	/**
-	 * The published (readable-type) post ids for a skrywer.
+	 * The published (readable-type) post ids for a skrywer, EXCLUDING any
+	 * `QA FIXTURE — ` titled post (same fixture-leak bug class already fixed on
+	 * every other page this rework — a writer's real public work counts/genre
+	 * pills must never be inflated by seeded QA content).
 	 *
 	 * @param int $author_id The skrywer.
 	 * @return list<int>
@@ -236,7 +242,36 @@ final class SkrywerProfiel {
 			)
 		);
 
-		return array_map( 'intval', $query->posts );
+		$ids = array_map( 'intval', $query->posts );
+
+		return array_values(
+			array_filter(
+				$ids,
+				static function ( int $post_id ): bool {
+					return ! QaFixture::isFixtureTitle( get_the_title( $post_id ) );
+				}
+			)
+		);
+	}
+
+	/**
+	 * The fixture-excluded published-work counts, grouped by post type. Shared
+	 * helper for {@see genreLabels()} and {@see worksBreakdown()} — a single
+	 * query pass instead of one `count_user_posts()` call per type (which also
+	 * can't exclude by title at all).
+	 *
+	 * @param int $author_id The skrywer.
+	 * @return array<string,int> Post type => count.
+	 */
+	private static function publishedWorkCountsByType( int $author_id ): array {
+		$counts = array();
+
+		foreach ( self::publishedWorkIds( $author_id ) as $post_id ) {
+			$type            = (string) get_post_type( $post_id );
+			$counts[ $type ] = ( $counts[ $type ] ?? 0 ) + 1;
+		}
+
+		return $counts;
 	}
 
 	/**
@@ -291,6 +326,10 @@ final class SkrywerProfiel {
 
 		foreach ( PinnedWorks::forUser( $author_id ) as $post_id ) {
 			if ( 'publish' !== get_post_status( $post_id ) ) {
+				continue;
+			}
+
+			if ( QaFixture::isFixtureTitle( get_the_title( $post_id ) ) ) {
 				continue;
 			}
 
