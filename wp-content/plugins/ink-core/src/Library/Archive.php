@@ -12,6 +12,7 @@ namespace Ink\Library;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
 use Ink\Kernel\ArchiveRender;
+use Ink\Kernel\QaFixture;
 use Ink\I18n\Terms;
 
 defined( 'ABSPATH' ) || exit;
@@ -61,6 +62,21 @@ final class Archive {
 	 * @var int
 	 */
 	public const FEATURED = 3;
+
+	/**
+	 * Overridable seam: when a filter callback returns true, QA-fixture-titled
+	 * `biblioteek_item` posts (see {@see QaFixture}) are INCLUDED in both the
+	 * featured shelf and the main listing instead of excluded (the default). This
+	 * block has no `*_FILTER` data seam to hook — it reads a live `WP_Query`
+	 * directly, so a fixture-titled post leaks onto the real `/biblioteek/` page
+	 * exactly like {@see \Ink\Training\Hub}'s opleiding hub did before its own
+	 * Epic-19 theme-fidelity fix (the identical leak class, re-found here during the
+	 * biblioteek re-audit). The theme gates its own override to the QA/component
+	 * gallery page only, mirroring {@see \Ink\Training\Hub::INCLUDE_FIXTURES_FILTER}.
+	 *
+	 * @var string
+	 */
+	public const INCLUDE_FIXTURES_FILTER = 'ink_biblioteek_argief_include_fixtures';
 
 	/**
 	 * Custom paged query var — avoids colliding with WP page pagination.
@@ -218,7 +234,7 @@ final class Archive {
 
 		$active_genre = '' !== $genre ? $genre : null;
 
-		$query = new \WP_Query( self::queryArgs( $paged, self::PER_PAGE, $active_genre, $search ) );
+		$query = self::runQuery( self::queryArgs( $paged, self::PER_PAGE, $active_genre, $search ) );
 
 		$cards = array();
 
@@ -234,7 +250,7 @@ final class Archive {
 		$featured = array();
 
 		if ( 1 === max( 1, $paged ) && null === $active_genre && '' === $search ) {
-			$featured_query = new \WP_Query( self::featuredArgs( self::FEATURED ) );
+			$featured_query = self::runQuery( self::featuredArgs( self::FEATURED ) );
 
 			foreach ( $featured_query->posts as $post ) {
 				if ( $post instanceof \WP_Post ) {
@@ -254,6 +270,39 @@ final class Archive {
 				'search'    => $search,
 			)
 		);
+	}
+
+	/**
+	 * Run a `WP_Query`, excluding QA-fixture-titled posts by default (Epic-19
+	 * theme-fidelity rework finding — see {@see INCLUDE_FIXTURES_FILTER}). The
+	 * exclusion is applied at the SQL layer (a scoped `posts_where` filter, removed
+	 * immediately after) rather than by filtering `$query->posts` in PHP, so
+	 * `found_posts`/`max_num_pages` stay accurate for pagination even when fixtures
+	 * are excluded. Impure (WP_Query + filter). Mirrors
+	 * {@see \Ink\Training\Hub::runQuery()}.
+	 *
+	 * @param array<string, mixed> $args The `WP_Query` args.
+	 * @return \WP_Query
+	 */
+	private static function runQuery( array $args ): \WP_Query {
+		if ( (bool) apply_filters( self::INCLUDE_FIXTURES_FILTER, false ) ) {
+			return new \WP_Query( $args );
+		}
+
+		$exclude_fixtures = static function ( string $where, \WP_Query $wp_query ): string {
+			global $wpdb;
+
+			return $where . $wpdb->prepare(
+				" AND {$wpdb->posts}.post_title NOT LIKE %s",
+				$wpdb->esc_like( QaFixture::TITLE_PREFIX ) . '%'
+			);
+		};
+
+		add_filter( 'posts_where', $exclude_fixtures, 10, 2 );
+		$query = new \WP_Query( $args );
+		remove_filter( 'posts_where', $exclude_fixtures, 10 );
+
+		return $query;
 	}
 
 	/**

@@ -611,6 +611,30 @@ function ink_foundation_qa_fixture_include_opleiding( mixed $include ): mixed {
 add_filter( 'ink_opleiding_argief_include_fixtures', 'ink_foundation_qa_fixture_include_opleiding' ); // Ink\Training\Hub::INCLUDE_FIXTURES_FILTER.
 
 /**
+ * Fixture override for `ink/biblioteek-argief` (the Biblioteek archive) — same
+ * "turn the exclusion back on for this page only" shape as
+ * {@see ink_foundation_qa_fixture_include_opleiding()}. This block has no
+ * `*_FILTER` data seam either (a live paginated `WP_Query`,
+ * {@see \Ink\Library\Archive::runQuery()}), so `Ink\Library\Archive` itself
+ * EXCLUDES `QA FIXTURE — ` titled `biblioteek_item` posts from every real page by
+ * default (Epic-19 theme-fidelity rework finding, re-found during the biblioteek
+ * re-audit: with only fixture-titled `biblioteek_item` posts existing on this dev
+ * site, 100% of the real `/biblioteek/` page's content — including the "Uitgelig"
+ * featured strip — was fixture data). This callback turns that exclusion back OFF,
+ * gated to the QA gallery page only, so the three real seeded fixture
+ * `biblioteek_item` posts stay visible here for the featured shelf + card-grid
+ * fidelity check.
+ *
+ * @param mixed $include The filter's incoming value (false unless another
+ *                        filter already overrode it).
+ * @return mixed
+ */
+function ink_foundation_qa_fixture_include_biblioteek( mixed $include ): mixed {
+	return ink_foundation_is_qa_gallery() ? true : $include;
+}
+add_filter( 'ink_biblioteek_argief_include_fixtures', 'ink_foundation_qa_fixture_include_biblioteek' ); // Ink\Library\Archive::INCLUDE_FIXTURES_FILTER.
+
+/**
  * Register the core block style variations (card / button / emphasis).
  *
  * These are token-driven presentation treatments applied to any block instance
