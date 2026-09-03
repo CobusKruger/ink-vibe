@@ -1,0 +1,139 @@
+/**
+ * INK Foundation — Kontak (contact-form) stylesheet.
+ *
+ * Theme visual-fidelity Phase 2, page 15 (docs/theme-fidelity-rework-plan.md).
+ * Before this file the Kontak form had ZERO CSS anywhere — every control (name/
+ * e-mail/subject inputs, message textarea, labels, notices, submit button)
+ * rendered as raw unstyled browser form chrome (inputs computed
+ * `font-family: Arial`), the same bug shape already found and fixed on
+ * skryf/lees-storie/my-profiel. No live Lovable route exists for this page
+ * (MISSING_IN_CURRENT_LOVABLE_REPO, page-map.csv) — enqueued on the Kontak page
+ * ONLY, styled to internal design-system consistency with the closest sitewide
+ * precedent for a raw `<form>` of this shape (assets/css/skryf.css's field/
+ * button recipe), per page 13/lidmaatskap's established "no Lovable route"
+ * approach.
+ *
+ * TOKENS ONLY (Gate A): every colour/spacing/radius/type value resolves to a
+ * theme.json custom property.
+ */
+
+.ink-kontak-vorm__veld {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+}
+
+.ink-kontak-vorm__veld label {
+	display: block;
+	margin-bottom: var(--wp--preset--spacing--s-8);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-kontak-vorm input[type="text"],
+.ink-kontak-vorm input[type="email"],
+.ink-kontak-vorm textarea {
+	width: 100%;
+	box-sizing: border-box;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-12);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+.ink-kontak-vorm input[type="text"]::placeholder,
+.ink-kontak-vorm input[type="email"]::placeholder,
+.ink-kontak-vorm textarea::placeholder {
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-kontak-vorm input[type="text"]:focus-visible,
+.ink-kontak-vorm input[type="email"]:focus-visible,
+.ink-kontak-vorm textarea:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 2px var(--wp--preset--color--surface), 0 0 0 4px var(--wp--preset--color--primary);
+}
+
+.ink-kontak-vorm textarea {
+	min-height: 160px;
+	line-height: var(--wp--custom--line-height--relaxed);
+	resize: vertical;
+}
+
+/* The message field's inline hint ("Hoe ons kan help?") followed the label with
+   no line break or spacing at all — both were inline elements, so they ran
+   together on one line ("BoodskapHoe ons kan help?"). */
+.ink-kontak-vorm__wenk {
+	display: block;
+	margin-bottom: var(--wp--preset--spacing--s-8);
+	font-size: var(--wp--preset--font-size--xs);
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-kontak-vorm__privaatheid {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+	font-size: var(--wp--preset--font-size--xs);
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* ── Result notice (success / error, role="status"/"alert") ────────────────── */
+.ink-kontak-vorm__notice {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-16);
+	border-radius: var(--wp--custom--radius--md);
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+.ink-kontak-vorm__notice--ok {
+	border: 1px solid var(--wp--preset--color--success);
+	background-color: color-mix(in srgb, var(--wp--preset--color--success) 10%, transparent);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-kontak-vorm__notice--fout {
+	border: 1px solid var(--wp--preset--color--danger);
+	background-color: color-mix(in srgb, var(--wp--preset--color--danger) 10%, transparent);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* ── Submit button — established 44px / `0 32px` / weight-500 recipe ────────
+   The raw `<button class="wp-element-button">` already inherits theme.json's
+   global elements.button recipe (primary background, surface-alt text, radius
+   md, Lora — correctly Lora, matching the sitewide CTA-button convention: see
+   the fidelity handoff's rule that CTA buttons stay serif, only raw text-input
+   controls need the Inter-inheritance fix). That global rule sets no height/
+   padding/font-weight, so the button fell back to the browser's inconsistent
+   em-derived default (~49px tall, asymmetric padding, weight 400) — the same
+   page-scoped gap already fixed on uitdagings-single/gemeenskap/lidmaatskap. */
+.ink-kontak-vorm__stuur {
+	margin: var(--wp--preset--spacing--s-8) 0 0;
+}
+
+.ink-kontak-vorm__stuur button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 44px;
+	padding: 0 var(--wp--preset--spacing--s-32);
+	font-weight: var(--wp--custom--font-weight--medium);
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+}
+
+.ink-kontak-vorm__stuur button:hover {
+	background-color: var(--wp--preset--color--primary-light);
+}
+
+.ink-kontak-vorm__stuur button:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-kontak-vorm__stuur button {
+		transition: none;
+	}
+}

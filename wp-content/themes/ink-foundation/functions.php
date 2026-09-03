@@ -130,6 +130,32 @@ function ink_foundation_enqueue_ontdek_assets(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_ontdek_assets' );
 
 /**
+ * Enqueue the Kontak contact-form stylesheet on the Kontak page only
+ * (Theme-Fidelity re-audit, page 15 — never previously started).
+ *
+ * `kontak.css` carries the form's own presentation (field/label/textarea/notice/
+ * submit-button styling) — before this the `ink/kontak-vorm` block (Story 15.4)
+ * had NO CSS anywhere and rendered as raw unstyled browser form chrome
+ * (inputs computed `font-family: Arial`), mirroring the same gap already found
+ * and fixed on skryf/lees-storie/my-profiel.
+ */
+function ink_foundation_enqueue_kontak_assets(): void {
+	if ( ! function_exists( 'is_page' ) || ! is_page( 'kontak' ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_style(
+		'ink-foundation-kontak',
+		get_theme_file_uri( 'assets/css/kontak.css' ),
+		array(),
+		(string) $theme->get( 'Version' )
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_kontak_assets' );
+
+/**
  * Enqueue the line-reactions client on a single gedig (Story 7.3, FR-26).
  *
  * The reading-surface reaction widget attaches to the `[data-ink-line]` anchors
