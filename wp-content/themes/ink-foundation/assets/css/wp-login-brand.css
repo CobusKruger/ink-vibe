@@ -1,0 +1,95 @@
+/**
+ * INK Foundation — brand skin for WordPress core's OWN `wp-login.php` screens
+ * that this theme deliberately does NOT replace with a custom page (Epic 19
+ * auth fidelity pass, page 16).
+ *
+ * Scope: only the password-RESET screen (`action=resetpass`/`rp` — the link a
+ * visitor actually clicks from the reset e-mail). Every other auth screen
+ * (login/register/lost-password) is fully replaced by this theme's own
+ * `page-meld-aan.html` / `page-registreer.html` / `page-wagwoord-herstel.html`
+ * templates — this is the one screen deliberately LEFT as WordPress core's own
+ * `login_header()` markup, because it carries real WP-native interactive
+ * machinery (the password-strength meter, "Generate password" button, weak-
+ * password confirmation checkbox — `wp-admin/js/user-profile.js`) that has no
+ * cheap equivalent to reproduce in this theme's own visual language. Rather
+ * than leave it 100% unbranded, this file re-skins WordPress's OWN markup
+ * (colours, fonts, card shape) to match the sitewide design tokens — NOT a
+ * pixel-for-pixel rebuild of the other three auth cards. Enqueued only for
+ * this one screen via `login_enqueue_scripts` (functions.php).
+ *
+ * TOKENS ONLY (Gate A) is relaxed here on purpose: `wp-login.php` renders
+ * standalone (no `wp_head`, so no `--wp--preset--*` custom properties exist on
+ * this page) — literal values are the sitewide tokens' own resolved values,
+ * hand-copied and commented, not re-derivable via `var()` on this screen.
+ */
+
+body.login {
+	background-color: #f8f6f2; /* --wp--preset--color--surface */
+	font-family: 'Inter', system-ui, sans-serif; /* --wp--preset--font-family--body */
+}
+
+body.login #login h1 a {
+	background-image: none;
+	width: auto;
+	height: auto;
+	font-family: 'Lora', Georgia, serif; /* --wp--preset--font-family--display */
+	font-size: 24px;
+	font-weight: 700;
+	color: #1a1d21; /* --wp--preset--color--ink-text */
+	text-indent: 0;
+}
+
+body.login #login h1 a::before {
+	content: 'INK';
+}
+
+body.login #loginform,
+body.login #resetpassform {
+	background-color: #fdfcfa; /* --wp--preset--color--surface-alt */
+	border: 1px solid #e8e4dc; /* --wp--preset--color--border */
+	border-radius: 8px; /* --wp--custom--radius--lg */
+	box-shadow: 0 2px 12px -2px hsl(220 20% 12% / 0.06); /* --wp--preset--shadow--sm */
+	padding: 32px;
+}
+
+body.login input[type="text"],
+body.login input[type="password"] {
+	font-family: 'Inter', system-ui, sans-serif;
+	border-color: #e8e4dc;
+	border-radius: 6px; /* --wp--custom--radius--md */
+}
+
+body.login input[type="text"]:focus,
+body.login input[type="password"]:focus {
+	border-color: #ec3b13; /* --wp--preset--color--primary */
+	box-shadow: 0 0 0 1px #ec3b13;
+}
+
+body.login .button-primary {
+	background: #ec3b13; /* --wp--preset--color--primary */
+	border-color: #ec3b13;
+	box-shadow: none;
+	text-shadow: none;
+	border-radius: 6px;
+	font-family: 'Lora', Georgia, serif;
+	font-weight: 500;
+	height: 44px;
+	line-height: 42px;
+	padding: 0 32px;
+}
+
+body.login .button-primary:hover,
+body.login .button-primary:focus {
+	background: #ef6842; /* --wp--preset--color--primary-light */
+	border-color: #ef6842;
+}
+
+body.login #nav a,
+body.login #backtoblog a {
+	color: #6b7280; /* --wp--preset--color--muted-text */
+}
+
+body.login #nav a:hover,
+body.login #backtoblog a:hover {
+	color: #1a1d21;
+}

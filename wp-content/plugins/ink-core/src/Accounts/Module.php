@@ -33,7 +33,11 @@ defined( 'ABSPATH' ) || exit;
  *  - the ALWAYS-ON registration anti-abuse baseline + hardening (honeypot, submit
  *    timing, a Cloudflare-Turnstile challenge seam, per-IP rate-limiting and
  *    blocked-attempt analytics) on the registration endpoint — {@see RegistrationGuard}
- *    (Story 18.10, the security stack's registration surface around the 3.6 pending state).
+ *    (Story 18.10, the security stack's registration surface around the 3.6 pending state);
+ *  - keeping a failed login / lost-password submission, and a registration POST
+ *    of either outcome, on INK's own styled pages rather than WordPress core's
+ *    raw `wp-login.php` chrome (or, for registration, BuddyPress's own
+ *    un-translated screen) — {@see AuthRedirects} (Epic 19 auth fidelity pass).
  * WordPress owns the auth MECHANISM (credential storage, sessions, lost-password
  * tokens) — this module hooks it, never reimplements it. The Afrikaans auth +
  * onboarding SCREENS are presentation and live in the `ink-foundation` theme;
@@ -85,5 +89,6 @@ final class Module implements ModuleContract {
 		( new Onboarding() )->register();
 		( new Approval() )->register();
 		( new RegistrationGuard() )->register();
+		( new AuthRedirects() )->register();
 	}
 }

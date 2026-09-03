@@ -39,6 +39,16 @@ class Module implements ModuleContract {
 	public function register(): void {
 		if ( $this->buddyPressActive() ) {
 			add_filter( 'bp_active_components', array( BuddyPress::class, 'scopeComponents' ) );
+
+			// Epic 19 auth fidelity pass: stop BuddyPress's own Register/Activate
+			// directory-page mapping from hijacking /registreer/ — see
+			// BuddyPress::excludeAuthPages() for the full rationale.
+			add_filter( 'bp_core_get_directory_page_ids', array( BuddyPress::class, 'excludeAuthPages' ) );
+
+			// Epic 19 auth fidelity pass: the content-level half of the same
+			// fix — frees the `registreer` slug from BuddyPress's own Register
+			// CPT post and ensures a real `page` object exists there instead.
+			( new AuthPageRelease() )->register();
 		}
 
 		// Story 9.2: the asymmetric follow graph — REST write path + toggle block.

@@ -93,3 +93,28 @@ test( 'the scoped-on and forced-off sets are disjoint and cover the spec scope',
 	expect( BuddyPress::FORCED_OFF )->toContain( 'friends' );
 	expect( BuddyPress::FORCED_OFF )->toContain( 'messages' );
 } );
+
+test( 'excludeAuthPages strips register and activate, non-vacuous, keeps everything else', function (): void {
+	$pageIds = array(
+		'members'  => 338,
+		'register' => 448,
+		'activate' => 360,
+	);
+
+	$filtered = BuddyPress::excludeAuthPages( $pageIds );
+
+	expect( $filtered )->not->toHaveKey( 'register' );
+	expect( $filtered )->not->toHaveKey( 'activate' );
+	expect( $filtered )->toHaveKey( 'members' );
+	expect( $filtered['members'] )->toBe( 338 );
+} );
+
+test( 'excludeAuthPages is a no-op when register/activate are already absent', function (): void {
+	$pageIds = array( 'members' => 338 );
+
+	expect( BuddyPress::excludeAuthPages( $pageIds ) )->toBe( $pageIds );
+} );
+
+test( 'excludeAuthPages tolerates a non-array filter value (loose filter signature)', function (): void {
+	expect( BuddyPress::excludeAuthPages( null ) )->toBe( array() );
+} );

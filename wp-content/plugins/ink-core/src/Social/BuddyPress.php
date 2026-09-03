@@ -84,4 +84,38 @@ final class BuddyPress {
 
 		return $scoped;
 	}
+
+	/**
+	 * Strip BuddyPress's own "Register" directory-page mapping (Epic 19 auth
+	 * fidelity pass).
+	 *
+	 * `members` stays scoped on ({@see self::SCOPED_ON} — needed for extended
+	 * Profiles + the Directory), but the theme's own `auth-register.php` /
+	 * `auth-forgot-password.php` / `auth-login.php` patterns are explicit,
+	 * documented commitments to use WordPress's OWN registration/lost-password
+	 * endpoints in-theme ("auth is USED, never reimplemented" — see those
+	 * patterns' docblocks); nothing in this codebase ever opted into BuddyPress's
+	 * own legacy Register screen. A brownfield `bp-pages` option nonetheless had
+	 * a `register` entry mapped to the site's `/registreer/` page, which made
+	 * `bp_is_register_page()` true for that URL and let BuddyPress's
+	 * `bp_core_catch_transparent_404()` hijack it wholesale — silently discarding
+	 * the theme's own `page-registreer.html` template/pattern in favour of BP's
+	 * unstyled, un-translated (English) legacy registration form. Dropping
+	 * `register` (and, for the same reason, `activate` — INK's WP-native signup
+	 * has no separate BP-style activation step) from the filtered page-id array
+	 * stops BuddyPress's URI routing from ever claiming that slug, the same
+	 * "hook, don't edit, code-enforced not admin-toggled" approach as
+	 * {@see self::scopeComponents()}.
+	 *
+	 * @param mixed $pageIds The `bp_core_get_directory_page_ids` filter's current
+	 *                       value. Typed loose to match the filter signature.
+	 * @return array<string,int> The page-id map with `register`/`activate` removed.
+	 */
+	public static function excludeAuthPages( $pageIds ): array {
+		$pageIds = (array) $pageIds;
+
+		unset( $pageIds['register'], $pageIds['activate'] );
+
+		return $pageIds;
+	}
 }

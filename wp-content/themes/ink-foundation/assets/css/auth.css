@@ -1,0 +1,245 @@
+/**
+ * INK Foundation — Auth (meld-aan / registreer / wagwoord-herstel) stylesheet.
+ *
+ * Theme visual-fidelity Phase 2, page 16 (docs/theme-fidelity-rework-plan.md) —
+ * the last page of the rework. Before this file the login form was the core
+ * `wp:loginout` block's raw, unstyled `wp_login_form()` markup (Arial inputs,
+ * browser-default button chrome), and the register/forgot-password forms
+ * already carried `.ink-auth-*` classes with ZERO matching CSS anywhere — the
+ * same "zero CSS" bug shape already found and fixed on kontak/skryf. Enqueued
+ * on the three auth pages ONLY (mirrors the Skryf/Kontak/Ontdek `is_page()`
+ * gating pattern) — Lovable reference: `ink-lovable/src/pages/Auth.tsx` +
+ * `ForgotPassword.tsx` + `ResetPassword.tsx` (single centred card, `p-8`
+ * padding, stacked Label+Input fields, full-width primary submit button).
+ * The live Lovable preview (preview--quill-muse-heart.lovable.app) returned
+ * Internal Server Error site-wide for this whole session — every measurement
+ * below is sourced from the Lovable REPO's source (Tailwind classes read
+ * directly off Auth.tsx et al.) reconciled against this theme's own
+ * already-live-verified sitewide tokens/recipes (the input/button/card
+ * conventions established on kontak.css and skryf.css), not a fresh
+ * getComputedStyle() diff against a live reference — see this page's entry in
+ * docs/theme-fidelity-rework-plan.md for the full note.
+ *
+ * TOKENS ONLY (Gate A): every colour / spacing / radius / type value resolves
+ * to a theme.json custom property.
+ */
+
+/* ── H1 — the sitewide-known-open "xxl" font-size token is still a fluid
+   `clamp(1.25rem, …, 1.5rem)` (20–24px), not yet converted to a fixed step
+   (see docs/theme-fidelity-rework-plan.md's "Known outstanding items"; the
+   token-level fix itself is out of this page's blast radius). Pinned
+   page-scoped to a flat 24px, the same pattern already used on gemeenskap/
+   lidmaatskap/kontak/oor-ink. Lovable's own heading here (`text-2xl
+   font-semibold`) is 24px/600 — the weight half of that mismatch (this theme's
+   heading element style defaults to 700) is left alone, matching the sitewide
+   precedent of not touching heading-element defaults outside a page's own
+   established scope. */
+.ink-auth-card h1.has-xxl-font-size {
+	font-size: 24px !important;
+}
+
+/* ── Card — Lovable's Auth/ForgotPassword/ResetPassword card is `p-8` (32px),
+   NOT the sitewide `.is-style-card` default of `s-24` (24px) used by every
+   other (interactive, clickable) card on the site. The auth card is also a
+   static form container, never a link, so the sitewide hover-lift transform
+   (`.is-style-card:hover{transform:translateY(-4px)}`) is switched off here —
+   Lovable's card never lifts on hover. */
+.ink-auth-card {
+	padding: var(--wp--preset--spacing--s-32);
+	transition: none;
+}
+
+.ink-auth-card:hover {
+	transform: none;
+	box-shadow: var(--wp--preset--shadow--sm);
+}
+
+/* ── Form shell — vertical rhythm between fields (Lovable: `space-y-4`). ── */
+.ink-auth-field {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+}
+
+.ink-auth-remember,
+.ink-auth-submit {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+}
+
+.ink-auth-field label {
+	display: block;
+	margin-bottom: var(--wp--preset--spacing--s-8);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* Password field's label + "Wagwoord vergeet?" link share one row (Lovable:
+   `flex items-center justify-between` on the Label's wrapping div). */
+.ink-auth-field__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var(--wp--preset--spacing--s-8);
+}
+
+.ink-auth-field__row label {
+	margin-bottom: 0;
+}
+
+.ink-auth-field__forgot {
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xs);
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-auth-field__forgot:hover {
+	text-decoration: underline;
+}
+
+.ink-auth-form input[type="text"],
+.ink-auth-form input[type="email"],
+.ink-auth-form input[type="password"] {
+	width: 100%;
+	box-sizing: border-box;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-12);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+.ink-auth-form input[type="text"]::placeholder,
+.ink-auth-form input[type="email"]::placeholder,
+.ink-auth-form input[type="password"]::placeholder {
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-auth-form input[type="text"]:focus-visible,
+.ink-auth-form input[type="email"]:focus-visible,
+.ink-auth-form input[type="password"]:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 2px var(--wp--preset--color--surface), 0 0 0 4px var(--wp--preset--color--primary);
+}
+
+/* Field hint (register form's "Kies 'n gebruikersnaam…" / "Ons stuur jou…"
+   captions) — was inline text running on with no visual separation. */
+.ink-auth-hint {
+	display: block;
+	margin-top: var(--wp--preset--spacing--s-4);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xs);
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* ── Result notice (success / error, role="status"/"alert") — same recipe as
+   `.ink-kontak-vorm__notice` (kontak.css), reused here for the login-failed /
+   register-failed / lost-password-failed / lost-password-sent states that
+   `Ink\Accounts\AuthRedirects` routes back to these pages. ── */
+.ink-auth-notice {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-16);
+	border-radius: var(--wp--custom--radius--md);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+.ink-auth-notice--ok {
+	border: 1px solid var(--wp--preset--color--success);
+	background-color: color-mix(in srgb, var(--wp--preset--color--success) 10%, transparent);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-auth-notice--fout {
+	border: 1px solid var(--wp--preset--color--danger);
+	background-color: color-mix(in srgb, var(--wp--preset--color--danger) 10%, transparent);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* ── "Onthou my" remember-me checkbox (login form only — no Lovable
+   equivalent; Auth.tsx has no remember-me control, kept as a real, useful
+   WordPress-native feature rather than dropped to match 1:1). ── */
+.ink-auth-remember label {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-auth-remember input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	accent-color: var(--wp--preset--color--primary);
+}
+
+/* ── Submit button — established 44px / `0 32px` / weight-500 recipe, full
+   width (Lovable: `w-full` on every Button in these three forms). The raw
+   `<button class="wp-element-button">` already inherits theme.json's global
+   elements.button recipe (primary background, surface-alt text, radius md,
+   Lora — correctly Lora, matching the sitewide CTA-button convention). That
+   global rule sets no height/padding/font-weight/width, so the button fell
+   back to the browser's inconsistent em-derived default — the same
+   page-scoped gap already fixed on kontak/uitdagings-single/gemeenskap. ── */
+.ink-auth-submit button {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+	height: 44px;
+	padding: 0 var(--wp--preset--spacing--s-32);
+	font-weight: var(--wp--custom--font-weight--medium);
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+}
+
+.ink-auth-submit button:hover {
+	background-color: var(--wp--preset--color--primary-light);
+}
+
+.ink-auth-submit button:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+/* ── "Back to sign in" outline button (forgot-password's sent-state) —
+   Lovable's `variant="outline"`, same 44px/full-width shape as the primary
+   submit, neutral colours instead of primary. ── */
+.ink-auth-secondary {
+	display: flex;
+	box-sizing: border-box;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+	height: 44px;
+	padding: 0 var(--wp--preset--spacing--s-32);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--md);
+	font-weight: var(--wp--custom--font-weight--medium);
+	text-decoration: none;
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+}
+
+.ink-auth-secondary:hover {
+	background-color: var(--wp--preset--color--secondary);
+}
+
+.ink-auth-secondary:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-auth-submit button,
+	.ink-auth-secondary {
+		transition: none;
+	}
+}

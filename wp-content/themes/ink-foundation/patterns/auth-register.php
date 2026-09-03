@@ -15,12 +15,21 @@
  * path (Story 3.1) — no OAuth / defaults logic lives in this theme file.
  * All copy is Afrikaans, curated in docs/ui-copy-translations.md (labels + the
  * username/e-pos field hints).
+ *
+ * Epic 19 auth-fidelity pass: both the FAILURE and SUCCESS outcomes of a POST
+ * to `wp-login.php?action=register` are caught by
+ * {@see \Ink\Accounts\AuthRedirects::registerSubmission()} (fired at priority 1
+ * on `login_form_register`, pre-empting BuddyPress's own registration screen
+ * handler, live whenever the `members` component is scoped on) and redirected
+ * back HERE with a `?registreer=fout`/`voltooi` marker, rather than landing on
+ * BuddyPress's separate, un-translated signup screen or WordPress core's raw
+ * `wp-login.php?checkemail=registered`.
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"480px"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"className":"is-style-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group is-style-card">
+	<!-- wp:group {"className":"is-style-card ink-auth-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group is-style-card ink-auth-card">
 		<!-- wp:heading {"level":1,"fontSize":"xxl"} -->
 		<h1 class="wp-block-heading has-xxl-font-size">Skep jou rekening</h1>
 		<!-- /wp:heading -->
@@ -30,25 +39,37 @@
 		<!-- /wp:paragraph -->
 
 		<!-- wp:html -->
-		<?php // Renders WordPress's OWN registration handler in-theme (Afrikaans, single-column) — auth is used, not rebuilt. ?>
-		<form name="registerform" class="ink-auth-form" action="<?php echo esc_url( site_url( 'wp-login.php?action=register', 'login_post' ) ); ?>" method="post" novalidate="novalidate">
-			<p class="ink-auth-field">
-				<label for="user_login"><?php echo esc_html__( 'Gebruikersnaam', 'ink-foundation' ); ?></label>
-				<input type="text" name="user_login" id="user_login" autocapitalize="off" autocorrect="off" autocomplete="username" aria-describedby="user_login-wenk" required="required" />
-				<span class="ink-auth-hint" id="user_login-wenk"><?php echo esc_html__( "Kies 'n gebruikersnaam — ander lede sal dit sien.", 'ink-foundation' ); ?></span>
-			</p>
-			<p class="ink-auth-field">
-				<label for="user_email"><?php echo esc_html__( 'E-pos', 'ink-foundation' ); ?></label>
-				<input type="email" name="user_email" id="user_email" autocomplete="email" aria-describedby="user_email-wenk" required="required" />
-				<span class="ink-auth-hint" id="user_email-wenk"><?php echo esc_html__( 'Ons stuur jou intekenbesonderhede na hierdie adres.', 'ink-foundation' ); ?></span>
-			</p>
-			<?php do_action( 'register_form' ); ?>
-			<p class="ink-auth-submit">
-				<button type="submit" name="wp-submit" class="wp-element-button"><?php echo esc_html__( 'Registreer', 'ink-foundation' ); ?></button>
-			</p>
-		</form>
+		<?php
+		$ink_registreer_status = isset( $_GET['registreer'] ) && is_scalar( $_GET['registreer'] ) ? sanitize_key( wp_unslash( (string) $_GET['registreer'] ) ) : '';
+
+		if ( 'voltooi' === $ink_registreer_status ) :
+			?>
+			<p class="ink-auth-notice ink-auth-notice--ok" role="status"><?php echo esc_html__( 'Registrasie voltooi. Ons het jou intekenbesonderhede per e-pos gestuur.', 'ink-foundation' ); ?></p>
+			<a class="ink-auth-secondary" href="<?php echo esc_url( home_url( '/meld-aan' ) ); ?>"><?php echo esc_html__( 'Meld aan', 'ink-foundation' ); ?></a>
+		<?php else : ?>
+			<?php // Renders WordPress's OWN registration handler in-theme (Afrikaans, single-column) — auth is used, not rebuilt. ?>
+			<?php if ( 'fout' === $ink_registreer_status ) : ?>
+				<p class="ink-auth-notice ink-auth-notice--fout" role="alert"><?php echo esc_html__( 'Registrasie het misluk. Gaan jou besonderhede na en probeer weer.', 'ink-foundation' ); ?></p>
+			<?php endif; ?>
+			<form name="registerform" class="ink-auth-form" action="<?php echo esc_url( site_url( 'wp-login.php?action=register', 'login_post' ) ); ?>" method="post" novalidate="novalidate">
+				<p class="ink-auth-field">
+					<label for="user_login"><?php echo esc_html__( 'Gebruikersnaam', 'ink-foundation' ); ?></label>
+					<input type="text" name="user_login" id="user_login" autocapitalize="off" autocorrect="off" autocomplete="username" aria-describedby="user_login-wenk" required="required" />
+					<span class="ink-auth-hint" id="user_login-wenk"><?php echo esc_html__( "Kies 'n gebruikersnaam — ander lede sal dit sien.", 'ink-foundation' ); ?></span>
+				</p>
+				<p class="ink-auth-field">
+					<label for="user_email"><?php echo esc_html__( 'E-pos', 'ink-foundation' ); ?></label>
+					<input type="email" name="user_email" id="user_email" autocomplete="email" aria-describedby="user_email-wenk" required="required" />
+					<span class="ink-auth-hint" id="user_email-wenk"><?php echo esc_html__( 'Ons stuur jou intekenbesonderhede na hierdie adres.', 'ink-foundation' ); ?></span>
+				</p>
+				<?php do_action( 'register_form' ); ?>
+				<p class="ink-auth-submit">
+					<button type="submit" name="wp-submit" class="wp-element-button"><?php echo esc_html__( 'Registreer', 'ink-foundation' ); ?></button>
+				</p>
+			</form>
+		<?php endif; ?>
 		<!-- /wp:html -->
-<?php if ( function_exists( 'ink_foundation_social_login_available' ) && ink_foundation_social_login_available() ) : ?>
+<?php if ( 'voltooi' !== $ink_registreer_status && function_exists( 'ink_foundation_social_login_available' ) && ink_foundation_social_login_available() ) : ?>
 		<!-- wp:separator {"className":"is-style-wide"} -->
 		<hr class="wp-block-separator has-alpha-channel-opacity is-style-wide"/>
 		<!-- /wp:separator -->
@@ -85,9 +106,11 @@
 		<!-- /wp:paragraph -->
 <?php endif; ?>
 
+<?php if ( 'voltooi' !== $ink_registreer_status ) : ?>
 		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
 		<p class="has-muted-text-color has-text-color has-sm-font-size">Reeds 'n rekening? <a href="/meld-aan">Meld aan</a></p>
 		<!-- /wp:paragraph -->
+<?php endif; ?>
 	</div>
 	<!-- /wp:group -->
 </section>

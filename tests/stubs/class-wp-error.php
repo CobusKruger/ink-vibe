@@ -58,5 +58,14 @@ if ( ! class_exists( 'WP_Error' ) ) {
 
 			return $this->errors[ (string) $code ][0] ?? '';
 		}
+
+		/**
+		 * Whether any errors are present, mirroring WP_Error::has_errors() (WP 5.1+).
+		 *
+		 * @return bool
+		 */
+		public function has_errors(): bool {
+			return array() !== $this->errors;
+		}
 	}
 }

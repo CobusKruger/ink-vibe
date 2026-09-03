@@ -156,6 +156,80 @@ function ink_foundation_enqueue_kontak_assets(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_kontak_assets' );
 
 /**
+ * Enqueue the Auth (meld-aan / registreer / wagwoord-herstel) stylesheet on
+ * those three pages only (Theme-Fidelity re-audit, page 16 — the last page).
+ *
+ * `auth.css` carries the three forms' shared presentation (field/label/hint/
+ * remember-me/submit-button styling, the auth card's own padding/hover
+ * overrides). Before this file `meld-aan` rendered the core `wp:loginout`
+ * block's raw, unstyled `wp_login_form()` markup, and `registreer` /
+ * `wagwoord-herstel` already carried `.ink-auth-*` classes with ZERO matching
+ * CSS anywhere — the same "zero CSS" gap already found and fixed on kontak/
+ * skryf. See `assets/css/auth.css`'s own docblock for the Lovable-reference
+ * note (the live preview returned Internal Server Error site-wide this
+ * session).
+ */
+function ink_foundation_enqueue_auth_assets(): void {
+	if ( ! function_exists( 'is_page' ) || ! is_page( array( 'meld-aan', 'registreer', 'wagwoord-herstel' ) ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_style(
+		'ink-foundation-auth',
+		get_theme_file_uri( 'assets/css/auth.css' ),
+		array(),
+		(string) $theme->get( 'Version' )
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_auth_assets' );
+
+/**
+ * Re-skin (not replace) WordPress core's OWN `wp-login.php?action=resetpass`
+ * screen — the one auth screen this theme deliberately leaves as WordPress's
+ * native `login_header()` markup rather than a custom page, because it carries
+ * real WP-native interactive machinery (password-strength meter, "Generate
+ * password") with no cheap equivalent to reproduce (Theme-Fidelity re-audit,
+ * page 16 — the last page). See `assets/css/wp-login-brand.css`'s own
+ * docblock for the full rationale + the hand-copied token values (this screen
+ * renders standalone, no `wp_head`, so no `--wp--preset--*` custom properties
+ * exist to `var()` against here).
+ */
+function ink_foundation_enqueue_wp_login_brand(): void {
+	$action = isset( $_GET['action'] ) && is_scalar( $_GET['action'] ) ? sanitize_key( wp_unslash( (string) $_GET['action'] ) ) : 'login';
+
+	if ( ! in_array( $action, array( 'resetpass', 'rp' ), true ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_style(
+		'ink-foundation-wp-login-brand',
+		get_theme_file_uri( 'assets/css/wp-login-brand.css' ),
+		array(),
+		(string) $theme->get( 'Version' )
+	);
+}
+add_action( 'login_enqueue_scripts', 'ink_foundation_enqueue_wp_login_brand' );
+
+/**
+ * Swap WordPress core's own logo link/title on `wp-login.php` for INK's
+ * (same screen as above) — `login_headerurl`/`login_headertext` are core's
+ * own, documented seam for exactly this, no core markup touched.
+ */
+function ink_foundation_login_headerurl(): string {
+	return home_url( '/' );
+}
+add_filter( 'login_headerurl', 'ink_foundation_login_headerurl' );
+
+function ink_foundation_login_headertext(): string {
+	return get_bloginfo( 'name' );
+}
+add_filter( 'login_headertext', 'ink_foundation_login_headertext' );
+
+/**
  * Enqueue the line-reactions client on a single gedig (Story 7.3, FR-26).
  *
  * The reading-surface reaction widget attaches to the `[data-ink-line]` anchors

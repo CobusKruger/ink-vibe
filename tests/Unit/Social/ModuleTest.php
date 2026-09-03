@@ -51,8 +51,17 @@ test( 'register() wires the bp_active_components scope filter when BuddyPress is
 	)->not->toBeFalse();
 } );
 
+test( 'register() wires the bp_core_get_directory_page_ids auth-page-exclusion filter when BuddyPress is present', function (): void {
+	ink_social_module( true )->register();
+
+	expect(
+		has_filter( 'bp_core_get_directory_page_ids', 'Ink\Social\BuddyPress::excludeAuthPages' )
+	)->not->toBeFalse();
+} );
+
 test( 'register() is a clean no-op when BuddyPress is absent', function (): void {
 	ink_social_module( false )->register();
 
 	expect( has_filter( 'bp_active_components' ) )->toBeFalse();
+	expect( has_filter( 'bp_core_get_directory_page_ids' ) )->toBeFalse();
 } );
