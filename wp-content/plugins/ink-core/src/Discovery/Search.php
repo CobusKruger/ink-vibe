@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Discovery;
 
 use Ink\I18n\Terms;
+use Ink\Kernel\QaFixture;
 use Ink\Tiers\Api as TiersApi;
 
 defined( 'ABSPATH' ) || exit;
@@ -144,6 +145,15 @@ final class Search {
 				continue;
 			}
 
+			// Skip seeded `QA FIXTURE — ` titled works (Epic-19 theme-fidelity
+			// rework finding — a real match would otherwise surface fixture
+			// content in real search results). Filtered post-query (not at the
+			// SQL layer) — search has a flat LIMIT and no pagination, so an
+			// occasionally-short result list is the correct trade-off here.
+			if ( QaFixture::isFixtureTitle( get_the_title( $post ) ) ) {
+				continue;
+			}
+
 			$works[] = array(
 				'title'     => get_the_title( $post ),
 				'permalink' => (string) get_permalink( $post ),
@@ -194,11 +204,18 @@ final class Search {
 	 * @return string
 	 */
 	public static function toHtml( string $raw_query, array $works, array $skrywers ): string {
+		$icon = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" '
+			. 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '
+			. 'class="ink-ontdek-soek__ikoon" aria-hidden="true" focusable="false">'
+			. '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>';
+
 		$html = '<section class="ink-ontdek-soek"><form class="ink-ontdek-soek__form" role="search" method="get">'
+			. '<div class="ink-ontdek-soek__veld-houer">' . $icon
 			. '<input type="search" class="ink-ontdek-soek__veld" name="' . esc_attr( self::QUERY_VAR ) . '"'
 			. ' value="' . esc_attr( $raw_query ) . '"'
 			. ' placeholder="' . esc_attr__( 'Vind stories, gedigte of skrywers...', 'ink-core' ) . '"'
 			. ' aria-label="' . esc_attr__( 'Vind stories, gedigte of skrywers...', 'ink-core' ) . '" />'
+			. '</div>'
 			. '<button type="submit" class="ink-ontdek-soek__knoppie">' . esc_html__( 'Soek', 'ink-core' ) . '</button>'
 			. '</form>';
 

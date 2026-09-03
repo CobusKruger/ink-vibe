@@ -179,6 +179,8 @@ final class SkrywersTab {
 				'profile_url' => (string) get_author_posts_url( $uid ),
 				'gradering'   => Terms::label( TiersApi::forUser( $uid )->value ),
 				'bio'         => (string) get_the_author_meta( 'description', $uid ),
+				'avatar_url'  => (string) get_avatar_url( $uid, array( 'size' => 128 ) ),
+				'genres'      => self::genreLabelsFor( $uid ),
 			);
 		}
 
@@ -232,7 +234,7 @@ final class SkrywersTab {
 	/**
 	 * Build the skrywers HTML. Pure — Terms + escaping only.
 	 *
-	 * @param list<array{name:string, profile_url:string, gradering:string, bio:string}> $cards The writers.
+	 * @param list<array{name:string, profile_url:string, gradering:string, bio:string, avatar_url:string, genres:list<string>}> $cards The writers.
 	 * @param array{paged:int, max_pages:int, genre?:string|null, sort?:string}          $nav   Render context.
 	 * @return string
 	 */
@@ -254,16 +256,78 @@ final class SkrywersTab {
 		$html = '<section class="ink-ontdek-skrywers">' . $heading . $controls . '<ul class="ink-ontdek-skrywers__list">';
 
 		foreach ( $cards as $card ) {
-			$html .= '<li class="ink-ontdek-skrywers__item is-style-card">'
-				. '<a class="ink-ontdek-skrywers__naam" href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
-				. '<span class="ink-ontdek-skrywers__gradering">' . esc_html( $card['gradering'] ) . '</span>'
-				. '<p class="ink-ontdek-skrywers__bio">' . esc_html( $card['bio'] ) . '</p>'
-				. '</li>';
+			$html .= self::cardHtml( $card );
 		}
 
 		$html .= '</ul>' . self::paginationHtml( $nav ) . '</section>';
 
 		return $html;
+	}
+
+	/**
+	 * A writer's genre labels — the Afrikaans labels of their published forms.
+	 * Impure (user-meta reads). Mirrors {@see \Ink\Discovery\SearchIndex::rebuildSkrywer()}'s
+	 * type→genre reverse-map.
+	 *
+	 * @param int $user_id The writer.
+	 * @return list<string>
+	 */
+	private static function genreLabelsFor( int $user_id ): array {
+		$type_to_genre = array(
+			\Ink\Content\PostTypes::GEDIG   => 'digkuns',
+			\Ink\Content\PostTypes::STORIE  => 'prosa',
+			\Ink\Content\PostTypes::ARTIKEL => 'artikels',
+		);
+
+		$labels = array();
+
+		foreach ( $type_to_genre as $type => $genre ) {
+			if ( '1' === (string) get_user_meta( $user_id, SkrywerIndex::formFlagKey( $type ), true ) ) {
+				$labels[] = Terms::label( 'skrywer_genre_' . $genre );
+			}
+		}
+
+		return $labels;
+	}
+
+	/**
+	 * One skrywer card. Pure — escaping only.
+	 *
+	 * @param array{name:string, profile_url:string, gradering:string, bio:string, avatar_url?:string, genres?:list<string>} $card The card row.
+	 * @return string
+	 */
+	private static function cardHtml( array $card ): string {
+		$avatar = (string) ( $card['avatar_url'] ?? '' );
+		$genres = isset( $card['genres'] ) && is_array( $card['genres'] ) ? $card['genres'] : array();
+
+		$html = '<li class="ink-ontdek-skrywers__item is-style-card">'
+			. '<div class="ink-ontdek-skrywers__kop">';
+
+		if ( '' !== $avatar ) {
+			$html .= '<img class="ink-ontdek-skrywers__foto" src="' . esc_url( $avatar ) . '" '
+				. 'alt="' . esc_attr( $card['name'] ) . '" width="56" height="56" loading="lazy" decoding="async" />';
+		}
+
+		$html .= '<div class="ink-ontdek-skrywers__kop-teks">'
+			. '<a class="ink-ontdek-skrywers__naam" href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
+			. '<span class="ink-ontdek-skrywers__gradering">' . esc_html( $card['gradering'] ) . '</span>'
+			. '</div></div>';
+
+		if ( array() !== $genres ) {
+			$html .= '<div class="ink-ontdek-skrywers__genres">';
+
+			foreach ( $genres as $genre_label ) {
+				$html .= '<span class="ink-ontdek-skrywers__genre-pil">' . esc_html( $genre_label ) . '</span>';
+			}
+
+			$html .= '</div>';
+		}
+
+		if ( '' !== $card['bio'] ) {
+			$html .= '<p class="ink-ontdek-skrywers__bio">' . esc_html( $card['bio'] ) . '</p>';
+		}
+
+		return $html . '</li>';
 	}
 
 	/**

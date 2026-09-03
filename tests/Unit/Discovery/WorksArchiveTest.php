@@ -43,6 +43,12 @@ function ink_archive_render_stubs(): void {
 	Functions\when( 'add_query_arg' )->alias(
 		static fn ( string $key, $value = '', $url = '' ): string => '/ontdek?' . $key . '=' . $value
 	);
+	// The card footer's Heart/MessageCircle counts (theme-fidelity re-audit,
+	// page 11) route through EngagementApi::hartjieCountLabel()/Terms, both of
+	// which format via `_n()` — mirrors {@see \Ink\Tests\Unit\Discovery\FeaturedStreamTest}.
+	Functions\when( '_n' )->alias(
+		static fn ( string $single, string $plural, int $number ): string => 1 === $number ? $single : $plural
+	);
 }
 
 test( 'readableTypes are the three bydrae types, excluding the skryfwerk bucket', function (): void {

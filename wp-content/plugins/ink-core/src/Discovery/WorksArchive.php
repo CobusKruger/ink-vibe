@@ -12,6 +12,7 @@ namespace Ink\Discovery;
 use Ink\Content\PostTypes;
 use Ink\Engagement\Api as EngagementApi;
 use Ink\Kernel\ArchiveRender;
+use Ink\Kernel\QaFixture;
 use Ink\I18n\Terms;
 
 defined( 'ABSPATH' ) || exit;
@@ -106,6 +107,17 @@ final class WorksArchive {
 	 * @var string
 	 */
 	public const SORT_GELIEFD = 'mees_geliefd';
+
+	/**
+	 * Overridable data seam: turns the default QA-fixture exclusion back ON for
+	 * the QA gallery page only (Epic-19 theme-fidelity rework finding — the
+	 * `/ontdek/` Bydraes archive had no exclusion at all, so seeded
+	 * `QA FIXTURE — ` titled works leaked onto the real page unfiltered).
+	 * Mirrors {@see \Ink\Library\Archive::INCLUDE_FIXTURES_FILTER}.
+	 *
+	 * @var string
+	 */
+	public const INCLUDE_FIXTURES_FILTER = 'ink_ontdek_werke_include_fixtures';
 
 	/**
 	 * The valid sort keys (anything else degrades to {@see self::SORT_NUUT}).
@@ -272,7 +284,7 @@ final class WorksArchive {
 		$active_type = in_array( $type_raw, self::readableTypes(), true ) ? $type_raw : null;
 		$active_sort = in_array( $sort_raw, self::allowedSorts(), true ) ? $sort_raw : self::SORT_NUUT;
 
-		$query = new \WP_Query(
+		$query = self::runQuery(
 			self::queryArgs(
 				$paged,
 				self::PER_PAGE,
@@ -290,11 +302,18 @@ final class WorksArchive {
 				continue;
 			}
 
+			$post_id = (int) $post->ID;
+
 			$cards[] = array(
-				'title'     => get_the_title( $post ),
-				'permalink' => (string) get_permalink( $post ),
-				'type'      => $post->post_type,
-				'author'    => (string) get_the_author_meta( 'display_name', (int) $post->post_author ),
+				'title'          => get_the_title( $post ),
+				'permalink'      => (string) get_permalink( $post ),
+				'type'           => $post->post_type,
+				'author'         => (string) get_the_author_meta( 'display_name', (int) $post->post_author ),
+				'avatar_url'     => (string) get_avatar_url( (int) $post->post_author, array( 'size' => 64 ) ),
+				'excerpt'        => self::excerptFor( $post ),
+				'read_minutes'   => ReadingTime::minutesFromText( wp_strip_all_tags( (string) $post->post_content ) ),
+				'hart_count'     => EngagementApi::hartjieCountForPost( $post_id ),
+				'response_count' => EngagementApi::responseCountForPost( $post_id ),
 			);
 		}
 
@@ -316,7 +335,7 @@ final class WorksArchive {
 	/**
 	 * Build the archive HTML. Pure — Terms + escaping only.
 	 *
-	 * @param list<array{title:string, permalink:string, type:string, author:string}>                            $cards The works.
+	 * @param list<array{title:string, permalink:string, type:string, author:string, avatar_url:string, excerpt:string, read_minutes:int, hart_count:int, response_count:int}> $cards The works.
 	 * @param array{paged:int, max_pages:int, type?:string|null, sort?:string, year?:int|null, years?:list<int>} $nav Render context.
 	 * @return string
 	 */
@@ -342,11 +361,7 @@ final class WorksArchive {
 		$html = '<section class="ink-ontdek-werke">' . $heading . $controls . '<ul class="ink-ontdek-werke__list">';
 
 		foreach ( $cards as $card ) {
-			$html .= '<li class="ink-ontdek-werke__item is-style-card">'
-				. '<span class="ink-ontdek-werke__type">' . esc_html( Terms::label( $card['type'] ) ) . '</span>'
-				. '<a class="ink-ontdek-werke__title" href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>'
-				. '<span class="ink-ontdek-werke__author">' . esc_html( $card['author'] ) . '</span>'
-				. '</li>';
+			$html .= self::cardHtml( $card );
 		}
 
 		$paged     = isset( $nav['paged'] ) ? (int) $nav['paged'] : 1;
@@ -355,6 +370,189 @@ final class WorksArchive {
 		$html .= '</ul>' . ArchiveRender::pagination( $paged, $max_pages, 'ink-ontdek-werke', self::PAGED_VAR ) . '</section>';
 
 		return $html;
+	}
+
+	/**
+	 * Run the works `WP_Query`, excluding QA-fixture-titled posts by default
+	 * (Epic-19 theme-fidelity rework finding — see {@see INCLUDE_FIXTURES_FILTER}).
+	 * The exclusion is applied at the SQL layer (a scoped `posts_where` filter,
+	 * removed immediately after) rather than by filtering `$query->posts` in PHP,
+	 * so `max_num_pages` stays accurate for pagination even when fixtures are
+	 * excluded. Impure (WP_Query + filter). Mirrors
+	 * {@see \Ink\Library\Archive::runQuery()} / {@see \Ink\Training\Hub::runQuery()}.
+	 *
+	 * @param array<string, mixed> $args The `WP_Query` args.
+	 * @return \WP_Query
+	 */
+	private static function runQuery( array $args ): \WP_Query {
+		if ( (bool) apply_filters( self::INCLUDE_FIXTURES_FILTER, false ) ) {
+			return new \WP_Query( $args );
+		}
+
+		$exclude_fixtures = static function ( string $where, \WP_Query $wp_query ): string {
+			global $wpdb;
+
+			return $where . $wpdb->prepare(
+				" AND {$wpdb->posts}.post_title NOT LIKE %s",
+				$wpdb->esc_like( QaFixture::TITLE_PREFIX ) . '%'
+			);
+		};
+
+		add_filter( 'posts_where', $exclude_fixtures, 10, 2 );
+		$query = new \WP_Query( $args );
+		remove_filter( 'posts_where', $exclude_fixtures, 10 );
+
+		return $query;
+	}
+
+	/**
+	 * A trimmed excerpt for the card body. Impure (WP excerpt helpers). Mirrors
+	 * {@see \Ink\Discovery\FeaturedStream::excerptFor()}.
+	 *
+	 * @param \WP_Post $post The bydrae.
+	 * @return string
+	 */
+	private static function excerptFor( \WP_Post $post ): string {
+		if ( has_excerpt( $post ) ) {
+			return (string) get_the_excerpt( $post );
+		}
+
+		return (string) wp_trim_words( wp_strip_all_tags( (string) $post->post_content ), 24, '…' );
+	}
+
+	// --- Lucide inner-SVG paths (§0.9 — emitted inline by the block PHP), mirroring
+	// {@see \Ink\Discovery\FeaturedStream}'s icon set. ---
+
+	private const ICON_CLOCK   = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
+	private const ICON_HEART   = '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>';
+	private const ICON_MESSAGE = '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>';
+
+	/**
+	 * One works-archive card. Pure — formatters + escaping only. Mirrors
+	 * {@see \Ink\Discovery\FeaturedStream::cardHtml()}'s meta-top/footer shape
+	 * (category pill + read-time, author avatar + name, Heart/MessageCircle
+	 * counts) so the Ontdek card and the Tuisblad featured card read identically.
+	 *
+	 * @param array<array-key, mixed> $card The card row.
+	 * @return string
+	 */
+	private static function cardHtml( array $card ): string {
+		$base    = 'ink-ontdek-werke';
+		$title   = (string) ( $card['title'] ?? '' );
+		$url     = (string) ( $card['permalink'] ?? '' );
+		$excerpt = (string) ( $card['excerpt'] ?? '' );
+
+		$html = '<li class="' . esc_attr( $base . '__item is-style-card' ) . '">'
+			. '<div class="' . esc_attr( $base . '__meta-top' ) . '">'
+			. '<span class="' . esc_attr( $base . '__type' ) . '">' . esc_html( Terms::label( (string) ( $card['type'] ?? '' ) ) ) . '</span>';
+
+		$read_time = ReadingTime::label( (int) ( $card['read_minutes'] ?? 0 ) );
+
+		if ( '' !== $read_time ) {
+			$html .= '<span class="' . esc_attr( $base . '__leestyd' ) . '">'
+				. self::icon( self::ICON_CLOCK )
+				. '<span>' . esc_html( $read_time ) . '</span>'
+				. '</span>';
+		}
+
+		$html .= '</div>'
+			. '<a class="' . esc_attr( $base . '__title' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $title ) . '</a>';
+
+		if ( '' !== $excerpt ) {
+			$html .= '<p class="' . esc_attr( $base . '__uittreksel' ) . '">' . esc_html( $excerpt ) . '</p>';
+		}
+
+		$html .= '<div class="' . esc_attr( $base . '__voet' ) . '">'
+			. self::authorHtml( $base, $card )
+			. self::countsHtml( $base, $card )
+			. '</div></li>';
+
+		return $html;
+	}
+
+	/**
+	 * The card's author (avatar + name). Pure.
+	 *
+	 * @param string                  $base The BEM base class.
+	 * @param array<array-key, mixed> $card The card row.
+	 * @return string
+	 */
+	private static function authorHtml( string $base, array $card ): string {
+		$author = (string) ( $card['author'] ?? '' );
+		$avatar = (string) ( $card['avatar_url'] ?? '' );
+
+		$html = '<div class="' . esc_attr( $base . '__author' ) . '">';
+
+		if ( '' !== $avatar ) {
+			$html .= '<img class="' . esc_attr( $base . '__foto' ) . '" src="' . esc_url( $avatar ) . '" '
+				. 'alt="' . esc_attr( $author ) . '" width="28" height="28" loading="lazy" decoding="async" />';
+		}
+
+		if ( '' !== $author ) {
+			$html .= '<span class="' . esc_attr( $base . '__author-naam' ) . '">' . esc_html( $author ) . '</span>';
+		}
+
+		return $html . '</div>';
+	}
+
+	/**
+	 * The card's Heart / MessageCircle engagement counts. Pure.
+	 *
+	 * @param string                  $base The BEM base class.
+	 * @param array<array-key, mixed> $card The card row.
+	 * @return string
+	 */
+	private static function countsHtml( string $base, array $card ): string {
+		$hart_count     = (int) ( $card['hart_count'] ?? 0 );
+		$response_count = (int) ( $card['response_count'] ?? 0 );
+
+		return '<div class="' . esc_attr( $base . '__tellers' ) . '">'
+			. self::countHtml( $base, self::ICON_HEART, $hart_count, EngagementApi::hartjieCountLabel( $hart_count ) )
+			. self::countHtml( $base, self::ICON_MESSAGE, $response_count, self::responseCountLabel( $response_count ) )
+			. '</div>';
+	}
+
+	/**
+	 * One engagement count: an aria-hidden icon + visible number, the whole span
+	 * carrying the full verb-less accessible label. Pure.
+	 *
+	 * @param string $base  The BEM base class.
+	 * @param string $icon  The Lucide inner-SVG paths.
+	 * @param int    $count The count value.
+	 * @param string $label The full accessible label.
+	 * @return string
+	 */
+	private static function countHtml( string $base, string $icon, int $count, string $label ): string {
+		return '<span class="' . esc_attr( $base . '__teller' ) . '" aria-label="' . esc_attr( $label ) . '">'
+			. self::icon( $icon )
+			. '<span aria-hidden="true">' . esc_html( (string) $count ) . '</span>'
+			. '</span>';
+	}
+
+	/**
+	 * The verb-less Gemeenskapsreaksie-count label (MessageCircle). Pure. Mirrors
+	 * {@see \Ink\Discovery\FeaturedStream::responseCountLabel()}.
+	 *
+	 * @param int $n The response count.
+	 * @return string
+	 */
+	private static function responseCountLabel( int $n ): string {
+		$label = 1 === $n ? Terms::label( 'gemeenskapsreaksie' ) : Terms::label( 'gemeenskapsreaksie_plural' );
+
+		return (string) $n . ' ' . $label;
+	}
+
+	/**
+	 * A decorative inline Lucide icon (§0.9): 16px, currentColor, aria-hidden.
+	 * Pure. `$paths` is a trusted class-internal SVG literal (never user input).
+	 *
+	 * @param string $paths The inner SVG markup.
+	 * @return string
+	 */
+	private static function icon( string $paths ): string {
+		return '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" '
+			. 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '
+			. 'class="ink-icon" aria-hidden="true" focusable="false">' . $paths . '</svg>';
 	}
 
 	/**

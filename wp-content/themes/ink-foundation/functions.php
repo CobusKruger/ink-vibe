@@ -102,6 +102,34 @@ function ink_foundation_enqueue_skryf_assets(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_skryf_assets' );
 
 /**
+ * Enqueue the Ontdek tab-toggle enhancement on the Ontdek page only
+ * (Theme-Fidelity re-audit, page 11 — never previously started).
+ *
+ * Progressive enhancement over the `#bydraes`/`#skrywers` anchor-jump nav: both
+ * panels are server-rendered up-front (AD-7, no REST for discovery), so with
+ * this script disabled the two sections simply stack. See `ontdek-tabs.js`'s own
+ * docblock. The bulk of this page's fidelity fix (card/tab/pill/search styling)
+ * lives in `theme.json`'s global `styles.css` (the established `.ink-ontdek-*`
+ * convention, not a dedicated stylesheet — this page never had one before).
+ */
+function ink_foundation_enqueue_ontdek_assets(): void {
+	if ( ! function_exists( 'is_page' ) || ! is_page( 'ontdek' ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-ontdek-tabs',
+		get_theme_file_uri( 'assets/js/ontdek-tabs.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_ontdek_assets' );
+
+/**
  * Enqueue the line-reactions client on a single gedig (Story 7.3, FR-26).
  *
  * The reading-surface reaction widget attaches to the `[data-ink-line]` anchors
