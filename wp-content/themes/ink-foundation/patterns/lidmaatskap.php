@@ -66,8 +66,8 @@ if ( empty( $ink_plans ) ) {
 	}
 }
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-24","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-hero","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-24","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-lidmaatskap-hero" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
@@ -82,8 +82,8 @@ if ( empty( $ink_plans ) ) {
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-plans","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-lidmaatskap-plans" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:columns {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|s-24","left":"var:preset|spacing|s-24"}}}} -->
 	<div class="wp-block-columns alignwide">
 <?php
@@ -132,7 +132,7 @@ foreach ( $ink_plans as $ink_plan ) :
 					<!-- /wp:button -->
 	<?php else : ?>
 					<!-- wp:button {"backgroundColor":"secondary","textColor":"muted-text","width":100,"className":"is-style-pill"} -->
-					<div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-pill"><a class="wp-block-button__link has-muted-text-color has-secondary-background-color has-text-color has-background wp-element-button" aria-disabled="true"><?php echo esc_html__( 'Binnekort beskikbaar', 'ink-foundation' ); ?></a></div>
+					<div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-pill"><a class="wp-block-button__link has-muted-text-color has-secondary-background-color has-text-color has-background wp-element-button" aria-disabled="true" tabindex="-1"><?php echo esc_html__( 'Binnekort beskikbaar', 'ink-foundation' ); ?></a></div>
 					<!-- /wp:button -->
 	<?php endif; ?>
 				</div>
@@ -147,8 +147,8 @@ foreach ( $ink_plans as $ink_plan ) :
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-benefits","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-lidmaatskap-benefits" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
@@ -175,8 +175,8 @@ foreach ( $ink_plans as $ink_plan ) :
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-faq","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-lidmaatskap-faq" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
@@ -184,7 +184,7 @@ foreach ( $ink_plans as $ink_plan ) :
 		<!-- /wp:heading -->
 
 		<!-- wp:details {"lock":{"move":true,"remove":true},"className":"is-style-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}}} -->
-		<details class="wp-block-details is-style-card" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)"><summary><?php echo esc_html__( 'Hoe lank duur \'n lidmaatskap?', 'ink-foundation' ); ?></summary>
+		<details class="wp-block-details is-style-card" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)"><summary><span class="ink-lidmaatskap-faq__label"><?php echo esc_html__( 'Hoe lank duur \'n lidmaatskap?', 'ink-foundation' ); ?></span><?php echo ink_foundation_icon( '<path d="m6 9 6 6 6-6"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG. */ ?></summary>
 			<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
 			<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( 'Jou lidmaatskap duur vir die termyn wat jy gekies het — \'n maand, ses maande, of \'n jaar.', 'ink-foundation' ); ?></p>
 			<!-- /wp:paragraph -->
@@ -192,7 +192,7 @@ foreach ( $ink_plans as $ink_plan ) :
 		<!-- /wp:details -->
 
 		<!-- wp:details {"lock":{"move":true,"remove":true},"className":"is-style-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}}} -->
-		<details class="wp-block-details is-style-card" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)"><summary><?php echo esc_html__( 'Hernieu my lidmaatskap outomaties?', 'ink-foundation' ); ?></summary>
+		<details class="wp-block-details is-style-card" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)"><summary><span class="ink-lidmaatskap-faq__label"><?php echo esc_html__( 'Hernieu my lidmaatskap outomaties?', 'ink-foundation' ); ?></span><?php echo ink_foundation_icon( '<path d="m6 9 6 6 6-6"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG. */ ?></summary>
 			<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
 			<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( 'Nee. Lidmaatskap hernieu nie outomaties nie. Ons sal jou laat weet \'n week voordat dit verval.', 'ink-foundation' ); ?></p>
 			<!-- /wp:paragraph -->
@@ -200,7 +200,7 @@ foreach ( $ink_plans as $ink_plan ) :
 		<!-- /wp:details -->
 
 		<!-- wp:details {"lock":{"move":true,"remove":true},"className":"is-style-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}}} -->
-		<details class="wp-block-details is-style-card" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)"><summary><?php echo esc_html__( 'Hoe betaal ek?', 'ink-foundation' ); ?></summary>
+		<details class="wp-block-details is-style-card" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)"><summary><span class="ink-lidmaatskap-faq__label"><?php echo esc_html__( 'Hoe betaal ek?', 'ink-foundation' ); ?></span><?php echo ink_foundation_icon( '<path d="m6 9 6 6 6-6"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG. */ ?></summary>
 			<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
 			<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( 'Betaling word veilig hanteer deur PayFast. Ons sien nooit jou kaartbesonderhede nie.', 'ink-foundation' ); ?></p>
 			<!-- /wp:paragraph -->
@@ -211,8 +211,8 @@ foreach ( $ink_plans as $ink_plan ) :
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"secondary","textColor":"ink-text","layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull has-ink-text-color has-secondary-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-cta","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"secondary","textColor":"ink-text","layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull has-ink-text-color has-secondary-background-color has-text-color has-background ink-lidmaatskap-cta" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group">
 		<!-- wp:heading {"textAlign":"center","level":2,"fontSize":"xxxl"} -->
