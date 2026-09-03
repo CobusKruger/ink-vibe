@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Engagement;
 
 use Ink\I18n\Terms;
+use Ink\Kernel\QaFixture;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -77,8 +78,16 @@ final class ReadingList {
 				continue;
 			}
 
+			$title = get_the_title( $post );
+
+			// Same fixture-leak bug class fixed on every other page this rework —
+			// a member's own leeslys must never show seeded QA content.
+			if ( QaFixture::isFixtureTitle( $title ) ) {
+				continue;
+			}
+
 			$cards[] = array(
-				'title'     => get_the_title( $post ),
+				'title'     => $title,
 				'permalink' => (string) get_permalink( $post ),
 				'type'      => $post->post_type,
 			);

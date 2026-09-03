@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Discovery;
 
 use Ink\Content\PostTypes;
+use Ink\Kernel\QaFixture;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -105,8 +106,17 @@ final class ReadCountSurface {
 				continue;
 			}
 
+			$title = get_the_title( $post );
+
+			// Same fixture-leak bug class fixed on every other page this rework —
+			// this writer's own private read-count list must never show seeded
+			// QA content.
+			if ( QaFixture::isFixtureTitle( $title ) ) {
+				continue;
+			}
+
 			$rows[] = array(
-				'title' => get_the_title( $post ),
+				'title' => $title,
 				'count' => (int) get_post_meta( (int) $post->ID, ReadCount::READ_COUNT_META, true ),
 			);
 		}

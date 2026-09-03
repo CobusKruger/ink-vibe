@@ -11,6 +11,7 @@ namespace Ink\Social;
 
 use Ink\Content\PostTypes;
 use Ink\I18n\Terms;
+use Ink\Kernel\QaFixture;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -146,8 +147,17 @@ final class FollowingFeed {
 				continue;
 			}
 
+			$title = get_the_title( $post );
+
+			// Same fixture-leak bug class fixed on every other page this rework —
+			// a member's real activity feed must never show a followed writer's
+			// seeded QA content.
+			if ( QaFixture::isFixtureTitle( $title ) ) {
+				continue;
+			}
+
 			$cards[] = array(
-				'title'     => get_the_title( $post ),
+				'title'     => $title,
 				'permalink' => (string) get_permalink( $post ),
 				'type'      => $post->post_type,
 				'author'    => (string) get_the_author_meta( 'display_name', (int) $post->post_author ),

@@ -11,6 +11,7 @@ namespace Ink\Social;
 
 use Ink\Content\PostTypes;
 use Ink\I18n\Terms;
+use Ink\Kernel\QaFixture;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -103,9 +104,18 @@ final class PinnedWorksManager {
 				continue;
 			}
 
+			$title = get_the_title( $post );
+
+			// Same fixture-leak bug class fixed on every other page this rework —
+			// the writer's own pin-curation list must never offer seeded QA
+			// content to pin.
+			if ( QaFixture::isFixtureTitle( $title ) ) {
+				continue;
+			}
+
 			$works[] = array(
 				'id'        => (int) $post->ID,
-				'title'     => get_the_title( $post ),
+				'title'     => $title,
 				'is_pinned' => in_array( (int) $post->ID, $pinned, true ),
 			);
 		}
