@@ -177,3 +177,25 @@
 	<!-- /wp:group -->
 </section>
 <!-- /wp:group -->
+
+<!-- wp:group {"tagName":"section","align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-12"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignwide" style="padding-top:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-12)">
+	<!-- wp:heading {"level":2} -->
+	<h2 class="wp-block-heading">9. Sponsor recognition (Oor INK) — full grid, all tiers</h2>
+	<!-- /wp:heading -->
+
+	<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
+	<p class="has-muted-text-color has-text-color has-sm-font-size"><code>ink/borg-erkenning</code> — no filter seam exists (same as <code>ink/borg-strook</code> above, {@see Ink\Sponsors\Campaign::activeSponsors()} queries directly); the real <code>/oor-ink/</code> page had NO exclusion at all before the Epic-19 theme-fidelity re-audit (page 14) found the same three real seeded <code>QA FIXTURE — </code> <code>borg</code> posts leaking onto it. This embed turns the (now-added) exclusion back on via <code>ink_borg_erkenning_include_fixtures</code>, gated to this page only, reusing the same three fixture sponsors so all three tier chips (goud/silwer/brons) are visible here.</p>
+	<!-- /wp:paragraph -->
+</section>
+<!-- /wp:group -->
+
+<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide">
+		<!-- wp:ink/borg-erkenning /-->
+	</div>
+	<!-- /wp:group -->
+</section>
+<!-- /wp:group -->

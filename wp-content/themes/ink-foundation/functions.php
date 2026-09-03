@@ -682,6 +682,27 @@ function ink_foundation_qa_fixture_include_sponsors( mixed $include ): mixed {
 add_filter( 'ink_borg_strook_include_fixtures', 'ink_foundation_qa_fixture_include_sponsors' ); // Ink\Sponsors\HomepageStrip::INCLUDE_FIXTURES_FILTER.
 
 /**
+ * Fixture override for `ink/borg-erkenning` (the Oor INK sponsor recognition
+ * section) — same shape as {@see ink_foundation_qa_fixture_include_sponsors()},
+ * added during the Epic-19 theme-fidelity re-audit (page 14, oor-ink). This block
+ * has no `*_FILTER` data seam either (it also reads `Campaign::activeSponsors()`
+ * directly), and — unlike the homepage strip — had NO exclusion at all before this
+ * pass, so the same three real seeded `QA FIXTURE — ` `borg` posts leaked onto the
+ * real `/oor-ink/` page (confirmed live). `Ink\Sponsors\RecognitionSection` now
+ * excludes them the same way; this callback turns that exclusion back OFF, gated to
+ * the QA gallery page only, reusing the SAME three seeded fixture posts (no new
+ * fixture content needed — they already exist for the homepage strip).
+ *
+ * @param mixed $include The filter's incoming value (false unless another filter
+ *                        already overrode it).
+ * @return mixed
+ */
+function ink_foundation_qa_fixture_include_sponsors_erkenning( mixed $include ): mixed {
+	return ink_foundation_is_qa_gallery() ? true : $include;
+}
+add_filter( 'ink_borg_erkenning_include_fixtures', 'ink_foundation_qa_fixture_include_sponsors_erkenning' ); // Ink\Sponsors\RecognitionSection::INCLUDE_FIXTURES_FILTER.
+
+/**
  * Fixture override for `ink/opleiding-argief` (the Opleiding hub) — same
  * "turn the exclusion back on for this page only" shape as
  * {@see ink_foundation_qa_fixture_include_sponsors()}. This block has no

@@ -15,15 +15,26 @@
  * confirmed generic non-profit framing with no legal-registration detail and never
  * any US nonprofit legal-status wording (project-context "Org placeholders" rule).
  *
+ * Section wrapper classes (`ink-oor-ink-hero`/`-org`/`-kontak`/`-meer`) are the
+ * theme.json-global-CSS scoping hooks for the Epic-19 theme-fidelity re-audit
+ * (page 14): the sitewide `xxl`/`xxxl` fluid-clamp bug (still open as of the
+ * gemeenskap/page-12 pass) and the button height/padding/weight recipe, pinned the
+ * same page-scoped `!important` way as gemeenskap/lidmaatskap. This page has no
+ * live Lovable route (assembly-only, `page-map.csv`), so its fidelity target is
+ * internal design-system consistency with the already-verified pages, not a
+ * page-to-page diff — the eyebrow recipe below matches the Lovable-verified
+ * gemeenskap plain-uppercase-eyebrow recipe (xs/primary/medium/0.2em), the closest
+ * established analog, replacing the previous ungrounded muted-grey/sm/0.08em value.
+ *
  * @package Ink\Foundation
  */
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-oor-ink-hero","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-oor-ink-hero" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:paragraph {"style":{"typography":{"fontStyle":"normal","fontWeight":"600","textTransform":"uppercase","letterSpacing":"0.08em"}},"fontSize":"sm","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-sm-font-size" style="font-style:normal;font-weight:600;letter-spacing:0.08em;text-transform:uppercase">Oor INK</p>
+		<!-- wp:paragraph {"style":{"typography":{"fontStyle":"normal","fontWeight":"500","textTransform":"uppercase","letterSpacing":"0.2em"}},"fontSize":"xs","textColor":"primary"} -->
+		<p class="has-primary-color has-text-color has-xs-font-size" style="font-style:normal;font-weight:500;letter-spacing:0.2em;text-transform:uppercase">Oor INK</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
@@ -42,8 +53,8 @@
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull has-surface-alt-background-color has-background" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-oor-ink-org","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull has-surface-alt-background-color has-background ink-oor-ink-org" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
@@ -58,8 +69,8 @@
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-oor-ink-kontak","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-oor-ink-kontak" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
@@ -84,8 +95,8 @@
 
 <!-- wp:pattern {"slug":"ink-foundation/borg-erkenning"} /-->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull has-surface-alt-background-color has-background" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-oor-ink-meer","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull has-surface-alt-background-color has-background ink-oor-ink-meer" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->

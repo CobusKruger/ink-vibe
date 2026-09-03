@@ -70,10 +70,43 @@ test( 'toHtml renders a logo grid item per active sponsor', function (): void {
 	$html = RecognitionSection::toHtml( $sponsors );
 
 	expect( $html )->toContain( 'ink-borg-erkenning__rooster' );
-	expect( substr_count( $html, 'ink-borg-erkenning__item' ) )->toBe( 2 );
+	// Trailing space distinguishes the base class from its tier-modifier siblings
+	// (which start with the same substring) — mirrors HomepageStripTest's technique.
+	expect( substr_count( $html, 'ink-borg-erkenning__item ' ) )->toBe( 2 );
 	expect( $html )->toContain( 'href="https://protea.test"' );
 	expect( $html )->toContain( 'href="https://nb.test"' );
 	expect( $html )->toContain( 'rel="noopener sponsored"' );
+} );
+
+// --- one per-tier modifier class per active sponsor (parity with HomepageStrip) ---
+
+test( 'toHtml gives each grid item a tier modifier class, degrading unknown/empty tiers to brons', function (): void {
+	Functions\when( 'get_post_thumbnail_id' )->justReturn( 0 );
+
+	// postId 0 (not a real seeded post) with no external link deliberately keeps
+	// SponsorLink out of its `get_permalink()` fallback branch (`$post_id <= 0`
+	// short-circuits it) — this test only cares about the tier modifier class, not
+	// the link target, so it has no reason to touch `get_permalink` at all.
+	$sponsors = array(
+		new Sponsor( 0, 'Protea', '', 'Goud', '', '', '' ),
+		new Sponsor( 0, 'NB', '', 'Silwer', '', '', '' ),
+		new Sponsor( 0, 'Kwela', '', '', '', '', '' ),
+	);
+
+	$html = RecognitionSection::toHtml( $sponsors );
+
+	expect( $html )->toContain( 'ink-borg-erkenning__item--goud' );
+	expect( $html )->toContain( 'ink-borg-erkenning__item--silwer' );
+	expect( $html )->toContain( 'ink-borg-erkenning__item--brons' ); // untiered Kwela → brons.
+} );
+
+// --- CTA carries the decorative heart icon (Lovable SponsorsSection.tsx parity) ---
+
+test( 'toHtml prefixes the CTA with the decorative heart icon', function (): void {
+	$html = RecognitionSection::toHtml( array() );
+
+	expect( $html )->toContain( 'ink-borg-erkenning__cta-ikoon' );
+	expect( $html )->toContain( 'aria-hidden="true"' );
 } );
 
 // --- name fallback when no logo ---
