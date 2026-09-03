@@ -38,7 +38,8 @@ test( 'the Ontdek pattern carries the Bydraes/Skrywers tab scaffold and embeds t
 
 	// Positive structural markers (make the embed check non-vacuous).
 	expect( $markup )->toContain( 'ink-foundation/archive-intro' ); // hub intro
-	expect( $markup )->toContain( 'is-style-pill' );                 // tab scaffold
+	expect( $markup )->toContain( 'ink-ontdek-tabs__knoppie' );      // tab scaffold
+	expect( $markup )->toContain( 'data-ink-ontdek-tab' );           // toggling tab buttons
 
 	// Tab labels read from the terminology registry bridge (single-source, not bare literals).
 	expect( $markup )->toContain( "ink_foundation_term( 'bydrae_plural'" );
