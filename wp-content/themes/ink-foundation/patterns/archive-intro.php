@@ -15,7 +15,7 @@
 		</p>
 
 		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
-		<h1 class="wp-block-heading has-xxxl-font-size">Vind 'n stuk wat jou aand verswelg, of 'n skrywer wat jou bybly.</h1>
+		<h1 class="wp-block-heading has-xxxl-font-size">Vind &#8217;n stuk wat jou aand verswelg, of &#8217;n skrywer wat jou bybly.</h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"lg","textColor":"muted-text"} -->

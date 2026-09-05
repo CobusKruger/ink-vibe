@@ -35,9 +35,9 @@ $ink_plan_noun = function_exists( 'ink_foundation_term' )
 // Per-term, member-facing plan descriptions (human-authored Afrikaans —
 // docs/ui-copy-translations.md "Aansluitingsopsies"; no savings framing).
 $ink_plan_descriptions = array(
-	1  => __( 'Volle toegang vir \'n maand.', 'ink-foundation' ),
+	1  => __( 'Volle toegang vir \&#8217;n maand.', 'ink-foundation' ),
 	6  => __( 'Volle toegang vir ses maande.', 'ink-foundation' ),
-	12 => __( 'Volle toegang vir \'n jaar.', 'ink-foundation' ),
+	12 => __( 'Volle toegang vir \&#8217;n jaar.', 'ink-foundation' ),
 );
 
 // Fail-safe: when ink-core is inactive the bridge returns an empty list. Render the

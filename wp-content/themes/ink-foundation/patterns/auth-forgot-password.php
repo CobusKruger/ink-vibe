@@ -35,7 +35,7 @@
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-md-font-size">Voer jou e-pos in en ons stuur 'n skakel om jou wagwoord te herstel.</p>
+		<p class="has-muted-text-color has-text-color has-md-font-size">Voer jou e-pos in en ons stuur &#8217;n skakel om jou wagwoord te herstel.</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:html -->

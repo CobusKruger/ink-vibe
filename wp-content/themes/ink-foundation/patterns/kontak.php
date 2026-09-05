@@ -38,7 +38,7 @@
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"lg","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-lg-font-size">Het jy 'n vraag, 'n voorstel, of wil jy as borg betrokke raak? Stuur ons 'n boodskap.</p>
+		<p class="has-muted-text-color has-text-color has-lg-font-size">Het jy &#8217;n vraag, &#8217;n voorstel, of wil jy as borg betrokke raak? Stuur ons &#8217;n boodskap.</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:ink/kontak-vorm /-->

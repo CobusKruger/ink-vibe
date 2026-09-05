@@ -20,13 +20,13 @@ $ink_skryf_in    = function_exists( 'ink_foundation_is_member_logged_in' ) && in
 // Per-type supporting descriptions + body placeholders (theme presentation copy).
 $ink_skryf_desc       = array(
 	'gedig'   => __( 'Druk emosies uit deur vers, ritme en beelding.', 'ink-foundation' ),
-	'storie'  => __( 'Skep \'n vertelling met karakters, intrige en betekenis.', 'ink-foundation' ),
-	'artikel' => __( 'Deel \'n essay, besinning of joernalistieke stuk.', 'ink-foundation' ),
+	'storie'  => __( 'Skep \&#8217;n vertelling met karakters, intrige en betekenis.', 'ink-foundation' ),
+	'artikel' => __( 'Deel \&#8217;n essay, besinning of joernalistieke stuk.', 'ink-foundation' ),
 );
 $ink_skryf_ph         = array(
 	'gedig'   => __( "Begin jou gedig hier...\n\nWenk: Gebruik reëlbreuke om jou verse te struktureer.", 'ink-foundation' ),
 	'storie'  => __( "Begin jou storie hier...\n\nWenk: Kortverhale is gewoonlik tussen 1 000 en 7 500 woorde.", 'ink-foundation' ),
-	'artikel' => __( "Begin met 'n sterk openingsreël...\n\nWenk: Begin met die idee, grond dit dan in 'n storie.", 'ink-foundation' ),
+	'artikel' => __( "Begin met &#8217;n sterk openingsreël...\n\nWenk: Begin met die idee, grond dit dan in &#8217;n storie.", 'ink-foundation' ),
 );
 // Per-type icon (Lucide glyphs, matching the Lovable reference's type-card
 // icons exactly — feather/book-open/newspaper): theme presentation only, via

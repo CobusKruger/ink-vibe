@@ -165,6 +165,25 @@ test( 'toHtml renders the heading, the controls and a card per work, escaping ev
 	expect( $html )->not->toContain( 'ink-ontdek-werke__blaai' );
 } );
 
+test( 'toHtml colours each card type pill via the shared .ink-lees-tipe reading-page convention', function (): void {
+	ink_archive_render_stubs();
+
+	$cards = array(
+		array( 'title' => 'Herfsblare', 'permalink' => '/gedig/herfsblare', 'type' => 'gedig', 'author' => 'Lid Een' ),
+		array( 'title' => 'Die brug', 'permalink' => '/storie/die-brug', 'type' => 'storie', 'author' => 'Lid Twee' ),
+		array( 'title' => 'Opiniestuk', 'permalink' => '/artikel/opiniestuk', 'type' => 'artikel', 'author' => 'Lid Drie' ),
+	);
+
+	$html = WorksArchive::toHtml( $cards, array( 'paged' => 1, 'max_pages' => 1, 'type' => null, 'sort' => WorksArchive::SORT_NUUT ) );
+
+	// Sage (accent) for Gedig, brand orange (primary) for Storie, grey (muted-text)
+	// for Artikel — the SAME badge convention as the reading pages, not a bespoke
+	// Ontdek-only colour (Theme-Fidelity fourth-pass re-audit, Ontdek page, item #7).
+	expect( $html )->toContain( 'ink-ontdek-werke__type ink-lees-tipe has-accent-color' );
+	expect( $html )->toContain( 'ink-ontdek-werke__type ink-lees-tipe has-primary-color' );
+	expect( $html )->toContain( 'ink-ontdek-werke__type ink-lees-tipe has-muted-text-color' );
+} );
+
 test( 'controlsHtml marks the active type and sort and preserves the other dimension', function (): void {
 	ink_archive_render_stubs();
 

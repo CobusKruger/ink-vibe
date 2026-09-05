@@ -73,7 +73,7 @@ $ink_post_to = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : 
 			<p class="has-md-font-size">
 			<?php
 				/* translators: %1$s: the singular skrywer label from the glossary. %2$s: the singular bydrae label. */
-				echo esc_html( sprintf( __( 'Volg \'n %1$s of stoor \'n %2$s na jou leeslys.', 'ink-foundation' ), $ink_skrywer, $ink_bydrae ) );
+				echo esc_html( sprintf( __( 'Volg \&#8217;n %1$s of stoor \&#8217;n %2$s na jou leeslys.', 'ink-foundation' ), $ink_skrywer, $ink_bydrae ) );
 			?>
 			</p>
 			<!-- /wp:paragraph -->
@@ -88,7 +88,7 @@ $ink_post_to = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : 
 				<p class="has-muted-text-color has-text-color has-sm-font-size">
 				<?php
 					/* translators: %s: the singular skrywer label from the glossary. */
-					echo esc_html( sprintf( __( 'Volg \'n %s om hul nuwe stukke in jou aktiwiteitsvoer te sien.', 'ink-foundation' ), $ink_skrywer ) );
+					echo esc_html( sprintf( __( 'Volg \&#8217;n %s om hul nuwe stukke in jou aktiwiteitsvoer te sien.', 'ink-foundation' ), $ink_skrywer ) );
 				?>
 				</p>
 				<!-- /wp:paragraph -->

@@ -112,7 +112,7 @@
 
 <?php if ( 'voltooi' !== $ink_registreer_status ) : ?>
 		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-sm-font-size">Reeds 'n rekening? <a href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></p>
+		<p class="has-muted-text-color has-text-color has-sm-font-size">Reeds &#8217;n rekening? <a href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></p>
 		<!-- /wp:paragraph -->
 <?php endif; ?>
 	</div>

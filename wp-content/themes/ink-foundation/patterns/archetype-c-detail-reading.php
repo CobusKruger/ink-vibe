@@ -36,7 +36,7 @@
 		<!-- /wp:paragraph -->
 
 		<!-- wp:paragraph {"fontSize":"md"} -->
-		<p class="has-md-font-size">'n Tweede paragraaf as plekhouer sodat die leesritme en kolombreedte sigbaar is.</p>
+		<p class="has-md-font-size">&#8217;n Tweede paragraaf as plekhouer sodat die leesritme en kolombreedte sigbaar is.</p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->

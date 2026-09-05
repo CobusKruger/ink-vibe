@@ -30,7 +30,7 @@
 					<!-- wp:group {"className":"is-style-emphasis","layout":{"type":"constrained"}} -->
 					<div class="wp-block-group is-style-emphasis">
 						<!-- wp:paragraph {"fontSize":"md"} -->
-						<p class="has-md-font-size">Kort bio van die skrywer. Voeg 'n paar sinne by oor die skrywer se werk en stem.</p>
+						<p class="has-md-font-size">Kort bio van die skrywer. Voeg &#8217;n paar sinne by oor die skrywer se werk en stem.</p>
 						<!-- /wp:paragraph -->
 					</div>
 					<!-- /wp:group -->

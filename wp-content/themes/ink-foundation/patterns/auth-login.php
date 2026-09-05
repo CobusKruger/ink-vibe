@@ -119,7 +119,7 @@
 <?php endif; ?>
 
 		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-sm-font-size">Nog nie 'n lid nie? <a href="/registreer">Registreer</a></p>
+		<p class="has-muted-text-color has-text-color has-sm-font-size">Nog nie &#8217;n lid nie? <a href="/registreer">Registreer</a></p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->

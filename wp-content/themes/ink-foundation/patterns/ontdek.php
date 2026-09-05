@@ -23,6 +23,20 @@
  * below (unlike Lovable's `top-16`), so this sticks to the viewport top
  * directly (`top:0`).
  *
+ * The five inner `wp:group {"align":"wide"}` wrappers (soek / vlakke / tabbalk
+ * nav / bydraes / skrywers) deliberately carry NO `layout` attribute of their
+ * own (Theme-Fidelity fourth-pass re-audit, page 11, 2026-09-05 — PO item #6,
+ * "everything from the search box down [was] weirdly constrained to a narrow
+ * column"). Each used to redundantly re-declare `"layout":{"type":"constrained"}`
+ * — which makes WP treat the wrapper's OWN children as a fresh constrained
+ * layout root, clamping any child lacking its own `alignwide`/`alignfull`
+ * class (i.e. every one of these raw dynamic-block `<div>`s) down to the
+ * theme's `contentSize` (768px) instead of letting it inherit the wrapper's
+ * already-correct `wideSize` (1368px) width. Dropping the redundant `layout`
+ * leaves these as plain "flow" groups, so their block children render at the
+ * wrapper's full width, matching Lovable's `Browse.tsx` (which only narrows
+ * the intro copy, never the search/results below it — see archive-intro.php).
+ *
  * @package Ink\Foundation
  */
 
@@ -37,7 +51,7 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/ontdek-soek /-->
 	</div>
@@ -47,7 +61,7 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/ontdek-vlakke /-->
 	</div>
@@ -57,7 +71,7 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-ontdek-tabbalk","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull ink-ontdek-tabbalk">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 		<nav class="ink-ontdek-tabs" aria-label="<?php esc_attr_e( 'Ontdek-oortjies', 'ink-foundation' ); ?>">
 			<button type="button" class="ink-ontdek-tabs__knoppie is-active" data-ink-ontdek-tab="bydraes" aria-selected="true">
@@ -76,7 +90,7 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" id="bydraes" data-ink-ontdek-panel="bydraes" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/ontdek-werke /-->
 	</div>
@@ -86,7 +100,7 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" id="skrywers" data-ink-ontdek-panel="skrywers" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/ontdek-skrywers /-->
 	</div>

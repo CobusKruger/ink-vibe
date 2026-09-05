@@ -444,7 +444,7 @@ final class WorksArchive {
 
 		$html = '<li class="' . esc_attr( $base . '__item is-style-card' ) . '">'
 			. '<div class="' . esc_attr( $base . '__meta-top' ) . '">'
-			. '<span class="' . esc_attr( $base . '__type' ) . '">' . esc_html( Terms::label( (string) ( $card['type'] ?? '' ) ) ) . '</span>';
+			. self::typePillHtml( $base, (string) ( $card['type'] ?? '' ) );
 
 		$read_time = ReadingTime::label( (int) ( $card['read_minutes'] ?? 0 ) );
 
@@ -468,6 +468,49 @@ final class WorksArchive {
 			. '</div></li>';
 
 		return $html;
+	}
+
+	/**
+	 * The card's type pill — the SAME `.ink-lees-tipe` badge + per-type colour
+	 * convention as the reading pages (sage `gedig` / brand-orange `storie` /
+	 * grey `artikel`), not a bespoke Ontdek-only style. Pure.
+	 *
+	 * Direct product-owner instruction (Theme-Fidelity fourth-pass re-audit,
+	 * Ontdek page, 2026-09-05, item #7): "The excerpt cards must use pills that
+	 * match the reading pages: sage for poems, brand orange for stories and
+	 * gray for articles." Before this fix `.ink-ontdek-werke__type` hardcoded
+	 * `color: primary` (orange) for every type — Storie was already correct by
+	 * accident, Gedig and Artikel were not. Mirrors reading-gedig.php /
+	 * reading-storie.php / reading-artikel.php's exact class+style pattern
+	 * (`has-accent-color` + a 15% inline background tint for Gedig only, the
+	 * other two types at `.ink-lees-tipe`'s shared 10%) so the two surfaces
+	 * cannot drift apart. Any type outside the three readable ones keeps the
+	 * neutral (uncoloured) pill.
+	 *
+	 * @param string $base The BEM base class.
+	 * @param string $type The bydrae post type (`gedig`/`storie`/`artikel`), or ''.
+	 * @return string
+	 */
+	private static function typePillHtml( string $base, string $type ): string {
+		$classes = $base . '__type ink-lees-tipe';
+		$style   = '';
+
+		switch ( $type ) {
+			case PostTypes::GEDIG:
+				$classes .= ' has-accent-color has-text-color';
+				// The shared `.ink-lees-tipe` rule tints at 10%; the reading pages
+				// bump Gedig specifically to 15% (see reading-gedig.php) — matched here.
+				$style = ' style="background-color:color-mix(in srgb, currentColor 15%, transparent)"';
+				break;
+			case PostTypes::STORIE:
+				$classes .= ' has-primary-color has-text-color';
+				break;
+			case PostTypes::ARTIKEL:
+				$classes .= ' has-muted-text-color has-text-color';
+				break;
+		}
+
+		return '<span class="' . esc_attr( $classes ) . '"' . $style . '>' . esc_html( Terms::label( $type ) ) . '</span>';
 	}
 
 	/**

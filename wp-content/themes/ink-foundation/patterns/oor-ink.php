@@ -42,11 +42,11 @@
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"lg"} -->
-		<p class="has-lg-font-size">INK is 'n niewinsgerigte literêre tuiste gebou rondom 'n eenvoudige idee: dat deurdagte skryfwerk lesers verdien, en dat albei 'n beter plek verdien om mekaar te vind.</p>
+		<p class="has-lg-font-size">INK is &#8217;n niewinsgerigte literêre tuiste gebou rondom &#8217;n eenvoudige idee: dat deurdagte skryfwerk lesers verdien, en dat albei &#8217;n beter plek verdien om mekaar te vind.</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-md-font-size">'n Tuiste vir skrywers en lesers, wat sinvolle literêre bande smee sedert 2018.</p>
+		<p class="has-muted-text-color has-text-color has-md-font-size">&#8217;n Tuiste vir skrywers en lesers, wat sinvolle literêre bande smee sedert 2018.</p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
@@ -62,7 +62,7 @@
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md"} -->
-		<p class="has-md-font-size">INK is 'n niewinsgerigte gemeenskapsorganisasie, gestig in 2018.</p>
+		<p class="has-md-font-size">INK is &#8217;n niewinsgerigte gemeenskapsorganisasie, gestig in 2018.</p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
@@ -78,7 +78,7 @@
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-md-font-size">Het jy 'n vraag of wil jy by INK betrokke raak? Ons hoor graag van jou.</p>
+		<p class="has-muted-text-color has-text-color has-md-font-size">Het jy &#8217;n vraag of wil jy by INK betrokke raak? Ons hoor graag van jou.</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:buttons {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
@@ -107,7 +107,7 @@
 		<ul>
 			<li><a href="/gemeenskap">Die INK-gemeenskap</a></li>
 			<li><a href="/uitdagings">Maandelikse uitdagings</a></li>
-			<li><a href="/kontak">Word 'n borg</a></li>
+			<li><a href="/kontak">Word &#8217;n borg</a></li>
 		</ul>
 		<!-- /wp:list -->
 	</div>

@@ -1170,6 +1170,119 @@ user to re-establish a logged-in session if live re-verification of that branch 
 
 ---
 
+### Same-day follow-up: Ontdek/Browse hub — 8 shortcomings (2026-09-05)
+
+Direct product-owner report against `/ontdek/` vs Lovable's `/browse` covering the intro's spacing/typography, a
+sitewide typographic defect, a page-width regression, the archive cards' type pills, and a request to document
+the discovery-surfaces logic. Compared live via `getBoundingClientRect()`/`getComputedStyle()` against both the
+deployed Local site and the live Lovable preview.
+
+**Items 1–3 (eyebrow-to-heading gap, 2-line vs 3-line wrap, line overlap) — one shared root cause.** The intro's
+H1 (`patterns/archive-intro.php`) carries its own default heading margin (a fluid clamp that resolved to
+`40.2px` top AND bottom at this viewport) inside a plain block-flow wrapper (`display:block`, not the flex
+`gap` the block's `blockGap` setting implies) — so CSS margin COLLAPSING took over: the eyebrow's own
+`margin-bottom:16px` and the H1's `margin-top:40.2px` collapsed to the larger value, and likewise H1's
+`margin-bottom` vs. the paragraph's `margin-top`, giving a uniform ~40px gap on both sides where Lovable has
+two DIFFERENT, smaller gaps (16px above the heading, 24px below it). Separately, the H1's container had no
+width cap at all (full 1368px "wide" container) where Lovable's equivalent (`Browse.tsx`) constrains its intro
+text to `max-w-3xl` (768px) — so the same words that wrap to 3 lines on Lovable fit in 2 wider lines on INK,
+which is what read as "line overlap": the leading is IDENTICAL on both sites (`line-height:1`, confirmed via
+`getComputedStyle` — Lovable's own `leading-tight` class is overridden by its responsive `text-6xl` utility's
+bundled `line-height:1` at this breakpoint), it's the wrapping that differed. Fix (`theme.json`'s custom CSS,
+scoped to `.ink-ontdek-intro`): added `max-width:768px` on the intro's inner wrapper (now wraps to 3 lines,
+matching Lovable exactly) and explicit `margin-top:0;margin-bottom:24px` on the H1 (stops the margin collapse,
+so the eyebrow's own 16px and the H1's new 24px become the visible gaps — both now measured byte-for-byte
+against Lovable: 16px above, 24px below).
+
+**Item 4 (the `'n` quote character) — a sitewide `wptexturize` defect, fixed everywhere, not just this page.**
+WordPress's `wptexturize()` guesses which way to curl a word-initial apostrophe and gets Afrikaans's `'n`
+(the elided "'n" = "a/an") backwards every time — it renders `&#8216;n` (an OPENING single quote, `'`) instead
+of `&#8217;n` (the correct closing/elision form, `'`), because `'n` isn't in its hardcoded exception list (that
+list only knows English patterns like `'99`). Confirmed live (`curl`, byte-level: `&#8216;n` in the response).
+Grepped every raw (non-`esc_html`-wrapped) pattern-file occurrence of a word-initial `'n ` sitewide — 33 real
+markup instances across 12 files, `archive-intro.php` among them — and hardcoded the correct entity
+(`&#8217;n`) directly in each pattern's source text, which WordPress's texturizer leaves alone once it's
+already an entity. (Text inside `esc_html_e()`/`esc_html__()` calls, e.g. `hero.php`'s CTA copy, renders a
+plain straight apostrophe instead — a separate, lower-severity dumb-vs-smart-quote inconsistency, not the
+backwards-curl bug, and out of scope for this pass since it wasn't reported.)
+
+**Items 6 (narrow-column regression below the search box) — a redundant `layout` attribute on 5 wrapper
+groups.** `patterns/ontdek.php` wraps each of the 5 hub sections (soek / vlakke / tab nav / bydraes / skrywers)
+in an inner `wp:group {"align":"wide", ..., "layout":{"type":"constrained"}}`. Re-declaring `layout:constrained`
+on that INNER group makes WordPress treat ITS OWN children as a fresh constrained-layout root: any child
+lacking its own `alignwide`/`alignfull` class — which is every one of these raw dynamic-block `<div>`s
+(`ink-ontdek-soek`, `ink-ontdek-vlakke`, etc. — none of them call `get_block_wrapper_attributes()`) — gets
+clamped to the theme's `contentSize` (768px) instead of inheriting the wrapper's own already-correct
+`wideSize` (1368px). Confirmed by walking the DOM ancestor chain: `.ink-ontdek-vlakke` reported
+`max-width:768px` directly on itself while its immediate `alignwide` parent correctly measured 1368px. Fix:
+dropped the redundant `"layout":{"type":"constrained"}}` from all 5 inner wrappers — with no `layout` attribute
+they default to plain "flow" (no width constraint), so their children now render at the full 1368px width,
+matching Lovable (which only narrows the INTRO copy, never the search bar/results grid below it). Verified live:
+`.ink-ontdek-vlakke`, the tab nav, `#bydraes`'s and `#skrywers`' inner wrappers, and `.ink-ontdek-werke__list`
+all now measure 1368px/left:156, identical to the intro's own wide container.
+
+**Item 7 (excerpt-card type pills must match the reading pages) — real bug, same root cause as the earlier
+Tuisblad pill-colour fix.** `Ink\Discovery\WorksArchive::cardHtml()`'s `.ink-ontdek-werke__type` span hardcoded
+`color: primary` (brand orange) UNCONDITIONALLY for every card — Storie looked right by accident, Gedig and
+Artikel did not. Fixed by extracting a new `typePillHtml()` that mirrors `reading-gedig.php` /
+`reading-storie.php` / `reading-artikel.php`'s exact convention: the shared `.ink-lees-tipe` badge class plus a
+`has-accent-color` (Gedig, sage, tinted 15% to match the reading page's bump) / `has-primary-color` (Storie,
+brand orange, the shared 10% tint) / `has-muted-text-color` (Artikel, grey, 10% tint) modifier keyed on the
+POST TYPE. The old bespoke `.ink-ontdek-werke__type` CSS rule (fixed 2px padding, orange-tinted outline border)
+was replaced with a thin `.ink-ontdek-werke__type.ink-lees-tipe{font-size:...;font-weight:600}` rule that only
+tunes text size/weight, leaving shape and colour entirely to `.ink-lees-tipe` — so this surface and the reading
+pages cannot drift apart again. Verified live: Gedig cards render `rgb(82,122,102)` (sage) on a 15%-tinted
+background, Storie cards render `rgb(236,59,19)` (brand orange) on a 10%-tinted background. New regression test
+added (`WorksArchiveTest.php`) asserting the three colour-class pairings.
+
+**Item 5 (font/colour of the intro paragraph) — already matching, no change made.** Measured both sides:
+INK renders `Inter, system-ui, sans-serif`, `rgb(107,114,128)`, `18px` for "Elke storie en gedig..."; Lovable
+renders `Inter, system-ui, sans-serif`, `rgb(103,111,126)`, `18px` for "Every story and poem...". The two greys
+differ by ~4 per channel — visually indistinguishable, almost certainly just Tailwind's `gray-500` vs. INK's
+`muted-text` token landing a shade apart — and a side-by-side zoomed screenshot confirmed no visible divergence.
+No fix applied; flagged here so the item is recorded as checked rather than silently dropped.
+
+**Item 8 (discovery-surfaces logic — requested as documentation, not a bug).** `Ink\Discovery\DiscoverySurfaces`
+renders up to 4 rows, each a bounded `WP_User_Query` (max 6 writers, `Story 8.5`):
+
+- **Nuwe stemme** ("New voices") — the 6 writers with the most recent FIRST-ever publish timestamp
+  (`SkrywerIndex::FIRST_PUBLISH_META`, set ONCE and never moved). Newest-debut-first.
+- **Onlangs aktief** ("Recently active") — the 6 writers with the most recent LAST publish timestamp
+  (`SkrywerIndex::LAST_PUBLISH_META`, refreshed on every publish).
+- **Skrywers soos jy** ("Writers like you") — logged-in only, and only shown at all if the viewer has
+  published ≥1 readable form; an OR match on which of the three broad forms (`gedig`/`storie`/`artikel`) the
+  viewer has EVER published, excluding the viewer, capped at 6.
+- **Skrywers in jou Gradering** — logged-in only; up to 6 OTHER writers (must have ≥1 publish) sharing the
+  viewer's `Tier`. Not asked about directly, but it's the actual "similar by grade" surface, kept separate
+  from "soos jy" on purpose (Gradering is a discovery convenience, never conflated with content similarity).
+
+Corner cases, answered directly against the code (`DiscoverySurfaces::render()`/`toHtml()`):
+
+- *"Would someone who placed several items in short order fill all the 'Onlangs aktief' slots?"* — No.
+  `WP_User_Query` returns one row PER WRITER, ordered by their single most-recent-publish timestamp; publishing
+  five times in an hour still occupies exactly one slot (whichever rank that one timestamp earns), never more.
+- *"How do we choose similar writers?"* — Coarsely, by design (Principle 8: no follow graph, no algorithmic
+  profiling): two writers are "similar" if they've EVER published in the same one of the three broad forms
+  (poetry / prose / articles), an OR match — never by theme, tag, tone, or Gradering (that's the separate
+  "jou Gradering" row). A writer who has published in all three forms matches almost everyone; a writer who has
+  only ever published one poem only ever matches other poets — on a small site that pool can be thin.
+- *"What happens when there aren't several options?"* — No padding or backfill: each row independently returns
+  however many writers actually match (fewer than 6 is normal on a small site), and `toHtml()` drops a row
+  ENTIRELY (no heading, no empty-state message) if it has zero cards — so it's expected, not a bug, for fewer
+  than 3 rows to render for an anonymous visitor (soos-jy/jou-Gradering need a login) or for a never-published
+  logged-in reader (soos-jy needs ≥1 publish from the viewer too).
+
+No code change for item 8 — recorded here as the requested explanation.
+
+Verification: `composer test` 1334 passed (one more than the header fix, the new pill-colour test; same 4
+pre-existing Integration-suite failures), `stan` clean (206 files), `deptrac` same 3 pre-existing violations, 0
+new. Deployed and re-verified live: intro gaps measure 16px/24px (was 40px/40px), H1 wraps 3 lines, quote
+renders `’n` (confirmed via `textContent`), `.ink-ontdek-vlakke`/tab-nav/`#bydraes`/`#skrywers`/the works list
+all measure the full 1368px wide container, and Gedig/Storie/Artikel cards render sage/orange/grey pills
+respectively.
+
+---
+
 ### What each done row actually fixed
 
 **Sitewide tokens (`541a57a`).** Root-caused during the tuisblad pass: WordPress kebab-cases a
