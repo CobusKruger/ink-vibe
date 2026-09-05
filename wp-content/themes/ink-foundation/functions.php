@@ -186,6 +186,88 @@ function ink_foundation_enqueue_auth_assets(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_auth_assets' );
 
 /**
+ * Enqueue the reading-page engagement stylesheet on a single gedig OR storie
+ * (Theme-Fidelity re-audit, page 3 — lees-gedig — extended to lees-storie in
+ * the third pass; reading-artikel is deliberately NOT included, unchanged).
+ *
+ * `reading.css` carries the floating engagement bar's `position:sticky`
+ * treatment (the sticky-bottom pill matching Lovable's `ReadStory.tsx` "Floating
+ * Action Bar", a component shared unconditionally between poetry and prose) —
+ * before this file there was NO dedicated reading-page stylesheet anywhere
+ * (the `.ink-reaksie-bar` pill styling itself lives in theme.json's global
+ * CSS, shared with reading-artikel too; only the sticky positioning is
+ * gedig/storie-only, so it belongs in a page-scoped stylesheet, not the shared
+ * global CSS). See `patterns/reading-gedig.php`/`patterns/reading-storie.php`'s
+ * own docblocks for why `.ink-reaksie-bar` had to move to a top-level block
+ * for `sticky` to actually have room to float.
+ */
+function ink_foundation_enqueue_reading_engagement_assets(): void {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'gedig', 'storie' ) ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_style(
+		'ink-foundation-reading-engagement',
+		get_theme_file_uri( 'assets/css/reading.css' ),
+		array(),
+		(string) $theme->get( 'Version' )
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_reading_engagement_assets' );
+
+/**
+ * Stamp `data-audit-id="gedig-title"`/`"storie-title"` onto the rendered
+ * `core/post-title` block on a single gedig or storie (Theme-Fidelity
+ * re-audit, page 3, Tier-1 measurement anchor — extended to storie in the
+ * third pass). `wp:post-title` is a dynamic core block with no static markup
+ * in `patterns/reading-gedig.php`/`patterns/reading-storie.php` to hand-edit
+ * (unlike the badge/hint pills, which are plain `wp:paragraph` blocks and
+ * carry the attribute directly in the pattern file) — this is core's own
+ * per-block-name render filter (`render_block_core/{name}`), gated so
+ * reading-artikel/every other `wp:post-title` on the site is untouched.
+ */
+function ink_foundation_audit_id_reading_title( string $block_content ): string {
+	if ( ! function_exists( 'is_singular' ) ) {
+		return $block_content;
+	}
+
+	if ( is_singular( 'gedig' ) ) {
+		$audit_id = 'gedig-title';
+	} elseif ( is_singular( 'storie' ) ) {
+		$audit_id = 'storie-title';
+	} else {
+		return $block_content;
+	}
+
+	$with_audit_id = preg_replace( '/<h1\b/', '<h1 data-audit-id="' . $audit_id . '"', $block_content, 1 );
+
+	return null !== $with_audit_id ? $with_audit_id : $block_content;
+}
+add_filter( 'render_block_core/post-title', 'ink_foundation_audit_id_reading_title' );
+
+/**
+ * Stamp `data-audit-id="storie-paragraph"` onto the FIRST rendered paragraph
+ * of a storie's `core/post-content` output (Theme-Fidelity third pass,
+ * lees-storie, Tier-1 measurement anchor — mirrors the title filter above:
+ * `wp:post-content` is a dynamic core block with no static per-paragraph
+ * markup to hand-edit). Gated to storie only; every other `wp:post-content`
+ * on the site (including reading-artikel, out of scope this pass) is
+ * untouched.
+ */
+function ink_foundation_audit_id_storie_paragraph( string $block_content ): string {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( 'storie' ) ) {
+		return $block_content;
+	}
+
+	$with_audit_id = preg_replace( '/<p\b/', '<p data-audit-id="storie-paragraph"', $block_content, 1 );
+
+	return null !== $with_audit_id ? $with_audit_id : $block_content;
+}
+add_filter( 'render_block_core/post-content', 'ink_foundation_audit_id_storie_paragraph' );
+
+/**
  * Re-skin (not replace) WordPress core's OWN `wp-login.php?action=resetpass`
  * screen — the one auth screen this theme deliberately leaves as WordPress's
  * native `login_header()` markup rather than a custom page, because it carries
@@ -230,20 +312,32 @@ function ink_foundation_login_headertext(): string {
 add_filter( 'login_headertext', 'ink_foundation_login_headertext' );
 
 /**
- * Enqueue the line-reactions client on a single gedig (Story 7.3, FR-26).
+ * Enqueue the line-resonance client on a single gedig (Story 7.3, FR-26).
  *
- * The reading-surface reaction widget attaches to the `[data-ink-line]` anchors
+ * The reading-surface resonance widget attaches to the `[data-ink-line]` anchors
  * the ink/gedig-body block renders and writes through the `ink/v1/reaksie` REST
  * endpoint. Business logic stays server-side; this only ships the thin client +
- * its config (REST root, nonce, post id, Afrikaans reaction labels). Loaded only
- * where the anchors exist.
+ * its config (REST root, nonce, post id, the Afrikaans control label). Loaded
+ * only where the anchors exist.
+ *
+ * Post-Epic-19 fidelity pass: Lovable's `PoetryReader.tsx` gives each line ONE
+ * heart toggle, not a picker of reaction types — so the client always sends the
+ * single `hartjie` enum case (a safe, already-valid `Ink\Kernel\Reaction` case
+ * for this write path, confirmed against `Ink\Engagement\ReactionController`) and
+ * this config carries no `duim_op`/`wow` entries; that type choice never existed
+ * in the design this control now matches. `reactedLines` is the aggregate list of
+ * line indexes that already carry a reaction from ANY reader — mirrors
+ * `ink_foundation_enqueue_text_highlight_reactions()`'s `reactedParagraphs` — so
+ * the persisted filled-heart state renders on page load for every visitor, not
+ * just the ephemeral click that just resonated.
  */
 function ink_foundation_enqueue_line_reactions(): void {
 	if ( ! function_exists( 'is_singular' ) || ! is_singular( 'gedig' ) ) {
 		return;
 	}
 
-	$theme = wp_get_theme();
+	$theme   = wp_get_theme();
+	$post_id = get_the_ID();
 
 	wp_enqueue_script(
 		'ink-foundation-line-reactions',
@@ -257,26 +351,13 @@ function ink_foundation_enqueue_line_reactions(): void {
 		'ink-foundation-line-reactions',
 		'inkLineReactions',
 		array(
-			'restUrl'   => esc_url_raw( rest_url( 'ink/v1/reaksie' ) ),
-			'nonce'     => wp_create_nonce( 'wp_rest' ),
-			'postId'    => get_the_ID(),
-			'reactions' => array(
-				array(
-					'key'   => 'hartjie',
-					'label' => __( 'Hartjie', 'ink-foundation' ),
-					'glyph' => '♥',
-				),
-				array(
-					'key'   => 'duim_op',
-					'label' => __( 'Duim op', 'ink-foundation' ),
-					'glyph' => '👍',
-				),
-				array(
-					'key'   => 'wow',
-					'label' => __( 'Wow', 'ink-foundation' ),
-					'glyph' => '✨',
-				),
-			),
+			'restUrl'      => esc_url_raw( rest_url( 'ink/v1/reaksie' ) ),
+			'nonce'        => wp_create_nonce( 'wp_rest' ),
+			'postId'       => $post_id,
+			'label'        => __( 'Merk hierdie reël', 'ink-foundation' ),
+			'reactedLines' => ( $post_id && class_exists( '\\Ink\\Engagement\\ReactionStore' ) )
+				? array_values( \Ink\Engagement\ReactionStore::indexesWithReactions( (int) $post_id ) )
+				: array(),
 		)
 	);
 }
@@ -387,7 +468,12 @@ add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_gemeenskapsreaksie' );
  * The ink/leeslys-knoppie block server-renders the toggle in its saved state;
  * this thin client flips it through the `ink/v1/leeslys` REST endpoint and shows
  * the human-authored confirmation toast. The two toast strings are authored
- * Afrikaans (ui-copy-translations.md 155/156), localised verbatim.
+ * Afrikaans (ui-copy-translations.md 155/156), localised verbatim. Already
+ * enqueued regardless of login state (gated on post type only) — the block now
+ * renders for guests too (product-owner decision, post-Epic-19 follow-up), so
+ * `loginUrl` (the shared `Ink\Accounts\AuthRedirects::LOGIN_URL_PATH`, never a
+ * new hardcoded path) is always localised; the client only uses it for a guest's
+ * `data-ink-guest` click.
  */
 function ink_foundation_enqueue_leeslys(): void {
 	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'gedig', 'storie', 'artikel' ) ) ) {
@@ -412,6 +498,7 @@ function ink_foundation_enqueue_leeslys(): void {
 			'nonce'       => wp_create_nonce( 'wp_rest' ),
 			'savedText'   => __( 'Gestoor na jou leeslys', 'ink-foundation' ),
 			'removedText' => __( 'Verwyder van jou leeslys', 'ink-foundation' ),
+			'loginUrl'    => esc_url_raw( home_url( \Ink\Accounts\AuthRedirects::LOGIN_URL_PATH ) ),
 		)
 	);
 }

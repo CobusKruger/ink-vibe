@@ -42,6 +42,7 @@ final class Module implements ModuleContract {
 		( new ReactionController() )->register();
 		( new ResponseController() )->register();
 		( new ResponsesList() )->register();
+		( new ResponseCount() )->register();
 		( new ContextualPrompts() )->register();
 		( new SuggestedReads() )->register();
 		( new ReadingListController() )->register();

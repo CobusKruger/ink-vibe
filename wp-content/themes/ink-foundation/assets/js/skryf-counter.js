@@ -6,6 +6,14 @@
  * The authoritative rules live in PHP and are unit-tested there; this only gives
  * live feedback as the skrywer types. With JS off, the form still works — the body
  * keeps its server-rendered placeholder and submits normally.
+ *
+ * Also toggles the Plaas button's `disabled` state (mirrors Lovable's
+ * `disabled={!title.trim() || !content.trim()}`, Write.tsx) — a real, previously
+ * unfixed gap: the button rendered fully enabled regardless of empty fields
+ * (Epic-19 third-pass re-audit finding, the same "button never disabled" bug
+ * class first flagged on lees-gedig's publish control). With JS off the button
+ * stays enabled and the server-side `required` attributes are still the actual
+ * enforcement — this is a visual/UX affordance only, never the validation itself.
  */
 ( function () {
 	'use strict';
@@ -15,9 +23,11 @@
 		return;
 	}
 
+	var title = form.querySelector( '#ink-skryf-title' );
 	var body = form.querySelector( '#ink-skryf-body' );
 	var counter = form.querySelector( '.ink-skryf-counter' );
 	var typeInputs = form.querySelectorAll( 'input[type="radio"][data-counter-mode]' );
+	var publishBtn = form.querySelector( '.ink-skryf-submit' );
 	if ( ! body || ! counter || ! typeInputs.length ) {
 		return;
 	}
@@ -70,10 +80,23 @@
 		render();
 	}
 
+	function updatePublishState() {
+		if ( ! publishBtn || ! title ) {
+			return;
+		}
+		var ready = title.value.trim() !== '' && body.value.trim() !== '';
+		publishBtn.disabled = ! ready;
+	}
+
 	for ( var i = 0; i < typeInputs.length; i++ ) {
 		typeInputs[ i ].addEventListener( 'change', onTypeChange );
 	}
 	body.addEventListener( 'input', render );
+	body.addEventListener( 'input', updatePublishState );
+	if ( title ) {
+		title.addEventListener( 'input', updatePublishState );
+	}
 
 	render();
+	updatePublishState();
 }() );

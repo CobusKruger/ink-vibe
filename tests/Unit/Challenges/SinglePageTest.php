@@ -30,6 +30,9 @@ beforeEach( function (): void {
 	Functions\when( 'esc_attr' )->returnArg( 1 );
 	Functions\when( 'esc_url' )->returnArg( 1 );
 	Functions\when( 'esc_html__' )->returnArg( 1 );
+	Functions\when( '_n' )->alias(
+		static fn ( string $single, string $plural, int $number ): string => 1 === $number ? $single : $plural
+	);
 } );
 
 afterEach( function (): void {
@@ -81,6 +84,18 @@ test( 'statusHtml renders the sluitingsdatum with an Oop marker while open', fun
 	expect( $html )->toContain( 'ink-uitdaging__sluitingsdatum-ry' );
 	expect( $html )->toContain( 'ink-uitdaging__toestand-pil' );
 	expect( $html )->toContain( '<svg' );
+} );
+
+test( 'statusHtml renders the participants meta item (Post-Epic-19 third pass) with a default of 0', function (): void {
+	$html = SinglePage::statusHtml( '31 Oktober 2026', true );
+
+	expect( $html )->toContain( 'ink-uitdaging__deelnemers-ry' );
+	expect( $html )->toContain( '0 skrywers het ingeskryf' );
+} );
+
+test( 'statusHtml renders the given participant count, singular and plural', function (): void {
+	expect( SinglePage::statusHtml( '31 Oktober 2026', true, 1 ) )->toContain( '1 skrywer het ingeskryf' );
+	expect( SinglePage::statusHtml( '31 Oktober 2026', true, 12 ) )->toContain( '12 skrywers het ingeskryf' );
 } );
 
 test( 'statusHtml renders a Gesluit marker once closed', function (): void {
@@ -159,6 +174,39 @@ test( 'entriesHtml omits the pill/excerpt/author elements when a card has no suc
 	expect( $html )->not->toContain( 'ink-uitdaging__inskrywing-outeur' );
 } );
 
+test( 'entriesHtml renders the author avatar (Post-Epic-19 third pass, workstream 6b) when supplied', function (): void {
+	$html = SinglePage::entriesHtml(
+		array(
+			array(
+				'title'      => 'My gedig',
+				'permalink'  => 'https://ink.test/gedig/my-gedig',
+				'author'     => 'Anna Botha',
+				'avatar_url' => 'https://ink.test/avatar/anna.jpg',
+			),
+		)
+	);
+
+	expect( $html )->toContain( 'ink-uitdaging__inskrywing-foto' );
+	expect( $html )->toContain( 'https://ink.test/avatar/anna.jpg' );
+	expect( $html )->toContain( 'ink-uitdaging__inskrywing-outeur-naam' );
+	expect( $html )->toContain( 'Anna Botha' );
+} );
+
+test( 'entriesHtml omits the avatar image when no avatar_url is supplied', function (): void {
+	$html = SinglePage::entriesHtml(
+		array(
+			array(
+				'title'     => 'My gedig',
+				'permalink' => 'https://ink.test/gedig/my-gedig',
+				'author'    => 'Anna Botha',
+			),
+		)
+	);
+
+	expect( $html )->not->toContain( 'ink-uitdaging__inskrywing-foto' );
+	expect( $html )->toContain( 'ink-uitdaging__inskrywing-outeur-naam' );
+} );
+
 test( 'toHtml composes the status line and entries list inside the section shell', function (): void {
 	$html = SinglePage::toHtml( '<p class="ink-uitdaging__status">x</p>', '<ul class="ink-uitdaging__inskrywings"></ul>' );
 
@@ -168,4 +216,19 @@ test( 'toHtml composes the status line and entries list inside the section shell
 	// The anchor target for the pattern-level "Lees inskrywings" CTA button
 	// (reading-uitdaging.php) — mirrors Lovable's `href="#submissions"` jump-link.
 	expect( $html )->toContain( 'id="inskrywings"' );
+} );
+
+test( 'inskrywingsSectionHtml (Post-Epic-19 third pass, workstream 6b) wraps the entries list with the id="inskrywings" anchor', function (): void {
+	$html = SinglePage::inskrywingsSectionHtml( '<ul class="ink-uitdaging__inskrywings"></ul>' );
+
+	expect( $html )->toContain( 'id="inskrywings"' );
+	expect( $html )->toContain( 'ink-uitdaging__inskrywings' );
+	// The status meta row does NOT live in this section any more — it moved to the
+	// hero (VARIANT_KOP), matching Lovable's `Challenge.tsx` meta-row position.
+	expect( $html )->not->toContain( 'ink-uitdaging__status' );
+} );
+
+test( 'the variant constants are the single-source values (Post-Epic-19 third pass, workstream 6b)', function (): void {
+	expect( SinglePage::VARIANT_KOP )->toBe( 'kop' );
+	expect( SinglePage::VARIANT_INSKRYWINGS )->toBe( 'inskrywings' );
 } );

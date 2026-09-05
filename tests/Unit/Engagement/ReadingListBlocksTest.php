@@ -45,6 +45,21 @@ test( 'the toggle reflects the saved state (server-rendered, no flash)', functio
 	expect( $html )->toContain( 'aria-pressed="true"' );
 } );
 
+test( 'a guest renders the toggle unsaved with a data-ink-guest flag, not omitted', function (): void {
+	$html = ReadingListToggle::toHtml( 42, false, true );
+
+	expect( $html )->toContain( 'data-ink-post="42"' );
+	expect( $html )->toContain( 'data-ink-guest="1"' );
+	expect( $html )->toContain( 'aria-pressed="false"' );
+	expect( $html )->not->toContain( 'is-saved' );
+} );
+
+test( 'a logged-in member renders without the guest flag', function (): void {
+	$html = ReadingListToggle::toHtml( 42, false );
+
+	expect( $html )->not->toContain( 'data-ink-guest' );
+} );
+
 test( 'the profile list renders the heading and a card per saved work', function (): void {
 	$cards = array(
 		array( 'title' => 'Herfsblare', 'permalink' => '/gedig/herfsblare', 'type' => 'gedig' ),

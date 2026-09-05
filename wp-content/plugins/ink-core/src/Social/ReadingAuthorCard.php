@@ -1,7 +1,10 @@
 <?php
 /**
  * The reading-page author card server block — lees-gedig fidelity pass
- * (docs/theme-fidelity-audit-handoff.md §6, finding #15).
+ * (docs/theme-fidelity-audit-handoff.md §6, finding #15), reused unchanged on
+ * lees-storie in the third pass (Lovable's `ReadStory.tsx` Author Section is
+ * shared, unconditional code — not gated by `isPoetry` — so both reading
+ * pages render this block).
  *
  * @package Ink\Core
  */
@@ -98,14 +101,15 @@ final class ReadingAuthorCard {
 		$bio     = (string) get_the_author_meta( 'description', $author_id );
 		$avatar  = get_avatar( $author_id, 96, '', $name, array( 'class' => 'ink-outeur-kaart__foto' ) );
 		$profile = (string) get_author_posts_url( $author_id );
+		$prefix  = self::auditIdPrefix();
 
 		$html  = '<section class="ink-outeur-kaart">';
 		$html .= '<div class="ink-outeur-kaart__foto-omhulsel">' . (string) $avatar . '</div>';
 		$html .= '<div class="ink-outeur-kaart__inhoud">';
-		$html .= '<h3 class="ink-outeur-kaart__naam">' . esc_html( $name ) . '</h3>';
+		$html .= '<h3 class="ink-outeur-kaart__naam"' . ( null !== $prefix ? ' data-audit-id="' . esc_attr( $prefix ) . '-author-name"' : '' ) . '>' . esc_html( $name ) . '</h3>';
 
 		if ( '' !== trim( $bio ) ) {
-			$html .= '<p class="ink-outeur-kaart__bio">' . esc_html( $bio ) . '</p>';
+			$html .= '<p class="ink-outeur-kaart__bio"' . ( null !== $prefix ? ' data-audit-id="' . esc_attr( $prefix ) . '-author-bio"' : '' ) . '>' . esc_html( $bio ) . '</p>';
 		}
 
 		$html .= '<div class="ink-outeur-kaart__aksies">';
@@ -120,5 +124,31 @@ final class ReadingAuthorCard {
 		$html .= '</section>';
 
 		return $html;
+	}
+
+	/**
+	 * The `data-audit-id` prefix for the current reading page (`'gedig'` or
+	 * `'storie'`), or `null` off both — this block is shared between the two
+	 * reading patterns (theme-fidelity third pass: lees-storie gained its own
+	 * author card, reusing this block exactly as lees-gedig already does), so
+	 * the name/bio measurement anchors must stay page-specific rather than
+	 * both hard-coding `gedig-*`.
+	 *
+	 * @return string|null
+	 */
+	private static function auditIdPrefix(): ?string {
+		if ( ! function_exists( 'is_singular' ) ) {
+			return null;
+		}
+
+		if ( is_singular( 'gedig' ) ) {
+			return 'gedig';
+		}
+
+		if ( is_singular( 'storie' ) ) {
+			return 'storie';
+		}
+
+		return null;
 	}
 }

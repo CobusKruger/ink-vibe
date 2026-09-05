@@ -24,6 +24,10 @@ beforeEach( function (): void {
 	);
 	Functions\when( 'esc_html' )->returnArg( 1 );
 	Functions\when( 'esc_attr' )->returnArg( 1 );
+	// The 'enkel' variant resolves its data-audit-id from the current singular
+	// post type (gedig vs storie) — outside any real WP request context here,
+	// so `is_singular()` is always false (no audit-id printed).
+	Functions\when( 'is_singular' )->justReturn( false );
 } );
 
 afterEach( function (): void {
@@ -45,4 +49,19 @@ test( 'toHtml treats a missing reaction key as zero', function (): void {
 	expect( $html )->toContain( '7 hartjies' );
 	expect( $html )->toContain( '0 duim op' );
 	expect( $html )->toContain( '0 wows' );
+} );
+
+test( 'toHtml with the enkel variant renders only the hartjie count, no per-reaction labels', function (): void {
+	$html = ReactionTotals::toHtml( array( 'hartjie' => 12, 'duim_op' => 9, 'wow' => 4 ), 'enkel' );
+
+	expect( $html )->toContain( 'ink-reaksie-tellers--enkel' );
+	expect( $html )->toContain( '>12<' ); // bare visible count, no "N hartjies" label text
+	expect( $html )->not->toContain( '9 duim op' );
+	expect( $html )->not->toContain( '4 wow' );
+} );
+
+test( 'toHtml with the enkel variant treats a missing hartjie key as zero', function (): void {
+	$html = ReactionTotals::toHtml( array( 'duim_op' => 3 ), 'enkel' );
+
+	expect( $html )->toContain( '>0<' );
 } );

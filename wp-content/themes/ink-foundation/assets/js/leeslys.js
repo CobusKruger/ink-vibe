@@ -32,6 +32,20 @@
 	}
 
 	function toggle( button ) {
+		if ( button.dataset.inkGuest ) {
+			// Guests see the same icon (post-Epic-19 product-owner decision) but
+			// saving requires an account — send them to sign in rather than
+			// posting to the REST endpoint (which would 403 anyway) or doing
+			// nothing. `redirect_to` reuses the login form's own existing hidden
+			// field (patterns/auth-login.php already reads `$_GET['redirect_to']`
+			// into it) so a successful sign-in lands the visitor back on the
+			// work they were reading, not a fresh /meld-aan/.
+			if ( cfg.loginUrl ) {
+				window.location.href = cfg.loginUrl + '?redirect_to=' + encodeURIComponent( window.location.href );
+			}
+			return;
+		}
+
 		var postId = parseInt( button.getAttribute( 'data-ink-post' ), 10 );
 		if ( isNaN( postId ) ) {
 			return;

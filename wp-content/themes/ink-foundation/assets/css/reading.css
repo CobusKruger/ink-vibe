@@ -1,0 +1,88 @@
+/**
+ * reading.css — lees-gedig and lees-storie (the two reading pages whose
+ * Lovable source shares `ReadStory.tsx`'s floating action bar) — NOT
+ * reading-artikel.
+ *
+ * Theme-Fidelity re-audit, page 3 (docs/theme-fidelity-audit-handoff.md §6,
+ * this pass) built the floating-bar treatment for lees-gedig only; the third
+ * pass (lees-storie) confirmed `ReadStory.tsx`'s "Floating Action Bar" is
+ * unconditional, shared code between poetry and prose (not gated by
+ * `isPoetry`) and extended this file to storie unchanged. Enqueued on
+ * `is_singular(array('gedig','storie'))` (functions.php,
+ * `ink_foundation_enqueue_reading_engagement_assets()`) — never reaches
+ * reading-artikel.php, which still uses `.ink-reaksie-bar` / `.ink-reaksie-tellers`
+ * and deliberately keeps its current (non-floating, three-reaction)
+ * presentation untouched (out of scope both passes).
+ *
+ * The `.ink-reaksie-bar` pill's own base look (border/radius/shadow/background/
+ * padding) already lives in theme.json's global CSS, shared across all three
+ * reading patterns — only the sticky-to-viewport-bottom positioning below is
+ * gedig/storie-only, which is why it lives here rather than in the shared
+ * global CSS or a change to the shared class's base rule.
+ *
+ * Lovable reference: src/pages/ReadStory.tsx, "Floating Action Bar"
+ * (`<div className="sticky bottom-6 z-40">…<div className="… bg-card/95
+ * backdrop-blur-sm rounded-full shadow-elevated border …">`). For
+ * `position:sticky` to actually have room to float (rather than being pinned at
+ * the bottom of a box barely taller than itself), `.ink-reaksie-bar` was moved
+ * in `patterns/reading-gedig.php`/`patterns/reading-storie.php` to be a
+ * top-level block — a direct child of `<main class="ink-reading-main">` (see
+ * `templates/single-gedig.html`/`templates/single-storie.html`) — the same DOM
+ * shape Lovable's own sticky div has (a direct child of its `<main>`, with the
+ * Author + Critiques sections as later siblings). That gives the sticky
+ * element a tall containing block to float across.
+ */
+
+.ink-reaksie-bar {
+	position: sticky;
+	bottom: var(--wp--preset--spacing--s-24);
+	z-index: 40;
+	background-color: color-mix(in srgb, var(--wp--preset--color--surface-alt) 95%, transparent);
+	-webkit-backdrop-filter: blur(4px);
+	backdrop-filter: blur(4px);
+}
+
+/* The 'enkel' (single-hartjie) reaksie-tellers variant — lees-gedig AND
+ * lees-storie (product-owner decision: collapse the 3-reaction totals display
+ * to one heart+count, matching Lovable's floating-bar Like button — the third
+ * pass confirmed this is a decision about the shared floating-bar COMPONENT,
+ * not gedig-specific, so it extends to storie; reading-artikel keeps the
+ * `'volledig'` default, untouched). No hover/active state: this stays a
+ * verb-less, non-interactive totals READ (Ink\Engagement\ReactionTotals's
+ * existing "icon does the verb, no vanity framing" contract), not a new
+ * whole-piece like-toggle — the real interactivity stays at whichever
+ * per-anchor reactions each page already has (line-reactions.js for gedig,
+ * text-highlight-reactions.js for storie). */
+.ink-reaksie-tellers--enkel {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-reaksie-tellers--enkel .ink-reaksie-tellers__hart {
+	display: inline-flex;
+}
+
+.ink-reaksie-tellers--enkel .ink-reaksie-tellers__telling {
+	font-weight: var(--wp--custom--font-weight--medium);
+	font-size: var(--wp--preset--font-size--md);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* lees-storie prose paragraph fidelity (theme-fidelity third pass): two
+ * page-scoped pins against Lovable's `.prose-literary` recipe
+ * (src/index.css) that the shared `line-height--relaxed` token (1.7,
+ * shared with opleiding/biblioteek/oor-ink — a sitewide change is out of
+ * this page's blast radius, same pattern as the still-open xxl/xxxl-fluid
+ * token gap elsewhere in this rework) and the block-gap-driven paragraph
+ * spacing (24px, `s-24`) don't quite reach: Lovable is `line-height:1.8` /
+ * `margin-bottom:1.5em` (of an 18px base = 27px). `!important` matches the
+ * established page-scoped-pin convention used throughout this rework. */
+.ink-lees-storie__prose {
+	line-height: 1.8 !important;
+}
+
+.ink-lees-storie__prose > * + * {
+	margin-block-start: 1.5em !important;
+}

@@ -120,6 +120,7 @@
 
 		bar = document.createElement( 'div' );
 		bar.className = 'ink-storie-highlight-bar';
+		bar.setAttribute( 'data-audit-id', 'storie-highlight' );
 		bar.style.position = 'fixed';
 		bar.style.left = ( rect.left + rect.width / 2 ) + 'px';
 		bar.style.top = ( rect.top - 10 ) + 'px';

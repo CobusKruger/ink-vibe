@@ -43,9 +43,16 @@
    other (interactive, clickable) card on the site. The auth card is also a
    static form container, never a link, so the sitewide hover-lift transform
    (`.is-style-card:hover{transform:translateY(-4px)}`) is switched off here —
-   Lovable's card never lifts on hover. */
+   Lovable's card never lifts on hover.
+   `!important` is required here, not stylistic: `ink_foundation_register_block_styles()`
+   registers `.wp-block-group.is-style-card` (two classes = higher specificity
+   than this single-class selector), so a plain override silently lost the
+   cascade and never actually applied — caught 2026-09-05 via a real
+   getComputedStyle() read showing 24px instead of the intended 32px, the
+   exact "CSS looks right but never verified against a real matched element"
+   gap flagged in this doc's lees-gedig retrospective. */
 .ink-auth-card {
-	padding: var(--wp--preset--spacing--s-32);
+	padding: var(--wp--preset--spacing--s-32) !important;
 	transition: none;
 }
 
@@ -101,6 +108,11 @@
 .ink-auth-form input[type="password"] {
 	width: 100%;
 	box-sizing: border-box;
+	/* Lovable's `Input` (`h-10 px-3 py-2`) fixes a 40px height explicitly —
+	   padding alone (this rule) left the height implicit/font-derived, landing
+	   at ~35px live (caught 2026-09-05 via getComputedStyle(), alongside the
+	   button-height/card-padding fixes above). */
+	height: var(--wp--preset--spacing--s-40);
 	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-12);
 	border: 1px solid var(--wp--preset--color--border);
 	border-radius: var(--wp--custom--radius--md);
@@ -176,21 +188,29 @@
 	accent-color: var(--wp--preset--color--primary);
 }
 
-/* ── Submit button — established 44px / `0 32px` / weight-500 recipe, full
-   width (Lovable: `w-full` on every Button in these three forms). The raw
-   `<button class="wp-element-button">` already inherits theme.json's global
-   elements.button recipe (primary background, surface-alt text, radius md,
-   Lora — correctly Lora, matching the sitewide CTA-button convention). That
-   global rule sets no height/padding/font-weight/width, so the button fell
-   back to the browser's inconsistent em-derived default — the same
-   page-scoped gap already fixed on kontak/uitdagings-single/gemeenskap. ── */
+/* ── Submit button — full width (Lovable: `w-full` on every Button in these
+   three forms). The raw `<button class="wp-element-button">` already inherits
+   theme.json's global elements.button recipe (primary background, surface-alt
+   text, radius md, Lora — correctly Lora, matching the sitewide CTA-button
+   convention). That global rule sets no height/padding/font-weight/width, so
+   the button fell back to the browser's inconsistent em-derived default.
+   Height/padding corrected 2026-09-05 against a real live getComputedStyle()
+   read of `ink-lovable`'s running dev server (not source-code Tailwind-class
+   translation, which the prior pass had to rely on): `Auth.tsx`/
+   `ForgotPassword.tsx`/`ResetPassword.tsx` all pass NO `size` prop to
+   `<Button variant="literary">`, so shadcn's `buttonVariants` `size: "default"`
+   applies — `h-10 px-4 py-2` = 40px tall, 8px/16px padding — NOT the 44px/
+   `0 32px` figure this file previously carried (that recipe is real elsewhere
+   on the site, e.g. kontak/uitdagings-single/gemeenskap's own CTA buttons, but
+   was wrongly generalised onto this page's plain default-size form buttons
+   without an auth-page-specific live measurement). */
 .ink-auth-submit button {
 	display: flex;
 	width: 100%;
 	align-items: center;
 	justify-content: center;
-	height: 44px;
-	padding: 0 var(--wp--preset--spacing--s-32);
+	height: var(--wp--preset--spacing--s-40);
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-16);
 	font-weight: var(--wp--custom--font-weight--medium);
 	cursor: pointer;
 	transition: background-color 0.15s ease;
@@ -206,16 +226,17 @@
 }
 
 /* ── "Back to sign in" outline button (forgot-password's sent-state) —
-   Lovable's `variant="outline"`, same 44px/full-width shape as the primary
-   submit, neutral colours instead of primary. ── */
+   Lovable's `variant="outline"` with no `size` prop, same 40px/full-width
+   shape as the primary submit (corrected alongside it, 2026-09-05), neutral
+   colours instead of primary. ── */
 .ink-auth-secondary {
 	display: flex;
 	box-sizing: border-box;
 	width: 100%;
 	align-items: center;
 	justify-content: center;
-	height: 44px;
-	padding: 0 var(--wp--preset--spacing--s-32);
+	height: var(--wp--preset--spacing--s-40);
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-16);
 	border: 1px solid var(--wp--preset--color--border);
 	border-radius: var(--wp--custom--radius--md);
 	background-color: var(--wp--preset--color--surface);

@@ -29,25 +29,25 @@
 		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group">
 			<!-- wp:paragraph {"className":"ink-hero-badge","fontSize":"sm"} -->
-			<p class="ink-hero-badge has-sm-font-size"><?php esc_html_e( 'Waar woorde lesers vind', 'ink-foundation' ); ?></p>
+			<p data-audit-id="hero-badge" class="ink-hero-badge has-sm-font-size"><?php esc_html_e( 'Waar woorde lesers vind', 'ink-foundation' ); ?></p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:heading {"level":1,"fontSize":"hero","style":{"typography":{"fontStyle":"normal","fontWeight":"600"}}} -->
-			<h1 class="wp-block-heading has-hero-font-size" style="font-style:normal;font-weight:600"><?php esc_html_e( 'Stories wat verdien om', 'ink-foundation' ); ?> <span class="ink-text-gradient"><?php esc_html_e( 'gelees en gekoester', 'ink-foundation' ); ?></span> <?php esc_html_e( 'te word', 'ink-foundation' ); ?></h1>
+			<h1 data-audit-id="hero-h1" class="wp-block-heading has-hero-font-size" style="font-style:normal;font-weight:600"><?php esc_html_e( 'Stories wat verdien om', 'ink-foundation' ); ?> <span class="ink-text-gradient"><?php esc_html_e( 'gelees en gekoester', 'ink-foundation' ); ?></span> <?php esc_html_e( 'te word', 'ink-foundation' ); ?></h1>
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-			<p class="has-muted-text-color has-text-color has-md-font-size"><?php esc_html_e( 'Sluit aan by \'n lewendige gemeenskap van skrywers en lesers met \'n passie vir Afrikaanse letterkunde.', 'ink-foundation' ); ?></p>
+			<p data-audit-id="hero-paragraph" class="has-muted-text-color has-text-color has-md-font-size"><?php esc_html_e( 'Sluit aan by \'n lewendige gemeenskap van skrywers en lesers met \'n passie vir Afrikaanse letterkunde.', 'ink-foundation' ); ?></p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:buttons {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
 			<div class="wp-block-buttons">
 				<!-- wp:button {"className":"is-style-ink-primary ink-btn-lg ink-btn-icon"} -->
-				<div class="wp-block-button is-style-ink-primary ink-btn-lg ink-btn-icon"><a class="wp-block-button__link wp-element-button" href="/lees"><?php echo ink_foundation_icon( '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted theme-authored inline SVG icon (§0.9). ?><?php esc_html_e( 'Begin lees', 'ink-foundation' ); ?></a></div>
+				<div class="wp-block-button is-style-ink-primary ink-btn-lg ink-btn-icon"><a data-audit-id="hero-btn-primary" class="wp-block-button__link wp-element-button" href="/lees"><?php echo ink_foundation_icon( '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted theme-authored inline SVG icon (§0.9). ?><?php esc_html_e( 'Begin lees', 'ink-foundation' ); ?></a></div>
 				<!-- /wp:button -->
 
 				<!-- wp:button {"className":"is-style-ink-outline ink-btn-lg ink-btn-icon"} -->
-				<div class="wp-block-button is-style-ink-outline ink-btn-lg ink-btn-icon"><a class="wp-block-button__link wp-element-button" href="/skryf"><?php esc_html_e( 'Deel jou werk', 'ink-foundation' ); ?><?php echo ink_foundation_icon( '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted theme-authored inline SVG icon (§0.9). ?></a></div>
+				<div class="wp-block-button is-style-ink-outline ink-btn-lg ink-btn-icon"><a data-audit-id="hero-btn-outline" class="wp-block-button__link wp-element-button" href="/skryf"><?php esc_html_e( 'Deel jou werk', 'ink-foundation' ); ?><?php echo ink_foundation_icon( '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted theme-authored inline SVG icon (§0.9). ?></a></div>
 				<!-- /wp:button -->
 			</div>
 			<!-- /wp:buttons -->

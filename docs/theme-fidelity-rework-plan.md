@@ -1,277 +1,1132 @@
 # Theme Visual-Fidelity Rework — Plan
 
-**Date:** 2026-07-19 (original diagnosis) — updated 2026-08-31 after a live-deployment verification pass.
-**Status:** Epic 19 stories (19.1–19.5) are implemented, reviewed, and merged into this branch. A
-follow-up verification pass against a real deployment (`nuwe-ink.local`) found that **almost none of
-that work was ever actually visible on a live site**, due to a chain of unrelated bugs — not gaps in
-Epic 19's own work. All are now fixed and live-verified. See "Post-Epic-19 verification pass" below —
-**read that section first** if you're picking this up fresh; it's more relevant to what's actually
-broken/outstanding right now than the original diagnosis below it.
+**Date:** 2026-07-19 (original diagnosis) → 2026-08-31 (Post-Epic-19 verification pass) → 2026-09-02
+(corrected-method rewrite) → **2026-09-03 (third pass, in progress)**. This file is the running tracking
+log; previous versions described work that was later found to be under-verified — twice now (see "How
+pages 1–9 got re-audited" below, then "Third pass" below it) — or is now superseded by what's in this
+version.
 
-## Original diagnosis (2026-07-19) — historical context, still accurate
+**Status right now: a THIRD pass is underway.** The second pass (below, "corrected-method pass") called
+all 16 pages done using `getComputedStyle()` diffing with heuristic element-matching — but the product
+owner reviewed the live site against Lovable directly afterward and found real differences still remain.
+Root cause: that method never did an actual visual side-by-side, and matched elements by a "find by text,
+fewest descendants" heuristic rather than an unambiguous anchor. **Treat every "done" row below as
+unverified until re-confirmed under the third-pass method** (identity-anchored `data-audit-id` measurement
++ real screenshots, not heuristic matching) — see the new "Third pass" section immediately below the
+historical tracking table. Do not read the table's "done" status at face value.
 
-This is **not** a "theme failed to load" problem and **not** primarily a token-drift problem.
-
-- The theme's design tokens in `wp-content/themes/ink-foundation/theme.json` are an **exact match**
-  to the normalised handoff in `docs/design-handoff/tokens/theme-tokens.json` (same palette —
-  `primary #EA4015`, `surface #F8F6F2`, etc. — same Lora/Inter fonts, same spacing/shadow/radius
-  scale). The CSS is loading and applying.
-- `ink-lovable` HEAD is `5618f39` — **the exact commit the handoff was last synced to**
-  (`docs/design-handoff/README.md` changelog, 2026-06-20). So the design docs are **already
-  truthful** to the current Lovable design.
-
-**Conclusion:** the tokens/specs are correct; the **theme implementation does not honor them**.
-The composition layer (hero, section patterns, button block styles, story cards) was built to a
-lower fidelity than the design and must be reworked. The basic Lovable design has existed since
-February; most of the missing elements were in the design from the start.
-
-### Concrete gaps (became Epic 19's acceptance criteria — all addressed)
-
-1. **Buttons** — `theme.json` had no `styles.elements.button` rule → pill shape + wrong text color.
-2. **Background** — missing the plus-pattern background texture.
-3. **Hero heading** — wrong size/scale, no two-tone highlight.
-4. **Hero layout** — should be a two-column split (headline left, weekly-challenge card right).
-5. **Badge pill + stats row** — badge missing; stats row **deliberately omitted** (owner decision,
-   `theme-fidelity-spec.md` §4 — vanity-metric framing rejected, not a gap).
-6. **Story cards** — different type scale/colors/layout, no hover animations.
-
-### Original rework steps (BMAD workflow) — already executed, kept for reference
-
-`/lovable-design-sync` → `create UX specifications` (→ `theme-fidelity-spec.md`) → `propose sprint
-change` (→ Epic 19) → `create the epics and stories list` (19-1…19-5) → `run sprint planning` →
-`implement the next story…` ×5 → `run code review` (R19) → `run a retrospective`. Full detail
-preserved at the bottom of this file under "Original rework steps — full detail".
+If you're picking this up fresh: read `docs/theme-fidelity-audit-handoff.md` for the full method history
+and orchestration rules — still the operative process reference, itself now on its second correction.
 
 ---
 
-## Post-Epic-19 verification pass (2026-08-31)
+## How pages 1–9 got re-audited
 
-### The deployment gap — read this first, it explains everything below
+A first pass at this table (commits now superseded, still in git history) used screenshot-impression
+comparison ("a badge exists on both, roughly similar") instead of pulling real computed styles. A direct
+product-owner review of lees-gedig against Lovable found ~17 real, measurable mismatches that method had
+missed entirely — colors, alignment, gaps, line-heights, a font silently not loading on the *reference*
+site, a submit button that never disabled. `docs/theme-fidelity-audit-handoff.md` was written to correct
+the method and hand off a fresh re-audit of everything pages 1–9 had "done" under the old approach.
 
-`nuwe-ink.local` (a Local by Flywheel site at `/Users/cobus/Local Sites/nuwe-ink/app/public`) does
-**not** read theme/plugin code live from this git repo. It's a separate WordPress install; every
-commit made here needs to be manually synced across before it's visible anywhere.
+That corrected re-audit is what the table below reports. Each page: real `getComputedStyle()` diffed
+against both DOMs, `document.fonts` checked for actual font-load (not just declared `font-family`), real
+hover/click/focus interaction states triggered and re-measured after the interaction ended, then
+independently spot-checked by the orchestrating session before being marked done.
 
-**Use `tools/deploy-to-local.sh --apply`** (dry-run by default — shows what would change; pass
-`--apply` to actually sync). It mirrors `wp-content/themes/ink-foundation` and
-`wp-content/plugins/ink-core` via `rsync -av --delete`, then best-effort attempts a WP-CLI cache
-flush. **Run this after every change to those two directories** — without it, nothing you build here
-is visible on that site, no matter how correct the code is. This single gap is why a "finished and
-merged" epic still looked completely wrong when actually checked live: essentially none of Epic 19
-had ever reached the site before this session.
+---
 
-The deploy script's cache-purge step currently **fails** (`Error establishing a database
-connection`): Local's bundled MySQL runs on a non-standard socket that the system `wp`/`mysql`
-binaries on this machine can't find (`DB_HOST` in `wp-config.php` is literally `'localhost'`, which
-forces socket resolution over TCP even when a port is known — port `10015` was confirmed at one
-point, but a raw TCP connection to `127.0.0.1:10015` just hangs rather than refusing, consistent
-with the sandbox silently dropping a non-allowlisted destination even with
-`dangerouslyDisableSandbox: true`). This is unresolved but non-fatal — the file sync is what
-matters; a stuck WordPress-side cache after a change may need a manual purge from wp-admin
-(Appearance → Editor → Styles → Save has resolved at least one such case).
+## Tracking — corrected-method pass
 
-### Bugs found and fixed this session (7 commits, all on `feat/epic-19-theme-fidelity`)
+| # | Page | Status | Commit(s) |
+|---|---|---|---|
+| — | **Sitewide token fixes** (surfaced during the tuisblad pass, fixed once before continuing) | **done** | `541a57a` |
+| 1 | tuisblad | **done** | `7407963` |
+| 2 | lees-storie | **done** | `ba1a54b` |
+| 3 | lees-gedig | **done** — 17 pre-existing findings implemented + re-verified | `7436941` |
+| 4 | opleiding | **done** | `a64f98f` (+ small line-height follow-up `3087515`) |
+| 5 | biblioteek | **done** | `92b8d97` |
+| 6 | uitdagings-single | **done** | `8e5eb60` |
+| 7 | uitdagings-list | **done** | `8a6309f` |
+| 8 | skryf | **done** | `d380312` |
+| 9 | skrywerprofiel | **done** | `f485fca` |
+| — | Reaction-bar placement/framing reconciled across all `reading-*` patterns | **done** | `754fc42` |
+| — | Highlightable-text + floating action bar feature, lees-storie (real feature gap, now in scope) | **done** | `b6b609a` |
+| 10 | my-profiel | **done** (style/interaction pass) — **major structural gap logged, not built, see below** | `58e2f72` |
+| 11 | ontdek | **done** — **structural gap (anchor pills → real tabs) judged in-scope and built, see below** | `7884c90` |
+| — | Stale test fix (`OntdekTemplateTest` regression from `7884c90`, caught by orchestrator spot-check, not the subagent) | **done** | `0bc59ba` |
+| 12 | gemeenskap | **done** | `f7cc536` |
+| 13 | lidmaatskap (no live Lovable route — compare vs. spec/closest analog) | **done** — internal design-system-consistency pass | `bf0fc42` |
+| 14 | oor-ink (no dedicated Lovable page; sponsors section diffed directly) | **done** | `304f7c5` |
+| 15 | kontak (no live Lovable route — compare vs. spec/closest analog) | **done** — internal design-system-consistency pass | `c2e661c` |
+| 16 | auth (login/register/forgot-password/reset-password) | **done** — last page, rework complete | `2654ea6` |
 
-1. **`e745b8e`** — `theme.json`'s color palette had a slug literally named `"text"`, which collided
-   with WordPress core's generic `.has-text-color` marker class (emitted on *every* block with *any*
-   custom textColor, regardless of which color). Because `text` sat after `primary`/`secondary`/
-   `surface-alt`/etc in the palette array, its auto-generated CSS rule was emitted later and won the
-   `!important`-vs-`!important` cascade tie by source order, silently overriding every custom
-   textColor set to an earlier-declared palette color (found via the CTA band: `textColor:"surface-
-   alt"` rendered near-black instead of white). Renamed the slug to `ink-text`.
-   **Lesson for future token work:** never name a `settings.color.palette` slug `text` (or anything
-   else matching one of WordPress's own generated marker classes) — this class of bug is silent and
-   easy to reintroduce.
-2. **`e745b8e`** (same commit) — `theme.json`'s `styles.blocks.core/group.spacing.padding` applied a
-   blanket 24px padding to *every* `core/group` block site-wide. This silently inflated pure
-   layout-wrapper groups that were never meant to have padding (confirmed: the header's logo-lockup
-   and nav+button wrapper groups, taking the header from its intended 64px row to ~134px). Removed
-   the default entirely; audited all 199 `wp:group` usages in the theme and confirmed every group
-   that *needs* padding already owns it explicitly (inline style, or a padding-owning CSS class like
-   `.is-style-card`/`.ink-cta-band`), so no markup changes were needed elsewhere.
-   **Lesson:** don't add a blanket per-block-type style default in `theme.json` — pad structural
-   wrappers is-a-bug-waiting-to-happen; prefer explicit padding on the groups that need it.
-3. **`f9e7281`** — the hero badge pill (`.ink-hero-badge` in `home.css`) had an unapproved
-   accessibility-contrast darkening (`color-mix(...primary 72%, text...)`) baked in during an earlier
-   UX-spec-writing pass, never actually signed off by the product owner (contrast this with the
-   stats-row omission, which *is* properly attributed as an owner decision in
-   `theme-fidelity-spec.md` §4). Reverted to a plain `color: var(--wp--preset--color--primary)` to
-   match the Lovable design's pure primary-orange pill text, per explicit product direction.
-4. **`aee1c02`** — the CTA band (`.ink-cta-band` group in `cta-band.php`) had no `"align"` attribute,
-   so it fell through to `theme.json`'s narrow `settings.layout.contentSize` (768px) instead of
-   `wideSize` (1400px) like every other homepage section. Added `"align":"wide"` (+ matching
-   `alignwide` class), matching the convention already used by `hero.php`'s `ink-hero-grid` and
-   `front-page.html`'s `ink-feature-grid`.
-5. **`e43f1dd`** — `theme.json`'s `settings.custom.radius` had slugs `2xl`/`3xl`. WordPress's
-   `_wp_to_kebab_case()` (used internally by `WP_Theme_JSON::compute_theme_vars()` when generating
-   `--wp--custom--*` CSS variables from `settings.custom`) inserts a hyphen at **any letter↔digit
-   boundary**, so the actually-generated variable was `--wp--custom--radius--3-xl`, never
-   `--wp--custom--radius--3xl` as `home.css`'s `var()` references assumed — on any install, cache or
-   no cache; this was never a caching bug despite initially looking like one. A first fix attempt
-   (`xl2`/`xl3`, removing only the *leading* digit) was still wrong — `xl2` → `xl-2`, same boundary,
-   just relocated. Final fix: `xxl`/`xxxl` (zero digits anywhere), verified correct by running
-   WordPress's actual `_wp_to_kebab_case()` against the candidate names directly before deploying,
-   not assumed.
-   **Lesson, general WordPress gotcha, not INK-specific:** never use a `settings.custom.*` slug
-   containing a digit adjacent to a letter. This does **not** affect
-   `settings.typography.fontSizes` preset slugs (a different code path, `compute_preset_vars()`,
-   no kebab-casing involved) — the fontSize `2xl`/`3xl` presets were never affected and weren't
-   touched.
-6. **`0122347`** — `Ink\Content\FieldSets::register()` computed every meta field's
-   `register_post_meta()` default as `'integer' === $field['type'] ? 0 : ''` — too blunt for
-   `ink_uitdaging_cadence`, a `string` type constrained by a REST `enum`
-   (`CadenceType::values()`), where `''` isn't a member of that enum. WordPress's own schema
-   validation rejected the registration every request (confirmed via a live `debug.log` capture
-   during the real `init`-time module bootstrap — a `_doing_it_wrong` notice, non-fatal on its own).
-   Added an optional per-field `'default'` override (existing type-based logic stays the fallback for
-   every other field); `ink_uitdaging_cadence` now explicitly defaults to
-   `CadenceType::default()->value` — the same source `CadenceType::fromMeta()` and
-   `FieldSets::sanitizeCadence()` already fold invalid input to.
-7. **`3c71d44`** — the big one. **34 classes** across
-   Forms/InkPols/Training/Challenges/Discovery/Library/Sponsors/Engagement/Social registered their
-   WordPress block type via `add_action('init', array(self::class, 'registerBlock'))` inside their
-   own `register()` method — but `register()` is itself invoked from **within** `init`'s own active
-   dispatch (`Kernel\Plugin::run()` hooks `registerModules()` onto `init`; `registerModules()`
-   synchronously calls every `Module::register()`, which synchronously calls `register()` on each
-   constituent class — all inside that same `init` firing). **WordPress does not invoke a callback
-   added to a hook from within that hook's own currently-executing dispatch.** Confirmed via an
-   isolated minimal reproduction on the live install (an `init`-hooked closure at default priority
-   10 — matching `registerModules()`'s priority — that itself calls `add_action('init',
-   $innerCallback)`; the inner callback never fired), not theory. This is why **none** of the
-   homepage's dynamic sections (weekly-challenge card, winner spotlight, featured bydraes, sponsor
-   strip) ever rendered, regardless of content — the blocks themselves were never registered on any
-   real page load, full stop. Post types and meta fields registered fine throughout, because those
-   use direct synchronous calls (`register_post_type()`, `register_post_meta()`), not this nested
-   pattern.
-   Fix: call `registerBlock()` (or, for `InkPols\Viewer`, just the block half of `register()`)
-   directly/synchronously instead of re-deferring onto `init`.
-   **This is the single most important architectural fact for anyone extending this codebase**: any
-   new class under `Ink\{Module}\...` whose `register()` needs to register a block type (or, per the
-   items below, likely anything else) must call the registration directly — `register()` is already
-   running at the correct time via the Kernel's dispatch chain. Wrapping it in another
-   `add_action('init', ...)` is not just redundant, it's silently fatal to that registration.
+Note: text content is expected to differ (Afrikaans on the live site vs. English placeholder copy on
+Lovable) — that's correct, not a bug; see `[[afrikaans-is-source-of-truth]]`. Fidelity means
+visual/structural/interaction design, not copy.
 
-### Outstanding — same bug shape, confirmed present, NOT yet fixed
+---
 
-`3c71d44`'s fix was scoped to block-type registration only. The **identical** nested-`init`
-structural bug also exists in these 5 places, registering non-block things — left untouched pending
-a decision, since impact wasn't individually verified live for these:
+## Third pass — identity-anchored re-audit (2026-09-03, in progress)
 
-- `Ink\Discovery\TrendingScore::register()` → `add_action('init', ..., 'maybeSchedule')` (an Action
-  Scheduler cron registration)
-- `Ink\Challenges\ModeratorFeedback::register()` → `..., 'registerMeta'`
-- `Ink\Accounts\Approval::register()` → `..., 'registerMeta'`
-- `Ink\Accounts\Onboarding::register()` → `..., 'registerMeta'`
-- `Ink\Entitlement\Module::register()` → `..., 'registerSettings'`
+Method: Tier 0 (structural component-correspondence, source-to-source, before touching any style value) →
+Tier 1 (matching `data-audit-id` attributes added to BOTH the Lovable source and the WP pattern/block
+output, so every measurement is an exact lookup, never a heuristic guess) → Tier 2 (real screenshots,
+genuinely diffed). Viewport width is verified equal on both sides via `window.innerWidth` after every
+resize — never trusted from the resize call's own response, which was found to silently no-op on one tab.
+Every WP page load is cache-busted / curl-verified before trusting a browser tab's contents — a stale tab
+cost real time earlier in this pass. Full method detail: `docs/theme-fidelity-audit-handoff.md`.
 
-**Next step for a fresh agent:** verify each live the same way `3c71d44` verified the blocks (drop a
-throwaway mu-plugin — see debugging notes below — checking whether the meta/setting/cron schedule
-actually registers post-`init`), then apply the identical direct-call fix to whichever are confirmed
-broken.
+Also found and fixed this session, upstream of any WP work: `ink-lovable`'s own `src/index.css` had its
+Google-Fonts `@import` positioned *after* the `@tailwind` directives — invalid per the CSS spec (`@import`
+must precede all other rules), so browsers silently discarded it. Lovable's own reference site was
+therefore never actually rendering Lora, only its Georgia fallback, for as long as that ordering bug
+existed. Fixed by moving font loading into `index.html` as `<link>` tags. This invalidates any prior WP
+decision that deliberately replicated "Lovable renders Georgia, not Lora" — those now need re-deciding
+against Lovable's corrected rendering (first instance: lees-gedig's title, below).
 
-### Outstanding — deferred by product owner, not blockers, do not "fix" unasked
+| # | Page | Third-pass status | Notes |
+|---|---|---|---|
+| 3 | lees-gedig | **Tier 0–2 done, independently spot-checked** — per-line interaction, legacy-data parser, floating bar all fixed | see below |
+| 6 | uitdagings-single | **Tier 0–2 done** — structural reorder + gaps fixed, hover states confirmed live | see below |
+| 8 | skryf | **Tier 0–2 done, 2026-09-05** — field reorder + success-screen rebuild, real form submission tested; found+fixed a Local entitlement-config gap that blocked all submissions | see below |
+| 9 | skrywerprofiel | **Tier 0–2 done, 2026-09-05** — 3 real interaction bugs found and fixed (follow-sync, share-feedback, half-star rendering) | see below |
+| 10 | my-profiel | **Tier 0–2 re-verified, 2026-09-05** — no defects found; structural-gap deferral confirmed still accurate; discovered working DB access (`./tmp/wpcli.sh`) | see below |
+| 11 | ontdek | **Tier 0–2 done, re-verified 2026-09-05** — sticky tab bar built + font-size fixed; three real findings surfaced, none guessed at, see below | see below |
+| 12 | gemeenskap | **Tier 0–2 done, re-verified 2026-09-05** — stale-decision check resolved (not stale, but mischaracterized — see below); 2 real hover/font bugs found and fixed | see below |
+| 16 | auth | **Tier 0–2 done, 2026-09-05** — first real live Lovable comparison this pass (previously unreachable); 4 real CSS bugs fixed; 2 chrome/OAuth gaps flagged; **a real account-credential incident occurred, see below** | see below |
+| 2 | lees-storie | **Tier 0–2 done** (see the lees-gedig write-up's follow-on rounds) — one open item: highlight-select architecture (3-reaction/paragraph/login-gated vs. Lovable's single-highlight/substring/guest) needs a product-owner decision | see below |
+| 1, 4, 5, 7, 13–15 | tuisblad, opleiding, biblioteek, uitdagings-list, lidmaatskap, kontak, oor-ink | not yet started under this method | queued — see session todo list |
 
-- **Footer founding year.** `patterns/footer-main.php` has two literal, unresolved `[stigtingsjaar]`
-  placeholder tokens. `patterns/oor-ink.php` (About page) separately carries a **provisional,
-  explicitly-unconfirmed** "2018" (Story 17.1) pending founder sign-off — see
-  `docs/ui-copy-translations.md:33` and
-  `_bmad-output/implementation-artifacts/17-1-apply-approved-ui-copy.md`. Product owner has said:
-  leave both as-is for now.
-- **Content seeding** — none of the collapsing dynamic sections can be visually fidelity-checked
-  without real data; product owner is seeding this personally, on their own timeline. Reference,
-  per section:
-  - **Weekly-challenge card** (`ink/huidige-uitdaging`, `Ink\Challenges\CurrentChallenge`): one
-    published `uitdaging` post, custom field `ink_uitdaging_deadline` = a future `Y-m-d` date (SAST,
-    date-only, no time component). A converted OLD/past `uitdaging` is fine for the winner spotlight
-    below but will **not** show here — this specific card needs a still-open (future-dated) round.
-  - **Winner spotlight** (`ink/wenner-kollig`, `Ink\Challenges\FeaturedWinners` /
-    `Ink\Challenges\WinnersPost`): three linked pieces — (1) the `uitdaging` post itself (a past
-    deadline is fine/expected here — the challenge closed and a winner was picked), (2) at least one
-    entry post linked to it via meta `ink_submission_uitdagings` (a checkbox-array of ticked
-    uitdaging IDs) with a Gradering set, plus meta `ink_entry_placement` = 1/2/3, (3) a separate
-    *ordinary* `post` (not `uitdaging`), published, carrying meta
-    `ink_wenneraankondiging_uitdaging` = the uitdaging's post ID — this is what
-    `WinnersPost::featured()` actually looks up first. None of this has a wp-admin UI; it's raw post
-    meta, designed to be produced by the (separately tracked) Epic 12A adjudication pipeline.
-    **For fast visual-only testing without the real pipeline**: `ink/wenner-kollig` reads its entire
-    payload from the `ink_home_featured_winner` WP filter
-    (`Ink\Challenges\FeaturedWinners::FEATURED_FILTER`) — a small mu-plugin hooking that filter with
-    a hardcoded payload renders a fully real, styled card in seconds (see the payload shape in
-    `FeaturedWinners::orderFeed()`'s docblock: `id`, `rank` (1–3, validated by
-    `Placements::isValidRank()`), `title`, `url`, plus optional `month`/`author`/`quote`/
-    `avatar_url`/`avatar_alt`/`win_label`, each degrading gracefully if omitted). This technique was
-    used and verified working this session; the test mu-plugin itself was deleted afterward
-    (test-only, never committed) — recreate as needed.
-  - **Featured bydraes** (`ink/uitgesoekte-bydraes`, "Editor's picks"): 4–5 published,
-    featured-eligible creative works (gedig/storie/artikel), enough to populate the asymmetric grid
-    (one spanning "uitgesoek" card + several regular cards).
-  - **Sponsor strip** (`ink/borg-strook`): at least one active `borg` post, ideally one per tier
-    (goud/silwer/brons) to check all three chip styles.
-- **Re-run the full Lovable visual-fidelity comparison once content exists.** Everything checked
-  *this* session (header height, badge color, CTA band width/color/radius) now matches Lovable and
-  is live-verified; the four dynamic sections above have never been visually checked at all, because
-  they've never had anything to render until this session's registration fix landed.
+### Retrospective: why lees-gedig still had substantial differences after four prior passes
 
-### Local WordPress debugging notes (for any future investigation on this install)
+Not one root cause — six independent, compounding bugs, each escaping detection for a distinct reason.
+Worth reading before auditing any remaining page, since these are method gaps, not one-off mistakes:
 
-- WP-CLI/`mysql`/raw PHP `mysqli` from this repo's shell environment cannot reach `nuwe-ink.local`'s
-  database (see "deployment gap" above) — work around it via `curl`-based HTTP diagnostics and
-  temporary debug logging instead of direct DB access.
-- To get a real PHP error/notice trail (not silently swallowed — `WP_DEBUG` is off by default on this
-  install): add to `wp-config.php`, right after `/* Add any custom values... */`:
-  ```php
-  define( 'WP_DEBUG', true );
-  define( 'WP_DEBUG_LOG', true );
-  define( 'WP_DEBUG_DISPLAY', false );
+1. **Style-diffing can't catch a wrong component, only a wrong value.** The 3-icon reaction picker wasn't a
+   bad color or line-height — it was the wrong widget entirely (an aggregate post-level reaction system
+   reused as the per-line control, never checked against Lovable's actual per-line design). Property
+   diffing assumes the right element already exists; it has no way to notice the element itself is wrong.
+   That needs a structural/component-correspondence check (Tier 0), done specifically for the widget in
+   question — not assumed covered by a general page-level pass.
+2. **Stateful, hover-triggered UI is invisible to a resting-state check.** The per-line heart doesn't exist
+   in the page's resting DOM — JS builds it on load, CSS reveals it only on `:hover`. Every Tier-0/Tier-1
+   check this session before the product owner flagged it measured static elements only; the interaction
+   was never actually triggered and observed. This is the exact failure the original handoff doc already
+   warned about ("a resting-state screenshot has already hidden real bugs once") — and it still happened
+   again, because avoiding it requires deliberately designing a test around the interaction, not just
+   measuring what's already sitting on the page.
+3. **Coordinated CSS+markup changes need a final "does the selector match anything real" check.** The first
+   position fix wrote correct CSS (`.ink-gedig__line-text{position:relative}`) without confirming the
+   markup half actually applied that class to anything in the live DOM. Two independently-correct halves
+   of one change, never sanity-checked together.
+4. **Code assumptions about real-world data diversity go untested against QA fixtures.** The poem renderer
+   assumed one content format because that's all the recent QA/demo content ever exercised. Legacy content
+   in a different (also valid) format — 5,585 of 10,742 real posts — was never in any test path until one
+   specific post got looked at directly. The bug was in the code's assumption, not the data, but nobody
+   would know that without checking real content at scale.
+5. **Narrowly-scoped reactive fixes leave the rest of a component's spec unchecked.** Each round fixed
+   exactly what was flagged without checking the complete spec of the thing being fixed — floating-bar
+   composition, guest visibility, the empty-line edge case each took a separate explicit prompt to surface,
+   because fixing "the 3-reaction bug" didn't include re-deriving the bar's full intended contents first.
+
+Takeaway applied going forward: any hover/click/stateful interaction gets an explicit trigger-and-observe
+test before a page is called done, not an optional add-on — and any page rendering user-authored content
+gets checked against real production content diversity, not just QA fixtures.
+
+### lees-gedig — third-pass findings
+
+Confirmed via fresh `getComputedStyle()` + `document.fonts` + live screenshots (not the subagent's own
+claim — independently re-checked: raw `curl` diff of server HTML, live browser JS execution, and a
+from-scratch `composer test`/`stan` run, all matching what was reported):
+
+- **Reaction bar showed 3 reaction types (♥ hartjie / 👍 duim-op / ✨ wow) where Lovable's design has a
+  single like.** This is the "toolbar with three reactions, should be one" bug flagged at the start of
+  this session's audit. Root cause: `ink/reaksie-tellers` (`ReactionTotals.php`) always rendered all three
+  `Reaction::cases()`. Fixed via a new `variant` block attribute — `'enkel'` (single hartjie count only,
+  lees-gedig) vs. the existing default `'volledig'` (all 3, unchanged on `reading-storie`/`reading-artikel`
+  — confirmed live via `curl` that both still show all 3 reaction classes, untouched).
+- **Engagement bar was static inline, not floating.** Lovable's is `position: sticky; bottom: 24px` and
+  stays reachable while scrolling a long poem. WP's was a plain block after the poem body. Fixed: new
+  page-scoped `assets/css/reading.css` (enqueued only on `is_singular('gedig')`), bar restructured to a
+  top-level sticky element. Confirmed live: `position: sticky`, `bottom: 24px`, and the pill visibly stays
+  in view while scrolling.
+- **Title pinned to literal Georgia**, deliberately replicating Lovable's font-loading bug (see above) —
+  that bug is now fixed upstream, so the replication is now wrong. Removed the pin; title now resolves
+  through `theme.json`'s real Lora heading token, same mechanism every other `wp:post-title` on the site
+  uses. Confirmed live: `document.fonts.check('italic 600 36px Lora')` → `true`.
+- Confirmed (not assumed) not gaps: `ink/verwante-stukke` and `ink/opleiding-verwant` have no Lovable
+  counterpart at all (WP-only additions, nothing to diff against); `ink/leeslys-knoppie` correctly renders
+  nothing for logged-out visitors (by design, member-only feature) — not re-verified in the logged-in
+  state this session (would require actually authenticating via browser automation, which wasn't done).
+- **Two items flagged for a product-owner call, not silently decided:**
+  - Lovable's floating bar has 4 actions (like, comment-count → anchor, bookmark, share); WP's now has 2
+    (the collapsed like + the reading-list toggle, itself invisible to guests). Approved scope this
+    session was narrowly "collapse to one like" + "make it float" — whether to also build a comment-anchor
+    and a share affordance is open.
+  - Should the reading-list toggle show *something* (e.g. a disabled/sign-in-prompting bookmark) to guests
+    instead of nothing, to visually match Lovable's always-visible bookmark icon? Currently by-design
+    invisible; that's a product call, not a style fix.
+- Minor, out-of-scope-for-this-pass token gaps surfaced during measurement (a few RGB units on
+  `ink-text`/`muted-text` vs. Lovable's `foreground`/`muted-foreground`, some container-width deltas) —
+  noted, not fixed; pre-existing, unrelated to the 3 items above.
+
+**Follow-up round (same session, product-owner live review caught 3 more real issues the first fix
+missed):** the per-line heart was positioned far to the right of each line instead of hugging the text —
+root cause: the line's text was never actually wrapped in the inline-block span the CSS expected, so the
+absolutely-positioned heart had no correctly-sized anchor. The hover tint was a solid, too-strong gray
+(reusing the `secondary` token at full opacity instead of a lighter `muted` tone at 40%). And the floating
+bar was missing a comment count and rendering the reading-list toggle as a full text-label button instead
+of an icon. All three fixed and independently re-verified against values measured directly from Lovable's
+live computed styles (not translated by hand from Tailwind class names, which is where this went wrong the
+first time): heart-to-text gap 14px (exact match both sides), hover background `rgba(243,240,237,0.4)`
+(exact match), resonant background `rgba(255,234,128,0.3)` (exact match), resonant heart color
+`rgb(236,59,19)` (exact match). New `ink/kommentaar-telling` block reuses `ResponseStore::countForPost()`
+(no new query); `ink/leeslys-knoppie` is now icon-only with the label preserved as `aria-label` +
+visually-hidden text. Both shared with `reading-storie.php`, confirmed live not to have broken it.
+
+**Second follow-up (same session): guest-visible bookmark.** The reading-list icon was invisible to
+logged-out visitors (`ReadingListToggle::render()` returned `''` when not logged in — real, by-design,
+pre-existing). Product-owner decision: show it to guests too (matching Lovable's always-visible icon), click
+routes to `/meld-aan/?redirect_to=<current URL>` instead of silently doing nothing. Implemented, reusing
+`Ink\Accounts\AuthRedirects::LOGIN_URL_PATH` and the login form's existing `redirect_to` handling — no new
+redirect infrastructure built. Independently verified: anonymous `curl` shows `data-ink-guest="1"` on the
+button (proof the render-gate is actually gone, not just the JS); live guest click in the browser landed
+on exactly `https://nuwe-ink.local/meld-aan/?redirect_to=<the poem's URL>`. Logged-in behavior unchanged
+(verified via a real WP-CLI test-user login, not an auth bypass). Tests 1311→1313 (2 new), same 4
+pre-existing failures, stan/deptrac clean.
+
+**The per-line interaction's positioning/colors, the floating bar's comment-count/bookmark-visibility gaps,
+and the whole-poem-highlight parser fix are all now fixed and independently verified. lees-gedig is
+genuinely done.**
+
+**Correction, then real fix (same session): this was a parser gap, not corrupted data.** Initial diagnosis
+wrongly treated the poem this page uses (`die-kamer-sonder-woorde`, post 67912) as having "corrupted"
+`post_content` and rewrote it to raw `\n`-per-line text (also done for QA post 67904). **Product-owner
+correction: this was wrong** — the Gutenberg-wrapped/`<br>`-joined format is real historical content,
+stored that way by an old theme at the point it was captured/migrated. Both posts' original content were
+restored (67912 from its WP revision, byte-verified; 67904 had no surviving revision, reconstructed from
+this session's own earlier diagnostic capture — a verbatim first-hand transcript, not a re-guess).
+
+`GedigBody::normalizeLegacyMarkup()` (new, called as `tokenize()`'s first step) now reads legacy markup
+correctly instead of requiring it be rewritten. Built from evidence, not one generalized example: a
+full-database scan found **10,742 published `gedig` posts total (the total independently confirmed via the
+REST API's own count)**, of which **~5,585 share some HTML-markup legacy shape** — deep-sampled ~30 real
+posts and found five distinct real shapes (Gutenberg-wrapped single-paragraph, bare classic-editor
+per-stanza `<p>`/`<br>` — the dominant ~5,578-post shape, a Facebook-paste nested-div shape affecting 7
+posts, a one-`<p>`-per-line shape affecting 2, plus the untouched raw-`\n` majority), each with a distinct
+real stanza-break signal, handled via a placeholder-token pipeline so intermediate whitespace clean-up can
+never eat a meaningful line/stanza break. One disclosed, accepted imperfection remains (7 Facebook-paste
+posts can pick up one extra cosmetic blank separator — no content loss).
+
+Independently re-verified, not just trusted: the excerpt for `die-kamer-sonder-woorde` (server-computed
+from `post_content` via `wp_trim_excerpt`) still shows the exact run-together-without-spaces artifact
+characteristic of `<br>`-tag content — direct proof the restoration is real, not still the earlier rewrite.
+Live `curl` of the rendered page shows 4 correct per-line tokens from that restored content. The raw-format
+control post (`piet-punte`) still tokenizes correctly — no regression. Full corpus re-scanned for the
+original "whole poem glued into one line" symptom: 0 remaining (was the entire complaint). Tests 1313→1319
+(+6, covering all five shapes plus the regression case), same 4 pre-existing failures, stan/deptrac clean.
+
+**Third follow-up (same session): empty-after-sanitizing lines were still interactive.** Product-owner
+question surfaced a real gap: `tokenize()`'s blank-check runs on RAW pre-sanitization text, so a line whose
+raw text is disallowed markup (not whitespace) tokenized as a real `'line'` — but sanitized to nothing
+visible once `wp_kses()` ran in `toHtml()`, minting a genuinely-empty yet fully interactive
+`<p data-ink-line>` (heart + hover-highlight on a blank row). Fixed in `toHtml()`: compute the sanitized
+render first, check `trim(strip_tags(...))` on THAT (not the raw text again — that already missed this
+case), and treat an empty result exactly like a `blank` token (emit `.ink-gedig__sep`, no interactive
+element) without touching `tokenize()`'s own correctly-raw classification. A full render-level corpus scan
+(not a sample this time) found **79 of 10,742 posts** with this pattern — mostly stray `<img>` tags
+(including an old tracking-pixel plugin's spy images), `<hr>`, `<pre>`, `<ul>` fragments — all 79 confirmed
+fixed by the same change. Independently re-verified: post 58508's empty line is gone from the interactive
+set (`data-ink-line` now jumps 19→22, both the artifact and its neighboring separator collapsing into real
+`.ink-gedig__sep` gaps); `die-kamer-sonder-woorde` unaffected; a minimal-content/shaped poem
+(`in-n-oogwink-goud`, single-word/short lines) still shows all lines correctly interactive — confirms no
+over-triggering on real-but-short content. Tests 1319→1322 (+3), same 4 pre-existing failures, stan/deptrac
+clean.
+
+Files touched (staged, **not yet committed** — pending a decision on commit cadence for this pass):
+`wp-content/plugins/ink-core/src/Engagement/ReactionTotals.php`,
+`wp-content/plugins/ink-core/src/Engagement/GedigBody.php`,
+`wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php`,
+`wp-content/themes/ink-foundation/patterns/reading-gedig.php`,
+`wp-content/themes/ink-foundation/functions.php`,
+`wp-content/themes/ink-foundation/assets/css/reading.css` (new),
+`tests/Unit/Engagement/ReactionTotalsTest.php` — plus `data-audit-id` instrumentation (kept, harmless) in
+`ink-lovable`'s `src/pages/ReadStory.tsx` and `src/components/reading/PoetryReader.tsx` (separate repo,
+uncommitted).
+
+### uitdagings-single — third-pass findings
+
+Structural correspondence (Tier 0) mapped `Challenge.tsx` section-by-section against
+`reading-uitdaging.php` before measuring any style value, per the lees-gedig
+retrospective's lesson #1. Found a real structural bug the corrected-method
+(second) pass's property-diffing had no way to catch (the retrospective's exact
+warning: "style-diffing can't catch a wrong component/order, only a wrong value"):
+the `ink/uitdaging-besonderhede` block was embedded ONCE in the hero, fusing the
+sluitingsdatum/status meta row with the entries list — so the "Inskrywings" card
+grid rendered ABOVE the prompt/opdrag content, the opposite of Lovable's Hero →
+Prompt → Resources → Submissions → CTA order. Confirmed via real screenshots on
+both a fresh `curl`-verified live tab and the Lovable reference tab, not inferred
+from source alone.
+
+**Fixed this pass:**
+- Split `ink/uitdaging-besonderhede` into two embeds via a new `variant` block
+  attribute (`kop` in the hero, `inskrywings` in its own section after the opdrag
+  content) — the entries list now renders in the same relative position as
+  Lovable's "Entries from the community" grid. The `#inskrywings` anchor target
+  (used by the hero's "Lees inskrywings" button) migrated to the new section.
+- Added the tagline paragraph (Lovable's `challenge.tagline`, between title and
+  meta row) — renders only when the uitdaging post has a manually-authored
+  excerpt (`has_excerpt()`); no real post has one yet, so this is wired but
+  currently invisible — copy-debt to author, not a template bug (rendering the
+  auto-generated WP excerpt instead would just duplicate the opdrag text directly
+  beneath the title).
+- Added the missing "[N] skrywers het ingeskryf" participants meta item (ratified
+  copy, `docs/ui-copy-translations.md`) — `SinglePage::entryCount()` was already
+  computed elsewhere on this exact page (the CTA subtitle) but never surfaced in
+  the hero meta row.
+- Reordered the hero to meta-row-then-buttons (was buttons-then-meta-row),
+  matching Lovable's exact sequence.
+- Added the author avatar to each entry card (`get_avatar_url()`, WP core — no
+  new cross-module dependency) — Lovable's submission cards carry one, WP's didn't.
+
+**Flagged, not built (genuine feature/scope questions, not style fixes):**
+- Lovable's entire "Learning resources for this challenge" section (a 4-card
+  hulpbronne grid with icons, tags, sources, and a hover-reveal `ExternalLink`
+  icon) has **NO WP counterpart at all, in any form** — not folded into the
+  post-content blob either. Building it needs a new resource-link content model
+  (repeater field or CPT); a real feature build, not a fidelity/style fix.
+- The Prompt/Literary-devices/Submission-rules/Prize zones are genuinely a single
+  authored post-content blob by a pre-existing, documented Story 12.1 decision
+  (`reading-uitdaging.php`'s own docblock) — re-confirmed still accurate, not
+  re-litigated. Note: the one real uitdaging post's actual body doesn't even
+  informally separate devices/rules/prize into distinct paragraphs (they're
+  crammed into one dense sentence) — a copy-authoring quality issue, not a
+  template bug, out of scope for a style pass.
+- Lovable's "Editor's pick" (Trophy icon) meta item has ratified copy ("Die
+  redakteur se keuse") but no backing data anywhere — no per-uitdaging "is this
+  an editor's pick" flag exists. Deliberately not rendered (would otherwise be a
+  permanent, potentially false claim on every challenge page) — needs a
+  product-owner decision on whether to build a real curation flag or treat it as
+  always-on decoration.
+- Entry-card read-time (Clock icon) and Heart/MessageCircle engagement counts
+  (Lovable's submission cards carry both) are NOT built — would require new
+  `Challenges → Discovery` and `Challenges → Engagement` deptrac edges (currently
+  `Challenges` only depends on `Kernel`/`Content`/`Tiers`/`Notifications`). The
+  avatar addition above needed no such edge (WP core only); these two would.
+  Flagged as a recommended follow-up rather than silently expanding module
+  coupling without an explicit decision — mirrors the `ontdek`/`oor-ink` pattern
+  of flagging genuine scope questions rather than guessing.
+
+**Hover states confirmed live, not just read from CSS** (per the retrospective's
+lesson #2): Lovable's resources-card `ExternalLink` icon reveal was actually
+hovered, screenshotted with the icon visible + title tinted terracotta, then
+moved away and re-screenshotted with both reverted — real trigger-and-observe,
+not a resting-state assumption (though this component itself has no WP
+counterpart to compare against — see above). WP's entry-card lift
+(`translateY(-4px)` + shadow + title-color change) was hovered and confirmed via
+both a screenshot and a fresh `getComputedStyle()` read
+(`transform: matrix(1,0,0,1,0,-4)`), matching Lovable's `card-hover:hover` class
+value exactly.
+
+**Real content checked, not just the one URL** (lesson #3): the one real
+(non-fixture) uitdaging has exactly one real entry; the three `QA FIXTURE —`
+uitdaging posts (not wired to any QA-gallery embed for this block — see the
+class's own `INCLUDE_FIXTURES_FILTER` docblock) all have zero entries. **No
+multi-entry example exists anywhere on this install** — disclosed as a real
+testing limitation rather than silently skipped; the grid CSS itself
+(`grid-template-columns:repeat(auto-fit,minmax(260px,1fr))`) is unchanged from
+the already-verified prior (`8e5eb60`) pass, so risk is judged low, not zero.
+
+**Narrow-viewport rendering unverified** — `resize_window` again failed to
+reliably set `window.innerWidth` on both tabs (one tab moved partially, the other
+didn't move at all despite a successful-looking response), the same known tool
+unreliability recorded elsewhere in this doc. Not chased further; CSS uses the
+same relative-width patterns already verified responsive on other pages.
+
+Tests 1322→1328 (Post-Epic-19 baseline carried the working tree's uncommitted
+lees-gedig test additions at session start; `SinglePageTest.php` itself grew
+11→17 tests), same 4 pre-existing Integration-suite failures, stan clean,
+deptrac shows only the pre-existing `Kernel\Activation → Content\PostTypes`
+finding (unrelated to this page). Files touched: `wp-content/plugins/ink-core/
+src/Challenges/SinglePage.php`, `wp-content/themes/ink-foundation/patterns/
+reading-uitdaging.php`, `wp-content/themes/ink-foundation/theme.json`,
+`tests/Unit/Challenges/SinglePageTest.php`.
+
+---
+
+### ontdek — third-pass re-verification (2026-09-05)
+
+Re-verified the `7884c90`/`0bc59ba` tab rebuild from scratch per the retrospective's rule ("don't trust
+prior git history") — Tier 0 structural walk of `Browse.tsx` against `ontdek.php`/`WorksArchive.php`/
+`SkrywersTab.php`/`Search.php`, then all 4 stateful behaviours actually triggered in-browser (not inferred),
+then a property-diff on anchored elements. Three real findings surfaced, two fixed in this pass, one is a
+significant pre-existing functional bug well outside a style pass's scope — flagged, not guessed at.
+
+**1. Sticky tab bar — confirmed genuinely absent, now built.** Lovable's `<section className="... sticky
+top-16 z-30 bg-background/95 backdrop-blur-sm">` around `Browse.tsx`'s `TabButton` row keeps it pinned under
+the site header while scrolling. Checked `ontdek-tabs.js` directly (per the task's explicit instruction not
+to assume) — it's pure show/hide + `aria-selected` + `#hash` toggling, no sticky/scroll logic at all; and
+`theme.json` had zero `position:sticky` anywhere in the whole theme (grepped). Confirmed by scrolling the
+live page: the tab bar scrolled away with the rest of the content. Fixed: gave the tab bar's wrapping
+`wp:group` a `className:"ink-ontdek-tabbalk"` (`patterns/ontdek.php`) and added
+`.ink-ontdek-tabbalk{position:sticky;top:var(--wp-admin--admin-bar--height, 0px);z-index:30;
+background-color:color-mix(in srgb, var(--wp--preset--color--surface) 95%, transparent);
+backdrop-filter:blur(4px)}` (`theme.json`). WP has no sitewide sticky site-header to pin below like
+Lovable's `top-16`, so this sticks directly to the viewport top — except the theme has no sitewide sticky
+header at all (a bigger, separate decision, out of this page's scope), so the closest true match achievable
+page-locally is implemented. The `var(--wp-admin--admin-bar--height, 0px)` offset was a real bug caught
+mid-fix, not a guess: the first cut used a bare `top:0`, which sat correctly for a logged-out visitor but
+was rendered fully behind WP's own black admin toolbar for a logged-in user (its top ~13px, where the tab
+labels/icons live, invisible — only the bottom border/underline peeked out below the toolbar). Verified via
+`getBoundingClientRect()` + a screenshot before and after the admin-bar-height fix.
+
+**2. Search/filter/sort — confirmed a real server round-trip, and that's correct, not a bug.**
+`Search.php`/`WorksArchive.php`/`SkrywersTab.php` are all documented AD-7 (no REST/AJAX for discovery) —
+every filter pill, sort pill, and the search submit are real `<a href>`/`<form method="get">` full-page GET
+reloads, confirmed live (`location.href` changed to `?soek=koei`, `?skrywer_genre=digkuns`, etc., and typing
+in the search field alone — no submit — produced no live recompute, matching the documented design). This
+is architecturally different from Lovable's instant client-side `useMemo` recompute, but it is the
+already-decided, documented WP-native choice for this page, not a regression — no fix needed.
+
+**3. Tab-switch persistence — confirmed still correct.** Set the Skrywers tab active, applied the Digkuns
+filter (a real GET reload to `?skrywer_genre=digkuns`), then did a genuine `location.reload()` (not just a
+click) — the Skrywers tab stayed active with Digkuns still selected, per `ontdek-tabs.js`'s documented
+query-string-prefix-wins `initialTabKey()` logic. No regression since `0bc59ba`.
+
+**4. Save/Follow toggles — not a sync bug, because the feature doesn't exist on this page at all.** The
+prompt's premise (check for the cross-instance-sync bug class already found twice this session in
+`volg.js`/the pin toggle) doesn't apply: `WorksArchive::cardHtml()` and `SkrywersTab::cardHtml()` render no
+`ink/leeslys-knoppie` (save-to-reading-list) or `ink/volg-knoppie` (follow) markup at all, and neither
+`leeslys.js` nor `volg.js` is enqueued on `is_page('ontdek')` (`functions.php` gates them to singular
+works / `my-profiel` / author archives only). Confirmed by diffing the raw server HTML body for those class
+names (zero matches) rather than trusting the theme's sitewide inlined CSS (which *does* reference all three
+class names, harmlessly, since `theme.json`'s `styles.css` is emitted globally regardless of which blocks
+are actually on a given page — a red herring caught before it became a false "found it" claim). Lovable's
+`StoryCard` has a Bookmark toggle on every card and `WriterCard` has a Follow button on every card — a core
+interactive affordance on the browse page, structurally absent on WP's equivalent. **Flagged, not built**:
+wiring this in means rendering the existing `leeslys`/`volg` block markup inside two different archive
+card renderers plus enqueuing their scripts on this page — a feature-vs-style scope call (per the standing
+"default to match Lovable" rule, exactly the kind of call that gets escalated rather than silently decided),
+sized similarly to my-profiel's deferred structural gap. Needs a product-owner decision on whether to build
+it now or continue deferring.
+
+**Also found, unprompted, while verifying #2 (real-content search): the works/skrywers search index is
+populated for almost none of the real production content.** Typed a search term that exactly matches a real
+(non-fixture) published post's title — `"koei"` against "Oom Jaap en sy koei" — and got "Probeer 'n ander
+soekterm of blaai deur alle artikels" (no results). `Search::render()` matches against `_ink_soek_indeks`
+post-meta (`SearchIndex::WORKS_META`), which is populated only by a `save_post` hook — so any post whose
+row was written directly (bulk migration import) rather than through `wp_insert_post`/`wp_update_post`
+since the search feature shipped never got indexed. Verified via `./tmp/wpcli.sh eval` against the real DB
+(not guessed): **6 of 10,976** published readable works (`gedig`/`storie`/`artikel`) carry
+`_ink_soek_indeks`; **3 of 322** writers carry `ink_skrywer_soek_indeks`. Search on `/ontdek/` effectively
+does not work for over 99.9% of real content right now. This is a real (non-fixture) content/data-format
+problem per the standing rule — **flagged, not fixed**: it needs a one-off backfill migration (loop every
+readable published post through `SearchIndex::onSavePost()`'s index-assembly logic, same for every writer
+through `SearchIndex::rebuildSkrywer()`), which is a backend/data operation out of a style-and-behaviour
+audit's scope, not a routine CSS fix — sized like the Epic 16 Migration module's one-off WP-CLI commands,
+not guessed at or attempted here. Screenshot evidence: `tmp/ontdek-screenshots/03-wp-search-real-content-zero-results.jpg`.
+
+**Also noted, informational only:** WP's `/ontdek/` renders three "Nuwe stemme" / "Onlangs aktief" /
+"Skrywers soos jy" discovery-surface rows (`ink/ontdek-vlakke`, `DiscoverySurfaces.php`, Story 8.5/FR-36)
+above the Bydraes/Skrywers tabs — real, deliberately-built, tested INK-native functionality with no
+equivalent anywhere in Lovable's `Browse.tsx` mock. Not a fidelity gap to close (Lovable's mock never
+modelled this surface at all), but flagged so a product owner can confirm it's meant to stay rather than
+this being silently assumed correct.
+
+**Property-diff table (anchored elements, both sides measured live via `getComputedStyle()`):**
+
+| Element | Property | Lovable | WP (before) | WP (after) |
+|---|---|---|---|---|
+| Search input | `font-size` | 14px | 16px | **14px (fixed)** |
+| Search input | `height` | 48px | 45.5px | unchanged (minor, not chased) |
+| Active tab button | `font-size`/`font-weight`/`border-bottom` | 14px / 500 / 2px `#EC3B13` | identical | identical |
+| Card | `border-radius` | 8px | 8px | identical |
+| Card | `box-shadow` | `0 1px 2px rgba(0,0,0,.05)` (near-flat) | `0 2px 12px -2px rgba(24,29,37,.06)` (visibly lifted) | unchanged — shared `.is-style-card` convention reused sitewide from the already-fidelity-matched tuisblad card; treated as an established design-system choice, not chased |
+| Tab bar | `position` | `sticky` | `static` | **`sticky` (fixed)** |
+
+Screenshots: `tmp/ontdek-screenshots/01-wp-sticky-tabs.jpg` (fixed sticky bar, admin-bar-aware),
+`02-lovable-live-search-filter.jpg` (live client recompute), `03-wp-search-real-content-zero-results.jpg`
+(the index bug), `04-lovable-writer-card-follow-button.jpg` + `05-wp-skrywer-card-no-follow-button.jpg`
+(the missing save/follow affordance).
+
+Tests: `composer test:unit -- --filter=Ontdek` — `OntdekTemplateTest` 2/2 pass (no regression from the
+`className` addition). Full `composer test`: 1331 passed, same 4 pre-existing Integration-suite DB failures
+(`CommentInsertionTest`, `SubmissionGateTest`, `TierWriteTest` ×2), no new failures. `composer stan`: clean
+(207/207). `composer deptrac`: same pre-existing `Kernel\Activation → Content\PostTypes` finding only,
+unrelated to this page. Files touched: `wp-content/themes/ink-foundation/patterns/ontdek.php`,
+`wp-content/themes/ink-foundation/theme.json`. Deployed via `tools/deploy-to-local.sh --apply`, verified with
+`diff -rq` against the Local copy (only stray `.DS_Store` files differed).
+
+---
+
+### gemeenskap — third-pass re-verification (2026-09-05)
+
+**Headline: the stale-decision check.** Read `EXPERIENCE.md`'s page-map row and Story 15.2's AC directly
+(not just trusted the `f7cc536` write-up's summary of them), and compared both against `Community.tsx` as it
+reads today. Conclusion: **not stale, but mischaracterized.**
+
+- `EXPERIENCE.md`'s page-map row for gemeenskap lists only "value props, principles, how-it-works, and
+  CTAs" — it never mentions live stats or a spotlight block at all, in either direction.
+- Story 15.2's AC #3 says, verbatim: *"Dynamic surfaces from the Lovable design — live statistics counters
+  and the 'Kollig'/spotlight featured writer-reader — are NOT built here; they need live data and belong to
+  a future ink-core block. Documented as deferred."* This sentence already, at authorship time (2026-06-28),
+  explicitly acknowledges Lovable's design has both sections — the decision was never "Lovable doesn't have
+  this," it was "this needs a real data source and a future block, so it's deferred." `Community.tsx`
+  having both sections today is therefore not new information; the citation was written with full knowledge
+  of them.
+- Reinforcing that this is a live, intended-to-be-built feature rather than a closed "doesn't apply to INK"
+  call: `docs/ui-copy-translations.md` already carries fully ratified Afrikaans copy for both the
+  "Statistieke" section (line ~293, all 4 stat labels) and the "Kollig" section (line ~302, spotlight
+  eyebrow/H2/card labels) — copy debt was already cleared for content that has never been built.
+
+So the citation itself holds up — it is not stale, and Lovable's content hasn't changed since it was made.
+But the `f7cc536` pattern docblock's phrasing (*"confirmed out of scope by citation, not just asserted"*)
+overstates what the citation says: Story 15.2 says **deferred pending a future dynamic-data ink-core block**,
+not **out of scope**. "Out of scope" reads as a permanent design decision; "deferred" is an owed feature with
+copy already sitting ready. This is the same class of open item as my-profiel's structural gap and ontdek's
+missing save/follow affordance — a real feature-vs-style scope call that was correctly not built during a
+style pass, but should not be described as closed. Corrected the pattern's docblock wording accordingly
+(`patterns/gemeenskap.php`) so a future reader doesn't read "out of scope" as "never build this."
+
+**Tier 0 (structural correspondence).** Full-page scroll-through screenshot comparison at 1400px against
+`Community.tsx`/`http://localhost:8080/community` section by section: hero, two-column Vir
+skrywers/Vir lesers value cards, Hoe INK werk (numbered steps), Gemeenskapsbeginsels (2×2 left-border cards),
+closing inverted CTA. Every section present on WP matches Lovable's structure, order, and (once the two
+fixes below landed) near-pixel-identical visual rhythm — the `f7cc536` rebuild held up completely under
+fresh scrutiny, unlike lees-gedig's and uitdagings-single's second-pass work. Only the two Story-15.2-deferred
+sections (stats strip, spotlight) are absent, as expected.
+
+**Tier 1 (data-audit-id-anchored property diff).** Added matching `data-audit-id` attributes to both
+`ink-lovable/src/pages/Community.tsx` (uncommitted, separate repo) and
+`wp-content/themes/ink-foundation/patterns/gemeenskap.php` (hero, both hero buttons, the Vir-skrywers card +
+icon + H2, Hoe-INK-werk section + H2 + first step `<li>`, Gemeenskapsbeginsels section + H2 + first principle
+card, closing CTA section + H2 + both CTA buttons). `getComputedStyle()` diffed live on both sides at
+`window.innerWidth` 1400 (verified equal on both tabs). Two real, fixed findings:
+
+| Element | Property | Lovable | WP (before) | WP (after) |
+|---|---|---|---|---|
+| Hero secondary button ("Sluit aan as leser") | `font-family` | Inter (outline variant has no `font-serif`) | Lora | **Inter (fixed)** |
+| Closing-CTA secondary button ("Kyk eers rond") | `font-family` | Inter | Lora | **Inter (fixed)** |
+| Hero secondary button, `:hover` | `background-color` / `color` | `rgb(82,122,102)` (accent sage) / `rgb(253,253,252)` | `rgb(237,233,224)` (secondary, unchanged) / unchanged | **`rgb(82,122,102)` / `rgb(253,252,250)` (fixed, exact-token match)** |
+| Card icon circle, card H2, step badge, principle card, CTA H2 | font-size/weight/color/radius/bg | — | — | identical, no fix needed |
+
+Root cause of both: `ink_foundation_icon`-wrapped `.wp-block-button__link` inherits the theme's sitewide
+button default (`elements.button.typography.fontFamily: display` → Lora) unconditionally, but Lovable's
+`Button` component (`src/components/ui/button.tsx`) only applies `font-serif` on its `literary`/
+`literary-outline` variants — the plain `outline` variant (used for both of gemeenskap's secondary buttons)
+inherits the body sans-serif font instead, and its hover state pulls from Tailwind's shared `hover:bg-accent
+hover:text-accent-foreground` classes (`--accent: 150 20% 40%` = INK's own sage-green `accent` token,
+`#527A66`) — a real, sitewide Lovable button convention, not a one-off. Fixed page-scoped on
+`.ink-gemeenskap-btn-neutral .wp-block-button__link` (font-family + hover bg/color) in `theme.json`'s global
+CSS string; the dark-CTA twin (`.ink-gemeenskap-btn-neutral-dark`) already had a correct *custom* hover
+(Lovable's CTA band overrides the outline default with its own `hover:bg-background hover:text-foreground`
+classes) and only needed the font-family fix, not the hover-color fix.
+
+**Flagged, not built — cross-page consistency note:** this "outline-variant buttons use body font and turn
+accent-sage on hover" is Lovable's shared `Button` component behavior, so it likely applies wherever any
+other page uses a plain (non-`literary-outline`) secondary button — worth a sweep across already-verified
+pages at some point, but out of this page's blast radius to chase now.
+
+**Tier 2 (real hover triggers, re-measured after mouse-away, per the retrospective's lesson #2).** Both
+fixed hover states triggered via real mouse `hover`, screenshotted mid-hover (sage-green fill confirmed
+visually, not just via computed style), then the mouse moved away and re-measured: hero secondary button
+reverts to `rgb(253,252,250)`/`rgb(26,29,33)` (confirmed via both `getComputedStyle()` and
+`el.matches(':hover') === false`); primary CTA button's pre-existing terracotta-light hover
+(`rgb(236,59,19)` → `rgb(239,104,66)`) also re-verified live (an initial false-negative reading during this
+check turned out to be a stale-scroll-position mismeasurement, not a bug — caught by re-testing with the
+element in view and `matches(':hover')` before trusting the "no change" result).
+
+**Narrow-viewport rendering unverified** — same known `resize_window` tool unreliability recorded elsewhere
+in this doc: `window.innerWidth` stayed at 1400 after repeated resize attempts (500px and 420px both
+requested) despite a successful-looking response. Not chased further; the page's CSS uses the same
+`@media (min-width:768px)` step pattern already verified responsive on other pages (hero/card padding,
+H1/H2 sizes all step down at that breakpoint, matching Lovable's own `md:` Tailwind breakpoint).
+
+Tests: full `composer test` — 1331 passed, same 4 pre-existing Integration-suite DB failures
+(`CommentInsertionTest`, `SubmissionGateTest`, `TierWriteTest` ×2), no new failures. `composer stan`: clean
+(207/207, sandbox off). `composer deptrac`: same pre-existing `Kernel\Activation → Content\PostTypes`
+finding only, unrelated to this page. Files touched:
+`wp-content/themes/ink-foundation/patterns/gemeenskap.php` (data-audit-id instrumentation + corrected
+docblock wording), `wp-content/themes/ink-foundation/theme.json` (2 button fixes: font-family + hover
+color, both on `.ink-gemeenskap-btn-neutral*`) — plus `data-audit-id` instrumentation (kept, harmless) in
+`ink-lovable`'s `src/pages/Community.tsx` (separate repo, uncommitted). Deployed via
+`tools/deploy-to-local.sh --apply`, verified with `diff -rq` against the Local copy (clean, no diff) after
+each change.
+
+### skryf — third-pass findings (2026-09-05)
+
+Tier 0 found the challenges checklist rendering **after** the body textarea instead of Lovable's
+type→challenges→title→body order — fixed, with a code comment explaining the field-order contract so it
+doesn't drift back. The post-submit success screen had zero CSS (bare heading/text-link buttons) — rebuilt
+as a real bordered/padded card with icon, heading, lead paragraph, and two proper `is-style-ink-*` CTA
+buttons, matching Lovable's banner structure. Publish-button disabled state (`disabled={!title.trim() ||
+!content.trim()}` in Lovable) was **never disabled at all** on WP — the same "button never disabled" bug
+class as one of the original 17 lees-gedig findings that started this whole rework — fixed via
+`skryf-counter.js`. All 5 stateful behaviors (type-card swap, checkbox checked/unchecked, live word/line
+counter, disabled/enabled Publish, and the success screen) verified via real triggers, including a real
+end-to-end form submission through a real WP-CLI test user and real membership entitlement — not inferred.
+
+**Real, disclosed WP-only addition, not built:** Lovable's success screen has a 3-card "Lift another writer
+today" community-works recommendation grid, sourced from static demo data — no ink-core facade currently
+exposes a reusable "N pieces to recommend now" read-model. Flagged in the pattern file itself with a code
+comment (needs a product-owner call on the selection rule — trending? recent? excluding own work? — before
+it's buildable), not silently invented.
+
+**Separate, significant finding, outside theme scope:** the entitlement gate (`ink_membership_plan_products`
+option + per-plan WooCommerce `_product_ids` meta) was completely misconfigured on this Local install — no
+membership plan had a linked product, so **no one could ever pass the submission gate**. Fixed on the
+Local site's data (not code, doesn't show in any diff) so testing could proceed. **If production has the
+same gap, nobody can currently publish anything — worth an explicit pre-launch check independent of this
+audit.**
+
+Tests 1328 (unchanged — CSS/JS/markup work, no new PHP unit-testable logic), same 4 pre-existing failures,
+stan clean, deptrac unchanged. Files: `patterns/skryf.php`, `assets/css/skryf.css`,
+`assets/js/skryf-counter.js`.
+
+### skrywerprofiel — third-pass findings (2026-09-05)
+
+Found the deployed-Local-copy-instead-of-repo-copy mistake mid-task (see the general process note added to
+every subagent prompt since), self-corrected, verified byte-identical via `diff` before continuing. Three
+real interaction bugs found and fixed, all via actual triggered interaction, not code reading:
+
+- **Follow/Unfollow didn't sync across the two on-page instances** (header button + bottom CTA-band
+  button, both referencing the same skrywer) — `volg.js`'s `toggle()` only updated the clicked button.
+  Fixed to update every `.ink-volg-knoppie[data-ink-skrywer]` match on the page. Independently re-verified
+  live in both directions after the fix, with the test follow-state reverted afterward (net-zero DB
+  change).
+- **Share button's confirmation silently depended on `navigator.clipboard.writeText()` resolving**, which
+  hung/failed in this environment — a genuine no-op on click, not just a missing style. Fixed to always
+  show the confirmation (matching Lovable's own unconditional toast) plus an `execCommand('copy')`
+  fallback.
+- **Rating stars had no half-star logic at all** (`floor()` then all-empty remainder) vs. Lovable's
+  `Math.floor` + `>= 0.5` half-star rule. Fixed to match exactly; verified via 3 new PHPUnit cases against
+  `toHtml()` directly (the real install's only two writers both have zero approved reviews, so the
+  live-rendered case couldn't be forced without going around the moderation gate — flagged as an
+  untestable-live limitation, not skipped).
+
+Also fixed: the header/cover gradient was painting over genre-pill content below it (z-index/stacking fix),
+and the About+Accomplishments sections were independent stacked blocks instead of Lovable's side-by-side
+`lg:grid-cols-3` layout (grid wrapper added). Work-card hover confirmed correct with no fix needed.
+
+Tests 1328→1331 (+3, the star-rendering cases), same 4 pre-existing failures, stan clean, deptrac
+unchanged. Files: `SkrywerProfiel.php`, `FollowToggle.php`, `volg.js`, `skrywer-deel.js`, `theme.json`.
+
+### my-profiel — third-pass re-verification (2026-09-05)
+
+Scoped deliberately narrow per the page's already-documented major structural gap (no tab shell, identity
+strip, "Wie ek volg" list, or notifications panel — logged, product-owner-confirmed to defer, not
+re-litigated here). Re-verified what currently exists: pin/unpin toggle (`vasgespel.js`) confirmed working
+correctly both directions via real clicks + `read_network_requests` showing real 200s + a clean DB residue
+check; no follow-toggle exists anywhere on this page to test (`FollowingFeed` renders read-only cards, zero
+button markup — confirmed via source and live DOM, so the cross-instance-sync bug class just found on
+skrywerprofiel has nothing to act on here). One correction to the task's own framing: my-profiel has no
+Lovable-equivalent "stats strip" at all (that only exists on the *skrywerprofiel* side, already verified) —
+its own private surfaces (Leesgetalle, Gradering) are FR-40/44b features with no Lovable counterpart to
+diff against, same treatment as lidmaatskap/kontak.
+
+**New, disclosed, not fixed:** Leeslys renders a bare empty `<ul>` with no message when empty, inconsistent
+with its three sibling sections on the same page (all of which show an authored "Jy het nog geen …"
+sentence) and with Lovable's own explicit "Nothing saved yet" empty state. No approved Afrikaans copy
+exists for this string — copy-debt-process territory, not invented inline.
+
+**Session-significant side effect: found and confirmed working DB access from this shell environment**,
+solving a limitation documented since 2026-08-31 — see the new note under "Local WordPress debugging
+notes" (`./tmp/wpcli.sh`). No code changes made this round (verification found no defect needing one).
+Tests unchanged at 1331, stan clean, deptrac unchanged.
+
+### auth — third-pass re-verification (2026-09-05)
+
+**First time this pass Lovable's live preview was actually reachable for auth** — the second pass
+(`2654ea6`) explicitly could not reach `preview--quill-muse-heart.lovable.app` (site-wide 500 error all
+session) and reconciled purely from source. Two real, previously-invisible gaps surfaced from finally
+seeing it live, both flagged for a product-owner decision, not silently actioned:
+
+- **Lovable's auth pages render with zero site chrome** (no header/nav/CTA) — just a centered logo + card.
+  WP keeps the full sitewide header on `/meld-aan/`/`/registreer/`/`/wagwoord-herstel/`. A chrome/focus
+  decision, orthogonal to the already-settled separate-URL-vs-tabbed-card question (that verdict still
+  holds even seeing it live).
+- **Lovable has a working Google/Apple OAuth row; WP renders nothing there.** Not an oversight — a tested
+  graceful-degradation seam already exists (`ink_foundation_social_login_available()`, Story 3.5/R6) that
+  correctly emits nothing because no vetted social-login plugin is active. The gap is real and now visually
+  confirmed, not hypothetical; worth a priority decision.
+
+**4 real CSS bugs found via live `getComputedStyle()` on both sides and fixed:** submit-button
+height/padding (was 44px/`0 32px` — a recipe real elsewhere on the site, wrongly generalized onto these
+plain-sized buttons that pass no `size` prop — corrected to Lovable's actual 40px/`8px 16px`), input height
+(was implicit/font-derived ≈35px, fixed to 40px), card padding (was 24px — a `.is-style-card` block-style
+rule was silently winning the cascade over the page's own 32px override, exactly the "CSS looks right but
+never verified it applies" bug class the retrospective warned about — fixed with `!important`), and a
+duplicate `::before{content:'INK'}` rule on the WP-core reset-password screen rendering a literal
+"INKINK" header (removed).
+
+**Confirmed still accurate, not re-litigated:** BuddyPress still intercepts the registration POST before
+WP's `init` fires (live-reconfirmed via a direct `curl` POST). `resize_window` now floors at exactly
+**500px** regardless of requested target (390/375/320 all landed at 500, verified via JS every time) — a
+specific, reproducible number for the next attempt, replacing the previous flat "didn't work."
+
+**Incident, disclosed immediately, not worked around:** while testing WP-core's native reset-password
+screen, a stray keypress (meant to dismiss a browser navigation-warning dialog) instead submitted the
+form's pre-filled auto-generated password, **changing the real password of the `cobus` administrator
+account on the Local dev site** (local-only, not production). The subagent attempted to restore it via
+`wp-cli` and correctly stopped when that meant changing account credentials without the product owner's
+explicit sign-off — flagged for the user to either supply a new password or reset it themselves via the
+site's own forgot-password flow. Not yet resolved as of this write-up.
+
+Tests unchanged at 1331, same 4 pre-existing failures, stan clean, deptrac unchanged. Files:
+`assets/css/auth.css`, `assets/css/wp-login-brand.css`.
+
+---
+
+### What each done row actually fixed
+
+**Sitewide tokens (`541a57a`).** Root-caused during the tuisblad pass: WordPress kebab-cases a
+digit-adjacent preset slug when generating CSS custom-property/class names (`2xl` → `--...-2-xl`, `.has-2-
+xl-font-size`, etc. — see "WordPress digit-adjacent-slug gotcha" below for the general rule). Renamed
+`theme.json` font-size slugs `2xl/3xl/4xl/5xl` → `xxl/xxxl/xxxxl/xxxxxl` (added `xxxxxxl` for opleiding's
+60px H1), fixed every `var()`/block-attribute reference across the theme (patterns, templates, CSS). Also,
+by product-owner decision: brand primary `#EA4015 → #EC3B13`, accent `#4D8066 → #527A66` (match Lovable
+exactly, no citation existed for the old values); hero H1 switched from a fluid `clamp()` to Lovable's
+actual fixed breakpoint steps (30/36/48px); added a missing `s-6` spacing token.
+
+**tuisblad (`7407963`).** Found and fixed the first instances of a bug class that recurred on nearly
+every page after this: `QA FIXTURE — ` titled posts (real seeded test content, not git-tracked) leaking
+onto real pages because their queries had no exclusion filter — including the already-known sponsor-strip
+leak, now closed. Fix pattern: `Ink\Kernel\QaFixture::isFixtureTitle()`, scoped `posts_where` exclusion,
+fixture content gated back on only via an `INCLUDE_FIXTURES_FILTER`-style seam on `/qa-bloks/`. That same
+pattern got reused on opleiding, biblioteek, uitdagings-single, uitdagings-list, skryf, and skrywerprofiel
+(3 separate query sites) — it was the single most common defect this pass.
+
+**lees-storie (`ba1a54b`).** Seeded the site's first real published `storie` post (none existed —
+`docs/design-handoff` had never had one). Fixed button/input font-inheritance (rendering Arial instead of
+Inter — recurred on 5 more pages after this), badge line-height, byline emphasis, response-card
+padding/radius, and added missing hover states. First occurrence of the input/button font-inheritance bug
+in this pass.
+
+**lees-gedig (`7436941`).** Implemented all 17 items from the prior product-owner-reviewed audit. Two
+needed explicit decisions, both applied: title font matches Lovable's *actual rendered* Georgia (Lovable
+itself declares Lora but has zero `@font-face` entries for it anywhere and silently falls back — the
+decision was to replicate that rendered reality, not "fix" the reference); the `.ink-leesprompte`
+"Reageer met bedoeling" panel (a real, deliberately-built INK component with no Lovable equivalent) was
+cut to match Lovable exactly, cutting it only from `reading-gedig.php` (kept on storie/artikel, which
+still use it). Also: new author card component, response-card avatar/per-type-color/relative-timestamps/
+upvote+reply, a genuine functional bug fix (submit button never disabled on an empty textarea), and 3
+items (whole-poem reaction bar structure, two reaction-icon interaction bugs) deliberately deferred — see
+the reaction-bar reconciliation row below.
+
+**opleiding (`a64f98f` + `3087515`).** Same fixture-leak bug fixed for `Ink\Training\Hub`. Added the
+missing intro eyebrow/H1/subheading (curated Afrikaans, not invented). A later cross-page consistency
+check (during the biblioteek pass) found this page's H1 `line-height:1` didn't match a fresh Lovable
+remeasurement (`1.25`, breakpoint-dependent — flat 1.25 chosen to match the sibling biblioteek heading,
+which is imprecise above 768px on the Lovable side but consistent with the established sibling pattern);
+fixed in the small follow-up commit.
+
+**biblioteek (`92b8d97`).** Same fixture-leak bug fixed for `Ink\Library\Archive`. Card
+title/genre-badge/heading weight and line-height corrected to match the same "Library-layout archetype"
+values already verified on opleiding. Flagged, not fixed (no real Lovable counterpart exists to diff
+against): missing intro copy (copy-debt process territory, not a style fix), missing contribute-CTA
+(a real feature, Story 11.5, not to be improvised here), image-crop parity (Lovable's Library.tsx cards
+carry no images at all — nothing to diff against, current treatment left as-is on its own merits).
+
+**uitdagings-single (`8e5eb60`).** Same fixture-leak bug, plus found the *identical* bug latent in
+`CurrentChallenge::entryCount()` (tuisblad's card) which had never excluded fixtures either — fixed by
+sharing one `entryCount()` helper. Wired in a previously-authored-but-never-rendered CTA subtitle. Fixed 6
+"not a themed ratio" line-height bugs, 3 fluid-token-instead-of-fixed-step heading bugs, and a button
+height/padding inconsistency (`theme.json`'s `elements.button` defines no padding/height, so buttons
+without explicit sizing fell back to inconsistent em-based defaults — fixed page-scoped, not touched
+sitewide since that's out of this page's blast radius).
+
+**uitdagings-list (`8a6309f`).** Confirmed the real live URL is `/uitdaging/` (singular), not
+`/uitdagings/` as the page-map assumed — no dedicated `page-uitdagings` page/template exists; the real
+target is `archive-uitdaging.html`. Same fixture-leak bug (this page never got it in the prior pass, the
+one page that still had it). A prior commit's card-grid build (structurally sound) had diverged from its
+own cited sibling recipe on radius/hover-lift/line-height/pill-sizing — all corrected to match.
+
+**skryf (`d380312`).** A prior pass's claimed fixes (bordered challenges box, styled draft button) never
+actually rendered — both silently defeated by a more-specific CSS reset winning the cascade
+(`.ink-skryf-form fieldset` zeroing the challenges box; `.ink-skryf-actions button` overriding the draft
+button's font back to serif) — requalified the selectors. Fixed the same fixture-leak bug in
+`ChallengeLinking::publishedChallenges()`. Added a genuinely-missing checked-state style on challenge
+checkboxes (ticked looked identical to unticked before this).
+
+**skrywerprofiel (`f485fca`).** Same fixture-leak bug, in 3 separate query sites on this one page
+(pinned-work cards, works-breakdown stat, hartjie total) — refactored to share one
+`publishedWorkCountsByType()` helper rather than patch each site individually. A prior pass's structural
+work (cover image, stats strip, genre pills, accomplishments) held up completely; every one of its
+CSS/token value claims did not survive fresh measurement — all corrected. Minor DB-hygiene note, not a
+code bug: the real dev/test account used as this page's test subject (`https://nuwe-ink.local/author/
+cobus/`) has a literal leftover `"QA FIXTURE bio — ..."` string in its bio field from earlier testing;
+harmless on a Local-only install, worth clearing next time someone's in wp-admin for that account.
+
+**Reaction-bar reconciliation (`754fc42`).** An earlier subagent (auditing lees-storie) had cited
+"AD-5a" as the reason the hartjie/duim_op/wow three-reaction system was in tension with a Lovable
+mismatch. **That citation was wrong** — AD-5a (`architecture.md` ~line 383) governs an unrelated feature
+(Gemeenskapsreaksie/moderator-feedback storage as WP comment types). The real citation is stronger: PRD
+glossary, `EXPERIENCE.md`, and Story 7.3's `Ink\Kernel\Reaction` enum all ratify hartjie/duim_op/wow as
+deliberate INK product design, different from Lovable's heart-only system on purpose — so a prior audit's
+recommendation to "drop to heart-only" was correctly *not* actioned. What did get fixed: the whole-piece
+reaction bar's placement (moved below content, framed/bordered/centered to match Lovable's container
+language, on `reading-gedig.php`/`reading-storie.php`/`reading-artikel.php` — the only 3 patterns that
+carry it), a selected-icon-scoping bug (a clicked button retaining focus kept a `:focus-within` reveal
+rule active for all 3 icons, not just the selected one — root-caused via real click-then-mouse-away
+testing, fixed with an explicit `blur()`), and a line-highlight-persistence bug (only responded to live
+`:hover`, now persists via a `.has-reaksie` class once a line has an active reaction).
+
+**my-profiel (`58e2f72`).** Confirmed and fixed the previously-flagged pin-toggle bug: `vasgespel.js`
+(the pin/unpin client, mirroring `leeslys.js`) had been written by an earlier interrupted session but
+never committed — its `functions.php` enqueue had already landed on its own, so the button silently fired
+no request at all. Also found and committed `volg.js` (the follow-toggle client for
+skrywerprofiel/my-profiel), similarly already enqueued but pointing at a file that didn't exist — a live
+404 until this pass. Fixed the usual fixture-leak bug (4 sites: read-count surface, pinned-works manager,
+following-activity feed, reading list) and the input/button font-inheritance bug on the pin button.
+**Major structural gap found, deliberately not built this pass (logged, product-owner-confirmed to defer
+rather than build now):** the live page is a flat stack of sections with **no tab shell, no identity
+strip (avatar/name/tagline/Edit-profile/New-post), no "Wie ek volg" following-list, and no Kennisgewings/
+notifications panel** — `EXPERIENCE.md`, `ui-copy-translations.md`, and Lovable's `Profile.tsx` all specify
+a 7-tab design (Oorsig/Bydraes/Leeslys/Wie ek volg/Aktiwiteit/Kennisgewings/Lidmaatskap) that Story 9.4
+never actually built. No citation documents this as a deliberate simplification. This needs a dedicated
+feature-build pass, sized similarly to the lees-storie highlightable-text work below — not a quick style
+fix. `volg.js`'s unfollow-row-removal logic was already written with nowhere to render (no "Wie ek volg"
+list exists yet).
+
+**ontdek (`7884c90`).** Fixture-leak bug in the Bydraes works archive (4 unfiltered `QA FIXTURE` posts;
+`WorksArchive::runQuery()` gained the standard exclusion + `INCLUDE_FIXTURES_FILTER` seam) plus a leak in
+Search's results. Fixed the fluid-token-instead-of-fixed-step bug on the archive-intro H1 (Lovable steps
+36/48/60px at base/768/1024, weight 600 — was flat fluid "xxxxl"), the input/button font-inheritance bug on
+the search field, and a missing eyebrow/search-field icon. **Structural gap judged in-scope and built**
+(distinct from my-profiel's judgment call above): "Bydraes"/"Skrywers" were anchor-jump pills, not real
+tabs — Lovable's `Browse.tsx` toggles one visible panel. Rebuilt as real underline tabs
+(`ink-ontdek-tabs__knoppie`/`data-ink-ontdek-tab`) with a small progressive-enhancement JS toggle
+(`ontdek-tabs.js`, AD-7-compliant — no REST/AJAX, anchors still work with JS off); a query-string prefix
+determines the active tab on reload so an in-panel filter/sort click doesn't snap back to Bydraes. Cards
+were a bare unstyled text list — rebuilt to the same card shape as the tuisblad featured-stream (Story
+19.4): excerpt, read-time, author avatar, Heart/MessageCircle counts, reusing existing helpers/data, no new
+capability. Filter-vs-sort pill visual language matched to Lovable exactly. Also cleared the same leftover
+`"QA FIXTURE bio — "` DB-hygiene string (flagged on skrywerprofiel) since it was rendering on this page's
+Skrywers card too. Not fixed, logged only: the Search-results list keeps a lighter card treatment — no
+Lovable structural equivalent exists to diff against (Lovable's search is inline client-side filtering of
+the same cards, not a separate results view).
+
+**Stale test fix (`0bc59ba`).** The ontdek subagent's own `composer test` run mis-reported
+`OntdekTemplateTest`'s failure as "pre-existing, unrelated" — it wasn't. Its own tab rebuild removed the
+`is-style-pill` CSS class the test asserted on. Caught independently by the orchestrating session (not the
+subagent) via a targeted `composer test:unit -- --filter=OntdekTemplateTest` re-run plus `git log`/`grep`
+tracing the regression to `7884c90`. Fixed by pointing the assertion at the real current markup
+(`ink-ontdek-tabs__knoppie`/`data-ink-ontdek-tab`). The gemeenskap subagent's report (dispatched before this
+was caught) repeated the same incorrect "pre-existing" characterization of the same failure — harmless
+since the fix landed here regardless, but a reminder that a subagent's own "pre-existing" claim needs
+independent verification, not just trust.
+
+**gemeenskap (`f7cc536`).** Diverged from Lovable on nearly every section. Hero: was left-aligned, not
+centered in a ~768px column; H1 was a flat 32px "xxxxl" preset instead of Lovable's fixed 36px/60px
+(base/768) breakpoint steps at weight 600 not 700; eyebrow was muted-grey/14px/0.08em instead of
+primary/12px/0.2em; section padding was flat 64px instead of 80px (112px for the hero specifically).
+"Vir skrywers"/"Vir lesers" was a standalone H2 + 4-card grid with no icons — rebuilt to Lovable's actual
+one-bordered-card-per-audience structure (icon circle + heading + intro + icon-led benefit list). "Hoe INK
+werk" was a plain bullet list — rebuilt as CSS-counter numbered circle badges. "Gemeenskapsbeginsels" cards
+used the generic `is-style-card` and rendered 4-across instead of Lovable's left-border-accent 2×2 grid. The
+closing CTA band had its background/text colors backwards (light bg + dark text, should be inverted dark
+bg + light text) — the largest single defect on the page. Buttons: added missing icons, fixed
+height/padding/weight to the established 44px/`s-32`/medium recipe, added two new neutral button treatments
+for light- and dark-section contexts (Lovable's secondary buttons here are neutral-bordered, not terracotta
+outline). Found one more live instance of the **"xxl"/"xxxl" tokens are still fluid `clamp()`, not yet
+converted to fixed steps** gap (flagged as open in the sitewide-tokens paragraph above) on the value-card
+headings — pinned page-scoped to 24px, but the token-level fix itself remains open (see "Known outstanding
+items"). Confirmed via citation (`EXPERIENCE.md`'s page-map row + Story 15.2's AC) that Lovable's live
+statistics-counter strip and "This Month's Spotlight" block are legitimately out of scope for this page, not
+an unconfirmed simplification — not built.
+
+**lidmaatskap (`bf0fc42`).** First page in this rework with no live Lovable route to diff against
+(`MISSING_IN_CURRENT_LOVABLE_REPO`, assembly-only); fidelity target was internal design-system consistency
+with the 12 already-verified pages. Confirmed the **"xxl"/"xxxl" still-fluid** gap present on every heading/
+price using those slugs (H1, CTA-band H2, benefits H2, FAQ H2, per-plan price) — pinned page-scoped to each
+token's own flat non-fluid size (24px/32px), corroborated against `ink-lovable`'s `Profile.tsx`
+membership-renewal card (price at `text-2xl` = 24px) as the closest real analog. Fixed the recurring
+button-height/padding bug (3 plan-card CTAs at odd em-derived values → pinned to 44px/`s-32`/medium).
+Confirmed button-font-family was NOT a bug here (unlike other pages) — this page's CTAs are all
+`<a>`-based `.wp-block-button__link`, deliberately Lora sitewide; no raw form elements exist on this
+presentation-only page. Found and fixed a real accessibility bug: the disabled "Binnekort beskikbaar" plan
+buttons had `aria-disabled="true"` but no `href`, yet still rendered `cursor:pointer` and stayed in tab
+order — added `tabindex="-1"` and `cursor:not-allowed`. Built a full interaction treatment for the FAQ
+accordion (`wp:details`, the only page using this block) from scratch, since no sitewide accordion
+precedent existed to copy: hidden native marker, rotating chevron, hover/focus-visible states matching the
+sitewide vocabulary. **Flagged, not fixed** (out of this page's declared scope):
+`patterns/lidmaatskap-hernu.php` (the My Profiel → Lidmaatskap renewal section at
+`/my-profiel-lidmaatskap/`, Story 4.5) is a structural twin of this page's plan cards with the identical
+fluid-heading and button-height bugs just fixed here — needs its own follow-up so the two don't drift out
+of sync.
+
+**oor-ink (`304f7c5`).** Never previously started. No dedicated Lovable page exists (assembly-only per
+page-map.csv); only the sponsors/logos section maps to a real Lovable component
+(`SponsorsSection.tsx`, diffed directly) — everything else brought to internal design-system consistency
+with the 13 already-verified pages. Fixed the recurring fixture-leak bug in `Sponsors\RecognitionSection`
+(the "Ons borge" block had zero exclusion at all, unlike the homepage strip which already excluded fixtures
+from the tuisblad pass) — 3 real `QA FIXTURE — {tier} Borg` posts were rendering unfiltered on the live
+page; added the standard `QaFixture`/`INCLUDE_FIXTURES_FILTER` gate and a new qa-bloks.php section 9 so the
+fixtures still render on the QA gallery. Built the entire `.ink-borg-erkenning__*` CSS recipe from scratch
+(zero rules existed; content rendered as a bare `<ul>` of links) by reusing the already-Lovable-verified
+`.ink-borg-strook__*` tokens 1:1, plus new tier-tinted (`goud`/`silwer`/`brons`) chip modifiers and a heart
+icon on the CTA, matching Lovable's sage-eyebrow/tier-chip/sage-outline-CTA structure. Fixed the CTA's
+height (was 64px, not 44px — `box-sizing:content-box` on a themeless button; added `border-box`) and
+**flagged, not fixed**, the identical latent 64px-not-44px bug on the already-shipped `.ink-borg-strook__cta`
+from page 1/tuisblad — same recipe, same defect, out of this page's declared scope. Pinned the H1 (xxxxl,
+32px) and 3 H2s (xxl, 24px) against the narrow-viewport fluid-clamp gap, and matched the hero eyebrow to
+gemeenskap's already-Lovable-verified plain-eyebrow recipe (12px/primary/500/0.2em — was
+14px/muted-grey/600/0.08em with no citation). Fixed a real Brain-Monkey cross-suite test-isolation
+flakiness its own new unit test tripped over (order-dependent `get_permalink` process-wide patching),
+restructured to avoid the shared-infra fragility rather than patch it (that fragility is itself a known
+open item). No structural/feature gaps found — the page's 5-section structure matches `EXPERIENCE.md`'s
+page-map row exactly. Orchestrator spot-check (live `getComputedStyle()` on both `/oor-ink/` and
+`/qa-bloks/`) confirmed every claimed fix: fixture leak gone on the live page, present correctly on the QA
+gallery; CTA 44px/border-box; eyebrow 12px/primary/500/2.4px letter-spacing; H1 32px; the 3 pinned H2s 24px;
+Kontak-ons button 44px/`0 32px`/500.
+
+**kontak (`c2e661c`).** No live Lovable route to diff against (`MISSING_IN_CURRENT_LOVABLE_REPO`,
+assembly-only, same treatment as lidmaatskap) — fidelity target was internal design-system consistency.
+The contact form had **zero CSS anywhere**: inputs/textarea rendered in bare browser-default Arial (the
+input/button font-inheritance bug, in its most extreme form yet — nothing at all had been styled, not even
+partially), the submit button sat at browser-default height/padding/weight instead of the established
+44px/`0 32px`/500 recipe, and the "Boodskap"/hint label ran together on one line
+("BoodskapHoe ons kan help?") with no `display:block` separation. Fixed all of the above; new page-scoped
+`assets/css/kontak.css`, enqueued only on this page (mirrors the Skryf/Ontdek `is_page()` gating pattern).
+Also fixed the H1's still-open **"xxxl" fluid-clamp() bug** (pinned page-scoped to 32px, same pattern as
+lidmaatskap/oor-ink) and matched the eyebrow to the sitewide plain-eyebrow recipe (12px/primary/500/0.2em).
+Styled the previously-unstyled success/error submission notices off the `success`/`danger` color tokens.
+Real interaction testing: two genuine form submissions run end-to-end (one valid → real `wp_mail()`
+success redirect; one with `required` attributes stripped via JS to force the server-side validation path
+→ real error redirect), plus real focus-visible ring and hover-state checks. QA-fixture-leak bug class
+confirmed not applicable — the form runs no `WP_Query`. **Flagged, not built** (genuine feature-vs-scope
+question, not a style fix): page-map.csv/`EXPERIENCE.md` mention a `map` block, but Story 15.4's own
+shipped AC never included one and no physical address exists anywhere on the site to plot — unlike
+lidmaatskap's disabled-CTA precedent (a real priced slot with data pending), there's no existing slot or
+data here to gracefully degrade into a placeholder; building one would mean inventing a location. Left for
+product-owner input rather than guessed. Orchestrator spot-check (live `getComputedStyle()` against the
+real `.ink-kontak-vorm` form, after an initial false alarm where a first-pass selector accidentally matched
+the WP admin-bar's own search form instead) confirmed every claim: H1 32px, eyebrow 12px/primary/2.4px
+letter-spacing, Naam input `Inter, system-ui, sans-serif`, submit button 44px/`0 32px`/weight 500/Lora.
+
+**auth (`2654ea6`) — last page, rework complete.** Real structural bugs, not style: a brownfield BuddyPress
+install had its own Register directory-page mapping pointed at the theme's own `/registreer/` slug, so the
+theme's own `auth-register.php` pattern was **never reachable** on GET — BuddyPress's raw, un-translated
+legacy signup screen rendered instead every time. Fixed at two levels: `Ink\Social\BuddyPress::excludeAuthPages()`
+(`bp_core_get_directory_page_ids` filter) plus a new idempotent, self-healing `Ink\Social\AuthPageRelease`
+(renames the stray `buddypress`-post-type object off the slug, creates a real `page` object there, flushes
+rewrite rules once). WordPress core's own failed-login/failed-lost-password fell through to `wp-login.php`'s
+raw admin-styled English screens with no hook available — new `Ink\Accounts\AuthRedirects` (`wp_login_failed`,
+`lost_password`) redirects back to the theme's own styled `/meld-aan/`/`/wagwoord-herstel/` pages with a
+notice-slug query arg, the same convention as `Ink\Forms\ContactForm`. **Registration POST specifically is
+flagged, not fixed**: BuddyPress's own bootstrap intercepts it before WordPress's `init` ever fires (confirmed
+via live hook tracing down to `plugins_loaded` priority 999) — the `AuthRedirects::registerSubmission()` code
+is written and unit-tested but doesn't take effect on this install; needs a `BUDDYPRESS_LATE_LOAD` wp-config
+change or an mu-plugin-level fix, a product-owner-level infra decision, not a theme-layer style fix. Style
+fixes: `auth-login.php` replaced core's `wp:loginout` block (raw `wp_login_form()`, no hook for theme classes)
+with the same hand-authored `ink-auth-*` markup the other two patterns already used; new `assets/css/auth.css`
+fixes the input/button font-inheritance bug across all three forms, the 44px/`0 32px`/weight-500/full-width
+button recipe, card padding (Lovable's 32px vs. the sitewide `is-style-card` default of 24px), an unwanted
+hover-lift on a static card, and the still-open "xxl" fluid-clamp() bug. WP-core's native password-reset
+screen was deliberately left un-rebuilt (it carries real password-strength-meter/generate-password JS with
+no cheap equivalent) but given a **brand skin** — new `assets/css/wp-login-brand.css`, colors/fonts/card
+shape only, enqueued via `login_enqueue_scripts` gated to that action. A real bug the subagent's own fix
+introduced was caught and fixed during its own verification (a `box-sizing:content-box` overflow on the
+"Terug na aanmeld" secondary button). **Flagged, not built** (genuine architecture question, not a style
+call): whether to rebuild as Lovable's single tabbed-card `Auth.tsx` UI vs. keep this theme's established
+separate-URL pattern — judged NOT ambiguous, since both existing patterns' own docblocks already document
+separate-URL as the deliberate WordPress-native choice ("auth is used, never reimplemented"); left as-is.
+No live Lovable preview was reachable this session (`preview--quill-muse-heart.lovable.app` returned a
+site-wide Internal Server Error throughout) — measurements sourced from `ink-lovable`'s `Auth.tsx`/
+`ForgotPassword.tsx`/`ResetPassword.tsx` source reconciled against this theme's own already-live-verified
+sitewide tokens. **Narrow-viewport rendering on this specific page is unverified** — the browser tool's
+`resize_window` didn't actually shrink `window.innerWidth` this session (a known-unreliable tool, see the
+orchestration notes elsewhere); the CSS itself only uses the same relative/percentage-width pattern already
+verified responsive on every other page, but that's inference, not a fresh measurement. Orchestrator
+spot-check: confirmed `/registreer/` now serves the theme's own Afrikaans form (not BuddyPress's raw screen);
+confirmed login-form Inter font-inheritance and the 44px/`0 32px`/weight-500 button recipe live; the
+failed-login flow initially looked broken on a browser-automation click (no notice appeared) — traced via a
+direct `curl` POST to `wp-login.php` bypassing the browser entirely, which confirmed the server-side redirect,
+query arg, and rendered notice (styled danger-tinted, pre-filled username) all work exactly as claimed — the
+browser click was a false negative (the same click-didn't-register class of spot-check mistake as kontak's
+false alarm), not a real defect.
+
+**Highlightable-text feature, lees-storie (`b6b609a`).** `EXPERIENCE.md`'s page-map row for lees-storie
+lists "highlightable text, floating action bar" as expected; nothing had ever built it. Confirmed
+in-scope (real, ratified spec — not scope creep) and built: select text in a storie's body → a floating
+bar appears (styling measured live off Lovable's actual `HighlightableText.tsx` behavior) → pick
+hartjie/duim_op/wow (same enum as gedig, no new reaction types) → the containing paragraph tints and the
+tint persists across reloads for every visitor (gedig's own line-reactions do *not* persist across reload
+— this closes that gap independently for storie without touching gedig). Anchor granularity is
+paragraph-level, not character-range — a deliberate coarsening to match the existing gedig per-line
+precedent rather than building full arbitrary-range selection. New `Ink\Engagement\ProseBody` mirrors
+`GedigBody`'s tokenizer; the REST write path (`ink/v1/reaksie`) already had a `storie`-permitting gate
+from the start, extended to validate the new anchor type.
+
+---
+
+## Post-Epic-19 verification pass (2026-08-31) — still-relevant operational reference
+
+This section predates the Phase-2 corrected-method pass above and covers infrastructure facts that are
+still true and still worth knowing, not page-fidelity findings (those are all superseded by the table
+above).
+
+### The deployment gap
+
+`nuwe-ink.local` (Local by Flywheel, `/Users/cobus/Local Sites/nuwe-ink/app/public`) does **not** read
+theme/plugin code live from this git repo — it's a separate WordPress install. **Run
+`tools/deploy-to-local.sh --apply`** after every change to `wp-content/themes/ink-foundation` or
+`wp-content/plugins/ink-core`, or nothing you build here is visible on that site.
+
+The script's cache-purge step still fails (`wp cache flush`/`wp litespeed-purge` can't reach Local's
+MySQL — non-standard socket, `DB_HOST` forces TCP resolution that hangs rather than refusing under the
+sandbox). Confirmed still the case as of the 2026-09-02 pass — every subagent that needed to inspect DB
+state worked around it via live `getComputedStyle()`/REST calls instead of `wp eval`, never by fixing the
+script itself. `litespeed-cache` is inactive, so this doesn't currently mask anything; the file-sync half
+of the script is what matters and works fine.
+
+### WordPress digit-adjacent-slug gotcha (general rule, hit 3 separate ways so far)
+
+Never give a `theme.json` preset/custom slug a digit immediately adjacent to a letter (`2xl`, `3xl`, …).
+WordPress's internal kebab-casing (`_wp_to_kebab_case()` and equivalent preset-class generation) inserts a
+hyphen at *any* letter↔digit boundary, silently producing a different string than what your CSS/block
+attributes reference. Confirmed in three independent code paths so far:
+
+1. `settings.custom.radius` slugs `2xl`/`3xl` → generated as `--wp--custom--radius--2-xl` (fixed
+   2026-08-31, `e43f1dd`, renamed to `xxl`/`xxxl`).
+2. `settings.typography.fontSizes` slugs `2xl`/`3xl`/`4xl`/`5xl` → generated `var()` custom-property
+   names hyphenated the same way (fixed 2026-09-02, `541a57a`, renamed to `xxl`/`xxxl`/`xxxxl`/`xxxxxl`).
+3. The *class-name* generation path for the same font-size slugs is a **separate** bug from #2, not the
+   same fix: a block using `{"fontSize":"2xl"}` renders `class="has-2xl-font-size"`, but the generated CSS
+   rule is `.has-2-xl-font-size` — same root cause, different code path, needed its own rename (also
+   folded into `541a57a`).
+
+If you ever add a new `theme.json` preset/custom-token slug, don't use a digit-leading or digit-adjacent
+form at all — the theme's convention going forward is spelled-out repetition (`xxl`, `xxxl`, …), matching
+what the radius scale already used before this was understood as a general rule.
+
+### Local WordPress debugging notes
+
+- **UPDATE (2026-09-05): wp-cli DB access is solved.** The bare `wp` binary can't reach Local's MySQL
+  because `DB_HOST` forces TCP resolution, which hangs under the sandbox — but Local's MySQL is reachable
+  directly via its actual Unix socket. `./tmp/wpcli.sh` (gitignored, reusable) wraps this:
+  ```sh
+  #!/bin/zsh
+  SOCK="/Users/cobus/Library/Application Support/Local/run/UQ1ASIydU/mysql/mysqld.sock"
+  exec php -d memory_limit=512M -d mysqli.default_socket="$SOCK" -d pdo_mysql.default_socket="$SOCK" \
+    "$(which wp)" --path="/Users/cobus/Local Sites/nuwe-ink/app/public" "$@"
   ```
-  This writes to `wp-content/debug.log`. **Revert this and delete the log when done** — it was used
-  and fully reverted during this session; don't leave it on.
-- `curl -sk "https://nuwe-ink.local/?cachebust=<random>"` is a reliable way to inspect the real
-  server-rendered HTML directly, bypassing the browser entirely (useful for ruling browser-side
-  caching in/out — confirmed this session that a `curl` response and a browser's rendered DOM
-  matched exactly, so server-side is where to look first for any "changes aren't showing up"
-  mystery).
-- A throwaway mu-plugin dropped in `wp-content/mu-plugins/` (copied to
-  `/Users/cobus/Local Sites/nuwe-ink/app/public/wp-content/mu-plugins/` to actually take effect — see
-  "deployment gap" above) is the fastest way to run arbitrary diagnostic PHP against a real request:
-  no activation needed, WordPress auto-loads every file in that directory. Useful patterns from this
-  session: hooking `wp_head` to echo `WP_Block_Type_Registry`/`WP_Theme_JSON`/reflection introspection
-  as HTML comments; hooking a domain filter (like `ink_home_featured_winner`) directly to fake data
-  for visual testing. **Always mark such files clearly TEST-ONLY, never commit them, and delete both
-  copies (repo + deployed site) when done** — this session's probes were fully cleaned up.
+  Confirmed working independently (not just by the subagent that found it): `./tmp/wpcli.sh post list
+  --post_type=gedig --post_status=publish --format=count` returns `10742`, matching the REST-API-confirmed
+  total exactly. The socket path is specific to this Local install and may change if Local regenerates its
+  site ID — if the script stops working, find the current path via Local's UI (site → "Open site shell" or
+  the site's `conf/mysql/` folder) and update the constant. This unblocks real DB-level verification
+  (`wp user meta get`, `wp post get --field=...`, revision inspection, etc.) for every future page in this
+  pass — prefer it over REST-API/browser-only checks where DB truth matters (e.g. confirming a toggle left
+  no residue, checking real post meta, restoring from revision history).
+- Older workaround, superseded by the above but kept for context: verify state via live
+  `getComputedStyle()`/REST calls through the browser tools when `wpcli.sh` isn't applicable (e.g. actual
+  rendered CSS, which the DB can't tell you).
+- Real PHP error/notice trail: `WP_DEBUG`/`WP_DEBUG_LOG` in `wp-config.php`, writes to
+  `wp-content/debug.log` — revert and delete the log when done, don't leave it on.
+- `curl -sk "https://nuwe-ink.local/?cachebust=<random>"` inspects real server-rendered HTML directly,
+  bypassing the browser — confirmed to match the browser's rendered DOM exactly, so server-side is where
+  to look first for any "changes aren't showing up" mystery.
+- A throwaway mu-plugin dropped in `wp-content/mu-plugins/` (copy to
+  `/Users/cobus/Local Sites/nuwe-ink/app/public/wp-content/mu-plugins/` to take effect) is the fastest way
+  to run arbitrary diagnostic PHP against a real request — no activation needed. **Always mark such files
+  TEST-ONLY, never commit, delete both copies (repo + deployed site) when done.**
+- Pattern-cache gotcha: the theme's scanned block-pattern list is cached in a site transient that a plain
+  `rsync` deploy does **not** invalidate — a newly added `patterns/*.php` file can silently fail to
+  register even though the file synced correctly. Workaround: a one-off throwaway mu-plugin (Local-site
+  only, never committed) calling `wp_get_theme()->delete_pattern_cache()`. Expect to hit this again any
+  time a fidelity-pass agent adds a *new* pattern file.
+
+### Nested-`init` registration bug — fully resolved
+
+All 6 known instances of this bug class (a class calling `add_action('init', ...)` from *within* another
+class's own `init`-time dispatch, which WordPress silently never fires) are fixed and live-verified:
+block-type registration (`3c71d44`, the original find — broke every homepage dynamic section) plus the 5
+non-block instances (`TrendingScore`, `ModeratorFeedback`, `Approval`, `Onboarding`, `Entitlement\Module`
+— workstream A, `4b07e22`/`3c2f3d3`/`7ab1fa4`/`6bd7282`/`bc9c68d`). **Still the single most important
+architectural fact for anyone extending this codebase**: any `Ink\{Module}\...::register()` that needs to
+register something at `init` time must call it directly — `register()` is already running at the correct
+moment via the Kernel's own dispatch chain; wrapping it in another `add_action('init', ...)` is silently
+fatal to that registration, not redundant.
+
+### `git stash` gotcha
+
+`docs/theme-fidelity-rework-plan.md` (this file) is essentially always dirty in a subagent's working tree
+(the orchestrator's own live tracking edits). `git stash`/`git stash pop` on a tree that includes it fights
+with the sandbox's shell-write deny on `docs/`+`_bmad-output/` paths. **Don't `git stash` in this repo** —
+use `git worktree add` for a scratch checkout, or `git diff -- <path> > tmp/patch.diff` + inspect. Hit and
+recovered from twice pre-2026-09-02; the corrected-method pass avoided it entirely by following this rule.
+
+### QA gallery page (`/qa-bloks/`)
+
+Template `templates/page-qa-bloks.html`, content/pattern `patterns/qa-bloks.php`, fixture wiring in
+`functions.php`. Sections now cover: sponsor strip, current-challenge card, featured stream, opleiding hub,
+biblioteek archive, uitdagings-list card grid — each added as its page got re-audited and gained a
+fixture-exclusion filter (see the tracking table above). Check the target block's class for a `*_FILTER`
+data seam first; only fall back to real seeded `QA FIXTURE — ` titled WP content when no seam exists, and
+gate any filter so fixture data can never leak off the gallery page itself — that gating is exactly the bug
+class fixed repeatedly in the table above.
 
 ---
 
-## Original rework steps — full detail (already executed; kept for reference)
+## Known outstanding items, not yet resolved
 
-### Phase 0 — Re-establish design truth (cheap, do first)
+All 16 pages are done. What's left is flagged follow-up work, not incomplete rework:
 
-1. **`/lovable-design-sync`** — runs the sync skill: `git -C ink-lovable pull`, diff
-   `5618f39..HEAD`, re-normalise any changed tokens into `docs/design-handoff/tokens/theme-tokens.json`,
-   update `page-map.csv`, `mockup-readiness-assessment.md`, specs §9.4/§14, and the changelog.
+- **Registration POST is still intercepted by BuddyPress** before WordPress's `init` ever fires — the
+  fix code (`AuthRedirects::registerSubmission()`) is written and unit-tested but inert on this install.
+  Needs a `BUDDYPRESS_LATE_LOAD` wp-config change or an mu-plugin-level fix — a product-owner infra
+  decision, not a theme-layer style fix.
+- **auth page narrow-viewport rendering is unverified** — `resize_window` didn't actually shrink the
+  viewport this session (see the tool's known unreliability, noted elsewhere in this doc); CSS uses the
+  same relative-width pattern already verified responsive elsewhere, but that's inference, not measurement.
+- **kontak's `map` block** — flagged as a genuine feature-vs-scope question (no address exists anywhere on
+  the site to plot), not built. Needs product-owner input, not a style-pass guess.
+- **A recommended final full-sitewide sanity pass** was suggested by the auth (page 16) subagent but not
+  attempted by it or scheduled yet — worth doing once, now that all 16 pages are individually done, to
+  catch anything that only shows up in cross-page navigation rather than a single-page audit.
+- **My-profiel structural gap** — no tab shell, identity strip, "Wie ek volg" following-list, or
+  Kennisgewings/notifications panel. Logged, product-owner-confirmed to defer rather than build now (see
+  page 10's write-up above). Needs a dedicated feature-build pass when scheduled.
+- **`patterns/lidmaatskap-hernu.php`** (the My Profiel → Lidmaatskap renewal section at
+  `/my-profiel-lidmaatskap/`, Story 4.5) has the identical fluid-heading and button-height bugs fixed on
+  page 13/lidmaatskap proper — flagged during that pass, not yet fixed, out of that page's declared scope.
+- **"xxl"/"xxxl" font-size tokens are still fluid `clamp()`, not fixed steps** — the sitewide-tokens fix
+  (`541a57a`) converted xs/sm/md/lg/xl and xxxxl+ to fixed breakpoint steps but left these two still fluid.
+  Worked around page-scoped (`!important` pins) on gemeenskap and lidmaatskap so far; the token-level
+  conversion itself remains open and will keep recurring on any page not yet re-audited.
+- **`.ink-borg-strook__cta`** (page 1/tuisblad's sponsor-strip CTA) has the same 64px-not-44px
+  `box-sizing:content-box` bug fixed on its oor-ink twin (`.ink-borg-erkenning__cta`, page 14) — flagged
+  during the oor-ink pass, not yet fixed, out of that page's declared scope.
+- **ontdek's Search-results list** keeps a lighter-weight card treatment than the Bydraes/Skrywers cards —
+  no Lovable structural equivalent exists to diff against (Lovable's search is inline client-side filtering
+  of the same cards, not a separate results view). Flagged, not a confirmed defect.
+- **My-profiel pin-toggle button** reported broken (no REST request fires) — **fixed** as part of page 10's
+  pass (`58e2f72`, `vasgespel.js` was written but never committed).
+- **`uitdaging`/`inkpols_uitgawe`/`borg` post types** are missing `'custom-fields'` support, so REST/
+  Gutenberg-panel meta writes silently no-op for all 3 (classic meta-box form + `update_post_meta()`
+  unaffected). Known since 2026-08-31, still open.
+- **Challenge-linking picker on `skryf`** can't show deadlines — the data bridge
+  (`ChallengeLinking::openChallenges()`) only exposes id+title. Known, still open, plugin-layer change out
+  of scope for a style pass.
+- **Footer founding year** — `patterns/footer-main.php` has two literal unresolved `[stigtingsjaar]`
+  placeholders; `patterns/oor-ink.php` separately carries a provisional, unconfirmed "2018". Product owner
+  has said leave both as-is pending founder sign-off.
+- **gedig response-card upvote count** is a real, truthful zero rather than interactive — the upvote
+  backend itself is deferred, not built as part of the lees-gedig fix pass.
+- **Minor copy-debt flags** (not invented, but not fully polished) from this pass: a REST validation error
+  string reused verbatim for a new paragraph-anchor case (internal `WP_Error` text, not user-facing UI
+  copy); a couple of new single-word Terms entries added as low-risk glossary additions. Not tracked
+  individually elsewhere — mentioned here so they're not lost.
 
-### Phase 1 — Define what "correct" looks like
+---
 
-2. **`create UX specifications`** → **bmad-ux** (Sally). Produced the theme visual-fidelity spec →
-   `_bmad-output/planning-artifacts/ux-designs/ux-ink-vibe-2026-06-15/theme-fidelity-spec.md`.
+## Original diagnosis (2026-07-19) and Epic 19 rebuild — historical, compressed
 
-### Phase 2 — Introduce the rework as governed scope
-
-3. **`propose sprint change`** → **bmad-correct-course**. Framed the fidelity failure as a course
-   correction, drafted Epic 19.
-4. **`create the epics and stories list`** → stories `19-1` (button/foundation block styles) through
-   `19-5` (polish — CTA gradient, 4-col footer, borg chips, animations) in
-   `_bmad-output/implementation-artifacts/`.
-5. **`run sprint planning`** → added Epic 19 + stories to `sprint-status.yaml`.
-
-### Phase 3 — Rebuild, review, close
-
-6. **`implement the next story in the sprint plan`** (loop) → **bmad-dev-story** (Amelia) per story.
-7. **`run code review`** → **bmad-code-review** → R19 review.
-8. **`run a retrospective`** → **bmad-retrospective**.
-
-### One-line sequence
-
-`/lovable-design-sync` → `create UX specifications` → `propose sprint change` →
-`create the epics and stories list` → `run sprint planning` →
-`implement the next story…` (×N) → `run code review` → `run a retrospective`.
+Epic 19 (stories 19.1–19.5) rebuilt the theme's composition layer (buttons, background texture, hero
+scale/layout, badge/stats row, story-card hover states) against `theme-fidelity-spec.md`, going through
+the standard BMAD sequence (`/lovable-design-sync` → UX spec → sprint-change proposal → epics/stories →
+sprint planning → dev-story loop → code review → retrospective). Reviewed, merged. The 2026-08-31 pass
+above found this work had barely ever reached the live site due to the deployment-gap and nested-`init`
+bugs documented above — not gaps in Epic 19's own implementation. All resolved.

@@ -457,14 +457,14 @@ final class SkrywerProfiel {
 		$html .= '<div class="ink-skrywerprofiel__identiteit">';
 
 		if ( array() !== $genres ) {
-			$html .= '<div class="ink-skrywerprofiel__genres">';
+			$html .= '<div class="ink-skrywerprofiel__genres" data-audit-id="skrywer-genres">';
 			foreach ( $genres as $genre ) {
-				$html .= '<span class="ink-skrywerprofiel__genre">' . esc_html( (string) $genre ) . '</span>';
+				$html .= '<span class="ink-skrywerprofiel__genre" data-audit-id="skrywer-genre-pill">' . esc_html( (string) $genre ) . '</span>';
 			}
 			$html .= '</div>';
 		}
 
-		$html .= '<h1 class="ink-skrywerprofiel__naam">' . esc_html( $name ) . '</h1>';
+		$html .= '<h1 class="ink-skrywerprofiel__naam" data-audit-id="skrywer-name">' . esc_html( $name ) . '</h1>';
 
 		if ( '' !== $badge ) {
 			// Badge is self-built escaped markup from graderingBadge().
@@ -491,7 +491,7 @@ final class SkrywerProfiel {
 			// The confirmation string is the ratified toast copy verbatim
 			// (`ui-copy-translations.md` "Profile link copied to your clipboard" ->
 			// "Profielskakel gekopieër na jou knipbord") — never invented here.
-			$html .= '<button type="button" class="ink-skrywerprofiel__deel" data-ink-deel-url="' . esc_url( $share_url ) . '" data-ink-deel-label="' . esc_attr__( 'Deel', 'ink-core' ) . '" data-ink-deel-gekopieer="' . esc_attr__( 'Profielskakel gekopieër na jou knipbord', 'ink-core' ) . '">'
+			$html .= '<button type="button" class="ink-skrywerprofiel__deel" data-audit-id="skrywer-share-btn" data-ink-deel-url="' . esc_url( $share_url ) . '" data-ink-deel-label="' . esc_attr__( 'Deel', 'ink-core' ) . '" data-ink-deel-gekopieer="' . esc_attr__( 'Profielskakel gekopieër na jou knipbord', 'ink-core' ) . '">'
 				. esc_html__( 'Deel', 'ink-core' ) . '</button>';
 		}
 
@@ -506,10 +506,10 @@ final class SkrywerProfiel {
 
 			if ( $rating_count > 0 ) {
 				$average = isset( $aggregate['average'] ) ? (float) $aggregate['average'] : 0.0;
-				$html   .= '<div class="ink-skrywerprofiel__stat">'
+				$html   .= '<div class="ink-skrywerprofiel__stat" data-audit-id="skrywer-stat-rating">'
 					. '<span class="ink-skrywerprofiel__stat-etiket">' . esc_html__( 'Lesergradering', 'ink-core' ) . '</span>'
-					. '<span class="ink-skrywerprofiel__stat-waarde">' . esc_html( number_format_i18n( $average, 1 ) ) . '</span>'
-					. '<span class="ink-skrywerprofiel__stat-sterre" aria-hidden="true">' . self::starsHtml( $average ) . '</span>'
+					. '<span class="ink-skrywerprofiel__stat-waarde" data-audit-id="skrywer-rating-value">' . esc_html( number_format_i18n( $average, 1 ) ) . '</span>'
+					. '<span class="ink-skrywerprofiel__stat-sterre" data-audit-id="skrywer-rating-stars" aria-hidden="true">' . self::starsHtml( $average ) . '</span>'
 					. '</div>';
 			}
 
@@ -521,7 +521,7 @@ final class SkrywerProfiel {
 						$works['items']
 					)
 				);
-				$html     .= '<div class="ink-skrywerprofiel__stat">'
+				$html     .= '<div class="ink-skrywerprofiel__stat" data-audit-id="skrywer-stat-works">'
 					. '<span class="ink-skrywerprofiel__stat-etiket">' . esc_html__( 'Werke', 'ink-core' ) . '</span>'
 					. '<span class="ink-skrywerprofiel__stat-waarde">' . esc_html( number_format_i18n( $works['total'] ) ) . '</span>'
 					. '<span class="ink-skrywerprofiel__stat-detail">' . $breakdown . '</span>'
@@ -538,18 +538,23 @@ final class SkrywerProfiel {
 			$html .= '</div>';
 		}
 
+		// About + Accomplishments — a shared 2/1 grid on desktop (Lovable's
+		// `grid lg:grid-cols-3`: bio takes 2 cols, the accomplishments rail 1)
+		// rather than two independently-stacked full-width blocks.
+		$html .= '<div class="ink-skrywerprofiel__oor-prestasies" data-audit-id="skrywer-oor-prestasies-grid">';
+
 		// About — the bio, under an "Oor [naam]" heading (ratified copy sheet).
 		if ( '' !== trim( $bio ) ) {
 			$html .= '<div class="ink-skrywerprofiel__oor">'
 				/* translators: %s: the writer's first name. */
 				. '<h2 class="ink-skrywerprofiel__oor-titel">' . esc_html( sprintf( __( 'Oor %s', 'ink-core' ), $first_name ) ) . '</h2>'
-				. '<p class="ink-skrywerprofiel__bio">' . esc_html( $bio ) . '</p>'
+				. '<p class="ink-skrywerprofiel__bio" data-audit-id="skrywer-bio">' . esc_html( $bio ) . '</p>'
 				. '</div>';
 		}
 
 		// Accomplishments — real Gradering-history rows (Tiers audit log).
 		if ( array() !== $accomplishments ) {
-			$html .= '<div class="ink-skrywerprofiel__prestasies" data-ink-slot="prestasies">'
+			$html .= '<div class="ink-skrywerprofiel__prestasies" data-audit-id="skrywer-prestasies" data-ink-slot="prestasies">'
 				. '<h2 class="ink-skrywerprofiel__prestasies-titel">' . esc_html__( 'Prestasies', 'ink-core' ) . '</h2>'
 				. '<div class="ink-skrywerprofiel__prestasies-lys">';
 
@@ -569,8 +574,10 @@ final class SkrywerProfiel {
 			$html .= '</div></div>';
 		} else {
 			// No Gradering history yet — keep the empty shell (pre-existing behaviour).
-			$html .= '<section class="ink-skrywerprofiel__prestasies"><h2 class="ink-skrywerprofiel__prestasies-titel">' . esc_html__( 'Prestasies', 'ink-core' ) . '</h2></section>';
+			$html .= '<div class="ink-skrywerprofiel__prestasies" data-audit-id="skrywer-prestasies"><h2 class="ink-skrywerprofiel__prestasies-titel">' . esc_html__( 'Prestasies', 'ink-core' ) . '</h2></div>';
 		}
+
+		$html .= '</div>'; // .ink-skrywerprofiel__oor-prestasies
 
 		// Pinned / selected works — reading-list cards (Story 9.5, ratified "Uitgesoekte
 		// werk" copy). Heading only when there is at least one pin; nothing when empty.
@@ -588,9 +595,9 @@ final class SkrywerProfiel {
 				$h_label    = isset( $card['hartjieLabel'] ) ? (string) $card['hartjieLabel'] : '';
 				$gemeenskap = isset( $card['gemeenskap'] ) ? (int) $card['gemeenskap'] : 0;
 
-				$html .= '<li class="ink-skrywerprofiel__vasgespel-item is-style-card">'
+				$html .= '<li class="ink-skrywerprofiel__vasgespel-item is-style-card" data-audit-id="skrywer-workcard">'
 					. '<span class="ink-skrywerprofiel__vasgespel-tipe">' . esc_html( Terms::label( (string) $card['type'] ) ) . '</span>'
-					. '<a class="ink-skrywerprofiel__vasgespel-titel-skakel" href="' . esc_url( (string) $card['permalink'] ) . '">' . esc_html( (string) $card['title'] ) . '</a>';
+					. '<a class="ink-skrywerprofiel__vasgespel-titel-skakel" data-audit-id="skrywer-workcard-title" href="' . esc_url( (string) $card['permalink'] ) . '">' . esc_html( (string) $card['title'] ) . '</a>';
 
 				if ( '' !== $excerpt ) {
 					$html .= '<p class="ink-skrywerprofiel__vasgespel-uittreksel">' . esc_html( $excerpt ) . '</p>';
@@ -643,16 +650,31 @@ final class SkrywerProfiel {
 	}
 
 	/**
-	 * A decorative filled/empty star row for a 0-5 average. Pure, aria-hidden by
-	 * the caller (the visible numeric average + review count carry the a11y text).
+	 * A decorative filled/half/empty star row for a 0-5 average. Pure,
+	 * aria-hidden by the caller (the visible numeric average + review count
+	 * carry the a11y text).
+	 *
+	 * Mirrors the Lovable `Writer.tsx` reference's exact rounding rule
+	 * (`ratingStars` memo: `full = Math.floor(rating)`,
+	 * `half = rating - full >= 0.5`, `empty = 5 - full - (half ? 1 : 0)`) —
+	 * this WAS a flat floor()-then-empty computation with no half-star case at
+	 * all, a real rendering-logic gap, not just a missing style.
 	 *
 	 * @param float $average A 0-5 rating average.
 	 * @return string
 	 */
 	private static function starsHtml( float $average ): string {
 		$full  = (int) floor( $average );
-		$empty = max( 0, 5 - $full );
-		$out   = str_repeat( '&#9733;', min( $full, 5 ) ) . str_repeat( '&#9734;', $empty );
+		$half  = ( $average - $full ) >= 0.5;
+		$empty = max( 0, 5 - $full - ( $half ? 1 : 0 ) );
+
+		$out = str_repeat( '<span class="ink-skrywerprofiel__ster is-vol">&#9733;</span>', min( $full, 5 ) );
+
+		if ( $half ) {
+			$out .= '<span class="ink-skrywerprofiel__ster is-half"><span class="ink-skrywerprofiel__ster-agter">&#9734;</span><span class="ink-skrywerprofiel__ster-voor">&#9733;</span></span>';
+		}
+
+		$out .= str_repeat( '<span class="ink-skrywerprofiel__ster is-leeg">&#9734;</span>', $empty );
 
 		return $out;
 	}

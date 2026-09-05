@@ -110,7 +110,7 @@ final class ResponsesList {
 	public static function toHtml( int $post_id, array $responses, int $count ): string {
 		$heading_label = 1 === $count ? Terms::label( 'gemeenskapsreaksie' ) : Terms::label( 'gemeenskapsreaksie_plural' );
 
-		$html  = '<section class="ink-reaksies" aria-label="' . esc_attr( Terms::label( 'gemeenskapsreaksie_plural' ) ) . '">';
+		$html  = '<section id="kommentaar" class="ink-reaksies" aria-label="' . esc_attr( Terms::label( 'gemeenskapsreaksie_plural' ) ) . '">';
 		$html .= '<h2 class="ink-reaksies__heading">' . esc_html( (string) $count . ' ' . $heading_label ) . '</h2>';
 
 		$html .= '<ul class="ink-reaksies__list">';

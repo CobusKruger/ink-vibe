@@ -39,10 +39,6 @@ body.login #login h1 a {
 	text-indent: 0;
 }
 
-body.login #login h1 a::before {
-	content: 'INK';
-}
-
 body.login #loginform,
 body.login #resetpassform {
 	background-color: #fdfcfa; /* --wp--preset--color--surface-alt */

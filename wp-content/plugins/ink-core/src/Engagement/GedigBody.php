@@ -48,6 +48,25 @@ final class GedigBody {
 	public const BLOCK = 'ink/gedig-body';
 
 	/**
+	 * Non-whitespace sentinel standing in for "a stanza break belongs here"
+	 * during {@see self::normalizeLegacyMarkup()} — never a real newline until
+	 * that method's final step, so intermediate whitespace-eating regexes in
+	 * the same pass can never accidentally consume it. `\x00` bytes cannot
+	 * occur in real stored post content, so collision is not a concern.
+	 *
+	 * @var string
+	 */
+	private const STANZA_PLACEHOLDER = "\x00INK_STANZA\x00";
+
+	/**
+	 * Sentinel standing in for "a line break belongs here" — see
+	 * {@see self::STANZA_PLACEHOLDER}.
+	 *
+	 * @var string
+	 */
+	private const LINE_PLACEHOLDER = "\x00INK_LINE\x00";
+
+	/**
 	 * Register the server-rendered block.
 	 *
 	 * Invoked from {@see Module::register()}, which the Kernel already dispatches
@@ -104,11 +123,17 @@ final class GedigBody {
 	 * 0-based physical-line `index`, its verbatim `text` (leading whitespace + inline
 	 * marks intact — NOT trimmed), and whether it is a Roman-numeral `marker`.
 	 *
+	 * `$body` is run through {@see self::normalizeLegacyMarkup()} FIRST (a no-op for
+	 * the majority raw-`\n` format) so both real historical HTML-markup storage
+	 * formats and the raw format tokenize identically from here on — see that
+	 * method's docblock for why (product-owner correction: this is real historical
+	 * data in a valid legacy format, not corruption to rewrite).
+	 *
 	 * @param string $body The raw stored body.
 	 * @return array<int, array{type:string, index?:int, text?:string, marker?:bool}>
 	 */
 	public static function tokenize( string $body ): array {
-		$lines  = explode( "\n", $body );
+		$lines  = explode( "\n", self::normalizeLegacyMarkup( $body ) );
 		$tokens = array();
 
 		foreach ( $lines as $index => $line ) {
@@ -126,6 +151,119 @@ final class GedigBody {
 		}
 
 		return $tokens;
+	}
+
+	/**
+	 * Normalise a legacy HTML-markup body to the plain `\n`-per-line format
+	 * {@see self::tokenize()} expects — a NO-OP for the majority raw format.
+	 *
+	 * Product-owner correction: the Gutenberg-wrapped / `<br>`-joined content on
+	 * some `gedig` posts is real historical data, captured verbatim at migration
+	 * time from an old theme's storage format — it was never corrupted, and must
+	 * never be rewritten to suit this parser. `tokenize()` has to learn to READ
+	 * it instead. This method is that read-time adapter.
+	 *
+	 * Evidence, not guesswork: a full-database scan (2026-09, this pass) found
+	 * ~5,585 `gedig` posts sharing SOME HTML-markup shape, sampled in depth
+	 * before this was written. Five distinct real shapes turned up:
+	 *
+	 *  1. Genuine raw `\n`-per-line (the majority, unaffected — no `<p>`, `<div>`,
+	 *     `<br>`, or `<!-- wp: -->` anywhere in the body at all; this method's
+	 *     first line is a fast, zero-risk no-op return for exactly this case).
+	 *  2. Gutenberg-wrapped, one `<p>` for the WHOLE body, `<br>`-joined lines
+	 *     inside (2 posts confirmed directly — 67912, 67904 — restored to this
+	 *     exact original form after an earlier, incorrect "fix the data" pass).
+	 *  3. The DOMINANT legacy shape (~5,578 of the ~5,585): NO Gutenberg wrapper
+	 *     at all, one bare `<p>…</p>` per STANZA, `<br>`/`<br />` joining that
+	 *     stanza's lines inside it — pre-Gutenberg (classic-editor-era) HTML,
+	 *     migrated/imported as raw markup.
+	 *  4. A Facebook-paste shape (7 posts): nested `<div class="html-div …">` /
+	 *     `<span class="…">` wrappers (Meta's own atomic CSS class names) with
+	 *     `<br class="html-br" />` line breaks; a bare EMPTY `<div></div>` pair
+	 *     is Meta's own paragraph-spacer and is the real stanza-break signal —
+	 *     ordinary (non-empty) `</div><div>` transitions are just the next LINE
+	 *     of the same stanza, not a stanza break.
+	 *  5. A "one `<p>` per LINE" shape (2 posts): no `<br>` anywhere; each line is
+	 *     its own `<p>…</p>`, and a blank/`&nbsp;`-only `<p>` is the stanza-break
+	 *     signal — an ordinary `</p><p>` transition here is just the next line,
+	 *     the OPPOSITE convention from shape 3's `</p><p>` (there, a stanza
+	 *     break). Distinguished from shape 3 by the one reliable per-post signal
+	 *     that actually differs between them: whether `<br>` appears anywhere.
+	 *
+	 * Approach: convert every shape's real structural boundaries into one of two
+	 * non-whitespace placeholder tokens (`self::STANZA_PLACEHOLDER` /
+	 * `self::LINE_PLACEHOLDER`) — NOT directly into `\n`/`\n\n` — because later
+	 * clean-up steps in this same pass consume incidental pretty-printing
+	 * whitespace around remaining tags (`\s*<tag>\s*` → `''`); if the meaningful
+	 * breaks were literal newlines at that point, that clean-up would eat them
+	 * right back out. Real newlines are materialised from the placeholders only
+	 * as the very last step, once no further whitespace-eating regex will run.
+	 *
+	 * Known, disclosed imperfection (7 Facebook-paste posts only): a stanza
+	 * boundary can pick up one extra blank separator (an adjacent ordinary
+	 * `</div><div>` transition firing alongside the dedicated empty-div stanza
+	 * marker) — a harmless slightly-larger visual gap, not glued/lost content;
+	 * not worth a full nested-HTML parser for 7 posts.
+	 *
+	 * @param string $body The raw stored body, either format.
+	 * @return string Plain `\n`-per-line text, ready for `explode( "\n", … )`.
+	 */
+	private static function normalizeLegacyMarkup( string $body ): string {
+		if ( ! preg_match( '/<p\b|<div\b|<br\b|<!--\s*wp:/i', $body ) ) {
+			return $body; // The raw \n format — the majority of posts — untouched.
+		}
+
+		$stanza = self::STANZA_PLACEHOLDER;
+		$line   = self::LINE_PLACEHOLDER;
+
+		// 1. Any HTML comment is pure noise here — Gutenberg block comments
+		// (the expected case), but evidence also turned up third-party-app
+		// export artifacts (e.g. a Samsung Notes clipboard-metadata comment
+		// glued onto a signature line by a copy-paste import) that are just as
+		// much noise; a poem never legitimately contains an HTML comment as
+		// real content. Left unstripped, such a comment would otherwise become
+		// its OWN bare, still-interactive resonance line once rendered (the
+		// exact "bare comment-only token" symptom this whole fix targets) —
+		// {@see wp_kses()} would already strip it at render time regardless,
+		// so stripping it here just avoids minting a spurious empty line/anchor
+		// for it in the first place.
+		$body = (string) preg_replace( '/\s*<!--.*?-->\s*/s', '', $body );
+
+		// 2. A bare, empty <div></div> pair (Meta's own paragraph-spacer, shape 4)
+		// is an explicit stanza break — consumed BEFORE the generic </div><div>
+		// line-boundary rule below can see (and misread) it as just a line.
+		$body = (string) preg_replace( '/\s*<div>\s*<\/div>\s*/i', $stanza, $body );
+
+		// 3. Shape 3 vs shape 5 both use <p>, with OPPOSITE </p><p> conventions —
+		// the one reliable signal that differs is whether <br> appears anywhere.
+		$has_br            = 1 === preg_match( '/<br\b/i', $body );
+		$paragraph_boundary = $has_br ? $stanza : $line;
+
+		// 4. A blank/&nbsp;-only <p> is shape 5's explicit stanza-break signal
+		// (harmless no-op for shape 3, which never produces one in practice).
+		$body = (string) preg_replace( '/\s*<p[^>]*>\s*(?:&nbsp;|\xC2\xA0)?\s*<\/p>\s*/i', $stanza, $body );
+
+		// 5. <br> / <br/> / <br /> / <br class="…" /> (any attributes) is always
+		// a line break — its own trailing pretty-print whitespace is consumed in
+		// the SAME match so it can never double up with a following real break.
+		$body = (string) preg_replace( '/<br\b[^>]*>\s*/i', $line, $body );
+
+		// 6. </p> immediately followed by <p …> — shape-dependent (step 3).
+		$body = (string) preg_replace( '/<\/p>\s*<p\b[^>]*>/i', $paragraph_boundary, $body );
+
+		// 7 & 8. </div><div> / </span><span> — always just the next line (shape
+		// 4's only stanza signal, the empty-div pair, is already consumed above).
+		$body = (string) preg_replace( '/<\/div>\s*<div\b[^>]*>/i', $line, $body );
+		$body = (string) preg_replace( '/<\/span>\s*<span\b[^>]*>/i', $line, $body );
+
+		// 9. Whatever p/div/span tags remain (the very first opening tag, the
+		// very last closing tag, wrappers that never bordered another wrapper
+		// tag) are pure structural noise now — strip fully, whitespace included.
+		$body = (string) preg_replace( '/\s*<\/?(?:p|div|span)\b[^>]*>\s*/i', '', $body );
+
+		// 10. Materialise the placeholders — only now, once nothing further in
+		// this pass will eat whitespace and risk consuming a real newline.
+		return str_replace( array( $stanza, $line ), array( "\n\n", "\n" ), $body );
 	}
 
 	/**
@@ -172,6 +310,34 @@ final class GedigBody {
 				continue;
 			}
 
+			// Sanitize BEFORE deciding whether this token has any real content.
+			// tokenize()'s own blank-check runs on the RAW pre-sanitization text
+			// (`'' === trim( $line )`) and rightly stays that way — it can't know
+			// what the inline allowlist will do. But a line whose raw text is
+			// disallowed markup with nothing else (e.g. a stray legacy `<ul>`
+			// footnote artifact survived by {@see self::normalizeLegacyMarkup()})
+			// is NOT whitespace-only raw text, so it tokenizes as `line`, yet
+			// sanitizes down to nothing visible — rendering it as-is would mint a
+			// genuinely empty `<p data-ink-line>` that `line-reactions.js` still
+			// treats as fully interactive (heart + hover highlight over blank
+			// space). Checking the RENDERED result (not `trim($token['text'])`
+			// again, which is exactly the raw check that already missed this)
+			// catches that: `strip_tags()` here strips even the ALLOWED inline
+			// tags too (an empty `<em></em>` or a bare `<br>` carries no visible
+			// text either), so only genuinely-nothing-left counts as empty — a
+			// line that's just punctuation, a single word, an em dash, etc. still
+			// has real text and stays interactive.
+			$rendered = wp_kses( (string) $token['text'], $allowed );
+
+			if ( '' === trim( strip_tags( $rendered ) ) ) {
+				if ( $stanza_open ) {
+					$html       .= '</div>';
+					$stanza_open = false;
+				}
+				$html .= '<div class="ink-gedig__sep" aria-hidden="true"></div>';
+				continue;
+			}
+
 			if ( ! $stanza_open ) {
 				$html       .= '<div class="ink-gedig__stanza">';
 				$stanza_open = true;
@@ -182,8 +348,16 @@ final class GedigBody {
 				$classes .= ' ink-gedig__line--marker';
 			}
 
-			$html .= '<p class="' . $classes . '" data-ink-line="' . esc_attr( (string) $token['index'] ) . '">'
-				. wp_kses( (string) $token['text'], $allowed )
+			// The text is wrapped in an inner `.ink-gedig__line-text` span (shrink-
+			// to-fit, `display:inline-block`) rather than positioned straight off
+			// the full-width `<p>` — this is the anchor the theme's per-line heart
+			// toggle (Story 7.3 post-Epic-19 fidelity pass) positions itself
+			// against, so it sits right after each line's own text (Lovable's
+			// `PoetryReader.tsx` wraps its line text in an identical
+			// `relative inline-block` span for the same reason), not pinned to a
+			// fixed column unrelated to line length.
+			$html .= '<p class="' . $classes . '" data-ink-line="' . esc_attr( (string) $token['index'] ) . '" data-audit-id="gedig-stanza-line">'
+				. '<span class="ink-gedig__line-text">' . $rendered . '</span>'
 				. '</p>';
 		}
 

@@ -16,6 +16,13 @@
  * panels are server-rendered up-front (no REST/AJAX, AD-7) so the `#bydraes`/
  * `#skrywers` anchors still work — and both sections still render — with JS off.
  *
+ * The "Bydraes"/"Skrywers" nav bar itself is sticky (Theme-Fidelity third-pass
+ * re-audit, page 11): `.ink-ontdek-tabbalk` mirrors Lovable's `Browse.tsx`
+ * `<section className="... sticky top-16 z-30 bg-background/95
+ * backdrop-blur-sm">` — the theme has no sitewide sticky site-header to pin
+ * below (unlike Lovable's `top-16`), so this sticks to the viewport top
+ * directly (`top:0`).
+ *
  * @package Ink\Foundation
  */
 
@@ -48,8 +55,8 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-ontdek-tabbalk","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-ontdek-tabbalk">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<nav class="ink-ontdek-tabs" aria-label="<?php esc_attr_e( 'Ontdek-oortjies', 'ink-foundation' ); ?>">

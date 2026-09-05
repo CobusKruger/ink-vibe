@@ -4,9 +4,10 @@
  * Slug: ink-foundation/reading-uitdaging
  * Categories: ink-foundation
  * Inserter: no
- * Description: Leessjabloon vir 'n uitdaging — badge, titel, sluitingsdatum/status,
- * opdrag, inskrywings en 'n sluitende oproep tot aksie (Storie 12.1, FR-45; Post-
- * Epic-19 fidelity pass, workstream 6).
+ * Description: Leessjabloon vir 'n uitdaging — badge, titel, taglyn, sluitingsdatum/
+ * status/deelnemers, opdrag, inskrywings en 'n sluitende oproep tot aksie (Storie
+ * 12.1, FR-45; Post-Epic-19 fidelity pass, workstream 6; third-pass structural
+ * correspondence fixes, workstream 6b).
  *
  * Presentation only (three-layer separation). The reading header is core blocks
  * resolved per-post at render time; the type-badge label comes from the ink-core
@@ -16,10 +17,23 @@
  * blob (Story 12.1 decision), not split into the separate Prompt/Rules/Prize zones
  * the Lovable reference (`Challenge.tsx`) shows; splitting it would need new post-meta
  * fields, a content-model change out of scope for a visual-fidelity pass (see
- * `docs/theme-fidelity-rework-plan.md`, workstream 6 report). The sluitingsdatum,
- * Oop/Gesluit status and inskrywings list are the server-rendered
- * `ink/uitdaging-besonderhede` block (ink-core/Challenges) — all business logic stays
- * in ink-core. No WP comments UI — comments are disabled site-wide.
+ * `docs/theme-fidelity-rework-plan.md`, workstream 6 report). Lovable's separate
+ * "Learning resources for this challenge" card grid (hulpbronne) has NO WP
+ * counterpart at all, in any form — confirmed absent this pass (workstream 6b), not
+ * folded into the opdrag blob either; it would need a new resource-link content
+ * model (repeater field or CPT), a real feature build, not a style fix — flagged for
+ * a product-owner decision, not guessed at here.
+ *
+ * The sluitingsdatum/Oop-Gesluit-status/deelnemers meta row and the inskrywings list
+ * are both the server-rendered `ink/uitdaging-besonderhede` block (ink-core/
+ * Challenges) — all business logic stays in ink-core — but rendered as TWO separate
+ * embeds via its `variant` attribute (`kop` in the hero, `inskrywings` in its own
+ * section below the opdrag). Workstream 6b's structural-correspondence audit found
+ * the two previously fused into ONE embed placed in the hero, so the entries list
+ * rendered ABOVE the prompt/opdrag content — the opposite of Lovable's order (Hero →
+ * Prompt → Resources → Submissions → CTA). Splitting the block fixed the order
+ * without changing where any business logic lives. No WP comments UI — comments are
+ * disabled site-wide.
  *
  * The two CTA button rows + the closing band reuse copy already ratified in
  * `docs/ui-copy-translations.md` ("Uitdaging-detailbladsy" section) — never
@@ -27,7 +41,18 @@
  * "Weeklikse uitdaging" ("Weekly Challenge") string: INK's real cadence model is
  * Maandeliks/Jaarliks, never weekly, so that literal translation of Lovable's mockup
  * copy would misstate a real uitdaging's cadence; the badge keeps the existing
- * data-true type label instead.
+ * data-true type label instead. Lovable's "Editor's pick" (Trophy icon) meta item
+ * also has ratified copy ("Die redakteur se keuse") but NO backing data anywhere in
+ * the codebase — no per-uitdaging "is this an editor's pick" flag exists — so it is
+ * deliberately NOT rendered here rather than shown as a permanent, potentially false
+ * claim on every challenge; flagged for a product-owner decision (workstream 6b).
+ *
+ * The taglyn paragraph below the title renders the post excerpt ONLY when one has
+ * been manually authored (`has_excerpt()`) — mirrors {@see \Ink\Challenges\CurrentChallenge::excerptFor()}'s
+ * graceful-omit convention. No uitdaging post has a manually-authored excerpt yet
+ * (confirmed this pass) — this is copy-debt to author, not a template bug; rendering
+ * the auto-generated WordPress excerpt instead would just duplicate the opdrag text
+ * directly beneath the title.
  *
  * @package Ink\Foundation
  */
@@ -54,6 +79,14 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 
 		<!-- wp:post-title {"level":1,"fontSize":"hero"} /-->
 
+		<?php if ( has_excerpt() ) : ?>
+		<!-- wp:paragraph {"className":"ink-uitdaging__tagline","lock":{"move":true,"remove":true}} -->
+		<p class="ink-uitdaging__tagline" data-audit-id="uitdaging-tagline"><?php echo esc_html( get_the_excerpt() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html() applied directly above. ?></p>
+		<!-- /wp:paragraph -->
+		<?php endif; ?>
+
+		<!-- wp:ink/uitdaging-besonderhede {"variant":"kop"} /-->
+
 		<!-- wp:buttons {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
 		<div class="wp-block-buttons">
 			<!-- wp:button {"className":"is-style-ink-primary ink-btn-icon"} -->
@@ -65,8 +98,16 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 			<!-- /wp:button -->
 		</div>
 		<!-- /wp:buttons -->
+	</div>
+	<!-- /wp:group -->
+</section>
+<!-- /wp:group -->
 
-		<!-- wp:ink/uitdaging-besonderhede /-->
+<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-24","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
+	<!-- wp:group {"className":"ink-uitdaging__opdrag","lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"672px"}} -->
+	<div class="wp-block-group ink-uitdaging__opdrag">
+		<!-- wp:post-content {"lock":{"move":true,"remove":true}} /-->
 	</div>
 	<!-- /wp:group -->
 </section>
@@ -74,9 +115,9 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"className":"ink-uitdaging__opdrag","lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"672px"}} -->
-	<div class="wp-block-group ink-uitdaging__opdrag">
-		<!-- wp:post-content {"lock":{"move":true,"remove":true}} /-->
+	<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"1120px"}} -->
+	<div class="wp-block-group">
+		<!-- wp:ink/uitdaging-besonderhede {"variant":"inskrywings"} /-->
 	</div>
 	<!-- /wp:group -->
 </section>

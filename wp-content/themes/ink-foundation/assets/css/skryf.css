@@ -20,9 +20,14 @@
    Centering itself is set on the block (textAlign/align), not here. font-weight
    is explicit because the browser/theme default for a bare <h1> is bold (700);
    Lovable's own h1 here is font-semibold (600) — same per-heading override shape
-   as hero.php's h1 (Epic-19 theme-fidelity re-audit finding). */
+   as hero.php's h1 (Epic-19 theme-fidelity re-audit finding).
+   Mobile size is a FIXED 30px (1.875rem), not the `xxxl` token — that token is
+   still a fluid clamp() sitewide (documented open item, theme-fidelity-audit-
+   handoff.md §4), which measured 25.33px at a 500px viewport against Lovable's
+   fixed 30px text-3xl at the same width. Page-scoped pin, same recipe already
+   applied on gemeenskap/lidmaatskap/oor-ink (third-pass re-audit finding). */
 .ink-skryf-title {
-	font-size: var(--wp--preset--font-size--xxxl);
+	font-size: 1.875rem;
 	font-weight: var(--wp--custom--font-weight--semibold);
 }
 
@@ -425,6 +430,20 @@
 	outline-offset: 2px;
 }
 
+/* Disabled Plaas button — was a real, previously-unfixed gap: the button was
+   NEVER disabled regardless of empty title/body (matches the exact "button
+   never disabled" bug class first flagged on lees-gedig's publish control).
+   `skryf-counter.js` toggles the native `disabled` attribute; this rule makes
+   that state visually distinct, matching Lovable's measured disabled Publish
+   button exactly (opacity:.5, cursor:default, pointer-events:none). Save
+   Draft is deliberately NEVER disabled here — Lovable's own Save Draft button
+   has no disabled logic either (Write.tsx), so this only targets Plaas. */
+.ink-skryf-submit:disabled {
+	opacity: 0.5;
+	cursor: default;
+	pointer-events: none;
+}
+
 /* `.ink-skryf-actions button` (class + element = 0,1,1) outranks a bare
    `.ink-skryf-draft` (0,1,0) regardless of source order — qualifying with the
    element name matches it class-for-class-and-element (Epic-19 re-audit
@@ -470,4 +489,89 @@ button.ink-skryf-draft {
 	border-radius: var(--wp--custom--radius--md);
 	background-color: color-mix(in srgb, var(--wp--preset--color--warning) 10%, transparent);
 	color: var(--wp--preset--color--ink-text);
+}
+
+/* ── §7 Success screen (post-plaas) ──────────────────────────────────────────
+   Before this, the success state had ZERO CSS — a plain unbordered heading and
+   two bare inline text links, none of Lovable's banner-card/icon/button
+   treatment (Epic-19 third-pass re-audit finding: the prior pass never
+   actually submitted the form for real, so roughly half of this page's total
+   content — this whole view — went unverified). The "Lift another writer
+   today" 3-card community-works grid Lovable shows below this banner is
+   flagged, not built here — see the PHP comment at its call site. */
+.ink-skryf-success {
+	max-width: 640px;
+	margin: 0 auto;
+	padding: var(--wp--preset--spacing--s-32) var(--wp--preset--spacing--s-24);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--xl);
+	background-color: var(--wp--preset--color--surface-alt);
+	text-align: center;
+}
+
+@media (min-width: 768px) {
+	.ink-skryf-success {
+		padding: var(--wp--preset--spacing--s-40) var(--wp--preset--spacing--s-32);
+	}
+}
+
+.ink-skryf-success__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 64px;
+	height: 64px;
+	margin: 0 auto var(--wp--preset--spacing--s-16);
+	border-radius: var(--wp--custom--radius--full);
+	background-color: var(--wp--preset--color--secondary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
+}
+
+.ink-skryf-success__icon .ink-icon {
+	width: 32px;
+	height: 32px;
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-skryf-success__heading {
+	margin-bottom: var(--wp--preset--spacing--s-8);
+}
+
+.ink-skryf-success__lead {
+	max-width: 480px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.ink-skryf-success__cta {
+	margin-top: var(--wp--preset--spacing--s-24);
+}
+
+.ink-skryf-success__cta .wp-block-button__link {
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-left: var(--wp--preset--spacing--s-32);
+	padding-right: var(--wp--preset--spacing--s-32);
+}
+
+/* Eyebrow — icon + uppercase tracked label, matches Lovable's
+   "<Users/> Read & respond" recipe (Write.tsx success screen) exactly. */
+.ink-skryf-success__eyebrow {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	margin: var(--wp--preset--spacing--s-48) 0 0;
+	color: var(--wp--preset--color--primary);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.ink-skryf-success__eyebrow .ink-icon {
+	width: 16px;
+	height: 16px;
 }

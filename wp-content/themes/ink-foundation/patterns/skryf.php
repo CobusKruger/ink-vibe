@@ -55,17 +55,37 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	$ink_done_label = function_exists( 'mb_strtolower' ) ? mb_strtolower( $ink_done_label ) : strtolower( $ink_done_label );
 	$ink_done_title = isset( $ink_skryf_success['title'] ) ? (string) $ink_skryf_success['title'] : '';
 	?>
-	<!-- wp:heading {"level":1,"fontSize":"xxl"} -->
-	<h1 class="wp-block-heading has-xxl-font-size"><?php printf( /* translators: %s: bydrae type (gedig/storie/artikel). */ esc_html__( 'Jou %s is gepubliseer', 'ink-foundation' ), esc_html( $ink_done_label ) ); ?></h1>
-	<!-- /wp:heading -->
+	<!-- wp:group {"className":"ink-skryf-success","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group ink-skryf-success">
+		<!-- wp:html -->
+		<span class="ink-skryf-success__icon" aria-hidden="true"><?php echo ink_foundation_icon( '<path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></span>
+		<!-- /wp:html -->
 
-	<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-	<p class="has-muted-text-color has-text-color has-md-font-size"><?php printf( /* translators: %s: the bydrae title. */ esc_html__( 'Dankie dat jy “%s” gedeel het. Skryf is \'n gesprek — die gemeenskap groei wanneer skrywers mekaar lees en op mekaar reageer.', 'ink-foundation' ), esc_html( $ink_done_title ) ); ?></p>
-	<!-- /wp:paragraph -->
+		<!-- wp:heading {"level":1,"textAlign":"center","className":"ink-skryf-title ink-skryf-success__heading"} -->
+		<h1 class="wp-block-heading has-text-align-center ink-skryf-title ink-skryf-success__heading" data-audit-id="skryf-success-heading"><?php printf( /* translators: %s: bydrae type (gedig/storie/artikel). */ esc_html__( 'Jou %s is gepubliseer', 'ink-foundation' ), esc_html( $ink_done_label ) ); ?></h1>
+		<!-- /wp:heading -->
 
-	<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-	<p class="has-muted-text-color has-text-color has-sm-font-size"><?php echo esc_html__( 'Lees en reageer', 'ink-foundation' ); ?></p>
-	<!-- /wp:paragraph -->
+		<!-- wp:paragraph {"align":"center","fontSize":"md","textColor":"muted-text","className":"ink-skryf-success__lead"} -->
+		<p class="has-text-align-center has-muted-text-color has-text-color has-md-font-size ink-skryf-success__lead"><?php printf( /* translators: %s: the bydrae title. */ esc_html__( 'Dankie dat jy “%s” gedeel het. Skryf is \'n gesprek — die gemeenskap groei wanneer skrywers mekaar lees en op mekaar reageer.', 'ink-foundation' ), esc_html( $ink_done_title ) ); ?></p>
+		<!-- /wp:paragraph -->
+
+		<!-- wp:buttons {"className":"ink-skryf-success__cta","layout":{"type":"flex","justifyContent":"center"}} -->
+		<div class="wp-block-buttons ink-skryf-success__cta">
+			<!-- wp:button {"className":"is-style-ink-primary"} -->
+			<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link wp-element-button" href="/skryf" data-audit-id="skryf-success-write-another"><?php echo esc_html__( 'Skryf nog \'n stuk', 'ink-foundation' ); ?></a></div>
+			<!-- /wp:button -->
+
+			<!-- wp:button {"className":"is-style-ink-outline"} -->
+			<div class="wp-block-button is-style-ink-outline"><a class="wp-block-button__link wp-element-button" href="/" data-audit-id="skryf-success-back-home"><?php echo esc_html__( 'Terug na tuis', 'ink-foundation' ); ?></a></div>
+			<!-- /wp:button -->
+		</div>
+		<!-- /wp:buttons -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:html -->
+	<p class="ink-skryf-success__eyebrow"><?php echo ink_foundation_icon( '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' ) . esc_html__( 'Lees en reageer', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></p>
+	<!-- /wp:html -->
 
 	<!-- wp:heading {"level":2,"fontSize":"lg"} -->
 	<h2 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( 'Gee \'n skrywer vandag \'n hupstoot', 'ink-foundation' ); ?></h2>
@@ -75,9 +95,20 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( '\'n Deurdagte opmerking kan iemand se week verander. Begin met een van hierdie.', 'ink-foundation' ); ?></p>
 	<!-- /wp:paragraph -->
 
-	<!-- wp:paragraph -->
-	<p><a href="/skryf"><?php echo esc_html__( 'Skryf nog \'n stuk', 'ink-foundation' ); ?></a> · <a href="/"><?php echo esc_html__( 'Terug na tuis', 'ink-foundation' ); ?></a></p>
-	<!-- /wp:paragraph -->
+	<?php
+	/*
+	 * NOT BUILT — flagged, not guessed at (Epic-19 third-pass, skryf page): Lovable's
+	 * Write.tsx success screen renders a 3-card "Lift another writer today" community-
+	 * works recommendation grid here (title/excerpt/author/read-time/likes/comments per
+	 * card), sourced from a static `communityWorks` demo array in the React source — not
+	 * live data. No ink-core facade currently surfaces "N real published pieces to
+	 * recommend right now" (the closest existing surfaces are Ontdek's Bydraes archive
+	 * and the tuisblad trending feed, neither built as a reusable 3-card recommendation
+	 * read-model). Building one is a real feature addition (a new query + facade), not a
+	 * style fix — needs a product-owner decision on the selection rule (trending? most
+	 * recent? excluding the author's own work?) before it's built.
+	 */
+	?>
 <?php else : ?>
 	<!-- wp:heading {"level":1,"textAlign":"center","className":"ink-skryf-title"} -->
 	<h1 class="wp-block-heading has-text-align-center ink-skryf-title"><?php esc_html_e( 'Deel jou woorde', 'ink-foundation' ); ?></h1>
@@ -110,7 +141,7 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 					continue;
 				}
 				?>
-				<label class="ink-skryf-type ink-skryf-type--<?php echo esc_attr( $ink_slug ); ?>">
+				<label class="ink-skryf-type ink-skryf-type--<?php echo esc_attr( $ink_slug ); ?>" data-audit-id="skryf-type-card">
 					<input type="radio" name="<?php echo esc_attr( $ink_skryf['field_type'] ); ?>" value="<?php echo esc_attr( $ink_slug ); ?>"<?php echo $ink_first ? ' checked' : ''; ?> data-counter-mode="<?php echo esc_attr( isset( $ink_type['counter_mode'] ) ? (string) $ink_type['counter_mode'] : 'words' ); ?>" data-placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_slug ] ?? '' ); ?>" />
 					<?php if ( isset( $ink_skryf_icons[ $ink_slug ] ) ) : ?>
 						<span class="ink-skryf-type__icon ink-skryf-type__icon--<?php echo esc_attr( $ink_slug ); ?>" aria-hidden="true"><?php echo ink_foundation_icon( $ink_skryf_icons[ $ink_slug ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></span>
@@ -126,18 +157,11 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 			?>
 		</fieldset>
 
-		<p class="ink-skryf-field">
-			<label for="ink-skryf-title"><?php echo esc_html__( 'Titel', 'ink-foundation' ); ?></label>
-			<input type="text" id="ink-skryf-title" name="<?php echo esc_attr( $ink_skryf['field_title'] ); ?>" placeholder="<?php echo esc_attr__( 'Gee jou werk \'n titel...', 'ink-foundation' ); ?>" required />
-		</p>
-
-		<div class="ink-skryf-field ink-skryf-field--body">
-			<label for="ink-skryf-body"><?php echo esc_html__( 'Jou werk', 'ink-foundation' ); ?></label>
-			<span class="ink-skryf-counter" data-words-label="<?php echo esc_attr__( 'woorde', 'ink-foundation' ); ?>" data-lines-label="<?php echo esc_attr__( 'reëls', 'ink-foundation' ); ?>" aria-live="polite"></span>
-			<textarea id="ink-skryf-body" name="<?php echo esc_attr( $ink_skryf['field_body'] ); ?>" rows="16" placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_skryf_first_slug ] ?? '' ); ?>" required></textarea>
-		</div>
-
 		<?php
+		// Field order matches Lovable's Write.tsx exactly: type picker -> challenges
+		// (optional) -> title -> body (Epic-19 third-pass re-audit finding — the prior
+		// build placed challenges AFTER the body field, a real structural/Tier-0
+		// mismatch never caught by property-diffing alone).
 		$ink_skryf_challenges = isset( $ink_skryf['open_challenges'] ) && is_array( $ink_skryf['open_challenges'] ) ? $ink_skryf['open_challenges'] : array();
 		if ( ! empty( $ink_skryf_challenges ) ) :
 			?>
@@ -152,7 +176,7 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 					continue;
 				}
 				?>
-				<label class="ink-skryf-challenge">
+				<label class="ink-skryf-challenge" data-audit-id="skryf-checkbox">
 					<input type="checkbox" name="<?php echo esc_attr( $ink_skryf['field_challenges'] ?? 'ink_submission_uitdagings' ); ?>[]" value="<?php echo esc_attr( (string) $ink_ch_id ); ?>" />
 					<span><?php echo esc_html( $ink_ch_title ); ?></span>
 				</label>
@@ -161,6 +185,17 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 			<?php
 		endif;
 		?>
+
+		<p class="ink-skryf-field">
+			<label for="ink-skryf-title"><?php echo esc_html__( 'Titel', 'ink-foundation' ); ?></label>
+			<input type="text" id="ink-skryf-title" name="<?php echo esc_attr( $ink_skryf['field_title'] ); ?>" placeholder="<?php echo esc_attr__( 'Gee jou werk \'n titel...', 'ink-foundation' ); ?>" data-audit-id="skryf-title-input" required />
+		</p>
+
+		<div class="ink-skryf-field ink-skryf-field--body">
+			<label for="ink-skryf-body"><?php echo esc_html__( 'Jou werk', 'ink-foundation' ); ?></label>
+			<span class="ink-skryf-counter" data-words-label="<?php echo esc_attr__( 'woorde', 'ink-foundation' ); ?>" data-lines-label="<?php echo esc_attr__( 'reëls', 'ink-foundation' ); ?>" aria-live="polite"></span>
+			<textarea id="ink-skryf-body" name="<?php echo esc_attr( $ink_skryf['field_body'] ); ?>" rows="16" placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_skryf_first_slug ] ?? '' ); ?>" data-audit-id="skryf-body-textarea" required></textarea>
+		</div>
 
 		<p class="ink-skryf-field">
 			<label for="ink-skryf-image"><?php echo esc_html__( 'Voorbeeld-prent (opsioneel)', 'ink-foundation' ); ?></label>
@@ -179,8 +214,8 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 		?>
 
 		<p class="ink-skryf-actions">
-			<button type="submit" name="<?php echo esc_attr( $ink_skryf['intent_field'] ?? 'ink_submission_intent' ); ?>" value="<?php echo esc_attr( $ink_skryf['intent_draft'] ?? 'konsep' ); ?>" class="ink-skryf-draft"><?php echo esc_html__( 'Stoor konsep', 'ink-foundation' ); ?></button>
-			<button type="submit" name="<?php echo esc_attr( $ink_skryf['intent_field'] ?? 'ink_submission_intent' ); ?>" value="<?php echo esc_attr( $ink_skryf['intent_publish'] ?? 'plaas' ); ?>" class="ink-skryf-submit"><?php echo esc_html__( 'Plaas', 'ink-foundation' ); ?></button>
+			<button type="submit" name="<?php echo esc_attr( $ink_skryf['intent_field'] ?? 'ink_submission_intent' ); ?>" value="<?php echo esc_attr( $ink_skryf['intent_draft'] ?? 'konsep' ); ?>" class="ink-skryf-draft" data-audit-id="skryf-draft-btn"><?php echo esc_html__( 'Stoor konsep', 'ink-foundation' ); ?></button>
+			<button type="submit" name="<?php echo esc_attr( $ink_skryf['intent_field'] ?? 'ink_submission_intent' ); ?>" value="<?php echo esc_attr( $ink_skryf['intent_publish'] ?? 'plaas' ); ?>" class="ink-skryf-submit" data-audit-id="skryf-publish-btn"><?php echo esc_html__( 'Plaas', 'ink-foundation' ); ?></button>
 		</p>
 	</form>
 	<!-- /wp:html -->

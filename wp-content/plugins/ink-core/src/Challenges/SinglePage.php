@@ -74,6 +74,31 @@ final class SinglePage {
 	public const INCLUDE_FIXTURES_FILTER = 'ink_uitdaging_besonderhede_include_fixtures';
 
 	/**
+	 * The hero meta-row variant (Post-Epic-19 theme-fidelity third pass, workstream
+	 * 6b) — renders ONLY the sluitingsdatum/status/participants meta row
+	 * ({@see self::statusHtml()}), no entries. Splits the block so the pattern can
+	 * place the meta row in the hero (matching the Lovable `Challenge.tsx` meta-row
+	 * position, before the CTA buttons) while the entries list renders in its own
+	 * section further down the page (matching Lovable's later "Entries from the
+	 * community" position) — the third-pass structural-correspondence audit found
+	 * the two were wrongly fused into one block embed, rendering entries ABOVE the
+	 * prompt/opdrag content instead of below it.
+	 *
+	 * @var string
+	 */
+	public const VARIANT_KOP = 'kop';
+
+	/**
+	 * The entries-list variant (Post-Epic-19 theme-fidelity third pass, workstream
+	 * 6b) — renders ONLY the inskrywings list ({@see self::entriesHtml()}), wrapped
+	 * in its own `id="inskrywings"` section (the anchor target migrates here from
+	 * the old combined section — see {@see self::VARIANT_KOP}).
+	 *
+	 * @var string
+	 */
+	public const VARIANT_INSKRYWINGS = 'inskrywings';
+
+	/**
 	 * Lucide `calendar` icon path data (Post-Epic-19 fidelity pass, workstream 6) —
 	 * mirrors the sluitingsdatum meta-row icon in the Lovable `Challenge.tsx`
 	 * reference. Local to this class, matching the per-class icon-constant house
@@ -82,6 +107,18 @@ final class SinglePage {
 	 * @var string
 	 */
 	private const ICON_CALENDAR = '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>';
+
+	/**
+	 * Lucide `users` icon path data (Post-Epic-19 theme-fidelity third pass,
+	 * workstream 6b) — the "[N] skrywers het ingeskryf" meta-row item, ratified copy
+	 * from `docs/ui-copy-translations.md` ("[N] writers entered" row). Mirrors the
+	 * identical constant already used by {@see \Ink\Challenges\CurrentChallenge::ICON_USERS}
+	 * (same Lucide glyph, duplicated per the per-class icon-constant house style —
+	 * no shared-icon-registry module exists to import from instead).
+	 *
+	 * @var string
+	 */
+	private const ICON_USERS = '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>';
 
 	/**
 	 * Render a 16px inline SVG icon. Pure markup, decorative (the adjacent label
@@ -119,6 +156,17 @@ final class SinglePage {
 			self::BLOCK,
 			array(
 				'render_callback' => array( self::class, 'render' ),
+				'attributes'      => array(
+					// '' (unset) keeps the pre-split combined rendering — no existing
+					// embed relies on it (the pattern always passes an explicit
+					// variant now), kept only so the block degrades sanely if ever
+					// embedded bare. Mirrors {@see \Ink\Challenges\CurrentChallenge}'s
+					// `variant` attribute convention.
+					'variant' => array(
+						'type'    => 'string',
+						'default' => '',
+					),
+				),
 			)
 		);
 	}
@@ -229,15 +277,30 @@ final class SinglePage {
 	 *
 	 * @param string $formatted_deadline The SAST-formatted deadline, or ''.
 	 * @param bool   $is_open            Whether the round is still open.
+	 * @param int    $entry_count        The round's published, non-fixture entry
+	 *                                   count (Post-Epic-19 theme-fidelity third
+	 *                                   pass, workstream 6b — the "[N] skrywers het
+	 *                                   ingeskryf" meta-row item, previously entirely
+	 *                                   missing from this row; Lovable's `Challenge.tsx`
+	 *                                   meta row shows it between the deadline and the
+	 *                                   (WP-only, deliberate — see class docblock)
+	 *                                   Oop/Gesluit pill). Defaults to 0 (renders "0
+	 *                                   skrywers het ingeskryf" — a true, neutral
+	 *                                   stat, unlike the closing-CTA subtitle which
+	 *                                   deliberately hides at zero; see
+	 *                                   {@see self::ctaSubtitleHtml()}).
 	 * @return string
 	 */
-	public static function statusHtml( string $formatted_deadline, bool $is_open ): string {
+	public static function statusHtml( string $formatted_deadline, bool $is_open, int $entry_count = 0 ): string {
 		if ( '' === $formatted_deadline ) {
 			return '';
 		}
 
 		$state_key   = $is_open ? 'uitdaging_oop' : 'uitdaging_gesluit';
 		$state_class = $is_open ? 'is-oop' : 'is-gesluit';
+
+		/* translators: %d: the number of writers who have entered this challenge. */
+		$participants_label = sprintf( _n( '%d skrywer het ingeskryf', '%d skrywers het ingeskryf', $entry_count, 'ink-core' ), $entry_count );
 
 		// Post-Epic-19 fidelity pass (workstream 6): a plain inline text line is easy
 		// to miss and doesn't scale down cleanly ("date readability", page-map.csv's
@@ -251,6 +314,14 @@ final class SinglePage {
 			. '<span class="ink-uitdaging__sluitingsdatum-etiket">' . esc_html( Terms::label( 'sluitingsdatum' ) ) . ': </span>'
 			. '<time class="ink-uitdaging__sluitingsdatum">' . esc_html( $formatted_deadline ) . '</time>'
 			. '</span>'
+			// Post-Epic-19 theme-fidelity third pass (workstream 6b): the
+			// participants meta item, missing entirely until now — Lovable's
+			// meta row carries it (Users icon + "[N] writers entered"); ratified
+			// Afrikaans copy from `docs/ui-copy-translations.md`.
+			. '<span class="ink-uitdaging__deelnemers-ry">'
+			. self::icon( self::ICON_USERS )
+			. '<span>' . esc_html( $participants_label ) . '</span>'
+			. '</span>'
 			. '<span class="ink-uitdaging__toestand-pil ' . esc_attr( $state_class ) . '">' . esc_html( Terms::label( $state_key ) ) . '</span>'
 			. '</div>';
 	}
@@ -260,13 +331,14 @@ final class SinglePage {
 	 *
 	 * Renders a graceful empty state (no `<ul>`/`<li>` shell) when the round has no
 	 * linked entries. Each entry is rendered as a card — type-label pill, title,
-	 * excerpt and author (Post-Epic-19 fidelity pass, workstream 6; matches the
-	 * Lovable `Challenge.tsx` "Entries from the community" card grid). `excerpt`/
-	 * `type_label`/`author` are optional so a minimal `{title, permalink}` entry
-	 * (e.g. a caller with no excerpt/author context) still renders a valid, if
-	 * plainer, card rather than erroring.
+	 * excerpt, author avatar + name (Post-Epic-19 fidelity pass, workstream 6, avatar
+	 * added workstream 6b; matches the Lovable `Challenge.tsx` "Entries from the
+	 * community" card grid). `excerpt`/`type_label`/`author`/`avatar_url` are
+	 * optional so a minimal `{title, permalink}` entry (e.g. a caller with no
+	 * excerpt/author context) still renders a valid, if plainer, card rather than
+	 * erroring.
 	 *
-	 * @param list<array{title:string, permalink:string, excerpt?:string, type_label?:string, author?:string}> $entries The entries.
+	 * @param list<array{title:string, permalink:string, excerpt?:string, type_label?:string, author?:string, avatar_url?:string}> $entries The entries.
 	 * @return string
 	 */
 	public static function entriesHtml( array $entries ): string {
@@ -286,6 +358,7 @@ final class SinglePage {
 			$type_label = (string) ( $entry['type_label'] ?? '' );
 			$excerpt    = (string) ( $entry['excerpt'] ?? '' );
 			$author     = (string) ( $entry['author'] ?? '' );
+			$avatar_url = (string) ( $entry['avatar_url'] ?? '' );
 
 			$html .= '<li class="ink-uitdaging__inskrywing">'
 				. '<a class="ink-uitdaging__inskrywing-skakel" href="' . esc_url( $entry['permalink'] ) . '">';
@@ -300,8 +373,21 @@ final class SinglePage {
 				$html .= '<p class="ink-uitdaging__inskrywing-uittreksel">' . esc_html( $excerpt ) . '</p>';
 			}
 
-			if ( '' !== $author ) {
-				$html .= '<span class="ink-uitdaging__inskrywing-outeur">' . esc_html( $author ) . '</span>';
+			if ( '' !== $author || '' !== $avatar_url ) {
+				$html .= '<span class="ink-uitdaging__inskrywing-outeur">';
+
+				if ( '' !== $avatar_url ) {
+					// Avatar alt falls back to the author name so it is never empty
+					// (a11y) — mirrors {@see \Ink\Discovery\FeaturedStream::footerHtml()}.
+					$html .= '<img class="ink-uitdaging__inskrywing-foto" src="' . esc_url( $avatar_url ) . '" '
+						. 'alt="' . esc_attr( $author ) . '" width="28" height="28" loading="lazy" decoding="async" />';
+				}
+
+				if ( '' !== $author ) {
+					$html .= '<span class="ink-uitdaging__inskrywing-outeur-naam">' . esc_html( $author ) . '</span>';
+				}
+
+				$html .= '</span>';
 			}
 
 			$html .= '</a></li>';
@@ -366,21 +452,90 @@ final class SinglePage {
 	public static function toHtml( string $status_html, string $entries_html ): string {
 		// The `id` is the anchor target for the pattern-level "Lees inskrywings"
 		// CTA button (reading-uitdaging.php) — mirrors Lovable's `href="#submissions"`
-		// jump-link (Post-Epic-19 fidelity pass, workstream 6).
+		// jump-link (Post-Epic-19 fidelity pass, workstream 6). Retained for the
+		// unsplit (no-`variant`) combined rendering; the split `VARIANT_KOP` /
+		// `VARIANT_INSKRYWINGS` embeds used by the current pattern compose the two
+		// halves separately (see {@see self::inskrywingsSectionHtml()}) so the
+		// entries list can render in its own page position, below the opdrag
+		// content rather than fused into the hero.
 		return '<section id="inskrywings" class="ink-uitdaging ink-uitdaging__besonderhede">' . $status_html . $entries_html . '</section>';
 	}
 
 	/**
-	 * Block render callback. Resolves the current uitdaging, reads the deadline, queries
-	 * its entries, and composes. Thin impure shell over the pure helpers above.
+	 * Compose the entries-only section shell (the `VARIANT_INSKRYWINGS` embed). Pure.
 	 *
+	 * Carries the `id="inskrywings"` anchor target for the hero's "Lees inskrywings"
+	 * CTA button (migrated here from {@see self::toHtml()} — Post-Epic-19
+	 * theme-fidelity third pass, workstream 6b structural-correspondence finding:
+	 * the entries list previously rendered fused inside the hero, ABOVE the
+	 * prompt/opdrag content, where Lovable's `Challenge.tsx` "Entries from the
+	 * community" grid renders well below it, after the resources section).
+	 *
+	 * @param string $entries_html The entries-list markup.
 	 * @return string
 	 */
-	public static function render(): string {
+	public static function inskrywingsSectionHtml( string $entries_html ): string {
+		return '<section id="inskrywings" class="ink-uitdaging ink-uitdaging__inskrywings-seksie">' . $entries_html . '</section>';
+	}
+
+	/**
+	 * Query + hydrate a round's entry cards. Impure (WP_Query + author/avatar reads).
+	 *
+	 * Shared by the `VARIANT_INSKRYWINGS` and unsplit (combined) render paths so the
+	 * card-row shape is built in exactly one place.
+	 *
+	 * @param int $uitdaging_id The producing uitdaging post id.
+	 * @return list<array{title:string, permalink:string, type_label:string, excerpt:string, author:string, avatar_url:string}>
+	 */
+	private static function resolveEntries( int $uitdaging_id ): array {
+		$query   = self::runQuery( self::entriesQueryArgs( $uitdaging_id ) );
+		$entries = array();
+
+		foreach ( $query->posts as $post ) {
+			if ( $post instanceof \WP_Post ) {
+				$author_id = (int) $post->post_author;
+
+				// type_label/excerpt/author are drawn from data already on $post;
+				// avatar_url is `get_avatar_url()` — WP core, not a new cross-module
+				// dependency (deptrac's Challenges->Content/Kernel-only edge is
+				// unchanged; Terms is already an allowed import for the
+				// sluitingsdatum/toestand labels above).
+				$entries[] = array(
+					'title'      => get_the_title( $post ),
+					'permalink'  => (string) get_permalink( $post ),
+					'type_label' => Terms::label( $post->post_type ),
+					'excerpt'    => self::excerptFor( $post ),
+					'author'     => get_the_author_meta( 'display_name', $author_id ),
+					'avatar_url' => (string) get_avatar_url( $author_id, array( 'size' => 64 ) ),
+				);
+			}
+		}
+
+		return $entries;
+	}
+
+	/**
+	 * Block render callback. Resolves the current uitdaging, reads the deadline, and
+	 * composes ONE of: the hero meta row (`VARIANT_KOP`), the entries section
+	 * (`VARIANT_INSKRYWINGS`), or — with no `variant` attribute — the original
+	 * combined section (kept for a bare/unrecognised embed; unused by the current
+	 * pattern, which always passes an explicit variant). Thin impure shell over the
+	 * pure helpers above.
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @return string
+	 */
+	public static function render( array $attributes = array() ): string {
 		$uitdaging_id = (int) get_the_ID();
 
 		if ( $uitdaging_id <= 0 || PostTypes::UITDAGING !== get_post_type( $uitdaging_id ) ) {
 			return '';
+		}
+
+		$variant = (string) ( $attributes['variant'] ?? '' );
+
+		if ( self::VARIANT_INSKRYWINGS === $variant ) {
+			return self::inskrywingsSectionHtml( self::entriesHtml( self::resolveEntries( $uitdaging_id ) ) );
 		}
 
 		$raw      = Scalar::asString( get_post_meta( $uitdaging_id, FieldSets::UITDAGING_DEADLINE, true ) );
@@ -389,28 +544,13 @@ final class SinglePage {
 		$status_html = '';
 
 		if ( $deadline instanceof \DateTimeImmutable ) {
-			$status_html = self::statusHtml( Deadline::format( $deadline ), self::isOpen( $deadline ) );
+			$status_html = self::statusHtml( Deadline::format( $deadline ), self::isOpen( $deadline ), self::entryCount( $uitdaging_id ) );
 		}
 
-		$query   = self::runQuery( self::entriesQueryArgs( $uitdaging_id ) );
-		$entries = array();
-
-		foreach ( $query->posts as $post ) {
-			if ( $post instanceof \WP_Post ) {
-				// type_label/excerpt/author are drawn from data already on $post — no
-				// new cross-module dependency (deptrac's Challenges->Content/Kernel-only
-				// edge is unchanged; Terms is already an allowed import for the
-				// sluitingsdatum/toestand labels above).
-				$entries[] = array(
-					'title'      => get_the_title( $post ),
-					'permalink'  => (string) get_permalink( $post ),
-					'type_label' => Terms::label( $post->post_type ),
-					'excerpt'    => self::excerptFor( $post ),
-					'author'     => get_the_author_meta( 'display_name', (int) $post->post_author ),
-				);
-			}
+		if ( self::VARIANT_KOP === $variant ) {
+			return $status_html;
 		}
 
-		return self::toHtml( $status_html, self::entriesHtml( $entries ) );
+		return self::toHtml( $status_html, self::entriesHtml( self::resolveEntries( $uitdaging_id ) ) );
 	}
 }

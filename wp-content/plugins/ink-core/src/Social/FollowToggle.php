@@ -107,6 +107,7 @@ final class FollowToggle {
 
 		return '<button type="button" class="' . esc_attr( $classes ) . '"'
 			. ' data-ink-skrywer="' . esc_attr( (string) $skrywer_id ) . '"'
+			. ' data-audit-id="skrywer-follow-btn"'
 			. ' aria-pressed="' . ( $following ? 'true' : 'false' ) . '">'
 			. esc_html( $label )
 			. '</button>';

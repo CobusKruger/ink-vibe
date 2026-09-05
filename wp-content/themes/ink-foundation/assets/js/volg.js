@@ -14,6 +14,12 @@
  *
  * Config (REST root, nonce, the two state labels) is provided via
  * `window.inkVolg`.
+ *
+ * Skrywerprofiel places TWO buttons for the same skrywer on one page (the
+ * header toggle + the closing CTA-band toggle, mirroring the Lovable
+ * `Writer.tsx` reference, which keeps both in sync via one shared `following`
+ * React state). A click must therefore update every `.ink-volg-knoppie` for
+ * that skrywer id on the page, not just the one that was clicked.
  */
 ( function () {
 	'use strict';
@@ -21,6 +27,24 @@
 	var cfg = window.inkVolg;
 	if ( ! cfg || ! cfg.restUrl ) {
 		return;
+	}
+
+	/**
+	 * Every follow button on the page for a given skrywer id — always a fresh
+	 * DOM query (never a cached snapshot), so it still reflects reality if a
+	 * sibling toggle removed a row (the "Wie ek volg" unfollow-removes case)
+	 * while a request was in flight.
+	 *
+	 * @param {number} skrywerId
+	 * @return {Element[]}
+	 */
+	function buttonsFor( skrywerId ) {
+		return Array.prototype.filter.call(
+			document.querySelectorAll( '.ink-volg-knoppie[data-ink-skrywer]' ),
+			function ( button ) {
+				return parseInt( button.getAttribute( 'data-ink-skrywer' ), 10 ) === skrywerId;
+			}
+		);
 	}
 
 	function toggle( button ) {
@@ -32,7 +56,9 @@
 		var following = button.classList.contains( 'is-following' );
 		var method = following ? 'DELETE' : 'POST';
 
-		button.disabled = true;
+		buttonsFor( skrywerId ).forEach( function ( btn ) {
+			btn.disabled = true;
+		} );
 
 		window.fetch( cfg.restUrl, {
 			method: method,
@@ -46,20 +72,25 @@
 			return res.ok ? res.json() : Promise.reject( res );
 		} ).then( function ( data ) {
 			var nowFollowing = !! ( data && data.following );
-			var row = button.closest( '[data-ink-remove-on-unfollow]' );
 
-			if ( row && ! nowFollowing ) {
-				row.remove();
-				return;
-			}
+			buttonsFor( skrywerId ).forEach( function ( btn ) {
+				var row = btn.closest( '[data-ink-remove-on-unfollow]' );
 
-			button.classList.toggle( 'is-following', nowFollowing );
-			button.setAttribute( 'aria-pressed', nowFollowing ? 'true' : 'false' );
-			button.textContent = nowFollowing ? cfg.followingText : cfg.followText;
-			button.disabled = false;
+				if ( row && ! nowFollowing ) {
+					row.remove();
+					return;
+				}
+
+				btn.classList.toggle( 'is-following', nowFollowing );
+				btn.setAttribute( 'aria-pressed', nowFollowing ? 'true' : 'false' );
+				btn.textContent = nowFollowing ? cfg.followingText : cfg.followText;
+				btn.disabled = false;
+			} );
 		} ).catch( function () {
 			/* leave state unchanged on failure; the server is the source of truth */
-			button.disabled = false;
+			buttonsFor( skrywerId ).forEach( function ( btn ) {
+				btn.disabled = false;
+			} );
 		} );
 	}
 
