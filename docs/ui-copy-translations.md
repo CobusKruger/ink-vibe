@@ -548,7 +548,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 
 #### Gekureerde hernuwings-kopie (Storie 4.5, FR-8)
 
-*(Die drie gekureerde renewal-stringe hierbo — "Hernieu lidmaatskap" (H2), "Kies hoe lank jy jou INK-lidmaatskap wil verleng." (intro) en "Hernieu vir [N] maand(e)" (knoppie) — word vanaf Storie 4.5 deur die `patterns/lidmaatskap-hernu.php`-patroon (die My Profiel → Lidmaatskap-blad hernuwings-afdeling) gerender, deur die `ink-foundation`-teksdomein (`esc_html__`) sodat hulle vertaalbaar is en deur die Engels-lek-skandering gevang word. **Geen besparings-/%-afslag-raam** op die hernuwings-UI (staande reël — sien die ✅-nota hieronder, wat 4.4 ÉN 4.5 dek). "Hernieu" by lansering = 'n verdere vaste termyn via PayFast aankoop (Storie 4.2); **geen outo-hernuwing** (Stories 4.9–4.11 is na-lansering). Ook gerender: "Prys binnekort beskikbaar" (geen lewende prys), "Binnekort beskikbaar" (`aria-disabled`, onsellbare plan), "Meld aan om jou lidmaatskap te hernieu." (uitgelogde terugval) — almal via `esc_html__`. Die My Profiel-houer self is Epic 9 (Storie 9.4); 4.5 lewer net die hernuwings-afdeling.)*
+*(Die drie gekureerde renewal-stringe hierbo — "Hernieu lidmaatskap" (H2), "Kies hoe lank jy jou INK-lidmaatskap wil verleng." (intro) en "Hernieu vir [N] maand(e)" (knoppie) — word vanaf Storie 4.5 deur die `patterns/lidmaatskap-hernu.php`-patroon (die My Profiel → Lidmaatskap-blad hernuwings-afdeling) gerender, deur die `ink-foundation`-teksdomein (`esc_html__`) sodat hulle vertaalbaar is en deur die Engels-lek-skandering gevang word. **Geen besparings-/%-afslag-raam** op die hernuwings-UI (staande reël — sien die ✅-nota hieronder, wat 4.4 ÉN 4.5 dek). "Hernieu" by lansering = 'n verdere vaste termyn via PayFast aankoop (Storie 4.2); **geen outo-hernuwing** (Stories 4.9–4.11 is na-lansering). Ook gerender: "Prys binnekort beskikbaar" (geen lewende prys), "Binnekort beskikbaar" (`aria-disabled`, onsellbare plan), "Teken in om jou lidmaatskap te hernieu." (uitgelogde terugval; was "Meld aan om...", hersien 2026-09-05) — almal via `esc_html__`. Die My Profiel-houer self is Epic 9 (Storie 9.4); 4.5 lewer net die hernuwings-afdeling.)*
 
 > **Enkelvoud/meervoud-knoppie (`_n()`) — gekureer, nie 'n KI-keuse nie.** Die knoppie word met WordPress se `_n( 'Hernieu vir %d maand', 'Hernieu vir %d maande', $n, 'ink-foundation' )` gerender. Die enkelvoud- ("maand", N = 1) en meervoud-vorms ("maande", N = 6 / 12) is NIE deur die ontwikkelaar-agent uitgedink nie — hulle is die staande glossaar-maandwoordeskat wat reeds in die Storie 4.1 termyn-etikette gebruik word ("1 maand" / "6 maande" / "12 maande", terminologieregister `term_1_month` / `term_6_months` / `term_12_months`). Hulle word hier eksplisiet as die gekureerde enkelvoud/meervoud-knoppiekopie aangeteken (sien die twee tabelrye hierbo). `_n()` bly die korrekte WP-meervoudsmeganisme; geen NUWE bewoording is uitgedink nie.
 
@@ -787,16 +787,18 @@ per-field validation notices. Wired into the live code; leak-scan baseline lower
 
 ## Sync 2026-07-19 — Outentisering-skerm (Auth / ForgotPassword / ResetPassword)
 
-*(Die Lovable-mockup het die volledige aanmeld-/registrasie-skerm ontwerp — `Auth.tsx`, `ForgotPassword.tsx`, `ResetPassword.tsx` — met sosiale aanmelding (Google/Apple), wat die reeds-besluite R6 sosiale aanmelding bevestig (§14 #22 / kenmerk 3.5). Terminologie volg `afrikaans-terms.md`: rekening skep → **Registreer**, aanmeld → **Meld aan**, afmeld → **Meld af**. Die Engels is Lovable-plekhouer; die Afrikaans is 'n werkskonsep wat doelbewus in betekenis mag afwyk. **Let op:** die mockup gebruik die handelsnaam "Inkwell" as plekhouer — die werklike naam is **INK**, so "Back to Inkwell" / "Join Inkwell" word met INK-bewoording vervang. Die Supabase-aanmelding in die mockup is prototipe-loodgieterwerk; die bou gebruik WordPress-eie outentisering.)*
+*(Die Lovable-mockup het die volledige aanmeld-/registrasie-skerm ontwerp — `Auth.tsx`, `ForgotPassword.tsx`, `ResetPassword.tsx` — met sosiale aanmelding (Google/Apple), wat die reeds-besluite R6 sosiale aanmelding bevestig (§14 #22 / kenmerk 3.5). Terminologie volg `afrikaans-terms.md`: rekening skep → **Registreer**, aanmeld → ~~Meld aan~~ **Teken in**, afmeld → **Meld af**. Die Engels is Lovable-plekhouer; die Afrikaans is 'n werkskonsep wat doelbewus in betekenis mag afwyk. **Let op:** die mockup gebruik die handelsnaam "Inkwell" as plekhouer — die werklike naam is **INK**, so "Back to Inkwell" / "Join Inkwell" word met INK-bewoording vervang. Die Supabase-aanmelding in die mockup is prototipe-loodgieterwerk; die bou gebruik WordPress-eie outentisering.
+
+**Hersien 2026-09-05 (Epic 19 fourth-pass fidelity fix, direkte produk-eienaar-instruksie):** "aanmeld" se bewoording is van **Meld aan** na **Teken in** verander — "'meld aan' ... should always be 'teken in'". Elke tabel hieronder wat voorheen "Meld aan" as die aanmeld-CTA gewys het, is bygewerk; sien die {@see \Ink\I18n\Terms} registry-sleutel `teken_in` (enkelbron, om verdere wegdrywing te voorkom). Die `/meld-aan`-URL self is ONVERANDERD — hierdie is 'n vertoon-etiket-regstelling, nie 'n roete-hernoeming nie.)*
 
 ### Aanmeld-/registreer-skerm (`Auth.tsx`)
 
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| Sign in | Meld aan | Oortjie + knoppie (`aanmeld` → Meld aan) |
+| Sign in | Teken in | Oortjie + knoppie (`aanmeld` → Teken in; was Meld aan, hersien 2026-09-05) |
 | Sign up | Registreer | Oortjie (`rekening skep` → Registreer) |
 | Create account | Skep rekening | Registrasie-knoppie |
-| Signing in... | Meld tans aan... | Besige knoppie-toestand |
+| Signing in... | Teken tans in... | Besige knoppie-toestand |
 | Creating account... | Skep tans rekening... | Besige knoppie-toestand |
 | Email | E-pos | Veld-etiket |
 | Password | Wagwoord | Veld-etiket |
@@ -821,7 +823,7 @@ per-field validation notices. Wired into the live code; leak-scan baseline lower
 | Send reset link | Stuur herstelskakel | Knoppie |
 | Sending... | Stuur tans... | Besige knoppie-toestand |
 | If an account exists for [email], a reset link is on its way. | As daar 'n rekening vir [e-pos] bestaan, is 'n herstelskakel op pad. | Bevestigingsboodskap (e-pos-adres ingevoeg) |
-| Back to sign in | Terug na aanmeld | Skakel |
+| Back to sign in | Teken in | Skakel (die werklike bou se skakelteks is kaal "Teken in", nie "Terug na aanmeld" nie — bygewerk om ooreen te stem, 2026-09-05) |
 
 ### Wagwoord-herstel-skerm (`ResetPassword.tsx`)
 
@@ -841,7 +843,7 @@ per-field validation notices. Wired into the live code; leak-scan baseline lower
 
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| Sign in | Meld aan | Uitgetekende-toestand (ghost-knoppie) |
+| Sign in | Teken in | Uitgetekende-toestand (ghost-knoppie; was Meld aan, hersien 2026-09-05) |
 | Join Inkwell | Sluit aan | Uitgetekende-toestand HRA (handelsnaam-plekhouer verwyder) |
 | My Profile | My profiel | Ingetekende-toestand keuselys |
 | Library | Opleiding | Ingetekende-toestand keuselys (amptelike seksienaam) |

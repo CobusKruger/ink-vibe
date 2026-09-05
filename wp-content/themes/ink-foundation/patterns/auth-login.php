@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Meld aan
+ * Title: Teken in
  * Slug: ink-foundation/auth-login
  * Categories: ink-foundation
  * Description: Enkelkolom-aanmeldskerm wat WordPress se eie aanmeldmeganisme gebruik (geen herbou van outentisering nie). Sluit 'n grasieus-degraderende sosiale-aanmeldnaat (R6, Storie 3.5) in wat slegs verskyn as 'n gekeurde sosiale-aanmeld-inprop aktief is.
@@ -22,6 +22,15 @@
  * and the "Wagwoord vergeet?" link can sit inline with the password label
  * (Lovable's `Auth.tsx` layout) instead of the block's own fixed-below-form
  * position.
+ *
+ * "Meld aan" -> "Teken in" (Epic 19 fourth-pass fidelity fix, 2026-09-05, direct
+ * product-owner instruction: "'meld aan' ... should always be 'teken in'").
+ * Sourced from the {@see \Ink\I18n\Terms} registry (`teken_in`) via
+ * `ink_foundation_term()` rather than inlined, since the same label now also
+ * appears in the header, auth-register.php, auth-forgot-password.php, skryf.php
+ * and lidmaatskap-hernu.php — single-source, so it cannot drift apart again. The
+ * `/meld-aan` URL and the `meld_aan` notice query-arg ({@see
+ * \Ink\Accounts\AuthRedirects}) are UNCHANGED — this is a display-label fix only.
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"480px"}} -->
@@ -29,11 +38,11 @@
 	<!-- wp:group {"className":"is-style-card ink-auth-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group is-style-card ink-auth-card">
 		<!-- wp:heading {"level":1,"fontSize":"xxl"} -->
-		<h1 class="wp-block-heading has-xxl-font-size">Meld aan</h1>
+		<h1 class="wp-block-heading has-xxl-font-size"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-md-font-size">Meld aan by jou rekening met jou e-pos en wagwoord.</p>
+		<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( 'Teken in by jou rekening met jou e-pos en wagwoord.', 'ink-foundation' ); ?></p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:html -->
@@ -68,7 +77,7 @@
 			</p>
 			<input type="hidden" name="redirect_to" value="<?php echo esc_url( ! empty( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ) : home_url( '/' ) ); ?>" />
 			<p class="ink-auth-submit">
-				<button type="submit" name="wp-submit" class="wp-element-button"><?php echo esc_html__( 'Meld aan', 'ink-foundation' ); ?></button>
+				<button type="submit" name="wp-submit" class="wp-element-button"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></button>
 			</p>
 		</form>
 		<!-- /wp:html -->

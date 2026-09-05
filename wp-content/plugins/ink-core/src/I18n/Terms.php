@@ -70,6 +70,19 @@ final class Terms {
 			'betaalde_lid'                  => __( 'Betaalde lid', 'ink-core' ),
 			'gratis_lid'                    => __( 'Gratis lid', 'ink-core' ),
 
+			// Auth CTAs (Epic 19 fourth-pass fidelity fix, 2026-09-05, direct
+			// product-owner instruction): the two logged-out header actions, Lovable's
+			// "Sign in"/"Join Inkwell". "Meld aan" was a competing, inconsistent label
+			// for the same sign-in concept scattered across the auth pages, the write
+			// gate and the membership-renewal fallback — the PO's instruction was that
+			// it "should always be 'teken in'", so every one of those call sites was
+			// switched to read this key rather than its own bare literal (single-source,
+			// same fix shape as the "werke" -> "skrywes" correction earlier this pass).
+			// The URL slug (/meld-aan) is unchanged — this registry governs DISPLAY
+			// LABELS only (AC-4); renaming the route is a separate, unrequested concern.
+			'teken_in'                      => __( 'Teken in', 'ink-core' ),
+			'sluit_aan'                     => __( 'Sluit aan', 'ink-core' ),
+
 			// Lidmaatskap plans (Story 4.1 — the three fixed-term aansluitingsopsies).
 			// The plan noun + the fixed term-length display labels. The PRICE
 			// (R60/R300/R600) is owned by the WooCommerce product (admin-editable),

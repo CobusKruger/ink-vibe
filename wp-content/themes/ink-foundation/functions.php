@@ -1244,6 +1244,44 @@ function ink_foundation_register_block_styles(): void {
 		)
 	);
 
+	// is-style-ink-ghost — transparent / ink-text at rest, hover -> accent
+	// (sage) fill + surface-alt text. Added for the header's logged-out "Teken
+	// in" action (Epic 19 fourth-pass fidelity fix, 2026-09-05): Lovable's
+	// header pairs a `variant="ghost"` Sign-in button with a `variant="literary"`
+	// (ink-primary) Join button — confirmed live (`preview--quill-muse-heart.
+	// lovable.app`) at rest: transparent background, `rgb(24,29,37)` (ink-text)
+	// label, 36px/0 12px/6px-radius box, no border. Ghost's hover state
+	// (`hover:bg-accent hover:text-accent-foreground`) resolves to Lovable's own
+	// sage-toned `--accent`/near-white `--accent-foreground` custom-property
+	// pair (`src/index.css`) — mapped here to INK's own `accent`/`surface-alt`
+	// tokens, the closest existing equivalents.
+	register_block_style(
+		'core/button',
+		array(
+			'name'         => 'ink-ghost',
+			'label'        => __( 'INK skim', 'ink-foundation' ),
+			'inline_style' => '.wp-block-button.is-style-ink-ghost .wp-block-button__link{'
+				. 'background-color:transparent;'
+				. 'color:var(--wp--preset--color--ink-text);'
+				. 'font-family:var(--wp--preset--font-family--display);'
+				. 'border:0;'
+				. 'border-radius:var(--wp--custom--radius--md);'
+				. 'transition:all .15s ease;'
+				. '}'
+				. '.wp-block-button.is-style-ink-ghost .wp-block-button__link:hover{'
+				. 'background-color:var(--wp--preset--color--accent);'
+				. 'color:var(--wp--preset--color--surface-alt);'
+				. '}'
+				. '.wp-block-button.is-style-ink-ghost .wp-block-button__link:focus-visible{'
+				. 'outline:2px solid var(--wp--preset--color--primary);'
+				. 'outline-offset:2px;'
+				. '}'
+				. '.wp-block-button.is-style-ink-ghost .wp-block-button__link:disabled{'
+				. 'opacity:.5;'
+				. '}',
+		)
+	);
+
 	// is-style-ink-sage — accent (sage) fill / surface-alt text, hover ->
 	// accent-light (used by the §7 borg strip CTA).
 	register_block_style(
@@ -1921,7 +1959,7 @@ if ( ! function_exists( 'ink_foundation_is_member_logged_in' ) ) {
 	 * Whether the current viewer is a logged-in lid (Story 4.5 renewal-section gate).
 	 *
 	 * A thin presentation gate so the renewal section (and its interim host) renders the
-	 * renew options only for a logged-in lid, and a "Meld aan om te hernieu" fallback
+	 * renew options only for a logged-in lid, and a "Teken in om te hernieu" fallback
 	 * otherwise. This is NOT the submission-entitlement gate (that is Story 4.3/6.8,
 	 * `Api::can_submit()`) — the renewal surface is open to any logged-in lid wishing to
 	 * extend access; no entitlement logic lives in the theme. `function_exists`-guarded

@@ -252,7 +252,7 @@
   "customTemplates": [
     {
       "name": "page-meld-aan",
-      "title": "Meld aan",
+      "title": "Teken in",
       "postTypes": [ "page" ]
     },
     {

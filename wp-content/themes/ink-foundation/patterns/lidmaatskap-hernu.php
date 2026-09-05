@@ -22,7 +22,9 @@
  *
  * A `class_exists`/`function_exists`-guarded logged-in gate
  * (`ink_foundation_is_member_logged_in()`) shows the renew options only to a logged-in
- * lid; a "Meld aan om te hernieu" fallback shows otherwise. When `ink-core`/WooCommerce is
+ * lid; a "Teken in om te hernieu" fallback shows otherwise (was "Meld aan" — retired
+ * sitewide, Epic 19 fourth-pass fidelity fix, 2026-09-05, direct product-owner
+ * instruction). When `ink-core`/WooCommerce is
  * inactive or a plan is not sellable, each slot degrades gracefully (static label, no
  * live price/CTA) — never a fatal, never an invented endpoint.
  *
@@ -146,7 +148,7 @@ if ( empty( $ink_renewal_plans ) ) {
 		<!-- /wp:columns -->
 <?php else : ?>
 		<!-- wp:paragraph {"fontSize":"md"} -->
-		<p class="has-md-font-size"><a href="<?php echo esc_url( home_url( '/meld-aan' ) ); ?>"><?php echo esc_html__( 'Meld aan om jou lidmaatskap te hernieu.', 'ink-foundation' ); ?></a></p>
+		<p class="has-md-font-size"><a href="<?php echo esc_url( home_url( '/meld-aan' ) ); ?>"><?php echo esc_html__( 'Teken in om jou lidmaatskap te hernieu.', 'ink-foundation' ); ?></a></p>
 		<!-- /wp:paragraph -->
 <?php endif; ?>
 	</div>

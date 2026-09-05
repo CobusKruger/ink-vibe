@@ -20,6 +20,10 @@
  * {@see \Ink\Accounts\AuthRedirects::lostPasswordFailed()}, fired on core's own
  * `lost_password` action — since core has no redirect to honour on that path,
  * only a raw in-place re-render.
+ *
+ * The "back to sign-in" link reads `teken_in` from the {@see \Ink\I18n\Terms}
+ * registry (Epic 19 fourth-pass fidelity fix, 2026-09-05) — "Meld aan" retired
+ * sitewide per direct product-owner instruction.
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"480px"}} -->
@@ -62,7 +66,7 @@
 			<!-- /wp:html -->
 
 			<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-			<p class="has-muted-text-color has-text-color has-sm-font-size">Onthou jy jou wagwoord? <a href="/meld-aan">Meld aan</a></p>
+			<p class="has-muted-text-color has-text-color has-sm-font-size">Onthou jy jou wagwoord? <a href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></p>
 			<!-- /wp:paragraph -->
 		<?php endif; ?>
 	</div>

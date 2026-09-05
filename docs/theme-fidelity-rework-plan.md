@@ -1117,6 +1117,57 @@ files). Deployed and re-verified live: heading gone, both cards exactly 381.38px
 `rgb(232,177,48)` reading "Desember wenner", avatar rendering from `images.unsplash.com`, win label
 "3de wen".
 
+### Same-day follow-up: header sign-in/join buttons + "Meld aan" → "Teken in" sitewide (2026-09-05)
+
+Direct product-owner report: every visitor, logged in or not, saw only "Begin skryf" in the header — Lovable
+shows "Sign in" (ghost) + "Join Inkwell" (primary) when logged out, "Start Writing" only when logged in.
+Separately, "Meld aan" (a competing Afrikaans label for the same sign-in concept, used inconsistently across
+the auth pages, the write-page gate and the membership-renewal fallback) was reported as needing to become
+"Teken in" everywhere.
+
+**Header (`patterns/header-main.php`) — real bug, fixed.** The header pattern had no auth-state branching at
+all — a static, unconditional "Begin skryf" button regardless of who was viewing. WordPress natively executes
+`patterns/*.php` server-side (the Pattern File Header convention), so a plain `is_user_logged_in()` PHP
+conditional inside the pattern is the correct, idiomatic fix — the same mechanism `skryf.php` and
+`lidmaatskap-hernu.php` already use for their own logged-in gates. Logged out now renders a new
+`is-style-ink-ghost` button ("Teken in", linking to the unchanged `/meld-aan` URL) + the existing
+`is-style-ink-primary` style ("Sluit aan", `/registreer`); logged in renders "Begin skryf" exactly as before,
+byte-identical markup, just now correctly gated. The new ghost style (`functions.php`) was measured directly
+against Lovable's live "Sign in" button (`rgb(24,29,37)` text, transparent background, 36×~px, 6px radius —
+confirmed via `getComputedStyle()`) and its hover state maps Lovable's `--accent`/`--accent-foreground`
+custom properties (a sage tone, confirmed in `ink-lovable/src/index.css`) onto INK's own `accent`/`surface-alt`
+tokens.
+
+**Terminology (`Ink\I18n\Terms`) — new `teken_in`/`sluit_aan` registry keys, "Meld aan" retired sitewide.**
+Grepped the whole repo for every real occurrence: the login page's own H1/intro/submit button
+(`auth-login.php`), the "back to sign in" links on `auth-register.php` and `auth-forgot-password.php`, the
+write-page logged-out gate (`skryf.php`), and the membership-renewal logged-out fallback
+(`lidmaatskap-hernu.php`) — all switched to read `teken_in` from the registry (or the equivalent literal where
+a full sentence needed the word inline) instead of independent "Meld aan" literals. Also updated: the real WP
+`page` post's title for `/meld-aan/` (id 67875, was "Meld aan", now "Teken in" — slug unchanged), the
+pattern's own admin-facing "Title:" header, `theme.json`'s `customTemplates` display title, and the curated
+source docs (`docs/afrikaans-terms.md`'s glossary row, `docs/ui-copy-translations.md`'s translation tables) —
+both explicitly documented "Meld aan" as the deliberate, curated decision for this concept, so both needed an
+explicit revision note (not just a silent overwrite) recording that a direct product-owner instruction
+superseded the prior decision on 2026-09-05. The `/meld-aan` URL path and the `meld_aan` notice query-arg
+(`Ink\Accounts\AuthRedirects`) are deliberately UNCHANGED — this is a display-label fix, not a routing change
+(the same AC-4 boundary the registry itself documents).
+
+Verification: independent-request checks (`curl`, no session cookie) against the live homepage and all 5
+affected pages confirm zero remaining "Meld aan" occurrences and the new labels rendering correctly; the
+homepage's logged-out header shows "Teken in" + "Sluit aan" with no "Begin skryf" (confirmed both via a
+cookie-less request and, unintentionally, via a real logged-out browser session — see note below). Ghost
+button hover confirmed live (sage background, white text). `composer test` 1333 passed (same 4 pre-existing
+failures, one more test than before), `stan` clean (206 files), `deptrac` same 3 pre-existing violations.
+
+**Incident note:** while verifying the logged-out header state, following WordPress's own logout-confirmation
+link (to avoid guessing at cookie manipulation) ended up logging the orchestrator's own admin browser session
+out, and there are no stored credentials to log back in as that QA account. No password was reset or touched —
+this is a plain session end, not a credential incident — but it means the LOGGED-IN "Begin skryf" branch could
+not be re-verified live in-browser this round (only by code review: the branch is byte-identical to the
+pattern's prior unconditional markup, now just correctly gated behind `is_user_logged_in()`). Flagged for the
+user to re-establish a logged-in session if live re-verification of that branch is wanted.
+
 ---
 
 ### What each done row actually fixed

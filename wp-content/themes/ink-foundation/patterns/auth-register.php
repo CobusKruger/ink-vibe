@@ -24,6 +24,10 @@
  * back HERE with a `?registreer=fout`/`voltooi` marker, rather than landing on
  * BuddyPress's separate, un-translated signup screen or WordPress core's raw
  * `wp-login.php?checkemail=registered`.
+ *
+ * Both "sign in" links read `teken_in` from the {@see \Ink\I18n\Terms} registry
+ * (Epic 19 fourth-pass fidelity fix, 2026-09-05) — "Meld aan" retired sitewide
+ * per direct product-owner instruction.
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"480px"}} -->
@@ -45,7 +49,7 @@
 		if ( 'voltooi' === $ink_registreer_status ) :
 			?>
 			<p class="ink-auth-notice ink-auth-notice--ok" role="status"><?php echo esc_html__( 'Registrasie voltooi. Ons het jou intekenbesonderhede per e-pos gestuur.', 'ink-foundation' ); ?></p>
-			<a class="ink-auth-secondary" href="<?php echo esc_url( home_url( '/meld-aan' ) ); ?>"><?php echo esc_html__( 'Meld aan', 'ink-foundation' ); ?></a>
+			<a class="ink-auth-secondary" href="<?php echo esc_url( home_url( '/meld-aan' ) ); ?>"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a>
 		<?php else : ?>
 			<?php // Renders WordPress's OWN registration handler in-theme (Afrikaans, single-column) — auth is used, not rebuilt. ?>
 			<?php if ( 'fout' === $ink_registreer_status ) : ?>
@@ -108,7 +112,7 @@
 
 <?php if ( 'voltooi' !== $ink_registreer_status ) : ?>
 		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-sm-font-size">Reeds 'n rekening? <a href="/meld-aan">Meld aan</a></p>
+		<p class="has-muted-text-color has-text-color has-sm-font-size">Reeds 'n rekening? <a href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></p>
 		<!-- /wp:paragraph -->
 <?php endif; ?>
 	</div>

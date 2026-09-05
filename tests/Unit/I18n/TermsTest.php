@@ -199,6 +199,16 @@ test( 'all returns the full registry as the inspectable surface', function (): v
 } );
 
 /**
+ * Epic 19 fourth-pass fidelity fix (2026-09-05): the two logged-out header CTAs
+ * resolve to their single-sourced labels, replacing the competing "Meld aan"
+ * literal scattered across the auth pages/write gate/renewal fallback.
+ */
+test( 'label returns the auth CTA labels', function (): void {
+	expect( Terms::label( 'teken_in' ) )->toBe( 'Teken in' );
+	expect( Terms::label( 'sluit_aan' ) )->toBe( 'Sluit aan' );
+} );
+
+/**
  * Epic 9 social terms resolve to their glossary labels.
  */
 test( 'the social glossary keys resolve to their approved labels', function (): void {

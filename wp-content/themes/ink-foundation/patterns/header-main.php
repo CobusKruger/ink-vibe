@@ -4,16 +4,36 @@
  * Slug: ink-foundation/header-main
  * Categories: header
  * Block Types: core/template-part/header
- * Description: Werf-wye kopstuk (Epic 19, Storie 19.2, §1) — kleefbaar (sticky), deurskynende oppervlak + agtergrond-vervaging + 1px onderrand, 64px-ry. Veer-glief (terracotta) langs die Lora-woordmerk; navigasie-skakels met onderstreep-glы en fokusring, wat invou na 'n hamburger op klein skerms; "Begin skryf" as primêre HRA-knoppie (nie 'n kaal skakel nie).
+ * Description: Werf-wye kopstuk (Epic 19, Storie 19.2, §1) — kleefbaar (sticky), deurskynende oppervlak + agtergrond-vervaging + 1px onderrand, 64px-ry. Veer-glief (terracotta) langs die Lora-woordmerk; navigasie-skakels met onderstreep-glы en fokusring, wat invou na 'n hamburger op klein skerms; ingeteken toon "Begin skryf" (primêr), uitgeteken toon "Teken in" (skim) + "Sluit aan" (primêr).
  *
- * Presentation only (three-layer separation): no business logic. The sticky /
- * translucent / blur / border / row-height / nav-hover treatment lives site-wide
- * on the `is-style-ink-header` block style (functions.php) — NOT in home.css, which
- * is front-page-only, because the header renders on every page. Copy is authored
- * Afrikaans via the `ink-foundation` text domain. The feather is a decorative
- * inline SVG (aria-hidden), coloured via the `primary` token (§0.9). The site-title
- * renders at heading level 0 (a <p>, not an <h1>) so the page keeps a single visible
- * <h1> (the hero heading).
+ * Presentation only (three-layer separation): the ONE bit of logic here —
+ * `is_user_logged_in()` — is a view-state check, not business logic (it decides
+ * which of two already-built markup branches to print, same as {@see
+ * ink-foundation/skryf} and {@see ink-foundation/lidmaatskap-hernu} already do
+ * from inside their own pattern PHP; WordPress natively executes `patterns/*.php`
+ * server-side via its Pattern-File-Header convention, so this is the same
+ * mechanism, not a bespoke one). Fourth-pass fidelity fix (2026-09-05, direct
+ * product-owner finding): every visitor used to see "Begin skryf" regardless of
+ * auth state — Lovable's `Header.tsx` shows "Start Writing" only when `user` is
+ * set, and "Sign in" (ghost) + "Join Inkwell" (primary) otherwise. Logged-out now
+ * renders `is-style-ink-ghost` "Teken in" (linking to the existing `/meld-aan`
+ * page — the URL is unchanged, only the label) + `is-style-ink-primary` "Sluit
+ * aan" (`/registreer`); logged-in keeps "Begin skryf" exactly as before. Both new
+ * labels are sourced from the {@see \Ink\I18n\Terms} registry via
+ * `ink_foundation_term()` (`teken_in`/`sluit_aan`) — single-source, since "Teken
+ * in" now also replaces the competing "Meld aan" label across the auth pages, the
+ * write-page gate and the membership-renewal fallback (same product-owner
+ * instruction: "'meld aan' ... should always be 'teken in'").
+ *
+ * The sticky / translucent / blur / border / row-height / nav-hover treatment
+ * lives site-wide on the `is-style-ink-header` block style (functions.php) — NOT
+ * in home.css, which is front-page-only, because the header renders on every
+ * page (the same reason the two button styles above are registered in
+ * functions.php rather than home.css). Copy is authored Afrikaans via the
+ * `ink-foundation` text domain. The feather is a decorative inline SVG
+ * (aria-hidden), coloured via the `primary` token (§0.9). The site-title renders
+ * at heading level 0 (a <p>, not an <h1>) so the page keeps a single visible <h1>
+ * (the hero heading).
  *
  * Row structure (Epic 19 lees-gedig re-audit, docs/theme-fidelity-audit-handoff.md
  * §6, finding #1 — this is the site-wide header, so the fix applies everywhere,
@@ -60,9 +80,19 @@
 
 		<!-- wp:buttons {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
 		<div class="wp-block-buttons">
+<?php if ( function_exists( 'is_user_logged_in' ) && is_user_logged_in() ) : ?>
 			<!-- wp:button {"className":"is-style-ink-primary","fontSize":"sm","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-8","right":"var:preset|spacing|s-12","bottom":"var:preset|spacing|s-8","left":"var:preset|spacing|s-12"}}}} -->
 			<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" href="/skryf"><?php esc_html_e( 'Begin skryf', 'ink-foundation' ); ?></a></div>
 			<!-- /wp:button -->
+<?php else : ?>
+			<!-- wp:button {"className":"is-style-ink-ghost","fontSize":"sm","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-8","right":"var:preset|spacing|s-12","bottom":"var:preset|spacing|s-8","left":"var:preset|spacing|s-12"}}}} -->
+			<div class="wp-block-button is-style-ink-ghost"><a class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></div>
+			<!-- /wp:button -->
+
+			<!-- wp:button {"className":"is-style-ink-primary","fontSize":"sm","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-8","right":"var:preset|spacing|s-12","bottom":"var:preset|spacing|s-8","left":"var:preset|spacing|s-12"}}}} -->
+			<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" href="/registreer"><?php echo esc_html( ink_foundation_term( 'sluit_aan', 'Sluit aan' ) ); ?></a></div>
+			<!-- /wp:button -->
+<?php endif; ?>
 		</div>
 		<!-- /wp:buttons -->
 	</div>

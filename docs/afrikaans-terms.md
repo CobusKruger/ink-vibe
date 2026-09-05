@@ -201,10 +201,10 @@ Hierdie woorde en frases verskyn as knoppies, skakels en toestandsboodskappe. Ge
 | 'n reël merk/hoogsig | **Merk hierdie reël** |
 | aansluit by 'n betaalde lidmaatskap / 'n plan koop | **Inteken** *(⚠️ hersien — Eienaarsbesluit 2026-06-20 G1 het die selfstandige naamwoord "intekening" laat vaar; bevestig of die aksie-knoppie "Inteken" bly en of 'n lidmaatskap-gebaseerde bewoording verkies word. Geen AI-vertaling — mens moet bevestig.)* |
 | rekening skep | **Registreer** |
-| aanmeld | **Meld aan** |
+| aanmeld | **Teken in** *(hersien 2026-06-20 → 2026-09-05: was "Meld aan"; Eienaarsbesluit tydens die Epic 19 fourth-pass fideliteitstoets — "'meld aan' ... should always be 'teken in'". Enkelbron: {@see \Ink\I18n\Terms} sleutel `teken_in`.)* |
 | afmeld | **Meld af** |
 | wagwoord vergeet / herstel | **Herstel wagwoord** *(skerm-kop: "Herstel jou wagwoord" / "Stel 'n nuwe wagwoord")* |
-| aanmeld met 'n sosiale rekening (R6) | **Meld aan met Google / Apple** *(sosiale aanmelding — bevestig deur die Lovable-ontwerp 2026-07-19; §14 #22)* |
+| aanmeld met 'n sosiale rekening (R6) | **Teken in met Google / Apple** *(sosiale aanmelding — bevestig deur die Lovable-ontwerp 2026-07-19; §14 #22; "Meld aan" → "Teken in" hersien 2026-09-05)* |
 | profiel sien | **Sien profiel** |
 | deel op sosiale media | **Deel** |
 
