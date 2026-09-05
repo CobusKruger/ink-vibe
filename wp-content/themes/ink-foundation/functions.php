@@ -186,23 +186,24 @@ function ink_foundation_enqueue_auth_assets(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_auth_assets' );
 
 /**
- * Enqueue the reading-page engagement stylesheet on a single gedig OR storie
- * (Theme-Fidelity re-audit, page 3 — lees-gedig — extended to lees-storie in
- * the third pass; reading-artikel is deliberately NOT included, unchanged).
+ * Enqueue the reading-page engagement stylesheet on a single gedig, storie OR
+ * artikel (Theme-Fidelity re-audit, page 3 — lees-gedig — extended to
+ * lees-storie in the third pass, and to lees-artikel in the fourth pass once
+ * `reading-artikel.php` was rebuilt onto storie's exact shape, sticky
+ * engagement bar included).
  *
  * `reading.css` carries the floating engagement bar's `position:sticky`
  * treatment (the sticky-bottom pill matching Lovable's `ReadStory.tsx` "Floating
  * Action Bar", a component shared unconditionally between poetry and prose) —
  * before this file there was NO dedicated reading-page stylesheet anywhere
  * (the `.ink-reaksie-bar` pill styling itself lives in theme.json's global
- * CSS, shared with reading-artikel too; only the sticky positioning is
- * gedig/storie-only, so it belongs in a page-scoped stylesheet, not the shared
- * global CSS). See `patterns/reading-gedig.php`/`patterns/reading-storie.php`'s
- * own docblocks for why `.ink-reaksie-bar` had to move to a top-level block
- * for `sticky` to actually have room to float.
+ * CSS, shared across all three reading patterns; only the sticky positioning
+ * is scoped here). See `patterns/reading-gedig.php`/`patterns/reading-storie.php`/
+ * `patterns/reading-artikel.php`'s own docblocks for why `.ink-reaksie-bar`
+ * had to move to a top-level block for `sticky` to actually have room to float.
  */
 function ink_foundation_enqueue_reading_engagement_assets(): void {
-	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'gedig', 'storie' ) ) ) {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'gedig', 'storie', 'artikel' ) ) ) {
 		return;
 	}
 
@@ -219,14 +220,20 @@ add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_reading_engagement_ass
 
 /**
  * Stamp `data-audit-id="gedig-title"`/`"storie-title"` onto the rendered
- * `core/post-title` block on a single gedig or storie (Theme-Fidelity
- * re-audit, page 3, Tier-1 measurement anchor — extended to storie in the
- * third pass). `wp:post-title` is a dynamic core block with no static markup
- * in `patterns/reading-gedig.php`/`patterns/reading-storie.php` to hand-edit
- * (unlike the badge/hint pills, which are plain `wp:paragraph` blocks and
- * carry the attribute directly in the pattern file) — this is core's own
- * per-block-name render filter (`render_block_core/{name}`), gated so
- * reading-artikel/every other `wp:post-title` on the site is untouched.
+ * `core/post-title` block on a single gedig, storie OR artikel
+ * (Theme-Fidelity re-audit, page 3, Tier-1 measurement anchor — extended to
+ * storie in the third pass, and to artikel in the fourth once
+ * `reading-artikel.php` was rebuilt onto storie's shape). `wp:post-title` is a
+ * dynamic core block with no static markup in the reading patterns to
+ * hand-edit (unlike the badge/hint pills, which are plain `wp:paragraph`
+ * blocks and carry the attribute directly in the pattern file) — this is
+ * core's own per-block-name render filter (`render_block_core/{name}`).
+ *
+ * Artikel deliberately gets the literal string `"storie-title"`, NOT a new
+ * `"artikel-title"` value — mirrors `ReadStory.tsx`'s own
+ * `data-audit-id={isPoetry ? "gedig-title" : "storie-title"}` ternary, which
+ * has no third branch: Article and Short Story share the identical id in
+ * Lovable's own source.
  */
 function ink_foundation_audit_id_reading_title( string $block_content ): string {
 	if ( ! function_exists( 'is_singular' ) ) {
@@ -235,7 +242,7 @@ function ink_foundation_audit_id_reading_title( string $block_content ): string 
 
 	if ( is_singular( 'gedig' ) ) {
 		$audit_id = 'gedig-title';
-	} elseif ( is_singular( 'storie' ) ) {
+	} elseif ( is_singular( array( 'storie', 'artikel' ) ) ) {
 		$audit_id = 'storie-title';
 	} else {
 		return $block_content;
@@ -249,15 +256,14 @@ add_filter( 'render_block_core/post-title', 'ink_foundation_audit_id_reading_tit
 
 /**
  * Stamp `data-audit-id="storie-paragraph"` onto the FIRST rendered paragraph
- * of a storie's `core/post-content` output (Theme-Fidelity third pass,
- * lees-storie, Tier-1 measurement anchor — mirrors the title filter above:
+ * of a storie/artikel's `core/post-content` output (Theme-Fidelity third pass,
+ * lees-storie, Tier-1 measurement anchor — extended to artikel in the fourth
+ * pass, same "reuse storie's literal id" rationale as the title filter above).
  * `wp:post-content` is a dynamic core block with no static per-paragraph
- * markup to hand-edit). Gated to storie only; every other `wp:post-content`
- * on the site (including reading-artikel, out of scope this pass) is
- * untouched.
+ * markup to hand-edit.
  */
-function ink_foundation_audit_id_storie_paragraph( string $block_content ): string {
-	if ( ! function_exists( 'is_singular' ) || ! is_singular( 'storie' ) ) {
+function ink_foundation_audit_id_reading_paragraph( string $block_content ): string {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'storie', 'artikel' ) ) ) {
 		return $block_content;
 	}
 
@@ -265,7 +271,101 @@ function ink_foundation_audit_id_storie_paragraph( string $block_content ): stri
 
 	return null !== $with_audit_id ? $with_audit_id : $block_content;
 }
-add_filter( 'render_block_core/post-content', 'ink_foundation_audit_id_storie_paragraph' );
+add_filter( 'render_block_core/post-content', 'ink_foundation_audit_id_reading_paragraph' );
+
+/**
+ * Auto-link bare URLs in a storie/artikel's prose body (Theme-Fidelity fourth
+ * pass, docs/theme-fidelity-audit-handoff.md, 2026-09-05, item 10 — a genuine
+ * product-owner-requested NEW feature, not a Lovable fidelity fix; Lovable's
+ * own sample prose bodies never contain a bare URL to diff against).
+ *
+ * Styled like the site footer's own nav-link recipe — confirmed live via
+ * `getComputedStyle()` on a real footer link, NOT assumed: the footer's own
+ * links render in `muted-text` (`#6B7280`, a genuine gray), never the sitewide
+ * `elements.link` primary/brand-red default that every bare `<a>` gets
+ * otherwise. `.ink-prose-link` sets `color:muted-text` explicitly (it can't
+ * rely on inheriting the footer's color the way the footer's own links do,
+ * since it isn't scoped inside the footer template part) PLUS a traditional
+ * underline on top (the footer's own links carry no underline, so this is a
+ * NEW class, not a reuse) PLUS a trailing "opens in new tab" icon glyph (the
+ * same inline-SVG house style already used in `reading-storie.php`/
+ * `reading-gedig.php`'s hint pills). `target="_blank" rel="noopener
+ * noreferrer"` per the request.
+ *
+ * An earlier version of this feature let the primary/brand-red color bleed
+ * through from `elements.link` (never overridden), which is also what made
+ * the reading pages' avatar+name byline link render brand-red/underlined
+ * once `isLink:true` was added to `wp:avatar`/`wp:post-author-name` in the
+ * same pass — flagged by the product owner and fixed alongside this: the
+ * byline link resets to `ink-text`/no-underline (`.wp-block-post-author-
+ * name__link`/`.wp-block-avatar__link` in `theme.json`), matching what it
+ * looked like before it became a link at all, while `.ink-prose-link` gets
+ * its own explicit `muted-text` instead of quietly inheriting brand-red.
+ *
+ * Deliberately NOT applied to gedig: poetry has no free-form prose paragraphs
+ * beyond a short dedication, and this filter is gated to storie/artikel only
+ * (never fires on `wp:ink/gedig-body`'s own separate render path anyway, but
+ * gated explicitly for clarity and defence-in-depth).
+ *
+ * Skips text already inside an `<a>` (split-and-rejoin on existing anchor
+ * tags, only linkifying the non-anchor segments) so a URL a writer already
+ * hand-linked is never double-wrapped.
+ */
+function ink_foundation_autolink_prose_urls( string $block_content ): string {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'storie', 'artikel' ) ) ) {
+		return $block_content;
+	}
+
+	$segments = preg_split( '/(<a\b[^>]*>.*?<\/a>)/is', $block_content, -1, PREG_SPLIT_DELIM_CAPTURE );
+
+	if ( ! is_array( $segments ) ) {
+		return $block_content;
+	}
+
+	foreach ( $segments as $index => $segment ) {
+		// Leave existing anchors (the odd-indexed capture groups) untouched.
+		if ( 0 === strpos( $segment, '<a ' ) || 0 === strpos( $segment, '<a>' ) ) {
+			continue;
+		}
+
+		$linked = preg_replace_callback(
+			'/\bhttps?:\/\/[^\s<>"\']+/i',
+			'ink_foundation_prose_link_markup',
+			$segment
+		);
+
+		if ( null !== $linked ) {
+			$segments[ $index ] = $linked;
+		}
+	}
+
+	return implode( '', $segments );
+}
+add_filter( 'render_block_core/post-content', 'ink_foundation_autolink_prose_urls' );
+
+/**
+ * Build one auto-linked `<a>` for {@see ink_foundation_autolink_prose_urls()}.
+ * Trailing sentence punctuation (`.`, `,`, `)`, etc.) is peeled off the URL and
+ * placed back outside the anchor, so "See https://ink.example." doesn't pull
+ * the full stop into the link.
+ *
+ * @param array<int, string> $matches The regex match (index 0 = the raw URL).
+ * @return string
+ */
+function ink_foundation_prose_link_markup( array $matches ): string {
+	$url     = $matches[0];
+	$trailer = '';
+
+	if ( preg_match( '/^(.*?)([.,;:!?)\]]+)$/', $url, $trim_matches ) ) {
+		$url     = $trim_matches[1];
+		$trailer = $trim_matches[2];
+	}
+
+	$icon = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true" style="display:inline;vertical-align:-1px;margin-left:2px"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>';
+
+	return '<a href="' . esc_url( $url ) . '" class="ink-prose-link" target="_blank" rel="noopener noreferrer">'
+		. esc_html( $url ) . $icon . '</a>' . $trailer;
+}
 
 /**
  * Re-skin (not replace) WordPress core's OWN `wp-login.php?action=resetpass`
@@ -364,70 +464,59 @@ function ink_foundation_enqueue_line_reactions(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_line_reactions' );
 
 /**
- * Enqueue the text-highlight-reactions client on a single storie (post-Epic-19
- * storie fidelity pass, FR-24/26).
+ * Enqueue the text-selection highlighting client on a single storie OR artikel
+ * (Theme-Fidelity fourth pass, docs/theme-fidelity-audit-handoff.md,
+ * 2026-09-05, item 9 — REPLACES the removed
+ * `ink_foundation_enqueue_text_highlight_reactions()`/`text-highlight-
+ * reactions.js`, which reused gedig's whole-paragraph hartjie/duim_op/wow
+ * REST-backed "resonance" mechanism — confirmed, on a fresh read of
+ * `HighlightableText.tsx`/`HighlightsPanel.tsx`, to be architecturally wrong:
+ * Lovable's real storie/artikel interaction is select-text → "Highlight"
+ * tooltip → confirm → add to an in-memory, session-local highlight list/
+ * counter. No REST call, no login gate, no persistence — see
+ * `highlightable-text.js`'s own docblock for the full citation).
  *
- * The storie equivalent of {@see ink_foundation_enqueue_line_reactions()}: a lid
- * selects arbitrary text in the prose body, a floating bar attaches the same
- * hartjie/duim_op/wow reaction through the SAME `ink/v1/reaksie` REST endpoint
- * (re-purposing the `line` field as a 0-based paragraph index for this CPT — see
- * `Ink\Engagement\ReactionController`/`ProseBody`). `reactedParagraphs` is the
- * aggregate list of paragraph indexes that already carry a reaction from ANY
- * reader, so the persistent tint renders on page load for every visitor, not
- * just the ephemeral selection that just reacted.
+ * Now extended to artikel (the third pass had deliberately scoped this to
+ * storie only, reasoning "no page-map row for lees-artikel" — moot now that
+ * `reading-artikel.php` was rebuilt onto storie's exact shape, prose body
+ * included).
  *
- * artikel is NOT in scope: `docs/design-handoff/page-map.csv` lists this
- * interaction only for lees-storie (EXPERIENCE.md's page-map has no equivalent
- * lees-artikel row), so this stays storie-only per the product-owner directive.
+ * The Afrikaans control labels localised here (`highlightLabel`/
+ * `panelTitleLabel`/`emptyLabel`/`removeLabel`) are NEW copy with no existing
+ * `docs/ui-copy-translations.md` row — hand-authored in this pass, matching
+ * this reading surface's established tone (e.g. gedig's "Merk hierdie reël"),
+ * not run through the formal copy-debt translation-sheet pipeline. Flagged as
+ * copy-debt for a future authoring pass, same as other minor new strings
+ * logged elsewhere in `docs/theme-fidelity-rework-plan.md`.
  */
-function ink_foundation_enqueue_text_highlight_reactions(): void {
-	if ( ! function_exists( 'is_singular' ) || ! is_singular( 'storie' ) ) {
+function ink_foundation_enqueue_highlightable_text(): void {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'storie', 'artikel' ) ) ) {
 		return;
 	}
 
-	$theme   = wp_get_theme();
-	$post_id = get_the_ID();
+	$theme = wp_get_theme();
 
 	wp_enqueue_script(
-		'ink-foundation-text-highlight-reactions',
-		get_theme_file_uri( 'assets/js/text-highlight-reactions.js' ),
+		'ink-foundation-highlightable-text',
+		get_theme_file_uri( 'assets/js/highlightable-text.js' ),
 		array(),
 		(string) $theme->get( 'Version' ),
 		true
 	);
 
 	wp_localize_script(
-		'ink-foundation-text-highlight-reactions',
-		'inkTextHighlightReactions',
+		'ink-foundation-highlightable-text',
+		'inkHighlightableText',
 		array(
-			'restUrl'           => esc_url_raw( rest_url( 'ink/v1/reaksie' ) ),
-			'nonce'             => wp_create_nonce( 'wp_rest' ),
-			'postId'            => $post_id,
 			'containerSelector' => '.ink-lees-storie__prose',
-			'reactedParagraphs' => ( $post_id && class_exists( '\\Ink\\Engagement\\ReactionStore' ) )
-				? array_values( \Ink\Engagement\ReactionStore::indexesWithReactions( (int) $post_id ) )
-				: array(),
-			'reactions'         => array(
-				array(
-					'key'   => 'hartjie',
-					'label' => __( 'Hartjie', 'ink-foundation' ),
-					'glyph' => '♥',
-				),
-				array(
-					'key'   => 'duim_op',
-					'label' => __( 'Duim op', 'ink-foundation' ),
-					'glyph' => '👍',
-				),
-				array(
-					'key'   => 'wow',
-					'label' => __( 'Wow', 'ink-foundation' ),
-					'glyph' => '✨',
-				),
-			),
+			'highlightLabel'    => __( 'Merk uit', 'ink-foundation' ),
+			'panelTitleLabel'   => __( 'Jou uitgeligte gedeeltes', 'ink-foundation' ),
+			'emptyLabel'        => __( 'Kies enige teks in die stuk om onvergeetlike gedeeltes uit te lig.', 'ink-foundation' ),
+			'removeLabel'       => __( 'Verwyder hooglig', 'ink-foundation' ),
 		)
 	);
 }
-add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_text_highlight_reactions' );
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_highlightable_text' );
 
 /**
  * Enqueue the Gemeenskapsreaksie form client on a single work (Story 7.4, FR-27).

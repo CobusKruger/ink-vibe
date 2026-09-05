@@ -130,21 +130,15 @@ test( 'every reading pattern embeds the reaction-totals (resonance counts) block
 	}
 } );
 
-test( 'reading-storie and reading-artikel show the contextual prompt before the response form', function () use ( $ink_read ): void {
-	foreach ( array( 'reading-storie.php', 'reading-artikel.php' ) as $pattern ) {
-		$markup = $ink_read( 'patterns/' . $pattern );
-		expect( $markup )->toContain( 'wp:ink/leesprompte' );
-		// The prompt introduces the form, so it must appear before it.
-		expect( strpos( $markup, 'wp:ink/leesprompte' ) )->toBeLessThan( strpos( $markup, 'wp:ink/gemeenskapsreaksies' ) );
+test( 'no reading pattern embeds the leesprompte panel any more (Theme-Fidelity fourth pass)', function () use ( $ink_read ): void {
+	// Product-owner decision (docs/theme-fidelity-audit-handoff.md §6, fourth
+	// pass, 2026-09-05): the panel's authored copy read as broken Afrikaans, it
+	// matched nothing in Lovable, and it served no purpose — removed outright
+	// (the `Ink\Engagement\ContextualPrompts` class and `ink/leesprompte` block
+	// no longer exist at all, not just unembedded here).
+	foreach ( array( 'reading-storie.php', 'reading-artikel.php', 'reading-gedig.php' ) as $pattern ) {
+		expect( $ink_read( 'patterns/' . $pattern ) )->not->toContain( 'wp:ink/leesprompte' );
 	}
-} );
-
-test( 'reading-gedig deliberately omits the leesprompte panel (Epic 19 lees-gedig fidelity pass)', function () use ( $ink_read ): void {
-	// Product-owner decision (docs/theme-fidelity-audit-handoff.md §6, finding
-	// #17): Lovable's poetry reader has no equivalent panel between the poem and
-	// the response form, so it is cut here specifically — the block/class stays
-	// registered and still renders on reading-storie / reading-artikel above.
-	expect( $ink_read( 'patterns/reading-gedig.php' ) )->not->toContain( 'wp:ink/leesprompte' );
 } );
 
 test( 'reading-storie and reading-artikel eyebrows source the type label from the terminology bridge', function () use ( $ink_read ): void {

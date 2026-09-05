@@ -27,10 +27,12 @@
  * inline-style override on this pill only, not a change to the shared class. The
  * hint pill's copy ("Merk hierdie reël") reuses the one ratified INK phrase for
  * line-reaction guidance (afrikaans-terms.md's "hooglignering" row) — no new
- * Afrikaans invented. The `ink/leesprompte` panel is cut here per product-owner
- * decision (Lovable has no equivalent element on the reading page); the
- * block/class stays registered and still renders on reading-storie /
- * reading-artikel, which keep using it.
+ * Afrikaans invented. The `ink/leesprompte` panel was never embedded here (no
+ * Lovable equivalent) and, as of the fourth pass, has been removed from
+ * reading-storie/reading-artikel too (docs/theme-fidelity-audit-handoff.md
+ * §6/fourth pass) — a product-owner call that the panel's copy read as broken
+ * Afrikaans, matched nothing in Lovable, and served no purpose. The block
+ * class itself was deleted, not just unembedded.
  *
  * lees-gedig re-audit (docs/theme-fidelity-audit-handoff.md §6, this pass):
  * the title's font-family pin to literal Georgia (a prior pass's deliberate
@@ -58,6 +60,17 @@
  * `wp:post-title` is a dynamic core block with no static markup to hand-edit),
  * the type badge, the hint pill, each poem line (`GedigBody::toHtml()`), and the
  * author-card name/bio (`ReadingAuthorCard::toHtml()`).
+ *
+ * Fourth pass (docs/theme-fidelity-audit-handoff.md, 2026-09-05): removed the
+ * invented "deur" label between avatar and name (Lovable's `ReadStory.tsx` has
+ * none, just avatar+name as one `<Link>` — approximated here with `isLink` on
+ * both the `core/avatar` and `core/post-author-name` blocks, since this pattern
+ * stays presentation-only core blocks rather than hand-built markup); fixed the
+ * separator to a real bullet (`•`, U+2022, was `·` middot); header section
+ * padding corrected to Lovable's uniform `py-12` (48px top+bottom, was 64/48);
+ * added the header-section background (`bg-cream/50` — imperceptible against
+ * this theme's own page background, which is the same colour, but added for
+ * literal parity per product-owner decision to treat gedig/storie identically).
  */
 
 $ink_type_label = function_exists( 'ink_foundation_term' )
@@ -68,8 +81,8 @@ $ink_gedig_feather_svg = '<span aria-hidden="true" style="display:inline-flex;ve
 
 $ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex;vertical-align:-2px;margin-right:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></span>';
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}},"border":{"bottom":{"width":"1px","color":"var:preset|color|border","style":"solid"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24);border-bottom-width:1px;border-bottom-color:var(--wp--preset--color--border);border-bottom-style:solid">
+<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}},"border":{"bottom":{"width":"1px","color":"var:preset|color|border","style":"solid"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24);border-bottom-width:1px;border-bottom-color:var(--wp--preset--color--border);border-bottom-style:solid;background-color:color-mix(in srgb, var(--wp--preset--color--surface) 50%, transparent)">
 	<!-- wp:group {"className":"ink-gedig-intro","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained","contentSize":"768px"}} -->
 	<div class="wp-block-group ink-gedig-intro">
 		<!-- wp:paragraph {"className":"ink-lees-tipe","textAlign":"center","style":{"typography":{"fontStyle":"normal","fontWeight":"500"}},"fontSize":"sm","textColor":"accent"} -->
@@ -80,16 +93,12 @@ $ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex;vert
 
 		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-8"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
 		<div class="wp-block-group">
-			<!-- wp:avatar {"size":40,"style":{"border":{"radius":"9999px"}}} /-->
+			<!-- wp:avatar {"size":40,"isLink":true,"style":{"border":{"radius":"9999px"}}} /-->
+
+			<!-- wp:post-author-name {"isLink":true,"fontSize":"md","textColor":"ink-text","style":{"typography":{"fontWeight":"500"}}} /-->
 
 			<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-			<p class="has-muted-text-color has-text-color has-md-font-size"><?php esc_html_e( 'deur', 'ink-foundation' ); ?></p>
-			<!-- /wp:paragraph -->
-
-			<!-- wp:post-author-name {"fontSize":"md","textColor":"ink-text","style":{"typography":{"fontWeight":"500"}}} /-->
-
-			<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-			<p class="has-muted-text-color has-text-color has-md-font-size">·</p>
+			<p class="has-muted-text-color has-text-color has-md-font-size">•</p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:post-date {"fontSize":"md","textColor":"muted-text"} /-->

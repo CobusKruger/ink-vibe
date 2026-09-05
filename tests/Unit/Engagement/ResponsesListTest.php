@@ -42,7 +42,7 @@ afterEach( function (): void {
 	Monkey\tearDown();
 } );
 
-test( 'toHtml renders the count heading, typed badges and escaped content', function (): void {
+test( 'toHtml renders a plain (non count-prefixed) heading, typed badges and escaped content', function (): void {
 	$responses = array(
 		array(
 			'id'      => 1,
@@ -55,17 +55,22 @@ test( 'toHtml renders the count heading, typed badges and escaped content', func
 
 	$html = ResponsesList::toHtml( 42, $responses, 1 );
 
-	expect( $html )->toContain( '1 Gemeenskapsreaksie' );          // singular count heading
+	// Fourth pass (docs/theme-fidelity-audit-handoff.md, 2026-09-05): Lovable's
+	// own heading is a plain static string, never count-prefixed — "1
+	// Gemeenskapsreaksie(s)" must NOT appear anywhere in the markup.
+	expect( $html )->toContain( 'Gemeenskapsreaksies' );
+	expect( $html )->not->toContain( '1 Gemeenskapsreaksie' );
 	expect( $html )->toContain( 'ink-reaksie--lof' );               // typed badge class
 	expect( $html )->toContain( 'Lof' );                            // badge label (from Terms)
 	expect( $html )->toContain( 'Pragtige beeldspraak.' );          // escaped content
 	expect( $html )->toContain( 'Lid Een' );
 } );
 
-test( 'toHtml uses the plural heading for a count other than one', function (): void {
+test( 'toHtml never count-prefixes the heading, regardless of response count', function (): void {
 	$html = ResponsesList::toHtml( 42, array(), 0 );
 
-	expect( $html )->toContain( '0 Gemeenskapsreaksies' );
+	expect( $html )->toContain( 'Gemeenskapsreaksies' );
+	expect( $html )->not->toContain( '0 Gemeenskapsreaksies' );
 } );
 
 test( 'toHtml renders the typed form with all three response-type radios and a submit', function (): void {
@@ -85,4 +90,44 @@ test( 'toHtml renders the authored instruction line before the type radios', fun
 	expect( $html )->toContain( 'ink-reaksies__intro' );
 	expect( $html )->toContain( "Deel 'n deurdagte reaksie" );
 	expect( strpos( $html, 'ink-reaksies__intro' ) )->toBeLessThan( strpos( $html, 'ink-reaksies__types' ) );
+} );
+
+test( 'toHtml renders the compose form BEFORE the existing-response list', function (): void {
+	// Fourth pass: `ReadStory.tsx`'s literal JSX order is compose-card, THEN
+	// `critiques.map(...)` — this class used to render the inverse.
+	$responses = array(
+		array(
+			'id'      => 1,
+			'type'    => ResponseType::Insig,
+			'content' => 'n Insiggewende reaksie.',
+			'author'  => 'Lid Twee',
+			'date'    => '2026-06-26 10:00:00',
+		),
+	);
+
+	$html = ResponsesList::toHtml( 42, $responses, 1 );
+
+	expect( strpos( $html, 'ink-reaksies__form' ) )->toBeLessThan( strpos( $html, 'ink-reaksies__list' ) );
+} );
+
+test( 'toHtml renders no Reply action at all', function (): void {
+	// A prior pass first wired Reply to focus the compose textarea (flagged by
+	// the product owner as misleading), then left it rendered but inert to
+	// match Lovable's own dead `<button>Reply</button>` — but a control with no
+	// effect when activated is a defect regardless of the reference, so it was
+	// removed outright, not just de-wired.
+	$responses = array(
+		array(
+			'id'      => 1,
+			'type'    => ResponseType::Voorstel,
+			'content' => "'n Voorstel.",
+			'author'  => 'Lid Drie',
+			'date'    => '2026-06-26 10:00:00',
+		),
+	);
+
+	$html = ResponsesList::toHtml( 42, $responses, 1 );
+
+	expect( $html )->not->toContain( 'ink-reaksies__reply' );
+	expect( $html )->not->toContain( 'data-ink-reply-target' );
 } );

@@ -35,13 +35,34 @@ defined( 'ABSPATH' ) || exit;
  * functional gap, not just a styling one; the client
  * (assets/js/gemeenskapsreaksie.js) keeps the disabled state in sync as the
  * visitor types). Each response card shows the author's avatar and a relative
- * ("[N] ... gelede") timestamp instead of an absolute date, plus an upvote count
- * and a Reply action — Reply focuses the response form (a real, small piece of
- * behaviour); the upvote count is a truthful, currently-always-zero READ (no
- * per-response upvote store exists yet — that's reaction-system machinery
- * (AD-5a) deliberately deferred to the cross-page reaction-system reconciliation
- * dispatch alongside the whole-poem reaction bar and line reactions, not invented
- * here), so it is rendered as inert text, not a button implying a working toggle.
+ * ("[N] ... gelede") timestamp instead of an absolute date, plus an upvote count;
+ * the upvote count is a truthful, currently-always-zero READ (no per-response
+ * upvote store exists yet — that's reaction-system machinery (AD-5a) deliberately
+ * deferred to the cross-page reaction-system reconciliation dispatch alongside
+ * the whole-poem reaction bar and line reactions, not invented here), so it is
+ * rendered as inert text, not a button implying a working toggle.
+ *
+ * Fourth pass (docs/theme-fidelity-audit-handoff.md, 2026-09-05): `ReadStory.tsx`
+ * read directly confirmed the compose card renders BEFORE the existing-response
+ * list (this class had it backwards — `<ul>` then `formHtml()` — matching the PO's
+ * "existing comments show above the compose box instead of below it" finding
+ * verbatim); swapped in `toHtml()` below. The heading dropped its `"{count}
+ * {label}"` composition — Lovable's own heading is a plain static string, never
+ * count-prefixed. The compose form now carries the SAME card recipe as a response
+ * item (`bg-card`/`rounded-xl`/`border`/`p-6`, i.e. `.ink-reaksies__form` picked up
+ * the exact `.ink-reaksies__item` box treatment in the theme CSS) instead of
+ * rendering as a bare, unframed stack of controls. The submit button's shape
+ * changed from a pill (`border-radius:full`) to Lovable's actual `variant=
+ * "literary"` `Button` shape (`rounded-md`, i.e. the theme's `radius--md` token —
+ * confirmed via `ink-lovable/src/components/ui/button.tsx`), plus its own send
+ * icon (Lovable's `<Send>` glyph) to match. The `Reply` action (previously wired
+ * to focus the compose textarea, then briefly made a decorative no-op button to
+ * match Lovable's own dead `<button>Reply</button>` exactly) has been REMOVED
+ * outright, not just de-wired — a control with no effect at all when activated
+ * is a real UX defect regardless of what Lovable's own reference happens to do;
+ * matching Lovable's fidelity does not extend to reproducing its dead controls.
+ * Real threaded replies remain a product-owner decision to build later, not
+ * silently added here.
  *
  * `toHtml()` is pure (Terms + escaping only) and unit-tested; `render()` is the
  * thin block callback that pulls the post's data.
@@ -102,16 +123,27 @@ final class ResponsesList {
 	/**
 	 * Build the Gemeenskapsreaksies section HTML. Pure — Terms + escaping only.
 	 *
+	 * `$count` is kept in the signature for call-site/test stability
+	 * (`render()` still passes `ResponseStore::countForPost()`) even though the
+	 * heading no longer uses it — the fourth pass (docs/theme-fidelity-audit-
+	 * handoff.md, 2026-09-05) dropped the count-prefixed heading entirely
+	 * (Lovable's own heading is a plain static string, never "{N} …"). Left
+	 * available for a future consumer (e.g. an aria-live count announcement)
+	 * rather than churning the public signature for a pure copy change.
+	 *
 	 * @param int                                                                                              $post_id   The work.
 	 * @param list<array{id:int, type:ResponseType, content:string, author:string, date:string, user_id?:int}> $responses The existing typed responses.
 	 * @param int                                                                                              $count     The filtered response count.
 	 * @return string
 	 */
-	public static function toHtml( int $post_id, array $responses, int $count ): string {
-		$heading_label = 1 === $count ? Terms::label( 'gemeenskapsreaksie' ) : Terms::label( 'gemeenskapsreaksie_plural' );
-
+	public static function toHtml( int $post_id, array $responses, int $count ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- kept for signature stability, see docblock.
 		$html  = '<section id="kommentaar" class="ink-reaksies" aria-label="' . esc_attr( Terms::label( 'gemeenskapsreaksie_plural' ) ) . '">';
-		$html .= '<h2 class="ink-reaksies__heading">' . esc_html( (string) $count . ' ' . $heading_label ) . '</h2>';
+		$html .= '<h2 class="ink-reaksies__heading">' . esc_html( Terms::label( 'gemeenskapsreaksie_plural' ) ) . '</h2>';
+
+		// Compose FIRST, existing responses SECOND — `ReadStory.tsx`'s literal
+		// JSX order (the compose card, then `critiques.map(...)`); this class used
+		// to render the inverse.
+		$html .= self::formHtml( $post_id );
 
 		$html .= '<ul class="ink-reaksies__list">';
 		foreach ( $responses as $response ) {
@@ -135,9 +167,6 @@ final class ResponsesList {
 				. '<p class="ink-reaksies__text">' . esc_html( $response['content'] ) . '</p>'
 				. '<div class="ink-reaksies__footer">'
 				. '<span class="ink-reaksies__upvote">' . esc_html( (string) 0 ) . '</span>'
-				. '<button type="button" class="ink-reaksies__reply" data-ink-reply-target="ink-reaksie-teks-' . esc_attr( (string) $post_id ) . '">'
-				. esc_html( Terms::label( 'antwoord' ) )
-				. '</button>'
 				. '</div>'
 				. '</div>';
 
@@ -145,7 +174,6 @@ final class ResponsesList {
 		}
 		$html .= '</ul>';
 
-		$html .= self::formHtml( $post_id );
 		$html .= '</section>';
 
 		return $html;
@@ -253,10 +281,23 @@ final class ResponsesList {
 			. esc_attr( (string) $post_id ) . '" placeholder="' . esc_attr( Terms::label( 'gemeenskapsreaksie_plekhouer' ) ) . '" aria-label="'
 			. esc_attr( Terms::label( 'gemeenskapsreaksie' ) ) . '"></textarea>';
 
-		$html .= '<button type="submit" class="ink-reaksies__submit" disabled>' . esc_html( Terms::label( 'plaas' ) ) . '</button>';
+		$html .= '<div class="ink-reaksies__form-actions">';
+		$html .= '<button type="submit" class="ink-reaksies__submit" disabled>' . self::sendIcon() . esc_html( Terms::label( 'plaas' ) ) . '</button>';
+		$html .= '</div>';
 
 		$html .= '</form>';
 
 		return $html;
+	}
+
+	/**
+	 * The decorative send-glyph on the submit button (Lovable's `<Send>` icon on
+	 * its `variant="literary"` "Share Response" button). Purely presentational
+	 * (aria-hidden) — the button's own label text carries the meaning.
+	 *
+	 * @return string
+	 */
+	private static function sendIcon(): string {
+		return '<span class="ink-reaksies__submit-ikoon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></span>';
 	}
 }

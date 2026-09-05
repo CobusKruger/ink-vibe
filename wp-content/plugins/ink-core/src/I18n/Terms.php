@@ -192,7 +192,6 @@ final class Terms {
 			// 'gemeenskapsreaksie_instruksie' above.
 			'gemeenskapsreaksie_plekhouer'  => __( 'Jou gedagtes oor hierdie stuk...', 'ink-core' ),
 			'plaas'                         => __( 'Plaas', 'ink-core' ), // Recurring authored submit verb (Skryf + Gemeenskapsreaksie).
-			'antwoord'                      => __( 'Antwoord', 'ink-core' ), // Response-card Reply action (Epic 19 lees-gedig pass).
 			'nou_net'                       => __( 'Nou net', 'ink-core' ), // Relative-timestamp "just now" case (Epic 19 lees-gedig pass).
 			'leeslys'                       => __( 'Leeslys', 'ink-core' ), // Story 7.7 (glossary line 151).
 

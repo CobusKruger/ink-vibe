@@ -64,22 +64,15 @@
 		button.disabled = ! content.value.trim();
 	}
 
-	// The response-card Reply action (finding #16): a real, small behaviour —
-	// focus this work's response textarea — rather than a decorative dead link.
-	function initReplyButtons() {
-		var buttons = document.querySelectorAll( '.ink-reaksies__reply' );
-		Array.prototype.forEach.call( buttons, function ( button ) {
-			button.addEventListener( 'click', function () {
-				var targetId = button.getAttribute( 'data-ink-reply-target' );
-				var target = targetId ? document.getElementById( targetId ) : null;
-
-				if ( target ) {
-					target.focus();
-					target.scrollIntoView( { behavior: 'smooth', block: 'center' } );
-				}
-			} );
-		} );
-	}
+	// The response-card Reply action was removed outright (Theme-Fidelity
+	// fourth pass, docs/theme-fidelity-audit-handoff.md, 2026-09-05): an
+	// earlier pass gave it a "focus the compose textarea" behaviour that the
+	// product owner flagged as actively misleading (it looked like opening a
+	// real reply thread); a follow-up pass then left it rendered but inert to
+	// match Lovable's own dead `<button>Reply</button>` — but a control with
+	// no effect when activated is a defect regardless of what the reference
+	// does, so `Ink\Engagement\ResponsesList` no longer renders it at all.
+	// Nothing here needs to reference it any more.
 
 	function init() {
 		var forms = document.querySelectorAll( '.ink-reaksies__form' );
@@ -99,8 +92,6 @@
 				submit( form );
 			} );
 		} );
-
-		initReplyButtons();
 	}
 
 	if ( 'loading' === document.readyState ) {

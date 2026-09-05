@@ -46,6 +46,21 @@
  * `functions.php`, storie-scoped; the badge/hint pills directly here; the
  * engagement bar wrapper directly here; author-card name/bio already
  * parametrised in `Ink\Social\ReadingAuthorCard`).
+ *
+ * Fourth pass (docs/theme-fidelity-audit-handoff.md, 2026-09-05): removed the
+ * invented "deur" label (see reading-gedig.php's docblock — same fix, same
+ * `isLink` approximation of Lovable's single avatar+name `<Link>`); fixed the
+ * separator to a real bullet (`•`); added the `.ink-lees-intro` wrapper class
+ * (new shared rule, `text-align:center`) because `.ink-lees-tipe`'s own
+ * `display:inline-flex` defeats its own `has-text-align-center` block class —
+ * gedig already worked by accident via its own `.ink-gedig-intro{text-align:
+ * center}` wrapper; storie had no such wrapper, so the badge rendered
+ * left-aligned despite carrying the "centered" class; header section padding
+ * corrected to Lovable's uniform `py-12` (48px, was 64/48 top/bottom), and the
+ * header now carries Lovable's `bg-secondary/30` background + `border-b`
+ * (previously plain, matching the body section with no visual separation) —
+ * reusing the exact `color-mix(... secondary 30% ...)` recipe already
+ * established for this page's own author-card band.
  */
 
 $ink_type_label = function_exists( 'ink_foundation_term' )
@@ -54,10 +69,10 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 
 $ink_storie_highlighter_svg = '<span aria-hidden="true" style="display:inline-flex;vertical-align:-2px;margin-right:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg></span>';
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained","contentSize":"768px"}} -->
-	<div class="wp-block-group">
+<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}},"border":{"bottom":{"width":"1px","color":"var:preset|color|border","style":"solid"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24);border-bottom-width:1px;border-bottom-color:var(--wp--preset--color--border);border-bottom-style:solid;background-color:color-mix(in srgb, var(--wp--preset--color--secondary) 30%, transparent)">
+	<!-- wp:group {"className":"ink-lees-intro","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained","contentSize":"768px"}} -->
+	<div class="wp-block-group ink-lees-intro">
 		<!-- wp:paragraph {"className":"ink-lees-tipe","textAlign":"center","style":{"typography":{"fontStyle":"normal","fontWeight":"500"}},"fontSize":"sm","textColor":"primary"} -->
 		<p data-audit-id="storie-badge" class="ink-lees-tipe has-text-align-center has-primary-color has-text-color has-sm-font-size" style="font-style:normal;font-weight:500"><?php echo esc_html( $ink_type_label ); ?></p>
 		<!-- /wp:paragraph -->
@@ -66,16 +81,12 @@ $ink_storie_highlighter_svg = '<span aria-hidden="true" style="display:inline-fl
 
 		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-8"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
 		<div class="wp-block-group">
-			<!-- wp:avatar {"size":40,"style":{"border":{"radius":"9999px"}}} /-->
+			<!-- wp:avatar {"size":40,"isLink":true,"style":{"border":{"radius":"9999px"}}} /-->
+
+			<!-- wp:post-author-name {"isLink":true,"fontSize":"sm","textColor":"ink-text","style":{"typography":{"fontWeight":"500"}}} /-->
 
 			<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-			<p class="has-muted-text-color has-text-color has-sm-font-size"><?php esc_html_e( 'deur', 'ink-foundation' ); ?></p>
-			<!-- /wp:paragraph -->
-
-			<!-- wp:post-author-name {"fontSize":"sm","textColor":"ink-text","style":{"typography":{"fontWeight":"500"}}} /-->
-
-			<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-			<p class="has-muted-text-color has-text-color has-sm-font-size">·</p>
+			<p class="has-muted-text-color has-text-color has-sm-font-size">•</p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:post-date {"fontSize":"sm","textColor":"muted-text"} /-->
@@ -120,8 +131,6 @@ $ink_storie_highlighter_svg = '<span aria-hidden="true" style="display:inline-fl
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"672px"}} -->
 	<div class="wp-block-group">
-		<!-- wp:ink/leesprompte /-->
-
 		<!-- wp:ink/gemeenskapsreaksies /-->
 
 		<!-- wp:ink/verwante-stukke /-->

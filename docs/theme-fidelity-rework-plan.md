@@ -95,7 +95,9 @@ against Lovable's corrected rendering (first instance: lees-gedig's title, below
 | 11 | ontdek | **Tier 0–2 done, re-verified 2026-09-05** — sticky tab bar built + font-size fixed; three real findings surfaced, none guessed at, see below | see below |
 | 12 | gemeenskap | **Tier 0–2 done, re-verified 2026-09-05** — stale-decision check resolved (not stale, but mischaracterized — see below); 2 real hover/font bugs found and fixed | see below |
 | 16 | auth | **Tier 0–2 done, 2026-09-05** — first real live Lovable comparison this pass (previously unreachable); 4 real CSS bugs fixed; 2 chrome/OAuth gaps flagged; **a real account-credential incident occurred, see below** | see below |
-| 2 | lees-storie | **Tier 0–2 done** (see the lees-gedig write-up's follow-on rounds) — one open item: highlight-select architecture (3-reaction/paragraph/login-gated vs. Lovable's single-highlight/substring/guest) needs a product-owner decision | see below |
+| 3 | lees-gedig | **Fourth pass done, independently re-verified, 2026-09-05** — deur/bullet/spacing/color/heart-box-model/comments all fixed, live-triggered-interaction checked | see "Fourth pass" below |
+| 2 | lees-storie | **Fourth pass done, independently re-verified, 2026-09-05** — header background/border added, real text-selection highlight mechanism built and triggered live, comments rebuilt | see "Fourth pass" below |
+| — | lees-artikel | **Fourth pass done, independently re-verified, 2026-09-05** — unified onto lees-storie's exact shape (Lovable has no distinct Article render path), confirmed via live badge class/author-card/reaction-variant checks | see "Fourth pass" below |
 | 1, 4, 5, 7, 13–15 | tuisblad, opleiding, biblioteek, uitdagings-list, lidmaatskap, kontak, oor-ink | not yet started under this method | queued — see session todo list |
 
 ### Retrospective: why lees-gedig still had substantial differences after four prior passes
@@ -675,6 +677,262 @@ site's own forgot-password flow. Not yet resolved as of this write-up.
 
 Tests unchanged at 1331, same 4 pre-existing failures, stan clean, deptrac unchanged. Files:
 `assets/css/auth.css`, `assets/css/wp-login-brand.css`.
+
+---
+
+## Fourth pass — lees-gedig/lees-storie reopened, lees-artikel added (2026-09-05)
+
+**The product owner reviewed the reading pages live against Lovable again and found substantial,
+structural differences on both lees-gedig and lees-storie, despite both being marked "Tier 0–2 done" in
+the third pass.** Their exact report, verbatim, because prose summaries have already once hidden real
+scope in this rework:
+
+**Poetry** (comparing Lovable's `/read/s` against `https://nuwe-ink.local/gedig/laat-ek-jou-vertel-goud/`
+and `.../vier-susters-van-4de-straat/`):
+1. The word "deur" between the author image and name should not be there.
+2. The bullet separator between author name and date is a different character than Lovable's.
+3. Line and paragraph spacing is both wrong and inconsistent between different poems.
+4. The poem body text color is clearly wrong.
+5. On hover and once resonant, the heart sometimes renders outside the hover/selection background.
+6. The comment block ("Responses to this poem"/Gemeenskapsreaksies) is entirely different: existing
+   comments show above the compose box instead of below it, the submit button is a pill instead of
+   Lovable's shape, the card backgrounds are wrong, and a "Reply" affordance lets a visitor open what looks
+   like a new top-level comment instead of a real reply.
+
+**Story** (comparing Lovable's `/read/s1` against `https://nuwe-ink.local/storie/die-wenteltrap-na-die-lig/`):
+1. Missing the header-section background Lovable has behind the title/author/meta block — wanted on
+   **both** gedig and storie.
+2. The "Storie" pill sits too far from the top and is left-aligned (Lovable centers it).
+3. The "Kies enige teks..." hint pill has the wrong background/foreground.
+4. No border under the header section, and its background matches the body section (no visual separation).
+5. **The poetry and story interaction models have been conflated.** Poetry: hover a line → gray background
+   + outlined heart; click the heart → it fills and the line stays highlighted. Story: select text with
+   normal browser text selection → a "Highlight" tooltip appears; confirming it adds to a highlight
+   counter/passage count on the side. There is no hovered heart/thumbs-up/wow on story — that's the
+   poetry-only mechanism. Same highlight *color* token on both, entirely different *mechanism*.
+6. Same comment-section defects as poetry (shared component, see below).
+
+**Articles use a completely different design from stories, and that is itself the bug**: in Lovable,
+`Short Story` and `Article` are both handled by the exact same non-poetry render branch — there is no
+Article-specific layout anywhere in the reference. WP built `reading-artikel.php` as an entirely separate,
+bespoke pattern instead of reusing `reading-storie.php`'s shape.
+
+**New feature request, not present in Lovable, explicitly asked for on top of fidelity**: auto-detect URLs
+in prose body text (storie/artikel) and turn them into anchors — open in a new tab, styled the same as the
+footer's links (traditional underline added on top), with an "open in new tab" icon appended to the link
+text.
+
+### Ground truth pulled directly from Lovable source (not re-derived from screenshots)
+
+`src/pages/ReadStory.tsx` is the **single shared component for Poetry, Short Story, and Article** —
+confirmed against `src/data/works.ts` (`WorkType = "Poetry" | "Short Story" | "Article"`). The only branch
+in the whole file is `isPoetry = work.type === "Poetry"`; every other line of logic (badge color/copy,
+title size, hint pill, floating engagement bar, Author Section, Critiques section) applies identically to
+Short Story and Article. There is no third branch anywhere. This means `reading-artikel.php` should be
+near-identical to `reading-storie.php` — same terracotta/primary badge pill (not artikel's own uppercase
+eyebrow), same title sizing, same "Kies enige teks..." hint pill, same sticky `enkel`-variant engagement
+bar as a direct child of `<main>`, same Author Section band, same Critiques/Gemeenskapsreaksies section —
+with only the Afrikaans type label text differing, exactly the way gedig differs from storie only by its
+`isPoetry` ternaries.
+
+Confirmed structural facts from `ReadStory.tsx` (order matters, this is the literal JSX order):
+`<Header/>` → highlights panel (prose only, not relevant to WP which uses a different highlight UI) →
+**Story Header** section (`bg-cream/50` for poetry / `bg-secondary/30` for prose, `border-b border-border`,
+centered: badge pill → title → `avatar + name` (as one `<Link>`, **no "deur"/"by" word anywhere between
+them**) → `<span>•</span>` (a real bullet, U+2022, not middot) → `Clock icon + work.readTime` → hint pill)
+→ **Body** (`PoetryReader` or `HighlightableText`) → **Floating Action Bar**, `sticky bottom-6`, a **direct
+child of `<main>`**, unconditionally shared between poetry/prose (heart+count, `MessageCircle`+comment
+count as an `<a href="#critiques">`, bookmark, share) → **Author Section** (separate gray band,
+`bg-secondary/30 border-y`, 96px avatar, name, bio, Follow + "View all works" buttons) → **Critiques
+Section**: heading is a **plain static string** ("Responses to this poem" / "Community Responses" — no
+count prefixed into the heading text, unlike WP's current `"N Gemeenskapsreaksies"`), then the **compose
+card FIRST** (intro line → 3 prompt-type pill buttons → textarea → right-aligned "Share Response" button,
+`variant="literary"`, disabled while empty), then the **existing-critiques list SECOND**, each card:
+avatar, author name, a type badge (Insight/Praise/Suggestion — sage/gold/terracotta tinted pill with icon),
+relative timestamp, body text, then an upvote count + a **`Reply` button that does nothing at all** — it is
+decorative in Lovable, not wired to any handler, not even a focus-scroll.
+
+`src/components/reading/PoetryReader.tsx` — the exact per-line/per-stanza layout, as fixed numbers, not
+values derived from `line-height`: stanzas wrapped in `space-y-10 md:space-y-12` (40px/48px gap **between**
+stanzas), each stanza's lines in `space-y-2` (**8px** gap between lines within a stanza) — a large,
+deliberate, fixed ratio between the two, not incidental. The heart is `absolute -right-7` (28px) relative
+to a `<span className="relative inline-block">` that wraps **only the line's own text**, itself nested
+inside a `block w-full` `<button>` that owns the hover/resonant background — so the background always
+spans the full row width regardless of how far right the heart sits; if WP's heart is instead positioned
+relative to a span that isn't nested inside a matching full-width background element, or if the
+`.ink-gedig__line`'s own box (not a `w-full` ancestor) is what carries the background, long lines will push
+the heart past that box's own right edge — visible-outside-background is a probable **box-model mismatch,
+not a color/position value problem**, needs live DOM inspection to confirm on the two example poems given.
+
+`src/components/engagement/ResponsesList.php`-equivalent behavior (WP's actual `ResponsesList::toHtml()`,
+read directly): confirmed it renders `<ul>` (existing responses) **then** `formHtml()` (compose form) —
+the literal inverse of Lovable's compose-first order. This is exactly PO finding poetry-#6/story-#6's
+"comments showing above the new comment block."
+
+### Scope of the fourth pass (not yet started)
+
+This reopens **lees-gedig** and **lees-storie** to a fourth Tier 0–2 round, and adds **lees-artikel** to
+the tracked page set for the first time (it was never a numbered row — there is no dedicated Lovable route
+for it, but `works.ts`'s `Article` type combined with `ReadStory.tsx`'s branching is authoritative ground
+truth that it must share storie's exact shape). Planned fix set, in one coordinated round since all three
+patterns share the same underlying blocks/CSS:
+
+- Remove the invented "deur" paragraph from all three `reading-*.php` patterns' author line; fix the
+  separator character to a real bullet (•) to match Lovable exactly.
+- Rebuild `reading-artikel.php` onto `reading-storie.php`'s shape (badge/title/hint/engagement-bar/
+  author-card/critiques all unified) — an Article gets `reading-storie.php`'s exact layout with only its
+  own type label swapped in, per the `isPoetry`-only branch confirmed above.
+- Fix poem line/stanza spacing to the fixed 8px/40–48px constants (not `1lh`-derived), and re-verify against
+  both example poems (`laat-ek-jou-vertel-goud`, `vier-susters-van-4de-straat`) since the legacy-markup
+  parser (`GedigBody::normalizeLegacyMarkup()`) is a likely source of the *inconsistency* between poems even
+  once the CSS constants are fixed — needs checking against both examples' actual stored markup shape, not
+  assumed uniform.
+- Fix poem body text color against a fresh `getComputedStyle()` read on both sides.
+- Investigate and fix the heart-overflow-outside-background bug per the box-model hypothesis above, via
+  live triggered-hover DOM inspection (per the retrospective's rule: stateful UI needs an explicit
+  trigger-and-observe check, not a resting read).
+- Rebuild `ResponsesList::toHtml()` to compose-before-list order, plain (non-count-prefixed) heading copy,
+  matching card/pill/button shapes, and make `Reply` either genuinely decorative (matching Lovable exactly)
+  or flag a real threaded-reply feature decision to the product owner rather than the current
+  focus-the-top-level-form behavior, which the PO has now flagged as actively misleading.
+- Add the storie/artikel header-section background + border-under-header + hint-pill color fixes.
+- Implement the real text-selection → "Highlight" tooltip → highlight-counter mechanism for storie/artikel
+  (this was flagged as an open PO decision after the third pass and is now confirmed, not optional — the
+  third pass's poetry-style hover/heart treatment must **not** leak onto storie/artikel).
+- New feature (PO-requested, not a fidelity fix): auto-linkify bare URLs in storie/artikel prose body into
+  `target="_blank" rel="noopener"` anchors, styled like the footer's link recipe plus an underline and a
+  trailing "opens in new tab" icon glyph.
+
+Dispatched to a subagent (interrupted once by a session-limit error mid-round, resumed from transcript
+with no work lost — confirmed via `git diff` before and after resuming). Full fix list implemented; see
+subagent's own file list above the retrospective note below.
+
+### Fourth pass — orchestrator independent verification (2026-09-05)
+
+Every item below was re-checked fresh by the orchestrator, not accepted on the subagent's own report:
+
+- `git status` confirms the exact file list the subagent claimed, no more, no less.
+- `composer test` (1333 passed, same 4 pre-existing Integration failures), `composer stan` (clean, sandbox
+  disabled for the known TCP-listen gotcha), `composer deptrac` (same pre-existing 3 Kernel→Content
+  violations, 0 new) — all independently re-run, not trusted from the subagent's own numbers.
+- Fresh `curl` on both example poems and the storie page: "deur" gone, separator is a real `•` (confirmed
+  byte-for-byte, not `&middot;`/`·`).
+- `artikel` confirmed unified onto storie's shape: same `.ink-lees-tipe has-primary-color` badge class, an
+  `.ink-outeur-kaart-band` author-card section now present, no leftover full-`'volledig'`-variant reaction
+  markup, `ink-reading-main` class present on `<main>` (needed for the sticky bar's containing block).
+- **Real triggered interaction, poem heart**: hovered a line, screenshotted, clicked it, confirmed via
+  `getComputedStyle`-adjacent DOM read that `has-reaksie`/`is-active` actually applied, then a fresh
+  screenshot showed the heart filled red *inside* the full-width highlighted row — the box-model fix holds
+  on a real long line, not just in theory. Toggled back off afterward to leave state clean.
+- **Poem-spacing "inconsistency" investigated at the data level, not just re-measured in CSS**: pulled
+  `laat-ek-jou-vertel-goud` (67798) and `vier-susters-van-4de-straat` (67847)'s raw `post_content` directly
+  via `./tmp/wpcli.sh post get`. Confirmed independently: `vier-susters` really is stored with a full blank
+  line between every single line (one-line-per-stanza, by the original author/legacy capture, not a parser
+  misclassification) — the subagent's "no parser bug, genuinely different real structures" conclusion holds
+  under direct inspection of the exact two posts the product owner named, not a substitute pair.
+- **Real triggered interaction, story highlight**: selected a text span on `die-wenteltrap-na-die-lig`,
+  watched the "Merk uit" tooltip appear at the selection, clicked it, confirmed the highlight persisted
+  (yellow mark) and the side panel's count badge went from empty to `1`, opened the panel and confirmed the
+  quoted-passage card ("Jou uitgeligte gedeeltes"), then removed it via the panel's own control and
+  confirmed the DOM returned to zero marks/zero panel items — the full cycle, not just the tooltip
+  appearing. (One false alarm during this check: the panel initially looked clipped off the right edge of
+  a screenshot — turned out to be the screenshot tool's own pixel-to-CSS-pixel scale factor the subagent
+  had already flagged in their report; `getBoundingClientRect()` confirmed the panel sits fully inside the
+  real viewport.)
+- **`ResponsesList` rebuild confirmed live**: compose card renders above the existing-response list (not
+  below), the heading is the plain "Gemeenskapsreaksies" string with no count prefix, the submit button is
+  a rounded-rectangle "Plaas" button in its disabled tint (not a pill), and the "Antwoord" (Reply) button
+  has no `data-ink-reply-target` and no click handler at all — clicking it live does nothing observable,
+  confirming it's genuinely inert like Lovable's, not silently still wired to focus the compose box.
+- **Header background/border confirmed via computed style**, not eyeballed: the storie header section
+  computes to a real `color(srgb .93 .91 .88 / 0.3)` tint with a `1px` bottom border, while the body section
+  beneath it is fully transparent with no border — real, measurable separation, matching the PO's complaint.
+- Read (not live-fixture-tested, since the subagent's own QA fixture was already cleaned up) the new
+  `ink_foundation_autolink_prose_urls()` implementation in `functions.php` directly: gated to
+  `is_singular(['storie','artikel'])` only, skips text already inside an existing `<a>` via a split-and
+  -rejoin on anchor tags, peels trailing sentence punctuation off the URL before linking it, and emits
+  `target="_blank" rel="noopener noreferrer"` plus the trailing icon — logic reads correct on inspection.
+
+No discrepancies found between the subagent's report and independent re-verification. **lees-gedig,
+lees-storie, and lees-artikel are now marked done for this fourth pass.** Outstanding, not fixed by this
+round (flagged by the subagent, not silently dropped): the new highlight-feature Afrikaans copy hasn't been
+through the formal copy-debt translation-sheet pipeline yet (flagged as copy-debt, same process as every
+other page); the storie/artikel header background/border reuse the sitewide `secondary`/`border` tokens
+rather than hand-matching Lovable's precise RGB values, which were found to drift a few units from this
+theme's existing tokens — a pre-existing, out-of-scope sitewide precision gap, not touched this round.
+
+### Two direct follow-up removals, same day (2026-09-05), orchestrator-authored not subagent-dispatched
+
+Two more product-owner calls came in immediately after the fourth-pass verification above, both small
+enough to fix directly rather than round-trip through a subagent:
+
+1. **The response-card "Reply"/"Antwoord" button was removed outright, not just left inert.** The fourth
+   pass had made it a genuine no-op to match Lovable's own dead `<button>Reply</button>` (no `onClick`
+   anywhere in `ReadStory.tsx`). Told directly: "What would the point of a decorative link be?" — correct;
+   matching Lovable's fidelity doesn't extend to reproducing a control with no effect when activated.
+   Removed from `Ink\Engagement\ResponsesList::toHtml()` (button markup gone, `.ink-reaksies__footer` now
+   holds only the upvote count), the `antwoord` term retired from `Ink\I18n\Terms`, the dead
+   `.ink-reaksies__reply` CSS removed from `theme.json`, the stale explanatory comment in
+   `assets/js/gemeenskapsreaksie.js` rewritten, and the test renamed to assert the button doesn't render at
+   all (was asserting it rendered-but-unwired). `composer test` unaffected beyond the assertion change (same
+   4 pre-existing Integration failures), `stan`/`deptrac` clean, confirmed removed live via a fresh curl.
+2. **The `ink/leesprompte` ("Reageer met bedoeling") panel was deleted entirely, class and all** — not
+   merely unembedded. It predates this rework (Story 7.5/FR-30) and sat between the body and the
+   Gemeenskapsreaksies form on storie/artikel only (gedig already excluded it by an earlier product-owner
+   call). Told directly it read as broken Afrikaans, matched nothing in Lovable, and served no purpose.
+   Removed the block embeds from `patterns/reading-storie.php`/`reading-artikel.php`, deleted
+   `Ink\Engagement\ContextualPrompts` (the class) and its registration in `Engagement\Module`, deleted
+   `tests/Unit/Engagement/ContextualPromptsTest.php`, removed the `.ink-leesprompte*` CSS from `theme.json`,
+   and collapsed `ReadingTemplatesTest.php`'s two prompt-specific tests (one asserting it was present on
+   storie/artikel, one asserting gedig deliberately omitted it) into a single test asserting no reading
+   pattern embeds it any more. `composer test` (1330 passed, same 4 pre-existing failures — 3 fewer than
+   before from the deleted test file, 2 further fewer from the Reply-test rewrite), `stan` (206 files now,
+   was 207, clean), `deptrac` (same 3 pre-existing violations) all re-run and confirmed clean. Deployed via
+   `deploy-to-local.sh --apply` (sandbox disabled for the known rsync-permission gotcha) and confirmed
+   removed live via a fresh curl (0 matches for `leesprompte`/"Reageer met bedoeling") and a screenshot —
+   the author-card band now flows directly into "Gemeenskapsreaksies" with nothing between them.
+3. **The reading-page byline (avatar+author-name) was rendering brand-red and underlined** — reported by
+   the product owner, who guessed it was caused by the new URL-autolink feature. The actual root cause,
+   confirmed via `git diff`, was a different change from the SAME fourth-pass round: `isLink:true` was
+   added to both `wp:avatar` and `wp:post-author-name` (the subagent's own disclosed judgment call #1,
+   approximating Lovable's single `<Link>` wrapping both). Before that, neither block rendered as an `<a>`
+   at all, so the sitewide `elements.link` style (`primary` color, `accent` on hover — confirmed unchanged
+   since before this whole rework via `git show HEAD:theme.json`) never touched it; making them real links
+   let that sitewide style bleed through, overriding the block's own explicit `textColor:"ink-text"`
+   (a real WP core quirk: the color attribute lands on a wrapping element, not the inner
+   `.wp-block-post-author-name__link`/`.wp-block-avatar__link` anchor itself). Checked against Lovable's
+   actual source (`ReadStory.tsx`'s `<Link to=... className="... hover:text-foreground">`) to confirm the
+   right fix: Lovable's own byline link carries no special link color/underline at all — it deliberately
+   looks like plain text, matching what "reset to what it was" should mean. Fixed with two new CSS rules
+   in `theme.json` targeting `.wp-block-post-author-name__link`/`.wp-block-avatar__link` (`ink-text`, no
+   underline, unchanged on hover) — kept the link itself (a genuine Lovable-matching fix, not reverted)
+   but suppressed the sitewide link styling that made it look like a normal hyperlink.
+4. **Same investigation surfaced the prose auto-link color was also wrong**, for the same underlying
+   reason: `.ink-prose-link` never set its own `color`, so it silently inherited the same sitewide
+   `primary`/brand-red instead of the footer's actual link color, which the original feature docblock had
+   *assumed* was "primary colour, inherited" without checking. Checked live via `getComputedStyle()` on a
+   real bottom-of-page footer nav link (not the "INK" site-title link, which is a separate dark/`ink-text`
+   treatment): footer nav links render in `muted-text` (`#6B7280`), a genuine gray, never brand-red. Fixed
+   `.ink-prose-link` to set `color:muted-text` explicitly (keeping the underline, per the original request
+   — "same color as footer... except with the traditional link underline added"). Verified end-to-end with
+   a temporary QA-fixture storie post containing two URLs (one bare, one parenthesized-with-trailing-
+   punctuation): both rendered gray, underlined, with the trailing icon, punctuation correctly excluded
+   from the link — fixture deleted after. `composer stan` (206 files, clean), `composer test` (1330 passed,
+   same 4 pre-existing failures) both re-run, no regression from the CSS-only change.
+5. **The Artikel type-pill was deliberately recoloured to gray, diverging from Lovable on purpose** — a
+   direct product-owner request, not a bug fix: "Poetry is sage, Story is the brand orange... let's try
+   matching shades of gray for the articles," specifically so Article reads as visually distinct from Story
+   at a glance. This is a genuine, disclosed exception to the fourth pass's own "Article gets Short Story's
+   exact shape" finding (`ReadStory.tsx`'s only branch is `isPoetry` — Lovable itself renders Article in the
+   identical terracotta pill as Short Story, confirmed earlier this pass) — the badge's `textColor` in
+   `patterns/reading-artikel.php` changed from `primary` to `muted-text`; no new CSS needed since
+   `.ink-lees-tipe`'s background is `color-mix(in srgb, currentColor 10%, transparent)`, so it auto-tints to
+   whatever text color is applied. `data-audit-id="storie-badge"` was deliberately left unchanged (it
+   anchors which Lovable branch the element structurally corresponds to, not the colour rendered).
+   Everything else on the artikel page (title sizing, hint pill, engagement bar, author-card band) stays
+   identical to storie's shape — only the pill's colour diverges. Verified live on a real published artikel
+   post: gray pill, clearly distinct from storie's orange and gedig's sage. `composer stan` clean (206
+   files), `composer test` unaffected (no test asserted the prior `has-primary-color` class on this pill).
 
 ---
 
