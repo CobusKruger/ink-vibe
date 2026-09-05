@@ -1067,6 +1067,56 @@ exactly 144px, equal to the borg-strook-to-CTA-band gap above it.
 production data source (see #3 above) — Epic 12A shipped the adjudication backend but never wired it to
 this filter. Needs a decision on whether it becomes its own follow-up story before launch.
 
+### Same-day follow-up: 6 shortcomings in the December-winner demo fixture (2026-09-05)
+
+The product owner reviewed the demo winner card added above and reported 6 more items, all confirmed real
+and fixed, three of them genuine pre-existing bugs surfaced only once the card actually had content to look
+at (it had rendered empty on every page load before this pass):
+
+1. **The "DESEMBER SE WENNERS" heading above the card was not supposed to be there.** Real: Lovable's
+   `ChallengeSection.tsx` has no section-level heading at all — each card carries its own "[Month] Winner"
+   eyebrow already. Removed from `FeaturedWinners::toHtml()` entirely (not just hidden), and the collapse
+   gate moved from "is there a title" to "is there at least one valid winner" — a more meaningful check now
+   that the title has no visible role. `title`/`url` are simply no longer read.
+2. **Winner card and challenge card must match height — real, and it was the same underlying cause as
+   #1.** The extraneous heading pushed the visible card down inside its grid cell without the wrapper
+   stretching to compensate, so the two cards' visible boxes were ~51px apart even though their grid CELLS
+   already matched (CSS Grid was already stretching those correctly — the mismatch was entirely inside the
+   winner wrapper). Removing the heading closes most of the gap by itself; added `height:100%` on
+   `.ink-wenner-kollig__kaarte` plus `flex:1` on the card when it's the wrapper's only child (deliberately
+   scoped to the single-card case — a future multi-winner feed must keep each card's own natural height,
+   not be squashed into equal slices). Live-confirmed: both cards exactly 381.38px.
+3. **Background and text colour of "Desember algehele wenner" were wrong — the text colour was real, no
+   separate background bug found.** `.ink-wenner-kollig__rang` rendered in `ink-text` (near-black) on a
+   deliberate prior a11y assumption ("gold text on gold ground ≈ 1.8:1") that didn't match what the card
+   actually paints (a 10-20%-opacity tint, not solid gold) — the exact same category of stale one-off
+   darkening as the Uitdaging-pill fix earlier this pass. Lovable's own "December Winner" label is
+   `rgb(232,177,48)` (confirmed live) with no background box behind the text at all — checked, and no CSS
+   rule adds one on the Ink side either, so "background" is read here as describing the badge as a whole
+   (icon tile + text), whose tile background already matched Lovable exactly before this fix. Corrected the
+   text colour to `gold`; live-confirmed exact match.
+4. **"Desember algehele wenner" should read "Desember wenner" — a real pre-existing bug, not a rewording.**
+   `Ink\Challenges\Placements`'s own class docblock documents the glossary convention as SPACE-joined for
+   both cases ("[Maand] algehele wenner" / "[Maand] wenner"), but `FeaturedWinners::cardHtml()` hyphen-joined
+   the ordinary case ("Desember-wenner") — a genuine inconsistency between the class's own documentation and
+   its implementation, with no test locking in the hyphenated form. Fixed the join to always use a space;
+   changed the demo entry's rank from 1 (algehele) to 2 (ordinary) so it actually exercises that path,
+   mirroring Lovable's own demo card (which is an ordinary win, not an overall-winner spotlight).
+5. **No author avatar — real, fixed.** The demo payload never set `avatar_url`. Added Lovable's own
+   placeholder photo (the same Unsplash URL `ChallengeSection.tsx` hardcodes for this exact card) rather
+   than inventing a new one.
+6. **"3de uitdagingwen" should be "3de wen" — direct wording correction, applied.** Notably, the *existing*
+   `FeaturedWinnersTest.php` fixture already used "3de wen" as its example value — the demo's invented
+   "3de uitdagingswen" was a one-off deviation from that established convention, not the other way around.
+
+New test coverage: `FeaturedWinnersTest.php`'s collapse test now asserts the new "no valid winners" gate
+(a title alone no longer renders anything); the render test asserts no heading/`<h2>` renders at all; a new
+test locks in the space-join fix for ordinary winners specifically so the hyphenated form can't regress.
+`composer test` 1332 passed (same 4 pre-existing failures, one more test than before), `stan` clean (206
+files). Deployed and re-verified live: heading gone, both cards exactly 381.38px, eyebrow text
+`rgb(232,177,48)` reading "Desember wenner", avatar rendering from `images.unsplash.com`, win label
+"3de wen".
+
 ---
 
 ### What each done row actually fixed

@@ -840,8 +840,6 @@ function ink_foundation_qa_fixture_featured_winner( mixed $data ): mixed {
 	}
 
 	return array(
-		'title'   => 'QA FIXTURE — Augustus-wenneraankondiging',
-		'url'     => '#qa-fixture-wenner-kollig',
 		'winners' => array(
 			array(
 				'id'        => 900001,
@@ -905,6 +903,16 @@ add_filter( 'ink_home_featured_winner', 'ink_foundation_qa_fixture_featured_winn
  * Delete this function (and its `add_filter`) the moment Challenges supplies the
  * real payload; the block will pick the real data up with no other change.
  *
+ * No section-level 'title'/'url' any more (fourth-pass follow-up, 2026-09-05):
+ * {@see \Ink\Challenges\FeaturedWinners::toHtml()} stopped rendering a section
+ * heading (direct product-owner finding: "DESEMBER SE WENNERS" above the card is
+ * not supposed to be there — Lovable's `ChallengeSection.tsx` has no such heading,
+ * each card carries its own eyebrow). This entry is rank 2 (an ordinary wenner,
+ * not the algehele wenner) with an avatar, matching Lovable's own "December
+ * Winner" / "Sarah Mitchell" demo card exactly (same fields populated, same
+ * Unsplash placeholder photo Lovable's own `ChallengeSection.tsx` hardcodes for
+ * this entry — reused rather than inventing a new placeholder).
+ *
  * @param mixed $data The filter's incoming value (null unless another filter
  *                     already supplied a payload).
  * @return mixed
@@ -920,18 +928,18 @@ function ink_foundation_homepage_demo_winner( mixed $data ): mixed {
 	}
 
 	return array(
-		'title'   => __( 'Desember se wenners', 'ink-foundation' ),
-		'url'     => '/uitdagings/',
 		'winners' => array(
 			array(
-				'id'        => 1,
-				'rank'      => 1,
-				'title'     => __( 'Die laaste lig van winter', 'ink-foundation' ),
-				'url'       => '/uitdagings/',
-				'month'     => __( 'Desember', 'ink-foundation' ),
-				'author'    => 'Sarie Mostert',
-				'quote'     => __( 'Die kers het geflikker teen die ryp-geverfde venster, elke dansende skaduwee ’n herinnering aan somers lank verby …', 'ink-foundation' ),
-				'win_label' => __( '3de uitdagingswen', 'ink-foundation' ),
+				'id'         => 1,
+				'rank'       => 2,
+				'title'      => __( 'Die laaste lig van winter', 'ink-foundation' ),
+				'url'        => '/uitdagings/',
+				'month'      => __( 'Desember', 'ink-foundation' ),
+				'author'     => 'Sarie Mostert',
+				'quote'      => __( 'Die kers het geflikker teen die ryp-geverfde venster, elke dansende skaduwee ’n herinnering aan somers lank verby …', 'ink-foundation' ),
+				'avatar_url' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
+				'avatar_alt' => 'Sarie Mostert',
+				'win_label'  => __( '3de wen', 'ink-foundation' ),
 			),
 		),
 	);

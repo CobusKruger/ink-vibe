@@ -215,58 +215,60 @@ final class FeaturedWinners {
 	 * Build the featured-slot HTML — the §5 winner card(s). Pure (Placements labels +
 	 * escaping only).
 	 *
-	 * Collapses to '' when there is no announcement title (no current wenneraankondiging)
-	 * — no empty chrome. When populated, renders the announcement heading (linked to its
-	 * permalink) and the ordered winners, each as a CARD ({@see cardHtml()}): a Crown
-	 * watermark + rank eyebrow (text + Crown icon — never colour alone), the linked work
-	 * title, the optional quote/author/avatar (seam-supplied), and a "Lees die volledige
-	 * storie" link. The gradient token CLASS (`--goud-gradient`) is a hook the theme
-	 * styles (`goud`/`gold-muted`); the block emits no colour itself.
+	 * Collapses to '' when there are no valid winners (no current wenneraankondiging) —
+	 * no empty chrome. When populated, renders the ordered winners, each as a CARD
+	 * ({@see cardHtml()}): a Crown watermark + rank eyebrow (text + Crown icon — never
+	 * colour alone), the linked work title, the optional quote/author/avatar
+	 * (seam-supplied), and a "Lees die volledige storie" link. The gradient token CLASS
+	 * (`--goud-gradient`) is a hook the theme styles (`goud`/`gold-muted`); the block
+	 * emits no colour itself.
+	 *
+	 * No section-level announcement heading is rendered (fourth-pass fidelity fix,
+	 * 2026-09-05, direct product-owner finding: "DESEMBER SE WENNERS" above the card
+	 * is not supposed to be there). Lovable's `ChallengeSection.tsx` has no equivalent
+	 * heading at all — each card carries its own "[Month] Winner" eyebrow already
+	 * ({@see cardHtml()}), so a section-wide title was pure INK-side elaboration with no
+	 * Lovable counterpart. The collapse gate moved from "is there a title" to "is there
+	 * at least one valid winner" — the more meaningful question now that the title has
+	 * no visible role — so `$featured['title']`/`['url']` are no longer read; a caller
+	 * may still pass them (e.g. a future consumer using them for something else) with no
+	 * effect here.
 	 *
 	 * @param array{title?:string, url?:string, winners?:array<int,array<string,mixed>>} $featured The 12A payload.
 	 * @return string
 	 */
 	public static function toHtml( array $featured ): string {
-		$title = (string) ( $featured['title'] ?? '' );
-
-		if ( '' === trim( $title ) ) {
-			return '';
-		}
-
-		$url = (string) ( $featured['url'] ?? '' );
 		// 12A.7: render the full feed (every winner, algehele wenner(s) first), not the
 		// single-spotlight dedup — the per-category pools (12A.3) have one algehele wenner each.
 		$winners = self::orderFeed( is_array( $featured['winners'] ?? null ) ? $featured['winners'] : array() );
 
-		$heading = '' !== $url
-			? '<a href="' . esc_url( $url ) . '">' . esc_html( $title ) . '</a>'
-			: esc_html( $title );
-
-		$html = '<section class="ink-wenner-kollig" aria-label="' . esc_attr__( 'Wenneraankondiging', 'ink-core' ) . '">'
-			. '<h2 class="ink-wenner-kollig__titel">' . $heading . '</h2>';
-
-		if ( array() !== $winners ) {
-			$html .= '<div class="ink-wenner-kollig__kaarte">';
-
-			foreach ( $winners as $winner ) {
-				$html .= self::cardHtml( $winner );
-			}
-
-			$html .= '</div>';
+		if ( array() === $winners ) {
+			return '';
 		}
 
-		return $html . '</section>';
+		$html = '<section class="ink-wenner-kollig" aria-label="' . esc_attr__( 'Wenneraankondiging', 'ink-core' ) . '">'
+			. '<div class="ink-wenner-kollig__kaarte">';
+
+		foreach ( $winners as $winner ) {
+			$html .= self::cardHtml( $winner );
+		}
+
+		return $html . '</div></section>';
 	}
 
 	/**
 	 * One winner CARD (§5). Pure (escaping only).
 	 *
-	 * Rank is conveyed by TEXT (the eyebrow "[Maand] algehele wenner" / "[Maand]-wenner")
-	 * paired with a Crown icon — never colour alone (a11y). The eyebrow join follows the
-	 * authored ui-copy: a space for the algehele wenner ("Desember algehele wenner"), a
-	 * hyphen for an ordinary wenner ("Desember-wenner"). The month + author + quote +
-	 * avatar + win_label are OPTIONAL seam fields — each sub-part is omitted when absent,
-	 * so the card degrades gracefully until 12A supplies the richer payload.
+	 * Rank is conveyed by TEXT (the eyebrow "[Maand] algehele wenner" / "[Maand] wenner")
+	 * paired with a Crown icon — never colour alone (a11y). The eyebrow join is a SPACE
+	 * for both cases, per {@see \Ink\Challenges\Placements}'s own glossary docblock
+	 * ("rank 1 = algehele wenner ('[Maand] algehele wenner'); ranks 2–3 = wenner
+	 * ('[Maand] wenner')") — a hyphen for the ordinary case was a real bug here, fixed
+	 * 2026-09-05 (direct product-owner finding: "Desember algehele wenner" should read
+	 * "Desember wenner" for an ordinary placement). No test had locked in the hyphenated
+	 * form. The month + author + quote + avatar + win_label are OPTIONAL seam fields —
+	 * each sub-part is omitted when absent, so the card degrades gracefully until 12A
+	 * supplies the richer payload.
 	 *
 	 * @param array{id:int, rank:int, title:string, url:string, is_algehele_wenner:bool, label:string, month:string, author:string, quote:string, avatar_url:string, avatar_alt:string, win_label:string} $winner The winner row.
 	 * @return string
@@ -278,13 +280,11 @@ final class FeaturedWinners {
 		$classes = 'ink-wenner-kollig__kaart ink-wenner-kollig__kaart--goud-gradient '
 			. 'ink-wenner-kollig__kaart--' . $variant;
 
-		// Eyebrow: month + placement label, joined per authored ui-copy (space for the
-		// algehele wenner, hyphen otherwise). Month absent → just the placement label.
+		// Eyebrow: month + placement label, space-joined either way. Month absent →
+		// just the placement label.
 		$label   = (string) $winner['label'];
 		$month   = (string) $winner['month'];
-		$eyebrow = '' !== $month
-			? ( $is_algehele ? $month . ' ' . $label : $month . '-' . $label )
-			: $label;
+		$eyebrow = '' !== $month ? $month . ' ' . $label : $label;
 
 		$url        = (string) $winner['url'];
 		$title      = (string) $winner['title'];

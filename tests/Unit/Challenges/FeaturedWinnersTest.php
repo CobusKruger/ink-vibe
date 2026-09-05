@@ -79,14 +79,17 @@ test( 'order drops rows with no id or a non-placement rank', function (): void {
 
 // --- toHtml(): collapses when empty (the forward-compatible 12A invariant) ---
 
-test( 'toHtml COLLAPSES to empty markup when there is no announcement (12A not yet supplying)', function (): void {
+test( 'toHtml COLLAPSES to empty markup when there are no valid winners', function (): void {
 	expect( FeaturedWinners::toHtml( array() ) )->toBe( '' );
-	expect( FeaturedWinners::toHtml( array( 'title' => '   ' ) ) )->toBe( '' );
+	expect( FeaturedWinners::toHtml( array( 'winners' => array() ) ) )->toBe( '' );
+	// A 'title' with no valid winners still collapses — title is no longer the gate
+	// (fourth-pass fidelity fix, 2026-09-05: the section-level heading was removed).
+	expect( FeaturedWinners::toHtml( array( 'title' => 'Junie-uitslae' ) ) )->toBe( '' );
 } );
 
-// --- toHtml(): renders the announcement + ordered winners when populated ---
+// --- toHtml(): renders the ordered winners when populated ---
 
-test( 'toHtml renders the announcement linked + winner CARDS in algehele-wenner-first order', function (): void {
+test( 'toHtml renders no section-level heading, only winner CARDS in algehele-wenner-first order', function (): void {
 	$html = FeaturedWinners::toHtml(
 		array(
 			'title'   => 'Junie-uitslae',
@@ -98,10 +101,15 @@ test( 'toHtml renders the announcement linked + winner CARDS in algehele-wenner-
 		)
 	);
 
-	// Non-vacuous: the announcement heading links to its permalink.
 	expect( $html )->toContain( 'ink-wenner-kollig' );
-	expect( $html )->toContain( 'Junie-uitslae' );
-	expect( $html )->toContain( 'href="https://ink.test/wenneraankondiging/junie"' );
+
+	// No section-level heading/announcement link — removed 2026-09-05 (product-owner
+	// finding: "DESEMBER SE WENNERS" above the card is not supposed to be there;
+	// Lovable's ChallengeSection.tsx has no such heading at all).
+	expect( $html )->not->toContain( 'ink-wenner-kollig__titel' );
+	expect( $html )->not->toContain( '<h2' );
+	expect( $html )->not->toContain( 'Junie-uitslae' );
+	expect( $html )->not->toContain( 'href="https://ink.test/wenneraankondiging/junie"' );
 
 	// The upgraded DOM emits card articles, not a flat <ul>/<li> list (§5).
 	expect( $html )->toContain( 'ink-wenner-kollig__kaart' );
@@ -157,6 +165,30 @@ test( 'toHtml renders the optional card fields (avatar with alt, quote, author) 
 
 	// The eyebrow joins month + "algehele wenner" with a SPACE for the algehele wenner.
 	expect( $html )->toContain( 'Desember algehele wenner' );
+} );
+
+test( 'toHtml joins month + label with a SPACE for an ordinary (non-algehele) wenner too', function (): void {
+	// Fourth-pass fidelity fix (2026-09-05): this used to hyphen-join ("Desember-wenner"),
+	// contradicting Placements's own glossary docblock ("[Maand] wenner", space-joined
+	// for ranks 2-3 same as rank 1) — a real bug, not a style choice. No prior test
+	// locked in the hyphenated form.
+	$html = FeaturedWinners::toHtml(
+		array(
+			'winners' => array(
+				array(
+					'id'    => 20,
+					'rank'  => 2,
+					'title' => 'Tweede werk',
+					'url'   => 'https://ink.test/w/2',
+					'month' => 'Desember',
+				),
+			),
+		)
+	);
+
+	expect( $html )->toContain( 'Desember wenner' );
+	expect( $html )->not->toContain( 'Desember-wenner' );
+	expect( $html )->not->toContain( 'algehele' );
 } );
 
 test( 'toHtml OMITS the optional card sub-parts gracefully when the seam supplies only id/rank/title/url', function (): void {

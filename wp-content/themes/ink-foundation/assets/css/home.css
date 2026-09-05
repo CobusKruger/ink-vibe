@@ -163,6 +163,7 @@
 .ink-huidige-uitdaging,
 .ink-huidige-uitdaging__aksie,
 .ink-wenner-kollig,
+.ink-wenner-kollig__kaart,
 .ink-wenner-kollig__skakel,
 .ink-borg-strook__cta {
 	box-sizing: border-box;
@@ -577,37 +578,34 @@
 
 /* ── §5 Winner card (ink/wenner-kollig block, upgraded DOM) ──────────────────────
    Gradient gold/10 → gold-muted/20 (135°, bright → muted), 16px, 1px gold-muted/30
-   border, NO shadow, Crown watermark. Eyebrow set in `text` — NOT gold-on-gold
-   (a11y: gold text on gold ground ≈ 1.8:1). Rank is always TEXT + Crown icon. */
+   border, NO shadow, Crown watermark. Rank is always TEXT + Crown icon.
+   No section-level heading any more (fourth-pass fidelity fix, 2026-09-05,
+   product-owner finding: "DESEMBER SE WENNERS" above the card is not supposed to
+   be there — Lovable's ChallengeSection.tsx has no such heading, only each card's
+   own eyebrow) — `.ink-wenner-kollig__titel` and its states are removed along
+   with the markup `FeaturedWinners::toHtml()` no longer emits. */
 .ink-wenner-kollig {
 	display: block;
 	height: 100%;
-}
-
-.ink-wenner-kollig__titel {
-	margin: 0 0 var(--wp--preset--spacing--s-16);
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--wp--preset--font-size--sm);
-	font-weight: var(--wp--custom--font-weight--medium);
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	color: var(--wp--preset--color--muted-text);
-}
-
-.ink-wenner-kollig__titel a {
-	color: inherit;
-	text-decoration: none;
-}
-
-.ink-wenner-kollig__titel a:hover,
-.ink-wenner-kollig__titel a:focus-visible {
-	color: var(--wp--preset--color--ink-text);
 }
 
 .ink-wenner-kollig__kaarte {
 	display: flex;
 	flex-direction: column;
 	gap: var(--wp--preset--spacing--s-24);
+	height: 100%;
+}
+
+/* When there is exactly one card (the common case — the slot sits beside the
+   single Uitdaging feature card and the two must read as a matched pair,
+   product-owner finding "the winner card and the challenge card to its left
+   form a set and must have the same height"), stretch it to fill the wrapper's
+   full height, same as `.ink-huidige-uitdaging--kenmerk` does. With MULTIPLE
+   cards (12A.7's per-category feed) this intentionally does NOT apply — each
+   keeps its natural height; forcing every card to flex:1 would squash a
+   multi-winner feed into equal slices instead of their own content height. */
+.ink-wenner-kollig__kaarte > .ink-wenner-kollig__kaart:only-child {
+	flex: 1;
 }
 
 .ink-wenner-kollig__kaart {
@@ -651,6 +649,18 @@
 	height: var(--wp--preset--spacing--s-96);
 }
 
+/* Rank eyebrow text ("Desember wenner" etc.) — GOLD, matching Lovable's
+   `text-gold` exactly (confirmed live: `rgb(232,177,48)` on both). This used to
+   render in `ink-text` (near-black) instead, on the reasoning that gold text
+   would fail contrast against a "gold ground" (~1.8:1) — but the card's actual
+   background is the same 10-20%-opacity gold TINT as the rest of this card
+   (near-white, not solid gold), so that assumption never matched what was
+   actually painted; the same primary-on-primary/10% pattern is used undarkened
+   elsewhere on this page (see the Uitdaging pill fix, same pass). Corrected on
+   direct product-owner fidelity instruction (2026-09-05: "the text color for
+   'Desember algehele wenner' is wrong"). No separate background belongs on this
+   text — Lovable's own label is plain coloured text next to the (already
+   correctly gold-tinted) icon tile, not a pill. */
 .ink-wenner-kollig__rang {
 	display: inline-flex;
 	align-items: center;
@@ -659,7 +669,7 @@
 	font-family: var(--wp--preset--font-family--heading);
 	font-size: var(--wp--preset--font-size--sm);
 	font-weight: var(--wp--custom--font-weight--semibold);
-	color: var(--wp--preset--color--ink-text);
+	color: var(--wp--preset--color--gold);
 }
 
 /* Crown icon tile: gold/20 bg + gold icon (Lovable: `bg-gold/20` + `text-gold`).
