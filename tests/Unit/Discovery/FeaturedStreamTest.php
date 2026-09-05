@@ -107,16 +107,16 @@ test( 'toHtml COLLAPSES when no item has a title (never an orphan header)', func
 
 // --- toHtml(): the section header (§6) ---
 
-test( 'toHtml renders the eyebrow + serif title + focusable "Sien alle werke" link', function (): void {
+test( 'toHtml renders the eyebrow + serif title + focusable "Sien alle skrywes" link', function (): void {
 	$html = FeaturedStream::toHtml( array( ink_featured_item() ) );
 
 	// UPPERCASE terracotta eyebrow (authored copy) + the serif h2 title.
 	expect( $html )->toContain( 'Die redakteur se keuse' );
 	expect( $html )->toContain( '<h2 id="ink-uitgesoekte-bydraes__titel"' );
-	expect( $html )->toContain( 'Hierdie week se uitgesoektes' );
+	expect( $html )->toContain( 'In die kollig' );
 
-	// "Sien alle werke" link to the Ontdek hub, underline-slide, real href (no #).
-	expect( $html )->toContain( 'Sien alle werke' );
+	// "Sien alle skrywes" link to the Ontdek hub, underline-slide, real href (no #).
+	expect( $html )->toContain( 'Sien alle skrywes' );
 	expect( $html )->toContain( 'href="/ontdek"' );
 	expect( $html )->toContain( 'ink-underline-slide' );
 	expect( $html )->not->toContain( 'href="#"' );
@@ -175,6 +175,27 @@ test( 'toHtml renders the card: pill, read-time, h3 title link, excerpt, avatar 
 	expect( $html )->toContain( 'alt="Elena Vasquez"' );
 	expect( $html )->toContain( 'width="32" height="32"' );
 	expect( $html )->toContain( 'Elena Vasquez' );
+} );
+
+test( 'the category pill carries a per-bydrae-type modifier keyed on the POST TYPE, not the visible label', function (): void {
+	// The visible pill text is a free-text genre term ("Kortverhaal"), so the
+	// modifier must come from `category_slug` (the post type) — the theme colours
+	// gedig/storie/artikel differently (sage / brand orange / grey).
+	foreach ( array( 'gedig', 'storie', 'artikel' ) as $type ) {
+		$html = FeaturedStream::toHtml( array( ink_featured_item( array( 'category_slug' => $type ) ) ) );
+
+		expect( $html )->toContain( 'ink-uitgesoekte-bydraes__pil ink-uitgesoekte-bydraes__pil--' . $type );
+	}
+
+	// An unknown / absent type degrades to the neutral base pill — never an
+	// unstyled `--skryfwerk` class and never a class built from unvalidated input.
+	$unknown = FeaturedStream::toHtml( array( ink_featured_item( array( 'category_slug' => 'skryfwerk' ) ) ) );
+	expect( $unknown )->toContain( 'class="ink-uitgesoekte-bydraes__pil"' );
+	expect( $unknown )->not->toContain( '__pil--' );
+
+	$absent = FeaturedStream::toHtml( array( ink_featured_item() ) );
+	expect( $absent )->toContain( 'class="ink-uitgesoekte-bydraes__pil"' );
+	expect( $absent )->not->toContain( '__pil--' );
 } );
 
 test( 'toHtml renders verb-less engagement counts with full accessible labels (Heart = hartjies, MessageCircle = reaksies)', function (): void {

@@ -619,7 +619,11 @@ final class SkrywerProfiel {
 
 			$html .= '</ul>';
 
-			$html .= '<a class="ink-skrywerprofiel__sien-alle" href="' . esc_url( home_url( '/ontdek/' ) ) . '">' . esc_html__( 'Sien alle werke', 'ink-core' ) . '</a>';
+			// Reads the shared label through the Terms registry rather than repeating
+			// the literal (house single-source convention); the bare duplicate here had
+			// to be corrected by hand when the product owner replaced "werke" with
+			// "skrywes" sitewide on 2026-09-05.
+			$html .= '<a class="ink-skrywerprofiel__sien-alle" href="' . esc_url( home_url( '/ontdek/' ) ) . '">' . esc_html( Terms::label( 'sien_alle_werke' ) ) . '</a>';
 
 			$html .= '</div>';
 		}

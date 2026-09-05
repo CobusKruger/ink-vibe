@@ -98,7 +98,8 @@ against Lovable's corrected rendering (first instance: lees-gedig's title, below
 | 3 | lees-gedig | **Fourth pass done, independently re-verified, 2026-09-05** — deur/bullet/spacing/color/heart-box-model/comments all fixed, live-triggered-interaction checked | see "Fourth pass" below |
 | 2 | lees-storie | **Fourth pass done, independently re-verified, 2026-09-05** — header background/border added, real text-selection highlight mechanism built and triggered live, comments rebuilt | see "Fourth pass" below |
 | — | lees-artikel | **Fourth pass done, independently re-verified, 2026-09-05** — unified onto lees-storie's exact shape (Lovable has no distinct Article render path), confirmed via live badge class/author-card/reaction-variant checks | see "Fourth pass" below |
-| 1, 4, 5, 7, 13–15 | tuisblad, opleiding, biblioteek, uitdagings-list, lidmaatskap, kontak, oor-ink | not yet started under this method | queued — see session todo list |
+| 1 | tuisblad | **Fourth pass done, independently re-verified, 2026-09-05** — 15 PO-reported items, all confirmed real and fixed (sticky header, pill colours, button sizing, box-model overflow, spacing, page width, 2 missing fixtures); 1 open item carried forward (FeaturedWinners has no real data source) | see "Fourth pass — tuisblad" below |
+| 4, 5, 7, 13–15 | opleiding, biblioteek, uitdagings-list, lidmaatskap, kontak, oor-ink | not yet started under this method | queued — see session todo list |
 
 ### Retrospective: why lees-gedig still had substantial differences after four prior passes
 
@@ -933,6 +934,138 @@ enough to fix directly rather than round-trip through a subagent:
    identical to storie's shape — only the pill's colour diverges. Verified live on a real published artikel
    post: gray pill, clearly distinct from storie's orange and gedig's sage. `composer stan` clean (206
    files), `composer test` unaffected (no test asserted the prior `has-primary-color` class on this pill).
+
+---
+
+## Fourth pass — tuisblad (2026-09-05)
+
+The product owner reviewed the live homepage against Lovable directly and reported 15 items verbatim.
+Dispatched as a single fourth-pass fix round (mirroring the reading-page method above), with the two
+trickiest root causes pre-diagnosed by the orchestrator before dispatch (both confirmed live via
+`getComputedStyle()`/`getBoundingClientRect()` before handing off): the sticky header genuinely wasn't
+sticking (at scrollY 1200 its `top` read a large negative value, not 0), and the "Uitdaging" pill's text
+colour measured `#B13317`, not the brand `primary` Lovable's "Weekly Challenge" pill uses. Every item was
+independently re-verified by the orchestrator afterward — live computed-style/rect checks on the deployed
+site, a fresh `git diff` read of every changed file, and an independent re-run of `composer test`/`stan`/
+`deptrac` — before being marked done here; nothing below is taken on the subagent's word alone.
+
+**A live Lovable preview was reachable this pass** (`https://preview--quill-muse-heart.lovable.app/`) —
+past sessions' "unreachable, 500 error" notes are now stale; real Tier 2 screenshot/computed-style diffing
+against the actual reference was possible for the first time on this page.
+
+1. **Button sizes (hero "Begin lees"/"Deel jou werk", challenge-card "Skryf in") — real, fixed.**
+   `.ink-btn-lg`/`sm`/`xl` set `min-height` with WordPress core's own `.wp-block-button__link` vertical
+   padding left in place, so the floor never actually clamped anything — live-measured 49.34px/53.34px
+   against a 44px target. Lovable's shadcn sizes are a *fixed* `height` with horizontal-only padding,
+   flex-centred. Changed to fixed `height`, zeroed vertical padding, moved `inline-flex`/`align-items:center`
+   onto the size classes themselves (not borrowed from `.ink-btn-icon`), fixed `xl`'s padding (48px→40px,
+   a pre-existing mis-mapped token vs Lovable's `px-10`). `ink-btn-lg` is used only in `hero.php`;
+   `sm`/`xl` are used nowhere else in the theme — no sitewide blast radius. Live-confirmed: hero primary
+   44px, challenge-card CTA 40px.
+2. **"Uitdaging" pill colour — real, fixed.** Root cause exactly as pre-diagnosed: a one-off a11y-motivated
+   `color-mix(primary 72%, ink-text)` override on `.ink-huidige-uitdaging__kenteken`, inconsistent with the
+   identical primary-on-primary/10% treatment used undarkened everywhere else on the site (reading-page
+   `.ink-lees-tipe`, `.ink-hero-badge`, the featured-grid eyebrow). Removed on direct PO instruction
+   ("compare with Weekly Challenge"). Live-confirmed: `rgb(236, 59, 19)`, exact match.
+3. **No winner-card fixture — real, and a genuine stranded-capability gap surfaced.** `FeaturedWinners`
+   sources its whole payload from one filter (`ink_home_featured_winner`) that nothing in production ever
+   hooks — its own docblock still says "Epic 12A is unbuilt", which is stale (12A shipped and merged;
+   see [[epic-12a-carryforward]]). Confirmed there is not even latent data: zero `ink_entry_placement` meta
+   rows in the Local DB. Added `ink_foundation_homepage_demo_winner()`, a *separate* filter hook (deliberately
+   not a widening of the existing QA-gallery-gated fixture — conflating those two is exactly the mistake
+   already fixed once for sponsors, see #12), gated to `is_front_page()` only and yielding to any real
+   payload. Documented in-code as demo content to delete the moment Challenges wires the real query.
+   **Open item, not closed by this pass:** wiring `ink_home_featured_winner` to real `Placements` data is
+   real Challenges feature work, not a theme fix — needs its own follow-up story/decision, tracked here.
+4. **Heading copy "Hierdie week se uitgesoektes" → "In die kollig" — direct PO copy correction, applied.**
+   Eyebrow "Die redakteur se keuse" left untouched as instructed.
+5. **"werke" → "skrywes" — 4 real sitewide occurrences found and fixed**, all verbatim UI copy (not code
+   identifiers): `Terms::sien_alle_werke`'s value (key name left alone, it's an internal identifier), the
+   bare-literal duplicates in `FeaturedStream.php` and `SkrywerProfiel.php` (also re-routed through the
+   `Terms` registry instead of independently duplicating the literal — a pre-existing house-convention
+   violation, fixed opportunistically), and `PinnedWorksManager`'s "Vasgespelde werke". A direct PO
+   terminology instruction, not AI-retranslation — applied without going through the copy-debt process.
+6. **Featured-grid type-pill colours (Gedig/Storie/Artikel → sage/orange/gray) — deliberate, disclosed
+   divergence, implemented.** Confirmed Lovable's own `FeaturedWorks.tsx` uses one flat `bg-secondary`
+   badge for every type (live-verified: identical `rgb(240,235,230)`/`rgb(24,29,37)` on all four sample
+   cards) — this is the PO explicitly asking to diverge, mirroring the Artikel-pill precedent above.
+   `FeaturedStream::metaTopHtml()` now emits a `__pil--{gedig|storie|artikel}` modifier keyed on the post
+   TYPE (not the pill's visible text, which can be a free-text genre term), styled with the exact tokens/
+   percentages already established on the reading pages' `.ink-lees-tipe` badge, so the two surfaces can't
+   drift apart. Live-confirmed: Gedig `rgb(82,122,102)` (sage), Storie `rgb(236,59,19)` (primary).
+7 + 8. **"Oktober-uitdaging" box: too much internal bottom whitespace / no gap below it — one root cause,
+   fixed.** None of the `.ink-*` block markup gets `box-sizing:border-box` from WP core (core only covers
+   its own `.wp-block-*` classes), so every rule pairing a `height`/`min-height` with `padding` painted a
+   box bigger than declared — the kenmerk card computed height 370px but painted 436px, overflowing its own
+   grid row and eating the feature band's entire bottom padding. Fixed with explicit (not wildcard)
+   `box-sizing:border-box` on the five affected `.ink-huidige-uitdaging*`/`.ink-wenner-kollig*`/
+   `.ink-borg-strook__cta` rules. Live-confirmed: card box now exactly fills its grid area, 0px overflow.
+9. **Featured-grid card internal spacing (pill→heading→body→author) — real, fixed.** Was one flat 8px flex
+   `gap` for every pair; Lovable uses a *different* margin after each element (measured live: 12px pill→
+   title both card types, 12px/8px title→excerpt featured/standard, 16px excerpt→footer), plus a different
+   set again for the spanning featured card. Replaced the flat gap with explicit per-element margins
+   matching Lovable's measured values; also dropped `margin-top:auto` on the author row (Lovable does not
+   bottom-pin it — pinning it is exactly what made the gap vary card-to-card, the PO's "inconsistent" report).
+10. **Sticky header — real, fixed; root cause exactly as pre-diagnosed.** `position:sticky` was applied to
+    the inner `.is-style-ink-header` div, whose own containing block (the semantic `<header>` wrapper) is
+    sized to exactly its height — zero room to stick, so the whole thing scrolled away with the page
+    (live-confirmed pre-fix: `top` read a large negative value at scrollY 1200 despite `position`/`top`
+    computing correctly). Moved the positioning to `header.wp-block-template-part`, whose own parent
+    (`.wp-site-blocks`) spans the full page. This also surfaced a second real bug once it actually stuck:
+    it slid under the WP admin bar for signed-in users — added a `body.admin-bar` offset (32px above 782px,
+    0 below, matching the admin bar's own responsive behaviour). Global fix (site-wide header) — re-verified
+    on `/ontdek/` and a storie reading page in addition to the homepage. Live-confirmed: `top:32px` at
+    scrollY 1200 while logged in, header visibly present at every scroll depth.
+11. **"Redakteur se keuse" outer spacing bigger than the design — real, fixed.** The section's own `s-64`
+    padding already matched Lovable numerically; the extra came from WordPress's default 24px `blockGap` on
+    `<main>`, silently inserted between every pair of homepage sections (and between the header and the
+    first section) — Lovable's `<main>` stacks its sections edge-to-edge with 0 gap. Pinned `blockGap:"0"`
+    on the front-page `<main>` group; every section now carries its own, and only its own, padding. Also
+    fixed the section header's `margin-bottom` (32px → 40px, Lovable's measured `mb-10`) found in the same
+    investigation.
+12. **No sponsors-section fixture — real, fixed with real data.** Root cause: every `borg` post in the DB
+    was `QA FIXTURE — ` titled, and `HomepageStrip` correctly excludes those from production (a previous
+    fidelity-pass fix) — so after exclusion, zero sponsors remained and the section legitimately collapsed.
+    Created 6 real, non-"QA FIXTURE"-titled `borg` posts (IDs 67926–67931) via the real production path,
+    full active-campaign meta set, spread across goud/silwer/brons — left in place, not deleted. Making the
+    section actually render exposed two further real bugs, both fixed: the block's plain `<section>` sat
+    inside a *constrained* group, silently capped at 768px instead of the full 1368px wide width (six chips
+    that sit on one row in Lovable were wrapping onto three); and a flat 16px gap where Lovable uses several
+    different measured margins (`mt-2`/`mb-4`/`mb-10`/`gap-8 md:gap-12`). Live-confirmed: all 6 chips on one
+    row at 1680px viewport.
+13. **"Jou woorde verdien lesers" (CTA band) spacing wrong throughout — real, fixed.** One uniform 24px
+    `blockGap` for heading/paragraph/buttons, and a 1.2 line-height heading; Lovable uses `mb-4`(16px) after
+    the heading, `mb-8`(32px) after the paragraph, and a `line-height:1` 48px heading — all three measured
+    live and matched exactly.
+14. **Homepage overall wider than Lovable — real, fixed.** Measured at 1680px viewport: Ink content box
+    1400px wide vs Lovable's 1368px — a flat 32px (16px/side) too wide, with zero horizontal overflow
+    anywhere (ruled out an overflowing element). Root cause: Lovable's `container` max-width (1400px)
+    *includes* its own `px-4` side padding, so its actual content width is 1368px; Ink's `wideSize` (1400px)
+    was being treated as content width with the section's `s-24` padding applied on top of it. Fixed at the
+    single source — `theme.json`'s `wideSize` 1400px → 1368px — and re-verified on `/ontdek/`, `/oor-ink/`
+    and a storie reading page (a global token change) with zero regression. Live-confirmed: content box now
+    exactly 1368px on the homepage.
+15. **Huge, asymmetric spacing below the CTA band — real, PO override applied literally.** Measured both
+    sides: 160px below (80 CTA-band bottom padding + 80 footer top margin) vs 144px above (64 borg-strook
+    bottom + 80 CTA-band top) — Ink already matched Lovable's own asymmetry exactly, which is why the PO
+    called it out as "matches Lovable, but isn't right." Applied the override as stated: CTA-band bottom
+    padding `s-80`→`s-64`, so below now equals the same 144px as above. Disclosed as an intentional
+    divergence from the reference in the pattern's own comment.
+
+**Gates, independently re-run by the orchestrator (not just accepted from the subagent's report):**
+`composer test` 1331 passed / 4 failed (the same pre-existing `TierWriteTest.php` failures as every other
+check this whole rework — `wp_create_user()` undefined, no wp-env DB; one more test now than before, from
+the new `FeaturedStreamTest` pill-modifier coverage), `composer stan` 206 files clean, `composer deptrac`
+same 3 pre-existing `Activation → PostTypes` violations, 0 new. Deployed via `deploy-to-local.sh --apply`
+and confirmed live (not just via the subagent's report): sticky header holds at every scroll depth tested,
+pill colours exact-match Lovable's tokens, button heights exactly 44/40px, page content box exactly 1368px
+wide with zero horizontal overflow, 6 sponsor chips on one row, the winner card renders real Afrikaans demo
+content ("Desember se wenners" / "Desember algehele wenner"), and the CTA-band-to-footer gap measures
+exactly 144px, equal to the borg-strook-to-CTA-band gap above it.
+
+**Open item carried forward, not resolved by this pass:** the `FeaturedWinners` home-page slot has no real
+production data source (see #3 above) — Epic 12A shipped the adjudication backend but never wired it to
+this filter. Needs a decision on whether it becomes its own follow-up story before launch.
 
 ---
 

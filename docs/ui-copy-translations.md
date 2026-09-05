@@ -89,8 +89,8 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Engels | Afrikaans | Notas |
 |---|---|---|
 | Editor's Picks | Die redakteur se keuse | Boskrif-etiket |
-| Featured This Week | Hierdie week se uitgesoektes | H2 |
-| View All Works | Sien alle werke | Skakel |
+| Featured This Week | In die kollig | H2 — direkte produkeienaar-korreksie 2026-09-05 (was "Hierdie week se uitgesoektes") |
+| View All Works | Sien alle skrywes | Skakel — "werke" → "skrywes", produkeienaar-terminologiekorreksie 2026-09-05 (globaal) |
 | Short Story *(badge)* | Storie | |
 | Poetry *(badge)* | Gedig | |
 | Article *(badge)* | Artikel | |
@@ -429,7 +429,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Engels | Afrikaans | Notas |
 |---|---|---|
 | Follow | Volg | Knoppie |
-| View All Works | Sien alle werke | Knoppie |
+| View All Works | Sien alle skrywes | Knoppie — "werke" → "skrywes", produkeienaar-terminologiekorreksie 2026-09-05 |
 
 ### Gemeenskapsreaksies
 
@@ -689,7 +689,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Accomplishments | Prestasies | Sykolom-opskrif |
 | Selected work | Uitgesoekte werk | Boskrif-etiket |
 | A curated reading list, in [name]'s own order. | 'n Saamgestelde leeslys, in [naam] se eie volgorde. | H2 |
-| See all works | Sien alle werke | Skakel |
+| See all works | Sien alle skrywes | Skakel — "werke" → "skrywes", produkeienaar-terminologiekorreksie 2026-09-05 |
 | Don't miss [name]'s next piece. | Moenie [naam] se volgende stuk misloop nie. | H2 |
 | Follow to get new stories in your reading feed, and be the first to leave a thoughtful note when they publish. | Volg om nuwe stories in jou leesvloei te ontvang, en wees die eerste om 'n deurdagte nota te los wanneer hulle publiseer. | |
 | Follow | Volg | Knoppie |

@@ -1,6 +1,7 @@
 <!-- wp:template-part {"slug":"header","theme":"ink-foundation","tagName":"header","area":"header","lock":{"move":true,"remove":true}} /-->
 
-<!-- wp:group {"tagName":"main","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"layout":{"type":"constrained"}} -->
+<!-- Fourth-pass fidelity fix (2026-09-05, product-owner finding #11 "top and bottom spacing on the Redakteur se keuse section are bigger than on the design"): blockGap is pinned to 0. Every home section already carries its OWN vertical rhythm as section padding (hero/feature-band/featured-grid/borg s-64, cta-band s-80), exactly like Lovable, where `<main>` stacks `<section className="py-16">` siblings with NO gap between them at all (measured live: section boxes are edge-to-edge, 0px apart). Without this, WordPress's default 24px blockGap was silently added BETWEEN every pair of sections — and between the header and the first section — inflating every inter-section gap by 24px over the design. -->
+<!-- wp:group {"tagName":"main","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"},"blockGap":"0"}},"layout":{"type":"constrained"}} -->
 <main class="wp-block-group alignfull" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
 	<!-- wp:pattern {"slug":"ink-foundation/hero"} /-->
 

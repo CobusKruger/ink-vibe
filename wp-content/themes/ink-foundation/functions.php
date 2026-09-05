@@ -875,6 +875,70 @@ function ink_foundation_qa_fixture_featured_winner( mixed $data ): mixed {
 add_filter( 'ink_home_featured_winner', 'ink_foundation_qa_fixture_featured_winner' ); // Ink\Challenges\FeaturedWinners::FEATURED_FILTER.
 
 /**
+ * FRONT-PAGE VISUAL-PARITY DEMO CONTENT for `ink/wenner-kollig` — **not** a
+ * completion of Epic 12A's real winner-data wiring.
+ *
+ * Read this before touching it. `Ink\Challenges\FeaturedWinners` sources its whole
+ * payload from one filter ({@see \Ink\Challenges\FeaturedWinners::FEATURED_FILTER})
+ * and nothing in `ink-core` hooks it — its own docblock still says "Epic 12A is
+ * unbuilt", which is now STALE (12A shipped and merged). The winner spotlight is
+ * therefore a **stranded capability**: the block, its markup, its ordering contract
+ * and its styling all exist, but no production code path ever feeds it, so the
+ * Tuisblad's winner slot can never render real adjudication results. Confirmed
+ * against this install's database on 2026-09-05: zero `ink_entry_placement` meta
+ * rows exist, so there is not even latent real data to query. Closing that gap
+ * (querying the most recent concluded challenge's `Placements` and composing the
+ * announcement payload) is real feature work owned by Challenges, NOT by the theme,
+ * and remains OPEN.
+ *
+ * What this function does instead: supply believable demo content on the REAL front
+ * page only, so the section's fidelity can be reviewed against Lovable's "December
+ * Winner" card at all (product-owner finding #3, "there is no test fixture for the
+ * winning entry"). It is deliberately a SEPARATE hook from
+ * {@see ink_foundation_qa_fixture_featured_winner()} rather than a widening of that
+ * function's gate: conflating "QA gallery fixture payload" with "content a visitor
+ * sees on the real home page" is exactly the mistake that let `QA FIXTURE — `
+ * sponsor posts leak onto the live site earlier in this rework. For the same reason
+ * the copy here carries NO `QA FIXTURE — ` prefix — it is front-of-house demo
+ * content, and {@see \Ink\Kernel\QaFixture} exclusion must not apply to it.
+ *
+ * Delete this function (and its `add_filter`) the moment Challenges supplies the
+ * real payload; the block will pick the real data up with no other change.
+ *
+ * @param mixed $data The filter's incoming value (null unless another filter
+ *                     already supplied a payload).
+ * @return mixed
+ */
+function ink_foundation_homepage_demo_winner( mixed $data ): mixed {
+	if ( ! function_exists( 'is_front_page' ) || ! is_front_page() ) {
+		return $data;
+	}
+
+	// Never override a real payload, so this evaporates the moment 12A wires one up.
+	if ( null !== $data ) {
+		return $data;
+	}
+
+	return array(
+		'title'   => __( 'Desember se wenners', 'ink-foundation' ),
+		'url'     => '/uitdagings/',
+		'winners' => array(
+			array(
+				'id'        => 1,
+				'rank'      => 1,
+				'title'     => __( 'Die laaste lig van winter', 'ink-foundation' ),
+				'url'       => '/uitdagings/',
+				'month'     => __( 'Desember', 'ink-foundation' ),
+				'author'    => 'Sarie Mostert',
+				'quote'     => __( 'Die kers het geflikker teen die ryp-geverfde venster, elke dansende skaduwee ’n herinnering aan somers lank verby …', 'ink-foundation' ),
+				'win_label' => __( '3de uitdagingswen', 'ink-foundation' ),
+			),
+		),
+	);
+}
+add_filter( 'ink_home_featured_winner', 'ink_foundation_homepage_demo_winner' ); // Ink\Challenges\FeaturedWinners::FEATURED_FILTER.
+
+/**
  * Fixture payload for `ink/uitgesoekte-bydraes` ("Die redakteur se keuse" featured
  * stream — one spanning featured card + three standard cards). Hooks
  * `Ink\Discovery\FeaturedStream::DATA_FILTER`; shape per that class's
@@ -1288,10 +1352,37 @@ function ink_foundation_register_block_styles(): void {
 		array(
 			'name'         => 'ink-header',
 			'label'        => __( 'INK kopstuk', 'ink-foundation' ),
-			'inline_style' => '.wp-block-group.is-style-ink-header{'
+			// The sticky positioning lives on the semantic `<header
+			// class="wp-block-template-part">` WRAPPER, not on this inner
+			// `.is-style-ink-header` group (fourth-pass fidelity fix, 2026-09-05,
+			// product-owner finding #10 "the Lovable header is sticky, the Ink one
+			// scrolls away"). `position:sticky` only floats an element WITHIN its own
+			// containing block; the inner group's containing block is the `<header>`
+			// element, which is sized to exactly the same 65px as the group itself, so
+			// there was zero room to stick and the whole thing scrolled away with the
+			// page (confirmed live on nuwe-ink.local: at scrollY 1200 the header's
+			// getBoundingClientRect().top read -1168, i.e. never stuck at all, despite
+			// position/top/z-index all computing correctly). The `<header>`'s OWN parent
+			// is `.wp-site-blocks`, which spans the whole document — so the same three
+			// declarations, moved one level out, have the full page height to stick
+			// through. Only the positioning moves; the border/tint/blur/row treatment
+			// stays on the inner group so the visual is byte-identical.
+			'inline_style' => 'header.wp-block-template-part{'
 				. 'position:sticky;'
 				. 'top:0;'
 				. 'z-index:50;'
+				. '}'
+				// Now that the header genuinely sticks, it must clear WordPress's own
+				// admin bar for signed-in users — the admin bar is `position:fixed` at
+				// 32px tall above 782px, so a `top:0` sticky header slides underneath
+				// it. Below 782px the admin bar is `position:absolute` (it scrolls
+				// away), so the offset goes back to 0 there. Logged-out visitors are
+				// unaffected: no `.admin-bar` class, no offset.
+				. 'body.admin-bar header.wp-block-template-part{top:32px;}'
+				. '@media screen and (max-width:782px){'
+				. 'body.admin-bar header.wp-block-template-part{top:0;}'
+				. '}'
+				. '.wp-block-group.is-style-ink-header{'
 				. 'border-bottom:1px solid var(--wp--preset--color--border);'
 				. '}'
 				. '.wp-block-group.is-style-ink-header::before{'

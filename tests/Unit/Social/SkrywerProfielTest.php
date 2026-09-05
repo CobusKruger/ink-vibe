@@ -266,7 +266,7 @@ test( 'toHtml renders each pinned card\'s excerpt, age and engagement counts', f
 	expect( $html )->toContain( '3 dae gelede' );
 	expect( $html )->toContain( '42' );
 	expect( $html )->toContain( 'ink-skrywerprofiel__vasgespel-tellings' );
-	expect( $html )->toContain( 'Sien alle werke' );
+	expect( $html )->toContain( 'Sien alle skrywes' );
 } );
 
 test( 'toHtml renders the Deel (share) button only when a shareUrl is present', function (): void {

@@ -144,29 +144,87 @@
 	box-shadow: var(--wp--preset--shadow--lg);
 }
 
+/* ── §0.0 box-sizing for the ink-core block markup ───────────────────────────────
+   FOURTH-PASS FIDELITY FIX (2026-09-05). WordPress core's block stylesheets set
+   `box-sizing:border-box` on their OWN `.wp-block-*` classes only; the ink-core
+   blocks emit their own `.ink-*` element classes, which therefore fall back to
+   the CSS initial `content-box`. Every rule in this file that pairs a `padding`
+   with a `height`/`min-height` was consequently rendering a box TALLER than its
+   declared size — measured live on nuwe-ink.local: the §5 Uitdaging feature card
+   computed `height:370.19px` (its `height:100%` of the grid area) but painted a
+   436.2px box (370.19 + 2×32px padding + border), overflowing its own grid row
+   and eating the feature band's whole 64px bottom padding (product-owner findings
+   #7 "too much whitespace at the bottom of the Oktober-uitdaging box" and #8 "no
+   spacing below" — one root cause, two symptoms); the compact card's "Skryf in"
+   CTA painted 56px against Lovable's 40px `Submit Your Entry` (finding #1). The
+   affected rules are enumerated explicitly rather than reset with a wildcard, so
+   this front-page-only stylesheet can never silently change the box model of a
+   `.ink-*` element the header/footer share with every other page. */
+.ink-huidige-uitdaging,
+.ink-huidige-uitdaging__aksie,
+.ink-wenner-kollig,
+.ink-wenner-kollig__skakel,
+.ink-borg-strook__cta {
+	box-sizing: border-box;
+}
+
 /* ── §0.1 Button sizing utilities (optional per-instance sizing helpers) ─────────
    Button SIZE is NOT a block style (register_block_style is a single radio axis).
-   Locked patterns bake size per-instance, or use these utilities. Each sets
-   min-height + padding + font-size per the §9 reference table; radius comes from
-   the ink button block style (md 6px), except xl which steps up to lg (8px). */
+   Locked patterns bake size per-instance, or use these utilities.
+
+   FOURTH-PASS FIDELITY FIX (2026-09-05, product-owner finding "the button sizes
+   don't match at all"). These previously set `min-height` + a horizontal padding
+   only, leaving WordPress core's own `.wp-block-button__link` VERTICAL padding
+   (`calc(.667em + 2px)` ≈ 12.67px per side) in place — so the real rendered box
+   was 49.3px (primary) / 53.3px (outline), not the 44px the token claimed;
+   `min-height` is a floor, it cannot clamp a box the padding has already pushed
+   past it. Lovable's shadcn size utilities are a FIXED `height` with
+   HORIZONTAL-ONLY padding, vertically centred by the button's own flex box
+   (`button.tsx`: sm = `h-9 px-3`, lg = `h-11 px-8 text-base`, xl = `h-12
+   rounded-lg px-10 text-lg`) — confirmed live against
+   https://preview--quill-muse-heart.lovable.app/ via getComputedStyle: a real
+   `height:44px` with `padding:0px 32px`. Matched here exactly: a fixed `height`,
+   vertical padding explicitly zeroed, and `inline-flex`/`align-items:center`
+   declared on the SIZE class itself (not borrowed from `.ink-btn-icon`, which is
+   only present on icon-bearing instances) so a label stays centred either way.
+   `box-sizing` is already `border-box` from WP core's button stylesheet, so the
+   2px outline border is inside the 44px, exactly like Lovable's `border-2`.
+   xl's horizontal padding also drops 48px → 40px (Lovable's `px-10` = 2.5rem;
+   48px was a mis-mapped token). Radius comes from the ink button block style
+   (md 6px), except xl which steps up to lg (8px). */
+.wp-block-button.ink-btn-sm .wp-block-button__link,
+.wp-block-button.ink-btn-lg .wp-block-button__link,
+.wp-block-button.ink-btn-xl .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 0;
+	padding-bottom: 0;
+	/* Shadcn's own button base carries `whitespace-nowrap` for exactly this
+	   reason: once the height is FIXED rather than a floor, a label that wrapped
+	   to two lines would spill out of the box. The buttons stack instead (the
+	   `wp-block-buttons` row already wraps), which is what Lovable does too. */
+	white-space: nowrap;
+}
+
 .wp-block-button.ink-btn-sm .wp-block-button__link {
-	min-height: 36px;
+	height: 36px;
 	padding-left: var(--wp--preset--spacing--s-12);
 	padding-right: var(--wp--preset--spacing--s-12);
 	font-size: var(--wp--preset--font-size--sm);
 }
 
 .wp-block-button.ink-btn-lg .wp-block-button__link {
-	min-height: 44px;
+	height: 44px;
 	padding-left: var(--wp--preset--spacing--s-32);
 	padding-right: var(--wp--preset--spacing--s-32);
 	font-size: var(--wp--preset--font-size--md);
 }
 
 .wp-block-button.ink-btn-xl .wp-block-button__link {
-	min-height: 48px;
-	padding-left: var(--wp--preset--spacing--s-48);
-	padding-right: var(--wp--preset--spacing--s-48);
+	height: 48px;
+	padding-left: var(--wp--preset--spacing--s-40);
+	padding-right: var(--wp--preset--spacing--s-40);
 	font-size: var(--wp--preset--font-size--lg);
 	border-radius: var(--wp--custom--radius--lg);
 }
@@ -286,8 +344,19 @@
 	gap: var(--wp--preset--spacing--s-8);
 }
 
-/* UPPERCASE 12px/600 type badge (Sparkles). Text darkened toward `text` so the small
-   uppercase badge clears the readability floor (a11y — primary-on-primary/10 ~3.6:1). */
+/* UPPERCASE 12px/600 type badge (Sparkles).
+   This carried a one-off a11y darkening (`color-mix(primary 72%, ink-text)`,
+   rendering ~#B13317) on top of the plain `primary` declaration. RECONSIDERED and
+   REMOVED on direct product-owner fidelity instruction (2026-09-05): "Uitdaging
+   pill is the wrong colour (compare with Weekly Challenge)". Lovable's own
+   "Weekly Challenge" pill is exactly `rgb(236,59,19)` — the unmodified `primary`
+   token — on the same `primary`/10% ground (confirmed via live getComputedStyle
+   against https://preview--quill-muse-heart.lovable.app/), and this identical
+   primary-on-primary/10 recipe is used UNDARKENED everywhere else on this site
+   (the reading pages' `.ink-lees-tipe` badge, `.ink-hero-badge`'s sibling
+   treatment, `.ink-uitgesoekte-bydraes__boskrif`), so the darkening was an
+   inconsistent one-off rather than a systemic contrast policy. The badge still
+   pairs its colour with an icon + uppercase text, never colour alone. */
 .ink-huidige-uitdaging__kenteken {
 	display: inline-flex;
 	align-items: center;
@@ -297,7 +366,6 @@
 	background-color: var(--wp--preset--color--secondary);
 	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
 	color: var(--wp--preset--color--primary);
-	color: color-mix(in srgb, var(--wp--preset--color--primary) 72%, var(--wp--preset--color--ink-text));
 	font-size: var(--wp--preset--font-size--xs);
 	font-weight: var(--wp--custom--font-weight--semibold);
 	text-transform: uppercase;
@@ -728,7 +796,10 @@
 	align-items: flex-end;
 	justify-content: space-between;
 	gap: var(--wp--preset--spacing--s-24);
-	margin-bottom: var(--wp--preset--spacing--s-32);
+	/* 40px, not 32px: Lovable's `FeaturedWorks.tsx` header row is `mb-10`
+	   (measured live at 40px). Found while fixing the section's outer rhythm
+	   (product-owner finding #11). */
+	margin-bottom: var(--wp--preset--spacing--s-40);
 }
 
 .ink-uitgesoekte-bydraes__boskrif {
@@ -808,10 +879,33 @@
 	box-shadow: var(--wp--preset--shadow--lg);
 }
 
+/* Card interior rhythm. FOURTH-PASS FIDELITY FIX (2026-09-05, product-owner
+   finding #9: "the excerpt cards have inconsistent spacing between the pill, the
+   heading, the body and the author tag"). This was one FLAT 8px flex `gap` for
+   every pair; Lovable's `FeaturedWorks.tsx` uses a DIFFERENT margin after each
+   element, and a different set again for the spanning featured card — read off
+   the source and then confirmed by live getBoundingClientRect deltas on
+   https://preview--quill-muse-heart.lovable.app/:
+
+     pair                | Lovable featured | Lovable standard | was (both)
+     pill row -> title   | 12px  (mb-3)     | 12px  (mb-3)     | 8px
+     title -> excerpt    | 12px  (mb-3)     |  8px  (mb-2)     | 8px
+     excerpt -> footer   | 16px             | 16px             | 8px + 16px pad
+
+   (The excerpt->footer figure is Lovable's COLLAPSED value: its card interior is
+   a plain block box, so the excerpt's `mb-4`/`mb-3` collapses against the footer
+   row's own `mt-4` to a flat 16px — measured, not assumed. Ink's interior is a
+   flex column, where adjacent margins never collapse, so the excerpt carries no
+   bottom margin at all and the 16px is owned solely by `__voet`'s margin-top.)
+
+   The flex `gap` is therefore dropped entirely in favour of explicit per-element
+   margins. `margin-top:auto` also goes: Lovable does NOT bottom-pin the author
+   row (its shorter card in a row leaves the slack BELOW the author row, measured
+   live — 23.7px of it), and pinning made the excerpt-to-author gap vary from card
+   to card, which is exactly the "inconsistent spacing" reported. */
 .ink-uitgesoekte-bydraes__kaart-inhoud {
 	display: flex;
 	flex-direction: column;
-	gap: var(--wp--preset--spacing--s-8);
 	height: 100%;
 }
 
@@ -819,6 +913,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--wp--preset--spacing--s-8);
+	margin-bottom: var(--wp--preset--spacing--s-12);
 }
 
 .ink-uitgesoekte-bydraes__pil {
@@ -830,6 +925,41 @@
 	color: var(--wp--preset--color--ink-text);
 	font-size: var(--wp--preset--font-size--xs);
 	font-weight: var(--wp--custom--font-weight--medium);
+}
+
+/* Per-bydrae-type pill colour — a DISCLOSED, DELIBERATE DIVERGENCE FROM LOVABLE
+   (2026-09-05, direct product-owner request #6: "the badge pills for Gedig,
+   Storie and Artikel should match what they are on the reading pages, namely
+   sage, brand orange and gray"). Lovable's `FeaturedWorks.tsx` renders ONE flat
+   `bg-secondary` badge for every type with no per-type colour at all (confirmed
+   in source AND live: `rgb(240,235,230)` ground, `rgb(24,29,37)` text on all four
+   cards). The divergence is the same call already taken and recorded for the
+   reading-page Artikel pill (see docs/theme-fidelity-rework-plan.md, fourth-pass
+   follow-up #5, same day): type should read at a glance. Tokens + tint
+   percentages are copied from the reading pages' `.ink-lees-tipe` badge exactly
+   — gedig `accent` at 15%, storie `primary` at 10%, artikel `muted-text` at 10%
+   — so the two surfaces cannot drift apart. Colour is never the only cue: the
+   pill always carries the type name as text. The modifier class is emitted by
+   `Ink\Discovery\FeaturedStream::metaTopHtml()` off the POST TYPE (not the pill's
+   visible text, which may be a genre term name); a row with no recognised type
+   simply keeps the neutral base pill above. */
+.ink-uitgesoekte-bydraes__pil--gedig,
+.ink-uitgesoekte-bydraes__pil--storie,
+.ink-uitgesoekte-bydraes__pil--artikel {
+	background-color: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.ink-uitgesoekte-bydraes__pil--gedig {
+	color: var(--wp--preset--color--accent);
+	background-color: color-mix(in srgb, currentColor 15%, transparent);
+}
+
+.ink-uitgesoekte-bydraes__pil--storie {
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-uitgesoekte-bydraes__pil--artikel {
+	color: var(--wp--preset--color--muted-text);
 }
 
 .ink-uitgesoekte-bydraes__leestyd {
@@ -846,7 +976,7 @@
 }
 
 .ink-uitgesoekte-bydraes__werk {
-	margin: 0;
+	margin: 0 0 var(--wp--preset--spacing--s-8);
 	font-family: var(--wp--preset--font-family--display);
 	font-size: var(--wp--preset--font-size--xl);
 	font-weight: var(--wp--custom--font-weight--semibold);
@@ -876,9 +1006,12 @@
 	overflow: hidden;
 }
 
-/* Featured (first) card: spans two columns, larger title + un-clamped excerpt. */
+/* Featured (first) card: spans two columns, larger title + un-clamped excerpt, and
+   its own (larger) title/excerpt bottom margins — Lovable's `mb-3`/`mb-4` against
+   the standard card's `mb-2`/`mb-3` (see the rhythm table above). */
 .ink-uitgesoekte-bydraes__kaart--uitgesoek .ink-uitgesoekte-bydraes__werk {
 	font-size: var(--wp--preset--font-size--xxl);
+	margin-bottom: var(--wp--preset--spacing--s-12);
 }
 
 .ink-uitgesoekte-bydraes__kaart--uitgesoek .ink-uitgesoekte-bydraes__uittreksel {
@@ -893,8 +1026,7 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--wp--preset--spacing--s-16);
-	margin-top: auto;
-	padding-top: var(--wp--preset--spacing--s-16);
+	margin-top: var(--wp--preset--spacing--s-16);
 }
 
 .ink-uitgesoekte-bydraes__outeur {
@@ -950,12 +1082,22 @@
 	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 20%, transparent);
 }
 
+/* The block emits a plain `<section>` inside the pattern's `alignwide` constrained
+   group, so WordPress's constrained-layout rule was capping it at `contentSize`
+   (768px) — half the 1368px Lovable gives `SponsorsSection`'s container. That was
+   invisible while the strip had no active sponsors to render; seeding real
+   sponsors (product-owner finding #12) exposed it immediately: six chips that sit
+   on ONE row in Lovable wrapped onto three. Released to the full wide width here,
+   and the flat 16px column gap replaced by Lovable's real per-element margins
+   (`mt-2`/`mb-4` on the heading, `mb-10` under the intro and under the chip row),
+   all measured live. */
 .ink-borg-strook {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	text-align: center;
-	gap: var(--wp--preset--spacing--s-16);
+	width: 100%;
+	max-width: none;
 }
 
 /* Centred sage eyebrow (UPPERCASE, tracked). */
@@ -969,7 +1111,7 @@
 }
 
 .ink-borg-strook__titel {
-	margin: 0;
+	margin: var(--wp--preset--spacing--s-8) 0 var(--wp--preset--spacing--s-16);
 	font-family: var(--wp--preset--font-family--heading);
 	font-size: var(--wp--preset--font-size--xxl);
 	font-weight: var(--wp--custom--font-weight--semibold);
@@ -984,22 +1126,29 @@
 }
 
 .ink-borg-strook__beskrywing {
-	margin: 0;
+	margin: 0 0 var(--wp--preset--spacing--s-40);
 	max-width: 36rem;
 	color: var(--wp--preset--color--muted-text);
 	line-height: var(--wp--custom--line-height--relaxed);
 }
 
-/* Chip row — wraps (multiple sponsors), centred. */
+/* Chip row — wraps (multiple sponsors), centred. Gap is Lovable's `gap-8
+   md:gap-12` (32px stepping to 48px), not a flat 24px. */
 .ink-borg-strook__rooster {
 	list-style: none;
-	margin: var(--wp--preset--spacing--s-8) 0;
+	margin: 0 0 var(--wp--preset--spacing--s-40);
 	padding: 0;
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
-	gap: var(--wp--preset--spacing--s-24);
+	gap: var(--wp--preset--spacing--s-32);
+}
+
+@media (min-width: 768px) {
+	.ink-borg-strook__rooster {
+		gap: var(--wp--preset--spacing--s-48);
+	}
 }
 
 /* Per-tier chip: px-6 py-3 rounded-lg, tier-tinted background/border, plus the
@@ -1175,10 +1324,32 @@
 	z-index: 1;
 }
 
+/* Interior rhythm. FOURTH-PASS FIDELITY FIX (2026-09-05, product-owner finding
+   #13: "'Jou woorde verdien lesers' section has wrong spacing throughout"). The
+   group carried ONE uniform 24px blockGap between all three children; Lovable's
+   `CallToAction.tsx` uses `mb-4` (16px) after the heading and `mb-8` (32px)
+   after the paragraph, and its `lg:text-5xl` heading is `line-height:1` (48px on
+   a 48px font) against this theme's 1.2 (57.6px) — all three confirmed live via
+   getComputedStyle/getBoundingClientRect against
+   https://preview--quill-muse-heart.lovable.app/. The button row's own 16px
+   blockGap already matched Lovable's `gap-4` and is left alone. The blockGap
+   reset needs the extra `.ink-cta-band` qualifier because WordPress's generated
+   layout rule wraps its own selector in `:where()` (specificity 0,1,0) and this
+   file may load before it. */
+.ink-cta-band .ink-cta-band__inhoud > * + * {
+	margin-block-start: 0;
+}
+
+.ink-cta-band .ink-cta-band__inhoud > h2 {
+	margin-bottom: var(--wp--preset--spacing--s-16);
+	line-height: 1;
+}
+
 /* Body at FULL surface-alt + max 672px, centred (a11y contrast floor). */
-.ink-cta-band__teks {
+.ink-cta-band .ink-cta-band__teks {
 	max-width: 42rem;
 	margin-inline: auto;
+	margin-bottom: var(--wp--preset--spacing--s-32);
 }
 
 /* Two xl buttons (48px, 8px radius, px-10). Primary = surface-alt fill / primary text;

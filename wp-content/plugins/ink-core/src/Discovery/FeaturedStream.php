@@ -193,6 +193,7 @@ final class FeaturedStream {
 				'title'          => get_the_title( $post ),
 				'url'            => (string) get_permalink( $post ),
 				'category'       => self::categoryLabel( $post ),
+				'category_slug'  => (string) $post->post_type,
 				'read_minutes'   => ReadingTime::minutesFromText( wp_strip_all_tags( (string) $post->post_content ) ),
 				'excerpt'        => self::excerptFor( $post ),
 				'author'         => (string) get_the_author_meta( 'display_name', $author_id ),
@@ -265,7 +266,7 @@ final class FeaturedStream {
 	 * Collapses to '' when nothing survives — the WHOLE section (header included)
 	 * disappears (owner decision: empty feed hides entirely; brownfield data means it
 	 * is never seen). Otherwise: the UPPERCASE eyebrow + serif title + focusable
-	 * "Sien alle werke" link, then the asymmetric grid with the first card featured
+	 * "Sien alle skrywes" link, then the asymmetric grid with the first card featured
 	 * (spans two columns).
 	 *
 	 * @param array<array-key, mixed> $items The card rows (list of associative rows).
@@ -287,14 +288,22 @@ final class FeaturedStream {
 		$base     = 'ink-uitgesoekte-bydraes';
 		$title_id = $base . '__titel';
 
+		// Heading copy: "In die kollig" replaces "Hierdie week se uitgesoektes" on a
+		// direct product-owner instruction (2026-09-05). The eyebrow above it ("Die
+		// redakteur se keuse") was explicitly left unchanged in the same instruction.
+		// The "Sien alle skrywes" link now reads through the {@see Terms} registry
+		// instead of duplicating the literal — the house single-source convention;
+		// the same string is already served from there to the reading-page author
+		// card ({@see \Ink\Social\ReadingAuthorCard}), and the two had drifted apart
+		// as independent literals.
 		$header = '<div class="' . esc_attr( $base . '__kop' ) . '">'
 			. '<div class="' . esc_attr( $base . '__kop-teks' ) . '">'
 			. '<p class="' . esc_attr( $base . '__boskrif' ) . '">' . esc_html__( 'Die redakteur se keuse', 'ink-core' ) . '</p>'
 			. '<h2 id="' . esc_attr( $title_id ) . '" class="' . esc_attr( $base . '__titel' ) . '">'
-			. esc_html__( 'Hierdie week se uitgesoektes', 'ink-core' ) . '</h2>'
+			. esc_html__( 'In die kollig', 'ink-core' ) . '</h2>'
 			. '</div>'
 			. '<a class="' . esc_attr( $base . '__alles ink-underline-slide' ) . '" href="' . esc_url( self::allWorksUrl() ) . '">'
-			. esc_html__( 'Sien alle werke', 'ink-core' ) . '</a>'
+			. esc_html( Terms::label( 'sien_alle_werke' ) ) . '</a>'
 			. '</div>';
 
 		$cards = '';
@@ -330,6 +339,7 @@ final class FeaturedStream {
 		$title    = (string) ( $item['title'] ?? '' );
 		$url      = (string) ( $item['url'] ?? '' );
 		$category = (string) ( $item['category'] ?? '' );
+		$type     = (string) ( $item['category_slug'] ?? '' );
 		$excerpt  = (string) ( $item['excerpt'] ?? '' );
 
 		$title_html = '' !== $url
@@ -338,7 +348,7 @@ final class FeaturedStream {
 
 		$out = '<article class="' . esc_attr( $classes ) . '">'
 			. '<div class="' . esc_attr( $base . '__kaart-inhoud' ) . '">'
-			. self::metaTopHtml( $base, $category, (int) ( $item['read_minutes'] ?? 0 ) )
+			. self::metaTopHtml( $base, $category, $type, (int) ( $item['read_minutes'] ?? 0 ) )
 			. '<h3 class="' . esc_attr( $base . '__werk' ) . '">' . $title_html . '</h3>';
 
 		if ( '' !== $excerpt ) {
@@ -353,16 +363,34 @@ final class FeaturedStream {
 	/**
 	 * The card's top meta row: category pill + read-time (Clock icon + "N min"). Pure.
 	 *
+	 * The pill carries a per-bydrae-type MODIFIER class (`__pil--gedig` /
+	 * `--storie` / `--artikel`) so the theme can colour it the same way the reading
+	 * pages colour their `.ink-lees-tipe` badge (sage / brand orange / grey — a
+	 * product-owner call, disclosed in the theme's home.css). The modifier is keyed
+	 * on the POST TYPE, not on the pill's visible text: {@see categoryLabel()}
+	 * prefers the first `genre` TERM name, which is editorial free text and cannot
+	 * be matched reliably. Only the three known reader-facing bydrae types get a
+	 * modifier; anything else (including a filter-seam row that supplies no type)
+	 * falls through to the neutral base pill. The block emits the class only — no
+	 * colour — so the three-layer separation holds.
+	 *
 	 * @param string $base     The BEM base class.
 	 * @param string $category The category (genre) label.
+	 * @param string $type     The bydrae post type (`gedig`/`storie`/`artikel`), or ''.
 	 * @param int    $minutes  The read-time in whole minutes.
 	 * @return string
 	 */
-	private static function metaTopHtml( string $base, string $category, int $minutes ): string {
+	private static function metaTopHtml( string $base, string $category, string $type, int $minutes ): string {
 		$out = '<div class="' . esc_attr( $base . '__meta-top' ) . '">';
 
 		if ( '' !== $category ) {
-			$out .= '<span class="' . esc_attr( $base . '__pil' ) . '">' . esc_html( $category ) . '</span>';
+			$pil_classes = $base . '__pil';
+
+			if ( in_array( $type, PostTypes::readableTypes(), true ) ) {
+				$pil_classes .= ' ' . $base . '__pil--' . $type;
+			}
+
+			$out .= '<span class="' . esc_attr( $pil_classes ) . '">' . esc_html( $category ) . '</span>';
 		}
 
 		$read_time = ReadingTime::label( $minutes );
@@ -448,7 +476,7 @@ final class FeaturedStream {
 	}
 
 	/**
-	 * The "Sien alle werke" target — the Ontdek browse hub. Impure (URL builder).
+	 * The "Sien alle skrywes" target — the Ontdek browse hub. Impure (URL builder).
 	 *
 	 * @return string
 	 */

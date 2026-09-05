@@ -202,7 +202,13 @@ final class Terms {
 
 			// Social — reading-page author card (Epic 19 lees-gedig fidelity pass,
 			// curated in docs/ui-copy-translations.md, "Outeur-afdeling" table).
-			'sien_alle_werke'               => __( 'Sien alle werke', 'ink-core' ),
+			// "werke" -> "skrywes" on a direct product-owner terminology correction
+			// (2026-09-05): "'Sien alle werke' should be 'Sien alle skrywes' and
+			// 'werke' generally should be 'skrywes' globally." The KEY is left as
+			// `sien_alle_werke` deliberately — it is a stable internal identifier
+			// consumed by callers, not visible copy, and renaming it would churn
+			// call sites for no reader-facing gain.
+			'sien_alle_werke'               => __( 'Sien alle skrywes', 'ink-core' ),
 
 			// Social — pinned works (Story 9.5, ui-copy lines 281/702 "Speld vas" / "Vasgespeld").
 			'vasgespel'                     => __( 'Speld vas', 'ink-core' ),

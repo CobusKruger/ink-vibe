@@ -18,8 +18,9 @@
  */
 
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-80","bottom":"var:preset|spacing|s-80","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-80);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-80);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- Bottom padding is deliberately s-64, NOT the s-80 that mirrors the top: the theme footer contributes its own 80px margin-top on every page, so an s-80 bottom padding put 160px between the band and the footer against the 144px above it (64px of borg-strook bottom padding + this section's 80px top padding). Lovable has the identical 160px-below/144px-above asymmetry (measured live), but the product owner overrode it directly on 2026-09-05 ("huge spacing below … matches Lovable, but isn't right; it should match the spacing above"), so 64 + the footer's 80 = the 144px above. A deliberate, disclosed divergence from the reference. -->
+<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-80","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-80);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","className":"ink-cta-band ink-animate-fade-up","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide ink-cta-band ink-animate-fade-up">
 		<!-- wp:html -->

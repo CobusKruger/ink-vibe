@@ -130,7 +130,9 @@ final class PinnedWorksManager {
 	 * @return string
 	 */
 	public static function toHtml( array $works ): string {
-		$heading = '<h2 class="ink-vasgespel__titel">' . esc_html__( 'Vasgespelde werke', 'ink-core' ) . '</h2>';
+		// "werke" -> "skrywes" per the product-owner terminology correction of
+		// 2026-09-05 ("'werke' generally should be 'skrywes' globally").
+		$heading = '<h2 class="ink-vasgespel__titel">' . esc_html__( 'Vasgespelde skrywes', 'ink-core' ) . '</h2>';
 
 		if ( array() === $works ) {
 			return '<section class="ink-vasgespel">' . $heading
