@@ -1,0 +1,24 @@
+/**
+ * profiel.css — My Profiel (`/my-profiel/`) identity strip + tab shell.
+ *
+ * My Profiel rebuild (docs/my-profiel-rebuild-strategy.md §6): the full
+ * Lovable-fidelity styling pass (identity-strip layout, tab underline/badge
+ * treatment, per-tab card styling) is a LATER build step — this file is
+ * deliberately near-empty for now. It exists only so:
+ *
+ * 1. The enqueue (`ink_foundation_enqueue_profiel_assets()`, functions.php) has
+ *    a real file to load, mirroring `reading.css`'s narrow, single-page-scoped
+ *    enqueue pattern (gated `is_page('my-profiel')`).
+ * 2. The tab-hide/show mechanics work correctly WITHOUT relying on any CSS —
+ *    `profiel-tabs.js` toggles the native `hidden` attribute directly (browser
+ *    default `[hidden]{display:none}`), so nothing here is required for
+ *    correctness, only for appearance.
+ *
+ * Every value here (and everything added in the future full pass) must resolve
+ * to a `theme.json` token (Quality Gate A) — no literal colors/spacing/radii.
+ */
+
+.ink-profiel-tabs__knoppie {
+	font: inherit;
+	cursor: pointer;
+}

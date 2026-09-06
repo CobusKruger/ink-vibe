@@ -727,6 +727,59 @@ function ink_foundation_enqueue_profiel_edit(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_profiel_edit' );
 
 /**
+ * Enqueue the My Profiel tab-toggle enhancement on My Profiel only (My Profiel
+ * rebuild §5.2 — the 7-tab shell had no JS toggle before this).
+ *
+ * Progressive enhancement over the 7 stacked `[data-ink-profiel-panel]`
+ * sections, mirroring `ink_foundation_enqueue_ontdek_assets()` above exactly —
+ * see `profiel-tabs.js`'s own docblock. With this script disabled the 7
+ * sections simply stack in ratified order.
+ */
+function ink_foundation_enqueue_profiel_tabs(): void {
+	if ( ! function_exists( 'is_page' ) || ! is_page( 'my-profiel' ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-profiel-tabs',
+		get_theme_file_uri( 'assets/js/profiel-tabs.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_profiel_tabs' );
+
+/**
+ * Enqueue the My Profiel identity-strip + tab-shell stylesheet on My Profiel
+ * only (My Profiel rebuild §6).
+ *
+ * `profiel.css` carries the identity strip's and tab shell's presentation —
+ * before this file `my-profiel.php` rendered bare block markup with no
+ * dedicated stylesheet at all, mirroring `reading.css`'s narrow,
+ * single-page-scoped enqueue pattern. Deliberately near-empty for now (see the
+ * file's own docblock) — the full Lovable-fidelity styling pass is a later
+ * build step.
+ */
+function ink_foundation_enqueue_profiel_assets(): void {
+	if ( ! function_exists( 'is_page' ) || ! is_page( 'my-profiel' ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_style(
+		'ink-foundation-profiel',
+		get_theme_file_uri( 'assets/css/profiel.css' ),
+		array(),
+		(string) $theme->get( 'Version' )
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_profiel_assets' );
+
+/**
  * Enqueue the Skrywerprofiel "Deel" (share) client on an author archive.
  *
  * The button + its ratified Afrikaans labels are server-rendered by
