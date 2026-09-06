@@ -252,3 +252,32 @@ heading, still needs your Afrikaans.
 LEESLYS-LEEG-BODY
 EN: Tap the bookmark on any story or poem and it will land here for later.
 AF:
+
+---
+
+## 10. My Profiel — "Wysig profiel" edit modal (new field/button copy, not in Lovable's ratified sheet)
+
+The modal itself ("Wysig profiel" heading, "Naam", "Oor my") reuses copy already
+ratified elsewhere on this page. These five strings are new — the modal's tagline
+field, its Save/Cancel buttons, and its transient saving/error status text — and
+have no ratified Afrikaans yet.
+
+PROFIEL-REDIGEER-LEUSE-LABEL
+EN: Tagline *(short field label, under the field for the writer's own one-line tagline shown in the identity strip)*
+AF:
+
+PROFIEL-REDIGEER-STOOR
+EN: Save *(button)*
+AF:
+
+PROFIEL-REDIGEER-KANSELLEER
+EN: Cancel *(button)*
+AF:
+
+PROFIEL-REDIGEER-BESIG
+EN: Saving… *(transient status text shown while the save request is in flight)*
+AF:
+
+PROFIEL-REDIGEER-FOUT
+EN: Couldn't save. Please try again. *(transient status text shown if the save request fails)*
+AF:

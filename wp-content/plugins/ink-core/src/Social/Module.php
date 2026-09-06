@@ -84,6 +84,15 @@ class Module implements ModuleContract {
 		// Epic 19 lees-gedig fidelity pass: the reading-page author card (reuses
 		// FollowToggle's own markup for its Follow toggle — no new follow logic).
 		( new ReadingAuthorCard() )->register();
+
+		// My Profiel rebuild §5.1: the new short identity-strip tagline field +
+		// the real inline edit-profile modal (name/tagline/bio) + its REST write
+		// path. Registered now (block + REST route) even though the identity-strip
+		// step has not yet embedded the modal's trigger on the live template —
+		// same "build it standalone first" precedent as FollowingList (§5.6) above.
+		( new Tagline() )->register();
+		( new ProfileController() )->register();
+		( new ProfileEditor() )->register();
 	}
 
 	/**

@@ -683,6 +683,50 @@ function ink_foundation_enqueue_volg(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_volg' );
 
 /**
+ * Enqueue the "Wysig profiel" edit-modal client on My Profiel (My Profiel
+ * rebuild §5.1).
+ *
+ * `ink/profiel-redigeer` server-renders the hidden modal + form, but nothing
+ * ever wires the open/close interaction or the `ink/v1/profiel` save request —
+ * the same missing-JS shape as the vasgespel/volg enqueues above. Loaded only
+ * on My Profiel. Safe to load ahead of the identity-strip step embedding the
+ * modal's trigger: `profiel-edit.js` no-ops entirely when `#ink-profiel-redigeer`
+ * isn't present in the DOM.
+ */
+function ink_foundation_enqueue_profiel_edit(): void {
+	if ( ! function_exists( 'is_page' ) || ! is_page( 'my-profiel' ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-profiel-edit',
+		get_theme_file_uri( 'assets/js/profiel-edit.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+
+	wp_localize_script(
+		'ink-foundation-profiel-edit',
+		'inkProfielEdit',
+		array(
+			'restUrl'    => esc_url_raw( rest_url( 'ink/v1/profiel' ) ),
+			'nonce'      => wp_create_nonce( 'wp_rest' ),
+			// Copy-debt: the transient saving/error status text has no ratified
+			// Afrikaans yet — flagged per the standard afrikaans-copy-debt-process
+			// (docs/afrikaans-translation-sheet.md PROFIEL-REDIGEER-BESIG /
+			// PROFIEL-REDIGEER-FOUT, docs/afrikaans-copy-worklist.md) rather than
+			// invented here.
+			'savingText' => __( '[NEEDS HUMAN AFRIKAANS] — saving-status text not yet authored in ui-copy-translations.md.', 'ink-foundation' ),
+			'errorText'  => __( '[NEEDS HUMAN AFRIKAANS] — save-error status text not yet authored in ui-copy-translations.md.', 'ink-foundation' ),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_profiel_edit' );
+
+/**
  * Enqueue the Skrywerprofiel "Deel" (share) client on an author archive.
  *
  * The button + its ratified Afrikaans labels are server-rendered by

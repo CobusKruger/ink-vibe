@@ -47,6 +47,11 @@ the durable anchor. Code paths under `wp-content/`.
 | (scope) auth microcopy | — | `auth-register.php` ~47, `auth-forgot-password.php` ~40 | hidden-span markers; not discrete strings yet |
 | (scope) kontak microcopy | — | `…/Forms/ContactForm.php` (hidden span in `toHtml()`) | Story 15.4; field labels (Naam/E-pos/Onderwerp/Boodskap/Stuur boodskap) + the two notices render in Afrikaans; hidden-span marker stands for the not-yet-curated validation/success cluster |
 | LEESLYS-LEEG-BODY | L~469 (new row already added) → §"My Profiel-bladsy" §"Leeslys-blad" | `plugins/ink-core/src/Engagement/ReadingList.php` (`toHtml()`, empty-state body `<p class="ink-leeslys__leeg-beskrywing">`) | My Profiel rebuild §5.5; heading "Nog niks gestoor nie." already ratified (2026-09-06) and wired — only the body line ("Tap the bookmark on any story or poem…") is open |
+| PROFIEL-REDIGEER-LEUSE-LABEL | NEW row → §"My Profiel-bladsy" §"Identiteitsstrook" | `plugins/ink-core/src/Social/ProfileEditor.php` (`toHtml()`, `<label for="ink-profiel-redigeer-leuse">`) | My Profiel rebuild §5.1 edit-profile modal; the tagline field itself is new (not in Lovable's ratified sheet at all) |
+| PROFIEL-REDIGEER-STOOR | NEW row → same new §, edit-modal subsection | `plugins/ink-core/src/Social/ProfileEditor.php` (`toHtml()`, `<button type="submit" class="ink-profiel-redigeer__stoor">`) | Save button; modal's Naam/Oor my labels + "Wysig profiel" heading reuse already-ratified copy, only Save/Cancel are new |
+| PROFIEL-REDIGEER-KANSELLEER | NEW row → same new § | `plugins/ink-core/src/Social/ProfileEditor.php` (`toHtml()`, `<button type="button" class="ink-profiel-redigeer__kanselleer">`) | Cancel button |
+| PROFIEL-REDIGEER-BESIG | NEW row → same new § | `themes/ink-foundation/functions.php` (`ink_foundation_enqueue_profiel_edit()`, `inkProfielEdit.savingText`) | transient status text shown by `profiel-edit.js` while the save request is in flight |
+| PROFIEL-REDIGEER-FOUT | NEW row → same new § | `themes/ink-foundation/functions.php` (`ink_foundation_enqueue_profiel_edit()`, `inkProfielEdit.errorText`) | transient status text shown by `profiel-edit.js` if the save request fails |
 
 ## Fix-up procedure (after the sheet comes back)
 

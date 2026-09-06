@@ -141,3 +141,16 @@ if ( ! class_exists( 'WP_Post' ) ) {
 if ( ! class_exists( 'WP_Query' ) ) {
 	require_once __DIR__ . '/stubs/class-wp-query.php';
 }
+
+// Likewise a minimal WP_REST_Request double: My Profiel rebuild §5.1's
+// Ink\Social\ProfileController::handleUpdate() type-hints WP_REST_Request and
+// calls get_param(), so the symbol must exist for its unit tests to exercise
+// the handler's per-field update paths directly.
+if ( ! class_exists( 'WP_REST_Request' ) ) {
+	require_once __DIR__ . '/stubs/class-wp-rest-request.php';
+}
+
+// Likewise a minimal WP_REST_Response double, for the same handler's return value.
+if ( ! class_exists( 'WP_REST_Response' ) ) {
+	require_once __DIR__ . '/stubs/class-wp-rest-response.php';
+}
