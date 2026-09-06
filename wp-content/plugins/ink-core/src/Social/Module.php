@@ -60,6 +60,11 @@ class Module implements ModuleContract {
 		// Story 9.3: the following-feed (the profile "Aktiwiteit" tab).
 		( new FollowingFeed() )->register();
 
+		// My Profiel rebuild §5.6: the "Wie ek volg" writer-card list (distinct
+		// from the works-feed above — this lists the followed writers
+		// themselves).
+		( new FollowingList() )->register();
+
 		// Story 9.4: the public Skrywerprofiel block (resolves the queried author),
 		// plus its optional cover-image field (Phase-2 fidelity pass).
 		( new CoverImage() )->register();
