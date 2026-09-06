@@ -1735,19 +1735,33 @@ Direct product-owner report against `/ontdek/` (found immediately after the Ontd
 intro heading block is centered on the page (design has it left-aligned), and the Bydraes/Skrywers excerpt
 cards render in 4 columns, not Lovable's 3.
 
-**Centering — a regression from the same-day intro `max-width:768px` fix above.** Narrowing
-`.ink-ontdek-intro .wp-block-group.alignwide` to 768px (to make the heading wrap 3 lines, matching Lovable)
-left it inside a now-WIDER 1368px parent with nothing pinning it to the left — and WordPress's own
+**Centering — a regression from the same-day intro `max-width:768px` fix above, corrected twice.** Narrowing
+`.ink-ontdek-intro .wp-block-group.alignwide` itself to 768px (to make the heading wrap 3 lines, matching
+Lovable) left it inside a now-WIDER 1368px parent with nothing pinning it to the left — WordPress's own
 `.is-layout-constrained > :where(...)` rule (from the "constrained" layout every `alignwide`/`alignfull`
 ancestor here already carries) sets `margin-left/right: auto` on exactly this kind of child, so it centered.
-The fix is scoped `margin-left:0 !important; margin-right:0 !important`. The `!important` is necessary and not
-just belt-and-braces: measured directly (`getComputedStyle` before/after), a plain unqualified
-`margin-left:0` LOST to that `:where()`-based rule despite this selector's higher class-count specificity
-((0,3,0) vs (0,1,0) — `:where()` itself always contributes zero) — the exact mechanism wasn't fully run to
-ground, but the same `!important` requirement already exists on this page's own `h1.has-xxxl-font-size`
-font-size overrides a few lines above in the same stylesheet, so this isn't a new pattern, just one this fix
-initially missed reusing. Verified live: `margin-left` computes to `0px` (was `auto`/`432px`), the block now
-sits flush against the section's own left padding (`left:24px`, matching every other page's gutter).
+
+The FIRST attempt fixed that by forcing `margin-left/right:0 !important` on the same div (needing `!important`
+to win at all — measured directly, a plain override lost to the `:where()` rule despite this selector's higher
+class-count specificity, matching the same requirement already on this stylesheet's `h1.has-xxxl-font-size`
+overrides). That over-corrected: it pinned the div to the SECTION's own padding edge (`left:24px`) rather than
+to where a normal 1368px-wide `alignwide` box naturally sits on every OTHER part of this page (`left:156px` —
+the search box, the vlakke grid, the works archive all measure this) — reported back as "the header
+[heading] completely pushed to the left edge," now visibly misaligned against the rest of the page and the
+site header's own logo, not matching Lovable either (Lovable's intro sits at the SAME x as its search bar).
+
+Root cause of the whole back-and-forth: narrowing the OUTER `alignwide` wrapper conflates two unrelated jobs —
+"be this page's wide container, centered/positioned at 156" and "cap the intro copy to 768px, Lovable's
+`max-w-3xl`" — onto one element, and neither margin value (auto, or 0) satisfies both at once. The actual fix
+reverts that div to its default, untouched `alignwide` behavior (max-width 1368, `:where()`-driven centering,
+back to `left:156` exactly as every other section on the page) and instead caps `max-width:768px` directly on
+the two elements that need to wrap — `.ink-ontdek-intro h1.has-xxxl-font-size` (added alongside its existing
+font-size/margin overrides) and a new `.ink-ontdek-intro p:not(.ink-ontdek-intro__boskrif)` rule for the
+paragraph. Neither needs a margin override: as ordinary block children of a now-untouched, non-"layout"-typed
+wide div, they simply flow flush against ITS left edge by default — which is 156, matching everything else on
+the page. Verified live: the wrapper is back to `left:156px, width:1368px`; the H1 and paragraph measure
+`left:156px, width:768px` — aligned with the search box (also `left:156px`) and every wide section below it,
+matching Lovable's own alignment (intro and search bar share one x-origin there too).
 
 **4 columns — the works/skrywers archive grids never had a real 3-column rule.**
 `.ink-ontdek-werke__list`/`.ink-ontdek-skrywers__list` used `grid-template-columns:repeat(auto-fill,
