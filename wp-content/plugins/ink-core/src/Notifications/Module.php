@@ -59,5 +59,11 @@ final class Module implements ModuleContract {
 		// a work crosses a read-count milestone. Inert until the 18.9 analytics +
 		// 9.12 fire `ink/ontvangs` AND the R7 form-letter list is authored.
 		( new ReceiptNotification() )->register();
+
+		// My Profiel rebuild §5.8: the Kennisgewings tab's REST read + mark-all-read
+		// path (KennisgewingsSurface is the read-model it calls; that class has no
+		// `register()` of its own — it is not a block, just a data/render source
+		// the tab-shell build step consumes directly).
+		( new KennisgewingsController() )->register();
 	}
 }

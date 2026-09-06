@@ -121,6 +121,19 @@ final class Api {
 	}
 
 	/**
+	 * The user's unread kennisgewing count (My Profiel rebuild §5.3/§5.8) — the
+	 * Oorsig "Ongelees" stat card and the Kennisgewings tab's own badge share
+	 * this ONE computation via {@see KennisgewingsSurface::unreadCount()}
+	 * rather than each reading the notification store separately.
+	 *
+	 * @param int $user_id The user.
+	 * @return int
+	 */
+	public static function unreadCount( int $user_id ): int {
+		return KennisgewingsSurface::unreadCount( $user_id );
+	}
+
+	/**
 	 * The shared store, lazily built if {@see Api::bootstrap()} has not run.
 	 */
 	private static function store(): TemplateStore {
