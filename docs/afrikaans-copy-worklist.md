@@ -46,6 +46,7 @@ the durable anchor. Code paths under `wp-content/`.
 | APPROVAL-BTN-REJECT | L624 + `afrikaans-terms.md` §"Rekening-goedkeuring" | (registry label) | ratify only |
 | (scope) auth microcopy | — | `auth-register.php` ~47, `auth-forgot-password.php` ~40 | hidden-span markers; not discrete strings yet |
 | (scope) kontak microcopy | — | `…/Forms/ContactForm.php` (hidden span in `toHtml()`) | Story 15.4; field labels (Naam/E-pos/Onderwerp/Boodskap/Stuur boodskap) + the two notices render in Afrikaans; hidden-span marker stands for the not-yet-curated validation/success cluster |
+| LEESLYS-LEEG-BODY | L~469 (new row already added) → §"My Profiel-bladsy" §"Leeslys-blad" | `plugins/ink-core/src/Engagement/ReadingList.php` (`toHtml()`, empty-state body `<p class="ink-leeslys__leeg-beskrywing">`) | My Profiel rebuild §5.5; heading "Nog niks gestoor nie." already ratified (2026-09-06) and wired — only the body line ("Tap the bookmark on any story or poem…") is open |
 
 ## Fix-up procedure (after the sheet comes back)
 

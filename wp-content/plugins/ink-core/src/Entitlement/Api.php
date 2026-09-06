@@ -32,6 +32,13 @@ defined( 'ABSPATH' ) || exit;
  * the My Profiel / Skrywerprofiel status SURFACE is Story 9.4; both consume this
  * surface later.
  *
+ * Scope (My Profiel Lidmaatskap-tab status card): this facade ALSO exposes the
+ * two status-card date getters — {@see memberSinceFor()} ("Lid sedert") and
+ * {@see renewalDateFor()} ("Hernieu"), both keyed on the member's CURRENT
+ * ACTIVE INK lidmaatskap membership. Delegates to {@see MembershipDates}; both
+ * degrade to null (never a fatal) when WooCommerce Memberships is inactive or
+ * the member has no active INK membership.
+ *
  * Scope (Story 4.3): this facade now ALSO exposes the submission-entitlement gate —
  * {@see can_submit()} (facading {@see SubmissionGate}, AD-2): "may this user plaas
  * right now?", evaluated against the WooCommerce Membership END DATE in SAST (NOT
@@ -71,6 +78,11 @@ final class Api {
 	 * The shared status-message resolver (Story 4.7; lazily built, stateless).
 	 */
 	private static ?StatusMessages $status_messages = null;
+
+	/**
+	 * The shared lidmaatskap status-card date read-model (lazily built, stateless).
+	 */
+	private static ?MembershipDates $dates = null;
 
 	/**
 	 * The three launch lidmaatskap plan slots (one per fixed term).
@@ -244,6 +256,38 @@ final class Api {
 	}
 
 	/**
+	 * The member's "Lid sedert" date for the My Profiel Lidmaatskap status card.
+	 *
+	 * The current active INK lidmaatskap membership's start date, formatted with
+	 * the site's `date_format` option via `date_i18n()`. Null (graceful degrade,
+	 * never a fatal) when WooCommerce Memberships is inactive, the user has no
+	 * active INK membership, or the date cannot be resolved — the status card
+	 * omits the "Lid sedert" row rather than inventing a date. Delegates to
+	 * {@see MembershipDates}.
+	 *
+	 * @param int $user_id The member.
+	 * @return string|null The formatted start date, or null.
+	 */
+	public static function memberSinceFor( int $user_id ): ?string {
+		return self::dates()->memberSinceFor( $user_id );
+	}
+
+	/**
+	 * The member's "Hernieu" date for the My Profiel Lidmaatskap status card.
+	 *
+	 * The current active INK lidmaatskap membership's end/renewal date, formatted
+	 * with the site's `date_format` option via `date_i18n()`. Null (graceful
+	 * degrade, never a fatal) under the same conditions as {@see memberSinceFor()}.
+	 * Delegates to {@see MembershipDates}.
+	 *
+	 * @param int $user_id The member.
+	 * @return string|null The formatted end/renewal date, or null.
+	 */
+	public static function renewalDateFor( int $user_id ): ?string {
+		return self::dates()->renewalDateFor( $user_id );
+	}
+
+	/**
 	 * The shared registry instance.
 	 */
 	private static function registry(): MembershipPlans {
@@ -276,5 +320,13 @@ final class Api {
 	 */
 	private static function statusMessages(): StatusMessages {
 		return self::$status_messages ??= new StatusMessages();
+	}
+
+	/**
+	 * The shared lidmaatskap status-card date read-model (stateless, so a fresh
+	 * instance is fine).
+	 */
+	private static function dates(): MembershipDates {
+		return self::$dates ??= new MembershipDates();
 	}
 }

@@ -494,6 +494,13 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 | Edit | Wysig | Knoppie |
 | View | Sien | Knoppie |
 
+### Leeslys-blad
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Nothing saved yet | Nog niks gestoor nie. | Leë toestand-opskrif; deur die produk-eienaar bekragtig 2026-09-06 (`ReadingList::toHtml()`) |
+| Tap the bookmark on any story or poem and it will land here for later. | **[NEEDS HUMAN AFRIKAANS]** — sien `docs/afrikaans-translation-sheet.md` (ID `LEESLYS-LEEG-BODY`) | Leë toestand-beskrywing onder die opskrif; nog nie bekragtig nie — kopie-skuld, sien `docs/afrikaans-copy-worklist.md` |
+
 ### Kennisgewings-blad
 
 | Engels | Afrikaans | Notas |

@@ -106,7 +106,21 @@ final class ReadingList {
 		$html = '<section class="ink-leeslys"><h2 class="ink-leeslys__heading">' . esc_html( Terms::label( 'leeslys' ) ) . '</h2>';
 
 		if ( array() === $cards ) {
-			$html .= '<ul class="ink-leeslys__list"></ul></section>';
+			// Empty state — matches every sibling My Profiel section
+			// (PinnedWorksManager / ReadCountSurface / FollowingFeed all render
+			// an authored message instead of a bare empty list). Heading is
+			// ratified copy (product owner, 2026-09-06). The body line
+			// (Lovable: "Tap the bookmark on any story or poem and it will
+			// land here for later.") has NO ratified Afrikaans yet — per the
+			// standing unauthored-copy workflow it is NOT invented inline, it
+			// carries the standard human-copy-pending marker (below) and is
+			// tracked in docs/afrikaans-translation-sheet.md (ID
+			// LEESLYS-LEEG-BODY) / docs/afrikaans-copy-worklist.md until a
+			// human ratifies it; `composer copy:scan` tracks it as debt.
+			$html .= '<div class="ink-leeslys__leeg">'
+				. '<p class="ink-leeslys__leeg-titel">' . esc_html__( 'Nog niks gestoor nie.', 'ink-core' ) . '</p>'
+				. '<p class="ink-leeslys__leeg-beskrywing">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — Leeslys empty-state body copy not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</p>'
+				. '</div></section>';
 
 			return $html;
 		}

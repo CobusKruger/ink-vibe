@@ -21,6 +21,7 @@ beforeEach( function (): void {
 	Monkey\setUp();
 	Functions\when( '__' )->returnArg( 1 );
 	Functions\when( 'esc_html' )->returnArg( 1 );
+	Functions\when( 'esc_html__' )->returnArg( 1 );
 	Functions\when( 'esc_attr' )->returnArg( 1 );
 	Functions\when( 'esc_url' )->returnArg( 1 );
 } );
@@ -72,10 +73,28 @@ test( 'the profile list renders the heading and a card per saved work', function
 	expect( $html )->toContain( '/gedig/herfsblare' );
 } );
 
-test( 'the profile list renders the heading gracefully when empty', function (): void {
+test( 'the profile list renders an authored empty state, not a bare list', function (): void {
 	$html = ReadingList::toHtml( array() );
 
 	expect( $html )->toContain( 'ink-leeslys' );
 	expect( $html )->toContain( 'Leeslys' );
 	expect( $html )->not->toContain( 'ink-leeslys__item' );
+	expect( $html )->not->toContain( '<ul' ); // no more bare empty <ul>
+	expect( $html )->toContain( 'ink-leeslys__leeg' );
+	expect( $html )->toContain( 'Nog niks gestoor nie.' ); // ratified heading
+	expect( $html )->toContain( '[NEEDS HUMAN AFRIKAANS]' ); // body line still copy-debt
+} );
+
+test( 'a non-empty profile list is unaffected by the empty-state copy', function (): void {
+	$cards = array(
+		array( 'title' => 'Herfsblare', 'permalink' => '/gedig/herfsblare', 'type' => 'gedig' ),
+	);
+
+	$html = ReadingList::toHtml( $cards );
+
+	expect( $html )->toContain( '<ul class="ink-leeslys__list">' );
+	expect( $html )->toContain( 'ink-leeslys__item' );
+	expect( $html )->not->toContain( 'ink-leeslys__leeg' );
+	expect( $html )->not->toContain( 'Nog niks gestoor nie.' );
+	expect( $html )->not->toContain( '[NEEDS HUMAN AFRIKAANS]' );
 } );

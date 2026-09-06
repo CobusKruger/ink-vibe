@@ -240,3 +240,15 @@ AF: Ons stuur jou intekenbesonderhede na hierdie adres.
 AUTH-FORGOT-HINT
 EN: Enter the email or username linked to your account.
 AF: Vul die e-pos of gebruikersnaam in wat aan jou rekening gekoppel is.
+
+---
+
+## 9. My Profiel — Leeslys tab empty-state body (heading already ratified)
+
+The empty-state heading ("Nothing saved yet") is already ratified as **"Nog niks
+gestoor nie."** — nothing to do there. Only the line below it, shown under that
+heading, still needs your Afrikaans.
+
+LEESLYS-LEEG-BODY
+EN: Tap the bookmark on any story or poem and it will land here for later.
+AF:
