@@ -727,6 +727,39 @@ function ink_foundation_enqueue_profiel_edit(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_profiel_edit' );
 
 /**
+ * Enqueue the "Merk alles as gelees" client on My Profiel (My Profiel rebuild
+ * §5.8). `KennisgewingsSurface::toHtml()` server-renders the button + list, but
+ * nothing wires the click through `ink/v1/kennisgewings` — the same
+ * missing-JS shape as the vasgespel/volg/profiel-edit enqueues above. Loaded
+ * only on My Profiel.
+ */
+function ink_foundation_enqueue_kennisgewings(): void {
+	if ( ! function_exists( 'is_page' ) || ! is_page( 'my-profiel' ) ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-kennisgewings',
+		get_theme_file_uri( 'assets/js/kennisgewings.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+
+	wp_localize_script(
+		'ink-foundation-kennisgewings',
+		'inkKennisgewings',
+		array(
+			'restUrl' => esc_url_raw( rest_url( 'ink/v1/kennisgewings' ) ),
+			'nonce'   => wp_create_nonce( 'wp_rest' ),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_kennisgewings' );
+
+/**
  * Enqueue the My Profiel tab-toggle enhancement on My Profiel only (My Profiel
  * rebuild §5.2 — the 7-tab shell had no JS toggle before this).
  *

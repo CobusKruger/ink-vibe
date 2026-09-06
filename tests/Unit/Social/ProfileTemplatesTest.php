@@ -52,6 +52,11 @@ test( 'the my-profiel pattern embeds the private surfaces + reused blocks', func
 	expect( $markup )->toContain( 'wp:ink/volg-voer' );                      // following-feed (9.3)
 	expect( $markup )->toContain( 'wp:ink/leeslys' );                        // leeslys (7.7)
 	expect( $markup )->toContain( 'ink-foundation/lidmaatskap-hernu' );      // renewal section (4.5)
+	// My Profiel rebuild §5.6/§5.8/§5.9: the three previously-placeholder tabs are now wired.
+	expect( $markup )->toContain( 'wp:ink/volg-lys' );                       // Wie ek volg (§5.6)
+	expect( $markup )->toContain( 'KennisgewingsSurface::toHtml' );          // Kennisgewings (§5.8)
+	expect( $markup )->toContain( 'ink_lidmaatskap_aktief' );                // Lidmaatskap status card (§5.9)
+	expect( $markup )->not->toContain( 'WP7:' );                             // no placeholder markers remain
 } );
 
 test( 'FR-40 separation: the public Skrywerprofiel block source carries NO private surfaces', function () use ( $ink_core, $ink_read ): void {

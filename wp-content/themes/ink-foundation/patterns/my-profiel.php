@@ -10,34 +10,40 @@
  * content, so the per-user bridges resolve correctly in pattern PHP (auth is
  * established before `init`) — the same mechanism `lidmaatskap-hernu` relies on.
  *
- * IDENTITY STRIP + TAB SHELL + OORSIG + BYDRAES (My Profiel rebuild, this build
- * step — §5.1–§5.4): builds the identity strip, the 7-tab shell skeleton, the
- * Oorsig tab ("Oor my"/"In 'n oogopslag"/"Onlangse aktiwiteit") and the Bydraes
- * tab's new unified per-post render (`Ink\Social\BydraesSurface`, §5.4/§3 —
- * replaces the two previously separate `ink/leesgetalle` + `ink/vasgespel-bestuur`
- * blocks with one query/render carrying title+type+date+read-count+pin+edit/view
- * per row). It deliberately does NOT populate the still-genuinely-new tabs
- * (Wie-ek-volg's embed, Kennisgewings, the Lidmaatskap status card) — those
- * remain a separate, later step and still carry an explicit `<!-- WP7: … -->`
- * placeholder marker. Leeslys/Aktiwiteit/Lidmaatskap's existing blocks/patterns
- * (leeslys, volg-voer, lidmaatskap-hernu) stay moved-as-is, unchanged.
+ * IDENTITY STRIP + TAB SHELL + ALL 7 TABS (My Profiel rebuild, §5.1–§5.9):
+ * builds the identity strip, the 7-tab shell skeleton, the Oorsig tab ("Oor
+ * my"/"In 'n oogopslag"/"Onlangse aktiwiteit"), the Bydraes tab's unified
+ * per-post render (`Ink\Social\BydraesSurface`, §5.4/§3 — replaces the two
+ * previously separate `ink/leesgetalle` + `ink/vasgespel-bestuur` blocks with
+ * one query/render carrying title+type+date+read-count+pin+edit/view per row),
+ * the Wie-ek-volg tab (`ink/volg-lys`, §5.6), the Kennisgewings tab
+ * (`Ink\Notifications\KennisgewingsSurface`, §5.8), and the Lidmaatskap tab's
+ * left-hand status card (`Ink\Entitlement\Api::memberSinceFor()`/
+ * `renewalDateFor()`, §5.9). Leeslys/Aktiwiteit/Lidmaatskap's existing
+ * blocks/patterns (leeslys, volg-voer, lidmaatskap-hernu) stay moved-as-is,
+ * unchanged — lidmaatskap-hernu's own plan-card render is untouched, only
+ * wrapped in a columns split alongside the new status card.
  *
  * Private-only data lives HERE and nowhere public (FR-40): the "wins needed"
  * subtext (`ink_foundation_gradering_wins_needed`, Story 5.9), the read-count
  * surface (Story 9.12, now surfaced per-post on Bydraes via `BydraesSurface`),
- * the bio/stat cards, and the Kennisgewings-derived "Ongelees" count + "Onlangse
- * aktiwiteit" preview render only here, and never on the public Skrywerprofiel.
- * The Gradering badge + wins-needed subtext moved from their own standalone
- * section into the identity strip, and Leesgetalle moved from its own Oorsig
- * section to a per-post Bydraes stat (product-owner decisions 2026-09-06,
- * strategy doc §7 items 4/5).
+ * the bio/stat cards, the full Kennisgewings list + "Ongelees" count + "Onlangse
+ * aktiwiteit" preview render, and the Lidmaatskap status card's dates, only
+ * here, and never on the public Skrywerprofiel. The Gradering badge +
+ * wins-needed subtext moved from their own standalone section into the
+ * identity strip, and Leesgetalle moved from its own Oorsig section to a
+ * per-post Bydraes stat (product-owner decisions 2026-09-06, strategy doc §7
+ * items 4/5).
  *
  * Three-layer: presentation only. The Gradering badge + wins-needed subtext,
  * the tagline (`Ink\Social\Tagline`), the Oorsig stat reads (`Social\Api`,
  * `Notifications\KennisgewingsSurface`, `Entitlement\Api`), the Bydraes-tab
- * query (`Social\BydraesSurface`), and the avatar/name/public-URL reads are
- * `class_exists`/`function_exists`-guarded `ink-core` reads (display, never a
- * gate). The edit-profile modal (`ink/profiel-redigeer`), following-feed,
+ * query (`Social\BydraesSurface`), the Kennisgewings-tab render
+ * (`Notifications\KennisgewingsSurface::toHtml()`), the Lidmaatskap status-card
+ * dates (`Entitlement\Api::memberSinceFor()`/`renewalDateFor()`), and the
+ * avatar/name/public-URL reads are `class_exists`/`function_exists`-guarded
+ * `ink-core` reads (display, never a gate). The edit-profile modal
+ * (`ink/profiel-redigeer`), following-list (`ink/volg-lys`), following-feed,
  * leeslys, and lidmaatskap renewal are existing blocks/patterns, embedded here.
  * Copy is authored Afrikaans (ui-copy-translations.md "My Profiel-bladsy") via
  * the `ink-foundation` text domain; term labels via the registry. Unauthored
@@ -71,6 +77,26 @@ $ink_volg_getal = class_exists( '\Ink\Social\Api' ) ? \Ink\Social\Api::following
 $ink_ongelees   = class_exists( '\Ink\Notifications\KennisgewingsSurface' ) ? \Ink\Notifications\KennisgewingsSurface::unreadCount( $ink_user_id ) : 0;
 $ink_hernu_datum = class_exists( '\Ink\Entitlement\Api' ) ? \Ink\Entitlement\Api::renewalDateFor( $ink_user_id ) : null;
 $ink_onlangs    = class_exists( '\Ink\Notifications\KennisgewingsSurface' ) ? \Ink\Notifications\KennisgewingsSurface::recent( $ink_user_id ) : array();
+
+// Kennisgewings tab (§5.8): the full list + "Merk alles as gelees" button, rendered
+// server-side by the same ink-core read-model the Oorsig "Ongelees" stat/"Onlangse
+// aktiwiteit" card already read above — computed once as a guarded PHP value (this
+// file's established `ink-core`-bridge convention), then echoed in the panel markup.
+$ink_kennisgewings_html = class_exists( '\Ink\Notifications\KennisgewingsSurface' )
+	? \Ink\Notifications\KennisgewingsSurface::toHtml( \Ink\Notifications\KennisgewingsSurface::rows( $ink_user_id ) )
+	: '';
+
+// Lidmaatskap tab (§5.9): the status-card dates. "Lid sedert" reuses a fresh read
+// (memberSinceFor); "Hernieu" reuses the SAME renewal date already computed above
+// for the Oorsig one-liner ($ink_hernu_datum) — one call, two consumers, per this
+// file's own "compute once, share it" convention (see KennisgewingsSurface::rows()
+// for the same principle on the ink-core side). Both getters share ONE underlying
+// gate (Entitlement\MembershipDates::activeInkMembership() — literally-active
+// WooCommerce status): the card renders only when at least one resolves, since
+// that is only ever true for a genuinely active INK membership — never fabricated
+// for a non-member, and no new membership-state source is invented here.
+$ink_lid_sedert        = class_exists( '\Ink\Entitlement\Api' ) ? \Ink\Entitlement\Api::memberSinceFor( $ink_user_id ) : null;
+$ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_sedert );
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
@@ -280,10 +306,10 @@ $ink_onlangs    = class_exists( '\Ink\Notifications\KennisgewingsSurface' ) ? \I
 		</section>
 		<!-- /wp:group -->
 
-		<?php // Wie ek volg — genuinely new component (ink/volg-lys, §5.6), not yet embedded per the task's own instruction; next build step wires it in. ?>
+		<?php // Wie ek volg (§5.6) — the following-list block (Api::followeeIdsFor() resolved to writer cards + reused FollowToggle unfollow control). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
 		<section class="wp-block-group ink-profiel-panel" id="wie-ek-volg" data-ink-profiel-panel="wie-ek-volg">
-			<!-- WP7: Wie-ek-volg-oortjie-inhoud (ink/volg-lys — docs/my-profiel-rebuild-strategy.md §5.6). -->
+			<!-- wp:ink/volg-lys /-->
 		</section>
 		<!-- /wp:group -->
 
@@ -294,19 +320,71 @@ $ink_onlangs    = class_exists( '\Ink\Notifications\KennisgewingsSurface' ) ? \I
 		</section>
 		<!-- /wp:group -->
 
-		<?php // Kennisgewings — genuinely new component (KennisgewingsSurface, §5.8), the biggest remaining gap; not yet embedded per the task's own instruction. ?>
+		<?php // Kennisgewings (§5.8) — the read-model's rendered list + "Merk alles as gelees" button; $ink_kennisgewings_html computed above (guarded ink-core bridge). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
 		<section class="wp-block-group ink-profiel-panel" id="kennisgewings" data-ink-profiel-panel="kennisgewings">
-			<!-- WP7: Kennisgewings-oortjie-inhoud (Ink\Notifications\KennisgewingsSurface — docs/my-profiel-rebuild-strategy.md §5.8). -->
+			<!-- wp:html -->
+			<?php echo $ink_kennisgewings_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- KennisgewingsSurface::toHtml() escapes internally. ?>
+			<!-- /wp:html -->
 		</section>
 		<!-- /wp:group -->
 
-		<?php // Lidmaatskap — Story 4.5's renewal pattern moved as-is (data plumbing untouched per strategy §2); the left-hand status card (§5.9) is later. ?>
+		<?php // Lidmaatskap — Story 4.5's renewal pattern (data plumbing untouched per strategy §2) + the left-hand status card (§5.9). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
 		<section class="wp-block-group ink-profiel-panel" id="lidmaatskap" data-ink-profiel-panel="lidmaatskap">
-			<!-- WP7: Lidmaatskap-status-kaart (Ink\Entitlement\Api::memberSinceFor()/renewalDateFor() — docs/my-profiel-rebuild-strategy.md §5.9). -->
-			<?php // Story 4.5 / 9.4: the lidmaatskap renewal section (supersedes the interim host). ?>
+<?php if ( $ink_lidmaatskap_aktief ) : ?>
+			<?php // Status card only when the member genuinely has an active INK membership (never fabricated) — narrower left column, renewal section takes the rest (§5.9). ?>
+			<!-- wp:columns {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s-24","top":"var:preset|spacing|s-24"}}}} -->
+			<div class="wp-block-columns">
+				<!-- wp:column {"width":"33.33%","lock":{"move":true,"remove":true}} -->
+				<div class="wp-block-column" style="flex-basis:33.33%">
+					<!-- wp:group {"className":"is-style-card ink-lidmaatskap-status","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
+					<div class="wp-block-group is-style-card ink-lidmaatskap-status">
+						<!-- wp:paragraph {"fontSize":"xs","className":"ink-lidmaatskap-status__etiket"} -->
+						<p class="has-xs-font-size ink-lidmaatskap-status__etiket"><?php echo esc_html__( 'INK-lid', 'ink-foundation' ); ?></p>
+						<!-- /wp:paragraph -->
+
+						<!-- wp:heading {"level":3,"fontSize":"lg"} -->
+						<h3 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( 'Aktiewe lidmaatskap', 'ink-foundation' ); ?></h3>
+						<!-- /wp:heading -->
+
+						<!-- wp:html -->
+						<dl class="ink-lidmaatskap-status__lys">
+							<div class="ink-lidmaatskap-status__ry">
+								<dt><?php echo esc_html__( 'Status', 'ink-foundation' ); ?></dt>
+								<dd><?php echo esc_html__( 'Aktief', 'ink-foundation' ); ?></dd>
+							</div>
+<?php if ( null !== $ink_hernu_datum ) : ?>
+							<div class="ink-lidmaatskap-status__ry">
+								<dt><?php echo esc_html__( 'Hernieu', 'ink-foundation' ); ?></dt>
+								<dd><?php echo esc_html( $ink_hernu_datum ); ?></dd>
+							</div>
+<?php endif; ?>
+<?php if ( null !== $ink_lid_sedert ) : ?>
+							<div class="ink-lidmaatskap-status__ry">
+								<dt><?php echo esc_html__( 'Lid sedert', 'ink-foundation' ); ?></dt>
+								<dd><?php echo esc_html( $ink_lid_sedert ); ?></dd>
+							</div>
+<?php endif; ?>
+						</dl>
+						<!-- /wp:html -->
+					</div>
+					<!-- /wp:group -->
+				</div>
+				<!-- /wp:column -->
+
+				<!-- wp:column {"width":"66.66%","lock":{"move":true,"remove":true}} -->
+				<div class="wp-block-column" style="flex-basis:66.66%">
+					<?php // Story 4.5 / 9.4: the lidmaatskap renewal section (supersedes the interim host) — kept exactly as-is, only wrapped. ?>
+					<!-- wp:pattern {"slug":"ink-foundation/lidmaatskap-hernu"} /-->
+				</div>
+				<!-- /wp:column -->
+			</div>
+			<!-- /wp:columns -->
+<?php else : ?>
+			<?php // Story 4.5 / 9.4: the lidmaatskap renewal section (supersedes the interim host). No status card for a non-member — never a fabricated "Aktief" state. ?>
 			<!-- wp:pattern {"slug":"ink-foundation/lidmaatskap-hernu"} /-->
+<?php endif; ?>
 		</section>
 		<!-- /wp:group -->
 
