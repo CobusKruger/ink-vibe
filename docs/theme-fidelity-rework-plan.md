@@ -52,7 +52,7 @@ independently spot-checked by the orchestrating session before being marked done
 | 9 | skrywerprofiel | **done** | `f485fca` |
 | — | Reaction-bar placement/framing reconciled across all `reading-*` patterns | **done** | `754fc42` |
 | — | Highlightable-text + floating action bar feature, lees-storie (real feature gap, now in scope) | **done** | `b6b609a` |
-| 10 | my-profiel | **done** (style/interaction pass) — **major structural gap logged, not built, see below** | `58e2f72` |
+| 10 | my-profiel | **done**, incl. the deferred structural gap — **full 7-tab rebuild now built, see `docs/my-profiel-rebuild-strategy.md` and below** | `58e2f72`, rebuild `1d6b7fb`…`17ba2bf` |
 | 11 | ontdek | **done** — **structural gap (anchor pills → real tabs) judged in-scope and built, see below** | `7884c90` |
 | — | Stale test fix (`OntdekTemplateTest` regression from `7884c90`, caught by orchestrator spot-check, not the subagent) | **done** | `0bc59ba` |
 | 12 | gemeenskap | **done** | `f7cc536` |
@@ -1394,6 +1394,33 @@ feature-build pass, sized similarly to the lees-storie highlightable-text work b
 fix. `volg.js`'s unfollow-row-removal logic was already written with nowhere to render (no "Wie ek volg"
 list exists yet).
 
+**2026-09-06: strategy written, then built.** `docs/my-profiel-rebuild-strategy.md` carries the full
+tab-by-tab content mapping, the ratified-copy inventory, the "keep real WooCommerce pricing / don't copy
+Lovable's fake plan data" guardrail, and the six product-owner decisions (§7) that resolved every open
+item in the original draft. The rebuild itself — identity strip, 7-tab shell, the new `Ink\Social\
+BydraesSurface`/`FollowingList`/`Tagline`/`ProfileEditor`/`ProfileController` classes, the new
+`Ink\Notifications\KennisgewingsSurface` read-side (Story 9.9 had only ever written notifications — this
+closes that gap), the new `Entitlement\Api::memberSinceFor()`/`renewalDateFor()` facade, the "lesing" →
+"leser"/"lesers" rename, and the full `profiel.css` fidelity pass verified via real Tier 0–2 live
+interaction (tab switch, pin/unpin, unfollow, mark-all-read, edit-modal save) — is DONE, on this branch.
+
+The Tier-2 pass also caught a real production bug in the process, worth recording here rather than only
+in the strategy doc: `Kennisgewings::add()` wrote correctly, but BuddyPress's own
+`bp_notifications_get_notifications_for_user()` silently dropped every "ink" row on read (the pseudo-
+component was never in BuddyPress's registered-components list) — so notifications had been unreadable
+for every user since Story 9.9, undetected until this pass built a read side to notice. Fixed via a
+`bp_notifications_get_registered_components` filter, the same "hook, don't edit" pattern
+`Social\BuddyPress::scopeComponents()` already uses.
+
+Two items were flagged rather than guessed at, still open: (1) most real active WooCommerce memberships
+(6/12-month plans) appear to be missing the `_product_ids` link the shared `MembershipDates`/
+`SubmissionGate` guard requires, confirmed against a real production membership — not just QA data — so
+the new Lidmaatskap status card likely omits itself for most real members today; needs a real look before
+launch, possibly a plan-configuration fix rather than a code fix. (2) Unfollowing your last followed
+writer on Wie ek volg leaves a blank list until reload — `volg.js`'s client-side row removal doesn't
+reactively swap in the server empty-state markup, a small real gap, not built pending a design call on
+whether to duplicate that markup client-side.
+
 **ontdek (`7884c90`).** Fixture-leak bug in the Bydraes works archive (4 unfiltered `QA FIXTURE` posts;
 `WorksArchive::runQuery()` gained the standard exclusion + `INCLUDE_FIXTURES_FILTER` seam) plus a leak in
 Search's results. Fixed the fluid-token-instead-of-fixed-step bug on the archive-intro H1 (Lovable steps
@@ -1797,9 +1824,11 @@ All 16 pages are done. What's left is flagged follow-up work, not incomplete rew
 - **A recommended final full-sitewide sanity pass** was suggested by the auth (page 16) subagent but not
   attempted by it or scheduled yet — worth doing once, now that all 16 pages are individually done, to
   catch anything that only shows up in cross-page navigation rather than a single-page audit.
-- **My-profiel structural gap** — no tab shell, identity strip, "Wie ek volg" following-list, or
-  Kennisgewings/notifications panel. Logged, product-owner-confirmed to defer rather than build now (see
-  page 10's write-up above). Needs a dedicated feature-build pass when scheduled.
+- **My-profiel structural gap — CLOSED.** The 7-tab rebuild (identity strip, tab shell, Wie-ek-volg
+  following-list, Kennisgewings read-side) is built and Tier 0–2 live-verified; see page 10's write-up
+  above and `docs/my-profiel-rebuild-strategy.md`. Two smaller items surfaced during that pass remain
+  open, not re-described here: the Lidmaatskap status card's real-membership `_product_ids` gap, and the
+  Wie-ek-volg "unfollow your last writer" empty-state edge case (both noted in page 10's write-up above).
 - **`patterns/lidmaatskap-hernu.php`** (the My Profiel → Lidmaatskap renewal section at
   `/my-profiel-lidmaatskap/`, Story 4.5) has the identical fluid-heading and button-height bugs fixed on
   page 13/lidmaatskap proper — flagged during that pass, not yet fixed, out of that page's declared scope.
