@@ -98,9 +98,10 @@ $ink_kennisgewings_html = class_exists( '\Ink\Notifications\KennisgewingsSurface
 $ink_lid_sedert        = class_exists( '\Ink\Entitlement\Api' ) ? \Ink\Entitlement\Api::memberSinceFor( $ink_user_id ) : null;
 $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_sedert );
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-32"}},"layout":{"type":"constrained"}} -->
+<?php // Identity band (My Profiel rebuild, Tier-0 structural match to Profile.tsx's <section className="border-b border-border bg-cream/40">): a full-bleed tinted band housing ONLY the identity strip, distinct from the tab-shell section below (Lovable never puts the tabs inside this band). ?>
+<!-- wp:group {"tagName":"section","className":"ink-profiel-identiteit-band","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-40","bottom":"var:preset|spacing|s-40","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-profiel-identiteit-band" style="padding-top:var(--wp--preset--spacing--s-40);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-40);padding-left:var(--wp--preset--spacing--s-24)">
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 
 		<?php // Identity strip (My Profiel rebuild §5.1): avatar, "Jou profiel" eyebrow, serif H1 name, Gradering badge + wins-needed, tagline, three actions. ?>
@@ -139,11 +140,10 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 					</div>
 					<!-- /wp:group -->
 <?php endif; ?>
-<?php if ( '' !== $ink_tagline ) : ?>
-					<!-- wp:paragraph {"fontSize":"md","className":"ink-profiel-identiteit__leuse"} -->
-					<p class="has-md-font-size ink-profiel-identiteit__leuse" data-ink-profiel-veld="leuse">&#8220;<?php echo esc_html( $ink_tagline ); ?>&#8221;</p>
+					<?php // Two REAL bugs found live (Tier 2, profiel-edit.js's server-render-then-flip pattern): (1) this whole <p> was PHP-conditional on a non-empty tagline, so a member's FIRST-EVER tagline save had no element for the JS's [data-ink-profiel-veld="leuse"] selector to find — the identity strip silently never updated until reload; (2) even once the <p> existed, the JS's `el.textContent = data.tagline` blindly overwrote the PHP-baked literal quote-mark characters, since that selector sat on the SAME element as the quotes. Fixed by ALWAYS rendering the wrapper with the quote marks as PERMANENT sibling text, moving [data-ink-profiel-veld="leuse"] onto an INNER span (so the JS's existing textContent-only update never touches the quotes), and adding a separate wrapper attribute purely for the empty/non-empty visibility toggle — never bare empty quotes, but now a CSS concern, not a markup-presence one. ?>
+					<!-- wp:paragraph {"fontSize":"md","className":"ink-profiel-identiteit__leuse<?php echo '' === $ink_tagline ? ' is-empty' : ''; ?>"} -->
+					<p class="has-md-font-size ink-profiel-identiteit__leuse<?php echo '' === $ink_tagline ? ' is-empty' : ''; ?>" data-ink-profiel-leuse-wrap>&#8220;<span data-ink-profiel-veld="leuse"><?php echo esc_html( $ink_tagline ); ?></span>&#8221;</p>
 					<!-- /wp:paragraph -->
-<?php endif; ?>
 				</div>
 				<!-- /wp:group -->
 			</div>
@@ -151,15 +151,15 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 
 			<!-- wp:group {"className":"ink-profiel-identiteit__aksies","layout":{"type":"flex","flexWrap":"wrap"}} -->
 			<div class="wp-block-group ink-profiel-identiteit__aksies">
-				<?php // A real <button>, not a link — matches Lovable's onClick-only "Edit profile" control and the codebase's own convention for JS-triggered controls (vasgespel/volg toggles are also <button type="button">, never <a>). ?>
+				<?php // A real <button>, not a link — matches Lovable's onClick-only "Edit profile" control and the codebase's own convention for JS-triggered controls (vasgespel/volg toggles are also <button type="button">, never <a>). Styled directly via the BEM class in profiel.css (Tier-2 finding: a bare button never matches the `.wp-block-button.is-style-*` selector chain a real is-style-outline needs, so that className was a dead no-op — removed rather than left as a misleading label). ?>
 				<!-- wp:html -->
-				<button type="button" class="wp-element-button ink-profiel-identiteit__wysig is-style-outline" data-ink-profiel-redigeer-trigger><?php echo esc_html__( 'Wysig profiel', 'ink-foundation' ); ?></button>
+				<button type="button" class="wp-element-button ink-profiel-identiteit__wysig" data-ink-profiel-redigeer-trigger><?php echo esc_html__( 'Wysig profiel', 'ink-foundation' ); ?></button>
 				<!-- /wp:html -->
 
 				<!-- wp:buttons {"layout":{"type":"flex","flexWrap":"wrap"}} -->
 				<div class="wp-block-buttons">
-					<!-- wp:button -->
-					<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/skryf/' ) ); ?>"><?php echo esc_html__( 'Nuwe bydrae', 'ink-foundation' ); ?></a></div>
+					<!-- wp:button {"className":"is-style-ink-primary"} -->
+					<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/skryf/' ) ); ?>"><?php echo esc_html__( 'Nuwe bydrae', 'ink-foundation' ); ?></a></div>
 					<!-- /wp:button -->
 
 					<!-- wp:button {"className":"is-style-subtle"} -->
@@ -173,8 +173,19 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</div>
 		<!-- /wp:group -->
 
-		<?php // The real "Wysig profiel" edit modal (Ink\Social\ProfileEditor) — hidden by default; opened by the trigger button above via profiel-edit.js. ?>
-		<!-- wp:ink/profiel-redigeer /-->
+	</div>
+	<!-- /wp:group -->
+</section>
+<!-- /wp:group -->
+
+<?php // The real "Wysig profiel" edit modal (Ink\Social\ProfileEditor) — hidden by default (fixed-position overlay when open); opened by the trigger button above via profiel-edit.js. Lives outside both bands — its own overlay, not part of either's document flow. ?>
+<!-- wp:ink/profiel-redigeer /-->
+
+<?php // Tab shell + all 7 panels — a SEPARATE full-bleed section from the identity band above (Tier-0 structural match: Lovable's tabs live in their own `container mx-auto px-4 py-10`, not inside the bordered identity <section>). ?>
+<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-32"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide">
 
 		<?php // Tab shell (My Profiel rebuild §5.2): 7 ratified tabs, mirroring ontdek-tabs.js's progressive-enhancement mechanics (data-ink-profiel-tab/-panel, [hidden], #hash). ?>
 		<!-- wp:group {"tagName":"nav","className":"ink-profiel-tabs","lock":{"move":true,"remove":true},"layout":{"type":"flex","flexWrap":"wrap"}} -->
@@ -201,9 +212,13 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 				<div class="wp-block-column" style="flex-basis:66.66%">
 					<!-- wp:group {"className":"is-style-card ink-profiel-oormy","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 					<div class="wp-block-group is-style-card ink-profiel-oormy">
-						<!-- wp:heading {"level":3,"fontSize":"lg"} -->
-						<h3 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( 'Oor my', 'ink-foundation' ); ?></h3>
-						<!-- /wp:heading -->
+						<?php // Heading + "Wysig" affordance side by side (Tier-0 structural match to Profile.tsx's <div className="flex items-center justify-between mb-3"> — Lovable's Edit control sits beside the "About" heading, not after the bio text). ?>
+						<!-- wp:html -->
+						<div class="ink-profiel-oormy__kop">
+							<h3 class="ink-profiel-oormy__titel"><?php echo esc_html__( 'Oor my', 'ink-foundation' ); ?></h3>
+							<button type="button" class="wp-element-button ink-profiel-oormy__wysig" data-ink-profiel-redigeer-trigger><?php echo esc_html__( 'Wysig', 'ink-foundation' ); ?></button>
+						</div>
+						<!-- /wp:html -->
 
 						<!-- wp:paragraph {"className":"ink-profiel-oormy__bio"} -->
 						<p class="ink-profiel-oormy__bio" data-ink-profiel-veld="bio"><?php
@@ -216,10 +231,6 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 							: esc_html__( '[NEEDS HUMAN AFRIKAANS] — "no bio yet" fallback copy not yet authored in ui-copy-translations.md.', 'ink-foundation' );
 						?></p>
 						<!-- /wp:paragraph -->
-
-						<!-- wp:html -->
-						<button type="button" class="wp-element-button ink-profiel-oormy__wysig is-style-subtle" data-ink-profiel-redigeer-trigger><?php echo esc_html__( 'Wysig', 'ink-foundation' ); ?></button>
-						<!-- /wp:html -->
 					</div>
 					<!-- /wp:group -->
 				</div>

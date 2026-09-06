@@ -75,3 +75,17 @@ test( 'markAllRead stores the GMT boundary as the source of truth', function ():
 
 	Kennisgewings::markAllRead( 7 );
 } );
+
+test( 'registerBpComponent appends "ink" to BuddyPress\'s own registered-components list', function (): void {
+	expect( Kennisgewings::registerBpComponent( array( 'xprofile', 'members' ) ) )
+		->toBe( array( 'xprofile', 'members', NotificationType::COMPONENT ) );
+} );
+
+test( 'registerBpComponent tolerates a non-array filter value (never fatals)', function (): void {
+	expect( Kennisgewings::registerBpComponent( null ) )->toBe( array( NotificationType::COMPONENT ) );
+} );
+
+test( 'registerBpComponent never duplicates "ink" if it is already present', function (): void {
+	expect( Kennisgewings::registerBpComponent( array( 'members', NotificationType::COMPONENT ) ) )
+		->toBe( array( 'members', NotificationType::COMPONENT ) );
+} );

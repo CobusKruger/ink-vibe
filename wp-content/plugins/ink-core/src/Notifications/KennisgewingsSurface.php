@@ -294,6 +294,10 @@ final class KennisgewingsSurface {
 		$heading = '<h2 class="ink-kennisgewings__titel">' . esc_html__( 'Kennisgewings', 'ink-core' ) . '</h2>';
 		$button  = '<button type="button" class="ink-kennisgewings__merk-alles" data-ink-kennisgewings-merk-alles>'
 			. esc_html__( 'Merk alles as gelees', 'ink-core' ) . '</button>';
+		// Same "kop" (header row: heading + one action) shape BydraesSurface already
+		// uses (`.ink-bydraes__kop`) — reused, not reinvented, so the tab-shell CSS
+		// can style one shared "panel header row" recipe across both.
+		$kop = '<div class="ink-kennisgewings__kop">' . $heading . $button . '</div>';
 
 		if ( array() === $rows ) {
 			// No ratified copy exists yet for this empty state (ui-copy-translations.md's
@@ -301,11 +305,11 @@ final class KennisgewingsSurface {
 			// flagged per the standard [[afrikaans-copy-debt-process]] rather than invented.
 			$empty = __( '[NEEDS HUMAN AFRIKAANS] — Kennisgewings empty-state copy not yet authored in ui-copy-translations.md.', 'ink-core' );
 
-			return '<section class="ink-kennisgewings">' . $heading . $button
+			return '<section class="ink-kennisgewings">' . $kop
 				. '<p class="ink-kennisgewings__leeg">' . esc_html( $empty ) . '</p></section>';
 		}
 
-		$html = '<section class="ink-kennisgewings">' . $heading . $button . '<ul class="ink-kennisgewings__lys">';
+		$html = '<section class="ink-kennisgewings">' . $kop . '<ul class="ink-kennisgewings__lys">';
 
 		foreach ( $rows as $row ) {
 			$status  = ! empty( $row['unread'] ) ? 'unread' : 'gelees';

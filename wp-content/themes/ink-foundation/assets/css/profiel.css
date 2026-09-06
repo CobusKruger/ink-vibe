@@ -1,24 +1,1063 @@
 /**
- * profiel.css — My Profiel (`/my-profiel/`) identity strip + tab shell.
+ * profiel.css — My Profiel (`/my-profiel/`) identity strip + tab shell + all 7
+ * panels' card/list contents.
  *
- * My Profiel rebuild (docs/my-profiel-rebuild-strategy.md §6): the full
- * Lovable-fidelity styling pass (identity-strip layout, tab underline/badge
- * treatment, per-tab card styling) is a LATER build step — this file is
- * deliberately near-empty for now. It exists only so:
+ * My Profiel rebuild (docs/my-profiel-rebuild-strategy.md §6) full fidelity
+ * pass: every value here resolves to a `theme.json` token (Quality Gate A) —
+ * no literal colours/spacing/radii/shadows. Card visual language reuses the
+ * site's established `is-style-card` (static) / `is-style-ink-card` (hover-lift)
+ * recipes and the `.ink-volg-voer` activity-card precedent rather than
+ * inventing a fourth card language. Tab-bar shape mirrors `.ink-ontdek-tabs`
+ * (underline tabs) per §5.2 — a deliberate departure from Lovable's own
+ * shadcn segmented-pill `TabsList`, already decided in the strategy doc, not
+ * re-litigated here.
  *
- * 1. The enqueue (`ink_foundation_enqueue_profiel_assets()`, functions.php) has
- *    a real file to load, mirroring `reading.css`'s narrow, single-page-scoped
- *    enqueue pattern (gated `is_page('my-profiel')`).
- * 2. The tab-hide/show mechanics work correctly WITHOUT relying on any CSS —
- *    `profiel-tabs.js` toggles the native `hidden` attribute directly (browser
- *    default `[hidden]{display:none}`), so nothing here is required for
- *    correctness, only for appearance.
- *
- * Every value here (and everything added in the future full pass) must resolve
- * to a `theme.json` token (Quality Gate A) — no literal colors/spacing/radii.
+ * A few controls in `my-profiel.php`/the `ink-core` bridges are bare
+ * `<button>`/`<a>` elements (JS-triggered or block-comment-free `wp:html`
+ * output) that can never be matched by the `.wp-block-button.is-style-*`
+ * selector chain those style names are registered against (confirmed live —
+ * see `theme-fidelity-rework-plan.md`'s lees-gedig retrospective, lesson #3:
+ * "coordinated CSS+markup changes need a final does-the-selector-match-
+ * anything-real check"). Those get their OWN BEM-class rules below, copying
+ * the exact token recipe of the nearest registered `is-style-ink-*` variant
+ * (functions.php) rather than reinventing a fifth button language.
  */
 
-.ink-profiel-tabs__knoppie {
-	font: inherit;
+/* ─────────────────────────────────────────────────────────────────────────
+ * Identity band + strip (§5.1)
+ * ───────────────────────────────────────────────────────────────────────── */
+
+.ink-profiel-identiteit-band {
+	background-color: color-mix( in srgb, var(--wp--preset--color--surface) 40%, transparent );
+	border-bottom: 1px solid var(--wp--preset--color--border);
+}
+
+.ink-profiel-identiteit__persoon {
+	min-width: 0;
+}
+
+.ink-profiel-identiteit__avatar img {
+	display: block;
+	width: 7rem;
+	height: 7rem;
+	border-radius: var(--wp--custom--radius--full);
+	border: 4px solid var(--wp--preset--color--surface-alt);
+	box-shadow: var(--wp--preset--shadow--sm);
+	object-fit: cover;
+}
+
+.ink-profiel-identiteit__inhoud {
+	min-width: 0;
+}
+
+.ink-profiel-identiteit__etiket {
+	margin: 0 0 var(--wp--preset--spacing--s-4);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-profiel-identiteit__naam {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--xxxxl);
+	line-height: var(--wp--custom--line-height--tight);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-profiel-identiteit__gradering {
+	gap: var(--wp--preset--spacing--s-8);
+	margin-top: var(--wp--preset--spacing--s-8);
+}
+
+.ink-profiel-identiteit__leuse {
+	margin: var(--wp--preset--spacing--s-4) 0 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-style: italic;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* The wrapper always renders (Tier-2 fix, see my-profiel.php) so a live
+ * no-reload tagline update always has an element to flip into view — the
+ * "omit when empty, never show bare quote marks" rule is enforced here. */
+.ink-profiel-identiteit__leuse.is-empty {
+	display: none;
+}
+
+.ink-profiel-identiteit__aksies {
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+/* "Wysig profiel" — a bare <button> (JS-triggered, never a link); matches
+ * Lovable's `variant="literary-outline"`, the exact recipe already registered
+ * as `is-style-ink-outline` (functions.php) — copied here since the block-style
+ * selector can't reach a bare button. */
+.ink-profiel-identiteit__wysig {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	height: 2.5rem;
+	padding: 0 var(--wp--preset--spacing--s-16);
+	background-color: transparent;
+	color: var(--wp--preset--color--primary);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	border: 2px solid var(--wp--preset--color--primary);
+	border-radius: var(--wp--custom--radius--md);
 	cursor: pointer;
+	transition: background-color .15s ease, color .15s ease;
+}
+
+.ink-profiel-identiteit__wysig:hover {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+.ink-profiel-identiteit__wysig:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+/* "Sien openbare bladsy" — a REAL wp:button (is-style-subtle), so the normal
+ * block-style selector chain applies. Matches Lovable's `variant="subtle"`
+ * (`bg-secondary/50 text-foreground hover:bg-secondary`). Page-scoped here
+ * since My Profiel is currently the only consumer of this style name. */
+.wp-block-button.is-style-subtle .wp-block-button__link {
+	background-color: color-mix( in srgb, var(--wp--preset--color--secondary) 50%, transparent );
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-weight: var(--wp--custom--font-weight--medium);
+	border-radius: var(--wp--custom--radius--md);
+	transition: background-color .15s ease;
+}
+
+.wp-block-button.is-style-subtle .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--secondary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Tab shell (§5.2) — underline tabs, matching `.ink-ontdek-tabs`'s SHAPE.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+.ink-profiel-tabs {
+	gap: var(--wp--preset--spacing--s-4);
+	border-bottom: 1px solid var(--wp--preset--color--border);
+	margin-bottom: var(--wp--preset--spacing--s-32);
+}
+
+.ink-profiel-tabs__knoppie {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	padding: var(--wp--preset--spacing--s-16) 20px;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	background: transparent;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	color: var(--wp--preset--color--muted-text);
+	margin-bottom: -1px;
+	transition: color .15s ease, border-color .15s ease;
+}
+
+.ink-profiel-tabs__knoppie:hover {
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-profiel-tabs__knoppie.is-active {
+	color: var(--wp--preset--color--ink-text);
+	border-bottom-color: var(--wp--preset--color--primary);
+}
+
+.ink-profiel-tabs__knoppie:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+/* Panels are shown/hidden purely via the native [hidden] attribute
+ * (profiel-tabs.js) — no CSS required for correctness, only spacing. */
+.ink-profiel-panel + .ink-profiel-panel {
+	margin-top: var(--wp--preset--spacing--s-32);
+}
+
+/* Shared "panel header row" (heading + one trailing action) — the shape
+ * `.ink-bydraes__kop` already established, reused by Kennisgewings/Wie-ek-volg
+ * below rather than reinvented per-panel. */
+.ink-bydraes__kop,
+.ink-kennisgewings__kop,
+.ink-volg-lys__kop {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--s-16);
+	margin-bottom: var(--wp--preset--spacing--s-24);
+}
+
+.ink-bydraes__titel,
+.ink-leeslys__heading,
+.ink-volg-lys__heading,
+.ink-kennisgewings__titel {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--xxl);
+	font-weight: var(--wp--custom--font-weight--regular);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Oorsig (§5.3)
+ * ───────────────────────────────────────────────────────────────────────── */
+
+.ink-profiel-oormy__kop {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+.ink-profiel-oormy__titel,
+.ink-profiel-oogopslag h3,
+.ink-profiel-onlangs h3,
+.ink-lidmaatskap-status h3 {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--lg);
+	font-weight: var(--wp--custom--font-weight--regular);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* "Wysig" — bare <button>, Lovable's `variant="ghost" size="sm"`; matches the
+ * registered `is-style-ink-ghost` recipe at the "sm" size (36px/px-12/text-sm)
+ * a block-style className can't express — copied here for the same
+ * bare-element reason as `.ink-profiel-identiteit__wysig` above. */
+.ink-profiel-oormy__wysig {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-4);
+	height: 2.25rem;
+	padding: 0 var(--wp--preset--spacing--s-12);
+	background-color: transparent;
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	border: 0;
+	border-radius: var(--wp--custom--radius--md);
+	cursor: pointer;
+	transition: background-color .15s ease, color .15s ease;
+}
+
+.ink-profiel-oormy__wysig:hover {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+.ink-profiel-oormy__wysig:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+.ink-profiel-oormy__bio {
+	margin: var(--wp--preset--spacing--s-16) 0 0;
+	color: var(--wp--preset--color--muted-text);
+	font-family: var(--wp--preset--font-family--heading);
+	line-height: var(--wp--custom--line-height--relaxed);
+}
+
+.ink-profiel-oogopslag h3,
+.ink-profiel-onlangs h3 {
+	margin-bottom: var(--wp--preset--spacing--s-16);
+}
+
+.ink-profiel-oogopslag__lys {
+	display: grid;
+	grid-template-columns: repeat( 3, 1fr );
+	gap: var(--wp--preset--spacing--s-8);
+	margin: 0;
+	text-align: center;
+}
+
+.ink-profiel-oogopslag__stat {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-4);
+}
+
+.ink-profiel-oogopslag__stat dt {
+	order: 2;
+	font-size: var(--wp--preset--font-size--xs);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-profiel-oogopslag__stat dd {
+	order: 1;
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--xxl);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-profiel-oogopslag__lidmaatskap {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	padding-top: var(--wp--preset--spacing--s-16);
+	margin-top: var(--wp--preset--spacing--s-16) !important;
+	border-top: 1px solid var(--wp--preset--color--border);
+}
+
+.ink-profiel-onlangs__lys {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.ink-profiel-onlangs__item {
+	padding: var(--wp--preset--spacing--s-12) 0;
+	border-top: 1px solid var(--wp--preset--color--border);
+	color: var(--wp--preset--color--ink-text);
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+.ink-profiel-onlangs__item:first-child {
+	border-top: 0;
+	padding-top: 0;
+}
+
+.ink-profiel-onlangs__item.is-unread {
+	position: relative;
+	padding-left: var(--wp--preset--spacing--s-16);
+	font-weight: var(--wp--custom--font-weight--medium);
+}
+
+.ink-profiel-onlangs__item.is-unread::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translateY( -50% );
+	width: 6px;
+	height: 6px;
+	border-radius: var(--wp--custom--radius--full);
+	background-color: var(--wp--preset--color--primary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Bydraes (§5.4)
+ * ───────────────────────────────────────────────────────────────────────── */
+
+/* "Nuwe bydrae" — bare <a>, Lovable's `variant="literary"`; the exact
+ * registered `is-style-ink-primary` recipe, copied for the same bare-element
+ * reason as above. */
+.ink-bydraes__nuwe {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	height: 2.5rem;
+	padding: 0 var(--wp--preset--spacing--s-16);
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface-alt);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	text-decoration: none;
+	border-radius: var(--wp--custom--radius--md);
+	box-shadow: var(--wp--preset--shadow--md);
+	transition: background-color .15s ease;
+}
+
+.ink-bydraes__nuwe:hover {
+	background-color: var(--wp--preset--color--primary-light);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+.ink-bydraes__lys {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+/* NOTE: `BydraesSurface::toHtml()` puts an `is-style-card` class on this <li>,
+ * but the registered "card" block style's selector is `.wp-block-group.is-
+ * style-card` (functions.php) — a `<li>` never carries `wp-block-group`, so
+ * that class is a dead no-op here (same "class that can never match" bug
+ * class as the bare-button cases above, confirmed by reading the render
+ * chain). The full card recipe (values copied from that same registered
+ * style) is supplied directly on the BEM class instead. */
+.ink-bydraes__item {
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+	box-shadow: var(--wp--preset--shadow--sm);
+	padding: var(--wp--preset--spacing--s-24);
+}
+
+.ink-bydraes__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	margin-bottom: var(--wp--preset--spacing--s-4);
+}
+
+.ink-bydraes__tipe,
+.ink-bydraes__status {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px var(--wp--preset--spacing--s-12);
+	border: 1px solid color-mix( in srgb, var(--wp--preset--color--primary) 40%, transparent );
+	border-radius: var(--wp--custom--radius--full);
+	color: var(--wp--preset--color--primary);
+	font-size: var(--wp--preset--font-size--xs);
+	font-weight: var(--wp--custom--font-weight--semibold);
+	line-height: 1.333;
+}
+
+.ink-bydraes__status {
+	border-color: color-mix( in srgb, var(--wp--preset--color--success) 40%, transparent );
+	color: var(--wp--preset--color--success);
+}
+
+.ink-bydraes__datum {
+	font-size: var(--wp--preset--font-size--xs);
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-bydraes__werk-titel {
+	display: block;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--lg);
+	color: var(--wp--preset--color--ink-text);
+	text-decoration: none;
+}
+
+.ink-bydraes__werk-titel:hover {
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-bydraes__voet {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-16);
+	margin-top: var(--wp--preset--spacing--s-12);
+}
+
+.ink-bydraes__lesers {
+	font-size: var(--wp--preset--font-size--xs);
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* "Wysig" / "Sien" — bare <a> links, Lovable's `variant="subtle" size="sm"` /
+ * `variant="ghost" size="sm"`. Pushed to the row's trailing edge. */
+.ink-bydraes__sien,
+.ink-bydraes__wysig {
+	display: inline-flex;
+	align-items: center;
+	height: 2rem;
+	padding: 0 var(--wp--preset--spacing--s-12);
+	border-radius: var(--wp--custom--radius--md);
+	font-size: var(--wp--preset--font-size--sm);
+	text-decoration: none;
+	transition: background-color .15s ease, color .15s ease;
+}
+
+.ink-bydraes__sien {
+	margin-left: auto;
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-bydraes__sien:hover {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+.ink-bydraes__wysig {
+	background-color: color-mix( in srgb, var(--wp--preset--color--secondary) 50%, transparent );
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-bydraes__wysig:hover {
+	background-color: var(--wp--preset--color--secondary);
+}
+
+.ink-bydraes__leeg {
+	padding: var(--wp--preset--spacing--s-64) 0;
+	text-align: center;
+	color: var(--wp--preset--color--muted-text);
+	border: 1px dashed var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Leeslys (§5.5) — restyle existing bare list only, structure stays as-is.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+.ink-leeslys__list {
+	display: grid;
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+.ink-leeslys__item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-12);
+	padding: var(--wp--preset--spacing--s-16) var(--wp--preset--spacing--s-24);
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+}
+
+.ink-leeslys__title:hover {
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-leeslys__leeg {
+	padding: var(--wp--preset--spacing--s-64) 0;
+	text-align: center;
+	border: 1px dashed var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+}
+
+.ink-leeslys__leeg-titel {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--xl);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-leeslys__leeg-beskrywing {
+	max-width: 40ch;
+	margin: var(--wp--preset--spacing--s-8) auto 0;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Wie ek volg (§5.6)
+ * ───────────────────────────────────────────────────────────────────────── */
+
+.ink-volg-lys__kop-teks {
+	min-width: 0;
+}
+
+.ink-volg-lys__heading {
+	margin-bottom: var(--wp--preset--spacing--s-4);
+}
+
+.ink-volg-lys__intro {
+	margin: 0;
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+.ink-volg-lys__ontdek-kop {
+	display: inline-flex;
+	align-items: center;
+	height: 2.25rem;
+	padding: 0 var(--wp--preset--spacing--s-12);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: color-mix( in srgb, var(--wp--preset--color--secondary) 50%, transparent );
+	color: var(--wp--preset--color--ink-text);
+	font-size: var(--wp--preset--font-size--sm);
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background-color .15s ease;
+}
+
+.ink-volg-lys__ontdek-kop:hover {
+	background-color: var(--wp--preset--color--secondary);
+}
+
+.ink-volg-lys__grid {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	/* auto-FIT (not auto-fill): with few items, auto-fill reserves empty
+	 * phantom tracks that steal width from the real card(s) — confirmed live
+	 * (a single followee's card stayed pinned at ~240px, wrapping "Ryno Du
+	 * Plessis" onto three lines, while auto-fit correctly let it fill the row). */
+	grid-template-columns: repeat( auto-fit, minmax( 240px, 1fr ) );
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+/* Same dead-class note as `.ink-bydraes__item` above — `FollowingList::toHtml()`
+ * also puts `is-style-card` on a raw `<li>`, which the registered style's
+ * `.wp-block-group.is-style-card` selector can never match. Full recipe here. */
+.ink-volg-lys__item {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-12);
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+	box-shadow: var(--wp--preset--shadow--sm);
+	padding: var(--wp--preset--spacing--s-16);
+}
+
+.ink-volg-lys__foto img {
+	display: block;
+	width: 3rem;
+	height: 3rem;
+	border-radius: var(--wp--custom--radius--full);
+	object-fit: cover;
+	flex-shrink: 0;
+}
+
+.ink-volg-lys__inhoud {
+	flex: 1;
+	min-width: 0;
+}
+
+.ink-volg-lys__naam {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: var(--wp--custom--font-weight--medium);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-volg-lys__bio {
+	margin: var(--wp--preset--spacing--s-4) 0 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--xs);
+	color: var(--wp--preset--color--muted-text);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ink-volg-lys__item .ink-volg-knoppie {
+	margin-left: auto;
+	flex-shrink: 0;
+}
+
+.ink-volg-lys__leeg {
+	padding: var(--wp--preset--spacing--s-64) 0;
+	text-align: center;
+	border: 1px dashed var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+}
+
+.ink-volg-lys__leeg-titel {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--xl);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-volg-lys__leeg-teks {
+	max-width: 40ch;
+	margin: var(--wp--preset--spacing--s-8) auto 0;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-volg-lys__ontdek {
+	display: inline-flex;
+	align-items: center;
+	height: 2.5rem;
+	padding: 0 var(--wp--preset--spacing--s-16);
+	margin-top: var(--wp--preset--spacing--s-24);
+	background-color: transparent;
+	color: var(--wp--preset--color--primary);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	text-decoration: none;
+	border: 2px solid var(--wp--preset--color--primary);
+	border-radius: var(--wp--custom--radius--md);
+	transition: background-color .15s ease, color .15s ease;
+}
+
+.ink-volg-lys__ontdek:hover {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Kennisgewings (§5.8)
+ * ───────────────────────────────────────────────────────────────────────── */
+
+/* "Merk alles as gelees" — bare <button>, Lovable's `variant="subtle" size="sm"`. */
+.ink-kennisgewings__merk-alles {
+	display: inline-flex;
+	align-items: center;
+	height: 2.25rem;
+	padding: 0 var(--wp--preset--spacing--s-12);
+	background-color: color-mix( in srgb, var(--wp--preset--color--secondary) 50%, transparent );
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	border: 0;
+	border-radius: var(--wp--custom--radius--md);
+	cursor: pointer;
+	white-space: nowrap;
+	transition: background-color .15s ease;
+}
+
+.ink-kennisgewings__merk-alles:hover {
+	background-color: var(--wp--preset--color--secondary);
+}
+
+.ink-kennisgewings__merk-alles:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+.ink-kennisgewings__merk-alles:disabled {
+	opacity: .5;
+	cursor: default;
+}
+
+.ink-kennisgewings__lys {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+	overflow: hidden;
+}
+
+.ink-kennisgewings__item {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--wp--preset--spacing--s-12);
+	padding: var(--wp--preset--spacing--s-16);
+}
+
+.ink-kennisgewings__item + .ink-kennisgewings__item {
+	border-top: 1px solid var(--wp--preset--color--border);
+}
+
+.ink-kennisgewings__item::before {
+	content: "";
+	flex-shrink: 0;
+	width: 2rem;
+	height: 2rem;
+	margin-top: 2px;
+	border-radius: var(--wp--custom--radius--md);
+	background-color: var(--wp--preset--color--muted);
+}
+
+.ink-kennisgewings__item.is-unread::before {
+	background-color: color-mix( in srgb, var(--wp--preset--color--primary) 10%, transparent );
+}
+
+.ink-kennisgewings__teks {
+	margin: 0;
+	color: var(--wp--preset--color--ink-text);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: var(--wp--custom--line-height--normal);
+}
+
+.ink-kennisgewings__item.is-unread .ink-kennisgewings__teks {
+	font-weight: var(--wp--custom--font-weight--medium);
+}
+
+.ink-kennisgewings__item.is-unread {
+	position: relative;
+}
+
+.ink-kennisgewings__item.is-unread::after {
+	content: "";
+	position: absolute;
+	right: var(--wp--preset--spacing--s-16);
+	top: var(--wp--preset--spacing--s-16);
+	width: 8px;
+	height: 8px;
+	border-radius: var(--wp--custom--radius--full);
+	background-color: var(--wp--preset--color--primary);
+}
+
+.ink-kennisgewings__leeg {
+	padding: var(--wp--preset--spacing--s-64) 0;
+	text-align: center;
+	color: var(--wp--preset--color--muted-text);
+	border: 1px dashed var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Lidmaatskap (§5.9) — status card + `lidmaatskap-hernu` plan-card restyle.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+.ink-lidmaatskap-status__etiket {
+	margin: 0 0 var(--wp--preset--spacing--s-4);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-lidmaatskap-status__lys {
+	margin: var(--wp--preset--spacing--s-16) 0 0;
+	padding-top: var(--wp--preset--spacing--s-16);
+	border-top: 1px solid var(--wp--preset--color--border);
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+.ink-lidmaatskap-status__ry {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--wp--preset--spacing--s-16);
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+.ink-lidmaatskap-status__ry dt {
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-lidmaatskap-status__ry dd {
+	margin: 0;
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* Plan-card restyle (lidmaatskap-hernu.php, data plumbing untouched). Matches
+ * Lovable's plan-button shape (`rounded-lg border-2 p-4`); the selected-state
+ * tint (`border-terracotta bg-terracotta/5`) has no real-flow equivalent here
+ * (each term is an independent immediate purchase link, not a select-then-
+ * confirm radio group — see the strategy doc §5.9/§2 "keep the data plumbing
+ * exactly as-is") — a hover-only version of the same tint is applied instead,
+ * so every card still visually responds the same way Lovable's non-selected
+ * cards do on `hover:border-terracotta/40`. */
+#lidmaatskap .is-style-card:not(.ink-lidmaatskap-status) {
+	border-radius: var(--wp--custom--radius--lg);
+	border-width: 2px;
+	transition: border-color .15s ease, background-color .15s ease;
+}
+
+#lidmaatskap .is-style-card:not(.ink-lidmaatskap-status):hover {
+	border-color: color-mix( in srgb, var(--wp--preset--color--primary) 40%, var(--wp--preset--color--border) );
+	background-color: color-mix( in srgb, var(--wp--preset--color--primary) 5%, transparent );
+}
+
+/* Real bug found live (Tier 2): `lidmaatskap-hernu.php`'s own price text and
+ * "Renew for N months" pill button rely on a `.ink-lidmaatskap-plans` ancestor
+ * class for correct sizing (`patterns/lidmaatskap.php`'s CSS, theme.json) —
+ * that class only exists on the STANDALONE Lidmaatskap page, never on this
+ * pattern when it is embedded here on My Profiel's Lidmaatskap tab. Without
+ * it the price wrapped mid-digit ("R50,0" / "0") and the fully-rounded pill
+ * button squeezed multi-word button text into an oval, wrapping it into an
+ * unreadable stack. Same fix, same values, reused (not reinvented) — scoped
+ * to this tab's own panel id instead. */
+#lidmaatskap p.has-xxl-font-size {
+	font-size: 24px !important;
+}
+
+/* min-height (not a fixed height) + generous line-height: this tab's cards are
+ * narrower than the standalone Lidmaatskap page's (a 2/3-width column shared
+ * with the status card), so "Hernieu vir 12 maande" genuinely wraps to two
+ * lines here even though it never did in the wider original context — a
+ * fixed 44px would clip/overflow that second line (confirmed live: white
+ * text on white spilling below the pill). The radius is also relaxed from
+ * `full` to `lg` for the same reason — a two-line stadium/pill reads oddly;
+ * `lg` is closer to Lovable's own `rounded-lg` renew-button shape besides. */
+#lidmaatskap .wp-block-buttons .wp-block-button__link {
+	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-8);
+	min-height: 44px;
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.3;
+	white-space: normal;
+	text-align: center;
+	font-weight: var(--wp--custom--font-weight--medium);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#lidmaatskap .wp-block-buttons .wp-block-button.is-style-pill .wp-block-button__link {
+	border-radius: var(--wp--custom--radius--lg);
+}
+
+#lidmaatskap .wp-block-button__link[aria-disabled="true"] {
+	cursor: not-allowed;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Edit-profile modal (`ink/profiel-redigeer`, §5.1)
+ * ───────────────────────────────────────────────────────────────────────── */
+
+.ink-profiel-redigeer {
+	position: fixed;
+	inset: 0;
+	z-index: 100;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--wp--preset--spacing--s-16);
+}
+
+.ink-profiel-redigeer.is-hidden {
+	display: none;
+}
+
+.ink-profiel-redigeer__agtergrond {
+	position: absolute;
+	inset: 0;
+	background-color: color-mix( in srgb, var(--wp--preset--color--ink-text) 40%, transparent );
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(2px);
+}
+
+.ink-profiel-redigeer__venster {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: 32rem;
+	max-height: calc(100vh - var(--wp--preset--spacing--s-32));
+	overflow-y: auto;
+	padding: var(--wp--preset--spacing--s-24);
+	background-color: var(--wp--preset--color--surface-alt);
+	border-radius: var(--wp--custom--radius--xl);
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+.ink-profiel-redigeer__titel {
+	margin: 0 0 var(--wp--preset--spacing--s-24);
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--xl);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-profiel-redigeer__avatar {
+	margin-bottom: var(--wp--preset--spacing--s-16);
+}
+
+.ink-profiel-redigeer__avatar img {
+	display: block;
+	width: 4rem;
+	height: 4rem;
+	border-radius: var(--wp--custom--radius--full);
+	object-fit: cover;
+}
+
+.ink-profiel-redigeer__veld {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-4);
+}
+
+.ink-profiel-redigeer__veld label {
+	font-size: var(--wp--preset--font-size--xs);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-profiel-redigeer__veld input,
+.ink-profiel-redigeer__veld textarea {
+	width: 100%;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-12);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--md);
+	color: var(--wp--preset--color--ink-text);
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--md);
+	box-sizing: border-box;
+}
+
+.ink-profiel-redigeer__veld input:focus-visible,
+.ink-profiel-redigeer__veld textarea:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 1px;
+}
+
+.ink-profiel-redigeer__veld textarea {
+	resize: vertical;
+}
+
+.ink-profiel-redigeer__aksies {
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--wp--preset--spacing--s-8);
+	margin-top: var(--wp--preset--spacing--s-24);
+}
+
+.ink-profiel-redigeer__kanselleer,
+.ink-profiel-redigeer__stoor {
+	display: inline-flex;
+	align-items: center;
+	height: 2.5rem;
+	padding: 0 var(--wp--preset--spacing--s-16);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: var(--wp--custom--font-weight--medium);
+	border: 0;
+	border-radius: var(--wp--custom--radius--md);
+	cursor: pointer;
+}
+
+.ink-profiel-redigeer__kanselleer {
+	background-color: color-mix( in srgb, var(--wp--preset--color--secondary) 50%, transparent );
+	color: var(--wp--preset--color--ink-text);
+	transition: background-color .15s ease;
+}
+
+.ink-profiel-redigeer__kanselleer:hover {
+	background-color: var(--wp--preset--color--secondary);
+}
+
+.ink-profiel-redigeer__stoor {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface-alt);
+	font-family: var(--wp--preset--font-family--display);
+	transition: background-color .15s ease;
+}
+
+.ink-profiel-redigeer__stoor:hover {
+	background-color: var(--wp--preset--color--primary-light);
+}
+
+.ink-profiel-redigeer__kanselleer:disabled,
+.ink-profiel-redigeer__stoor:disabled {
+	opacity: .5;
+	cursor: default;
+}
+
+.ink-profiel-redigeer__status {
+	margin: var(--wp--preset--spacing--s-8) 0 0;
+	font-size: var(--wp--preset--font-size--sm);
+	color: var(--wp--preset--color--muted-text);
+	text-align: right;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Small screens
+ * ───────────────────────────────────────────────────────────────────────── */
+
+@media ( max-width: 782px ) {
+	.ink-profiel-oogopslag__lys {
+		gap: var(--wp--preset--spacing--s-4);
+	}
+
+	.ink-profiel-identiteit__naam {
+		font-size: var(--wp--preset--font-size--xxxl);
+	}
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.ink-profiel-identiteit__wysig,
+	.ink-profiel-oormy__wysig,
+	.ink-bydraes__nuwe,
+	.ink-bydraes__sien,
+	.ink-bydraes__wysig,
+	.ink-volg-lys__ontdek-kop,
+	.ink-volg-lys__ontdek,
+	.ink-kennisgewings__merk-alles,
+	.wp-block-button.is-style-subtle .wp-block-button__link,
+	#lidmaatskap .is-style-card:not(.ink-lidmaatskap-status) {
+		transition: none;
+	}
 }

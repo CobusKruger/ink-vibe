@@ -38,6 +38,44 @@ final class Kennisgewings {
 	public const MARK_META = 'ink_kennisgewings_gelees_op';
 
 	/**
+	 * Make BuddyPress's OWN read-path actually return "ink" kennisgewings.
+	 *
+	 * Real bug found live during the My Profiel rebuild's Tier-2 verification
+	 * (docs/my-profiel-rebuild-strategy.md §5.8): {@see self::add()} writes
+	 * correctly (confirmed via a direct DB check), but
+	 * `bp_notifications_get_notifications_for_user()` — the function
+	 * {@see \Ink\Notifications\KennisgewingsSurface} reads through — silently
+	 * returned NOTHING for every "ink" row, always, in every environment. Root
+	 * cause: BuddyPress's own
+	 * `BP_Notifications_Notification::get_grouped_notifications_for_user()`
+	 * filters to `component_name IN bp_notifications_get_registered_components()`,
+	 * and that function only ever returns REAL active `$bp->active_components`
+	 * keys that carry their own `notification_callback` (xprofile/members/
+	 * notifications/settings per {@see \Ink\Social\BuddyPress::SCOPED_ON}) —
+	 * "ink" is a pseudo-component (a stored `component_name` value only, never
+	 * a registered `BP_Component`), so it was unconditionally excluded. The
+	 * write-side test coverage ({@see KennisgewingsTest}) could never catch this
+	 * — it mocks `bp_notifications_add_notification` directly and never
+	 * exercises BuddyPress's own read-side filtering at all.
+	 *
+	 * Fixed the same "hook, don't edit" way
+	 * {@see \Ink\Social\BuddyPress::scopeComponents()} already handles an
+	 * analogous BP integration seam: append the "ink" pseudo-component to
+	 * whatever BuddyPress's own registered-components filter already returned,
+	 * rather than touching BuddyPress core or fabricating a full `BP_Component`
+	 * just to get a `notification_callback` slot.
+	 *
+	 * @param mixed $components The filter's current value (component name list).
+	 * @return list<string>
+	 */
+	public static function registerBpComponent( $components ): array {
+		$components   = is_array( $components ) ? array_values( $components ) : array();
+		$components[] = NotificationType::COMPONENT;
+
+		return array_values( array_unique( $components ) );
+	}
+
+	/**
 	 * Create a kennisgewing for a user (guarded BP write; no-op without BP).
 	 *
 	 * Never notifies the actor about their own action, and never writes for a

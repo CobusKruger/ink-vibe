@@ -120,6 +120,15 @@
 			if ( data && 'undefined' !== typeof data.tagline ) {
 				displaysFor( 'leuse' ).forEach( function ( el ) {
 					el.textContent = data.tagline;
+
+					// The quote-mark wrapper always renders (Tier-2 fix): toggle its
+					// empty/non-empty visibility here rather than touching its
+					// textContent, which would also wipe the permanent quote marks
+					// that sit OUTSIDE this inner span.
+					var wrap = el.closest( '[data-ink-profiel-leuse-wrap]' );
+					if ( wrap ) {
+						wrap.classList.toggle( 'is-empty', '' === data.tagline );
+					}
 				} );
 			}
 			if ( data && 'undefined' !== typeof data.bio ) {

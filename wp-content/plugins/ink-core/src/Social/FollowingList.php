@@ -122,7 +122,7 @@ final class FollowingList {
 			$empty_body  = __( "Volg 'n skrywer om hul nuwe stukke in jou aktiwiteitsvoer te sien.", 'ink-core' );
 			$cta         = __( 'Ontdek skrywers', 'ink-core' );
 
-			return '<section class="ink-volg-lys">' . $heading . $intro
+			return '<section class="ink-volg-lys"><div class="ink-volg-lys__kop-teks">' . $heading . $intro . '</div>'
 				. '<div class="ink-volg-lys__leeg">'
 				. '<p class="ink-volg-lys__leeg-titel">' . esc_html( $empty_title ) . '</p>'
 				. '<p class="ink-volg-lys__leeg-teks">' . esc_html( $empty_body ) . '</p>'
@@ -130,18 +130,28 @@ final class FollowingList {
 				. '</div></section>';
 		}
 
-		$html = '<section class="ink-volg-lys">' . $heading . $intro . '<ul class="ink-volg-lys__grid">';
+		// A persistent header CTA (Tier-0 structural match to Profile.tsx's
+		// always-visible "Discover writers" button, not only the empty state's) —
+		// reuses the SAME "Ontdek skrywers" copy/URL the empty state above already
+		// carries; no new string, no new destination.
+		$cta_persistent = '<a class="ink-volg-lys__ontdek-kop" href="' . esc_url( home_url( '/ontdek/' ) ) . '">' . esc_html__( 'Ontdek skrywers', 'ink-core' ) . '</a>';
+
+		$html = '<section class="ink-volg-lys"><div class="ink-volg-lys__kop"><div class="ink-volg-lys__kop-teks">' . $heading . $intro . '</div>' . $cta_persistent . '</div><ul class="ink-volg-lys__grid">';
 
 		foreach ( $writers as $writer ) {
+			// name + bio share ONE column beside the avatar/unfollow-button (Tier-2
+			// live finding: without this wrapper both were direct flex children of
+			// the <li> row, so a bio rendered BESIDE the name instead of under it).
 			$html .= '<li class="ink-volg-lys__item is-style-card" data-ink-remove-on-unfollow>'
 				. '<div class="ink-volg-lys__foto">' . (string) $writer['avatar'] . '</div>'
+				. '<div class="ink-volg-lys__inhoud">'
 				. '<span class="ink-volg-lys__naam">' . esc_html( (string) $writer['name'] ) . '</span>';
 
 			if ( '' !== trim( (string) $writer['bio'] ) ) {
 				$html .= '<p class="ink-volg-lys__bio"><em>' . esc_html( (string) $writer['bio'] ) . '</em></p>';
 			}
 
-			$html .= FollowToggle::toHtml( (int) $writer['id'], true )
+			$html .= '</div>' . FollowToggle::toHtml( (int) $writer['id'], true )
 				. '</li>';
 		}
 

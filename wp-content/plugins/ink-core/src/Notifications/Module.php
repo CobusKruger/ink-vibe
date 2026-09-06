@@ -55,6 +55,15 @@ final class Module implements ModuleContract {
 		// (guarded — a clean no-op without BuddyPress).
 		( new Events() )->register();
 
+		// My Profiel rebuild §5.8 (Tier-2 live-verification fix): register the
+		// "ink" pseudo-component with BuddyPress's OWN notifications read-path,
+		// so a written kennisgewing is actually returned by
+		// `bp_notifications_get_notifications_for_user()` — see
+		// {@see Kennisgewings::registerBpComponent()} for the full root cause.
+		// A no-op filter add when BuddyPress is absent (the hook simply never
+		// fires), same as `Events()->register()` above.
+		add_filter( 'bp_notifications_get_registered_components', array( Kennisgewings::class, 'registerBpComponent' ) );
+
 		// Story 9.11 (R7): the receipt trigger — an encouraging kennisgewing when
 		// a work crosses a read-count milestone. Inert until the 18.9 analytics +
 		// 9.12 fire `ink/ontvangs` AND the R7 form-letter list is authored.
