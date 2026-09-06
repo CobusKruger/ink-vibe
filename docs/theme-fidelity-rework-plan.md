@@ -1729,6 +1729,42 @@ helpers; `ReactionTotalsTest` covers the button-vs-div fallback, the guest data 
 gedig/storie anchor dispatch. `composer test` 1341 passed (same 4 pre-existing Integration-suite failures),
 `stan` clean (206 files), `deptrac` same 3 pre-existing violations, 0 new.
 
+### Same-day follow-up: Ontdek intro centered + a 4-column archive grid (2026-09-06)
+
+Direct product-owner report against `/ontdek/` (found immediately after the Ontdek pass further above): the
+intro heading block is centered on the page (design has it left-aligned), and the Bydraes/Skrywers excerpt
+cards render in 4 columns, not Lovable's 3.
+
+**Centering — a regression from the same-day intro `max-width:768px` fix above.** Narrowing
+`.ink-ontdek-intro .wp-block-group.alignwide` to 768px (to make the heading wrap 3 lines, matching Lovable)
+left it inside a now-WIDER 1368px parent with nothing pinning it to the left — and WordPress's own
+`.is-layout-constrained > :where(...)` rule (from the "constrained" layout every `alignwide`/`alignfull`
+ancestor here already carries) sets `margin-left/right: auto` on exactly this kind of child, so it centered.
+The fix is scoped `margin-left:0 !important; margin-right:0 !important`. The `!important` is necessary and not
+just belt-and-braces: measured directly (`getComputedStyle` before/after), a plain unqualified
+`margin-left:0` LOST to that `:where()`-based rule despite this selector's higher class-count specificity
+((0,3,0) vs (0,1,0) — `:where()` itself always contributes zero) — the exact mechanism wasn't fully run to
+ground, but the same `!important` requirement already exists on this page's own `h1.has-xxxl-font-size`
+font-size overrides a few lines above in the same stylesheet, so this isn't a new pattern, just one this fix
+initially missed reusing. Verified live: `margin-left` computes to `0px` (was `auto`/`432px`), the block now
+sits flush against the section's own left padding (`left:24px`, matching every other page's gutter).
+
+**4 columns — the works/skrywers archive grids never had a real 3-column rule.**
+`.ink-ontdek-werke__list`/`.ink-ontdek-skrywers__list` used `grid-template-columns:repeat(auto-fill,
+minmax(280px,1fr))`, which packs as many 280px+ columns as fit a row — 4 at the page's ~1368px content width.
+Lovable's `Browse.tsx` uses a fixed `grid md:grid-cols-2 lg:grid-cols-3 gap-6` for BOTH grids (the works list
+at line ~500, the writers list at line ~566 — literally the same class string, confirmed in source). Replaced
+both rules with the equivalent fixed breakpoints (1 column below 768px, 2 from 768px, 3 from 1024px; the
+existing `s-24` gap already matched Lovable's `gap-6`). Deliberately did NOT touch the "Nuwe stemme"/"Onlangs
+aktief"/"Skrywers soos jy" preview-row grids (`Ink\Discovery\DiscoverySurfaces`) — those are INK-only discovery
+surfaces with no Lovable `Browse.tsx` equivalent at all (confirmed: no matching component in that file), so
+their existing `auto-fill` grid isn't a divergence from anything and was left as-is. Verified live:
+`getComputedStyle(...).gridTemplateColumns` on the works list resolves to exactly 3 track values at desktop
+width.
+
+No PHP changed — CSS-only (`theme.json`). `stan` clean, `deptrac` unchanged (3 pre-existing violations, 0 new);
+`composer test` re-run for safety, unaffected (same pass count as directly above).
+
 ---
 
 ## Known outstanding items, not yet resolved
