@@ -10,37 +10,42 @@
  * content, so the per-user bridges resolve correctly in pattern PHP (auth is
  * established before `init`) — the same mechanism `lidmaatskap-hernu` relies on.
  *
- * IDENTITY STRIP + TAB SHELL (My Profiel rebuild, this build step — §5.1/§5.2):
- * this step builds ONLY the identity strip and the 7-tab shell skeleton, per the
- * strategy doc's own build order (§8, step 6). It deliberately does NOT populate
- * new tab content (Oorsig stats, the Bydraes/Kennisgewings/Wie-ek-volg reads) —
- * that is a separate, later step. To avoid regressing already-shipped, working
- * functionality in the meantime, every block that was ALREADY rendering on the
- * flat page (leesgetalle, vasgespel-bestuur, leeslys, volg-voer, the
- * lidmaatskap-hernu renewal pattern) is moved into its new tab home UNCHANGED —
- * none of that is "new tab content", it is the exact same already-working markup
- * relocated so the shell has somewhere real to put it. Only the genuinely new
- * tabs with no existing render today (Oorsig's stat cards, Wie-ek-volg,
- * Kennisgewings) carry an explicit `<!-- WP7: … -->` placeholder marker for the
- * next build step.
+ * IDENTITY STRIP + TAB SHELL + OORSIG + BYDRAES (My Profiel rebuild, this build
+ * step — §5.1–§5.4): builds the identity strip, the 7-tab shell skeleton, the
+ * Oorsig tab ("Oor my"/"In 'n oogopslag"/"Onlangse aktiwiteit") and the Bydraes
+ * tab's new unified per-post render (`Ink\Social\BydraesSurface`, §5.4/§3 —
+ * replaces the two previously separate `ink/leesgetalle` + `ink/vasgespel-bestuur`
+ * blocks with one query/render carrying title+type+date+read-count+pin+edit/view
+ * per row). It deliberately does NOT populate the still-genuinely-new tabs
+ * (Wie-ek-volg's embed, Kennisgewings, the Lidmaatskap status card) — those
+ * remain a separate, later step and still carry an explicit `<!-- WP7: … -->`
+ * placeholder marker. Leeslys/Aktiwiteit/Lidmaatskap's existing blocks/patterns
+ * (leeslys, volg-voer, lidmaatskap-hernu) stay moved-as-is, unchanged.
  *
  * Private-only data lives HERE and nowhere public (FR-40): the "wins needed"
- * subtext (`ink_foundation_gradering_wins_needed`, Story 5.9) and the read-count
- * surface (Story 9.12) render only here, and never on the public Skrywerprofiel.
+ * subtext (`ink_foundation_gradering_wins_needed`, Story 5.9), the read-count
+ * surface (Story 9.12, now surfaced per-post on Bydraes via `BydraesSurface`),
+ * the bio/stat cards, and the Kennisgewings-derived "Ongelees" count + "Onlangse
+ * aktiwiteit" preview render only here, and never on the public Skrywerprofiel.
  * The Gradering badge + wins-needed subtext moved from their own standalone
- * section into the identity strip (product-owner decision 2026-09-06, strategy
- * doc §7 item 5) — it is read-only for the member, nothing to edit or interact
- * with elsewhere.
+ * section into the identity strip, and Leesgetalle moved from its own Oorsig
+ * section to a per-post Bydraes stat (product-owner decisions 2026-09-06,
+ * strategy doc §7 items 4/5).
  *
  * Three-layer: presentation only. The Gradering badge + wins-needed subtext,
- * the tagline (`Ink\Social\Tagline`), and the avatar/name/public-URL reads are
+ * the tagline (`Ink\Social\Tagline`), the Oorsig stat reads (`Social\Api`,
+ * `Notifications\KennisgewingsSurface`, `Entitlement\Api`), the Bydraes-tab
+ * query (`Social\BydraesSurface`), and the avatar/name/public-URL reads are
  * `class_exists`/`function_exists`-guarded `ink-core` reads (display, never a
  * gate). The edit-profile modal (`ink/profiel-redigeer`), following-feed,
- * leeslys, pin-management, read-counts and lidmaatskap renewal are existing
- * blocks/patterns, embedded here. Copy is authored Afrikaans
- * (ui-copy-translations.md "My Profiel-bladsy") via the `ink-foundation` text
- * domain; term labels via the registry. Sentence case; structural wrappers
- * locked (move/remove) per Storie 1.6.
+ * leeslys, and lidmaatskap renewal are existing blocks/patterns, embedded here.
+ * Copy is authored Afrikaans (ui-copy-translations.md "My Profiel-bladsy") via
+ * the `ink-foundation` text domain; term labels via the registry. Unauthored
+ * copy (the Oorsig "no bio yet" fallback, the Bydraes empty state) carries a
+ * `[NEEDS HUMAN AFRIKAANS]` placeholder per the standard
+ * [[afrikaans-copy-debt-process]] rather than invented Afrikaans — see
+ * `docs/afrikaans-translation-sheet.md` (OORSIG-BIO-LEEG / BYDRAES-LEEG).
+ * Sentence case; structural wrappers locked (move/remove) per Storie 1.6.
  */
 
 $ink_user_id      = get_current_user_id();
@@ -56,6 +61,16 @@ $ink_tagline      = class_exists( '\Ink\Social\Tagline' )
 $ink_avatar       = function_exists( 'get_avatar' ) ? (string) get_avatar( $ink_user_id, 112 ) : '';
 $ink_display_name = (string) get_the_author_meta( 'display_name', $ink_user_id );
 $ink_public_url   = (string) get_author_posts_url( $ink_user_id );
+
+// Oorsig tab data (My Profiel rebuild §5.3). Product-owner decision 2026-09-06
+// (§7 item 5): Gradering lives in the identity strip above, Leesgetalle moved
+// to the Bydraes tab — Oorsig hosts neither directly any more.
+$ink_bio        = trim( (string) get_the_author_meta( 'description', $ink_user_id ) );
+$ink_bydraes    = class_exists( '\Ink\Social\BydraesSurface' ) ? \Ink\Social\BydraesSurface::rows( $ink_user_id ) : array();
+$ink_volg_getal = class_exists( '\Ink\Social\Api' ) ? \Ink\Social\Api::followingCount( $ink_user_id ) : 0;
+$ink_ongelees   = class_exists( '\Ink\Notifications\KennisgewingsSurface' ) ? \Ink\Notifications\KennisgewingsSurface::unreadCount( $ink_user_id ) : 0;
+$ink_hernu_datum = class_exists( '\Ink\Entitlement\Api' ) ? \Ink\Entitlement\Api::renewalDateFor( $ink_user_id ) : null;
+$ink_onlangs    = class_exists( '\Ink\Notifications\KennisgewingsSurface' ) ? \Ink\Notifications\KennisgewingsSurface::recent( $ink_user_id ) : array();
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
@@ -148,25 +163,113 @@ $ink_public_url   = (string) get_author_posts_url( $ink_user_id );
 		</nav>
 		<!-- /wp:group -->
 
-		<?php // Oorsig — genuinely new content (stat cards + recent activity), no existing render to move. Next build step (§5.3) fills this in. ?>
-		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+		<?php // Oorsig (§5.3): "Oor my" (2/3) + "In 'n oogopslag" (1/3) + "Onlangse aktiwiteit". ?>
+		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 		<section class="wp-block-group ink-profiel-panel" id="oorsig" data-ink-profiel-panel="oorsig">
-			<!-- WP7: Oorsig-oortjie-inhoud ("Oor my"-kaart + "In 'n oogopslag"-statistieke + "Onlangse aktiwiteit" — docs/my-profiel-rebuild-strategy.md §5.3). -->
-		</section>
-		<!-- /wp:group -->
 
-		<?php // Bydraes — the two blocks already rendering on the flat page (Story 9.5 pin-management, Story 9.12 read-counts) moved here unchanged; §5.4's unified per-post card (title+type+read-count+pin+edit/view in one row) is later, deliberately not built this step. ?>
-		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-		<section class="wp-block-group ink-profiel-panel" id="bydraes" data-ink-profiel-panel="bydraes">
-			<?php // Story 9.12 (R8): the private per-bydrae read-count surface. ?>
-			<!-- wp:group {"className":"ink-my-profiel__leesgetalle","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-			<div class="wp-block-group ink-my-profiel__leesgetalle" data-ink-slot="leesgetalle">
-				<!-- wp:ink/leesgetalle /-->
+			<!-- wp:columns {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s-24","top":"var:preset|spacing|s-24"}}}} -->
+			<div class="wp-block-columns">
+
+				<?php // "Oor my" — bio + Wysig affordance (2/3-width, matches Lovable's lg:col-span-2). ?>
+				<!-- wp:column {"width":"66.66%","lock":{"move":true,"remove":true}} -->
+				<div class="wp-block-column" style="flex-basis:66.66%">
+					<!-- wp:group {"className":"is-style-card ink-profiel-oormy","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
+					<div class="wp-block-group is-style-card ink-profiel-oormy">
+						<!-- wp:heading {"level":3,"fontSize":"lg"} -->
+						<h3 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( 'Oor my', 'ink-foundation' ); ?></h3>
+						<!-- /wp:heading -->
+
+						<!-- wp:paragraph {"className":"ink-profiel-oormy__bio"} -->
+						<p class="ink-profiel-oormy__bio" data-ink-profiel-veld="bio"><?php
+						echo '' !== $ink_bio
+							? esc_html( $ink_bio )
+							// No ratified Afrikaans exists yet for a "no bio" fallback — flagged
+							// per the standard [[afrikaans-copy-debt-process]] rather than
+							// invented (see docs/afrikaans-translation-sheet.md OORSIG-BIO-LEEG /
+							// docs/afrikaans-copy-worklist.md).
+							: esc_html__( '[NEEDS HUMAN AFRIKAANS] — "no bio yet" fallback copy not yet authored in ui-copy-translations.md.', 'ink-foundation' );
+						?></p>
+						<!-- /wp:paragraph -->
+
+						<!-- wp:html -->
+						<button type="button" class="wp-element-button ink-profiel-oormy__wysig is-style-subtle" data-ink-profiel-redigeer-trigger><?php echo esc_html__( 'Wysig', 'ink-foundation' ); ?></button>
+						<!-- /wp:html -->
+					</div>
+					<!-- /wp:group -->
+				</div>
+				<!-- /wp:column -->
+
+				<?php // "In 'n oogopslag" — Bydraes / Wie ek volg / Ongelees + membership one-liner (1/3-width). ?>
+				<!-- wp:column {"width":"33.33%","lock":{"move":true,"remove":true}} -->
+				<div class="wp-block-column" style="flex-basis:33.33%">
+					<!-- wp:group {"className":"is-style-card ink-profiel-oogopslag","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
+					<div class="wp-block-group is-style-card ink-profiel-oogopslag">
+						<!-- wp:heading {"level":3,"fontSize":"lg"} -->
+						<h3 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( "In 'n oogopslag", 'ink-foundation' ); ?></h3>
+						<!-- /wp:heading -->
+
+						<!-- wp:html -->
+						<dl class="ink-profiel-oogopslag__lys">
+							<div class="ink-profiel-oogopslag__stat">
+								<dt><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></dt>
+								<dd><?php echo esc_html( number_format_i18n( count( $ink_bydraes ) ) ); ?></dd>
+							</div>
+							<div class="ink-profiel-oogopslag__stat">
+								<dt><?php echo esc_html__( 'Wie ek volg', 'ink-foundation' ); ?></dt>
+								<dd><?php echo esc_html( number_format_i18n( $ink_volg_getal ) ); ?></dd>
+							</div>
+							<div class="ink-profiel-oogopslag__stat">
+								<dt><?php echo esc_html__( 'Ongelees', 'ink-foundation' ); ?></dt>
+								<dd><?php echo esc_html( number_format_i18n( $ink_ongelees ) ); ?></dd>
+							</div>
+						</dl>
+						<!-- /wp:html -->
+<?php if ( null !== $ink_hernu_datum && '' !== $ink_hernu_datum ) : ?>
+						<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text","className":"ink-profiel-oogopslag__lidmaatskap"} -->
+						<p class="has-muted-text-color has-text-color has-sm-font-size ink-profiel-oogopslag__lidmaatskap"><?php
+						echo esc_html(
+							sprintf(
+								/* translators: %s: the member's next renewal date. */
+								__( 'INK-lid · hernieu %s', 'ink-foundation' ),
+								$ink_hernu_datum
+							)
+						);
+						?></p>
+						<!-- /wp:paragraph -->
+<?php endif; ?>
+					</div>
+					<!-- /wp:group -->
+				</div>
+				<!-- /wp:column -->
+
+			</div>
+			<!-- /wp:columns -->
+
+			<?php // "Onlangse aktiwiteit" — first 3 Kennisgewings rows (§7 decision 4). Empty → heading-only shell (no invented copy), mirroring SkrywerProfiel::toHtml()'s "keep the empty shell" precedent for its own no-data card. ?>
+			<!-- wp:group {"className":"is-style-card ink-profiel-onlangs","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-group is-style-card ink-profiel-onlangs">
+				<!-- wp:heading {"level":3,"fontSize":"lg"} -->
+				<h3 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( 'Onlangse aktiwiteit', 'ink-foundation' ); ?></h3>
+				<!-- /wp:heading -->
+<?php if ( array() !== $ink_onlangs ) : ?>
+				<!-- wp:html -->
+				<ul class="ink-profiel-onlangs__lys">
+<?php foreach ( $ink_onlangs as $ink_kennisgewing ) : ?>
+					<li class="ink-profiel-onlangs__item<?php echo ! empty( $ink_kennisgewing['unread'] ) ? ' is-unread' : ''; ?>"><?php echo esc_html( (string) $ink_kennisgewing['text'] ); ?></li>
+<?php endforeach; ?>
+				</ul>
+				<!-- /wp:html -->
+<?php endif; ?>
 			</div>
 			<!-- /wp:group -->
 
-			<?php // Story 9.5: pin / unpin your own works (curation). ?>
-			<!-- wp:ink/vasgespel-bestuur /-->
+		</section>
+		<!-- /wp:group -->
+
+		<?php // Bydraes (§5.4): the unified per-post render (title+type+date+read-count+pin+edit/view in one row), replacing the two previously separate blocks (Story 9.5 pin-management, Story 9.12 read-counts) — same underlying data, one render. ?>
+		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+		<section class="wp-block-group ink-profiel-panel" id="bydraes" data-ink-profiel-panel="bydraes">
+			<!-- wp:ink/bydraes /-->
 		</section>
 		<!-- /wp:group -->
 

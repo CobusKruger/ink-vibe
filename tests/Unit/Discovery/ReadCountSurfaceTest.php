@@ -29,11 +29,12 @@ afterEach( function (): void {
 	Monkey\tearDown();
 } );
 
-test( 'countLabel is verb-less: singular at one, plural at zero and many, never "gelees"', function (): void {
-	expect( ReadCountSurface::countLabel( 1 ) )->toBe( '1 lesing' );
-	expect( ReadCountSurface::countLabel( 0 ) )->toBe( '0 lesings' );
-	expect( ReadCountSurface::countLabel( 12 ) )->toBe( '12 lesings' );
+test( 'countLabel is verb-less: singular at one, plural at zero and many, never "gelees" or "lesing"', function (): void {
+	expect( ReadCountSurface::countLabel( 1 ) )->toBe( '1 leser' );
+	expect( ReadCountSurface::countLabel( 0 ) )->toBe( '0 lesers' );
+	expect( ReadCountSurface::countLabel( 12 ) )->toBe( '12 lesers' );
 	expect( ReadCountSurface::countLabel( 5 ) )->not->toContain( 'gelees' ); // verb-less
+	expect( ReadCountSurface::countLabel( 5 ) )->not->toContain( 'lesing' ); // readers, not lectures
 } );
 
 test( 'toHtml renders a row per own work with its read count', function (): void {
@@ -46,15 +47,15 @@ test( 'toHtml renders a row per own work with its read count', function (): void
 
 	expect( $html )->toContain( 'ink-leesgetalle__lys' );
 	expect( $html )->toContain( 'Vlerke' );
-	expect( $html )->toContain( '12 lesings' );
+	expect( $html )->toContain( '12 lesers' );
 	expect( $html )->toContain( 'Brug' );
-	expect( $html )->toContain( '1 lesing' );
+	expect( $html )->toContain( '1 leser' );
 } );
 
-test( 'toHtml shows 0 lesings for a work that was never read (graceful, R8)', function (): void {
+test( 'toHtml shows 0 lesers for a work that was never read (graceful, R8)', function (): void {
 	$html = ReadCountSurface::toHtml( array( array( 'title' => 'Stil', 'count' => 0 ) ) );
 
-	expect( $html )->toContain( '0 lesings' );
+	expect( $html )->toContain( '0 lesers' );
 } );
 
 test( 'toHtml renders the empty state when the writer has no published works', function (): void {

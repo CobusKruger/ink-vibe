@@ -127,15 +127,19 @@ final class ReadCountSurface {
 	/**
 	 * The verb-less, plural-correct read-count label.
 	 *
-	 * A noun phrase ("12 lesings"), not the verb form ("12 keer gelees") — the
-	 * Story 7.8 verb-less house style. (`lesing`/`lesings` — copy-debt to ratify.)
+	 * A noun phrase ("12 lesers"), not the verb form ("12 keer gelees") — the
+	 * Story 7.8 verb-less house style. Ratified 2026-09-06 (My Profiel rebuild
+	 * strategy §2 item 2): "lesing"/"lesings" read as a lecture/public-reading
+	 * event, not a page-view count, so this renders "leser"/"lesers" (readers)
+	 * instead — a deliberate, product-owner-acknowledged simplification, not a
+	 * distinct unique-readers metric.
 	 *
 	 * @param int $n The read count (n=0 → plural form).
 	 * @return string
 	 */
 	public static function countLabel( int $n ): string {
-		/* translators: %s: the number of reads (lesings) of a work. */
-		$format = _n( '%s lesing', '%s lesings', $n, 'ink-core' );
+		/* translators: %s: the number of readers (lesers) of a work. */
+		$format = _n( '%s leser', '%s lesers', $n, 'ink-core' );
 
 		return sprintf( $format, number_format_i18n( $n ) );
 	}

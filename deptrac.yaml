@@ -161,6 +161,14 @@ deptrac:
             # depends only on Kernel/Content, never back on Social). Mirrors the
             # Discovery->Engagement (8.2) edge exactly. Display only; conflation-clean.
             - Engagement
+            # My Profiel rebuild §5.4: the Bydraes-tab unified per-post card
+            # ({@see BydraesSurface}) reads each own-work's read count + the
+            # "leser"/"lesers" label via the Discovery Api facade
+            # (`Discovery\Api::readCountFor()`/`::readerLabel()`) — a real,
+            # non-circular cross-module Api-facade dependency (Discovery depends
+            # only on Kernel/Content/Engagement/Tiers, never back on Social).
+            # Display only; conflation-clean (no Entitlement/Tiers edge added here).
+            - Discovery
         Discovery:
             - Kernel
             # Story 8.1: the Ontdek works archive queries the bydrae CPT slugs from

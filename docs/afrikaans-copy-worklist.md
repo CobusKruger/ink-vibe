@@ -52,6 +52,8 @@ the durable anchor. Code paths under `wp-content/`.
 | PROFIEL-REDIGEER-KANSELLEER | NEW row → same new § | `plugins/ink-core/src/Social/ProfileEditor.php` (`toHtml()`, `<button type="button" class="ink-profiel-redigeer__kanselleer">`) | Cancel button |
 | PROFIEL-REDIGEER-BESIG | NEW row → same new § | `themes/ink-foundation/functions.php` (`ink_foundation_enqueue_profiel_edit()`, `inkProfielEdit.savingText`) | transient status text shown by `profiel-edit.js` while the save request is in flight |
 | PROFIEL-REDIGEER-FOUT | NEW row → same new § | `themes/ink-foundation/functions.php` (`ink_foundation_enqueue_profiel_edit()`, `inkProfielEdit.errorText`) | transient status text shown by `profiel-edit.js` if the save request fails |
+| OORSIG-BIO-LEEG | NEW row → §"My Profiel-bladsy" §"Oorsig-blad" | `themes/ink-foundation/patterns/my-profiel.php` (Oorsig "Oor my" card, `<p class="ink-profiel-oormy__bio">`) | My Profiel rebuild §5.3; fallback shown only when the member's bio (`description` user-meta) is empty |
+| BYDRAES-LEEG | NEW row → §"My Profiel-bladsy" §"Bydraes-blad" | `plugins/ink-core/src/Social/BydraesSurface.php` (`toHtml()`, empty-state `<p class="ink-bydraes__leeg">`) | My Profiel rebuild §5.4; shown only when the member has no published works yet |
 
 ## Fix-up procedure (after the sheet comes back)
 

@@ -142,22 +142,37 @@ final class PinnedWorksManager {
 		$html = '<section class="ink-vasgespel">' . $heading . '<ul class="ink-vasgespel__lys">';
 
 		foreach ( $works as $work ) {
-			$pinned  = ! empty( $work['is_pinned'] );
-			$label   = $pinned ? Terms::label( 'vasgespeld' ) : Terms::label( 'vasgespel' );
-			$classes = 'ink-vasgespel__knoppie' . ( $pinned ? ' is-pinned' : '' );
-
 			$html .= '<li class="ink-vasgespel__item">'
 				. '<span class="ink-vasgespel__werk">' . esc_html( (string) $work['title'] ) . '</span>'
-				. '<button type="button" class="' . esc_attr( $classes ) . '"'
-				. ' data-ink-post="' . esc_attr( (string) $work['id'] ) . '"'
-				. ' aria-pressed="' . ( $pinned ? 'true' : 'false' ) . '">'
-				. esc_html( $label )
-				. '</button>'
+				. self::toggleHtml( (int) $work['id'], ! empty( $work['is_pinned'] ) )
 				. '</li>';
 		}
 
 		$html .= '</ul></section>';
 
 		return $html;
+	}
+
+	/**
+	 * The pin/unpin toggle button — the ONE markup shape `vasgespel.js`'s
+	 * `.ink-vasgespel__knoppie[data-ink-post]` selector wires up. Extracted so
+	 * OTHER presentation layers (the My Profiel rebuild's Bydraes-tab unified
+	 * card, {@see BydraesSurface}) can embed the exact same pin control without
+	 * forking a second markup shape or a second REST endpoint — see the class
+	 * docblock and `docs/my-profiel-rebuild-strategy.md` §3.
+	 *
+	 * @param int  $post_id The work.
+	 * @param bool $pinned  Whether the work is currently pinned.
+	 * @return string
+	 */
+	public static function toggleHtml( int $post_id, bool $pinned ): string {
+		$label   = $pinned ? Terms::label( 'vasgespeld' ) : Terms::label( 'vasgespel' );
+		$classes = 'ink-vasgespel__knoppie' . ( $pinned ? ' is-pinned' : '' );
+
+		return '<button type="button" class="' . esc_attr( $classes ) . '"'
+			. ' data-ink-post="' . esc_attr( (string) $post_id ) . '"'
+			. ' aria-pressed="' . ( $pinned ? 'true' : 'false' ) . '">'
+			. esc_html( $label )
+			. '</button>';
 	}
 }

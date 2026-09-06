@@ -46,6 +46,21 @@ test( 'toHtml renders a state-correct pin toggle per own work', function (): voi
 	expect( $html )->toContain( '>Speld vas<' );
 } );
 
+test( 'toggleHtml renders the exact vasgespel.js-wired toggle markup, pinned and unpinned', function (): void {
+	expect( PinnedWorksManager::toggleHtml( 7, true ) )
+		->toContain( 'ink-vasgespel__knoppie is-pinned' )
+		->toContain( 'data-ink-post="7"' )
+		->toContain( 'aria-pressed="true"' )
+		->toContain( '>Vasgespeld<' );
+
+	expect( PinnedWorksManager::toggleHtml( 42, false ) )
+		->toContain( 'ink-vasgespel__knoppie"' )
+		->not->toContain( 'is-pinned' )
+		->toContain( 'data-ink-post="42"' )
+		->toContain( 'aria-pressed="false"' )
+		->toContain( '>Speld vas<' );
+} );
+
 test( 'toHtml renders an empty state when the writer has no published works', function (): void {
 	$html = PinnedWorksManager::toHtml( array() );
 

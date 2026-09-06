@@ -1,10 +1,12 @@
 {
     "_comment": "Per-file Afrikaans copy-placeholder counts. Ratchet baseline: the scan FAILS if any file exceeds its count here or a new file appears. When you author copy and remove markers, lower these numbers (or rerun --update-baseline) so the gate keeps tightening. Launch target: empty.",
-    "_generated_total": 8,
+    "_generated_total": 11,
     "files": {
         "wp-content/plugins/ink-core/src/Engagement/ReadingList.php": 1,
         "wp-content/plugins/ink-core/src/Notifications/KennisgewingsSurface.php": 2,
+        "wp-content/plugins/ink-core/src/Social/BydraesSurface.php": 1,
         "wp-content/plugins/ink-core/src/Social/ProfileEditor.php": 3,
-        "wp-content/themes/ink-foundation/functions.php": 2
+        "wp-content/themes/ink-foundation/functions.php": 2,
+        "wp-content/themes/ink-foundation/patterns/my-profiel.php": 2
     }
 }

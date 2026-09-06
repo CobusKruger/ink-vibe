@@ -74,6 +74,11 @@ class Module implements ModuleContract {
 		( new PinnedWorksController() )->register();
 		( new PinnedWorksManager() )->register();
 
+		// My Profiel rebuild §5.4: the Bydraes-tab unified per-post render
+		// (title/type/date/read-count/pin-toggle/edit-view actions in one row),
+		// replacing the tab's previous two separately-rendered blocks.
+		( new BydraesSurface() )->register();
+
 		// Story 9.6: reader ratings & reviews — REST write path + form block
 		// (the public Lesergradering display lives on the Skrywerprofiel block;
 		// the ink_ratings table is registered with the Kernel Schema in the

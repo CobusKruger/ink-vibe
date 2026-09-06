@@ -281,3 +281,20 @@ AF:
 PROFIEL-REDIGEER-FOUT
 EN: Couldn't save. Please try again. *(transient status text shown if the save request fails)*
 AF:
+
+---
+
+## 11. My Profiel — Oorsig/Bydraes tabs (new empty-state copy, not in Lovable's ratified sheet)
+
+Two more empty-state strings from the Oorsig-tab and Bydraes-tab build, neither
+covered by the existing ratified sheet.
+
+OORSIG-BIO-LEEG
+EN: (No Lovable equivalent — a fallback line shown in the "Oor my" card when the
+member hasn't written a bio yet, in place of the bio text itself.)
+AF:
+
+BYDRAES-LEEG
+EN: (No Lovable equivalent — shown in the Bydraes tab when the member has no
+published works yet, in place of the post list.)
+AF:

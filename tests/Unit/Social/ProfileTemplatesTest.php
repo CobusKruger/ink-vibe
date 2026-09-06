@@ -41,8 +41,14 @@ test( 'the my-profiel pattern embeds the private surfaces + reused blocks', func
 	$markup = $ink_read( $ink_theme() . '/patterns/my-profiel.php' );
 
 	expect( $markup )->toContain( 'ink_foundation_gradering_wins_needed' ); // wins-needed (private)
-	expect( $markup )->toContain( 'data-ink-slot="leesgetalle"' );          // read-count slot (9.12)
-	expect( $markup )->toContain( 'wp:ink/leesgetalle' );                    // the read-count surface (9.12, private)
+	// My Profiel rebuild §5.4: the Bydraes tab's two previously-separate blocks
+	// (`ink/leesgetalle` read-count slot + `ink/vasgespel-bestuur` pin list) were
+	// replaced by ONE unified per-post render, `ink/bydraes` (BydraesSurface) —
+	// the read-count/pin DATA sources are unchanged (§3), only the presentation
+	// layer consolidated.
+	expect( $markup )->toContain( 'wp:ink/bydraes' );                        // the unified Bydraes-tab render (§5.4, private)
+	expect( $markup )->not->toContain( 'wp:ink/leesgetalle' );
+	expect( $markup )->not->toContain( 'wp:ink/vasgespel-bestuur' );
 	expect( $markup )->toContain( 'wp:ink/volg-voer' );                      // following-feed (9.3)
 	expect( $markup )->toContain( 'wp:ink/leeslys' );                        // leeslys (7.7)
 	expect( $markup )->toContain( 'ink-foundation/lidmaatskap-hernu' );      // renewal section (4.5)
