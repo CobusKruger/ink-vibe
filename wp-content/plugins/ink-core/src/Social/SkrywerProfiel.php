@@ -296,27 +296,14 @@ final class SkrywerProfiel {
 	}
 
 	/**
-	 * The "[N] dae/dag gelede" timestamp label for a work. Pure formatting.
-	 *
-	 * @param int $timestamp_gmt A GMT unix timestamp.
-	 * @return string
-	 */
-	private static function daysAgoLabel( int $timestamp_gmt ): string {
-		$days = max( 0, (int) floor( ( time() - $timestamp_gmt ) / DAY_IN_SECONDS ) );
-
-		/* translators: %s: the number of days since publication. */
-		$format = _n( '%s dag gelede', '%s dae gelede', $days, 'ink-core' );
-
-		return sprintf( $format, number_format_i18n( $days ) );
-	}
-
-	/**
 	 * The queried author's pinned works, resolved to reading-list cards (Story 9.5).
 	 *
 	 * Reads {@see PinnedWorks::forUser()} (in pin = display order) and resolves
 	 * each id to a card, skipping any that is no longer a published bydrae (a
 	 * stale pin never renders a broken card). Each card carries real per-post
-	 * data only — excerpt, publish-age, hartjie/gemeenskapsreaksie counts.
+	 * data only — excerpt, publish-age, hartjie/gemeenskapsreaksie counts,
+	 * the latter three via the shared {@see WorkCardFacts} helper (also used by
+	 * {@see FollowingFeed} — the identical per-post shape, a second caller).
 	 *
 	 * @param int $author_id The skrywer.
 	 * @return list<array{title:string, permalink:string, type:string, excerpt:string, daysAgo:string, hartjies:int, hartjieLabel:string, gemeenskap:int}>
@@ -333,18 +320,17 @@ final class SkrywerProfiel {
 				continue;
 			}
 
-			$timestamp = get_post_time( 'U', true, $post_id );
-			$hartjies  = class_exists( EngagementApi::class ) ? EngagementApi::hartjieCountForPost( $post_id ) : 0;
+			$engagement = WorkCardFacts::engagement( $post_id );
 
 			$cards[] = array(
 				'title'        => get_the_title( $post_id ),
 				'permalink'    => (string) get_permalink( $post_id ),
 				'type'         => (string) get_post_type( $post_id ),
 				'excerpt'      => (string) get_the_excerpt( $post_id ),
-				'daysAgo'      => is_int( $timestamp ) ? self::daysAgoLabel( $timestamp ) : '',
-				'hartjies'     => $hartjies,
-				'hartjieLabel' => class_exists( EngagementApi::class ) ? EngagementApi::hartjieCountLabel( $hartjies ) : '',
-				'gemeenskap'   => class_exists( EngagementApi::class ) ? EngagementApi::responseCountForPost( $post_id ) : 0,
+				'daysAgo'      => WorkCardFacts::daysAgoLabelForPost( $post_id ),
+				'hartjies'     => $engagement['hartjies'],
+				'hartjieLabel' => $engagement['hartjieLabel'],
+				'gemeenskap'   => $engagement['gemeenskap'],
 			);
 		}
 

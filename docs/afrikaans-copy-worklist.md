@@ -54,6 +54,7 @@ the durable anchor. Code paths under `wp-content/`.
 | PROFIEL-REDIGEER-FOUT | NEW row → same new § | `themes/ink-foundation/functions.php` (`ink_foundation_enqueue_profiel_edit()`, `inkProfielEdit.errorText`) | transient status text shown by `profiel-edit.js` if the save request fails |
 | OORSIG-BIO-LEEG | NEW row → §"My Profiel-bladsy" §"Oorsig-blad" | `themes/ink-foundation/patterns/my-profiel.php` (Oorsig "Oor my" card, `<p class="ink-profiel-oormy__bio">`) | My Profiel rebuild §5.3; fallback shown only when the member's bio (`description` user-meta) is empty |
 | BYDRAES-LEEG | NEW row → §"My Profiel-bladsy" §"Bydraes-blad" | `plugins/ink-core/src/Social/BydraesSurface.php` (`toHtml()`, empty-state `<p class="ink-bydraes__leeg">`) | My Profiel rebuild §5.4; shown only when the member has no published works yet |
+| VOLG-VOER-AKSIE | NEW row → §"My Profiel-bladsy" §"Volg- en Aktiwiteit-blaaie" | `plugins/ink-core/src/Social/FollowingFeed.php` (`cardHtml()`, `<span class="ink-volg-voer__aksie">`) | My Profiel rebuild §5.7; the "published a new [type]" connecting phrase only — the type label + days-ago timing either side already reuse ratified/established sources |
 
 ## Fix-up procedure (after the sheet comes back)
 

@@ -23,7 +23,9 @@ beforeEach( function (): void {
 	Functions\when( '__' )->returnArg( 1 );
 	Functions\when( 'esc_html' )->returnArg( 1 );
 	Functions\when( 'esc_html__' )->returnArg( 1 );
+	Functions\when( 'esc_attr' )->returnArg( 1 );
 	Functions\when( 'esc_url' )->returnArg( 1 );
+	Functions\when( 'number_format_i18n' )->alias( static fn ( $n, $d = 0 ): string => number_format( (float) $n, (int) $d ) );
 } );
 
 afterEach( function (): void {
@@ -61,6 +63,95 @@ test( 'toHtml renders a card per followed-writer publication', function (): void
 	expect( $html )->toContain( 'Vlerke' );
 	expect( $html )->toContain( '/brug' );
 	expect( $html )->toContain( 'Pieter' );
+} );
+
+test( 'toHtml renders the author avatar + name linked to their public profile', function (): void {
+	$cards = array(
+		array(
+			'title'        => 'Vlerke',
+			'permalink'    => '/vlerke',
+			'type'         => PostTypes::GEDIG,
+			'author'       => 'Anja',
+			'authorUrl'    => '/skrywer/anja-brand',
+			'authorAvatar' => '<img class="ink-volg-voer__avatar" alt="" />',
+		),
+	);
+
+	$html = FollowingFeed::toHtml( $cards, FollowingFeed::STATE_FEED );
+
+	expect( $html )->toContain( 'ink-volg-voer__outeur-skakel' );
+	expect( $html )->toContain( '/skrywer/anja-brand' );
+	expect( $html )->toContain( 'ink-volg-voer__avatar' );
+	expect( $html )->toContain( 'Anja' );
+} );
+
+test( 'toHtml renders the days-ago timing and the (flagged) action phrase around the type label', function (): void {
+	$cards = array(
+		array(
+			'title'     => 'Vlerke',
+			'permalink' => '/vlerke',
+			'type'      => PostTypes::GEDIG,
+			'author'    => 'Anja',
+			'daysAgo'   => '3 dae gelede',
+		),
+	);
+
+	$html = FollowingFeed::toHtml( $cards, FollowingFeed::STATE_FEED );
+
+	expect( $html )->toContain( 'ink-volg-voer__aksie' );
+	expect( $html )->toContain( '3 dae gelede' );
+	expect( $html )->toContain( 'NEEDS HUMAN AFRIKAANS' ); // no ratified copy yet — see afrikaans-copy-worklist.md
+} );
+
+test( 'toHtml renders the italic excerpt only when present', function (): void {
+	$withExcerpt = FollowingFeed::toHtml(
+		array(
+			array(
+				'title'     => 'Vlerke',
+				'permalink' => '/vlerke',
+				'type'      => PostTypes::GEDIG,
+				'author'    => 'Anja',
+				'excerpt'   => "'n Gedig oor vlug.",
+			),
+		),
+		FollowingFeed::STATE_FEED
+	);
+
+	expect( $withExcerpt )->toContain( 'ink-volg-voer__uittreksel' );
+	expect( $withExcerpt )->toContain( "'n Gedig oor vlug." );
+
+	$withoutExcerpt = FollowingFeed::toHtml(
+		array(
+			array( 'title' => 'Vlerke', 'permalink' => '/vlerke', 'type' => PostTypes::GEDIG, 'author' => 'Anja', 'excerpt' => '' ),
+		),
+		FollowingFeed::STATE_FEED
+	);
+
+	expect( $withoutExcerpt )->not->toContain( 'ink-volg-voer__uittreksel' );
+} );
+
+test( 'toHtml renders the hartjie + gemeenskap engagement counts and a decorative Lees link', function (): void {
+	$cards = array(
+		array(
+			'title'        => 'Vlerke',
+			'permalink'    => '/vlerke',
+			'type'         => PostTypes::GEDIG,
+			'author'       => 'Anja',
+			'hartjies'     => 42,
+			'hartjieLabel' => '42 hartjies',
+			'gemeenskap'   => 7,
+		),
+	);
+
+	$html = FollowingFeed::toHtml( $cards, FollowingFeed::STATE_FEED );
+
+	expect( $html )->toContain( 'ink-volg-voer__tellings' );
+	expect( $html )->toContain( '42' );
+	expect( $html )->toContain( '7' );
+	expect( $html )->toContain( 'ink-volg-voer__lees' );
+	expect( $html )->toContain( 'Lees' );
+	expect( $html )->toContain( 'tabindex="-1"' );
+	expect( $html )->toContain( 'href="/vlerke"' );
 } );
 
 test( 'toHtml renders the follows-nobody empty state (no list)', function (): void {

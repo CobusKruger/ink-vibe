@@ -298,3 +298,22 @@ BYDRAES-LEEG
 EN: (No Lovable equivalent — shown in the Bydraes tab when the member has no
 published works yet, in place of the post list.)
 AF:
+
+---
+
+## 12. My Profiel — Aktiwiteit tab activity-row action phrase (new copy, not in Lovable's ratified sheet)
+
+`FollowingFeed`'s Aktiwiteit-tab card gained a connecting phrase between the author
+name and the (already-ratified) type label + days-ago timing — Lovable's English
+reference reads "published a new {type} · {N}d ago"; only the connecting verb
+phrase itself is new copy (the type label and the days-ago timing either side of
+it already have ratified Afrikaans sources elsewhere and are reused, not
+retranslated here).
+
+VOLG-VOER-AKSIE
+EN: published a new {type} *(connecting phrase in the activity-feed row, between
+the author name and the type label + relative "Nd ago" timing, e.g. "Anja
+published a new gedig · 3d ago" — the {type}/timing either side are already
+ratified/established sources, only this phrase is new)*
+AF:
+AF:

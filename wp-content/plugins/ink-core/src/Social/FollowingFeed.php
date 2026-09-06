@@ -56,6 +56,23 @@ final class FollowingFeed {
 	public const PER_PAGE = 20;
 
 	/**
+	 * The author-avatar pixel size for each activity row (matches the Lovable
+	 * `Profile.tsx` activity-feed reference's `w-10 h-10`, i.e. 40px).
+	 *
+	 * @var int
+	 */
+	public const AVATAR_SIZE = 40;
+
+	/**
+	 * Lucide `arrow-right` icon path data — the card's decorative "Lees"
+	 * affordance, matching the exact sitewide convention (mirrors
+	 * `Library\Archive`/`Training\Hub`/`Challenges\Archive`'s own `ICON_ARROW`).
+	 *
+	 * @var string
+	 */
+	private const ICON_ARROW = '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>';
+
+	/**
 	 * The "follows nobody yet" render state.
 	 *
 	 * @var string
@@ -156,11 +173,24 @@ final class FollowingFeed {
 				continue;
 			}
 
+			$post_id    = (int) $post->ID;
+			$author_id  = (int) $post->post_author;
+			$engagement = WorkCardFacts::engagement( $post_id );
+
 			$cards[] = array(
-				'title'     => $title,
-				'permalink' => (string) get_permalink( $post ),
-				'type'      => $post->post_type,
-				'author'    => (string) get_the_author_meta( 'display_name', (int) $post->post_author ),
+				'title'        => $title,
+				'permalink'    => (string) get_permalink( $post ),
+				'type'         => $post->post_type,
+				'author'       => (string) get_the_author_meta( 'display_name', $author_id ),
+				'authorUrl'    => (string) get_author_posts_url( $author_id ),
+				'authorAvatar' => function_exists( 'get_avatar' )
+					? (string) get_avatar( $author_id, self::AVATAR_SIZE, '', '', array( 'class' => 'ink-volg-voer__avatar' ) )
+					: '',
+				'excerpt'      => (string) get_the_excerpt( $post ),
+				'daysAgo'      => WorkCardFacts::daysAgoLabelForPost( $post_id ),
+				'hartjies'     => $engagement['hartjies'],
+				'hartjieLabel' => $engagement['hartjieLabel'],
+				'gemeenskap'   => $engagement['gemeenskap'],
 			);
 		}
 
@@ -170,8 +200,17 @@ final class FollowingFeed {
 	/**
 	 * Build the feed HTML. Pure — Terms + escaping only.
 	 *
-	 * @param list<array{title:string, permalink:string, type:string, author:string}> $cards The works.
-	 * @param string                                                                  $state One of STATE_NO_FOLLOWS / STATE_FEED.
+	 * Each card renders the richer Lovable `Profile.tsx` activity-row shape:
+	 * author avatar + name (linked to their public profile), a "published a new
+	 * [type] · [N]d ago" action line, the title (linked), an italic excerpt, the
+	 * hartjie/gemeenskap counts, and a decorative "Lees" affordance — the exact
+	 * link-duplicates-the-title / `aria-hidden`+`tabindex="-1"` convention every
+	 * other archive card in this codebase already uses (see
+	 * {@see \Ink\Library\Archive::cardHtml()}), so a screen-reader/keyboard user
+	 * still meets only the ONE real, focusable path to the work (the title link).
+	 *
+	 * @param list<array{title:string, permalink:string, type:string, author:string, authorUrl?:string, authorAvatar?:string, excerpt?:string, daysAgo?:string, hartjies?:int, hartjieLabel?:string, gemeenskap?:int}> $cards The works.
+	 * @param string                                                                                                                                                                                                   $state One of STATE_NO_FOLLOWS / STATE_FEED.
 	 * @return string
 	 */
 	public static function toHtml( array $cards, string $state ): string {
@@ -197,15 +236,98 @@ final class FollowingFeed {
 		$html = '<section class="ink-volg-voer">' . $heading . '<ul class="ink-volg-voer__list">';
 
 		foreach ( $cards as $card ) {
-			$html .= '<li class="ink-volg-voer__item is-style-card">'
-				. '<span class="ink-volg-voer__type">' . esc_html( Terms::label( $card['type'] ) ) . '</span>'
-				. '<a class="ink-volg-voer__title" href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>'
-				. '<span class="ink-volg-voer__author">' . esc_html( $card['author'] ) . '</span>'
-				. '</li>';
+			$html .= self::cardHtml( $card );
 		}
 
 		$html .= '</ul></section>';
 
 		return $html;
+	}
+
+	/**
+	 * One activity-feed card. Pure — Terms + escaping only.
+	 *
+	 * @param array{title:string, permalink:string, type:string, author:string, authorUrl?:string, authorAvatar?:string, excerpt?:string, daysAgo?:string, hartjies?:int, hartjieLabel?:string, gemeenskap?:int} $card The work.
+	 * @return string
+	 */
+	private static function cardHtml( array $card ): string {
+		$author_url = isset( $card['authorUrl'] ) ? (string) $card['authorUrl'] : '';
+		$avatar     = isset( $card['authorAvatar'] ) ? (string) $card['authorAvatar'] : '';
+		$excerpt    = isset( $card['excerpt'] ) ? (string) $card['excerpt'] : '';
+		$days_ago   = isset( $card['daysAgo'] ) ? (string) $card['daysAgo'] : '';
+		$hartjies   = isset( $card['hartjies'] ) ? (int) $card['hartjies'] : 0;
+		$h_label    = isset( $card['hartjieLabel'] ) ? (string) $card['hartjieLabel'] : '';
+		$gemeenskap = isset( $card['gemeenskap'] ) ? (int) $card['gemeenskap'] : 0;
+
+		$html = '<li class="ink-volg-voer__item">';
+
+		// Kop: author avatar + name (linked to their public profile) + the
+		// "published a new [type] · [N]d ago" action line.
+		$html .= '<div class="ink-volg-voer__kop">';
+
+		$author_html = '';
+		if ( '' !== $avatar ) {
+			// Avatar is core-generated, already-escaped <img> markup.
+			$author_html .= $avatar;
+		}
+		$author_html .= '<span class="ink-volg-voer__outeur-naam">' . esc_html( $card['author'] ) . '</span>';
+
+		if ( '' !== $author_url ) {
+			$html .= '<a class="ink-volg-voer__outeur-skakel" href="' . esc_url( $author_url ) . '">' . $author_html . '</a>';
+		} else {
+			$html .= '<span class="ink-volg-voer__outeur-skakel">' . $author_html . '</span>';
+		}
+
+		// The connecting "published a new [type]" action-phrase has no ratified
+		// Afrikaans yet (no Lovable-sheet equivalent — a brand-new microcopy
+		// line) — flagged per the standard [[afrikaans-copy-debt-process]]
+		// rather than invented; see docs/afrikaans-translation-sheet.md
+		// VOLG-VOER-AKSIE / docs/afrikaans-copy-worklist.md. The type label and
+		// days-ago timing either side of it ARE already-ratified/established
+		// sources (Terms::label() / WorkCardFacts::daysAgoLabel()), not new copy.
+		$html .= '<span class="ink-volg-voer__aksie">'
+			. esc_html__( '[NEEDS HUMAN AFRIKAANS] — Aktiwiteitsvoer se "published a new [type]" aksiefrase nog nie outeur in ui-copy-translations.md nie.', 'ink-core' )
+			. ' <span class="ink-volg-voer__tipe">' . esc_html( Terms::label( $card['type'] ) ) . '</span>';
+
+		if ( '' !== $days_ago ) {
+			$html .= ' &middot; <span class="ink-volg-voer__tyd">' . esc_html( $days_ago ) . '</span>';
+		}
+
+		$html .= '</span>';
+		$html .= '</div>'; // .ink-volg-voer__kop
+
+		$html .= '<a class="ink-volg-voer__title" href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>';
+
+		if ( '' !== $excerpt ) {
+			$html .= '<p class="ink-volg-voer__uittreksel">' . esc_html( $excerpt ) . '</p>';
+		}
+
+		$html .= '<div class="ink-volg-voer__voet">'
+			. '<span class="ink-volg-voer__tellings">'
+			. '<span class="ink-volg-voer__telling" aria-label="' . esc_attr( $h_label ) . '"><span aria-hidden="true">&#9825;</span> ' . esc_html( number_format_i18n( $hartjies ) ) . '</span>'
+			. '<span class="ink-volg-voer__telling"><span aria-hidden="true">&#128172;</span> ' . esc_html( number_format_i18n( $gemeenskap ) ) . '</span>'
+			. '</span>'
+			. '<a class="ink-volg-voer__lees" href="' . esc_url( $card['permalink'] ) . '" tabindex="-1" aria-hidden="true">'
+			. esc_html__( 'Lees', 'ink-core' ) . self::icon( self::ICON_ARROW )
+			. '</a>'
+			. '</div>';
+
+		$html .= '</li>';
+
+		return $html;
+	}
+
+	/**
+	 * Render a small inline Lucide-style icon. Pure, self-escaping (trusted,
+	 * hard-coded path data only — mirrors every other card-rendering class's
+	 * own `icon()` helper, e.g. {@see \Ink\Library\Archive::icon()}).
+	 *
+	 * @param string $paths Trusted inline SVG `<path>` markup.
+	 * @return string
+	 */
+	private static function icon( string $paths ): string {
+		return '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" '
+			. 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '
+			. 'class="ink-icon" aria-hidden="true" focusable="false">' . $paths . '</svg>';
 	}
 }
