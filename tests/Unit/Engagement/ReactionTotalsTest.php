@@ -65,3 +65,43 @@ test( 'toHtml with the enkel variant treats a missing hartjie key as zero', func
 
 	expect( $html )->toContain( '>0<' );
 } );
+
+test( 'toHtml with the enkel variant and a real post_id renders a clickable button anchored to the first content line/paragraph', function (): void {
+	$post              = new \WP_Post();
+	$post->post_type   = 'gedig';
+	$post->post_content = "eerste reël\n\ntweede reël";
+
+	Functions\when( 'get_post' )->justReturn( $post );
+	Functions\when( 'is_user_logged_in' )->justReturn( true );
+
+	$html = ReactionTotals::toHtml( array( 'hartjie' => 3 ), 'enkel', 42 );
+
+	expect( $html )->toStartWith( '<button' );
+	expect( $html )->toEndWith( '</button>' );
+	expect( $html )->toContain( 'data-ink-post="42"' );
+	expect( $html )->toContain( 'data-ink-line="0"' );
+	expect( $html )->not->toContain( 'data-ink-guest' );
+} );
+
+test( 'toHtml with the enkel variant flags a logged-out visitor for a guest redirect, and dispatches the storie paragraph anchor', function (): void {
+	$post              = new \WP_Post();
+	$post->post_type   = 'storie';
+	$post->post_content = "eerste paragraaf\n\ntweede paragraaf";
+
+	Functions\when( 'get_post' )->justReturn( $post );
+	Functions\when( 'is_user_logged_in' )->justReturn( false );
+
+	$html = ReactionTotals::toHtml( array( 'hartjie' => 0 ), 'enkel', 7 );
+
+	expect( $html )->toContain( 'data-ink-line="0"' );
+	expect( $html )->toContain( 'data-ink-guest="1"' );
+} );
+
+test( 'toHtml with the enkel variant falls back to the plain non-interactive display when there is no valid anchor', function (): void {
+	Functions\when( 'get_post' )->justReturn( null );
+
+	$html = ReactionTotals::toHtml( array( 'hartjie' => 5 ), 'enkel', 99 );
+
+	expect( $html )->toStartWith( '<div' );
+	expect( $html )->not->toContain( 'data-ink-post' );
+} );

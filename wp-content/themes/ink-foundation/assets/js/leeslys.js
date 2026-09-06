@@ -6,6 +6,14 @@
  * Server-renders the initial saved state (the `is-saved` class on the button),
  * so this only reflects state — business logic stays server-side.
  *
+ * The toggle is OPTIMISTIC — the button (and its toast) update immediately on
+ * click and only roll back if the write actually fails, never waiting on the
+ * round-trip first (product-owner report, Theme-Fidelity fourth pass,
+ * 2026-09-06: the same multi-second "looks broken" delay reported for the
+ * line-reaction hearts, see `line-reactions.js`). The server's response still
+ * reconciles the guess afterwards; the server remains the source of truth on
+ * both success and failure.
+ *
  * Config (REST root, nonce, the two authored toast strings) is provided via
  * `window.inkLeeslys`.
  */
@@ -54,6 +62,12 @@
 		var saved = button.classList.contains( 'is-saved' );
 		var method = saved ? 'DELETE' : 'POST';
 
+		// Optimistic: flip the button and show the confirmation toast right
+		// away, don't wait on the write first.
+		button.classList.toggle( 'is-saved', ! saved );
+		button.setAttribute( 'aria-pressed', saved ? 'false' : 'true' );
+		toast( saved ? cfg.removedText : cfg.savedText );
+
 		window.fetch( cfg.restUrl, {
 			method: method,
 			credentials: 'same-origin',
@@ -65,12 +79,18 @@
 		} ).then( function ( res ) {
 			return res.ok ? res.json() : Promise.reject( res );
 		} ).then( function ( data ) {
+			// Reconcile with the server's actual state — normally a no-op
+			// against the optimistic guess above, but keeps the UI honest if
+			// it ever disagrees.
 			var nowSaved = !! ( data && data.saved );
 			button.classList.toggle( 'is-saved', nowSaved );
 			button.setAttribute( 'aria-pressed', nowSaved ? 'true' : 'false' );
-			toast( nowSaved ? cfg.savedText : cfg.removedText );
 		} ).catch( function () {
-			/* leave state unchanged on failure; the server is the source of truth */
+			// The write failed — undo the optimistic guess and let the member
+			// know, rather than leaving the button lying about the real state.
+			button.classList.toggle( 'is-saved', saved );
+			button.setAttribute( 'aria-pressed', saved ? 'true' : 'false' );
+			toast( cfg.errorText );
 		} );
 	}
 

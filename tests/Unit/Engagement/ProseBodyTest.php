@@ -67,3 +67,13 @@ test( 'isParagraphIndex is true only for a real paragraph index, false for blank
 	expect( ProseBody::isParagraphIndex( 2, $body ) )->toBeFalse(); // out of range
 	expect( ProseBody::isParagraphIndex( -1, $body ) )->toBeFalse();
 } );
+
+test( 'firstParagraphIndex returns 0 for any body with at least one paragraph', function (): void {
+	expect( ProseBody::firstParagraphIndex( "een\n\ntwee" ) )->toBe( 0 );
+	expect( ProseBody::firstParagraphIndex( "net een paragraaf" ) )->toBe( 0 );
+} );
+
+test( 'firstParagraphIndex returns null for an empty or all-blank body', function (): void {
+	expect( ProseBody::firstParagraphIndex( '' ) )->toBeNull();
+	expect( ProseBody::firstParagraphIndex( "   \n\n  " ) )->toBeNull();
+} );

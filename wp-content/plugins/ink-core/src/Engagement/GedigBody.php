@@ -154,6 +154,27 @@ final class GedigBody {
 	}
 
 	/**
+	 * The first real CONTENT line's 0-based index, or `null` for an empty/all-
+	 * blank body. Story 7.8 follow-up — the floating single-heart "enkel" total
+	 * ({@see ReactionTotals::toHtmlEnkel()}) needs one stable, always-valid
+	 * anchor to react against (never assume index `0`: a poem could open with a
+	 * blank stanza separator, which is not a resonance-able line per the 7.2
+	 * contract). Pure.
+	 *
+	 * @param string $body The raw stored body.
+	 * @return int|null
+	 */
+	public static function firstContentLineIndex( string $body ): ?int {
+		foreach ( self::tokenize( $body ) as $token ) {
+			if ( 'line' === $token['type'] && isset( $token['index'] ) ) {
+				return (int) $token['index'];
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Normalise a legacy HTML-markup body to the plain `\n`-per-line format
 	 * {@see self::tokenize()} expects — a NO-OP for the majority raw format.
 	 *

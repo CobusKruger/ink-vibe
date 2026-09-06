@@ -55,6 +55,16 @@ test( 'tokenize treats whitespace-only lines as blank separators', function (): 
 	expect( $tokens[2]['type'] )->toBe( 'line' );
 } );
 
+test( 'firstContentLineIndex returns the first non-blank line, skipping a leading blank separator', function (): void {
+	expect( GedigBody::firstContentLineIndex( "\nreël een\n\nreël twee" ) )->toBe( 1 );
+	expect( GedigBody::firstContentLineIndex( "reël een\n\nreël twee" ) )->toBe( 0 );
+} );
+
+test( 'firstContentLineIndex returns null for an empty or all-blank body', function (): void {
+	expect( GedigBody::firstContentLineIndex( '' ) )->toBeNull();
+	expect( GedigBody::firstContentLineIndex( "\n   \n" ) )->toBeNull();
+} );
+
 test( 'isRomanNumeralMarker recognises author Roman markers and rejects words/numbers', function (): void {
 	foreach ( array( 'I', 'II', 'III', 'IV', 'V', 'X', 'I.', 'IV.' ) as $marker ) {
 		expect( GedigBody::isRomanNumeralMarker( $marker ) )->toBeTrue( "should match: {$marker}" );

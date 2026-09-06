@@ -1,27 +1,37 @@
 /**
- * Line resonance (Story 7.3, FR-26).
+ * Line resonance (Story 7.3, FR-26) + the floating single-heart toggle
+ * (Story 7.8, extended 2026-09-06).
  *
  * Attaches a single heart-toggle control to each content line of a poem (the
  * `[data-ink-line]` anchors emitted by the ink/gedig-body server block, Story 7.2)
- * and writes through the `ink/v1/reaksie` REST endpoint. This is a boolean
- * per-line "resonance" toggle — Lovable's `PoetryReader.tsx` design has exactly
- * one reaction affordance per line (a heart), not a toolbar of reaction types —
- * so every write always sends `reaction: 'hartjie'`, the one enum case
- * `Ink\Kernel\Reaction` and `Ink\Engagement\ReactionController` treat as valid
- * here (see `ink_foundation_enqueue_line_reactions()` in functions.php, which no
- * longer localises `duim_op`/`wow` — this control never offered a type choice in
- * the design it now matches).
+ * AND, on gedig/storie alike, to the floating "enkel" heart button
+ * `Ink\Engagement\ReactionTotals::toHtmlEnkel()` renders — both write through the
+ * `ink/v1/reaksie` REST endpoint. This is a boolean per-line "resonance" toggle —
+ * Lovable's `PoetryReader.tsx` design has exactly one reaction affordance per
+ * line (a heart), not a toolbar of reaction types — so every write always sends
+ * `reaction: 'hartjie'`, the one enum case `Ink\Kernel\Reaction` and
+ * `Ink\Engagement\ReactionController` treat as valid here (see
+ * `ink_foundation_enqueue_line_reactions()` in functions.php, which no longer
+ * localises `duim_op`/`wow` — this control never offered a type choice in the
+ * design it now matches).
  *
- * Business logic stays server-side: this client only reflects state — it posts
- * the fixed reaction and toggles the active class on the success response. No
- * free-form commentary is possible here (reactions only — "encouragement, not
- * critique"); structured feedback is the Gemeenskapsreaksie (Story 7.4).
+ * Business logic stays server-side: this client only reflects state. Every
+ * toggle here is OPTIMISTIC — the UI flips immediately on click and only rolls
+ * back if the write actually fails — never waiting on the round-trip first
+ * (product-owner report, Theme-Fidelity fourth pass, 2026-09-06: a multi-second
+ * gap before the heart/highlight updated read as "the site is broken" and
+ * invited a same-again click, which then took the reaction back OFF). The
+ * server's response still reconciles the guess afterwards; the server remains
+ * the source of truth on both success and failure. No free-form commentary is
+ * possible here (reactions only — "encouragement, not critique"); structured
+ * feedback is the Gemeenskapsreaksie (Story 7.4).
  *
  * Config (REST root, nonce, post id, the aggregate `reactedLines` list so the
  * persisted tint/fill renders for every visitor on page load, not just an
  * ephemeral click — same pattern as `text-highlight-reactions.js`'s
- * `reactedParagraphs`) is provided by the theme via `window.inkLineReactions`
- * (localised in functions.php).
+ * `reactedParagraphs` — and `loginUrl` for a guest's floating-heart click) is
+ * provided by the theme via `window.inkLineReactions` (localised in
+ * functions.php).
  */
 ( function () {
 	'use strict';
@@ -88,29 +98,109 @@
 			var wasActive = btn.classList.contains( 'is-active' );
 			var method    = wasActive ? 'DELETE' : 'POST';
 
+			// Optimistic: reflect the toggle immediately, don't wait on the
+			// write. A mouse click also leaves the button holding real DOM
+			// focus, which keeps `:focus-within`/`:hover`-adjacent reveal rules
+			// engaged until focus moves elsewhere — release it right away so a
+			// persisted (active) heart's visibility comes only from
+			// `.is-active`, never from a lingering focus/hover state (keyboard
+			// users tabbing through are unaffected; focus simply moves to the
+			// next control as normal).
+			setResonant( lineEl, btn, ! wasActive );
+			btn.blur();
+
 			request( method, line ).then( function ( data ) {
+				// Reconcile with the server's actual state — normally a no-op
+				// against the optimistic guess above, but keeps the UI honest
+				// if it ever disagrees.
 				var resonant = !! ( data && ! data.removed && data.reaction );
 				setResonant( lineEl, btn, resonant );
-
-				// A mouse click leaves the button holding real DOM focus, which
-				// keeps `:focus-within`/`:hover`-adjacent reveal rules engaged
-				// until focus moves elsewhere. Release it so a persisted (active)
-				// heart's visibility comes only from `.is-active`, never from a
-				// lingering focus/hover state — keyboard users tabbing through
-				// are unaffected, focus simply moves to the next control as
-				// normal, it just doesn't linger here after a click.
-				btn.blur();
 			} ).catch( function () {
-				/* leave state unchanged on failure; the server is the source of truth */
+				// The write failed — undo the optimistic guess; the server is
+				// the source of truth.
+				setResonant( lineEl, btn, wasActive );
 			} );
 		} );
 
 		textEl.appendChild( btn );
 	}
 
+	/**
+	 * Wire the floating "enkel" heart (the reading page's action-bar total),
+	 * when one is present with a real click anchor
+	 * ({@see \Ink\Engagement\ReactionTotals::firstAnchorFor()} — a `<div>`
+	 * without `data-ink-post` means the work had no valid anchor at all, so
+	 * there is nothing to wire up). A logged-out visitor is sent to sign in
+	 * instead of posting to the REST endpoint (which would 403 anyway),
+	 * mirroring `leeslys.js`'s guest handling.
+	 */
+	function initFloating() {
+		var btn = document.querySelector( '.ink-reaksie-tellers--enkel[data-ink-post]' );
+		if ( ! btn ) {
+			return;
+		}
+
+		if ( btn.dataset.inkGuest ) {
+			btn.addEventListener( 'click', function () {
+				if ( cfg.loginUrl ) {
+					window.location.href = cfg.loginUrl + '?redirect_to=' + encodeURIComponent( window.location.href );
+				}
+			} );
+			return;
+		}
+
+		var line = parseInt( btn.getAttribute( 'data-ink-line' ), 10 );
+		if ( isNaN( line ) ) {
+			return;
+		}
+
+		var countEl = btn.querySelector( '.ink-reaksie-tellers__telling' );
+
+		function setCount( n ) {
+			if ( countEl ) {
+				countEl.textContent = String( n );
+			}
+		}
+
+		function setActive( active ) {
+			btn.classList.toggle( 'is-active', active );
+			btn.setAttribute( 'aria-pressed', active ? 'true' : 'false' );
+		}
+
+		// Seed the initial state from the SAME aggregate `reactedLines` list the
+		// per-line hearts use — this anchor is just another index in it, not a
+		// second read.
+		var reacted = cfg.reactedLines || [];
+		if ( -1 !== reacted.indexOf( line ) ) {
+			setActive( true );
+		}
+
+		btn.addEventListener( 'click', function () {
+			var wasActive = btn.classList.contains( 'is-active' );
+			var method    = wasActive ? 'DELETE' : 'POST';
+			var current   = countEl ? ( parseInt( countEl.textContent, 10 ) || 0 ) : 0;
+
+			// Optimistic: flip the active state AND move the total by one —
+			// same "don't wait on the network" fix as the per-line hearts.
+			setActive( ! wasActive );
+			setCount( wasActive ? current - 1 : current + 1 );
+
+			request( method, line ).then( function ( data ) {
+				var resonant = !! ( data && ! data.removed && data.reaction );
+				setActive( resonant );
+				btn.blur();
+			} ).catch( function () {
+				// Roll back both the active state and the count on failure.
+				setActive( wasActive );
+				setCount( current );
+			} );
+		} );
+	}
+
 	function init() {
 		var lines = document.querySelectorAll( '.ink-gedig__line[data-ink-line]' );
 		Array.prototype.forEach.call( lines, buildHeart );
+		initFloating();
 	}
 
 	if ( 'loading' === document.readyState ) {

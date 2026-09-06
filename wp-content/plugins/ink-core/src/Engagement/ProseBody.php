@@ -71,6 +71,21 @@ final class ProseBody {
 	}
 
 	/**
+	 * The first real paragraph's 0-based index, or `null` for an empty body.
+	 * Story 7.8 follow-up — the floating single-heart "enkel" total
+	 * ({@see ReactionTotals::toHtmlEnkel()}) needs one stable, always-valid
+	 * anchor to react against. Pure.
+	 *
+	 * @param string $body The raw stored body.
+	 * @return int|null
+	 */
+	public static function firstParagraphIndex( string $body ): ?int {
+		$tokens = self::tokenize( $body );
+
+		return array() !== $tokens ? (int) $tokens[0]['index'] : null;
+	}
+
+	/**
 	 * Whether `$index` is a real paragraph index of the body (not out-of-range).
 	 *
 	 * @param int    $index The submitted paragraph index.

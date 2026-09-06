@@ -412,13 +412,17 @@ function ink_foundation_login_headertext(): string {
 add_filter( 'login_headertext', 'ink_foundation_login_headertext' );
 
 /**
- * Enqueue the line-resonance client on a single gedig (Story 7.3, FR-26).
+ * Enqueue the line-resonance client on a single gedig or storie (Story 7.3,
+ * FR-26; extended 2026-09-06 to also drive the floating single-heart toggle).
  *
  * The reading-surface resonance widget attaches to the `[data-ink-line]` anchors
- * the ink/gedig-body block renders and writes through the `ink/v1/reaksie` REST
- * endpoint. Business logic stays server-side; this only ships the thin client +
- * its config (REST root, nonce, post id, the Afrikaans control label). Loaded
- * only where the anchors exist.
+ * the ink/gedig-body block renders (gedig only) AND to the floating "enkel"
+ * heart button `Ink\Engagement\ReactionTotals::toHtmlEnkel()` renders (gedig +
+ * storie — a no-op `querySelector` miss wherever the relevant markup is absent),
+ * writing both through the same `ink/v1/reaksie` REST endpoint. Business logic
+ * stays server-side; this only ships the thin client + its config (REST root,
+ * nonce, post id, the Afrikaans control label, the login URL for a guest's
+ * floating-heart click).
  *
  * Post-Epic-19 fidelity pass: Lovable's `PoetryReader.tsx` gives each line ONE
  * heart toggle, not a picker of reaction types — so the client always sends the
@@ -426,13 +430,15 @@ add_filter( 'login_headertext', 'ink_foundation_login_headertext' );
  * for this write path, confirmed against `Ink\Engagement\ReactionController`) and
  * this config carries no `duim_op`/`wow` entries; that type choice never existed
  * in the design this control now matches. `reactedLines` is the aggregate list of
- * line indexes that already carry a reaction from ANY reader — mirrors
+ * line/paragraph indexes that already carry a reaction from ANY reader — mirrors
  * `ink_foundation_enqueue_text_highlight_reactions()`'s `reactedParagraphs` — so
  * the persisted filled-heart state renders on page load for every visitor, not
- * just the ephemeral click that just resonated.
+ * just the ephemeral click that just resonated; the floating heart's initial
+ * `is-active` state is seeded from this SAME list (its anchor is just another
+ * index in it), not a second read.
  */
 function ink_foundation_enqueue_line_reactions(): void {
-	if ( ! function_exists( 'is_singular' ) || ! is_singular( 'gedig' ) ) {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'gedig', 'storie' ) ) ) {
 		return;
 	}
 
@@ -458,6 +464,7 @@ function ink_foundation_enqueue_line_reactions(): void {
 			'reactedLines' => ( $post_id && class_exists( '\\Ink\\Engagement\\ReactionStore' ) )
 				? array_values( \Ink\Engagement\ReactionStore::indexesWithReactions( (int) $post_id ) )
 				: array(),
+			'loginUrl'     => esc_url_raw( home_url( \Ink\Accounts\AuthRedirects::LOGIN_URL_PATH ) ),
 		)
 	);
 }
@@ -562,7 +569,11 @@ add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_gemeenskapsreaksie' );
  * renders for guests too (product-owner decision, post-Epic-19 follow-up), so
  * `loginUrl` (the shared `Ink\Accounts\AuthRedirects::LOGIN_URL_PATH`, never a
  * new hardcoded path) is always localised; the client only uses it for a guest's
- * `data-ink-guest` click.
+ * `data-ink-guest` click. `errorText` (2026-09-06, the optimistic-UI fix — see
+ * `leeslys.js`'s docblock) is new, hand-authored copy with no existing
+ * `docs/ui-copy-translations.md` row; flagged as copy-debt for a future
+ * authoring pass, same as other minor new strings logged elsewhere in
+ * `docs/theme-fidelity-rework-plan.md`.
  */
 function ink_foundation_enqueue_leeslys(): void {
 	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'gedig', 'storie', 'artikel' ) ) ) {
@@ -587,6 +598,7 @@ function ink_foundation_enqueue_leeslys(): void {
 			'nonce'       => wp_create_nonce( 'wp_rest' ),
 			'savedText'   => __( 'Gestoor na jou leeslys', 'ink-foundation' ),
 			'removedText' => __( 'Verwyder van jou leeslys', 'ink-foundation' ),
+			'errorText'   => __( 'Kon nie stoor nie. Probeer weer.', 'ink-foundation' ),
 			'loginUrl'    => esc_url_raw( home_url( \Ink\Accounts\AuthRedirects::LOGIN_URL_PATH ) ),
 		)
 	);

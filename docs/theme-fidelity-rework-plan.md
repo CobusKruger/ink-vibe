@@ -1675,6 +1675,62 @@ class fixed repeatedly in the table above.
 
 ---
 
+## Fifth pass — lees-gedig engagement interaction bugs (2026-09-06)
+
+Direct product-owner report: hearting a poem line has a multi-second delay before the highlight/heart update,
+which "looks broken" and invites a same-again click that then removes the reaction; the same delay affects the
+leeslys (reading-list) button; and the footer/floating heart "just doesn't work at all".
+
+**Delay (line hearts + leeslys) — genuinely pessimistic UI, fixed to optimistic.** Both `line-reactions.js`'s
+per-line heart and `leeslys.js`'s save toggle only updated the DOM inside the fetch's `.then()` — i.e. only
+AFTER the round-trip to the REST endpoint completed. Fixed both to flip the UI (and, for leeslys, show its
+toast) immediately on click, then reconcile with the server's actual response afterwards (normally a silent
+no-op against the optimistic guess) — and roll the UI back only if the write genuinely fails, with a new
+error toast (`errorText`, copy-debt, no existing translation-sheet row) added to leeslys so a real failure is
+never silently swallowed. Verified live: `btn.click()` followed immediately (same synchronous tick, no `await`)
+by a DOM check shows the flipped class/text already in place, and the change persists across a reload.
+
+**Floating heart "doesn't work" — a real, if more involved, bug.** `Ink\Engagement\ReactionTotals::toHtmlEnkel()`
+(the reading page's floating action-bar heart+count) rendered a plain `<div>` — no `<button>`, no click handler
+anywhere, ever. First checked whether some separate "whole-work like" infrastructure existed that this was
+simply failing to call into: it doesn't — `ReactionStore`'s `ink_line_reactions` table is `UNIQUE
+(post_id, line_index, user_id)` with `line_index NOT NULL`, and FR-26/FR-28 (the PRD) both describe reactions as
+attached to a highlighted LINE, never a separate whole-post entity; `Ink\Engagement\Api::hartjieCountForPost()`
+(used elsewhere, e.g. the home featured cards) is itself just a re-aggregation of this same per-line store.
+Lovable's `ReadStory.tsx` floating heart is real, clickable UI (`onClick={handleLike}`) — but it is pure local
+`useState`, no backend at all. Confirmed with the product owner that the per-line mechanism IS the intended
+"existing like infrastructure" this button should use, rather than inventing a second, parallel reaction
+concept — so the fix reuses `ink/v1/reaksie` exactly as-is: the floating heart now reacts to the work's first
+real content anchor (`GedigBody::firstContentLineIndex()` for gedig, new; `ProseBody::firstParagraphIndex()`
+for storie/artikel, new — both pure, mirroring `ReactionController::isValidAnchor()`'s existing CPT dispatch so
+the anchor this renders is guaranteed to pass that same write-time validation). `toHtmlEnkel()` now emits a
+real `<button data-ink-post data-ink-line>` (still a plain, non-interactive `<div>` when the post has no valid
+anchor at all, e.g. an empty body) with a `data-ink-guest="1"` flag for a logged-out visitor, wired up in
+`line-reactions.js`'s `initFloating()` (guest → redirect to `/meld-aan/`, same pattern as `leeslys.js`; member →
+the same optimistic toggle as the per-line hearts, moving the count by one and reconciling/rolling back exactly
+the same way). Its initial `is-active` state is seeded from the SAME aggregate `reactedLines` list the per-line
+hearts already use (the anchor is just another index in it) — no second read. New CSS
+(`button.ink-reaksie-tellers--enkel`) resets default button chrome and adds `cursor:pointer`/hover/focus-visible
+states, deliberately scoped to the `button` tag only so the passive `<div>` fallback never looks clickable.
+
+The script's enqueue (`ink_foundation_enqueue_line_reactions()`) is extended from gedig-only to gedig+storie
+(the floating heart renders on both; per-line hearts remain gedig-only and simply find nothing to attach to on
+storie) and now localises `loginUrl` for the guest path.
+
+Verified live end-to-end on a real poem (`/gedig/die-kamer-sonder-woorde/`): the floating heart's initial
+render for a cookie-less (guest) request carries `data-ink-guest="1"`; clicking it as a member flips
+`is-active`/the count synchronously (checked in the same tick as `.click()`, before any network round-trip
+could complete) and the new state survives a full page reload (a real DB write, not just an optimistic
+illusion); toggling it off removes the row the same way. Same synchronous-flip check done for a per-line heart
+and the leeslys button, including its toast firing immediately.
+
+New tests: `GedigBodyTest`/`ProseBodyTest` cover the two new `firstContentLineIndex()`/`firstParagraphIndex()`
+helpers; `ReactionTotalsTest` covers the button-vs-div fallback, the guest data attribute, and the
+gedig/storie anchor dispatch. `composer test` 1341 passed (same 4 pre-existing Integration-suite failures),
+`stan` clean (206 files), `deptrac` same 3 pre-existing violations, 0 new.
+
+---
+
 ## Known outstanding items, not yet resolved
 
 All 16 pages are done. What's left is flagged follow-up work, not incomplete rework:

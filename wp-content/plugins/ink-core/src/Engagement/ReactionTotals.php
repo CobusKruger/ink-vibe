@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Engagement;
 
+use Ink\Content\PostTypes;
 use Ink\Kernel\Reaction;
 
 defined( 'ABSPATH' ) || exit;
@@ -86,11 +87,14 @@ final class ReactionTotals {
 
 		$variant = isset( $attributes['variant'] ) && is_string( $attributes['variant'] ) ? $attributes['variant'] : 'volledig';
 
-		return self::toHtml( ReactionStore::countsForPost( $post_id ), $variant );
+		return self::toHtml( ReactionStore::countsForPost( $post_id ), $variant, $post_id );
 	}
 
 	/**
-	 * Build the verb-less totals HTML. Pure — formatter + escaping only.
+	 * Build the verb-less totals HTML. Pure — formatter + escaping only (the one
+	 * exception: `$post_id` > 0 makes the `'enkel'` variant read `is_user_logged_in()`
+	 * to decide whether to print a guest-redirect data attribute; see
+	 * {@see self::toHtmlEnkel()}).
 	 *
 	 * @param array<string, int> $counts  Reaction value → total.
 	 * @param string             $variant `'volledig'` (default, all 3 reactions —
@@ -99,11 +103,14 @@ final class ReactionTotals {
 	 *                                    Lovable's single heart+count floating-bar
 	 *                                    button; theme-fidelity re-audit, page 3,
 	 *                                    product-owner decision).
+	 * @param int                 $post_id The work (0 outside a real render, e.g.
+	 *                                     unit tests) — needed only by the 'enkel'
+	 *                                     variant to compute its click anchor.
 	 * @return string
 	 */
-	public static function toHtml( array $counts, string $variant = 'volledig' ): string {
+	public static function toHtml( array $counts, string $variant = 'volledig', int $post_id = 0 ): string {
 		if ( 'enkel' === $variant ) {
-			return self::toHtmlEnkel( $counts );
+			return self::toHtmlEnkel( $counts, $post_id );
 		}
 
 		$glyphs = self::glyphs();
@@ -126,32 +133,85 @@ final class ReactionTotals {
 	}
 
 	/**
-	 * The `'enkel'` variant: a single hartjie glyph + bare count, no per-reaction
-	 * label text — the reading page's floating action bar "like" affordance
-	 * (Lovable's `ReadStory.tsx` floating bar renders `<Heart/><span>{likeCount}</span>`
-	 * with no words, unconditionally for both poetry and prose — it is shared
-	 * code, not gedig-specific). Still a truthful READ of the same underlying
-	 * reaction totals (AD-5a) — collapsing the DISPLAY to one number is a
-	 * presentation decision, not a new reaction type or a new store. Product-
-	 * owner decision originated on lees-gedig (theme-fidelity third pass) and
-	 * was confirmed to extend to lees-storie, which shares the same Lovable
-	 * component — reading-artikel is NOT included (kept at the `'volledig'`
-	 * default, untouched).
+	 * The `'enkel'` variant: a single hartjie glyph + bare count — the reading
+	 * page's floating action bar "like" affordance (Lovable's `ReadStory.tsx`
+	 * floating bar renders `<Heart/><span>{likeCount}</span>` with no words,
+	 * unconditionally for both poetry and prose — it is shared code, not
+	 * gedig-specific).
 	 *
-	 * @param array<string, int> $counts Reaction value → total.
+	 * A real toggle, not a passive readout (fixed 2026-09-06 — product-owner
+	 * report: "the footer's heart icon just doesn't work at all"; Lovable's own
+	 * `handleLike()` is clickable). There is no separate "whole work" reaction
+	 * concept in {@see ReactionStore} — only per-line/per-paragraph rows — so
+	 * this reuses that SAME infrastructure rather than adding a new one: a click
+	 * here reacts to the work's first real content anchor ({@see
+	 * GedigBody::firstContentLineIndex()} for gedig, {@see
+	 * ProseBody::firstParagraphIndex()} for storie/artikel), through the exact
+	 * `ink/v1/reaksie` endpoint the per-line hearts already use — the total this
+	 * button shows and the per-line heart on that same first line/paragraph
+	 * share one row, one truth, by construction. `$post_id` is 0 outside a real
+	 * render (e.g. unit tests) or when the work has no valid anchor at all
+	 * (an empty body) — either way this degrades to the prior plain, non-
+	 * interactive `<div>` display rather than a button that would 400 on click.
+	 *
+	 * @param array<string, int> $counts  Reaction value → total.
+	 * @param int                $post_id The work (0 = render the passive display).
 	 * @return string
 	 */
-	private static function toHtmlEnkel( array $counts ): string {
+	private static function toHtmlEnkel( array $counts, int $post_id = 0 ): string {
 		$n = isset( $counts[ Reaction::Hartjie->value ] ) ? (int) $counts[ Reaction::Hartjie->value ] : 0;
 
 		$audit_id = self::enkelAuditId();
+		$anchor   = $post_id > 0 ? self::firstAnchorFor( $post_id ) : null;
+		$tag      = null !== $anchor ? 'button' : 'div';
 
-		return '<div class="ink-reaksie-tellers ink-reaksie-tellers--enkel"'
+		$attrs = ' class="ink-reaksie-tellers ink-reaksie-tellers--enkel"'
 			. ( null !== $audit_id ? ' data-audit-id="' . esc_attr( $audit_id ) . '"' : '' )
-			. ' aria-label="' . esc_attr( ReactionCounts::label( Reaction::Hartjie, $n ) ) . '">'
+			. ' aria-label="' . esc_attr( ReactionCounts::label( Reaction::Hartjie, $n ) ) . '"';
+
+		if ( null !== $anchor ) {
+			$attrs .= ' type="button" aria-pressed="false"'
+				. ' data-ink-post="' . esc_attr( (string) $post_id ) . '"'
+				. ' data-ink-line="' . esc_attr( (string) $anchor ) . '"';
+
+			if ( ! is_user_logged_in() ) {
+				$attrs .= ' data-ink-guest="1"';
+			}
+		}
+
+		return '<' . $tag . $attrs . '>'
 			. '<span class="ink-reaksie-tellers__hart" aria-hidden="true">' . self::heartOutlineSvg() . '</span>'
 			. '<span class="ink-reaksie-tellers__telling">' . esc_html( (string) $n ) . '</span>'
-			. '</div>';
+			. '</' . $tag . '>';
+	}
+
+	/**
+	 * The stable resonance anchor (line index for gedig, paragraph index for
+	 * storie/artikel) the floating "enkel" heart reacts to — the work's first
+	 * real content unit, computed the same way {@see ReactionController} already
+	 * validates anchors at the write layer, so this always renders a click
+	 * target that write path will accept. `null` when the post is missing or has
+	 * no valid anchor (an empty body) — the caller falls back to a plain display.
+	 *
+	 * @param int $post_id The work.
+	 * @return int|null
+	 */
+	private static function firstAnchorFor( int $post_id ): ?int {
+		$post = get_post( $post_id );
+
+		if ( ! $post instanceof \WP_Post ) {
+			return null;
+		}
+
+		if ( PostTypes::GEDIG === $post->post_type ) {
+			return GedigBody::firstContentLineIndex( (string) $post->post_content );
+		}
+
+		if ( in_array( $post->post_type, array( PostTypes::STORIE, PostTypes::ARTIKEL ), true ) ) {
+			return ProseBody::firstParagraphIndex( (string) $post->post_content );
+		}
+
+		return null;
 	}
 
 	/**
