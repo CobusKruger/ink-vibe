@@ -101,7 +101,17 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 <?php // Identity band (My Profiel rebuild, Tier-0 structural match to Profile.tsx's <section className="border-b border-border bg-cream/40">): a full-bleed tinted band housing ONLY the identity strip, distinct from the tab-shell section below (Lovable never puts the tabs inside this band). ?>
 <!-- wp:group {"tagName":"section","className":"ink-profiel-identiteit-band","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-40","bottom":"var:preset|spacing|s-40","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull ink-profiel-identiteit-band" style="padding-top:var(--wp--preset--spacing--s-40);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-40);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+	<?php // WIDTH BUG FIX (product-owner live-inspection pass): this wrapper redundantly
+	// re-declared "layout":{"type":"constrained"} — the SAME bug already found and
+	// fixed on ontdek.php (Theme-Fidelity fourth-pass re-audit, page 11): re-declaring
+	// "constrained" here makes WP treat this alignwide box as a FRESH constrained
+	// layout root, clamping any child lacking its own alignwide/alignfull class (the
+	// identity strip group below has none) down to contentSize (768px) instead of
+	// letting it fill this wrapper's already-correct wideSize (1368px) — confirmed
+	// live via getComputedStyle before this fix (.ink-profiel-identiteit measured
+	// 768px inside a 1368px .alignwide ancestor). Dropping the redundant "layout"
+	// leaves this a plain flow group, so the identity strip fills the full wide width. ?>
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 
 		<?php // Identity strip (My Profiel rebuild §5.1): avatar, "Jou profiel" eyebrow, serif H1 name, Gradering badge + wins-needed, tagline, three actions. ?>
@@ -184,7 +194,13 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 <?php // Tab shell + all 7 panels — a SEPARATE full-bleed section from the identity band above (Tier-0 structural match: Lovable's tabs live in their own `container mx-auto px-4 py-10`, not inside the bordered identity <section>). ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-32"}},"layout":{"type":"constrained"}} -->
+	<?php // WIDTH BUG FIX — same root cause as the identity band above: the redundant
+	// "layout":{"type":"constrained"} clamped the tab nav AND every one of the 7
+	// panel sections below (none carry their own alignwide/alignfull) to contentSize
+	// (768px) inside this already-correct wideSize (1368px) wrapper — confirmed live
+	// (.ink-profiel-tabs / #bydraes both measured 768px before this fix). Dropped for
+	// the same reason, matching ontdek.php's own proven fix for this exact mistake. ?>
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-32"}}} -->
 	<div class="wp-block-group alignwide">
 
 		<?php // Tab shell (My Profiel rebuild §5.2): 7 ratified tabs, mirroring ontdek-tabs.js's progressive-enhancement mechanics (data-ink-profiel-tab/-panel, [hidden], #hash). ?>

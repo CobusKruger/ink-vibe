@@ -87,6 +87,22 @@
 	gap: var(--wp--preset--spacing--s-12);
 }
 
+/* Real bug found live: "Nuwe bydrae"/"Sien openbare bladsy" are real
+ * `wp:button` blocks, which inherit the generic block-button padding/font
+ * size (measured 49px tall, 16px type) instead of matching "Wysig profiel"'s
+ * bare-button recipe (40px tall, 14px type) right beside them in the same
+ * row — three visibly different-sized controls. Scoped to this row only
+ * (not the global `is-style-ink-primary`/`is-style-subtle` registration,
+ * which other pages use at their own sizes) and copies `.ink-profiel-
+ * identiteit__wysig`'s exact box, the established size for this row. */
+.ink-profiel-identiteit__aksies .wp-block-button__link {
+	height: 2.5rem;
+	padding: 0 var(--wp--preset--spacing--s-16);
+	font-size: var(--wp--preset--font-size--sm);
+	display: inline-flex;
+	align-items: center;
+}
+
 /* "Wysig profiel" — a bare <button> (JS-triggered, never a link); matches
  * Lovable's `variant="literary-outline"`, the exact recipe already registered
  * as `is-style-ink-outline` (functions.php) — copied here since the block-style
@@ -453,8 +469,7 @@
 	color: var(--wp--preset--color--muted-text);
 }
 
-/* "Wysig" / "Sien" — bare <a> links, Lovable's `variant="subtle" size="sm"` /
- * `variant="ghost" size="sm"`. Pushed to the row's trailing edge. */
+/* "Wysig" — bare <a> link, Lovable's `variant="subtle" size="sm"`. */
 .ink-bydraes__sien,
 .ink-bydraes__wysig {
 	display: inline-flex;
@@ -467,16 +482,6 @@
 	transition: background-color .15s ease, color .15s ease;
 }
 
-.ink-bydraes__sien {
-	margin-left: auto;
-	color: var(--wp--preset--color--ink-text);
-}
-
-.ink-bydraes__sien:hover {
-	background-color: var(--wp--preset--color--accent);
-	color: var(--wp--preset--color--surface-alt);
-}
-
 .ink-bydraes__wysig {
 	background-color: color-mix( in srgb, var(--wp--preset--color--secondary) 50%, transparent );
 	color: var(--wp--preset--color--ink-text);
@@ -484,6 +489,35 @@
 
 .ink-bydraes__wysig:hover {
 	background-color: var(--wp--preset--color--secondary);
+}
+
+/* "Sien" — the row's read/view action. Real bug found live (product-owner
+ * inspection): this rendered as a plain ink-text link with no fill, when it
+ * should carry the PRIMARY treatment — the same filled recipe as Lovable's
+ * Reading-list tab's "Read" button (`variant="literary" size="sm"`), i.e.
+ * `is-style-ink-primary` at this row's small size, not Lovable's own
+ * Posts-tab ghost "View" (a deliberate, product-owner-directed departure). */
+.ink-bydraes__sien {
+	font-weight: var(--wp--custom--font-weight--medium);
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+.ink-bydraes__sien:hover {
+	background-color: var(--wp--preset--color--primary-light);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+/* Right-align the row's action cluster (pin toggle + Sien + Wysig) as a
+ * group, leaving the read-count stat at the row's left edge — real bug found
+ * live: only "Sien" carried `margin-left:auto`, so the pin toggle sat
+ * stranded next to the read count instead of grouping with the other two
+ * actions at the trailing edge. Moved the auto-margin onto the FIRST element
+ * of the right-hand group instead (the pin toggle) — putting it on more than
+ * one flex item would split the free space across both auto margins and
+ * open an unwanted gap between the pin toggle and "Sien". */
+.ink-bydraes__voet .ink-vasgespel__knoppie {
+	margin-left: auto;
 }
 
 .ink-bydraes__leeg {
