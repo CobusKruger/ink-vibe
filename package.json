@@ -10,7 +10,7 @@
     "test:e2e:smoke": "playwright test --grep @smoke"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.0",
+    "@playwright/test": "^1.63.0",
     "@wordpress/e2e-test-utils-playwright": "^1.16.0",
     "@wordpress/env": "^11.8.0"
   }
