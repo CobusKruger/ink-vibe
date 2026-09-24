@@ -1,0 +1,120 @@
+{
+  "_comment": [
+    "B5 — the capture target list. Derived from docs/fidelity-remediation/agent-brief.md §2.1,",
+    "which is owner-ratified and authoritative. Keep the two in step.",
+    "",
+    "`ink` and `lovable` are full URLs. `treatment` is A / B / C per README.md §4.6.",
+    "`auth` names a storageState file under tmp/fidelity-auth/ when the row needs a session.",
+    "`expect` selectors abort the capture rather than writing an empty file (A3).",
+    "",
+    "Rows 19, 20 and 21 are SKIPPED by owner ruling and are absent."
+  ],
+  "bases": {
+    "ink": "https://nuwe-ink.local",
+    "lovable": "http://localhost:4173"
+  },
+  "targets": [
+    {
+      "row": "00", "page": "tuisblad", "treatment": "A",
+      "ink": "https://nuwe-ink.local/",
+      "lovable": "http://localhost:4173/",
+      "expect": { "ink": "[data-audit-id=\"hero-h1\"],.ink-huidige-uitdaging,.ink-uitgesoekte-bydraes", "lovable": "[data-audit-id=\"hero-h1\"]" }
+    },
+    {
+      "row": "01", "page": "gemeenskap", "treatment": "A",
+      "ink": "https://nuwe-ink.local/gemeenskap/",
+      "lovable": "http://localhost:4173/community",
+      "expect": { "ink": "[data-audit-id=\"gemeenskap-hero\"]", "lovable": "[data-audit-id=\"gemeenskap-hero\"]" }
+    },
+    {
+      "row": "02", "page": "my-profiel", "treatment": "A", "auth": { "ink": "ink.json" },
+      "ink": "https://nuwe-ink.local/my-profiel/",
+      "lovable": "http://localhost:4173/profile",
+      "note": "Header differs by auth state (INK authed, Lovable anon). Exclude the header from this diff — it is covered by row 00."
+    },
+    {
+      "row": "03", "page": "ontdek", "treatment": "A",
+      "ink": "https://nuwe-ink.local/ontdek/",
+      "lovable": "http://localhost:4173/browse"
+    },
+    {
+      "row": "04", "page": "skryf", "treatment": "A",
+      "ink": "https://nuwe-ink.local/skryf/",
+      "lovable": "http://localhost:4173/write"
+    },
+    {
+      "row": "05", "page": "uitdaging-enkel", "treatment": "A",
+      "ink": "https://nuwe-ink.local/uitdaging/skryf-n-storie-waarin-die-hoofkarakter-nooit-praat-nie/",
+      "lovable": "http://localhost:4173/challenges/silent-protagonist"
+    },
+    {
+      "row": "06", "page": "skrywer", "treatment": "A",
+      "ink": "https://nuwe-ink.local/author/cobus/",
+      "lovable": "http://localhost:4173/writer/w1"
+    },
+    {
+      "row": "07", "page": "lees-storie", "treatment": "A",
+      "ink": "https://nuwe-ink.local/storie/die-wenteltrap-na-die-lig/",
+      "lovable": "http://localhost:4173/read/sample"
+    },
+    {
+      "row": "08a", "page": "biblioteek", "treatment": "A",
+      "ink": "https://nuwe-ink.local/biblioteek/",
+      "lovable": "http://localhost:4173/library"
+    },
+    {
+      "row": "08b", "page": "opleiding", "treatment": "A",
+      "ink": "https://nuwe-ink.local/opleiding/",
+      "lovable": "http://localhost:4173/library",
+      "note": "Second INK page sharing the one Lovable reference."
+    },
+    {
+      "row": "09a", "page": "meld-aan", "treatment": "A",
+      "ink": "https://nuwe-ink.local/meld-aan/",
+      "lovable": "http://localhost:4173/auth"
+    },
+    {
+      "row": "09b", "page": "registreer", "treatment": "A",
+      "ink": "https://nuwe-ink.local/registreer/",
+      "lovable": "http://localhost:4173/auth",
+      "note": "INK splits sign-in and registration; Lovable tabs them in one page."
+    },
+    {
+      "row": "10", "page": "wagwoord-herstel", "treatment": "A",
+      "ink": "https://nuwe-ink.local/wagwoord-herstel/",
+      "lovable": "http://localhost:4173/forgot-password"
+    },
+    {
+      "row": "11", "page": "wagwoord-terugstel", "treatment": "C",
+      "ink": "https://nuwe-ink.local/wp-login.php?action=lostpassword",
+      "lovable": null,
+      "note": "Owner ruling: core wp-login flow for now, branded via wp-login-brand.css."
+    },
+    {
+      "row": "12", "page": "vier-nul-vier", "treatment": "C",
+      "ink": "https://nuwe-ink.local/storie/pannekoek/",
+      "lovable": "http://localhost:4173/pannekoek"
+    },
+    {
+      "row": "13", "page": "oor-ink", "treatment": "B",
+      "ink": "https://nuwe-ink.local/oor-ink/",
+      "lovable": null,
+      "note": "Sponsor strip references SponsorsSection.tsx; the rest has no source."
+    },
+    {
+      "row": "14", "page": "uitdagings", "treatment": "B",
+      "ink": "https://nuwe-ink.local/uitdagings/",
+      "lovable": null,
+      "note": "Challenge card references ChallengeSection.tsx; the rest has no source."
+    },
+    { "row": "15", "page": "kontak", "treatment": "C", "ink": "https://nuwe-ink.local/kontak/", "lovable": null },
+    { "row": "16", "page": "lidmaatskap", "treatment": "C", "ink": "https://nuwe-ink.local/lidmaatskap/", "lovable": null },
+    { "row": "17", "page": "inkpols", "treatment": "C", "ink": "https://nuwe-ink.local/inkpols/", "lovable": null },
+    { "row": "18", "page": "ledegids", "treatment": "C", "ink": "https://nuwe-ink.local/ledegids/", "lovable": null },
+    {
+      "row": "22", "page": "lees-gedig", "treatment": "A",
+      "ink": "https://nuwe-ink.local/gedig/piet-punte/",
+      "lovable": "http://localhost:4173/read/s2"
+    }
+  ]
+}

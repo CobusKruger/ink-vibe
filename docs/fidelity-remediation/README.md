@@ -152,6 +152,28 @@ is a `MISSING` finding and is recorded, not invented.
 **Output:** edits to both repos + `maps/<page-slug>.csv`.
 
 ### Phase 4 — Rendered capture + computed diff
+
+**Tooling:** `tools/fidelity/run.sh` — see `harness-worklist.md` for the full contract and
+the environment facts. Targets are listed in `tools/fidelity/targets.json`, derived from
+`agent-brief.md` §2.1.
+
+```bash
+tools/fidelity/run.sh capture --url <url> --side <ink|lovable> --page <slug> \
+                              --viewport 390,768,1440 --expect '<selector>,…'
+tools/fidelity/run.sh diff --a <lovable.ndjson> --b <ink.ndjson> --out <finding.md>
+tools/fidelity/run.sh verify --capture <file.ndjson> --sample 30
+tools/fidelity/determinism-check.sh <url> <side> <page> <viewport> 3
+```
+
+**Preconditions — both are gates, not suggestions:**
+
+1. `determinism-check.sh` passes for the page. A capture that is not reproducible makes
+   every finding derived from it noise.
+2. `run.sh verify` passes on the capture. `README.md` §8.4 forbids shipping a Phase 4
+   finding whose numbers do not reproduce against a live read.
+
+**Chromium cannot run inside the macOS sandbox**, and a preview server cannot bind a
+socket there — see §9.
 Capture rendered DOM and `getComputedStyle` for every audit-id'd node on both sides.
 Diff numerically per property.
 **Output:** `findings/NN-<page-slug>-drift.md` (generated, not hand-written).
@@ -162,7 +184,15 @@ never to `docs/`. They are regenerable and must not be committed.
 ### Phase 4b — Register every primitive instance
 For each component on the page that is a shared kind — button, card, pill, badge, form
 field, label, tab, eyebrow, section band, avatar — append one row per instance to
-`maps/_primitive-observations.csv`. This is the raw material Stage 2 groups; a page is not
+`maps/_primitive-observations.csv`.
+
+**Tooling:** `tools/fidelity/run.sh primitives --in <capture.ndjson> [--in …] --out
+maps/_primitive-observations.csv [--append]`. It classifies each node and emits the row.
+
+A rendered capture cannot say *which stylesheet* a rule came from, so `defined_in`,
+`load_scope` and `used_in` come out **empty** and must be filled by a source-side pass —
+the method is demonstrated in `findings/01-primitives-audit.md`. That attribution is what
+turns a list of variants into an actionable finding, so do not skip it. This is the raw material Stage 2 groups; a page is not
 audited until its primitives are registered.
 
 **Record, do not judge.** Do not decide here which variant is right, and do not change a
@@ -456,3 +486,28 @@ A findings document is not ready until:
 - **`composer stan` needs the sandbox off** (it opens TCP and gets EPERM otherwise).
 - **`git merge` in this repo needs the sandbox off** (FS deny on `docs/`).
 - **Do not add commit attribution trailers** — enforced via `attribution.commit: ""`.
+
+### The capture harness
+
+Full contract in `harness-worklist.md`. The parts that bite:
+
+- **Chromium cannot launch inside the macOS Seatbelt sandbox** — it is denied its Mach
+  rendezvous port. A preview server also cannot bind a socket there (`listen EPERM`).
+  Neither is fixable with an allowlist entry; both need the sandbox off. The commands are
+  pre-approved in `.claude/settings.local.json`.
+- **Node 20+ is required.** Playwright 1.63 refuses the machine default (18.17.1).
+  `run.sh` points at the nvm-installed v24.12.0 and does not change your default.
+- **Browsers live in `tmp/ms-playwright`** — the sandbox denies the usual
+  `~/Library/Caches` location.
+- **The WordPress table prefix is `wpjj_`, not `wp_`.** A stale unused `wp_users` table
+  also exists; writing to it looks like it worked and WordPress never sees the row.
+- **`wp-cli` cannot connect** to the Local site — `wp-config.php` hardcodes
+  `DB_HOST = 'localhost'` and `--require` loads too late to override it. Use Local's own
+  PHP with `-d mysqli.default_socket=<sock>`, as `tools/fidelity/set-capture-password.php`
+  does, or its `mysql` client over the socket.
+- **`wp-login.php` is intercepted** by `ink-core`'s `Accounts\AuthRedirects` and sent to
+  `/meld-aan`. Log in there; the submit control is `<button name="wp-submit">`, not core's
+  `<input id="wp-submit">`.
+- **Capture as `fidelity-capture`, not `admin`** — the admin bar shifts the page ~32px and
+  would corrupt every bounding box. That user is a subscriber with
+  `show_admin_bar_front = false`.

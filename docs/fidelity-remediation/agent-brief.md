@@ -11,9 +11,6 @@ a pairing the owner has set.
 
 ## 1. Your objective
 
-Bring `ink-foundation` to visual fidelity with the Lovable reference, page by page, using
-the pipeline in `README.md` §4 and producing the artifacts in `README.md` §7.
-
 Bring `ink-foundation` to visual fidelity with the Lovable reference, in the four stages
 set out in `README.md` §4.0: **audit every page → synthesise the primitives → consolidate
 them into one shared stylesheet → remediate what remains.**
@@ -31,6 +28,13 @@ them into one shared stylesheet → remediate what remains.**
 
 The homepage (`00`) is already done through Phase 2 and serves as the worked example:
 `findings/00-tuisblad-spine.md`.
+
+**The capture harness is built and passing.** `tools/fidelity/run.sh` gives you `capture`,
+`diff`, `primitives`, `verify` and `login`; targets are in `tools/fidelity/targets.json`.
+Read `harness-worklist.md` before first use — the environment has several sharp edges
+(sandbox, Node version, `wpjj_` table prefix, intercepted `wp-login.php`), all documented
+there and in `README.md` §9. Run `determinism-check.sh` and `run.sh verify` on any page
+before generating a finding from its capture.
 
 ### What you must not do
 
@@ -60,28 +64,28 @@ This is the only table that needs owner review. Treatments are defined in `READM
 | # | Lovable URL | INK URL | Treatment | Confirm |
 |---|---|---|---|---|
 | 00 | `/` | `/` | A | ✅ verified — both read end to end |
-| 01 | `/community` | `/gemeenskap` | A | likely — 12 matching audit-ids already exist |
-| 02 | `/profile` | `/my-profiel` | A | ☐ |
-| 03 | `/browse` | `/ontdek` | A | ☐ |
-| 04 | `/write` | `/skryf` | A | ☐ |
-| 05 | `/challenges/silent-protagonist` | `https://nuwe-ink.local/uitdaging/skryf-n-storie-waarin-die-hoofkarakter-nooit-praat-nie/` | A | ☐ |
-| 06 | `/writer/w1` | `https://nuwe-ink.local/author/cobus/` | A | ☐ §3.1 |
-| 07 | `/read/sample` | `https://nuwe-ink.local/storie/die-wenteltrap-na-die-lig/` | A | ☐ §3.2 — INK has **6** reading page types. This one is for stories and articles. |
-| 08 | `/library` | `/biblioteek` **and** `/opleiding` | A | ☐ §3.3 — which one? |
-| 09 | `/auth` | `/meld-aan` **and** `/registreer` | A | ☐ §3.4 — INK splits it in two |
-| 10 | `/forgot-password` | `/wagwoord-herstel` | A | ☐ |
-| 11 | `/reset-password` | — probably WordPress's own `wp-login.php` | C? | ☐ §3.5 |
-| 12 | any bogus path (404) | any bogus path | C? | ☐ §3.6 |
-| 13 | — none | `/oor-ink` | **B** | ☐ — sponsor strip has a source, rest does not |
-| 14 | — none | `/uitdagings` (the list) | **B** | ☐ — challenge card has a source, rest does not |
-| 15 | — none | `/kontak` | **C** | ☐ |
-| 16 | — none | `/lidmaatskap` | **C** | ☐ |
-| 17 | — none | `/inkpols` | **C** | ☐ — list and single |
-| 18 | — none | `/ledegids` | **C** | ☐ |
-| 19 | — none | onboarding | **C** | ☐ — URL unknown |
-| 20 | — none | membership under My Profiel | **C** | ☐ — URL unknown |
-| 21 | — none | `/qa-bloks` | — | ☐ — QA scaffold; in scope at all? |
-| 22 | `https://preview--quill-muse-heart.lovable.app/read/s2` | `https://nuwe-ink.local/gedig/piet-punte/` | A | ☐ §3.2 — INK has **6** reading page types. This one is for poetry. |
+| 01 | `/community` | `/gemeenskap` | A | ✅ |
+| 02 | `/profile` | `/my-profiel` | A | ✅ |
+| 03 | `/browse` | `/ontdek` | A | ✅ |
+| 04 | `/write` | `/skryf` | A | ✅ |
+| 05 | `/challenges/silent-protagonist` | `https://nuwe-ink.local/uitdaging/skryf-n-storie-waarin-die-hoofkarakter-nooit-praat-nie/` | A | ✅ |
+| 06 | `/writer/w1` | `https://nuwe-ink.local/author/cobus/` | A | ✅ |
+| 07 | `/read/sample` | `https://nuwe-ink.local/storie/die-wenteltrap-na-die-lig/` | A | ✅ — stories and articles |
+| 08 | `/library` | `/biblioteek` **and** `/opleiding` | A | ✅ — audit both against the one reference |
+| 09 | `/auth` | `/meld-aan` **and** `/registreer` | A | ✅ — INK splits it in two |
+| 10 | `/forgot-password` | `/wagwoord-herstel` | A | ✅ |
+| 11 | `/reset-password` | `wp-login.php` core flow, branded via `wp-login-brand.css` | **C** | ✅ — owner ruling: wp-login for now |
+| 12 | any bogus path (404) | http://nuwe-ink.local/storie/pannekoek/ | **C** | ✅ |
+| 13 | — none | `/oor-ink` | **B** | ✅ — sponsor strip has a source, rest does not |
+| 14 | — none | `/uitdagings` (the list) | **B** | ✅ — challenge card has a source, rest does not |
+| 15 | — none | `/kontak` | **C** | ✅ |
+| 16 | — none | `/lidmaatskap` | **C** | ✅ |
+| 17 | — none | `/inkpols` | **C** | ✅ — list and single |
+| 18 | — none | `/ledegids` | **C** | ✅ |
+| ~~19~~ | — none | onboarding | — | 🚫 **SKIPPED** — owner ruling, out of scope |
+| ~~20~~ | — none | membership under My Profiel | — | 🚫 **SKIPPED** — owner ruling, out of scope |
+| ~~21~~ | — none | `/qa-bloks` | — | 🚫 **SKIPPED** — QA scaffold, out of scope |
+| 22 | `https://preview--quill-muse-heart.lovable.app/read/s2` | `https://nuwe-ink.local/gedig/piet-punte/` | A | ✅ — poetry |
 
 **Rows 00–12** are the thirteen Lovable routes, taken from `ink-lovable/src/App.tsx:30-45`.
 That list is definitive: `src/pages/` holds exactly thirteen files and no others. The
