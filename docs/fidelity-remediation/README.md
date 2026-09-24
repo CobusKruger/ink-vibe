@@ -190,9 +190,45 @@ field, label, tab, eyebrow, section band, avatar — append one row per instance
 maps/_primitive-observations.csv [--append]`. It classifies each node and emits the row.
 
 A rendered capture cannot say *which stylesheet* a rule came from, so `defined_in`,
-`load_scope` and `used_in` come out **empty** and must be filled by a source-side pass —
-the method is demonstrated in `findings/01-primitives-audit.md`. That attribution is what
-turns a list of variants into an actionable finding, so do not skip it. This is the raw material Stage 2 groups; a page is not
+`load_scope` and `used_in` come out **empty**. Fill them with the source-side pass below.
+That attribution is what turns a list of variants into an actionable finding — without it
+Stage 2 can see *that* variants exist but not *where* to fix them.
+
+#### Source attribution — filling the three empty columns
+
+For each distinct `selector` in the page's observation rows:
+
+1. **`defined_in`** — find where the selector is declared. Search, in this order, and read
+   what you find rather than inferring from the match (R1):
+   - `theme.json` → `styles.css` (a single ~100 KB string; extract it before searching)
+   - `wp-content/themes/ink-foundation/assets/css/*.css`
+   - `functions.php` → the `inline_style` of a `register_block_style()` call
+
+   Record as `theme.json`, `functions.php:<line>` or `assets/css/<file>:<line>`. More than
+   one hit is itself the finding: record every one, on its own row.
+
+2. **`load_scope`** — find how that definition reaches the browser:
+   - `theme.json` and `functions.php` inline styles are **site-wide**
+   - a file under `assets/css/` is gated by its `wp_enqueue_style` call in `functions.php`.
+     Record the actual condition, e.g. `is_front_page()`, `is_page('skryf')`,
+     `is_singular(['gedig','storie','artikel'])`.
+
+3. **`used_in`** — find every consumer of the class: search
+   `wp-content/themes/ink-foundation/patterns/` and
+   `wp-content/plugins/ink-core/src/` for the class name, then read each hit to confirm it
+   is emitted rather than merely mentioned in a comment.
+
+#### The two checks that produce findings
+
+- **Declaration comparison.** Where one `component_kind` has more than one definition,
+  compare them declaration by declaration, not as a whole. Variants routinely share
+  padding, radius and colour and differ only in type or background — which is why the
+  drift reads as "nearly right" rather than obviously broken. Identical definitions are
+  still a finding: duplication without a single source diverges the moment one is touched.
+- **Load-scope cross-check.** Compare `load_scope` against the pages implied by `used_in`.
+  A class *used* in a pattern that renders on pages where its stylesheet does not *load*
+  is inert there: the markup carries the class and nothing styles it. This is a live bug
+  and is invisible to any amount of looking at the page. This is the raw material Stage 2 groups; a page is not
 audited until its primitives are registered.
 
 **Record, do not judge.** Do not decide here which variant is right, and do not change a
@@ -419,6 +455,8 @@ docs/fidelity-remediation/
   README.md                       ← this file: method + hard rules
   agent-brief.md                  ← the page inventory + execution instruction.
                                      OWNER-EDITED — treat its mapping as authoritative.
+  stage-1-kickoff.md              ← paste-ready brief to start the audit
+  harness-worklist.md             ← capture-harness tool contract + environment facts
   findings/
     00-tuisblad-spine.md          ← first finding (also the method's worked example)
     01-primitives-audit.md        ← early partial sample; evidence + seed rows (§4.7)
@@ -437,6 +475,31 @@ docs/fidelity-remediation/
 
 The shared stylesheet that Stage 3 builds lives in the theme, not here:
 `wp-content/themes/ink-foundation/assets/css/primitives.css`.
+
+### 7.1 Spine-document format
+
+`findings/NN-<page-slug>-spine.md` carries these sections, in this order. Follow the
+structure from this specification — do not reverse-engineer it from another page's
+finding, and do not read another page's findings before auditing your own. They name
+specific defects, and an auditor who has read them goes looking for those instead of
+seeing what is actually on the page.
+
+1. **Header** — page slug, both URLs, date, phase, treatment.
+2. **Files read end to end.** The full list, both sides, including every link of the INK
+   resolution chain (§3). This is what makes a presence/absence claim auditable (R1). If a
+   file is not on this list, no claim may rest on it.
+3. **Section spine** — an ordered table pairing each reference section with its INK
+   counterpart, every row marked present / missing / extra. Treatment C pages have no
+   spine and omit this section.
+4. **Structural findings** — a table, one row per finding: id, class (§5), one-line
+   description, and `file:line` on **both** sides. Follow it with notes on any finding
+   whose classification needs justifying.
+5. **Join-key coverage** — which `data-audit-id`s exist and pair.
+6. **Conclusion and limits** — what the page's divergence actually consists of, and an
+   explicit statement of what the document cannot support. A Phase 2 document makes no
+   claim about computed values; say so.
+
+`findings/NN-<page-slug>-drift.md` is generated by `run.sh diff`. Never hand-edit it.
 
 `NN` is a two-digit sequence in the order pages are worked, matching the inventory.
 
