@@ -90,7 +90,8 @@ test( 'toHtml (compact) renders the §3 hero card: badge, h2 title, excerpt, dea
 	expect( $html )->toContain( 'Uitdaging' );
 
 	// Title is an h2 (correct order under the hero h1); the body excerpt renders.
-	expect( $html )->toContain( '<h2 class="ink-huidige-uitdaging__titel">Nuwe begin</h2>' );
+	// The compact card carries the hero-spotlight fidelity-audit join key.
+	expect( $html )->toContain( '<h2 class="ink-huidige-uitdaging__titel" data-audit-id="hero-spotlight-title">Nuwe begin</h2>' );
 	expect( $html )->toContain( 'Skryf oor' );
 
 	// Deadline meta ("Sluit <date>") + the "Skryf in" CTA linking the challenge.
@@ -140,7 +141,8 @@ test( 'toHtml (feature) renders the §5 Uitdaging card: eyebrow, icon tile, titl
 	expect( $html )->toContain( 'ink-huidige-uitdaging--kenmerk' );
 	expect( $html )->toContain( 'ink-huidige-uitdaging__ikoon' );
 	expect( $html )->toContain( 'Julie-uitdaging' );
-	expect( $html )->toContain( '<h2 class="ink-huidige-uitdaging__titel">Nuwe begin</h2>' );
+	// The feature card carries the challenge-card fidelity-audit join key.
+	expect( $html )->toContain( '<h2 class="ink-huidige-uitdaging__titel" data-audit-id="challenge-card-title">Nuwe begin</h2>' );
 
 	// The meta row shows the deadline + the pluralised entry count (_n af plural).
 	expect( $html )->toContain( 'ink-huidige-uitdaging__meta' );

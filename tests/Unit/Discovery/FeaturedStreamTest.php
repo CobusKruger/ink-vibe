@@ -165,7 +165,8 @@ test( 'toHtml renders the card: pill, read-time, h3 title link, excerpt, avatar 
 	expect( $html )->toContain( '8 min' );
 
 	// Title is an h3 (correct order under the section h2), linked to the work.
-	expect( $html )->toContain( '<h3 class="ink-uitgesoekte-bydraes__werk"><a href="https://ink.test/storie/fluister">Fluister in die tuin</a></h3>' );
+	// The featured (first) card carries the featured-lead fidelity-audit join key.
+	expect( $html )->toContain( '<h3 class="ink-uitgesoekte-bydraes__werk" data-audit-id="featured-lead-title"><a href="https://ink.test/storie/fluister">Fluister in die tuin</a></h3>' );
 
 	// Excerpt.
 	expect( $html )->toContain( 'Sy het die briewe' );

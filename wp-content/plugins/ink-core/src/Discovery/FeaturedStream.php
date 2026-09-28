@@ -296,26 +296,30 @@ final class FeaturedStream {
 		// the same string is already served from there to the reading-page author
 		// card ({@see \Ink\Social\ReadingAuthorCard}), and the two had drifted apart
 		// as independent literals.
-		$header = '<div class="' . esc_attr( $base . '__kop' ) . '">'
-			. '<div class="' . esc_attr( $base . '__kop-teks' ) . '">'
-			. '<p class="' . esc_attr( $base . '__boskrif' ) . '">' . esc_html__( 'Die redakteur se keuse', 'ink-core' ) . '</p>'
-			. '<h2 id="' . esc_attr( $title_id ) . '" class="' . esc_attr( $base . '__titel' ) . '">'
+		$header = '<div class="' . esc_attr( $base . '__kop' ) . '" data-audit-id="featured-head">'
+			. '<div class="' . esc_attr( $base . '__kop-teks' ) . '" data-audit-id="featured-head-text">'
+			. '<p class="' . esc_attr( $base . '__boskrif' ) . '" data-audit-id="featured-eyebrow">' . esc_html__( 'Die redakteur se keuse', 'ink-core' ) . '</p>'
+			. '<h2 id="' . esc_attr( $title_id ) . '" class="' . esc_attr( $base . '__titel' ) . '" data-audit-id="featured-h2">'
 			. esc_html__( 'In die kollig', 'ink-core' ) . '</h2>'
 			. '</div>'
-			. '<a class="' . esc_attr( $base . '__alles ink-underline-slide' ) . '" href="' . esc_url( self::allWorksUrl() ) . '">'
+			. '<a class="' . esc_attr( $base . '__alles ink-underline-slide' ) . '" data-audit-id="featured-all-link" href="' . esc_url( self::allWorksUrl() ) . '">'
 			. esc_html( Terms::label( 'sien_alle_werke' ) ) . '</a>'
 			. '</div>';
 
 		$cards = '';
 
+		// Fidelity-audit join keys: the featured (spanning) card and the first standard
+		// card only, mirroring Lovable's `FeaturedWorks.tsx` (maps/tuisblad.csv).
+		$audit_prefixes = array( 'featured-lead', 'featured-card' );
+
 		foreach ( $rows as $index => $item ) {
-			$cards .= self::cardHtml( $item, 0 === $index );
+			$cards .= self::cardHtml( $item, 0 === $index, $audit_prefixes[ $index ] ?? '' );
 		}
 
-		return '<section class="' . esc_attr( $base . ' alignfull' ) . '" aria-labelledby="' . esc_attr( $title_id ) . '">'
-			. '<div class="' . esc_attr( $base . '__houer' ) . '">'
+		return '<section class="' . esc_attr( $base . ' alignfull' ) . '" data-audit-id="featured" aria-labelledby="' . esc_attr( $title_id ) . '">'
+			. '<div class="' . esc_attr( $base . '__houer' ) . '" data-audit-id="featured-container">'
 			. $header
-			. '<div class="' . esc_attr( $base . '__rooster' ) . '">' . $cards . '</div>'
+			. '<div class="' . esc_attr( $base . '__rooster' ) . '" data-audit-id="featured-grid">' . $cards . '</div>'
 			. '</div></section>';
 	}
 
@@ -330,9 +334,10 @@ final class FeaturedStream {
 	 *
 	 * @param array<array-key, mixed> $item     The card row.
 	 * @param bool                    $featured Whether this is the featured (spanning) card.
+	 * @param string                  $aid      The fidelity-audit id prefix, or '' for none.
 	 * @return string
 	 */
-	private static function cardHtml( array $item, bool $featured ): string {
+	private static function cardHtml( array $item, bool $featured, string $aid = '' ): string {
 		$base    = 'ink-uitgesoekte-bydraes';
 		$classes = $base . '__kaart' . ( $featured ? ' ' . $base . '__kaart--uitgesoek' : '' );
 
@@ -346,16 +351,16 @@ final class FeaturedStream {
 			? '<a href="' . esc_url( $url ) . '">' . esc_html( $title ) . '</a>'
 			: esc_html( $title );
 
-		$out = '<article class="' . esc_attr( $classes ) . '">'
-			. '<div class="' . esc_attr( $base . '__kaart-inhoud' ) . '">'
-			. self::metaTopHtml( $base, $category, $type, (int) ( $item['read_minutes'] ?? 0 ) )
-			. '<h3 class="' . esc_attr( $base . '__werk' ) . '">' . $title_html . '</h3>';
+		$out = '<article class="' . esc_attr( $classes ) . '"' . self::auditId( $aid ) . '>'
+			. '<div class="' . esc_attr( $base . '__kaart-inhoud' ) . '"' . self::auditId( $aid, 'body' ) . '>'
+			. self::metaTopHtml( $base, $category, $type, (int) ( $item['read_minutes'] ?? 0 ), $aid )
+			. '<h3 class="' . esc_attr( $base . '__werk' ) . '"' . self::auditId( $aid, 'title' ) . '>' . $title_html . '</h3>';
 
 		if ( '' !== $excerpt ) {
-			$out .= '<p class="' . esc_attr( $base . '__uittreksel' ) . '">' . esc_html( $excerpt ) . '</p>';
+			$out .= '<p class="' . esc_attr( $base . '__uittreksel' ) . '"' . self::auditId( $aid, 'excerpt' ) . '>' . esc_html( $excerpt ) . '</p>';
 		}
 
-		$out .= self::footerHtml( $base, $item );
+		$out .= self::footerHtml( $base, $item, $aid );
 
 		return $out . '</div></article>';
 	}
@@ -378,10 +383,11 @@ final class FeaturedStream {
 	 * @param string $category The category (genre) label.
 	 * @param string $type     The bydrae post type (`gedig`/`storie`/`artikel`), or ''.
 	 * @param int    $minutes  The read-time in whole minutes.
+	 * @param string $aid      The fidelity-audit id prefix, or '' for none.
 	 * @return string
 	 */
-	private static function metaTopHtml( string $base, string $category, string $type, int $minutes ): string {
-		$out = '<div class="' . esc_attr( $base . '__meta-top' ) . '">';
+	private static function metaTopHtml( string $base, string $category, string $type, int $minutes, string $aid = '' ): string {
+		$out = '<div class="' . esc_attr( $base . '__meta-top' ) . '"' . self::auditId( $aid, 'meta' ) . '>';
 
 		if ( '' !== $category ) {
 			$pil_classes = $base . '__pil';
@@ -390,13 +396,13 @@ final class FeaturedStream {
 				$pil_classes .= ' ' . $base . '__pil--' . $type;
 			}
 
-			$out .= '<span class="' . esc_attr( $pil_classes ) . '">' . esc_html( $category ) . '</span>';
+			$out .= '<span class="' . esc_attr( $pil_classes ) . '"' . self::auditId( $aid, 'pill' ) . '>' . esc_html( $category ) . '</span>';
 		}
 
 		$read_time = ReadingTime::label( $minutes );
 
 		if ( '' !== $read_time ) {
-			$out .= '<span class="' . esc_attr( $base . '__leestyd' ) . '">'
+			$out .= '<span class="' . esc_attr( $base . '__leestyd' ) . '"' . self::auditId( $aid, 'time' ) . '>'
 				. self::icon( self::ICON_CLOCK )
 				. '<span>' . esc_html( $read_time ) . '</span>'
 				. '</span>';
@@ -410,22 +416,23 @@ final class FeaturedStream {
 	 *
 	 * @param string                  $base The BEM base class.
 	 * @param array<array-key, mixed> $item The card row.
+	 * @param string                  $aid  The fidelity-audit id prefix, or '' for none.
 	 * @return string
 	 */
-	private static function footerHtml( string $base, array $item ): string {
+	private static function footerHtml( string $base, array $item, string $aid = '' ): string {
 		$author = (string) ( $item['author'] ?? '' );
 		$avatar = (string) ( $item['avatar_url'] ?? '' );
 
-		$author_html = '<div class="' . esc_attr( $base . '__outeur' ) . '">';
+		$author_html = '<div class="' . esc_attr( $base . '__outeur' ) . '"' . self::auditId( $aid, 'author' ) . '>';
 
 		if ( '' !== $avatar ) {
 			// Avatar alt falls back to the author name so it is never empty (a11y).
-			$author_html .= '<img class="' . esc_attr( $base . '__foto' ) . '" src="' . esc_url( $avatar ) . '" '
+			$author_html .= '<img class="' . esc_attr( $base . '__foto' ) . '"' . self::auditId( $aid, 'avatar' ) . ' src="' . esc_url( $avatar ) . '" '
 				. 'alt="' . esc_attr( $author ) . '" width="32" height="32" loading="lazy" decoding="async" />';
 		}
 
 		if ( '' !== $author ) {
-			$author_html .= '<span class="' . esc_attr( $base . '__outeur-naam' ) . '">' . esc_html( $author ) . '</span>';
+			$author_html .= '<span class="' . esc_attr( $base . '__outeur-naam' ) . '"' . self::auditId( $aid, 'author-name' ) . '>' . esc_html( $author ) . '</span>';
 		}
 
 		$author_html .= '</div>';
@@ -433,12 +440,12 @@ final class FeaturedStream {
 		$hart_count     = (int) ( $item['hart_count'] ?? 0 );
 		$response_count = (int) ( $item['response_count'] ?? 0 );
 
-		$counts = '<div class="' . esc_attr( $base . '__tellers' ) . '">'
-			. self::countHtml( $base, self::ICON_HEART, $hart_count, EngagementApi::hartjieCountLabel( $hart_count ) )
+		$counts = '<div class="' . esc_attr( $base . '__tellers' ) . '"' . self::auditId( $aid, 'stats' ) . '>'
+			. self::countHtml( $base, self::ICON_HEART, $hart_count, EngagementApi::hartjieCountLabel( $hart_count ), self::auditId( $aid, 'stat' ) )
 			. self::countHtml( $base, self::ICON_MESSAGE, $response_count, self::responseCountLabel( $response_count ) )
 			. '</div>';
 
-		return '<div class="' . esc_attr( $base . '__voet' ) . '">' . $author_html . $counts . '</div>';
+		return '<div class="' . esc_attr( $base . '__voet' ) . '"' . self::auditId( $aid, 'footer' ) . '>' . $author_html . $counts . '</div>';
 	}
 
 	/**
@@ -449,10 +456,11 @@ final class FeaturedStream {
 	 * @param string $icon  The Lucide inner-SVG paths.
 	 * @param int    $count The count value.
 	 * @param string $label The full accessible label (e.g. "342 hartjies").
+	 * @param string $audit A pre-built ` data-audit-id` attribute, or ''.
 	 * @return string
 	 */
-	private static function countHtml( string $base, string $icon, int $count, string $label ): string {
-		return '<span class="' . esc_attr( $base . '__teller' ) . '" aria-label="' . esc_attr( $label ) . '">'
+	private static function countHtml( string $base, string $icon, int $count, string $label, string $audit = '' ): string {
+		return '<span class="' . esc_attr( $base . '__teller' ) . '"' . $audit . ' aria-label="' . esc_attr( $label ) . '">'
 			. self::icon( $icon )
 			. '<span aria-hidden="true">' . esc_html( (string) $count ) . '</span>'
 			. '</span>';
@@ -473,6 +481,23 @@ final class FeaturedStream {
 		$label = 1 === $n ? Terms::label( 'gemeenskapsreaksie' ) : Terms::label( 'gemeenskapsreaksie_plural' );
 
 		return (string) $n . ' ' . $label;
+	}
+
+	/**
+	 * A ` data-audit-id="<prefix>[-<role>]"` attribute (leading space) — the
+	 * fidelity-audit join key (docs/fidelity-remediation/README.md R3) — or '' when
+	 * the card carries no audit prefix. Pure.
+	 *
+	 * @param string $prefix The card's audit-id prefix ('' = not audited).
+	 * @param string $role   The element role suffix, or '' for the card itself.
+	 * @return string
+	 */
+	private static function auditId( string $prefix, string $role = '' ): string {
+		if ( '' === $prefix ) {
+			return '';
+		}
+
+		return ' data-audit-id="' . esc_attr( '' === $role ? $prefix : $prefix . '-' . $role ) . '"';
 	}
 
 	/**

@@ -156,7 +156,8 @@ test( 'toHtml renders the optional card fields (avatar with alt, quote, author) 
 	);
 
 	// Quote is a blockquote; author + avatar (with alt) + win_label all render.
-	expect( $html )->toContain( '<blockquote class="ink-wenner-kollig__aanhaling">' );
+	// The first card carries the fidelity-audit join keys.
+	expect( $html )->toContain( '<blockquote class="ink-wenner-kollig__aanhaling" data-audit-id="winner-quote">' );
 	expect( $html )->toContain( 'Die kers flikker' );
 	expect( $html )->toContain( 'ink-wenner-kollig__foto' );
 	expect( $html )->toContain( 'alt="Sarah Mitchell"' );

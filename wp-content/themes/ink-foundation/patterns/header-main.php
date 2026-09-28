@@ -56,13 +56,13 @@
  */
 ?>
 <!-- wp:group {"align":"full","className":"is-style-ink-header","templateLock":"contentOnly","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull is-style-ink-header" style="padding-top:0;padding-bottom:0;padding-left:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16)">
+<div data-audit-id="header" class="wp-block-group alignfull is-style-ink-header" style="padding-top:0;padding-bottom:0;padding-left:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"align":"wide","className":"ink-header-row","layout":{"type":"flex","justifyContent":"space-between","verticalAlignment":"center","flexWrap":"wrap"}} -->
-	<div class="wp-block-group alignwide ink-header-row">
+	<div data-audit-id="header-row" class="wp-block-group alignwide ink-header-row">
 		<!-- wp:group {"className":"ink-header-brand","style":{"spacing":{"blockGap":"var:preset|spacing|s-8"}},"layout":{"type":"flex","verticalAlignment":"center"}} -->
-		<div class="wp-block-group ink-header-brand">
+		<div data-audit-id="header-logo" class="wp-block-group ink-header-brand">
 			<!-- wp:html -->
-			<span class="ink-header-feather" aria-hidden="true" style="display:inline-flex;color:var(--wp--preset--color--primary)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" x2="2" y1="8" y2="22"/><line x1="17.5" x2="9" y1="15" y2="15"/></svg></span>
+			<span class="ink-header-feather" aria-hidden="true" style="display:inline-flex;color:var(--wp--preset--color--primary)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false" data-audit-id="header-logo-icon"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" x2="2" y1="8" y2="22"/><line x1="17.5" x2="9" y1="15" y2="15"/></svg></span>
 			<!-- /wp:html -->
 
 			<!-- wp:site-title {"level":0,"fontFamily":"display","fontSize":"xl","style":{"typography":{"fontStyle":"normal","fontWeight":"600"}},"textColor":"ink-text"} /-->
@@ -79,18 +79,18 @@
 		<!-- /wp:navigation -->
 
 		<!-- wp:buttons {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
-		<div class="wp-block-buttons">
+		<div data-audit-id="header-actions" class="wp-block-buttons">
 <?php if ( function_exists( 'is_user_logged_in' ) && is_user_logged_in() ) : ?>
 			<!-- wp:button {"className":"is-style-ink-primary","fontSize":"sm","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-8","right":"var:preset|spacing|s-12","bottom":"var:preset|spacing|s-8","left":"var:preset|spacing|s-12"}}}} -->
-			<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" href="/skryf"><?php esc_html_e( 'Begin skryf', 'ink-foundation' ); ?></a></div>
+			<div class="wp-block-button is-style-ink-primary"><a data-audit-id="header-btn-write" class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" href="/skryf"><?php esc_html_e( 'Begin skryf', 'ink-foundation' ); ?></a></div>
 			<!-- /wp:button -->
 <?php else : ?>
 			<!-- wp:button {"className":"is-style-ink-ghost","fontSize":"sm","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-8","right":"var:preset|spacing|s-12","bottom":"var:preset|spacing|s-8","left":"var:preset|spacing|s-12"}}}} -->
-			<div class="wp-block-button is-style-ink-ghost"><a class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></div>
+			<div class="wp-block-button is-style-ink-ghost"><a data-audit-id="header-btn-signin" class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></div>
 			<!-- /wp:button -->
 
 			<!-- wp:button {"className":"is-style-ink-primary","fontSize":"sm","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-8","right":"var:preset|spacing|s-12","bottom":"var:preset|spacing|s-8","left":"var:preset|spacing|s-12"}}}} -->
-			<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" href="/registreer"><?php echo esc_html( ink_foundation_term( 'sluit_aan', 'Sluit aan' ) ); ?></a></div>
+			<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" data-audit-id="header-btn-join" href="/registreer"><?php echo esc_html( ink_foundation_term( 'sluit_aan', 'Sluit aan' ) ); ?></a></div>
 			<!-- /wp:button -->
 <?php endif; ?>
 		</div>

@@ -246,11 +246,13 @@ final class FeaturedWinners {
 			return '';
 		}
 
-		$html = '<section class="ink-wenner-kollig" aria-label="' . esc_attr__( 'Wenneraankondiging', 'ink-core' ) . '">'
-			. '<div class="ink-wenner-kollig__kaarte">';
+		$html = '<section class="ink-wenner-kollig" data-audit-id="winner" aria-label="' . esc_attr__( 'Wenneraankondiging', 'ink-core' ) . '">'
+			. '<div class="ink-wenner-kollig__kaarte" data-audit-id="winner-cards">';
 
-		foreach ( $winners as $winner ) {
-			$html .= self::cardHtml( $winner );
+		// Fidelity-audit join keys go on the FIRST card only — Lovable's single winner
+		// card (docs/fidelity-remediation/maps/tuisblad.csv).
+		foreach ( $winners as $index => $winner ) {
+			$html .= self::cardHtml( $winner, 0 === $index );
 		}
 
 		return $html . '</div></section>';
@@ -271,9 +273,12 @@ final class FeaturedWinners {
 	 * supplies the richer payload.
 	 *
 	 * @param array{id:int, rank:int, title:string, url:string, is_algehele_wenner:bool, label:string, month:string, author:string, quote:string, avatar_url:string, avatar_alt:string, win_label:string} $winner The winner row.
+	 * @param bool                                                                                                                                                                                        $audit Whether to stamp the fidelity-audit join keys on this card.
 	 * @return string
 	 */
-	private static function cardHtml( array $winner ): string {
+	private static function cardHtml( array $winner, bool $audit = false ): string {
+		$aid = static fn ( string $id ): string => $audit ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
+
 		$is_algehele = ! empty( $winner['is_algehele_wenner'] );
 		$variant     = $is_algehele ? 'algehele' : 'wenner';
 
@@ -292,24 +297,24 @@ final class FeaturedWinners {
 			? '<a href="' . esc_url( $url ) . '">' . esc_html( $title ) . '</a>'
 			: esc_html( $title );
 
-		$out = '<article class="' . esc_attr( $classes ) . '">'
-			. '<span class="ink-wenner-kollig__watermerk" aria-hidden="true">' . self::icon( self::ICON_CROWN ) . '</span>'
-			. '<p class="ink-wenner-kollig__rang">'
-			. '<span class="ink-wenner-kollig__rang-merk" aria-hidden="true">' . self::icon( self::ICON_CROWN ) . '</span>'
-			. '<span class="ink-wenner-kollig__rang-teks">' . esc_html( $eyebrow ) . '</span>'
+		$out = '<article class="' . esc_attr( $classes ) . '"' . $aid( 'winner-card' ) . '>'
+			. '<span class="ink-wenner-kollig__watermerk"' . $aid( 'winner-watermark' ) . ' aria-hidden="true">' . self::icon( self::ICON_CROWN ) . '</span>'
+			. '<p class="ink-wenner-kollig__rang"' . $aid( 'winner-eyebrow' ) . '>'
+			. '<span class="ink-wenner-kollig__rang-merk"' . $aid( 'winner-eyebrow-icon' ) . ' aria-hidden="true">' . self::icon( self::ICON_CROWN ) . '</span>'
+			. '<span class="ink-wenner-kollig__rang-teks"' . $aid( 'winner-eyebrow-text' ) . '>' . esc_html( $eyebrow ) . '</span>'
 			. '</p>'
-			. '<h3 class="ink-wenner-kollig__werk">' . $title_html . '</h3>';
+			. '<h3 class="ink-wenner-kollig__werk"' . $aid( 'winner-title' ) . '>' . $title_html . '</h3>';
 
 		$quote = (string) $winner['quote'];
 
 		if ( '' !== $quote ) {
-			$out .= '<blockquote class="ink-wenner-kollig__aanhaling">' . esc_html( $quote ) . '</blockquote>';
+			$out .= '<blockquote class="ink-wenner-kollig__aanhaling"' . $aid( 'winner-quote' ) . '>' . esc_html( $quote ) . '</blockquote>';
 		}
 
-		$out .= self::authorHtml( $winner );
+		$out .= self::authorHtml( $winner, $audit );
 
 		if ( '' !== $url ) {
-			$out .= '<a class="ink-wenner-kollig__skakel" href="' . esc_url( $url ) . '">'
+			$out .= '<a class="ink-wenner-kollig__skakel"' . $aid( 'winner-btn' ) . ' href="' . esc_url( $url ) . '">'
 				. esc_html__( 'Lees die volledige storie', 'ink-core' ) . '</a>';
 		}
 
@@ -321,9 +326,12 @@ final class FeaturedWinners {
 	 * nothing when the seam supplies no author details (graceful).
 	 *
 	 * @param array{author:string, avatar_url:string, avatar_alt:string, win_label:string} $winner The winner row.
+	 * @param bool                                                                         $audit Whether to stamp the fidelity-audit join keys.
 	 * @return string
 	 */
-	private static function authorHtml( array $winner ): string {
+	private static function authorHtml( array $winner, bool $audit = false ): string {
+		$aid = static fn ( string $id ): string => $audit ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
+
 		$author    = (string) $winner['author'];
 		$avatar    = (string) $winner['avatar_url'];
 		$win_label = (string) $winner['win_label'];
@@ -332,25 +340,25 @@ final class FeaturedWinners {
 			return '';
 		}
 
-		$out = '<div class="ink-wenner-kollig__outeur">';
+		$out = '<div class="ink-wenner-kollig__outeur"' . $aid( 'winner-author' ) . '>';
 
 		if ( '' !== $avatar ) {
 			// Avatar alt falls back to the author name so it is never empty (a11y).
 			$alt  = '' !== $winner['avatar_alt'] ? (string) $winner['avatar_alt'] : $author;
-			$out .= '<img class="ink-wenner-kollig__foto" src="' . esc_url( $avatar ) . '" alt="' . esc_attr( $alt ) . '" '
+			$out .= '<img class="ink-wenner-kollig__foto"' . $aid( 'winner-avatar' ) . ' src="' . esc_url( $avatar ) . '" alt="' . esc_attr( $alt ) . '" '
 				. 'width="48" height="48" loading="lazy" decoding="async" />';
 		}
 
-		$out .= '<div class="ink-wenner-kollig__outeur-besonderhede">';
+		$out .= '<div class="ink-wenner-kollig__outeur-besonderhede"' . $aid( 'winner-author-details' ) . '>';
 
 		if ( '' !== $author ) {
-			$out .= '<span class="ink-wenner-kollig__outeur-naam">' . esc_html( $author ) . '</span>';
+			$out .= '<span class="ink-wenner-kollig__outeur-naam"' . $aid( 'winner-author-name' ) . '>' . esc_html( $author ) . '</span>';
 		}
 
 		if ( '' !== $win_label ) {
 			// win_label is a seam-supplied, pre-composed Afrikaans string (e.g. "3de wen")
 			// — the ordinal composition + copy live in 12A, not in this markup block.
-			$out .= '<span class="ink-wenner-kollig__wenne">' . esc_html( $win_label ) . '</span>';
+			$out .= '<span class="ink-wenner-kollig__wenne"' . $aid( 'winner-author-wins' ) . '>' . esc_html( $win_label ) . '</span>';
 		}
 
 		return $out . '</div></div>';

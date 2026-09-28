@@ -320,15 +320,16 @@ final class CurrentChallenge {
 		$entry_count = (int) ( $data['entry_count'] ?? 0 );
 
 		$classes = $base . ' ' . $base . '--' . $variant;
+		$aid     = self::auditPrefix( $variant );
 
-		$out  = '<section class="' . esc_attr( $classes ) . '">';
-		$out .= '<span class="' . esc_attr( $base . '__hoek' ) . '" aria-hidden="true"></span>';
-		$out .= '<div class="' . esc_attr( $base . '__inhoud' ) . '">';
+		$out  = '<section class="' . esc_attr( $classes ) . '"' . self::auditId( $aid ) . '>';
+		$out .= '<span class="' . esc_attr( $base . '__hoek' ) . '"' . self::auditId( $aid . '-corner' ) . ' aria-hidden="true"></span>';
+		$out .= '<div class="' . esc_attr( $base . '__inhoud' ) . '"' . self::auditId( $aid . '-body' ) . '>';
 		$out .= self::headerHtml( $base, $variant, $deadline, $eyebrow );
-		$out .= '<h2 class="' . esc_attr( $base . '__titel' ) . '">' . esc_html( $title ) . '</h2>';
+		$out .= '<h2 class="' . esc_attr( $base . '__titel' ) . '"' . self::auditId( $aid . '-title' ) . '>' . esc_html( $title ) . '</h2>';
 
 		if ( '' !== $excerpt ) {
-			$out .= '<p class="' . esc_attr( $base . '__uittreksel' ) . '">' . esc_html( $excerpt ) . '</p>';
+			$out .= '<p class="' . esc_attr( $base . '__uittreksel' ) . '"' . self::auditId( $aid . '-desc' ) . '>' . esc_html( $excerpt ) . '</p>';
 		}
 
 		if ( self::VARIANT_FEATURE === $variant ) {
@@ -336,7 +337,7 @@ final class CurrentChallenge {
 		}
 
 		if ( '' !== $url ) {
-			$out .= '<a class="' . esc_attr( $base . '__aksie' ) . '" href="' . esc_url( $url ) . '">'
+			$out .= '<a class="' . esc_attr( $base . '__aksie' ) . '"' . self::auditId( $aid . '-btn' ) . ' href="' . esc_url( $url ) . '">'
 				. '<span>' . esc_html__( 'Skryf in', 'ink-core' ) . '</span>'
 				. self::icon( self::ICON_ARROW )
 				. '</a>';
@@ -356,25 +357,27 @@ final class CurrentChallenge {
 	 * @return string
 	 */
 	private static function headerHtml( string $base, string $variant, string $deadline, string $eyebrow ): string {
+		$aid = self::auditPrefix( $variant );
+
 		if ( self::VARIANT_FEATURE === $variant ) {
-			$out = '<div class="' . esc_attr( $base . '__kop' ) . '">'
-				. '<span class="' . esc_attr( $base . '__ikoon' ) . '" aria-hidden="true">' . self::icon( self::ICON_TROPHY ) . '</span>';
+			$out = '<div class="' . esc_attr( $base . '__kop' ) . '"' . self::auditId( $aid . '-head' ) . '>'
+				. '<span class="' . esc_attr( $base . '__ikoon' ) . '"' . self::auditId( $aid . '-icon' ) . ' aria-hidden="true">' . self::icon( self::ICON_TROPHY ) . '</span>';
 
 			if ( '' !== $eyebrow ) {
-				$out .= '<span class="' . esc_attr( $base . '__boskrif' ) . '">' . esc_html( $eyebrow ) . '</span>';
+				$out .= '<span class="' . esc_attr( $base . '__boskrif' ) . '"' . self::auditId( $aid . '-eyebrow' ) . '>' . esc_html( $eyebrow ) . '</span>';
 			}
 
 			return $out . '</div>';
 		}
 
-		$out = '<div class="' . esc_attr( $base . '__kop' ) . '">'
-			. '<span class="' . esc_attr( $base . '__kenteken' ) . '">'
+		$out = '<div class="' . esc_attr( $base . '__kop' ) . '"' . self::auditId( $aid . '-head' ) . '>'
+			. '<span class="' . esc_attr( $base . '__kenteken' ) . '"' . self::auditId( $aid . '-badge' ) . '>'
 			. self::icon( self::ICON_SPARKLES )
 			. '<span class="' . esc_attr( $base . '__kenteken-teks' ) . '">' . esc_html( Terms::label( 'uitdaging' ) ) . '</span>'
 			. '</span>';
 
 		if ( '' !== $deadline ) {
-			$out .= '<span class="' . esc_attr( $base . '__meta-datum' ) . '">'
+			$out .= '<span class="' . esc_attr( $base . '__meta-datum' ) . '"' . self::auditId( $aid . '-date' ) . '>'
 				. self::icon( self::ICON_CALENDAR )
 				/* translators: %s: the challenge deadline date. */
 				. '<time>' . esc_html( sprintf( __( 'Sluit %s', 'ink-core' ), $deadline ) ) . '</time>'
@@ -396,7 +399,7 @@ final class CurrentChallenge {
 		$items = '';
 
 		if ( '' !== $deadline ) {
-			$items .= '<span class="' . esc_attr( $base . '__meta-item' ) . '">'
+			$items .= '<span class="' . esc_attr( $base . '__meta-item' ) . '"' . self::auditId( 'challenge-card-meta-item' ) . '>'
 				. self::icon( self::ICON_CALENDAR )
 				/* translators: %s: the challenge deadline date. */
 				. '<span>' . esc_html( sprintf( __( 'Sluit %s', 'ink-core' ), $deadline ) ) . '</span>'
@@ -406,7 +409,7 @@ final class CurrentChallenge {
 		if ( $entry_count > 0 ) {
 			/* translators: %d: the number of entries (inskrywings) submitted to the challenge. */
 			$label  = sprintf( _n( '%d inskrywing', '%d inskrywings', $entry_count, 'ink-core' ), $entry_count );
-			$items .= '<span class="' . esc_attr( $base . '__meta-item' ) . '">'
+			$items .= '<span class="' . esc_attr( $base . '__meta-item' ) . '"' . ( '' === $items ? self::auditId( 'challenge-card-meta-item' ) : '' ) . '>'
 				. self::icon( self::ICON_USERS )
 				. '<span>' . esc_html( $label ) . '</span>'
 				. '</span>';
@@ -416,7 +419,30 @@ final class CurrentChallenge {
 			return '';
 		}
 
-		return '<div class="' . esc_attr( $base . '__meta' ) . '">' . $items . '</div>';
+		return '<div class="' . esc_attr( $base . '__meta' ) . '"' . self::auditId( 'challenge-card-meta' ) . '>' . $items . '</div>';
+	}
+
+	/**
+	 * The fidelity-audit join-key prefix for a variant: the compact card pairs with
+	 * Lovable's hero spotlight card, the feature card with `ChallengeSection`'s left
+	 * card (docs/fidelity-remediation/maps/tuisblad.csv). Pure.
+	 *
+	 * @param string $variant The card variant.
+	 * @return string
+	 */
+	private static function auditPrefix( string $variant ): string {
+		return self::VARIANT_FEATURE === $variant ? 'challenge-card' : 'hero-spotlight';
+	}
+
+	/**
+	 * A ` data-audit-id="…"` attribute (leading space) — the fidelity-audit join key
+	 * (docs/fidelity-remediation/README.md R3). Pure.
+	 *
+	 * @param string $id The audit id.
+	 * @return string
+	 */
+	private static function auditId( string $id ): string {
+		return ' data-audit-id="' . esc_attr( $id ) . '"';
 	}
 
 	/**

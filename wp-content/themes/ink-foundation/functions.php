@@ -274,6 +274,81 @@ function ink_foundation_audit_id_reading_paragraph( string $block_content ): str
 add_filter( 'render_block_core/post-content', 'ink_foundation_audit_id_reading_paragraph' );
 
 /**
+ * Stamp the site-wide header/footer wordmark with its fidelity-audit join key
+ * (docs/fidelity-remediation/maps/tuisblad.csv). `wp:site-title` is a dynamic
+ * core block, so — like the reading-page filters above — the id cannot be
+ * hand-written in the pattern. The header and footer instances are told apart
+ * by their authored `fontSize` preset (`xl` in header-main.php, `lg` in
+ * footer-main.php), the one attribute that differs between them.
+ *
+ * @param string              $block_content The rendered block.
+ * @param array<string,mixed> $block         The parsed block.
+ */
+function ink_foundation_audit_id_site_title( string $block_content, array $block ): string {
+	$audit_ids = array(
+		'xl' => 'header-logo-text',
+		'lg' => 'footer-logo-text',
+	);
+	$size      = $block['attrs']['fontSize'] ?? '';
+
+	if ( ! is_string( $size ) || ! isset( $audit_ids[ $size ] ) ) {
+		return $block_content;
+	}
+
+	$with_audit_id = preg_replace( '/<(p|h[1-6])\b/', '<$1 data-audit-id="' . $audit_ids[ $size ] . '"', $block_content, 1 );
+
+	return null !== $with_audit_id ? $with_audit_id : $block_content;
+}
+add_filter( 'render_block_core/site-title', 'ink_foundation_audit_id_site_title', 10, 2 );
+
+/**
+ * Stamp the header `<nav>` and its mobile "open menu" toggle with their
+ * fidelity-audit join keys (maps/tuisblad.csv). `wp:navigation` is dynamic.
+ * The theme has exactly one navigation block (header-main.php).
+ *
+ * @param string $block_content The rendered block.
+ */
+function ink_foundation_audit_id_navigation( string $block_content ): string {
+	$with_audit_id = preg_replace( '/<nav\b/', '<nav data-audit-id="header-nav"', $block_content, 1 );
+	$with_audit_id = null !== $with_audit_id
+		? preg_replace( '/<button\b([^>]*\bwp-block-navigation__responsive-container-open\b)/', '<button data-audit-id="header-menu-toggle"$1', $with_audit_id, 1 )
+		: null;
+
+	return null !== $with_audit_id ? $with_audit_id : $block_content;
+}
+add_filter( 'render_block_core/navigation', 'ink_foundation_audit_id_navigation' );
+
+/**
+ * Stamp each header nav link's `<a>` with its fidelity-audit join key, keyed by
+ * the link's authored URL (maps/tuisblad.csv). `/opleiding` pairs with Lovable's
+ * "Library" (agent-brief.md §2.1 row 08); `/my-profiel` has no Lovable nav
+ * counterpart (spine finding F4, SCOPE).
+ *
+ * @param string              $block_content The rendered block.
+ * @param array<string,mixed> $block         The parsed block.
+ */
+function ink_foundation_audit_id_navigation_link( string $block_content, array $block ): string {
+	$audit_ids = array(
+		'/'           => 'header-nav-home',
+		'/ontdek'     => 'header-nav-browse',
+		'/opleiding'  => 'header-nav-library',
+		'/uitdagings' => 'header-nav-challenges',
+		'/gemeenskap' => 'header-nav-community',
+		'/my-profiel' => 'header-nav-profile',
+	);
+	$url       = $block['attrs']['url'] ?? '';
+
+	if ( ! is_string( $url ) || ! isset( $audit_ids[ $url ] ) ) {
+		return $block_content;
+	}
+
+	$with_audit_id = preg_replace( '/<a\b/', '<a data-audit-id="' . $audit_ids[ $url ] . '"', $block_content, 1 );
+
+	return null !== $with_audit_id ? $with_audit_id : $block_content;
+}
+add_filter( 'render_block_core/navigation-link', 'ink_foundation_audit_id_navigation_link', 10, 2 );
+
+/**
  * Auto-link bare URLs in a storie/artikel's prose body (Theme-Fidelity fourth
  * pass, docs/theme-fidelity-audit-handoff.md, 2026-09-05, item 10 — a genuine
  * product-owner-requested NEW feature, not a Lovable fidelity fix; Lovable's

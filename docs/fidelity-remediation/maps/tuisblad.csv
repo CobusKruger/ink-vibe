@@ -1,0 +1,146 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+header,src/components/layout/Header.tsx,28,wp-content/themes/ink-foundation/patterns/header-main.php,59,sticky header bar,paired,INK: the is-style-ink-header group inside the template-part <header>
+header-row,src/components/layout/Header.tsx,30,wp-content/themes/ink-foundation/patterns/header-main.php,61,64px flex row,paired,
+header-logo,src/components/layout/Header.tsx,32,wp-content/themes/ink-foundation/patterns/header-main.php,63,logo link / brand group,paired,Lovable <a>; INK <div> (site-title owns the link)
+header-logo-icon,src/components/layout/Header.tsx,33,wp-content/themes/ink-foundation/patterns/header-main.php,65,feather svg,paired,
+header-logo-text,src/components/layout/Header.tsx,34,wp-content/themes/ink-foundation/functions.php,289,wordmark,paired,INK: core/site-title <p>; stamped by render filter (fontSize xl)
+header-nav,src/components/layout/Header.tsx,40,wp-content/themes/ink-foundation/functions.php,312,primary nav,paired,INK: core/navigation <nav>; stamped by render filter
+header-nav-home,src/components/layout/Header.tsx,41,wp-content/themes/ink-foundation/functions.php,332,nav link Home / Tuis,paired,render filter keyed on url /
+header-nav-browse,src/components/layout/Header.tsx,44,wp-content/themes/ink-foundation/functions.php,333,nav link Browse / Ontdek,paired,keyed on /ontdek
+header-nav-library,src/components/layout/Header.tsx,47,wp-content/themes/ink-foundation/functions.php,334,nav link Library / Opleiding,paired,keyed on /opleiding; row 08 pairs /library with /opleiding
+header-nav-challenges,src/components/layout/Header.tsx,50,wp-content/themes/ink-foundation/functions.php,335,nav link Challenges / Uitdagings,paired,keyed on /uitdagings
+header-nav-community,src/components/layout/Header.tsx,53,wp-content/themes/ink-foundation/functions.php,336,nav link Community / Gemeenskap,paired,keyed on /gemeenskap
+header-nav-profile,,,wp-content/themes/ink-foundation/functions.php,337,nav link My profiel,scope,F4: INK-only nav item
+header-actions,src/components/layout/Header.tsx,59,wp-content/themes/ink-foundation/patterns/header-main.php,82,auth button group,paired,
+header-btn-signin,src/components/layout/Header.tsx,95,wp-content/themes/ink-foundation/patterns/header-main.php,89,ghost Sign in / Teken in,paired,logged-out branch
+header-btn-join,src/components/layout/Header.tsx,98,wp-content/themes/ink-foundation/patterns/header-main.php,93,primary Join / Sluit aan,paired,logged-out branch
+header-btn-write,src/components/layout/Header.tsx,62,wp-content/themes/ink-foundation/patterns/header-main.php,85,primary Start Writing / Begin skryf,paired,logged-in branch only; absent from anonymous captures
+header-menu-toggle,src/components/layout/Header.tsx,107,wp-content/themes/ink-foundation/functions.php,314,mobile menu button,paired,INK: core/navigation responsive-container-open button; render filter
+hero,src/components/home/HeroSpotlight.tsx,46,wp-content/themes/ink-foundation/patterns/hero.php,26,hero section,paired,
+hero-grid,src/components/home/HeroSpotlight.tsx,53,wp-content/themes/ink-foundation/patterns/hero.php,28,two-column grid,paired,
+hero-content,src/components/home/HeroSpotlight.tsx,55,wp-content/themes/ink-foundation/patterns/hero.php,30,left column,paired,
+hero-badge,src/components/home/HeroSpotlight.tsx,56,wp-content/themes/ink-foundation/patterns/hero.php,32,badge pill,paired,
+hero-h1,src/components/home/HeroSpotlight.tsx,60,wp-content/themes/ink-foundation/patterns/hero.php,36,h1,paired,
+hero-paragraph,src/components/home/HeroSpotlight.tsx,65,wp-content/themes/ink-foundation/patterns/hero.php,40,lede,paired,
+hero-actions,src/components/home/HeroSpotlight.tsx,69,wp-content/themes/ink-foundation/patterns/hero.php,44,button row,paired,
+hero-btn-primary,src/components/home/HeroSpotlight.tsx,70,wp-content/themes/ink-foundation/patterns/hero.php,46,primary button,paired,
+hero-btn-outline,src/components/home/HeroSpotlight.tsx,76,wp-content/themes/ink-foundation/patterns/hero.php,50,outline button,paired,
+hero-aside,src/components/home/HeroSpotlight.tsx,84,wp-content/themes/ink-foundation/patterns/hero.php,58,right column,paired,
+hero-texture,src/components/home/HeroSpotlight.tsx,48,,,background texture layer,missing-ink,F10 MECHANISM: INK paints the texture as a CSS background on the `hero` section (.ink-hero-texture)
+hero-spotlight,src/components/home/HeroSpotlight.tsx,85,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,325,spotlight card,paired,ink/huidige-uitdaging variant=kompak; id = auditPrefix() + suffix
+hero-spotlight-corner,src/components/home/HeroSpotlight.tsx,87,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,326,corner tint,paired,ink/huidige-uitdaging variant=kompak; id = auditPrefix() + suffix
+hero-spotlight-body,src/components/home/HeroSpotlight.tsx,89,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,327,card body (relative z-10),paired,ink/huidige-uitdaging variant=kompak; id = auditPrefix() + suffix
+hero-spotlight-head,src/components/home/HeroSpotlight.tsx,91,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,373,badge row,paired,ink/huidige-uitdaging variant=kompak; id = auditPrefix() + suffix
+hero-spotlight-badge,src/components/home/HeroSpotlight.tsx,92,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,374,type badge,paired,ink/huidige-uitdaging variant=kompak; id = auditPrefix() + suffix
+hero-spotlight-date,src/components/home/HeroSpotlight.tsx,97,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,380,deadline,paired,ink/huidige-uitdaging variant=kompak; id = auditPrefix() + suffix
+hero-spotlight-title,src/components/home/HeroSpotlight.tsx,105,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,329,card h2,paired,ink/huidige-uitdaging variant=kompak; id = auditPrefix() + suffix
+hero-spotlight-desc,src/components/home/HeroSpotlight.tsx,110,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,332,card description,paired,ink/huidige-uitdaging variant=kompak; id = auditPrefix() + suffix
+hero-spotlight-btn,src/components/home/HeroSpotlight.tsx,122,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,340,card CTA,paired,ink/huidige-uitdaging variant=kompak; id = auditPrefix() + suffix
+hero-stats,src/components/home/HeroSpotlight.tsx,134,,,stats row,missing-ink,F1
+hero-stat,src/components/home/HeroSpotlight.tsx,135,,,stat pair (first),missing-ink,F1
+hero-stat-value,src/components/home/HeroSpotlight.tsx,136,,,stat number,missing-ink,F1
+hero-stat-label,src/components/home/HeroSpotlight.tsx,137,,,stat label,missing-ink,F1
+challenge,src/components/home/ChallengeSection.tsx,6,wp-content/themes/ink-foundation/templates/front-page.html,10,feature band section,paired,
+challenge-grid,src/components/home/ChallengeSection.tsx,8,wp-content/themes/ink-foundation/templates/front-page.html,12,two-column grid,paired,
+challenge-card,src/components/home/ChallengeSection.tsx,10,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,325,challenge card,paired,ink/huidige-uitdaging variant=kenmerk
+challenge-card-corner,src/components/home/ChallengeSection.tsx,11,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,326,corner tint,paired,ink/huidige-uitdaging variant=kenmerk
+challenge-card-head,src/components/home/ChallengeSection.tsx,13,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,363,eyebrow row,paired,ink/huidige-uitdaging variant=kenmerk
+challenge-card-icon,src/components/home/ChallengeSection.tsx,14,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,364,trophy tile,paired,ink/huidige-uitdaging variant=kenmerk
+challenge-card-eyebrow,src/components/home/ChallengeSection.tsx,17,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,367,month eyebrow,paired,ink/huidige-uitdaging variant=kenmerk
+challenge-card-title,src/components/home/ChallengeSection.tsx,20,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,329,card h2,paired,ink/huidige-uitdaging variant=kenmerk
+challenge-card-desc,src/components/home/ChallengeSection.tsx,24,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,332,description,paired,ink/huidige-uitdaging variant=kenmerk
+challenge-card-meta,src/components/home/ChallengeSection.tsx,30,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,422,meta row,paired,ink/huidige-uitdaging variant=kenmerk
+challenge-card-meta-item,src/components/home/ChallengeSection.tsx,31,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,402,meta item (first),paired,ink/huidige-uitdaging variant=kenmerk
+challenge-card-btn,src/components/home/ChallengeSection.tsx,41,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,340,CTA,paired,ink/huidige-uitdaging variant=kenmerk; Lovable <button>; INK <a>
+challenge-card-body,,,wp-content/plugins/ink-core/src/Challenges/CurrentChallenge.php,327,__inhoud wrapper,missing-lovable,F12: kenmerk adds a wrapper the Lovable card lacks
+winner,,,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,249,winner section wrapper,scope,F6: repeater wrapper; the Lovable grid cell is the card itself
+winner-cards,,,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,250,winner cards list,scope,F6
+winner-card,src/components/home/ChallengeSection.tsx,48,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,300,winner card,paired,first card only
+winner-watermark,src/components/home/ChallengeSection.tsx,49,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,301,crown watermark,paired,
+winner-eyebrow,src/components/home/ChallengeSection.tsx,53,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,302,eyebrow row,paired,Lovable <div>; INK <p>
+winner-eyebrow-icon,src/components/home/ChallengeSection.tsx,54,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,303,crown tile,paired,
+winner-eyebrow-text,src/components/home/ChallengeSection.tsx,57,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,304,eyebrow text,paired,
+winner-title,src/components/home/ChallengeSection.tsx,60,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,306,work title h3,paired,
+winner-quote,src/components/home/ChallengeSection.tsx,65,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,311,quote,paired,F8: <p> vs <blockquote>
+winner-author,src/components/home/ChallengeSection.tsx,70,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,343,author row,paired,
+winner-avatar,src/components/home/ChallengeSection.tsx,72,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,348,avatar,paired,
+winner-author-details,src/components/home/ChallengeSection.tsx,77,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,352,name + wins column,paired,
+winner-author-name,src/components/home/ChallengeSection.tsx,78,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,355,author name,paired,
+winner-author-wins,src/components/home/ChallengeSection.tsx,79,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,361,win count,paired,
+winner-btn,src/components/home/ChallengeSection.tsx,83,wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php,317,read-story CTA,paired,F9: outline <button> vs bare <a>
+winner-byline,src/components/home/ChallengeSection.tsx,63,,,"""by {author}"" line",missing-ink,F7
+featured,src/components/home/FeaturedWorks.tsx,54,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,319,featured section,paired,
+featured-container,src/components/home/FeaturedWorks.tsx,55,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,320,container,paired,
+featured-head,src/components/home/FeaturedWorks.tsx,56,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,299,header row,paired,
+featured-head-text,src/components/home/FeaturedWorks.tsx,57,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,300,eyebrow + h2 column,paired,
+featured-eyebrow,src/components/home/FeaturedWorks.tsx,58,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,301,eyebrow,paired,
+featured-h2,src/components/home/FeaturedWorks.tsx,61,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,302,h2,paired,
+featured-all-link,src/components/home/FeaturedWorks.tsx,65,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,305,view-all link (desktop),paired,
+featured-grid,src/components/home/FeaturedWorks.tsx,70,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,322,card grid,paired,
+featured-all-link-mobile,src/components/home/FeaturedWorks.tsx,138,,,view-all link (mobile),missing-ink,F2
+featured-lead,src/components/home/FeaturedWorks.tsx,73,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,313,featured (spanning) card,paired,F5: Lovable <Link> card vs INK <article>; id composed from $audit_prefixes
+featured-lead-body,src/components/home/FeaturedWorks.tsx,86,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,355,featured (spanning) card: content column,paired,
+featured-lead-meta,src/components/home/FeaturedWorks.tsx,87,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,390,featured (spanning) card: pill + read-time row,paired,
+featured-lead-pill,src/components/home/FeaturedWorks.tsx,88,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,399,featured (spanning) card: category pill,paired,
+featured-lead-time,src/components/home/FeaturedWorks.tsx,91,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,405,featured (spanning) card: read time,paired,
+featured-lead-title,src/components/home/FeaturedWorks.tsx,97,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,357,featured (spanning) card: h3,paired,
+featured-lead-excerpt,src/components/home/FeaturedWorks.tsx,103,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,360,featured (spanning) card: excerpt,paired,
+featured-lead-footer,src/components/home/FeaturedWorks.tsx,110,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,448,featured (spanning) card: author + stats row,paired,
+featured-lead-author,src/components/home/FeaturedWorks.tsx,111,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,426,featured (spanning) card: author,paired,
+featured-lead-avatar,src/components/home/FeaturedWorks.tsx,113,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,430,featured (spanning) card: avatar,paired,
+featured-lead-author-name,src/components/home/FeaturedWorks.tsx,118,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,435,featured (spanning) card: author name,paired,
+featured-lead-stats,src/components/home/FeaturedWorks.tsx,121,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,443,featured (spanning) card: stats,paired,
+featured-lead-stat,src/components/home/FeaturedWorks.tsx,122,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,444,featured (spanning) card: first stat,paired,
+featured-card,src/components/home/FeaturedWorks.tsx,73,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,313,first standard card,paired,F5: Lovable <Link> card vs INK <article>; id composed from $audit_prefixes
+featured-card-body,src/components/home/FeaturedWorks.tsx,86,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,355,first standard card: content column,paired,
+featured-card-meta,src/components/home/FeaturedWorks.tsx,87,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,390,first standard card: pill + read-time row,paired,
+featured-card-pill,src/components/home/FeaturedWorks.tsx,88,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,399,first standard card: category pill,paired,
+featured-card-time,src/components/home/FeaturedWorks.tsx,91,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,405,first standard card: read time,paired,
+featured-card-title,src/components/home/FeaturedWorks.tsx,97,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,357,first standard card: h3,paired,
+featured-card-excerpt,src/components/home/FeaturedWorks.tsx,103,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,360,first standard card: excerpt,paired,
+featured-card-footer,src/components/home/FeaturedWorks.tsx,110,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,448,first standard card: author + stats row,paired,
+featured-card-author,src/components/home/FeaturedWorks.tsx,111,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,426,first standard card: author,paired,
+featured-card-avatar,src/components/home/FeaturedWorks.tsx,113,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,430,first standard card: avatar,paired,
+featured-card-author-name,src/components/home/FeaturedWorks.tsx,118,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,435,first standard card: author name,paired,
+featured-card-stats,src/components/home/FeaturedWorks.tsx,121,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,443,first standard card: stats,paired,
+featured-card-stat,src/components/home/FeaturedWorks.tsx,122,wp-content/plugins/ink-core/src/Discovery/FeaturedStream.php,444,first standard card: first stat,paired,
+sponsors,src/components/home/SponsorsSection.tsx,15,wp-content/themes/ink-foundation/patterns/borg-strook.php,24,sponsor band,paired,INK <aside> vs <section>
+sponsors-inner,,,wp-content/plugins/ink-core/src/Sponsors/HomepageStrip.php,207,inner <section> of ink/borg-strook,missing-lovable,INK block wrapper
+sponsors-eyebrow,src/components/home/SponsorsSection.tsx,17,wp-content/plugins/ink-core/src/Sponsors/HomepageStrip.php,208,eyebrow,paired,
+sponsors-h2,src/components/home/SponsorsSection.tsx,20,wp-content/plugins/ink-core/src/Sponsors/HomepageStrip.php,209,h2,paired,
+sponsors-intro,src/components/home/SponsorsSection.tsx,23,wp-content/plugins/ink-core/src/Sponsors/HomepageStrip.php,210,intro,paired,
+sponsors-grid,src/components/home/SponsorsSection.tsx,29,wp-content/plugins/ink-core/src/Sponsors/HomepageStrip.php,211,chip list,paired,F11: <ul>/<li> vs flex <div>s
+sponsors-btn,src/components/home/SponsorsSection.tsx,56,wp-content/plugins/ink-core/src/Sponsors/HomepageStrip.php,212,become-a-sponsor CTA,paired,Lovable sage-outline <button>; INK <a>
+sponsors-chip-gold,src/components/home/SponsorsSection.tsx,32,wp-content/plugins/ink-core/src/Sponsors/HomepageStrip.php,176,first gold chip,paired,first chip of each tier; present on INK only if an active sponsor has that tier
+sponsors-chip-gold-name,src/components/home/SponsorsSection.tsx,46,wp-content/plugins/ink-core/src/Sponsors/HomepageStrip.php,195,first gold chip name,paired,"INK: SponsorLink name span, stamped in HomepageStrip; absent when the sponsor has a logo"
+sponsors-chip-silver,src/components/home/SponsorsSection.tsx,32,wp-content/plugins/ink-core/src/Sponsors/HomepageStrip.php,177,first silver chip,paired,first chip of each tier; present on INK only if an active sponsor has that tier
+sponsors-chip-silver-name,src/components/home/SponsorsSection.tsx,46,wp-content/plugins/ink-core/src/Sponsors/HomepageStrip.php,195,first silver chip name,paired,"INK: SponsorLink name span, stamped in HomepageStrip; absent when the sponsor has a logo"
+sponsors-chip-bronze,src/components/home/SponsorsSection.tsx,32,wp-content/plugins/ink-core/src/Sponsors/HomepageStrip.php,178,first bronze chip,paired,first chip of each tier; present on INK only if an active sponsor has that tier
+sponsors-chip-bronze-name,src/components/home/SponsorsSection.tsx,46,wp-content/plugins/ink-core/src/Sponsors/HomepageStrip.php,195,first bronze chip name,paired,"INK: SponsorLink name span, stamped in HomepageStrip; absent when the sponsor has a logo"
+cta,src/components/home/CallToAction.tsx,6,wp-content/themes/ink-foundation/patterns/cta-band.php,23,cta section,paired,"bottom padding is DIVERGENCE (accepted), cta-band.php:21"
+cta-band,src/components/home/CallToAction.tsx,8,wp-content/themes/ink-foundation/patterns/cta-band.php,25,gradient band,paired,
+cta-circle-left,src/components/home/CallToAction.tsx,10,wp-content/themes/ink-foundation/patterns/cta-band.php,27,decor circle,paired,
+cta-circle-right,src/components/home/CallToAction.tsx,11,wp-content/themes/ink-foundation/patterns/cta-band.php,28,decor circle,paired,
+cta-content,src/components/home/CallToAction.tsx,13,wp-content/themes/ink-foundation/patterns/cta-band.php,32,content,paired,
+cta-h2,src/components/home/CallToAction.tsx,14,wp-content/themes/ink-foundation/patterns/cta-band.php,34,h2,paired,
+cta-text,src/components/home/CallToAction.tsx,17,wp-content/themes/ink-foundation/patterns/cta-band.php,38,text,paired,
+cta-actions,src/components/home/CallToAction.tsx,22,wp-content/themes/ink-foundation/patterns/cta-band.php,42,button row,paired,
+cta-btn-primary,src/components/home/CallToAction.tsx,24,wp-content/themes/ink-foundation/patterns/cta-band.php,44,primary xl button,paired,
+cta-btn-secondary,src/components/home/CallToAction.tsx,32,wp-content/themes/ink-foundation/patterns/cta-band.php,48,outline xl button,paired,
+footer,src/components/layout/Footer.tsx,6,wp-content/themes/ink-foundation/patterns/footer-main.php,23,footer,paired,
+footer-grid,src/components/layout/Footer.tsx,8,wp-content/themes/ink-foundation/patterns/footer-main.php,25,4-col grid,paired,
+footer-brand,src/components/layout/Footer.tsx,10,wp-content/themes/ink-foundation/patterns/footer-main.php,28,brand column,paired,
+footer-logo,src/components/layout/Footer.tsx,11,wp-content/themes/ink-foundation/patterns/footer-main.php,30,logo row,paired,
+footer-logo-icon,src/components/layout/Footer.tsx,12,wp-content/themes/ink-foundation/patterns/footer-main.php,32,feather svg,paired,
+footer-blurb,src/components/layout/Footer.tsx,15,wp-content/themes/ink-foundation/patterns/footer-main.php,40,blurb,paired,
+footer-col,src/components/layout/Footer.tsx,21,wp-content/themes/ink-foundation/patterns/footer-main.php,58,first link column,paired,
+footer-col-heading,src/components/layout/Footer.tsx,22,wp-content/themes/ink-foundation/patterns/footer-main.php,60,column heading,paired,Lovable <h4> vs INK <h3>
+footer-col-list,src/components/layout/Footer.tsx,23,wp-content/themes/ink-foundation/patterns/footer-main.php,64,link list,paired,
+footer-col-item,src/components/layout/Footer.tsx,24,wp-content/themes/ink-foundation/patterns/footer-main.php,65,first item,paired,
+footer-col-link,src/components/layout/Footer.tsx,24,wp-content/themes/ink-foundation/patterns/footer-main.php,65,first link,paired,
+footer-bottom,src/components/layout/Footer.tsx,54,wp-content/themes/ink-foundation/patterns/footer-main.php,114,bottom bar,paired,
+footer-copyright,src/components/layout/Footer.tsx,55,wp-content/themes/ink-foundation/patterns/footer-main.php,116,copyright,paired,
+footer-made-with,src/components/layout/Footer.tsx,58,wp-content/themes/ink-foundation/patterns/footer-main.php,124,made-with line,paired,
+footer-heart-icon,src/components/layout/Footer.tsx,59,wp-content/themes/ink-foundation/patterns/footer-main.php,121,heart svg,paired,
+footer-logo-text,src/components/layout/Footer.tsx,13,wp-content/themes/ink-foundation/functions.php,290,wordmark,paired,INK: core/site-title <p>; render filter (fontSize lg)
+footer-social,,,wp-content/themes/ink-foundation/patterns/footer-main.php,45,social links,missing-lovable,F3

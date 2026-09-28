@@ -170,28 +170,46 @@ final class HomepageStrip {
 		$description = Terms::label( 'borge_beskrywing' );
 		$cta_label   = Terms::label( 'word_borg' );
 
+		// Fidelity-audit join keys go on the FIRST chip of each tier only, mirroring
+		// Lovable's `SponsorsSection.tsx` (docs/fidelity-remediation/maps/tuisblad.csv).
+		$audit_ids = array(
+			'goud'   => 'sponsors-chip-gold',
+			'silwer' => 'sponsors-chip-silver',
+			'brons'  => 'sponsors-chip-bronze',
+		);
+
 		$chips = '';
 		foreach ( $sponsors as $sponsor ) {
-			$slug   = self::tierSlug( $sponsor->tier );
-			$chips .= '<li class="ink-borg-strook__chip ink-borg-strook__chip--' . esc_attr( $slug ) . ' ink-hover-scale">'
-				. SponsorLink::html(
-					$sponsor,
-					'ink-borg-strook__logo',
-					'ink-borg-strook__naam',
-					'ink-borg-strook__skakel'
-				)
+			$slug = self::tierSlug( $sponsor->tier );
+			$aid  = $audit_ids[ $slug ] ?? '';
+			unset( $audit_ids[ $slug ] );
+
+			$link = SponsorLink::html(
+				$sponsor,
+				'ink-borg-strook__logo',
+				'ink-borg-strook__naam',
+				'ink-borg-strook__skakel'
+			);
+
+			if ( '' !== $aid ) {
+				$link = str_replace( 'class="ink-borg-strook__naam"', 'class="ink-borg-strook__naam" data-audit-id="' . esc_attr( $aid . '-name' ) . '"', $link );
+			}
+
+			$chips .= '<li class="ink-borg-strook__chip ink-borg-strook__chip--' . esc_attr( $slug ) . ' ink-hover-scale"'
+				. ( '' !== $aid ? ' data-audit-id="' . esc_attr( $aid ) . '"' : '' ) . '>'
+				. $link
 				. '</li>';
 		}
 
 		// Lucide "Heart" (stroke), decorative — the visible CTA label carries the meaning.
 		$heart = '<svg class="ink-borg-strook__cta-ikoon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
 
-		return '<section class="ink-borg-strook" aria-label="' . esc_attr( $eyebrow ) . '">'
-			. '<p class="ink-borg-strook__etiket">' . esc_html( $eyebrow ) . '</p>'
-			. '<h2 class="ink-borg-strook__titel">' . esc_html( $heading ) . '</h2>'
-			. '<p class="ink-borg-strook__beskrywing">' . esc_html( $description ) . '</p>'
-			. '<ul class="ink-borg-strook__rooster">' . $chips . '</ul>'
-			. '<a class="ink-borg-strook__cta" href="' . esc_url( self::contactUrl() ) . '">'
+		return '<section class="ink-borg-strook" data-audit-id="sponsors-inner" aria-label="' . esc_attr( $eyebrow ) . '">'
+			. '<p class="ink-borg-strook__etiket" data-audit-id="sponsors-eyebrow">' . esc_html( $eyebrow ) . '</p>'
+			. '<h2 class="ink-borg-strook__titel" data-audit-id="sponsors-h2">' . esc_html( $heading ) . '</h2>'
+			. '<p class="ink-borg-strook__beskrywing" data-audit-id="sponsors-intro">' . esc_html( $description ) . '</p>'
+			. '<ul class="ink-borg-strook__rooster" data-audit-id="sponsors-grid">' . $chips . '</ul>'
+			. '<a class="ink-borg-strook__cta" data-audit-id="sponsors-btn" href="' . esc_url( self::contactUrl() ) . '">'
 			. $heart . esc_html( $cta_label ) . '</a>'
 			. '</section>';
 	}

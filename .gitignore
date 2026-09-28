@@ -26,5 +26,8 @@ wp-content/plugins/ink-core/vendor/
 !/tmp/.gitkeep
 
 *.csv
+# Fidelity-audit join tables + primitive register are committed deliverables
+# (docs/fidelity-remediation/README.md §7) and hold no personal data.
+!docs/fidelity-remediation/maps/*.csv
 *.xlsx
 docs/data-cleanup/**
