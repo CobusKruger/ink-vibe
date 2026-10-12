@@ -310,6 +310,19 @@ list-bullet          small filled dot marking a list item (rules-list bullet); t
                      classifies it `pill` (rounded-full) but it carries no text
 ```
 
+Added during row 04 (`skryf`, `findings/04-skryf-primitives.md`):
+
+```
+checkbox             check / radio control: a native <input type=checkbox|radio> or a
+                     Radix <button role=checkbox>. The tool files natives under
+                     form-field and Radix under button; resolve both to this kind
+choice-row           bordered, selectable row wrapping a checkbox + its text (challenge
+                     checklist row). The tool files it as form-label (it is a <label>)
+```
+
+Row 04 also files the circular type-card icon holders (48px and 40px, tinted) under the
+existing `icon-tile`. The kind covers round tiles as well as square ones.
+
 `run.sh primitives` also emits a generic `button` fallback. It is not a kind: resolve
 each such row to a variant before it enters the register.
 

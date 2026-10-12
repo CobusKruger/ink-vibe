@@ -1,0 +1,63 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+skryf-main,src/pages/Write.tsx,254,wp-content/themes/ink-foundation/templates/page-skryf.html,4,page <main>,paired,editor-view <main>; success view has its own unkeyed <main> (Write.tsx:154)
+skryf-container,src/pages/Write.tsx,255,wp-content/themes/ink-foundation/patterns/skryf.php,51,width container,paired,Lovable container div (max-w-4xl); INK the pattern's padded <section> group (contentSize 896px)
+skryf-intro,src/pages/Write.tsx,256,,,intro wrapper (h1 + lede),missing-ink,S-3 STRUCTURE: INK h1/p are direct children of the section
+skryf-intro-h1,src/pages/Write.tsx,257,wp-content/themes/ink-foundation/patterns/skryf.php,114,page h1,paired,
+skryf-intro-lede,src/pages/Write.tsx,260,wp-content/themes/ink-foundation/patterns/skryf.php,118,lede,paired,
+skryf-signin-notice,,,wp-content/themes/ink-foundation/patterns/skryf.php,123,anonymous sign-in notice,scope,S-1: INK gates the form on login; anonymous visitors get only this paragraph
+skryf-denial,,,wp-content/themes/ink-foundation/patterns/skryf.php,128,post-plaas entitlement denial notice,scope,conditional (?ink_skryf=geen-toegang); not captured
+skryf-form,src/pages/Write.tsx,300,wp-content/themes/ink-foundation/patterns/skryf.php,132,form / editor wrapper,paired,S-2: Lovable editor wrapper (step 2 only); INK <form> also holds the type picker. Pairs only in the editor-state capture
+skryf-types,src/pages/Write.tsx,266,wp-content/themes/ink-foundation/patterns/skryf.php,133,type-picker grid,paired,Lovable grid <div> (step 1 only); INK <fieldset>
+skryf-types-legend,,,wp-content/themes/ink-foundation/patterns/skryf.php,134,type-picker legend (Kies 'n tipe),missing-lovable,S-5 EXTRA
+skryf-type-card,src/pages/Write.tsx,273,wp-content/themes/ink-foundation/patterns/skryf.php,144,type card (first),paired,first instance only; Lovable <button> (click advances); INK <label> wrapping a radio (S-2 MECHANISM). INK previously tagged all three cards — narrowed to the first per convention
+skryf-type-card-radio,,,wp-content/themes/ink-foundation/patterns/skryf.php,145,native radio in the type card,missing-lovable,S-2: the radio IS the INK selection mechanism; first instance only
+skryf-type-card-icon,src/pages/Write.tsx,280,wp-content/themes/ink-foundation/patterns/skryf.php,147,icon circle (first),paired,
+skryf-type-card-label,src/pages/Write.tsx,289,wp-content/themes/ink-foundation/patterns/skryf.php,149,type label (first),paired,S-6: Lovable <h2>; INK <span>
+skryf-type-card-desc,src/pages/Write.tsx,292,wp-content/themes/ink-foundation/patterns/skryf.php,151,type description (first),paired,
+skryf-type-indicator,src/pages/Write.tsx,302,,,selected-type indicator row,divergence,S-2: two-step flow not reproduced; disclosed at assets/css/skryf.css:66-72
+skryf-type-indicator-icon,src/pages/Write.tsx,310,,,indicator icon circle,divergence,S-2
+skryf-type-indicator-label,src/pages/Write.tsx,314,,,indicator label,divergence,S-2
+skryf-type-indicator-desc,src/pages/Write.tsx,315,,,indicator description,divergence,S-2
+skryf-change-type-btn,src/pages/Write.tsx,325,,,Change type ghost button,divergence,S-2
+skryf-challenges,src/pages/Write.tsx,332,wp-content/themes/ink-foundation/patterns/skryf.php,168,challenges panel,paired,Lovable card <div>; INK <fieldset> (renders only when an open challenge exists)
+skryf-challenges-head,src/pages/Write.tsx,333,,,panel header row (icon + title/hint column),missing-ink,S-7 STRUCTURE
+skryf-challenges-title,src/pages/Write.tsx,336,wp-content/themes/ink-foundation/patterns/skryf.php,169,panel title,paired,Lovable <p>; INK <legend> that also holds the sparkles icon
+skryf-challenges-optional,src/pages/Write.tsx,337,,,muted (optional) span,missing-ink,S-7: INK puts (opsioneel) inline in the legend text with no element
+skryf-challenges-hint,src/pages/Write.tsx,339,wp-content/themes/ink-foundation/patterns/skryf.php,170,panel hint,paired,
+skryf-challenges-list,src/pages/Write.tsx,344,,,checkbox list wrapper,missing-ink,S-7: INK rows are direct fieldset children
+skryf-checkbox,src/pages/Write.tsx,349,wp-content/themes/ink-foundation/patterns/skryf.php,179,challenge row (first),paired,first instance only
+skryf-checkbox-input,src/pages/Write.tsx,362,wp-content/themes/ink-foundation/patterns/skryf.php,180,checkbox control (first),paired,S-8 MECHANISM: Radix <button role=checkbox> vs native <input type=checkbox>
+skryf-checkbox-text,src/pages/Write.tsx,364,,,title + deadline column,missing-ink,S-9
+skryf-checkbox-title,src/pages/Write.tsx,365,wp-content/themes/ink-foundation/patterns/skryf.php,181,challenge title (first),paired,Lovable <p>; INK <span>
+skryf-checkbox-deadline,src/pages/Write.tsx,366,,,challenge deadline line,missing-ink,S-9 MISSING
+skryf-title-field,src/pages/Write.tsx,375,wp-content/themes/ink-foundation/patterns/skryf.php,189,title field wrapper,paired,Lovable <div>; INK <p>
+skryf-title-label,src/pages/Write.tsx,376,wp-content/themes/ink-foundation/patterns/skryf.php,190,title label,paired,
+skryf-title-input,src/pages/Write.tsx,378,wp-content/themes/ink-foundation/patterns/skryf.php,191,title input,paired,pre-existing INK id
+skryf-body-field,src/pages/Write.tsx,387,wp-content/themes/ink-foundation/patterns/skryf.php,194,body field wrapper,paired,
+skryf-body-head,src/pages/Write.tsx,388,,,label + counter row,missing-ink,S-10 STRUCTURE: INK flex-wraps label/counter/textarea in one container
+skryf-body-label,src/pages/Write.tsx,389,wp-content/themes/ink-foundation/patterns/skryf.php,195,body label,paired,S-11: Lovable label is per-type (Your Poem); INK static (Jou werk)
+skryf-body-counter,src/pages/Write.tsx,392,wp-content/themes/ink-foundation/patterns/skryf.php,196,live word/line counter,paired,INK text filled by assets/js/skryf-counter.js
+skryf-body-textarea,src/pages/Write.tsx,399,wp-content/themes/ink-foundation/patterns/skryf.php,197,body textarea,paired,pre-existing INK id
+skryf-image-field,,,wp-content/themes/ink-foundation/patterns/skryf.php,200,featured-image picker field,scope,S-12: INK Stories 6.4/6.5; no Lovable counterpart
+skryf-image-input,,,wp-content/themes/ink-foundation/patterns/skryf.php,202,featured-image file input,scope,S-12
+skryf-media-field,,,wp-content/themes/ink-foundation/patterns/skryf.php,205,audio/video picker field,scope,S-12
+skryf-media-input,,,wp-content/themes/ink-foundation/patterns/skryf.php,207,audio/video file input,scope,S-12
+skryf-actions,src/pages/Write.tsx,407,wp-content/themes/ink-foundation/patterns/skryf.php,216,action row,paired,Lovable <div>; INK <p>
+skryf-draft-btn,src/pages/Write.tsx,408,wp-content/themes/ink-foundation/patterns/skryf.php,217,Save draft (outline),paired,pre-existing INK id
+skryf-draft-btn-icon,src/pages/Write.tsx,409,,,Save icon,missing-ink,S-13
+skryf-publish-btn,src/pages/Write.tsx,415,wp-content/themes/ink-foundation/patterns/skryf.php,218,Publish (primary),paired,pre-existing INK id
+skryf-publish-btn-icon,src/pages/Write.tsx,419,,,Send icon,missing-ink,S-13
+skryf-success,src/pages/Write.tsx,157,wp-content/themes/ink-foundation/patterns/skryf.php,59,success banner card,paired,success state: not captured on either side (would need a real submission)
+skryf-success-icon,src/pages/Write.tsx,158,wp-content/themes/ink-foundation/patterns/skryf.php,61,check icon circle,paired,
+skryf-success-heading,src/pages/Write.tsx,161,wp-content/themes/ink-foundation/patterns/skryf.php,65,success h1,paired,pre-existing INK id
+skryf-success-lead,src/pages/Write.tsx,164,wp-content/themes/ink-foundation/patterns/skryf.php,69,success lede,paired,
+skryf-success-cta,src/pages/Write.tsx,169,wp-content/themes/ink-foundation/patterns/skryf.php,73,success button row,paired,
+skryf-success-write-another,src/pages/Write.tsx,170,wp-content/themes/ink-foundation/patterns/skryf.php,75,write-another (primary),paired,pre-existing INK id; S-15 MECHANISM: Lovable resets state; INK links to /skryf
+skryf-success-write-another-icon,src/pages/Write.tsx,171,,,Feather icon,missing-ink,S-16
+skryf-success-back-home,src/pages/Write.tsx,174,wp-content/themes/ink-foundation/patterns/skryf.php,79,back-home (outline),paired,pre-existing INK id
+skryf-success-engage,src/pages/Write.tsx,181,,,engage-prompt wrapper,missing-ink,S-14 STRUCTURE: INK eyebrow/h2/p are section-level siblings
+skryf-success-eyebrow,src/pages/Write.tsx,184,wp-content/themes/ink-foundation/patterns/skryf.php,87,Read & respond eyebrow,paired,Lovable <span>; INK <p>
+skryf-success-h2,src/pages/Write.tsx,188,wp-content/themes/ink-foundation/patterns/skryf.php,91,engage h2,paired,
+skryf-success-text,src/pages/Write.tsx,191,wp-content/themes/ink-foundation/patterns/skryf.php,95,engage text,paired,
+skryf-success-works,src/pages/Write.tsx,197,,,community-works card grid,missing-ink,S-4 MISSING; flagged NOT BUILT at skryf.php:98-110 (owner decision pending)
+skryf-success-work-card,src/pages/Write.tsx,200,,,community-works card (first),missing-ink,S-4
