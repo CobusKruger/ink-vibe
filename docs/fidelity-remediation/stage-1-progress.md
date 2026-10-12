@@ -12,7 +12,7 @@ that (R9).
 | 00 | tuisblad | A | **done** | `e08fe8d` (P3), `121d503` (P4/4b) | Establishes header/footer + the audit-id convention. 131 ids pair at all 3 viewports. |
 | 01 | gemeenskap | A | **done** | `e74ff23` · lovable `3840ee9` | 5/7 sections (stats + spotlight = disclosed deferrals, SCOPE); 63 ids pair at all 3 viewports; no live load-scope bug |
 | 02 | my-profiel | A | queued | | INK captured authenticated; header excluded from diff |
-| 03 | ontdek | A | in progress — batch 1 | | |
+| 03 | ontdek | A | **done** | `d8364f1` · lovable `4a9c7c4` | 70 ids pair; Lovable writers tab is React state (no URL) → 19 `writers-*` ids unpaired; search-results / empty / logged-in states not captured. Discovery renderers restructured to stamp first-item ids; `SkrywersTab` ids also render on row 18 |
 | 04 | skryf | A | **done** | `54a9862` · lovable `93339cf` | INK authed; Lovable picker + post-click editor states; success screen not captured. Owner calls: S-2 (one form vs Lovable's two steps rests on an implementer comment, `skryf.css:66-72`, not a ruling). **Live copy bug:** storie/artikel descriptions render a literal backslash ("Skep \’n…", `skryf.php:23-24`) |
 | 05 | uitdaging-enkel | A | **done** | `7637a50` · lovable `a5021ae` | Resources = disclosed SCOPE gap; 64 ids pair; F10 ("The Prompt" h2) needs an owner call — MISSING unless the Story 12.1 disclosure covers it; closed (`is-gesluit`) state not captured |
 | 06 | skrywer | A | queued | | |
@@ -55,7 +55,7 @@ Fix these between batches, never while subagents are running.
 | T1 | row 01 | `determinism-check.sh` does `rm -rf tmp/determinism` — parallel agents delete each other's gate runs. Needs a per-page output dir. Row 01 worked around it with a page-private copy. | open |
 | T2 | rows 01, 05 | `run.sh primitives` misses Lovable `asChild` buttons/links, class-less eyebrows, INK icon tiles and INK `-skakel`/`-tipe` classes, and includes header/footer nodes. Row 01 built its register with a page-local script using the same property set. Every later row likely needs the same compensation. | open |
 | T4 | row 04 | `verify.mjs` and `determinism-check.sh` have no auth (`storageState`) option, and `capture.mjs` cannot click into a state (Lovable `/write` shows its form only after a type-card click). Row 04 gated through page-private patched copies in `tmp/fidelity-skryf/`. Rows 02 and the auth pages will hit the same gap. Also: the `fidelity-capture` session expires — re-run `run.sh login` before authed captures. | open |
-| T3 | row 03 | `capture.mjs` waited on every incomplete image, so a lazy `<img>` in a `display:none` tab panel hung the capture forever. Row 03 patched it to wait only on rendered images (against its brief, which forbade harness edits; the fix is sound and leaves computed values untouched). | patched, uncommitted — lands with row 03 |
+| T3 | row 03 | `capture.mjs` waited on every incomplete image, so a lazy `<img>` in a `display:none` tab panel hung the capture forever. Row 03 patched it to wait only on rendered images (against its brief, which forbade harness edits; the fix is sound and leaves computed values untouched). | **fixed** `9367c86` |
 
 ## Log
 
@@ -64,3 +64,6 @@ Fix these between batches, never while subagents are running.
   allowed `deploy-to-local.sh` in the committed settings. Batch 1 (01, 03, 04, 05) started.
 - **2026-10-13** — Batch 1 was interrupted by the account usage limit and resumed after
   reset. Row 01 committed. Tooling issues T1–T3 logged above.
+- **2026-10-13** — Batch 1 complete (01, 03, 04, 05). Every row needed a page-private
+  workaround for T1 and T2, and row 04 for T4. Harness fixes for T1/T2/T4 go in before
+  batch 2.
