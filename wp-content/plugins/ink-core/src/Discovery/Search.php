@@ -206,17 +206,17 @@ final class Search {
 	public static function toHtml( string $raw_query, array $works, array $skrywers ): string {
 		$icon = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" '
 			. 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '
-			. 'class="ink-ontdek-soek__ikoon" aria-hidden="true" focusable="false">'
+			. 'class="ink-ontdek-soek__ikoon" data-audit-id="search-icon" aria-hidden="true" focusable="false">'
 			. '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>';
 
-		$html = '<section class="ink-ontdek-soek"><form class="ink-ontdek-soek__form" role="search" method="get">'
-			. '<div class="ink-ontdek-soek__veld-houer">' . $icon
-			. '<input type="search" class="ink-ontdek-soek__veld" name="' . esc_attr( self::QUERY_VAR ) . '"'
+		$html = '<section class="ink-ontdek-soek" data-audit-id="search"><form class="ink-ontdek-soek__form" data-audit-id="search-form" role="search" method="get">'
+			. '<div class="ink-ontdek-soek__veld-houer" data-audit-id="search-field-wrap">' . $icon
+			. '<input type="search" class="ink-ontdek-soek__veld" data-audit-id="search-input" name="' . esc_attr( self::QUERY_VAR ) . '"'
 			. ' value="' . esc_attr( $raw_query ) . '"'
 			. ' placeholder="' . esc_attr__( 'Vind stories, gedigte of skrywers...', 'ink-core' ) . '"'
 			. ' aria-label="' . esc_attr__( 'Vind stories, gedigte of skrywers...', 'ink-core' ) . '" />'
 			. '</div>'
-			. '<button type="submit" class="ink-ontdek-soek__knoppie">' . esc_html__( 'Soek', 'ink-core' ) . '</button>'
+			. '<button type="submit" class="ink-ontdek-soek__knoppie" data-audit-id="search-btn">' . esc_html__( 'Soek', 'ink-core' ) . '</button>'
 			. '</form>';
 
 		if ( '' === $raw_query ) {

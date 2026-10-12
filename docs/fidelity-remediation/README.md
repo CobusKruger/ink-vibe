@@ -323,6 +323,18 @@ choice-row           bordered, selectable row wrapping a checkbox + its text (ch
 Row 04 also files the circular type-card icon holders (48px and 40px, tinted) under the
 existing `icon-tile`. The kind covers round tiles as well as square ones.
 
+Added during row 03 (`ontdek`, `findings/03-ontdek-primitives.md`):
+
+```
+tier-label           a member's Gradering (Brons / Silwer / Goud) as bare uppercase xs
+                     accent text: no chip, border or fill. Distinct from tier-chip (the
+                     sponsor-tier chip). The tool cannot classify it (no class hook)
+```
+
+Row 03 files sort pills and date-archive pills under the existing `filter-chip`; the note
+column says `sort chip` / `date chip`. It files a card title or writer name rendered as an
+`<a>` (no heading element) under `heading`, with the note saying so.
+
 `run.sh primitives` also emits a generic `button` fallback. It is not a kind: resolve
 each such row to a variant before it enters the register.
 

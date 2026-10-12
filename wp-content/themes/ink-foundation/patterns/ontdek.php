@@ -50,7 +50,7 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 <!-- wp:pattern {"slug":"ink-foundation/archive-intro"} /-->
 
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-24)">
+<section data-audit-id="search-band" class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/ontdek-soek /-->
@@ -60,7 +60,7 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 <!-- /wp:group -->
 
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-24)">
+<section data-audit-id="surfaces" class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/ontdek-vlakke /-->
@@ -70,15 +70,15 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 <!-- /wp:group -->
 
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-ontdek-tabbalk","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-ontdek-tabbalk">
+<section data-audit-id="tabs" class="wp-block-group alignfull ink-ontdek-tabbalk">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
-	<div class="wp-block-group alignwide">
-		<nav class="ink-ontdek-tabs" aria-label="<?php esc_attr_e( 'Ontdek-oortjies', 'ink-foundation' ); ?>">
-			<button type="button" class="ink-ontdek-tabs__knoppie is-active" data-ink-ontdek-tab="bydraes" aria-selected="true">
-				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ink-icon" aria-hidden="true" focusable="false"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M15 8h-5"/><path d="M15 12h-5"/></svg>
+	<div data-audit-id="tabs-container" class="wp-block-group alignwide">
+		<nav data-audit-id="tabs-list" class="ink-ontdek-tabs" aria-label="<?php esc_attr_e( 'Ontdek-oortjies', 'ink-foundation' ); ?>">
+			<button data-audit-id="tabs-tab-active" type="button" class="ink-ontdek-tabs__knoppie is-active" data-ink-ontdek-tab="bydraes" aria-selected="true">
+				<svg data-audit-id="tabs-tab-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ink-icon" aria-hidden="true" focusable="false"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M15 8h-5"/><path d="M15 12h-5"/></svg>
 				<span><?php echo esc_html( $ink_bydraes_label ); ?></span>
 			</button>
-			<button type="button" class="ink-ontdek-tabs__knoppie" data-ink-ontdek-tab="skrywers" aria-selected="false">
+			<button data-audit-id="tabs-tab" type="button" class="ink-ontdek-tabs__knoppie" data-ink-ontdek-tab="skrywers" aria-selected="false">
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ink-icon" aria-hidden="true" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
 				<span><?php echo esc_html( $ink_skrywers_label ); ?></span>
 			</button>
@@ -89,7 +89,7 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 <!-- /wp:group -->
 
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" id="bydraes" data-ink-ontdek-panel="bydraes" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<section data-audit-id="stories" class="wp-block-group alignfull" id="bydraes" data-ink-ontdek-panel="bydraes" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/ontdek-werke /-->
@@ -99,7 +99,7 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 <!-- /wp:group -->
 
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" id="skrywers" data-ink-ontdek-panel="skrywers" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<section data-audit-id="writers" class="wp-block-group alignfull" id="skrywers" data-ink-ontdek-panel="skrywers" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/ontdek-skrywers /-->

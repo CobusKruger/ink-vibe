@@ -340,7 +340,7 @@ final class WorksArchive {
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
-		$heading   = '<h1 class="ink-ontdek-werke__heading">' . esc_html( Terms::label( 'bydrae_plural' ) ) . '</h1>';
+		$heading   = '<h1 class="ink-ontdek-werke__heading" data-audit-id="stories-heading">' . esc_html( Terms::label( 'bydrae_plural' ) ) . '</h1>';
 		$controls  = self::controlsHtml(
 			$nav['type'] ?? null,
 			isset( $nav['sort'] ) ? (string) $nav['sort'] : self::SORT_NUUT
@@ -354,22 +354,50 @@ final class WorksArchive {
 			/* translators: %s: the plural bydraes label (e.g. Bydraes). */
 			$empty = sprintf( __( 'Geen %s gevind nie.', 'ink-core' ), Terms::label( 'bydrae_plural' ) );
 
-			return '<section class="ink-ontdek-werke">' . $heading . $controls
+			return '<section class="ink-ontdek-werke" data-audit-id="stories-archive">' . $heading . $controls
 				. '<p class="ink-ontdek-werke__leeg">' . esc_html( $empty ) . '</p></section>';
 		}
 
-		$html = '<section class="ink-ontdek-werke">' . $heading . $controls . '<ul class="ink-ontdek-werke__list">';
+		$html = '<section class="ink-ontdek-werke" data-audit-id="stories-archive">' . $heading . $controls . '<ul class="ink-ontdek-werke__list" data-audit-id="stories-grid">';
+
+		$first = true;
 
 		foreach ( $cards as $card ) {
-			$html .= self::cardHtml( $card );
+			$html .= self::cardHtml( $card, $first );
+			$first = false;
 		}
 
 		$paged     = isset( $nav['paged'] ) ? (int) $nav['paged'] : 1;
 		$max_pages = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;
 
-		$html .= '</ul>' . ArchiveRender::pagination( $paged, $max_pages, 'ink-ontdek-werke', self::PAGED_VAR ) . '</section>';
+		$html .= '</ul>' . self::withAuditId( ArchiveRender::pagination( $paged, $max_pages, 'ink-ontdek-werke', self::PAGED_VAR ), 'stories-pagination' ) . '</section>';
 
 		return $html;
+	}
+
+	/**
+	 * Stamp a fidelity-audit join key (docs/fidelity-remediation/maps/ontdek.csv)
+	 * onto the first tag of an HTML fragment. Pure. Empty input stays empty.
+	 *
+	 * @param string $html The fragment.
+	 * @param string $id   The audit id.
+	 * @return string
+	 */
+	private static function withAuditId( string $html, string $id ): string {
+		$stamped = preg_replace( '/^<([a-z][a-z0-9]*)\b/i', '<$1 data-audit-id="' . esc_attr( $id ) . '"', $html, 1 );
+
+		return null !== $stamped ? $stamped : $html;
+	}
+
+	/**
+	 * The ` data-audit-id="…"` attribute when `$on`, else ''. Pure.
+	 *
+	 * @param string $id The audit id.
+	 * @param bool   $on Whether to emit it (first repeater instance only).
+	 * @return string
+	 */
+	private static function auditAttr( string $id, bool $on ): string {
+		return $on ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
 	}
 
 	/**
@@ -433,38 +461,39 @@ final class WorksArchive {
 	 * (category pill + read-time, author avatar + name, Heart/MessageCircle
 	 * counts) so the Ontdek card and the Tuisblad featured card read identically.
 	 *
-	 * @param array<array-key, mixed> $card The card row.
+	 * @param array<array-key, mixed> $card  The card row.
+	 * @param bool                    $audit Stamp the fidelity-audit join keys (first card only).
 	 * @return string
 	 */
-	private static function cardHtml( array $card ): string {
+	private static function cardHtml( array $card, bool $audit = false ): string {
 		$base    = 'ink-ontdek-werke';
 		$title   = (string) ( $card['title'] ?? '' );
 		$url     = (string) ( $card['permalink'] ?? '' );
 		$excerpt = (string) ( $card['excerpt'] ?? '' );
 
-		$html = '<li class="' . esc_attr( $base . '__item is-style-card' ) . '">'
-			. '<div class="' . esc_attr( $base . '__meta-top' ) . '">'
-			. self::typePillHtml( $base, (string) ( $card['type'] ?? '' ) );
+		$html = '<li class="' . esc_attr( $base . '__item is-style-card' ) . '"' . self::auditAttr( 'stories-card', $audit ) . '>'
+			. '<div class="' . esc_attr( $base . '__meta-top' ) . '"' . self::auditAttr( 'stories-card-meta', $audit ) . '>'
+			. self::typePillHtml( $base, (string) ( $card['type'] ?? '' ), $audit );
 
 		$read_time = ReadingTime::label( (int) ( $card['read_minutes'] ?? 0 ) );
 
 		if ( '' !== $read_time ) {
-			$html .= '<span class="' . esc_attr( $base . '__leestyd' ) . '">'
-				. self::icon( self::ICON_CLOCK )
+			$html .= '<span class="' . esc_attr( $base . '__leestyd' ) . '"' . self::auditAttr( 'stories-card-time', $audit ) . '>'
+				. self::icon( self::ICON_CLOCK, $audit ? 'stories-card-time-icon' : '' )
 				. '<span>' . esc_html( $read_time ) . '</span>'
 				. '</span>';
 		}
 
 		$html .= '</div>'
-			. '<a class="' . esc_attr( $base . '__title' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $title ) . '</a>';
+			. '<a class="' . esc_attr( $base . '__title' ) . '"' . self::auditAttr( 'stories-card-title', $audit ) . ' href="' . esc_url( $url ) . '">' . esc_html( $title ) . '</a>';
 
 		if ( '' !== $excerpt ) {
-			$html .= '<p class="' . esc_attr( $base . '__uittreksel' ) . '">' . esc_html( $excerpt ) . '</p>';
+			$html .= '<p class="' . esc_attr( $base . '__uittreksel' ) . '"' . self::auditAttr( 'stories-card-excerpt', $audit ) . '>' . esc_html( $excerpt ) . '</p>';
 		}
 
-		$html .= '<div class="' . esc_attr( $base . '__voet' ) . '">'
-			. self::authorHtml( $base, $card )
-			. self::countsHtml( $base, $card )
+		$html .= '<div class="' . esc_attr( $base . '__voet' ) . '"' . self::auditAttr( 'stories-card-footer', $audit ) . '>'
+			. self::authorHtml( $base, $card, $audit )
+			. self::countsHtml( $base, $card, $audit )
 			. '</div></li>';
 
 		return $html;
@@ -487,11 +516,12 @@ final class WorksArchive {
 	 * cannot drift apart. Any type outside the three readable ones keeps the
 	 * neutral (uncoloured) pill.
 	 *
-	 * @param string $base The BEM base class.
-	 * @param string $type The bydrae post type (`gedig`/`storie`/`artikel`), or ''.
+	 * @param string $base  The BEM base class.
+	 * @param string $type  The bydrae post type (`gedig`/`storie`/`artikel`), or ''.
+	 * @param bool   $audit Stamp the fidelity-audit join key (first card only).
 	 * @return string
 	 */
-	private static function typePillHtml( string $base, string $type ): string {
+	private static function typePillHtml( string $base, string $type, bool $audit = false ): string {
 		$classes = $base . '__type ink-lees-tipe';
 		$style   = '';
 
@@ -510,29 +540,30 @@ final class WorksArchive {
 				break;
 		}
 
-		return '<span class="' . esc_attr( $classes ) . '"' . $style . '>' . esc_html( Terms::label( $type ) ) . '</span>';
+		return '<span class="' . esc_attr( $classes ) . '"' . $style . self::auditAttr( 'stories-card-pill', $audit ) . '>' . esc_html( Terms::label( $type ) ) . '</span>';
 	}
 
 	/**
 	 * The card's author (avatar + name). Pure.
 	 *
-	 * @param string                  $base The BEM base class.
-	 * @param array<array-key, mixed> $card The card row.
+	 * @param string                  $base  The BEM base class.
+	 * @param array<array-key, mixed> $card  The card row.
+	 * @param bool                    $audit Stamp the fidelity-audit join keys (first card only).
 	 * @return string
 	 */
-	private static function authorHtml( string $base, array $card ): string {
+	private static function authorHtml( string $base, array $card, bool $audit = false ): string {
 		$author = (string) ( $card['author'] ?? '' );
 		$avatar = (string) ( $card['avatar_url'] ?? '' );
 
-		$html = '<div class="' . esc_attr( $base . '__author' ) . '">';
+		$html = '<div class="' . esc_attr( $base . '__author' ) . '"' . self::auditAttr( 'stories-card-author', $audit ) . '>';
 
 		if ( '' !== $avatar ) {
-			$html .= '<img class="' . esc_attr( $base . '__foto' ) . '" src="' . esc_url( $avatar ) . '" '
+			$html .= '<img class="' . esc_attr( $base . '__foto' ) . '"' . self::auditAttr( 'stories-card-avatar', $audit ) . ' src="' . esc_url( $avatar ) . '" '
 				. 'alt="' . esc_attr( $author ) . '" width="28" height="28" loading="lazy" decoding="async" />';
 		}
 
 		if ( '' !== $author ) {
-			$html .= '<span class="' . esc_attr( $base . '__author-naam' ) . '">' . esc_html( $author ) . '</span>';
+			$html .= '<span class="' . esc_attr( $base . '__author-naam' ) . '"' . self::auditAttr( 'stories-card-author-name', $audit ) . '>' . esc_html( $author ) . '</span>';
 		}
 
 		return $html . '</div>';
@@ -541,16 +572,17 @@ final class WorksArchive {
 	/**
 	 * The card's Heart / MessageCircle engagement counts. Pure.
 	 *
-	 * @param string                  $base The BEM base class.
-	 * @param array<array-key, mixed> $card The card row.
+	 * @param string                  $base  The BEM base class.
+	 * @param array<array-key, mixed> $card  The card row.
+	 * @param bool                    $audit Stamp the fidelity-audit join keys (first card only).
 	 * @return string
 	 */
-	private static function countsHtml( string $base, array $card ): string {
+	private static function countsHtml( string $base, array $card, bool $audit = false ): string {
 		$hart_count     = (int) ( $card['hart_count'] ?? 0 );
 		$response_count = (int) ( $card['response_count'] ?? 0 );
 
-		return '<div class="' . esc_attr( $base . '__tellers' ) . '">'
-			. self::countHtml( $base, self::ICON_HEART, $hart_count, EngagementApi::hartjieCountLabel( $hart_count ) )
+		return '<div class="' . esc_attr( $base . '__tellers' ) . '"' . self::auditAttr( 'stories-card-stats', $audit ) . '>'
+			. self::countHtml( $base, self::ICON_HEART, $hart_count, EngagementApi::hartjieCountLabel( $hart_count ), $audit )
 			. self::countHtml( $base, self::ICON_MESSAGE, $response_count, self::responseCountLabel( $response_count ) )
 			. '</div>';
 	}
@@ -563,11 +595,12 @@ final class WorksArchive {
 	 * @param string $icon  The Lucide inner-SVG paths.
 	 * @param int    $count The count value.
 	 * @param string $label The full accessible label.
+	 * @param bool   $audit Stamp the fidelity-audit join keys (first count of the first card only).
 	 * @return string
 	 */
-	private static function countHtml( string $base, string $icon, int $count, string $label ): string {
-		return '<span class="' . esc_attr( $base . '__teller' ) . '" aria-label="' . esc_attr( $label ) . '">'
-			. self::icon( $icon )
+	private static function countHtml( string $base, string $icon, int $count, string $label, bool $audit = false ): string {
+		return '<span class="' . esc_attr( $base . '__teller' ) . '"' . self::auditAttr( 'stories-card-stat', $audit ) . ' aria-label="' . esc_attr( $label ) . '">'
+			. self::icon( $icon, $audit ? 'stories-card-stat-icon' : '' )
 			. '<span aria-hidden="true">' . esc_html( (string) $count ) . '</span>'
 			. '</span>';
 	}
@@ -589,13 +622,14 @@ final class WorksArchive {
 	 * A decorative inline Lucide icon (§0.9): 16px, currentColor, aria-hidden.
 	 * Pure. `$paths` is a trusted class-internal SVG literal (never user input).
 	 *
-	 * @param string $paths The inner SVG markup.
+	 * @param string $paths    The inner SVG markup.
+	 * @param string $audit_id Optional fidelity-audit join key ('' = none).
 	 * @return string
 	 */
-	private static function icon( string $paths ): string {
+	private static function icon( string $paths, string $audit_id = '' ): string {
 		return '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" '
 			. 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '
-			. 'class="ink-icon" aria-hidden="true" focusable="false">' . $paths . '</svg>';
+			. 'class="ink-icon"' . self::auditAttr( $audit_id, '' !== $audit_id ) . ' aria-hidden="true" focusable="false">' . $paths . '</svg>';
 	}
 
 	/**
@@ -610,42 +644,55 @@ final class WorksArchive {
 	 * @return string
 	 */
 	public static function controlsHtml( ?string $active_type, string $active_sort ): string {
-		$html = '<div class="ink-ontdek-werke__kontroles">';
+		$html = '<div class="ink-ontdek-werke__kontroles" data-audit-id="stories-controls">';
 
 		// Type filter: Alles + one pill per readable type.
-		$html .= '<div class="ink-ontdek-werke__filter">';
+		$html .= '<div class="ink-ontdek-werke__filter" data-audit-id="stories-filters">';
 
+		// Fidelity join keys by position (maps/ontdek.csv): pill 0 (active in the
+		// default unfiltered state) and pill 1 (first inactive).
 		$alles_active = ( null === $active_type );
-		$html        .= ArchiveRender::pill(
-			(string) remove_query_arg( array( self::TYPE_VAR, self::PAGED_VAR ) ),
-			__( 'Alles', 'ink-core' ),
-			$alles_active,
-			'ink-ontdek-werke__filter-knoppie'
+		$html        .= self::withAuditId(
+			ArchiveRender::pill(
+				(string) remove_query_arg( array( self::TYPE_VAR, self::PAGED_VAR ) ),
+				__( 'Alles', 'ink-core' ),
+				$alles_active,
+				'ink-ontdek-werke__filter-knoppie'
+			),
+			'stories-filter-active'
 		);
 
+		$type_index = 0;
+
 		foreach ( self::readableTypes() as $type ) {
-			$url   = (string) add_query_arg( self::TYPE_VAR, $type, remove_query_arg( self::PAGED_VAR ) );
-			$html .= ArchiveRender::pill(
+			$url  = (string) add_query_arg( self::TYPE_VAR, $type, remove_query_arg( self::PAGED_VAR ) );
+			$pill = ArchiveRender::pill(
 				$url,
 				Terms::label( $type . '_plural' ),
 				$type === $active_type,
 				'ink-ontdek-werke__filter-knoppie'
 			);
+
+			$html .= 0 === $type_index++ ? self::withAuditId( $pill, 'stories-filter' ) : $pill;
 		}
 
 		$html .= '</div>';
 
 		// Sort control: the three options.
-		$html .= '<div class="ink-ontdek-werke__sorteer">';
+		$html .= '<div class="ink-ontdek-werke__sorteer" data-audit-id="stories-sort">';
 
-		foreach ( self::allowedSorts() as $sort ) {
-			$url   = (string) add_query_arg( self::SORT_VAR, $sort, remove_query_arg( self::PAGED_VAR ) );
-			$html .= ArchiveRender::pill(
+		$sort_ids = array( 'stories-sort-active', 'stories-sort-pill' );
+
+		foreach ( self::allowedSorts() as $sort_index => $sort ) {
+			$url  = (string) add_query_arg( self::SORT_VAR, $sort, remove_query_arg( self::PAGED_VAR ) );
+			$pill = ArchiveRender::pill(
 				$url,
 				self::sortLabel( $sort ),
 				$sort === $active_sort,
 				'ink-ontdek-werke__sorteer-knoppie'
 			);
+
+			$html .= isset( $sort_ids[ $sort_index ] ) ? self::withAuditId( $pill, $sort_ids[ $sort_index ] ) : $pill;
 		}
 
 		$html .= '</div></div>';
@@ -669,24 +716,31 @@ final class WorksArchive {
 			return '';
 		}
 
-		$html = '<div class="ink-ontdek-werke__datums">';
+		$html = '<div class="ink-ontdek-werke__datums" data-audit-id="stories-dates">';
 
-		$html .= ArchiveRender::pill(
-			(string) remove_query_arg( array( self::YEAR_VAR, self::MONTH_VAR, self::PAGED_VAR ) ),
-			__( 'Alle datums', 'ink-core' ),
-			( null === $active_year ),
-			'ink-ontdek-werke__datum-knoppie'
+		$html .= self::withAuditId(
+			ArchiveRender::pill(
+				(string) remove_query_arg( array( self::YEAR_VAR, self::MONTH_VAR, self::PAGED_VAR ) ),
+				__( 'Alle datums', 'ink-core' ),
+				( null === $active_year ),
+				'ink-ontdek-werke__datum-knoppie'
+			),
+			'stories-date-active'
 		);
 
+		$year_index = 0;
+
 		foreach ( $years as $year ) {
-			$year  = (int) $year;
-			$url   = (string) add_query_arg( self::YEAR_VAR, $year, remove_query_arg( array( self::MONTH_VAR, self::PAGED_VAR ) ) );
-			$html .= ArchiveRender::pill(
+			$year = (int) $year;
+			$url  = (string) add_query_arg( self::YEAR_VAR, $year, remove_query_arg( array( self::MONTH_VAR, self::PAGED_VAR ) ) );
+			$pill = ArchiveRender::pill(
 				$url,
 				(string) $year,
 				$year === $active_year,
 				'ink-ontdek-werke__datum-knoppie'
 			);
+
+			$html .= 0 === $year_index++ ? self::withAuditId( $pill, 'stories-date' ) : $pill;
 		}
 
 		$html .= '</div>';

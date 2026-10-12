@@ -278,24 +278,33 @@ final class DiscoverySurfaces {
 	 */
 	public static function toHtml( array $surfaces ): string {
 		$html = '';
+		// Fidelity join key (docs/fidelity-remediation/maps/ontdek.csv): first row + first item only.
+		$first_row = true;
 
 		foreach ( $surfaces as $key => $cards ) {
 			if ( array() === $cards ) {
 				continue; // No empty rows.
 			}
 
-			$html .= '<section class="ink-ontdek-vlak ink-ontdek-vlak--' . esc_attr( (string) $key ) . '">'
-				. '<h2 class="ink-ontdek-vlak__titel">' . esc_html( self::surfaceLabel( (string) $key ) ) . '</h2>'
-				. '<ul class="ink-ontdek-vlak__lys">';
+			$aid = static fn ( string $id, bool $on ): string => $on ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
+
+			$html .= '<section class="ink-ontdek-vlak ink-ontdek-vlak--' . esc_attr( (string) $key ) . '"' . $aid( 'surfaces-row', $first_row ) . '>'
+				. '<h2 class="ink-ontdek-vlak__titel"' . $aid( 'surfaces-title', $first_row ) . '>' . esc_html( self::surfaceLabel( (string) $key ) ) . '</h2>'
+				. '<ul class="ink-ontdek-vlak__lys"' . $aid( 'surfaces-list', $first_row ) . '>';
+
+			$first_item = $first_row;
 
 			foreach ( $cards as $card ) {
-				$html .= '<li class="ink-ontdek-vlak__item is-style-card">'
-					. '<a class="ink-ontdek-vlak__naam" href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
-					. '<span class="ink-ontdek-vlak__gradering">' . esc_html( $card['gradering'] ) . '</span>'
+				$html .= '<li class="ink-ontdek-vlak__item is-style-card"' . $aid( 'surfaces-item', $first_item ) . '>'
+					. '<a class="ink-ontdek-vlak__naam"' . $aid( 'surfaces-name', $first_item ) . ' href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
+					. '<span class="ink-ontdek-vlak__gradering"' . $aid( 'surfaces-grade', $first_item ) . '>' . esc_html( $card['gradering'] ) . '</span>'
 					. '</li>';
+
+				$first_item = false;
 			}
 
 			$html .= '</ul></section>';
+			$first_row = false;
 		}
 
 		if ( '' === $html ) {

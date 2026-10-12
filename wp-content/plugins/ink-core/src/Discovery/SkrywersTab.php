@@ -239,7 +239,7 @@ final class SkrywersTab {
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
-		$heading  = '<h2 class="ink-ontdek-skrywers__heading">' . esc_html( Terms::label( 'skrywer_plural' ) ) . '</h2>';
+		$heading  = '<h2 class="ink-ontdek-skrywers__heading" data-audit-id="writers-heading">' . esc_html( Terms::label( 'skrywer_plural' ) ) . '</h2>';
 		$controls = self::controlsHtml(
 			$nav['genre'] ?? null,
 			isset( $nav['sort'] ) ? (string) $nav['sort'] : self::SORT_NUWE
@@ -249,14 +249,17 @@ final class SkrywersTab {
 			/* translators: %s: the plural skrywers label (e.g. Skrywers). */
 			$empty = sprintf( __( 'Geen %s gevind nie.', 'ink-core' ), Terms::label( 'skrywer_plural' ) );
 
-			return '<section class="ink-ontdek-skrywers">' . $heading . $controls
+			return '<section class="ink-ontdek-skrywers" data-audit-id="writers-archive">' . $heading . $controls
 				. '<p class="ink-ontdek-skrywers__leeg">' . esc_html( $empty ) . '</p></section>';
 		}
 
-		$html = '<section class="ink-ontdek-skrywers">' . $heading . $controls . '<ul class="ink-ontdek-skrywers__list">';
+		$html = '<section class="ink-ontdek-skrywers" data-audit-id="writers-archive">' . $heading . $controls . '<ul class="ink-ontdek-skrywers__list" data-audit-id="writers-grid">';
+
+		$first = true;
 
 		foreach ( $cards as $card ) {
-			$html .= self::cardHtml( $card );
+			$html .= self::cardHtml( $card, $first );
+			$first = false;
 		}
 
 		$html .= '</ul>' . self::paginationHtml( $nav ) . '</section>';
@@ -293,38 +296,43 @@ final class SkrywersTab {
 	/**
 	 * One skrywer card. Pure — escaping only.
 	 *
-	 * @param array{name:string, profile_url:string, gradering:string, bio:string, avatar_url?:string, genres?:list<string>} $card The card row.
+	 * @param array{name:string, profile_url:string, gradering:string, bio:string, avatar_url?:string, genres?:list<string>} $card  The card row.
+	 * @param bool                                                                                                          $audit Stamp the fidelity-audit join keys (first card only).
 	 * @return string
 	 */
-	private static function cardHtml( array $card ): string {
+	private static function cardHtml( array $card, bool $audit = false ): string {
 		$avatar = (string) ( $card['avatar_url'] ?? '' );
 		$genres = isset( $card['genres'] ) && is_array( $card['genres'] ) ? $card['genres'] : array();
+		$aid    = static fn ( string $id, bool $on = true ): string => ( $audit && $on ) ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
 
-		$html = '<li class="ink-ontdek-skrywers__item is-style-card">'
-			. '<div class="ink-ontdek-skrywers__kop">';
+		$html = '<li class="ink-ontdek-skrywers__item is-style-card"' . $aid( 'writers-card' ) . '>'
+			. '<div class="ink-ontdek-skrywers__kop"' . $aid( 'writers-card-head' ) . '>';
 
 		if ( '' !== $avatar ) {
-			$html .= '<img class="ink-ontdek-skrywers__foto" src="' . esc_url( $avatar ) . '" '
+			$html .= '<img class="ink-ontdek-skrywers__foto"' . $aid( 'writers-card-avatar' ) . ' src="' . esc_url( $avatar ) . '" '
 				. 'alt="' . esc_attr( $card['name'] ) . '" width="56" height="56" loading="lazy" decoding="async" />';
 		}
 
-		$html .= '<div class="ink-ontdek-skrywers__kop-teks">'
-			. '<a class="ink-ontdek-skrywers__naam" href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
-			. '<span class="ink-ontdek-skrywers__gradering">' . esc_html( $card['gradering'] ) . '</span>'
+		$html .= '<div class="ink-ontdek-skrywers__kop-teks"' . $aid( 'writers-card-head-text' ) . '>'
+			. '<a class="ink-ontdek-skrywers__naam"' . $aid( 'writers-card-name' ) . ' href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
+			. '<span class="ink-ontdek-skrywers__gradering"' . $aid( 'writers-card-grade' ) . '>' . esc_html( $card['gradering'] ) . '</span>'
 			. '</div></div>';
 
 		if ( array() !== $genres ) {
-			$html .= '<div class="ink-ontdek-skrywers__genres">';
+			$html .= '<div class="ink-ontdek-skrywers__genres"' . $aid( 'writers-card-genres' ) . '>';
+
+			$first_genre = true;
 
 			foreach ( $genres as $genre_label ) {
-				$html .= '<span class="ink-ontdek-skrywers__genre-pil">' . esc_html( $genre_label ) . '</span>';
+				$html       .= '<span class="ink-ontdek-skrywers__genre-pil"' . $aid( 'writers-card-genre', $first_genre ) . '>' . esc_html( $genre_label ) . '</span>';
+				$first_genre = false;
 			}
 
 			$html .= '</div>';
 		}
 
 		if ( '' !== $card['bio'] ) {
-			$html .= '<p class="ink-ontdek-skrywers__bio">' . esc_html( $card['bio'] ) . '</p>';
+			$html .= '<p class="ink-ontdek-skrywers__bio"' . $aid( 'writers-card-bio' ) . '>' . esc_html( $card['bio'] ) . '</p>';
 		}
 
 		return $html . '</li>';
@@ -338,14 +346,19 @@ final class SkrywersTab {
 	 * @return string
 	 */
 	public static function controlsHtml( ?string $active_genre, string $active_sort ): string {
-		$html = '<div class="ink-ontdek-skrywers__kontroles"><div class="ink-ontdek-skrywers__filter">';
+		$html = '<div class="ink-ontdek-skrywers__kontroles" data-audit-id="writers-controls"><div class="ink-ontdek-skrywers__filter" data-audit-id="writers-filters">';
 
+		// Fidelity join keys by position (maps/ontdek.csv): pill 0 (active in the
+		// default unfiltered state) and pill 1 (first inactive).
 		$html .= self::pill(
 			esc_url( remove_query_arg( array( self::GENRE_VAR, self::PAGED_VAR ) ) ),
 			__( 'Almal', 'ink-core' ),
 			( null === $active_genre ),
-			'ink-ontdek-skrywers__filter-knoppie'
+			'ink-ontdek-skrywers__filter-knoppie',
+			'writers-filter-active'
 		);
+
+		$genre_index = 0;
 
 		foreach ( self::allowedGenres() as $genre ) {
 			$url   = esc_url( add_query_arg( self::GENRE_VAR, $genre, remove_query_arg( self::PAGED_VAR ) ) );
@@ -353,19 +366,23 @@ final class SkrywersTab {
 				$url,
 				Terms::label( 'skrywer_genre_' . $genre ),
 				$genre === $active_genre,
-				'ink-ontdek-skrywers__filter-knoppie'
+				'ink-ontdek-skrywers__filter-knoppie',
+				0 === $genre_index++ ? 'writers-filter' : ''
 			);
 		}
 
-		$html .= '</div><div class="ink-ontdek-skrywers__sorteer">';
+		$html .= '</div><div class="ink-ontdek-skrywers__sorteer" data-audit-id="writers-sort">';
 
-		foreach ( self::allowedSorts() as $sort ) {
+		$sort_ids = array( 'writers-sort-active', 'writers-sort-pill' );
+
+		foreach ( self::allowedSorts() as $sort_index => $sort ) {
 			$url   = esc_url( add_query_arg( self::SORT_VAR, $sort, remove_query_arg( self::PAGED_VAR ) ) );
 			$html .= self::pill(
 				$url,
 				self::sortLabel( $sort ),
 				$sort === $active_sort,
-				'ink-ontdek-skrywers__sorteer-knoppie'
+				'ink-ontdek-skrywers__sorteer-knoppie',
+				$sort_ids[ $sort_index ] ?? ''
 			);
 		}
 
@@ -381,12 +398,14 @@ final class SkrywersTab {
 	 * @param string $label     The (unescaped) label.
 	 * @param bool   $is_active Whether this is the active option.
 	 * @param string $base      The base CSS class.
+	 * @param string $audit_id  Optional fidelity-audit join key ('' = none).
 	 * @return string
 	 */
-	private static function pill( string $url, string $label, bool $is_active, string $base ): string {
+	private static function pill( string $url, string $label, bool $is_active, string $base, string $audit_id = '' ): string {
 		$class = $base . ( $is_active ? ' is-active' : '' );
 
 		return '<a class="' . esc_attr( $class ) . '"'
+			. ( '' !== $audit_id ? ' data-audit-id="' . esc_attr( $audit_id ) . '"' : '' )
 			. ( $is_active ? ' aria-current="true"' : '' )
 			. ' href="' . $url . '">' . esc_html( $label ) . '</a>';
 	}

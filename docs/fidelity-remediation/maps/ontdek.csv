@@ -1,0 +1,90 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+intro,src/pages/Browse.tsx,389,wp-content/themes/ink-foundation/patterns/archive-intro.php,9,intro band section,paired,INK pattern archive-intro (also composed by the archetype-a/-b scaffold patterns)
+intro-container,src/pages/Browse.tsx,390,,,container (px-4 py-14 md:py-20),missing-ink,S3 MECHANISM/STRUCTURE: INK carries the band padding on the section itself; no container element
+intro-inner,src/pages/Browse.tsx,391,wp-content/themes/ink-foundation/patterns/archive-intro.php,11,max-w-3xl text column,paired,INK: alignwide group (wideSize) vs Lovable max-w-3xl
+intro-eyebrow,src/pages/Browse.tsx,392,wp-content/themes/ink-foundation/patterns/archive-intro.php,12,eyebrow row,paired,Lovable <div>; INK <p>
+intro-eyebrow-icon,src/pages/Browse.tsx,393,wp-content/themes/ink-foundation/patterns/archive-intro.php,13,book-open svg,paired,
+intro-eyebrow-text,src/pages/Browse.tsx,394,wp-content/themes/ink-foundation/patterns/archive-intro.php,14,eyebrow text,paired,
+intro-h1,src/pages/Browse.tsx,396,wp-content/themes/ink-foundation/patterns/archive-intro.php,18,h1,paired,
+intro-text,src/pages/Browse.tsx,399,wp-content/themes/ink-foundation/patterns/archive-intro.php,22,lede,paired,
+search-band,,,wp-content/themes/ink-foundation/patterns/ontdek.php,53,separate search section band,missing-lovable,S4 STRUCTURE: Lovable nests the search inside the intro (Browse.tsx:404)
+search,,,wp-content/plugins/ink-core/src/Discovery/Search.php,212,ink/ontdek-soek block root <section>,missing-lovable,block wrapper
+search-form,,,wp-content/plugins/ink-core/src/Discovery/Search.php,212,search <form>,missing-lovable,S5 MECHANISM: server-side GET form vs client-side live filter
+search-field-wrap,src/pages/Browse.tsx,404,wp-content/plugins/ink-core/src/Discovery/Search.php,213,icon + input wrapper,paired,
+search-icon,src/pages/Browse.tsx,405,wp-content/plugins/ink-core/src/Discovery/Search.php,209,search svg,paired,
+search-input,src/pages/Browse.tsx,406,wp-content/plugins/ink-core/src/Discovery/Search.php,214,search input,paired,
+search-btn,,,wp-content/plugins/ink-core/src/Discovery/Search.php,219,Soek submit button,missing-lovable,S5: INK-only submit button
+surfaces,,,wp-content/themes/ink-foundation/patterns/ontdek.php,63,discovery surfaces band (ink/ontdek-vlakke),scope,S6: INK-only section (Nuwe stemme / Onlangs aktief rows)
+surfaces-row,,,wp-content/plugins/ink-core/src/Discovery/DiscoverySurfaces.php,291,first surface row,scope,first row only
+surfaces-title,,,wp-content/plugins/ink-core/src/Discovery/DiscoverySurfaces.php,292,surface h2,scope,
+surfaces-list,,,wp-content/plugins/ink-core/src/Discovery/DiscoverySurfaces.php,293,surface card list,scope,
+surfaces-item,,,wp-content/plugins/ink-core/src/Discovery/DiscoverySurfaces.php,298,first surface card,scope,first card of first row only
+surfaces-name,,,wp-content/plugins/ink-core/src/Discovery/DiscoverySurfaces.php,299,writer name link,scope,
+surfaces-grade,,,wp-content/plugins/ink-core/src/Discovery/DiscoverySurfaces.php,300,gradering label,scope,
+tabs,src/pages/Browse.tsx,422,wp-content/themes/ink-foundation/patterns/ontdek.php,73,sticky tab band,paired,
+tabs-container,src/pages/Browse.tsx,423,wp-content/themes/ink-foundation/patterns/ontdek.php,75,container,paired,INK alignwide group
+tabs-list,src/pages/Browse.tsx,424,wp-content/themes/ink-foundation/patterns/ontdek.php,76,tab row,paired,Lovable flex <div>; INK <nav>
+tabs-tab-active,src/pages/Browse.tsx,425,wp-content/themes/ink-foundation/patterns/ontdek.php,77,active tab (Stories / Bydraes),paired,
+tabs-tab-icon,src/pages/Browse.tsx,426,wp-content/themes/ink-foundation/patterns/ontdek.php,78,tab icon,paired,
+tabs-tab-count,src/pages/Browse.tsx,428,,,tab count,missing-ink,S8
+tabs-tab,src/pages/Browse.tsx,430,wp-content/themes/ink-foundation/patterns/ontdek.php,81,inactive tab (Writers / Skrywers),paired,
+stories,src/pages/Browse.tsx,440,wp-content/themes/ink-foundation/patterns/ontdek.php,92,content panel section,paired,Lovable: one section whose content swaps by tab; INK: #bydraes panel (S9)
+stories-archive,,,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,361,ink/ontdek-werke block root <section>,missing-lovable,block wrapper
+stories-heading,,,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,343,Bydraes h1,missing-lovable,S10 EXTRA: second <h1> on the page
+stories-controls,src/pages/Browse.tsx,443,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,647,filter + sort row,paired,
+stories-filters,src/pages/Browse.tsx,444,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,650,type filter group,paired,
+stories-filter-active,src/pages/Browse.tsx,448,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,662,filter pill 0 (All / Alles; active by default),paired,Lovable <button>; INK <a> (S11)
+stories-filter,src/pages/Browse.tsx,448,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,676,filter pill 1 (Poetry / Gedigte),paired,
+stories-filter-icon,src/pages/Browse.tsx,457,,,filter pill icon,missing-ink,S12
+stories-sort,src/pages/Browse.tsx,465,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,682,sort group,paired,
+stories-sort-label,src/pages/Browse.tsx,466,,,Sort by label,missing-ink,S13
+stories-sort-active,src/pages/Browse.tsx,467,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,684,sort pill 0 (New / Nuut; active),paired,ids assigned from $sort_ids at 684
+stories-sort-pill,src/pages/Browse.tsx,470,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,684,sort pill 1,paired,
+stories-dates,,,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,719,date-archive pill row,missing-lovable,S14 EXTRA/SCOPE
+stories-date-active,,,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,728,Alle datums pill,missing-lovable,S14
+stories-date,,,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,743,first year pill,missing-lovable,S14
+stories-count,src/pages/Browse.tsx,494,,,result count line,missing-ink,S15
+stories-grid,src/pages/Browse.tsx,500,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,361,card grid,paired,Lovable <div> grid; INK <ul>
+stories-card,src/pages/Browse.tsx,647,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,474,first work card,paired,Lovable Card <div>; INK <li class=is-style-card>
+stories-card-save,src/pages/Browse.tsx,648,,,bookmark (save) button,missing-ink,S16
+stories-card-link,src/pages/Browse.tsx,662,,,whole-card link,missing-ink,S17 STRUCTURE: INK links the title only
+stories-card-body,src/pages/Browse.tsx,663,,,CardContent p-6,missing-ink,S17 MECHANISM: INK puts the padding on the <li>
+stories-card-meta,src/pages/Browse.tsx,664,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,475,pill + read-time row,paired,
+stories-card-pill,src/pages/Browse.tsx,665,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,543,type pill,paired,per-type colour is DIVERGENCE (accepted) — WorksArchive.php:478-488
+stories-card-time,src/pages/Browse.tsx,668,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,481,read time,paired,
+stories-card-time-icon,src/pages/Browse.tsx,669,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,482,clock svg,paired,
+stories-card-title,src/pages/Browse.tsx,673,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,488,card title,paired,Lovable <h3>; INK <a> (S18)
+stories-card-excerpt,src/pages/Browse.tsx,676,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,491,excerpt,paired,
+stories-card-footer,src/pages/Browse.tsx,679,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,494,author + stats row,paired,
+stories-card-author,src/pages/Browse.tsx,680,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,558,author group,paired,
+stories-card-avatar,src/pages/Browse.tsx,681,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,561,avatar,paired,
+stories-card-author-name,src/pages/Browse.tsx,686,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,566,author name,paired,
+stories-card-stats,src/pages/Browse.tsx,688,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,584,stats group,paired,
+stories-card-stat,src/pages/Browse.tsx,689,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,602,first stat (likes / hartjies),paired,
+stories-card-stat-icon,src/pages/Browse.tsx,690,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,603,heart svg,paired,
+stories-pagination,,,wp-content/plugins/ink-core/src/Discovery/WorksArchive.php,373,Vorige/Volgende pager,scope,S19: real-data pagination (Lovable shows all 12 mock items)
+writers,,,wp-content/themes/ink-foundation/patterns/ontdek.php,102,#skrywers panel section,missing-lovable,S9 MECHANISM: Lovable re-renders one section; INK toggles two. Hidden in default capture
+writers-archive,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,256,ink/ontdek-skrywers block root,missing-lovable,block wrapper; SkrywersTab is shared with ledegids (row 18)
+writers-heading,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,242,Skrywers h2,missing-lovable,S10
+writers-controls,src/pages/Browse.tsx,515,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,349,filter + sort row,paired,writers tab: not captured on Lovable (state-only tab)
+writers-filters,src/pages/Browse.tsx,516,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,349,genre filter group,paired,
+writers-filter-active,src/pages/Browse.tsx,520,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,358,filter pill 0 (All writers / Almal),paired,
+writers-filter,src/pages/Browse.tsx,520,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,370,filter pill 1,paired,
+writers-sort,src/pages/Browse.tsx,534,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,374,sort group,paired,
+writers-sort-label,src/pages/Browse.tsx,535,,,Sort by label,missing-ink,S13
+writers-sort-active,src/pages/Browse.tsx,536,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,376,sort pill 0,paired,S20: Lovable default = Most read; INK default = Nuwe stemme
+writers-sort-pill,src/pages/Browse.tsx,542,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,376,sort pill 1,paired,
+writers-count,src/pages/Browse.tsx,560,,,result count line,missing-ink,S15
+writers-grid,src/pages/Browse.tsx,566,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,256,card grid,paired,
+writers-card,src/pages/Browse.tsx,715,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,308,first writer card,paired,
+writers-card-body,src/pages/Browse.tsx,716,,,CardContent p-6,missing-ink,S17 MECHANISM
+writers-card-head,src/pages/Browse.tsx,717,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,309,avatar + name head,paired,Lovable <Link>; INK <div> (S21)
+writers-card-avatar,src/pages/Browse.tsx,718,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,312,avatar,paired,
+writers-card-head-text,src/pages/Browse.tsx,723,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,316,name column,paired,
+writers-card-name,src/pages/Browse.tsx,724,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,317,writer name,paired,Lovable <h3>; INK <a>
+writers-card-grade,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,318,gradering label,scope,S22 INK-only
+writers-card-genres,src/pages/Browse.tsx,727,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,322,genre badges row,paired,S21 STRUCTURE: inside head on Lovable; below head on INK
+writers-card-genre,src/pages/Browse.tsx,729,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,327,first genre badge,paired,
+writers-card-bio,src/pages/Browse.tsx,740,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,335,bio,paired,
+writers-card-stats,src/pages/Browse.tsx,743,,,works / followers / likes grid,missing-ink,S23
+writers-card-btn,src/pages/Browse.tsx,748,,,Follow button,missing-ink,S23
