@@ -274,6 +274,38 @@ function ink_foundation_audit_id_reading_paragraph( string $block_content ): str
 add_filter( 'render_block_core/post-content', 'ink_foundation_audit_id_reading_paragraph' );
 
 /**
+ * Stamp the single-uitdaging title and the FIRST paragraph of its authored
+ * opdrag (`core/post-content`) with their fidelity-audit join keys
+ * (docs/fidelity-remediation/maps/uitdaging-enkel.csv). Both are dynamic core
+ * blocks with no static markup in `reading-uitdaging.php` to hand-edit — same
+ * mechanism as the reading-page filters above.
+ *
+ * @param string $block_content The rendered block.
+ * @param array<string,mixed> $block The parsed block.
+ */
+function ink_foundation_audit_id_uitdaging( string $block_content, array $block ): string {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( 'uitdaging' ) ) {
+		return $block_content;
+	}
+
+	$targets = array(
+		'core/post-title'   => array( '/<h1\b/', '<h1 data-audit-id="uitdaging-title"' ),
+		'core/post-content' => array( '/<p\b/', '<p data-audit-id="uitdaging-prompt-body"' ),
+	);
+	$name    = $block['blockName'] ?? '';
+
+	if ( ! is_string( $name ) || ! isset( $targets[ $name ] ) ) {
+		return $block_content;
+	}
+
+	$with_audit_id = preg_replace( $targets[ $name ][0], $targets[ $name ][1], $block_content, 1 );
+
+	return null !== $with_audit_id ? $with_audit_id : $block_content;
+}
+add_filter( 'render_block_core/post-title', 'ink_foundation_audit_id_uitdaging', 10, 2 );
+add_filter( 'render_block_core/post-content', 'ink_foundation_audit_id_uitdaging', 10, 2 );
+
+/**
  * Stamp the site-wide header/footer wordmark with its fidelity-audit join key
  * (docs/fidelity-remediation/maps/tuisblad.csv). `wp:site-title` is a dynamic
  * core block, so — like the reading-page filters above — the id cannot be

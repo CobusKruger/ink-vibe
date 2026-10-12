@@ -1,0 +1,75 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+uitdaging-hero,src/pages/Challenge.tsx,128,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,69,hero section,paired,
+uitdaging-hero-texture,src/pages/Challenge.tsx,130,,,background texture layer,missing-ink,F1 MECHANISM: INK paints it as .ink-uitdaging__hero::before (theme.json styles.css)
+uitdaging-hero-container,src/pages/Challenge.tsx,136,,,container (padding wrapper),missing-ink,F2 STRUCTURE: INK merges the container into the section (section carries the padding)
+uitdaging-hero-content,src/pages/Challenge.tsx,145,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,71,max-w-3xl content column,paired,INK group contentSize 768px; Lovable back link sits outside this column (F2)
+uitdaging-back,src/pages/Challenge.tsx,138,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,73,back-to-home link,paired,F3: Lovable bare <a>; INK <p> wrapping the <a> (id on the <p>)
+uitdaging-badge,src/pages/Challenge.tsx,146,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,77,type badge,paired,F4: <span> vs <p>; label copy DIVERGENCE (accepted) reading-uitdaging.php:39-44
+uitdaging-title,src/pages/Challenge.tsx,151,wp-content/themes/ink-foundation/functions.php,292,h1,paired,INK: core/post-title <h1>; stamped by render_block_core/post-title filter (ink_foundation_audit_id_uitdaging)
+uitdaging-tagline,src/pages/Challenge.tsx,155,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,84,tagline,paired,pre-existing INK id (kept); renders only with a hand-authored excerpt - absent at capture (F5 DIVERGENCE (accepted) reading-uitdaging.php:50-55)
+uitdaging-meta,src/pages/Challenge.tsx,159,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,313,meta row,paired,ink/uitdaging-besonderhede variant=kop
+uitdaging-meta-deadline,src/pages/Challenge.tsx,160,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,314,deadline meta item,paired,F8: INK adds a label span + <time>
+uitdaging-meta-participants,src/pages/Challenge.tsx,164,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,323,participants meta item,paired,
+uitdaging-meta-pick,src/pages/Challenge.tsx,168,,,editor's pick meta item,missing-ink,F6 SCOPE: disclosed reading-uitdaging.php:44-48 (owner decision)
+uitdaging-meta-status,,,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,327,Oop/Gesluit pill,scope,F7 SCOPE: INK-only round state
+uitdaging-actions,src/pages/Challenge.tsx,174,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,91,hero button row,paired,
+uitdaging-btn-primary,src/pages/Challenge.tsx,175,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,93,primary lg button,paired,Lovable Button asChild -> <a>; INK <a> inside .wp-block-button.is-style-ink-primary.ink-btn-icon
+uitdaging-btn-outline,src/pages/Challenge.tsx,181,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,97,outline lg button,paired,INK <a> inside .wp-block-button.is-style-ink-outline.ink-btn-icon
+uitdaging-prompt,src/pages/Challenge.tsx,193,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,107,prompt section,paired,
+uitdaging-prompt-grid,src/pages/Challenge.tsx,194,,,container + 3-col grid,missing-ink,F9 DIVERGENCE (accepted): single authored blob; reading-uitdaging.php:15-20
+uitdaging-prompt-main,src/pages/Challenge.tsx,195,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,109,prompt column,paired,INK .ink-uitdaging__opdrag group (contentSize 672px)
+uitdaging-prompt-h2,src/pages/Challenge.tsx,197,,,"""The Prompt"" h2",missing-ink,F10 MISSING
+uitdaging-prompt-body,src/pages/Challenge.tsx,200,wp-content/themes/ink-foundation/functions.php,293,prompt text,paired,F12 MECHANISM: Lovable one pre-line <div>; INK first <p> of core/post-content (render_block_core/post-content filter)
+uitdaging-devices-h3,src/pages/Challenge.tsx,206,,,literary devices h3,missing-ink,F11 DIVERGENCE (accepted): reading-uitdaging.php:15-20
+uitdaging-devices,src/pages/Challenge.tsx,209,,,device chip row,missing-ink,F11
+uitdaging-device-chip,src/pages/Challenge.tsx,213,,,device chip (first),missing-ink,F11
+uitdaging-rules,src/pages/Challenge.tsx,223,,,submission rules aside card,missing-ink,F9; rules text is inline prose in the post body's 2nd paragraph
+uitdaging-rules-h3,src/pages/Challenge.tsx,224,,,rules h3,missing-ink,F9
+uitdaging-rules-list,src/pages/Challenge.tsx,228,,,rules list,missing-ink,F9
+uitdaging-rules-item,src/pages/Challenge.tsx,232,,,rules item (first),missing-ink,F9
+uitdaging-prize,src/pages/Challenge.tsx,240,,,prize block,missing-ink,F9; prize text is inline prose in the post body's 2nd paragraph
+uitdaging-prize-label,src/pages/Challenge.tsx,241,,,prize eyebrow,missing-ink,F9
+uitdaging-prize-text,src/pages/Challenge.tsx,244,,,prize text,missing-ink,F9
+uitdaging-resources,src/pages/Challenge.tsx,251,,,resources section,missing-ink,F13 SCOPE: disclosed reading-uitdaging.php:20-25 (owner decision)
+uitdaging-resources-container,src/pages/Challenge.tsx,252,,,container,missing-ink,F13
+uitdaging-resources-head,src/pages/Challenge.tsx,253,,,section head,missing-ink,F13
+uitdaging-resources-eyebrow,src/pages/Challenge.tsx,254,,,eyebrow,missing-ink,F13
+uitdaging-resources-h2,src/pages/Challenge.tsx,257,,,h2,missing-ink,F13
+uitdaging-resources-intro,src/pages/Challenge.tsx,260,,,intro,missing-ink,F13
+uitdaging-resources-grid,src/pages/Challenge.tsx,266,,,card grid,missing-ink,F13
+uitdaging-resource-card,src/pages/Challenge.tsx,273,,,resource card (first),missing-ink,F13
+uitdaging-resource-icon,src/pages/Challenge.tsx,277,,,icon tile (first),missing-ink,F13
+uitdaging-resource-tag,src/pages/Challenge.tsx,282,,,tag pill (first),missing-ink,F13
+uitdaging-resource-source,src/pages/Challenge.tsx,285,,,source label (first),missing-ink,F13
+uitdaging-resource-title,src/pages/Challenge.tsx,289,,,h3 (first),missing-ink,F13
+uitdaging-resource-desc,src/pages/Challenge.tsx,293,,,description (first),missing-ink,F13
+uitdaging-entries,src/pages/Challenge.tsx,305,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,117,entries section,paired,Lovable id=submissions on this section; INK anchor #inskrywings is on the inner section (F14)
+uitdaging-entries-container,src/pages/Challenge.tsx,306,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,119,container,paired,INK group contentSize 1120px
+uitdaging-entries-inner,,,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,488,inner <section id=inskrywings>,missing-lovable,F14 STRUCTURE
+uitdaging-entries-block,,,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,357,.ink-uitdaging__inskrywings-blok wrapper,missing-lovable,F14 STRUCTURE
+uitdaging-entries-head,src/pages/Challenge.tsx,307,,,head row (eyebrow + h2 + link),missing-ink,F15 MISSING
+uitdaging-entries-eyebrow,src/pages/Challenge.tsx,309,,,eyebrow,missing-ink,F15 MISSING
+uitdaging-entries-h2,src/pages/Challenge.tsx,312,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,347,h2,paired,
+uitdaging-entries-all-link,src/pages/Challenge.tsx,317,,,view-all link (md+),missing-ink,F16 MISSING
+uitdaging-entries-grid,src/pages/Challenge.tsx,325,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,357,card grid,paired,F17 MECHANISM: <div> grid vs <ul>
+uitdaging-entry-item,,,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,372,<li> (first),missing-lovable,F17 MECHANISM: list item wrapper
+uitdaging-entry-card,src/pages/Challenge.tsx,329,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,373,entry card (first),paired,first card only; both <a>
+uitdaging-entry-meta,src/pages/Challenge.tsx,333,,,pill + read-time row,missing-ink,F18 STRUCTURE: INK pill is a direct child of the card
+uitdaging-entry-type,src/pages/Challenge.tsx,334,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,376,type pill,paired,
+uitdaging-entry-time,src/pages/Challenge.tsx,337,,,read time,missing-ink,F19 MISSING
+uitdaging-entry-title,src/pages/Challenge.tsx,342,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,379,entry title,paired,F20 STRUCTURE: <h3> vs <span>
+uitdaging-entry-excerpt,src/pages/Challenge.tsx,345,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,382,excerpt,paired,
+uitdaging-entry-footer,src/pages/Challenge.tsx,348,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,386,author + stats footer,paired,F21 STRUCTURE: INK .ink-uitdaging__inskrywing-outeur is the bordered footer and the author group at once
+uitdaging-entry-author,src/pages/Challenge.tsx,349,,,author group,missing-ink,F21 STRUCTURE: collapsed into the footer span
+uitdaging-entry-avatar,src/pages/Challenge.tsx,351,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,391,avatar,paired,
+uitdaging-entry-author-name,src/pages/Challenge.tsx,356,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,396,author name,paired,
+uitdaging-entry-stats,src/pages/Challenge.tsx,358,,,likes + comments,missing-ink,F22 MISSING
+uitdaging-entry-stat,src/pages/Challenge.tsx,359,,,first stat,missing-ink,F22 MISSING
+uitdaging-cta,src/pages/Challenge.tsx,376,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,127,closing CTA section,paired,
+uitdaging-cta-content,src/pages/Challenge.tsx,377,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,129,centred content column,paired,INK group contentSize 576px
+uitdaging-cta-icon,src/pages/Challenge.tsx,378,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,131,sparkles icon,paired,F23 STRUCTURE: Lovable <svg>; INK <span> wrapping the <svg>
+uitdaging-cta-h2,src/pages/Challenge.tsx,379,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,135,h2,paired,
+uitdaging-cta-text,src/pages/Challenge.tsx,382,wp-content/plugins/ink-core/src/Challenges/SinglePage.php,452,subtitle,paired,INK renders it only when the round has >0 entries (SinglePage.php:423-427); present at capture
+uitdaging-cta-actions,src/pages/Challenge.tsx,387,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,145,button row,paired,
+uitdaging-cta-btn-primary,src/pages/Challenge.tsx,388,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,147,primary lg button,paired,
+uitdaging-cta-btn-secondary,src/pages/Challenge.tsx,394,wp-content/themes/ink-foundation/patterns/reading-uitdaging.php,151,outline lg button,paired,INK wrapper lacks ink-btn-icon (no icon)
