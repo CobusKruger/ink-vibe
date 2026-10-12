@@ -10,7 +10,7 @@ that (R9).
 | Row | Page | Treatment | Status | Commit(s) | Notes |
 |---|---|---|---|---|---|
 | 00 | tuisblad | A | **done** | `e08fe8d` (P3), `121d503` (P4/4b) | Establishes header/footer + the audit-id convention. 131 ids pair at all 3 viewports. |
-| 01 | gemeenskap | A | in progress — batch 1 | | |
+| 01 | gemeenskap | A | **done** | `e74ff23` · lovable `3840ee9` | 5/7 sections (stats + spotlight = disclosed deferrals, SCOPE); 63 ids pair at all 3 viewports; no live load-scope bug |
 | 02 | my-profiel | A | queued | | INK captured authenticated; header excluded from diff |
 | 03 | ontdek | A | in progress — batch 1 | | |
 | 04 | skryf | A | in progress — batch 1 | | |
@@ -43,10 +43,23 @@ that (R9).
 - **Subagents do not commit.** The lead commits per page (both repos) after reviewing the
   hand-back, so concurrent agents never race on the git index.
 - **Shared register.** Each subagent writes `maps/_primitive-observations.<page>.csv`; the
-  lead merges into `maps/_primitive-observations.csv` after every batch.
+  lead merges them all into `maps/_primitive-observations.csv` once, at the end of Stage 1
+  (`stage-1-kickoff.md`). Until then the merged file holds row 00 only.
+
+## Tooling issues found during the fan-out
+
+Fix these between batches, never while subagents are running.
+
+| # | Found on | Issue | Status |
+|---|---|---|---|
+| T1 | row 01 | `determinism-check.sh` does `rm -rf tmp/determinism` — parallel agents delete each other's gate runs. Needs a per-page output dir. Row 01 worked around it with a page-private copy. | open |
+| T2 | row 01 | `run.sh primitives` misses Lovable `asChild` buttons, class-less eyebrows and INK icon tiles, and includes header/footer nodes. Row 01 built its register with a page-local script using the same property set. Every later row likely needs the same compensation. | open |
+| T3 | row 03 | `capture.mjs` waited on every incomplete image, so a lazy `<img>` in a `display:none` tab panel hung the capture forever. Row 03 patched it to wait only on rendered images (against its brief, which forbade harness edits; the fix is sound and leaves computed values untouched). | patched, uncommitted — lands with row 03 |
 
 ## Log
 
 - **2026-10-12** — Row 00 completed (Phases 4/4b). Found that `nuwe-ink.local` had been
   serving pre-Phase-3 code; added deploy-before-capture as Phase 4 precondition 0 and
   allowed `deploy-to-local.sh` in the committed settings. Batch 1 (01, 03, 04, 05) started.
+- **2026-10-13** — Batch 1 was interrupted by the account usage limit and resumed after
+  reset. Row 01 committed. Tooling issues T1–T3 logged above.
