@@ -30,8 +30,17 @@
       "WebFetch(domain:api.anthropic.com)",
       "WebFetch(domain:http-intake.logs.us5.datadoghq.com)",
       "Skill(update-config)",
-      "Skill(fewer-permission-prompts)"
+      "Skill(fewer-permission-prompts)",
+      "Bash(tools/deploy-to-local.sh)",
+      "Bash(tools/deploy-to-local.sh --apply)"
     ]
+  },
+  "sandbox": {
+    "filesystem": {
+      "allowWrite": [
+        "/Users/cobus/Local Sites/nuwe-ink/app/public/wp-content"
+      ]
+    }
   },
   "hooks": {
     "PreToolUse": [
