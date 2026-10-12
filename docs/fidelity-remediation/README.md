@@ -165,8 +165,16 @@ tools/fidelity/run.sh verify --capture <file.ndjson> --sample 30
 tools/fidelity/determinism-check.sh <url> <side> <page> <viewport> 3
 ```
 
-**Preconditions — both are gates, not suggestions:**
+**Preconditions — all three are gates, not suggestions:**
 
+0. **The INK site is running this branch's code.** `nuwe-ink.local` does not read the
+   theme or plugin from this repo; it runs its own copy, which lags the branch silently
+   (row 00's first INK capture was taken against pre-Phase-3 code and had to be
+   discarded). Before any INK capture, run `tools/deploy-to-local.sh` (dry run). If it
+   lists any file, run `tools/deploy-to-local.sh --apply` (sandbox off), then confirm
+   with a cache-busted `curl` that the page serves the expected `data-audit-id`s. The
+   script's wp-cli cache purge always fails on this install (§9) — if the curl still shows
+   old markup, purge LiteSpeed by hand in wp-admin.
 1. `determinism-check.sh` passes for the page. A capture that is not reproducible makes
    every finding derived from it noise.
 2. `run.sh verify` passes on the capture. `README.md` §8.4 forbids shipping a Phase 4
@@ -235,23 +243,30 @@ audited until its primitives are registered.
 declaration. Two definitions that look identical still both get rows — Stage 2 determines
 whether they truly match.
 
-Columns:
+Columns (settled on row 00 — `findings/00-tuisblad-primitives.md`):
 
 ```
-page,component_kind,selector,defined_in,load_scope,used_in,declarations,audit_id,note
+page,side,viewport,component_kind,selector,defined_in,load_scope,used_in,declarations,audit_id,note
 ```
 
 | Column | Meaning |
 |---|---|
 | `page` | inventory row slug (`tuisblad`, `gemeenskap`, …) |
+| `side` | `ink` — a rendered INK instance · `lovable` — a rendered Lovable instance · `source` — one INK CSS *definition* (not an instance) |
+| `viewport` | capture width(s) the row's values hold at. An instance whose computed values are identical at several widths is **one** row, widths joined with `\|` (e.g. `390\|768\|1440`). Empty on `source` rows |
 | `component_kind` | from the controlled list below — a new kind must be *added to the list*, not invented inline |
 | `selector` | the selector as written |
-| `defined_in` | `theme.json` · `functions.php:<line>` · `assets/css/<file>:<line>` |
-| `load_scope` | where that definition actually loads — `site-wide`, or the `is_page()`/`is_singular()` condition gating it |
-| `used_in` | the pattern / render-callback / template that emits the class |
-| `declarations` | the full declaration body, normalised to one line |
+| `defined_in` | `theme.json` · `functions.php:<line>` · `assets/css/<file>:<line>` — `ink` and `source` rows only |
+| `load_scope` | where that definition actually loads — `site-wide`, or the `is_page()`/`is_singular()` condition gating it — `ink` and `source` rows only |
+| `used_in` | the pattern / render-callback / template that emits the class — `ink` and `source` rows only |
+| `declarations` | `ink`/`lovable`: the computed values, normalised to one line · `source`: the declaration body as written in the source |
 | `audit_id` | the Phase 3 join key, where one exists |
 | `note` | free text — e.g. "inert here, stylesheet does not load" |
+
+Why three sides: `lovable` rows are what Stage 2 needs to prefer the reference-backed
+variant (§4.7 step 4); `source` rows are what makes multiple definitions of one selector
+visible, one row each (the "more than one hit is itself the finding" rule above). The
+attribution columns stay empty on `lovable` rows — there is no INK source to attribute.
 
 Seed `component_kind` list — extend it as pages are audited, and record additions in this
 file so the vocabulary stays shared:
