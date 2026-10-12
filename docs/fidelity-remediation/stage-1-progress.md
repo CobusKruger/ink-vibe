@@ -14,7 +14,7 @@ that (R9).
 | 02 | my-profiel | A | queued | | INK captured authenticated; header excluded from diff |
 | 03 | ontdek | A | in progress — batch 1 | | |
 | 04 | skryf | A | in progress — batch 1 | | |
-| 05 | uitdaging-enkel | A | in progress — batch 1 | | |
+| 05 | uitdaging-enkel | A | **done** | `7637a50` · lovable `a5021ae` | Resources = disclosed SCOPE gap; 64 ids pair; F10 ("The Prompt" h2) needs an owner call — MISSING unless the Story 12.1 disclosure covers it; closed (`is-gesluit`) state not captured |
 | 06 | skrywer | A | queued | | |
 | 07 | lees-storie | A | queued | | |
 | 08a | biblioteek | A | queued | | shares Lovable `/library` with 08b |
@@ -53,7 +53,7 @@ Fix these between batches, never while subagents are running.
 | # | Found on | Issue | Status |
 |---|---|---|---|
 | T1 | row 01 | `determinism-check.sh` does `rm -rf tmp/determinism` — parallel agents delete each other's gate runs. Needs a per-page output dir. Row 01 worked around it with a page-private copy. | open |
-| T2 | row 01 | `run.sh primitives` misses Lovable `asChild` buttons, class-less eyebrows and INK icon tiles, and includes header/footer nodes. Row 01 built its register with a page-local script using the same property set. Every later row likely needs the same compensation. | open |
+| T2 | rows 01, 05 | `run.sh primitives` misses Lovable `asChild` buttons/links, class-less eyebrows, INK icon tiles and INK `-skakel`/`-tipe` classes, and includes header/footer nodes. Row 01 built its register with a page-local script using the same property set. Every later row likely needs the same compensation. | open |
 | T3 | row 03 | `capture.mjs` waited on every incomplete image, so a lazy `<img>` in a `display:none` tab panel hung the capture forever. Row 03 patched it to wait only on rendered images (against its brief, which forbade harness edits; the fix is sound and leaves computed values untouched). | patched, uncommitted — lands with row 03 |
 
 ## Log
