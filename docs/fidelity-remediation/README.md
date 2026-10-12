@@ -488,6 +488,7 @@ docs/fidelity-remediation/
   agent-brief.md                  ← the page inventory + execution instruction.
                                      OWNER-EDITED — treat its mapping as authoritative.
   stage-1-kickoff.md              ← paste-ready brief to start the audit
+  stage-1-progress.md             ← live per-row status + fan-out mechanics (lead-maintained)
   harness-worklist.md             ← capture-harness tool contract + environment facts
   findings/
     00-tuisblad-spine.md          ← first finding (also the method's worked example)

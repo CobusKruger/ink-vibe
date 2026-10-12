@@ -1,5 +1,13 @@
 # Theme Visual-Fidelity Rework — Plan
 
+> **SUPERSEDED (2026-09-23).** Fidelity work now runs under the staged process in
+> `docs/fidelity-remediation/README.md`, with live status in
+> `docs/fidelity-remediation/stage-1-progress.md`. This file is kept as history. Its
+> "done" rows were never trustworthy (see its own header), and its environment notes are
+> stale (e.g. `./tmp/wpcli.sh` no longer exists). The open items under "Known outstanding
+> items" near the end are the one part still worth reading — several are functional, not
+> styling, and are not yet tracked elsewhere.
+
 **Date:** 2026-07-19 (original diagnosis) → 2026-08-31 (Post-Epic-19 verification pass) → 2026-09-02
 (corrected-method rewrite) → **2026-09-03 (third pass, in progress)**. This file is the running tracking
 log; previous versions described work that was later found to be under-verified — twice now (see "How
