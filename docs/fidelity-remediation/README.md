@@ -263,6 +263,23 @@ form-field  form-label  form-hint  search-field  filter-chip  tab
 avatar  meta-row  count-chip  link-underline
 ```
 
+Added during row 00 (`tuisblad`, `findings/00-tuisblad-primitives.md`):
+
+```
+heading              h1–h6 type treatment (the tool already emits this kind)
+search-button        emitted by run.sh primitives; listed so tool and vocabulary agree
+button-sage-outline  the is-style-ink-sage-outline recipe and its replicas
+button-icon-label    icon + label layout modifier (.ink-btn-icon); NOT an icon-only
+                     button, which stays `button-icon`
+icon-tile            small tinted square holding an icon (trophy / crown tiles)
+meta-item            icon + muted small text (date, read-time, count)
+nav-link             muted navigation link — header nav and footer link lists
+tier-chip            sponsor tier chip (goud / silwer / brons)
+```
+
+`run.sh primitives` also emits a generic `button` fallback. It is not a kind: resolve
+each such row to a variant before it enters the register.
+
 A `load_scope` that is narrower than the set of pages in `used_in` is a live bug — flag it
 in `note`. That single cross-check is what surfaced `PRIM-1`.
 
