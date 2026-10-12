@@ -292,6 +292,24 @@ nav-link             muted navigation link — header nav and footer link lists
 tier-chip            sponsor tier chip (goud / silwer / brons)
 ```
 
+Added during row 01 (`gemeenskap`, `findings/01-gemeenskap-primitives.md`):
+
+```
+step-badge           small numbered circle marking a step in an ordered list (1, 2, 3);
+                     distinct from icon-tile (holds a numeral, not an icon) and from
+                     count-chip (an ordinal marker, not a count)
+accent-block         text block set off by a coloured left rule (principle / pull-quote
+                     treatment); related to, but not the same as, is-style-emphasis
+                     (which adds a tinted background)
+```
+
+Added during row 05 (`uitdaging-enkel`, `findings/05-uitdaging-enkel-primitives.md`):
+
+```
+list-bullet          small filled dot marking a list item (rules-list bullet); the tool
+                     classifies it `pill` (rounded-full) but it carries no text
+```
+
 `run.sh primitives` also emits a generic `button` fallback. It is not a kind: resolve
 each such row to a variant before it enters the register.
 

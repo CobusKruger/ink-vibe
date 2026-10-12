@@ -1,0 +1,69 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+gemeenskap-hero,src/pages/Community.tsx,88,wp-content/themes/ink-foundation/patterns/gemeenskap.php,51,hero section,paired,pre-existing id both sides
+gemeenskap-hero-inner,src/pages/Community.tsx,90,wp-content/themes/ink-foundation/patterns/gemeenskap.php,53,centred reading column,paired,Lovable max-w-3xl box inside a .container div; INK constrained-layout group (contentSize 48rem caps each child; the group itself is full width). Lovable .container wrapper has no INK node (S-1)
+gemeenskap-hero-eyebrow,src/pages/Community.tsx,91,wp-content/themes/ink-foundation/patterns/gemeenskap.php,55,eyebrow,paired,pre-existing; Lovable inline-block <span> vs INK block <p>
+gemeenskap-hero-h1,src/pages/Community.tsx,94,wp-content/themes/ink-foundation/patterns/gemeenskap.php,59,h1,paired,pre-existing
+gemeenskap-hero-intro,src/pages/Community.tsx,97,wp-content/themes/ink-foundation/patterns/gemeenskap.php,63,lede,paired,pre-existing
+gemeenskap-hero-actions,src/pages/Community.tsx,101,wp-content/themes/ink-foundation/patterns/gemeenskap.php,67,button row,paired,INK core/buttons flex row
+gemeenskap-hero-btn-primary,src/pages/Community.tsx,103,wp-content/themes/ink-foundation/patterns/gemeenskap.php,69,primary lg button (writer),paired,pre-existing; INK <a> inside div.wp-block-button.is-style-ink-primary; href /registreer vs Lovable /write
+gemeenskap-hero-btn-secondary,src/pages/Community.tsx,109,wp-content/themes/ink-foundation/patterns/gemeenskap.php,73,outline lg button (reader),paired,pre-existing; INK page-local .ink-gemeenskap-btn-neutral; href /registreer vs Lovable /browse
+gemeenskap-value,src/pages/Community.tsx,120,wp-content/themes/ink-foundation/patterns/gemeenskap.php,83,value-props section,paired,Lovable .container section; INK alignfull section with surface-alt background
+gemeenskap-value-grid,src/pages/Community.tsx,121,wp-content/themes/ink-foundation/patterns/gemeenskap.php,85,two-card grid,paired,MECHANISM: CSS grid vs core/columns flex
+gemeenskap-value-col,,,wp-content/themes/ink-foundation/patterns/gemeenskap.php,87,core/column wrapper (first),missing-lovable,INK-only wrapper around each card (core/columns)
+gemeenskap-card-writers,src/pages/Community.tsx,123,wp-content/themes/ink-foundation/patterns/gemeenskap.php,89,writers card,paired,pre-existing
+gemeenskap-card-writers-head,src/pages/Community.tsx,124,wp-content/themes/ink-foundation/patterns/gemeenskap.php,91,icon + h2 row,paired,
+gemeenskap-card-writers-icon,src/pages/Community.tsx,125,wp-content/themes/ink-foundation/patterns/gemeenskap.php,91,icon tile,paired,pre-existing; Lovable <div> vs INK <span>
+gemeenskap-card-writers-h2,src/pages/Community.tsx,128,wp-content/themes/ink-foundation/patterns/gemeenskap.php,91,card h2,paired,pre-existing
+gemeenskap-card-writers-intro,src/pages/Community.tsx,130,wp-content/themes/ink-foundation/patterns/gemeenskap.php,95,card intro paragraph,paired,
+gemeenskap-card-writers-list,src/pages/Community.tsx,133,wp-content/themes/ink-foundation/patterns/gemeenskap.php,99,benefit list,paired,Lovable space-y-6 block vs INK flex column gap
+gemeenskap-card-writers-item,src/pages/Community.tsx,135,wp-content/themes/ink-foundation/patterns/gemeenskap.php,100,benefit item (first),paired,
+gemeenskap-card-writers-item-icon,src/pages/Community.tsx,136,,,benefit icon (first),missing-ink,COVERAGE GAP not a MISSING element: INK draws the svg (gemeenskap.php:100 via ink_foundation_icon()) but the helper has no attribute seam; adding one is a code change beyond an attribute
+gemeenskap-card-writers-item-title,src/pages/Community.tsx,138,wp-content/themes/ink-foundation/patterns/gemeenskap.php,100,benefit title h3,paired,
+gemeenskap-card-writers-item-text,src/pages/Community.tsx,139,wp-content/themes/ink-foundation/patterns/gemeenskap.php,100,benefit body,paired,
+gemeenskap-card-readers,src/pages/Community.tsx,147,wp-content/themes/ink-foundation/patterns/gemeenskap.php,114,readers card,paired,second instance; root only (inner structure identical to writers card)
+gemeenskap-stats,src/pages/Community.tsx,173,,,statistics band,scope,"S-2: section absent on INK; disclosed DEFERRED (pending a live-data ink-core block), gemeenskap.php:10-26 — owner decision"
+gemeenskap-stats-grid,src/pages/Community.tsx,175,,,stats grid,scope,S-2
+gemeenskap-stat,src/pages/Community.tsx,182,,,stat (first),scope,S-2
+gemeenskap-stat-value,src/pages/Community.tsx,183,,,stat number,scope,S-2
+gemeenskap-stat-label,src/pages/Community.tsx,184,,,stat label,scope,S-2
+gemeenskap-spotlight,src/pages/Community.tsx,192,,,spotlight section,scope,"S-3: section absent on INK; disclosed DEFERRED, gemeenskap.php:10-26 — owner decision"
+gemeenskap-spotlight-eyebrow,src/pages/Community.tsx,195,,,eyebrow,scope,S-3
+gemeenskap-spotlight-h2,src/pages/Community.tsx,198,,,h2,scope,S-3
+gemeenskap-spotlight-grid,src/pages/Community.tsx,203,,,two-card grid,scope,S-3
+gemeenskap-spotlight-card,src/pages/Community.tsx,208,,,featured-writer card (first),scope,S-3; Lovable <a> card
+gemeenskap-spotlight-card-label,src/pages/Community.tsx,210,,,card label,scope,S-3
+gemeenskap-spotlight-card-quote-icon,src/pages/Community.tsx,211,,,quote icon,scope,S-3
+gemeenskap-spotlight-card-quote,src/pages/Community.tsx,212,,,quote,scope,S-3
+gemeenskap-spotlight-card-author,src/pages/Community.tsx,216,,,author row,scope,S-3
+gemeenskap-spotlight-card-avatar,src/pages/Community.tsx,217,,,initial avatar,scope,S-3
+gemeenskap-spotlight-card-name,src/pages/Community.tsx,221,,,author name,scope,S-3
+gemeenskap-spotlight-card-meta,src/pages/Community.tsx,224,,,author meta line,scope,S-3
+gemeenskap-hiw,src/pages/Community.tsx,253,wp-content/themes/ink-foundation/patterns/gemeenskap.php,141,how-it-works section,paired,pre-existing
+gemeenskap-hiw-inner,src/pages/Community.tsx,255,wp-content/themes/ink-foundation/patterns/gemeenskap.php,143,content column,paired,Lovable max-w-5xl; INK alignwide constrained group
+gemeenskap-hiw-head,src/pages/Community.tsx,256,wp-content/themes/ink-foundation/patterns/gemeenskap.php,145,h2 + intro group,paired,
+gemeenskap-hiw-h2,src/pages/Community.tsx,257,wp-content/themes/ink-foundation/patterns/gemeenskap.php,147,h2,paired,pre-existing
+gemeenskap-hiw-intro,src/pages/Community.tsx,260,wp-content/themes/ink-foundation/patterns/gemeenskap.php,151,intro,paired,
+gemeenskap-hiw-grid,src/pages/Community.tsx,263,wp-content/themes/ink-foundation/patterns/gemeenskap.php,157,two-column grid,paired,MECHANISM: CSS grid vs core/columns flex
+gemeenskap-hiw-col,src/pages/Community.tsx,264,wp-content/themes/ink-foundation/patterns/gemeenskap.php,159,column (readers),paired,
+gemeenskap-hiw-col-h3,src/pages/Community.tsx,265,wp-content/themes/ink-foundation/patterns/gemeenskap.php,161,column h3 with icon,paired,
+gemeenskap-hiw-steps,src/pages/Community.tsx,268,wp-content/themes/ink-foundation/patterns/gemeenskap.php,162,ordered steps,paired,
+gemeenskap-hiw-step-li,src/pages/Community.tsx,274,wp-content/themes/ink-foundation/patterns/gemeenskap.php,163,step (first),paired,INK id pre-existing; Lovable id added to match (Lovable had only -step-badge)
+gemeenskap-hiw-step-badge,src/pages/Community.tsx,275,,,numbered step badge,missing-ink,"MECHANISM: INK draws the badge as .ink-gemeenskap-steps li::before (pseudo-element, cannot carry an id or be captured); Lovable is a DOM node"
+gemeenskap-hiw-step-title,src/pages/Community.tsx,279,wp-content/themes/ink-foundation/patterns/gemeenskap.php,163,step title,paired,Lovable <div> vs INK <strong>
+gemeenskap-hiw-step-text,src/pages/Community.tsx,280,wp-content/themes/ink-foundation/patterns/gemeenskap.php,163,step description,paired,Lovable <p> vs INK <span>
+gemeenskap-principles,src/pages/Community.tsx,315,wp-content/themes/ink-foundation/patterns/gemeenskap.php,191,principles section,paired,pre-existing
+gemeenskap-principles-inner,src/pages/Community.tsx,316,wp-content/themes/ink-foundation/patterns/gemeenskap.php,193,content column,paired,
+gemeenskap-principles-head,src/pages/Community.tsx,317,wp-content/themes/ink-foundation/patterns/gemeenskap.php,195,eyebrow + h2 group,paired,
+gemeenskap-principles-eyebrow,src/pages/Community.tsx,318,wp-content/themes/ink-foundation/patterns/gemeenskap.php,197,eyebrow,paired,Lovable <span> vs INK <p>
+gemeenskap-principles-h2,src/pages/Community.tsx,321,wp-content/themes/ink-foundation/patterns/gemeenskap.php,201,h2,paired,pre-existing
+gemeenskap-principles-grid,src/pages/Community.tsx,323,wp-content/themes/ink-foundation/patterns/gemeenskap.php,207,principles grid,paired,STRUCTURE: one 2x2 grid vs a group holding two core/columns rows
+gemeenskap-principle-card,src/pages/Community.tsx,325,wp-content/themes/ink-foundation/patterns/gemeenskap.php,213,principle (first),paired,pre-existing
+gemeenskap-principle-title,src/pages/Community.tsx,326,wp-content/themes/ink-foundation/patterns/gemeenskap.php,215,principle h3,paired,
+gemeenskap-principle-text,src/pages/Community.tsx,327,wp-content/themes/ink-foundation/patterns/gemeenskap.php,219,principle body,paired,
+gemeenskap-cta,src/pages/Community.tsx,335,wp-content/themes/ink-foundation/patterns/gemeenskap.php,287,closing CTA section,paired,pre-existing
+gemeenskap-cta-inner,src/pages/Community.tsx,336,wp-content/themes/ink-foundation/patterns/gemeenskap.php,289,content column,paired,Lovable .container (only the <p> is max-w-xl); INK constrained group contentSize 36rem caps every child
+gemeenskap-cta-h2,src/pages/Community.tsx,337,wp-content/themes/ink-foundation/patterns/gemeenskap.php,291,h2,paired,pre-existing
+gemeenskap-cta-text,src/pages/Community.tsx,338,wp-content/themes/ink-foundation/patterns/gemeenskap.php,295,paragraph,paired,
+gemeenskap-cta-actions,src/pages/Community.tsx,341,wp-content/themes/ink-foundation/patterns/gemeenskap.php,299,button row,paired,
+gemeenskap-cta-btn-primary,src/pages/Community.tsx,343,wp-content/themes/ink-foundation/patterns/gemeenskap.php,301,primary lg button,paired,pre-existing; href /registreer vs /write
+gemeenskap-cta-btn-secondary,src/pages/Community.tsx,354,wp-content/themes/ink-foundation/patterns/gemeenskap.php,305,inverted outline lg button,paired,pre-existing; INK page-local .ink-gemeenskap-btn-neutral-dark; href /lees vs /browse
