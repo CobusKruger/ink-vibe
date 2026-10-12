@@ -177,9 +177,12 @@ for (const width of args.viewports) {
       await new Promise((r) => setTimeout(r, 40));
     }
     window.scrollTo(0, 0);
+    // Only wait on RENDERED images: a loading="lazy" <img> inside a display:none
+    // subtree (e.g. Ontdek's hidden #skrywers tab panel) is never fetched, so its
+    // load/error event never fires and an unfiltered wait hangs forever (row 03).
     await Promise.all(
       Array.from(document.images)
-        .filter((i) => !i.complete)
+        .filter((i) => !i.complete && i.getClientRects().length > 0)
         .map((i) => new Promise((r) => { i.onload = i.onerror = r; })),
     );
   });
