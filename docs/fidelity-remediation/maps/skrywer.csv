@@ -1,0 +1,88 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+skrywer-main,src/pages/Writer.tsx,181,wp-content/themes/ink-foundation/templates/author.html,4,page <main>,paired,INK: core/group main with constrained layout (contentSize 768px) + s-48/s-24 padding; Lovable flex-1 main with no width limit (F1)
+skrywer-profiel,,,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,423,outer profile <section>,missing-lovable,F1: INK wraps every region in one section; Lovable's regions are sibling <section>s of <main>
+skrywer-kop,src/pages/Writer.tsx,183,,,cover + identity <section>,missing-ink,F1: no INK section wrapper; cover and header are children of skrywer-profiel
+skrywer-cover,src/pages/Writer.tsx,187,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,429,cover banner,paired,F23 MECHANISM: Lovable CSS background-image on the div; INK an <img> inside the div. Data-dependent: INK omits it when the writer has no cover
+skrywer-cover-image,,,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,430,cover <img>,missing-lovable,F23 MECHANISM: Lovable paints the image as background-image on skrywer-cover
+skrywer-cover-gradient,src/pages/Writer.tsx,189,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,431,gradient overlay,paired,
+skrywer-kop-container,src/pages/Writer.tsx,192,,,identity container,missing-ink,F1: INK has no per-section container (the template main constrains everything)
+skrywer-identity,src/pages/Writer.tsx,193,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,436,identity row (avatar + text + actions),paired,Lovable <div> (column <md / row md+); INK <header> (always row; wraps)
+skrywer-avatar,src/pages/Writer.tsx,198,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,441,avatar <img>,paired,INK: core get_avatar() <img>; id stamped by preg_replace in toHtml
+skrywer-avatar-wrap,,,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,442,avatar wrapper div,missing-lovable,F24 STRUCTURE: extra wrapper
+skrywer-identity-text,src/pages/Writer.tsx,200,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,445,identity text column,paired,F4/F25: INK column also contains the actions
+skrywer-genres,src/pages/Writer.tsx,201,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,448,genre pill row,paired,pre-existing id (both sides). Data-dependent: INK genres = readable post types the writer has published
+skrywer-genre-pill,src/pages/Writer.tsx,207,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,451,genre pill (first),paired,pre-existing id; narrowed to the FIRST pill on both sides (diff.mjs pairs the last duplicate)
+skrywer-name,src/pages/Writer.tsx,215,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,456,writer name h1,paired,pre-existing id
+skrywer-tagline,src/pages/Writer.tsx,221,,,italic quoted tagline,missing-ink,F2 MISSING: Social/Tagline.php owns the data but toHtml never renders it
+skrywer-gradering,,,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,460,Gradering badge under name,missing-lovable,F5 SCOPE: INK tier system; data-dependent (Brons)
+skrywer-meta,src/pages/Writer.tsx,225,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,463,meta row,paired,
+skrywer-meta-location,src/pages/Writer.tsx,226,,,location meta item,missing-ink,F3 MISSING: no location field in the INK model
+skrywer-meta-joined,src/pages/Writer.tsx,230,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,467,joined meta item,paired,pre-existing Lovable id; INK has no icon (F3)
+skrywer-meta-followers,,,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,464,follower count in meta row,missing-lovable,F6 STRUCTURE: Lovable shows followers as a stats-strip stat
+skrywer-actions,src/pages/Writer.tsx,237,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,472,follow + share actions,paired,F4 STRUCTURE: Lovable third column; INK inside the text column
+skrywer-follow-btn,src/pages/Writer.tsx,241,wp-content/plugins/ink-core/src/Social/FollowToggle.php,110,Follow button,paired,pre-existing id. INK renders it only for a logged-in non-self viewer (F22) so it is absent from the anon captures; FollowToggle emits this id wherever it renders (ReadingAuthorCard / FollowingList too)
+skrywer-share-btn,src/pages/Writer.tsx,245,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,483,Share button,paired,pre-existing id. Lovable has a Share2 icon; INK text only
+skrywer-stats,src/pages/Writer.tsx,255,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,494,stats strip band,paired,F9: INK one node is band + grid
+skrywer-stats-grid,src/pages/Writer.tsx,256,,,stats container grid,missing-ink,F9 STRUCTURE: wrapper count
+skrywer-stat-rating,src/pages/Writer.tsx,257,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,498,reader-rating stat,paired,pre-existing INK id. Data-dependent: INK renders it only with >=1 approved rating; absent for cobus (F7)
+skrywer-stat-rating-label,src/pages/Writer.tsx,258,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,499,rating stat label,paired,data-dependent (F7)
+skrywer-rating-value,src/pages/Writer.tsx,262,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,500,rating value,paired,pre-existing id; data-dependent (F7)
+skrywer-rating-stars,src/pages/Writer.tsx,265,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,501,rating stars,paired,pre-existing id; data-dependent (F7). Lovable svg stars; INK text glyphs
+skrywer-rating-count,src/pages/Writer.tsx,280,,,"""N reader reviews"" line",missing-ink,F7 MISSING
+skrywer-stat-works,src/pages/Writer.tsx,284,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,513,works stat,paired,pre-existing id; data-dependent (rendered only when the writer has published work)
+skrywer-stat-works-label,src/pages/Writer.tsx,387,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,514,works stat label,paired,Lovable: StatBlock derives `${auditId}-label`
+skrywer-stat-works-value,src/pages/Writer.tsx,390,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,515,works stat value,paired,Lovable: StatBlock derives `${auditId}-value`
+skrywer-stat-works-detail,,,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,516,per-type breakdown line,missing-lovable,F8 SCOPE: ratified copy-sheet note 2 (SkrywerProfiel.php:194-196)
+skrywer-stat-followers,src/pages/Writer.tsx,285,,,followers stat,missing-ink,F6 STRUCTURE: INK shows the count in the meta row
+skrywer-stat-followers-label,src/pages/Writer.tsx,387,,,followers stat label,missing-ink,F6
+skrywer-stat-followers-value,src/pages/Writer.tsx,390,,,followers stat value,missing-ink,F6
+skrywer-stat-likes,src/pages/Writer.tsx,286,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,521,likes / Hartjies stat,paired,data-dependent: INK renders it only when hartjies > 0
+skrywer-stat-likes-label,src/pages/Writer.tsx,387,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,522,likes stat label,paired,
+skrywer-stat-likes-value,src/pages/Writer.tsx,390,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,523,likes stat value,paired,
+skrywer-oor-prestasies-grid,src/pages/Writer.tsx,293,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,533,about + accomplishments grid,paired,pre-existing id. Lovable <section class=container>; INK <div>
+skrywer-oor,src/pages/Writer.tsx,295,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,537,about column,paired,data-dependent: INK omits it when the bio is empty
+skrywer-oor-title,src/pages/Writer.tsx,296,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,539,About heading h2,paired,
+skrywer-bio,src/pages/Writer.tsx,299,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,540,bio paragraph,paired,pre-existing id; data-dependent (cobus's bio is one line)
+skrywer-prestasies,src/pages/Writer.tsx,304,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,546,accomplishments rail,paired,pre-existing id. Lovable <aside>; INK <div>. INK empty-shell branch at :568 renders for cobus
+skrywer-prestasies-title,src/pages/Writer.tsx,305,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,547,accomplishments heading,paired,F10 STRUCTURE: Lovable h3 eyebrow; INK h2. Also stamped on the empty-shell h2 at :568
+skrywer-prestasies-list,src/pages/Writer.tsx,308,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,548,accomplishment rows,paired,data-dependent: absent for cobus (no Gradering history) (F11)
+skrywer-prestasie,src/pages/Writer.tsx,401,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,553,accomplishment card (first),paired,first instance only; data-dependent (F11)
+skrywer-prestasie-body,src/pages/Writer.tsx,402,,,CardContent wrapper,missing-ink,F11 STRUCTURE: INK row has no inner wrapper
+skrywer-prestasie-icon,src/pages/Writer.tsx,403,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,554,icon tile,paired,data-dependent (F11). Lovable lucide svg per type; INK one ★ glyph
+skrywer-prestasie-text,src/pages/Writer.tsx,406,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,555,label + detail column,paired,data-dependent (F11)
+skrywer-prestasie-label,src/pages/Writer.tsx,407,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,556,accomplishment label,paired,data-dependent (F11)
+skrywer-prestasie-detail,src/pages/Writer.tsx,408,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,559,accomplishment detail,paired,data-dependent (F11)
+skrywer-werk,src/pages/Writer.tsx,317,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,576,selected-works band,paired,data-dependent: INK renders it only with >=1 pinned work
+skrywer-werk-container,src/pages/Writer.tsx,318,,,works container,missing-ink,F12 STRUCTURE
+skrywer-werk-head,src/pages/Writer.tsx,319,,,heading row (text + see-all link),missing-ink,F12 STRUCTURE
+skrywer-werk-head-text,src/pages/Writer.tsx,320,,,kicker + h2 column,missing-ink,F12 STRUCTURE
+skrywer-werk-kicker,src/pages/Writer.tsx,321,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,577,kicker,paired,Lovable flex <div> holding icon + span; INK <p> text
+skrywer-werk-kicker-icon,src/pages/Writer.tsx,322,,,BookOpen icon,missing-ink,F13 MISSING
+skrywer-werk-kicker-text,src/pages/Writer.tsx,323,,,kicker text span,missing-ink,F13: INK puts the text directly in the <p>
+skrywer-werk-title,src/pages/Writer.tsx,325,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,579,works h2,paired,
+skrywer-werk-all-link,src/pages/Writer.tsx,332,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,619,see-all link,paired,F12: Lovable in the heading row (hidden <768); INK after the grid
+skrywer-werk-grid,src/pages/Writer.tsx,338,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,580,works grid,paired,Lovable <div>; INK <ul>
+skrywer-workcard,src/pages/Writer.tsx,420,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,591,work card (first),paired,pre-existing id; narrowed to the FIRST card on both sides. Lovable Card <div>; INK <li>
+skrywer-workcard-link,src/pages/Writer.tsx,421,,,whole-card link,missing-ink,F14 STRUCTURE: INK links only the title
+skrywer-workcard-body,src/pages/Writer.tsx,422,,,CardContent wrapper,missing-ink,F14 STRUCTURE
+skrywer-workcard-meta,src/pages/Writer.tsx,423,,,type + time + pinned row,missing-ink,F14 STRUCTURE
+skrywer-workcard-type,src/pages/Writer.tsx,424,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,592,type pill,paired,F17: Lovable pill has a type icon
+skrywer-workcard-time,src/pages/Writer.tsx,430,,,read time,missing-ink,F15 MISSING
+skrywer-workcard-pinned,src/pages/Writer.tsx,435,,,Pinned badge,scope,F16 SCOPE: INK's list is pinned works only
+skrywer-workcard-title,src/pages/Writer.tsx,442,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,593,card title,paired,pre-existing id; Lovable <h3>; INK <a> (no heading element)
+skrywer-workcard-excerpt,src/pages/Writer.tsx,446,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,596,excerpt,paired,data-dependent: INK omits an empty excerpt
+skrywer-workcard-footer,src/pages/Writer.tsx,449,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,599,card footer,paired,
+skrywer-workcard-age,src/pages/Writer.tsx,450,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,602,publish age,paired,
+skrywer-workcard-stats,src/pages/Writer.tsx,451,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,605,count group,paired,
+skrywer-workcard-stat,src/pages/Writer.tsx,452,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,606,first count (likes),paired,F18 MECHANISM: Lovable svg icon; INK text glyph
+skrywer-lesergradering,,,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,695,Lesergradering section,missing-lovable,F19 SCOPE (Story 9.6)
+skrywer-lesergradering-title,,,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,696,Lesergradering h2,missing-lovable,F19
+skrywer-lesergradering-empty,,,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,699,no-reviews empty state,missing-lovable,F19; data-dependent (empty for cobus)
+skrywer-cta,src/pages/Writer.tsx,347,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,631,closing CTA,paired,Lovable <section class=container>; INK <div>
+skrywer-cta-inner,src/pages/Writer.tsx,348,,,max-w-3xl centred inner,missing-ink,F21 STRUCTURE
+skrywer-cta-title,src/pages/Writer.tsx,349,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,633,CTA h2,paired,
+skrywer-cta-text,src/pages/Writer.tsx,352,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,634,CTA paragraph,paired,
+skrywer-cta-actions,src/pages/Writer.tsx,356,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,635,CTA button row,paired,
+skrywer-cta-follow-btn,src/pages/Writer.tsx,361,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,640,CTA Follow button,paired,pre-existing Lovable id. INK reuses the FollowToggle markup and re-keys its id here; logged-in only (F22) so absent from the anon captures
+skrywer-cta-discover-btn,src/pages/Writer.tsx,366,wp-content/plugins/ink-core/src/Social/SkrywerProfiel.php,643,Discover-more-writers button,paired,Lovable <Button asChild> <Link>; INK <a>
+skrywer-oordeel-vorm,,,wp-content/plugins/ink-core/src/Social/RatingForm.php,100,rating submission form (ink/leseroordeel-vorm),scope,F20 SCOPE; logged-in non-self only; not tagged (never in an anon capture)
