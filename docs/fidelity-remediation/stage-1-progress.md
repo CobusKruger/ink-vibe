@@ -19,8 +19,8 @@ that (R9).
 | 07 | lees-storie | A | **done** | `767803f` · lovable `58306c5` | All 6 sections present; 82 ids pair; generic `reading-*` ids on shared reading components for row 22. Artikel not captured. Not captured: highlight mark (needs a selection), logged-in follow, drop-cap pseudo. `reading-author-follow` can't pair — the button already carries row 06's `skrywer-follow-btn` (FollowToggle stamps it everywhere). Owner calls: read time vs date (S-5/S-6), share button (S-8), confirm Reply/upvote disclosures (S-15/S-16) |
 | 08a | biblioteek | A | **done (partial)** | `1b9c83d` · lovable `c4df0b2` | **Cards not measured:** live archive renders its empty state (only QA-fixture posts exist, excluded outside `/qa-bloks/`). Owner call: seed real content or approve a capture route. Also: "Soek" button SCOPE?; cover-image divergence rests on an implementer comment; copy — h1 is just "Biblioteek", bylines lack "deur" |
 | 08b | opleiding | A | **done (partial)** | `1b9c83d` · lovable `c4df0b2` | Same empty-state gap. Search button renders in Arial (no font-family) |
-| 09a | meld-aan | A | in progress — batch 3 | | one agent does 09a + 09b (shared Lovable `/auth`; sign-up tab via `--click`) |
-| 09b | registreer | A | in progress — batch 3 | | |
+| 09a | meld-aan | A | **done** | see 09b | 12 ids pair. Owner calls: tabs split → SCOPE or STRUCTURE (M4/R4); should auth pages carry header/footer (M1/R1); remember-me rests on an implementer comment (M10); brand lock-up + back link (M2/M13) |
+| 09b | registreer | A | **done** | `5dd2136` · lovable `31db630` (09a + 09b) | 8 ids pair. **Owner call:** registreer asks username + e-mail with no password (WP core) vs Lovable's e-mail + password (R9). Not captured: fout/voltooi notices, focus/hover, toast, social section (gated off) |
 | 10 | wagwoord-herstel | A | queued | | |
 | 11 | wagwoord-terugstel | C | queued | | |
 | 12 | vier-nul-vier | C | queued | | |
