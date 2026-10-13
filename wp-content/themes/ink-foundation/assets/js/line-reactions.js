@@ -88,6 +88,10 @@
 		btn.setAttribute( 'aria-label', cfg.label || 'Merk hierdie reël' );
 		btn.setAttribute( 'aria-pressed', 'false' );
 		btn.innerHTML = HEART_SVG;
+		// Fidelity-audit join key (maps/lees-gedig.csv): first line's heart only.
+		if ( ! document.querySelector( '[data-audit-id="gedig-line-heart"]' ) ) {
+			btn.setAttribute( 'data-audit-id', 'gedig-line-heart' );
+		}
 
 		var reacted = cfg.reactedLines || [];
 		if ( -1 !== reacted.indexOf( line ) ) {

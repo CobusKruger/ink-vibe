@@ -318,8 +318,12 @@ final class GedigBody {
 		$tokens  = self::tokenize( $body );
 		$allowed = ProseFormat::allowedInlineTags();
 
-		$html        = '<div class="ink-gedig">';
+		$html        = '<div class="ink-gedig" data-audit-id="gedig-poem">';
 		$stanza_open = false;
+		// Fidelity-audit join keys (docs/fidelity-remediation/maps/lees-gedig.csv):
+		// first stanza / first content line only, so each id occurs once per page.
+		$first_stanza = true;
+		$first_line   = true;
 
 		foreach ( $tokens as $token ) {
 			if ( 'blank' === $token['type'] ) {
@@ -360,8 +364,9 @@ final class GedigBody {
 			}
 
 			if ( ! $stanza_open ) {
-				$html       .= '<div class="ink-gedig__stanza">';
-				$stanza_open = true;
+				$html        .= '<div class="ink-gedig__stanza"' . ( $first_stanza ? ' data-audit-id="gedig-stanza"' : '' ) . '>';
+				$stanza_open  = true;
+				$first_stanza = false;
 			}
 
 			$classes = 'ink-gedig__line';
@@ -377,9 +382,10 @@ final class GedigBody {
 			// `PoetryReader.tsx` wraps its line text in an identical
 			// `relative inline-block` span for the same reason), not pinned to a
 			// fixed column unrelated to line length.
-			$html .= '<p class="' . $classes . '" data-ink-line="' . esc_attr( (string) $token['index'] ) . '" data-audit-id="gedig-stanza-line">'
-				. '<span class="ink-gedig__line-text">' . $rendered . '</span>'
+			$html      .= '<p class="' . $classes . '" data-ink-line="' . esc_attr( (string) $token['index'] ) . '"' . ( $first_line ? ' data-audit-id="gedig-stanza-line"' : '' ) . '>'
+				. '<span class="ink-gedig__line-text"' . ( $first_line ? ' data-audit-id="gedig-line-text"' : '' ) . '>' . $rendered . '</span>'
 				. '</p>';
+			$first_line = false;
 		}
 
 		if ( $stanza_open ) {

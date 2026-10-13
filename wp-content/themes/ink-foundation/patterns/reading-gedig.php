@@ -79,12 +79,12 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 
 $ink_gedig_feather_svg = '<span aria-hidden="true" style="display:inline-flex;vertical-align:-2px;margin-right:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" x2="2" y1="8" y2="22"/><line x1="17.5" x2="9" y1="15" y2="15"/></svg></span>';
 
-$ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex;vertical-align:-2px;margin-right:4px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></span>';
+$ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex;vertical-align:-2px;margin-right:4px"><svg data-audit-id="reading-hint-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></span>';
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}},"border":{"bottom":{"width":"1px","color":"var:preset|color|border","style":"solid"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24);border-bottom-width:1px;border-bottom-color:var(--wp--preset--color--border);border-bottom-style:solid;background-color:color-mix(in srgb, var(--wp--preset--color--surface) 50%, transparent)">
+<section data-audit-id="reading-header" class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24);border-bottom-width:1px;border-bottom-color:var(--wp--preset--color--border);border-bottom-style:solid;background-color:color-mix(in srgb, var(--wp--preset--color--surface) 50%, transparent)">
 	<!-- wp:group {"className":"ink-gedig-intro","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained","contentSize":"768px"}} -->
-	<div class="wp-block-group ink-gedig-intro">
+	<div data-audit-id="reading-header-inner" class="wp-block-group ink-gedig-intro">
 		<!-- wp:paragraph {"className":"ink-lees-tipe","textAlign":"center","style":{"typography":{"fontStyle":"normal","fontWeight":"500"}},"fontSize":"sm","textColor":"accent"} -->
 		<p data-audit-id="gedig-badge" class="ink-lees-tipe has-text-align-center has-accent-color has-text-color has-sm-font-size" style="font-style:normal;font-weight:500;background-color:color-mix(in srgb, currentColor 15%, transparent)"><?php echo $ink_gedig_feather_svg; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, hand-authored inline SVG, no user input */ ?><?php echo esc_html( $ink_type_label ); ?></p>
 		<!-- /wp:paragraph -->
@@ -92,13 +92,13 @@ $ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex;vert
 		<!-- wp:post-title {"level":1,"textAlign":"center","fontSize":"xxxxl","style":{"typography":{"fontStyle":"italic","fontWeight":"600","letterSpacing":"-0.9px","lineHeight":"1.111"}}} /-->
 
 		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-8"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
-		<div class="wp-block-group">
+		<div data-audit-id="reading-byline" class="wp-block-group">
 			<!-- wp:avatar {"size":40,"isLink":true,"style":{"border":{"radius":"9999px"}}} /-->
 
 			<!-- wp:post-author-name {"isLink":true,"fontSize":"md","textColor":"ink-text","style":{"typography":{"fontWeight":"500"}}} /-->
 
 			<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-			<p class="has-muted-text-color has-text-color has-md-font-size">•</p>
+			<p data-audit-id="reading-byline-sep" class="has-muted-text-color has-text-color has-md-font-size">•</p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:post-date {"fontSize":"md","textColor":"muted-text"} /-->
@@ -114,9 +114,9 @@ $ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex;vert
 <!-- /wp:group -->
 
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<section data-audit-id="reading-body" class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"576px"}} -->
-	<div class="wp-block-group">
+	<div data-audit-id="gedig-body-col" class="wp-block-group">
 		<!-- wp:ink/gedig-body /-->
 	</div>
 	<!-- /wp:group -->
@@ -124,7 +124,7 @@ $ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex;vert
 <!-- /wp:group -->
 
 <!-- wp:group {"lock":{"move":true,"remove":true},"className":"ink-reaksie-bar"} -->
-<div class="wp-block-group ink-reaksie-bar">
+<div data-audit-id="gedig-engagement-bar" class="wp-block-group ink-reaksie-bar">
 	<!-- wp:ink/reaksie-tellers {"variant":"enkel"} /-->
 
 	<!-- wp:ink/kommentaar-telling /-->
@@ -134,7 +134,7 @@ $ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex;vert
 <!-- /wp:group -->
 
 <!-- wp:group {"tagName":"section","className":"ink-outeur-kaart-band","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}},"border":{"top":{"width":"1px","color":"var:preset|color|border","style":"solid"},"bottom":{"width":"1px","color":"var:preset|color|border","style":"solid"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-outeur-kaart-band" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24);border-top-width:1px;border-top-color:var(--wp--preset--color--border);border-top-style:solid;border-bottom-width:1px;border-bottom-color:var(--wp--preset--color--border);border-bottom-style:solid;background-color:color-mix(in srgb, var(--wp--preset--color--secondary) 30%, transparent)">
+<section data-audit-id="reading-author-band" class="wp-block-group alignfull ink-outeur-kaart-band" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24);border-top-width:1px;border-top-color:var(--wp--preset--color--border);border-top-style:solid;border-bottom-width:1px;border-bottom-color:var(--wp--preset--color--border);border-bottom-style:solid;background-color:color-mix(in srgb, var(--wp--preset--color--secondary) 30%, transparent)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"672px"}} -->
 	<div class="wp-block-group">
 		<!-- wp:ink/outeur-kaart /-->
@@ -144,7 +144,7 @@ $ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex;vert
 <!-- /wp:group -->
 
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<section data-audit-id="reading-responses" class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"672px"}} -->
 	<div class="wp-block-group">
 		<!-- wp:ink/gemeenskapsreaksies /-->

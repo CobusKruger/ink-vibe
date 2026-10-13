@@ -1,0 +1,64 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+reading-header,src/pages/ReadStory.tsx,139,wp-content/themes/ink-foundation/patterns/reading-gedig.php,85,poem header band,paired,generic id from row 07; Lovable <div> bg-cream/50; INK <section> surface 50% (inline)
+reading-header-inner,src/pages/ReadStory.tsx,141,wp-content/themes/ink-foundation/patterns/reading-gedig.php,87,centred intro column,paired,INK .ink-gedig-intro (contentSize 768px)
+gedig-badge,src/pages/ReadStory.tsx,142,wp-content/themes/ink-foundation/patterns/reading-gedig.php,89,type pill with feather icon,paired,pre-existing id
+gedig-title,src/pages/ReadStory.tsx,148,wp-content/themes/ink-foundation/functions.php,251,italic h1,paired,pre-existing id; INK core/post-title render filter
+reading-byline,src/pages/ReadStory.tsx,155,wp-content/themes/ink-foundation/patterns/reading-gedig.php,95,byline row,paired,
+reading-byline-author,src/pages/ReadStory.tsx,156,,,author link (avatar + name in one <Link>),missing-ink,S-2 STRUCTURE (row 07 S-4): INK renders two separate links
+reading-byline-avatar,src/pages/ReadStory.tsx,158,wp-content/themes/ink-foundation/functions.php,295,byline avatar,paired,core/avatar render filter
+reading-byline-name,src/pages/ReadStory.tsx,163,wp-content/themes/ink-foundation/functions.php,296,byline author name,paired,core/post-author-name <div> wrapping an <a>
+reading-byline-sep,src/pages/ReadStory.tsx,165,wp-content/themes/ink-foundation/patterns/reading-gedig.php,101,bullet separator,paired,Lovable <span>; INK <p>
+reading-byline-readtime,src/pages/ReadStory.tsx,166,,,read-time meta (clock + N min),missing-ink,S-3 MISSING: INK shows the publish date instead
+reading-byline-date,,,wp-content/themes/ink-foundation/functions.php,297,publish date,missing-lovable,S-3 EXTRA: core/post-date in the read-time slot
+gedig-hint,src/pages/ReadStory.tsx,173,wp-content/themes/ink-foundation/patterns/reading-gedig.php,109,interaction hint pill,paired,pre-existing id
+reading-hint-icon,src/pages/ReadStory.tsx,178,wp-content/themes/ink-foundation/patterns/reading-gedig.php,82,hint icon (heart),paired,poetry branch: Lovable <Heart>; INK inline svg in $ink_gedig_heart_svg (row 07 tags the storie highlighter with the same id)
+reading-body,src/pages/ReadStory.tsx,193,wp-content/themes/ink-foundation/patterns/reading-gedig.php,117,body section,paired,Lovable <article>; INK <section>
+gedig-body-col,src/pages/ReadStory.tsx,195,wp-content/themes/ink-foundation/patterns/reading-gedig.php,119,poem column (max-w-xl),paired,new id; Lovable 576px column; INK 768px group whose contentSize 576px constrains its child
+gedig-poem,src/components/reading/PoetryReader.tsx,25,wp-content/plugins/ink-core/src/Engagement/GedigBody.php,321,poem root,paired,new id; INK .ink-gedig
+gedig-dedication,src/components/reading/PoetryReader.tsx,27,,,dedication line,missing-ink,S-4 MISSING: INK has no dedication field in the content model (owner decision)
+gedig-stanzas,src/components/reading/PoetryReader.tsx,31,,,stanza stack (space-y),missing-ink,S-5 STRUCTURE: INK puts stanzas and blank-line separators directly in .ink-gedig
+gedig-stanza,src/components/reading/PoetryReader.tsx,33,wp-content/plugins/ink-core/src/Engagement/GedigBody.php,367,first stanza,paired,new id; first instance only
+gedig-stanza-line,src/components/reading/PoetryReader.tsx,51,wp-content/plugins/ink-core/src/Engagement/GedigBody.php,385,first poem line,paired,pre-existing id was on EVERY line on both sides (T5 duplicate); now first instance only; Lovable <button>; INK <p data-ink-line>
+gedig-line-text,src/components/reading/PoetryReader.tsx,60,wp-content/plugins/ink-core/src/Engagement/GedigBody.php,386,first line text span,paired,new id; first instance only
+gedig-line-heart,src/components/reading/PoetryReader.tsx,63,wp-content/themes/ink-foundation/assets/js/line-reactions.js,93,first line's resonance heart,paired,new id; Lovable lucide svg inside the line button; INK JS-built <button> appended to the text span
+gedig-engagement-bar,src/pages/ReadStory.tsx,212,wp-content/themes/ink-foundation/patterns/reading-gedig.php,127,floating action bar,paired,S-10 STRUCTURE (row 07 S-7): Lovable sticky full-width wrapper vs INK single pill node
+reading-engagement-pill,src/pages/ReadStory.tsx,214,,,floating bar pill,missing-ink,S-10: INK folds the pill into the gedig-engagement-bar node
+gedig-reaksie-tellers,src/pages/ReadStory.tsx,216,wp-content/plugins/ink-core/src/Engagement/ReactionTotals.php,169,like button,paired,pre-existing id (ReactionTotals::enkelAuditId)
+reading-like-icon,src/pages/ReadStory.tsx,220,wp-content/plugins/ink-core/src/Engagement/ReactionTotals.php,251,like heart icon,paired,generic id
+reading-like-count,src/pages/ReadStory.tsx,221,wp-content/plugins/ink-core/src/Engagement/ReactionTotals.php,184,like count,paired,generic id
+reading-comments-link,src/pages/ReadStory.tsx,224,wp-content/plugins/ink-core/src/Engagement/ResponseCount.php,91,comments anchor,paired,generic id
+reading-comments-count,src/pages/ReadStory.tsx,226,wp-content/plugins/ink-core/src/Engagement/ResponseCount.php,93,comments count,paired,generic id
+reading-bookmark-btn,src/pages/ReadStory.tsx,230,wp-content/plugins/ink-core/src/Engagement/ReadingListToggle.php,120,bookmark button,paired,generic id
+reading-share-btn,src/pages/ReadStory.tsx,238,,,share button,missing-ink,S-11 MISSING (row 07 S-8)
+reading-author-band,src/pages/ReadStory.tsx,246,wp-content/themes/ink-foundation/patterns/reading-gedig.php,137,author section band,paired,
+reading-author-card,src/pages/ReadStory.tsx,248,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,115,author row,paired,
+reading-author-avatar,src/pages/ReadStory.tsx,250,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,109,author avatar 96px,paired,
+reading-author-body,src/pages/ReadStory.tsx,255,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,117,author text column,paired,
+gedig-author-name,src/pages/ReadStory.tsx,256,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,118,author name h3,paired,pre-existing id
+gedig-author-bio,src/pages/ReadStory.tsx,257,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,121,author bio,scope,pre-existing id; INK omits the <p> when the author has no bio (this author has none); Lovable falls back to a stock sentence
+reading-author-actions,src/pages/ReadStory.tsx,260,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,124,author action row,paired,
+reading-author-follow,src/pages/ReadStory.tsx,261,wp-content/plugins/ink-core/src/Social/FollowToggle.php,,follow button,scope,as row 07 S-10: logged-in only on INK and already carries skrywer-follow-btn
+reading-author-all-works,src/pages/ReadStory.tsx,265,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,128,view-all-works link,paired,
+reading-responses,src/pages/ReadStory.tsx,274,wp-content/themes/ink-foundation/patterns/reading-gedig.php,147,responses section,paired,
+reading-responses-inner,src/pages/ReadStory.tsx,276,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,140,responses column,paired,
+reading-responses-h2,src/pages/ReadStory.tsx,277,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,141,responses h2,paired,Lovable poetry copy differs from prose; INK has one heading for all types (S-14)
+reading-response-form,src/pages/ReadStory.tsx,281,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,272,compose card,paired,
+reading-response-intro,src/pages/ReadStory.tsx,282,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,274,compose intro text,paired,poetry-variant copy on Lovable only (S-14)
+reading-response-types,src/pages/ReadStory.tsx,288,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,276,response-type chip row,paired,
+reading-response-type,src/pages/ReadStory.tsx,292,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,279,first response-type chip,paired,Lovable <button>; INK <label> + hidden radio (MECHANISM)
+reading-response-input,src/pages/ReadStory.tsx,307,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,287,compose textarea,paired,
+reading-response-actions,src/pages/ReadStory.tsx,314,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,291,submit row,paired,
+reading-response-submit,src/pages/ReadStory.tsx,315,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,292,submit button,paired,disabled at rest on both sides
+reading-response-list,src/pages/ReadStory.tsx,322,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,148,response list,paired,INK list is empty: this poem has no responses (data); Lovable 3 mock critiques
+reading-response-item,src/pages/ReadStory.tsx,324,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,155,first response card,scope,no INK instance on this page (no responses); paired on row 07
+reading-response-row,src/pages/ReadStory.tsx,325,,,card inner flex row,missing-ink,S-15 STRUCTURE (row 07 S-13)
+reading-response-avatar,src/pages/ReadStory.tsx,326,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,160,response avatar,scope,no INK instance on this page
+reading-response-body,src/pages/ReadStory.tsx,327,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,165,response text column,scope,no INK instance on this page
+reading-response-meta,src/pages/ReadStory.tsx,328,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,166,meta row,scope,no INK instance on this page
+reading-response-author,src/pages/ReadStory.tsx,329,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,169,response author,scope,no INK instance on this page
+reading-response-badge,src/pages/ReadStory.tsx,331,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,168,response type badge,scope,no INK instance on this page
+reading-response-date,src/pages/ReadStory.tsx,345,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,171,relative time,scope,no INK instance on this page
+reading-response-text,src/pages/ReadStory.tsx,347,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,173,response text,scope,no INK instance on this page
+reading-response-footer,src/pages/ReadStory.tsx,348,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,174,response footer row,scope,no INK instance on this page
+reading-response-upvote,src/pages/ReadStory.tsx,349,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,175,upvote,scope,no INK instance on this page
+reading-response-reply,src/pages/ReadStory.tsx,353,,,Reply action,divergence,as row 07 S-16: removed on INK by implementer disclosure (ResponsesList.php:59-65)
