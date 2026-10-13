@@ -17,8 +17,8 @@ that (R9).
 | 05 | uitdaging-enkel | A | **done** | `7637a50` · lovable `a5021ae` | Resources = disclosed SCOPE gap; 64 ids pair; F10 ("The Prompt" h2) needs an owner call — MISSING unless the Story 12.1 disclosure covers it; closed (`is-gesluit`) state not captured |
 | 06 | skrywer | A | **done** | `86a089e` · lovable `add1aa1` | 44 ids pair. Headline F1: profile sits in the template's 768px `<main>` vs Lovable's 1400px full-bleed sections. Tagline data exists (`Tagline.php`) but is never rendered. Follow buttons + rating form are logged-in only (not captured). Owner calls: F22 (Follow hidden from guests), F3 (no location field), F16 (pinned-only list), F8 |
 | 07 | lees-storie | A | **done** | `767803f` · lovable `58306c5` | All 6 sections present; 82 ids pair; generic `reading-*` ids on shared reading components for row 22. Artikel not captured. Not captured: highlight mark (needs a selection), logged-in follow, drop-cap pseudo. `reading-author-follow` can't pair — the button already carries row 06's `skrywer-follow-btn` (FollowToggle stamps it everywhere). Owner calls: read time vs date (S-5/S-6), share button (S-8), confirm Reply/upvote disclosures (S-15/S-16) |
-| 08a | biblioteek | A | in progress — batch 2 | | one agent does 08a + 08b: they share Lovable `/library`, so one id set must serve both |
-| 08b | opleiding | A | in progress — batch 2 | | |
+| 08a | biblioteek | A | **done (partial)** | `1b9c83d` · lovable `c4df0b2` | **Cards not measured:** live archive renders its empty state (only QA-fixture posts exist, excluded outside `/qa-bloks/`). Owner call: seed real content or approve a capture route. Also: "Soek" button SCOPE?; cover-image divergence rests on an implementer comment; copy — h1 is just "Biblioteek", bylines lack "deur" |
+| 08b | opleiding | A | **done (partial)** | `1b9c83d` · lovable `c4df0b2` | Same empty-state gap. Search button renders in Arial (no font-family) |
 | 09a | meld-aan | A | queued | | shares Lovable `/auth` with 09b |
 | 09b | registreer | A | queued | | |
 | 10 | wagwoord-herstel | A | queued | | |
