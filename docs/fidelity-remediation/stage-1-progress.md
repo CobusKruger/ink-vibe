@@ -27,7 +27,7 @@ that (R9).
 | 13 | oor-ink | B | queued | | |
 | 14 | uitdagings | B | queued | | |
 | 15–18 | kontak, lidmaatskap, inkpols, ledegids | C | queued | | one batched subagent (kickoff) |
-| 22 | lees-gedig | A | in progress — started after 07 | | shares Lovable `ReadStory.tsx` with row 07, so it runs after 07 to avoid id collisions |
+| 22 | lees-gedig | A | **done** `2a4574b` · lovable `9db3869` | Owner calls: INK pre-fills hearts/highlights for every line any reader reacted to (disclosed `functions.php:583-588`; Lovable shows none at rest); dedication field; poetry-specific response copy. **Live bug:** artikel floating heart is a clickable button but its script only loads on gedig/storie. Hover heart, logged-in and response cards not captured | | shares Lovable `ReadStory.tsx` with row 07, so it runs after 07 to avoid id collisions |
 
 ## How the fan-out runs
 
