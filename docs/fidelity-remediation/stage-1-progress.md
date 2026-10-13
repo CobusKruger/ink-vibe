@@ -16,7 +16,7 @@ that (R9).
 | 04 | skryf | A | **done** | `54a9862` · lovable `93339cf` | INK authed; Lovable picker + post-click editor states; success screen not captured. Owner calls: S-2 (one form vs Lovable's two steps rests on an implementer comment, `skryf.css:66-72`, not a ruling). **Live copy bug:** storie/artikel descriptions render a literal backslash ("Skep \’n…", `skryf.php:23-24`) |
 | 05 | uitdaging-enkel | A | **done** | `7637a50` · lovable `a5021ae` | Resources = disclosed SCOPE gap; 64 ids pair; F10 ("The Prompt" h2) needs an owner call — MISSING unless the Story 12.1 disclosure covers it; closed (`is-gesluit`) state not captured |
 | 06 | skrywer | A | **done** | `86a089e` · lovable `add1aa1` | 44 ids pair. Headline F1: profile sits in the template's 768px `<main>` vs Lovable's 1400px full-bleed sections. Tagline data exists (`Tagline.php`) but is never rendered. Follow buttons + rating form are logged-in only (not captured). Owner calls: F22 (Follow hidden from guests), F3 (no location field), F16 (pinned-only list), F8 |
-| 07 | lees-storie | A | in progress — batch 2 | | |
+| 07 | lees-storie | A | **done** | `767803f` · lovable `58306c5` | All 6 sections present; 82 ids pair; generic `reading-*` ids on shared reading components for row 22. Artikel not captured. Not captured: highlight mark (needs a selection), logged-in follow, drop-cap pseudo. `reading-author-follow` can't pair — the button already carries row 06's `skrywer-follow-btn` (FollowToggle stamps it everywhere). Owner calls: read time vs date (S-5/S-6), share button (S-8), confirm Reply/upvote disclosures (S-15/S-16) |
 | 08a | biblioteek | A | in progress — batch 2 | | one agent does 08a + 08b: they share Lovable `/library`, so one id set must serve both |
 | 08b | opleiding | A | in progress — batch 2 | | |
 | 09a | meld-aan | A | queued | | shares Lovable `/auth` with 09b |
@@ -27,7 +27,7 @@ that (R9).
 | 13 | oor-ink | B | queued | | |
 | 14 | uitdagings | B | queued | | |
 | 15–18 | kontak, lidmaatskap, inkpols, ledegids | C | queued | | one batched subagent (kickoff) |
-| 22 | lees-gedig | A | queued — after 07 | | shares Lovable `ReadStory.tsx` with row 07, so it runs after 07 to avoid id collisions |
+| 22 | lees-gedig | A | in progress — started after 07 | | shares Lovable `ReadStory.tsx` with row 07, so it runs after 07 to avoid id collisions |
 
 ## How the fan-out runs
 
