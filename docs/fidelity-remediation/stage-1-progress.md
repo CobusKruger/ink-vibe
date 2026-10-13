@@ -15,8 +15,8 @@ that (R9).
 | 03 | ontdek | A | **done** | `d8364f1` · lovable `4a9c7c4` | 70 ids pair; Lovable writers tab is React state (no URL) → 19 `writers-*` ids unpaired; search-results / empty / logged-in states not captured. Discovery renderers restructured to stamp first-item ids; `SkrywersTab` ids also render on row 18 |
 | 04 | skryf | A | **done** | `54a9862` · lovable `93339cf` | INK authed; Lovable picker + post-click editor states; success screen not captured. Owner calls: S-2 (one form vs Lovable's two steps rests on an implementer comment, `skryf.css:66-72`, not a ruling). **Live copy bug:** storie/artikel descriptions render a literal backslash ("Skep \’n…", `skryf.php:23-24`) |
 | 05 | uitdaging-enkel | A | **done** | `7637a50` · lovable `a5021ae` | Resources = disclosed SCOPE gap; 64 ids pair; F10 ("The Prompt" h2) needs an owner call — MISSING unless the Story 12.1 disclosure covers it; closed (`is-gesluit`) state not captured |
-| 06 | skrywer | A | queued | | |
-| 07 | lees-storie | A | queued | | |
+| 06 | skrywer | A | in progress — batch 2 | | |
+| 07 | lees-storie | A | in progress — batch 2 | | |
 | 08a | biblioteek | A | queued | | shares Lovable `/library` with 08b |
 | 08b | opleiding | A | queued | | |
 | 09a | meld-aan | A | queued | | shares Lovable `/auth` with 09b |
@@ -27,7 +27,7 @@ that (R9).
 | 13 | oor-ink | B | queued | | |
 | 14 | uitdagings | B | queued | | |
 | 15–18 | kontak, lidmaatskap, inkpols, ledegids | C | queued | | one batched subagent (kickoff) |
-| 22 | lees-gedig | A | queued | | |
+| 22 | lees-gedig | A | in progress — batch 2 | | |
 
 ## How the fan-out runs
 
@@ -52,9 +52,9 @@ Fix these between batches, never while subagents are running.
 
 | # | Found on | Issue | Status |
 |---|---|---|---|
-| T1 | row 01 | `determinism-check.sh` does `rm -rf tmp/determinism` — parallel agents delete each other's gate runs. Needs a per-page output dir. Row 01 worked around it with a page-private copy. | **fixed, uncommitted** — each gate runs in `tmp/determinism/<side>-<page>@<vp>[-auth][-<state>]/` and clears only that dir; capture flags pass through after the positionals |
-| T2 | rows 01, 05 | `run.sh primitives` misses Lovable `asChild` buttons/links, class-less eyebrows, INK icon tiles and INK `-skakel`/`-tipe` classes, and includes header/footer nodes. Row 01 built its register with a page-local script using the same property set. Every later row likely needs the same compensation. | **fixed, uncommitted** — new `--exclude-chrome` flag. Covers `asChild`/shadcn variants, INK buttons via their wrapper, class-less eyebrows, icon tiles, `-skakel`/`-tipe`, checkbox/choice-row, step-badge, list-bullet and tier-label. Leftovers are listed in README Phase 4b |
-| T4 | row 04 | `verify.mjs` and `determinism-check.sh` have no auth (`storageState`) option, and `capture.mjs` cannot click into a state (Lovable `/write` shows its form only after a type-card click). Row 04 gated through page-private patched copies in `tmp/fidelity-skryf/`. Rows 02 and the auth pages will hit the same gap. Also: the `fidelity-capture` session expires — re-run `run.sh login` before authed captures. | **fixed, uncommitted** — `--auth` on capture/verify/determinism, which fails with exit 3 and a `run.sh login` hint if not logged in. `--click <sel>` (repeatable) + `--state <name>` gives `<page>@<vp>[-auth][-<state>].ndjson`, and verify re-drives the clicks |
+| T1 | row 01 | `determinism-check.sh` does `rm -rf tmp/determinism` — parallel agents delete each other's gate runs. Needs a per-page output dir. Row 01 worked around it with a page-private copy. | **fixed `c423c15`** — each gate runs in `tmp/determinism/<side>-<page>@<vp>[-auth][-<state>]/` and clears only that dir; capture flags pass through after the positionals |
+| T2 | rows 01, 05 | `run.sh primitives` misses Lovable `asChild` buttons/links, class-less eyebrows, INK icon tiles and INK `-skakel`/`-tipe` classes, and includes header/footer nodes. Row 01 built its register with a page-local script using the same property set. Every later row likely needs the same compensation. | **fixed `c423c15`** — new `--exclude-chrome` flag. Covers `asChild`/shadcn variants, INK buttons via their wrapper, class-less eyebrows, icon tiles, `-skakel`/`-tipe`, checkbox/choice-row, step-badge, list-bullet and tier-label. Leftovers are listed in README Phase 4b |
+| T4 | row 04 | `verify.mjs` and `determinism-check.sh` have no auth (`storageState`) option, and `capture.mjs` cannot click into a state (Lovable `/write` shows its form only after a type-card click). Row 04 gated through page-private patched copies in `tmp/fidelity-skryf/`. Rows 02 and the auth pages will hit the same gap. Also: the `fidelity-capture` session expires — re-run `run.sh login` before authed captures. | **fixed `c423c15`** — `--auth` on capture/verify/determinism, which fails with exit 3 and a `run.sh login` hint if not logged in. `--click <sel>` (repeatable) + `--state <name>` gives `<page>@<vp>[-auth][-<state>].ndjson`, and verify re-drives the clicks |
 | T3 | row 03 | `capture.mjs` waited on every incomplete image, so a lazy `<img>` in a `display:none` tab panel hung the capture forever. Row 03 patched it to wait only on rendered images (against its brief, which forbade harness edits; the fix is sound and leaves computed values untouched). | **fixed** `9367c86` |
 
 ## Log
