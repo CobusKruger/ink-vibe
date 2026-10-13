@@ -9,10 +9,19 @@
  *
  * Usage:
  *   verify.mjs --capture <file.ndjson> [--sample 25]
+ *              [--auth <storageState.json>] [--click <selector> … --state <name>]
+ *
+ * A capture taken with --auth must be verified with --auth (it fails otherwise).
+ * A capture taken with --click/--state records them in its _meta; verify re-drives
+ * that state before its fresh reads. Passing --click/--state here overrides the
+ * recorded ones (they must agree with _meta.state).
  */
 
 import { readFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
+import {
+  parseFlags, checkStateName, preflightAuth, assertLoggedIn, driveState, exitOnAuthError,
+} from './state.mjs';
 
 const DETERMINISM_CSS = `
 *, *::before, *::after {
@@ -26,10 +35,13 @@ html { scroll-behavior: auto !important; }
 `;
 
 function parseArgs(argv) {
-  const a = {};
-  for (let i = 2; i < argv.length; i += 2) a[argv[i].slice(2)] = argv[i + 1];
-  if (!a.capture) throw new Error('Usage: verify.mjs --capture <file.ndjson> [--sample 25]');
-  return { capture: a.capture, sample: Number(a.sample ?? 25) };
+  const a = parseFlags(argv, { repeatable: ['click'] });
+  if (!a.capture) throw new Error('Usage: verify.mjs --capture <file.ndjson> [--sample 25] [--auth <file>] [--click <sel> … --state <name>]');
+  checkStateName(a.state, a.click);
+  return {
+    capture: a.capture, sample: Number(a.sample ?? 25),
+    auth: a.auth ?? null, clicks: a.click, state: a.state ?? null,
+  };
 }
 
 const args = parseArgs(process.argv);
@@ -37,6 +49,16 @@ const lines = (await readFile(args.capture, 'utf8')).trim().split('\n');
 const recs = lines.map((l) => JSON.parse(l));
 const meta = recs.shift();
 if (!meta?._meta) throw new Error('First line is not a _meta record — is this a capture file?');
+
+// T4: replay the same session and state the capture was taken under.
+if (meta.auth && !args.auth) {
+  throw new Error(`${args.capture} was captured with --auth (${meta.auth}); pass --auth <storageState.json> to verify it`);
+}
+if (args.state && args.state !== (meta.state ?? null)) {
+  throw new Error(`--state ${args.state} does not match the capture's state (${meta.state ?? 'default'})`);
+}
+const clicks = args.clicks.length ? args.clicks : (meta.clicks ?? []);
+try { preflightAuth(args.auth); } catch (e) { exitOnAuthError(e); }
 
 // Random sample, stable enough to be meaningful without being exhaustive.
 const pool = [...recs];
@@ -51,10 +73,18 @@ const ctx = await browser.newContext({
   viewport: { width: meta.viewport, height: 900 },
   deviceScaleFactor: 1,
   colorScheme: 'light',
+  ...(args.auth ? { storageState: args.auth } : {}),
 });
 const page = await ctx.newPage();
 await page.goto(meta.url, { waitUntil: 'networkidle', timeout: 60_000 });
 await page.addStyleTag({ content: DETERMINISM_CSS });
+try {
+  await assertLoggedIn(page, meta.side, args.auth);
+  await driveState(page, clicks);
+} catch (e) {
+  await browser.close();
+  exitOnAuthError(e);
+}
 await page.evaluate(() => document.fonts.ready);
 await page.evaluate(async () => {
   const step = window.innerHeight;
@@ -110,6 +140,9 @@ await browser.close();
 
 console.log(`verify ${args.capture}`);
 console.log(`  url        ${meta.url} @ ${meta.viewport}px`);
+if (args.auth || clicks.length) {
+  console.log(`  session    ${args.auth ?? 'anonymous'}${clicks.length ? `; state ${meta.state ?? args.state} via ${clicks.length} click(s)` : ''}`);
+}
 console.log(`  sampled    ${picked.length} of ${recs.length} nodes`);
 console.log(`  properties ${checked} compared`);
 console.log(`  unresolved ${unresolved}`);

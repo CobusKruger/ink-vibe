@@ -12,11 +12,22 @@
  *               [--viewport 390,768,1440] [--mode all|keyed]
  *               [--auth <storageState.json>] [--out <dir>]
  *               [--expect <selector>[,<selector>...]]
+ *               [--click <selector> [--click <selector> …] --state <name>]
+ *
+ *   --auth   Playwright storageState from `run.sh login`. On the ink side the capture
+ *            aborts (exit 3) unless the page renders with the WP `logged-in` body class.
+ *   --click  drive the page into a state before capture; repeatable, applied in order,
+ *            each followed by a settle wait. Requires --state.
+ *   --state  label for that state; output is <page>@<vp>[-auth][-<state>].ndjson and the
+ *            _meta record gains `state` + `clicks` (verify.mjs re-drives from them).
  */
 
 import { chromium } from 'playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import {
+  parseFlags, checkStateName, preflightAuth, assertLoggedIn, driveState, exitOnAuthError,
+} from './state.mjs';
 
 const TOOL_VERSION = '1.0.0';
 
@@ -64,14 +75,11 @@ html { scroll-behavior: auto !important; }
 `;
 
 function parseArgs(argv) {
-  const a = {};
-  for (let i = 2; i < argv.length; i += 2) {
-    if (!argv[i].startsWith('--')) throw new Error(`Expected a flag at "${argv[i]}"`);
-    a[argv[i].slice(2)] = argv[i + 1];
-  }
+  const a = parseFlags(argv, { repeatable: ['click'] });
   for (const req of ['url', 'side', 'page']) {
     if (!a[req]) throw new Error(`Missing required --${req}`);
   }
+  checkStateName(a.state, a.click);
   return {
     url: a.url,
     side: a.side,
@@ -81,6 +89,8 @@ function parseArgs(argv) {
     auth: a.auth ?? null,
     out: a.out ?? 'tmp/fidelity-captures',
     expect: a.expect ? a.expect.split(',') : [],
+    clicks: a.click,
+    state: a.state ?? null,
   };
 }
 
@@ -148,9 +158,11 @@ function collect({ props, skipTags, mode }) {
 }
 
 const args = parseArgs(process.argv);
+try { preflightAuth(args.auth); } catch (e) { exitOnAuthError(e); }
 const browser = await chromium.launch();
 const results = [];
 
+try {
 for (const width of args.viewports) {
   const ctx = await browser.newContext({
     ignoreHTTPSErrors: true,            // nuwe-ink.local uses a Local-issued cert
@@ -164,6 +176,10 @@ for (const width of args.viewports) {
   await page.addStyleTag({ content: DETERMINISM_CSS }).catch(() => {});
   await page.goto(args.url, { waitUntil: 'networkidle', timeout: 60_000 });
   await page.addStyleTag({ content: DETERMINISM_CSS });
+
+  // T4: never capture a logged-out page under an auth filename; then drive the state.
+  await assertLoggedIn(page, args.side, args.auth);
+  await driveState(page, args.clicks);
 
   // C2: font metrics move every measurement downstream.
   await page.evaluate(() => document.fonts.ready);
@@ -214,6 +230,9 @@ for (const width of args.viewports) {
     viewport: width,
     mode: args.mode,
     auth: args.auth ? path.basename(args.auth) : null,
+    // Only present for a driven state, so a default-state capture is byte-identical
+    // to one taken before these flags existed.
+    ...(args.state ? { state: args.state, clicks: args.clicks } : {}),
     nodes: nodes.length,
     auditIds: nodes.filter((n) => n.a).length,
     props: PROPS.length,
@@ -221,7 +240,7 @@ for (const width of args.viewports) {
 
   const dir = path.join(args.out, args.side);
   await mkdir(dir, { recursive: true });
-  const name = `${args.page}@${width}${args.auth ? '-auth' : ''}.ndjson`;
+  const name = `${args.page}@${width}${args.auth ? '-auth' : ''}${args.state ? `-${args.state}` : ''}.ndjson`;
   const file = path.join(dir, name);
   await writeFile(
     file,
@@ -231,6 +250,10 @@ for (const width of args.viewports) {
   results.push({ file, ...meta });
   console.log(`${file}  ${nodes.length} nodes, ${meta.auditIds} audit-ids`);
   await ctx.close();
+}
+} catch (e) {
+  await browser.close();
+  exitOnAuthError(e);
 }
 
 await browser.close();

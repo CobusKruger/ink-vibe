@@ -162,8 +162,23 @@ tools/fidelity/run.sh capture --url <url> --side <ink|lovable> --page <slug> \
                               --viewport 390,768,1440 --expect '<selector>,…'
 tools/fidelity/run.sh diff --a <lovable.ndjson> --b <ink.ndjson> --out <finding.md>
 tools/fidelity/run.sh verify --capture <file.ndjson> --sample 30
-tools/fidelity/determinism-check.sh <url> <side> <page> <viewport> 3
+tools/fidelity/determinism-check.sh <url> <side> <page> <viewport> 3 ['<expect>'] [capture flags…]
+
+# authenticated page, and/or a state reached by clicking (Lovable /write's editor step):
+tools/fidelity/run.sh capture … --auth tmp/fidelity-auth/ink.json
+tools/fidelity/run.sh capture … --click '<selector>' [--click '<selector>' …] --state <name>
+tools/fidelity/run.sh verify --capture <file> --sample 30 [--auth tmp/fidelity-auth/ink.json]
+tools/fidelity/determinism-check.sh <url> <side> <page> <vp> 3 '<expect>' --auth … --click … --state …
 ```
+
+`--auth`, `--click` and `--state` work the same way on all three tools.
+- **`--auth`:** an INK capture that does not render logged in aborts with exit 3 and a
+  `run.sh login` hint, so a logged-out page is never written under an `-auth` name.
+- **`--click`/`--state`:** `--click` needs `--state`, and the output file becomes
+  `<page>@<vp>[-auth][-<state>].ndjson`. `verify` re-drives the clicks recorded in the
+  capture's `_meta`.
+- **Gate directories:** each determinism gate runs in its own
+  `tmp/determinism/<side>-<page>@<vp>[-auth][-<state>]/`, so parallel gates are safe.
 
 **Preconditions — all three are gates, not suggestions:**
 
@@ -195,7 +210,19 @@ field, label, tab, eyebrow, section band, avatar — append one row per instance
 `maps/_primitive-observations.csv`.
 
 **Tooling:** `tools/fidelity/run.sh primitives --in <capture.ndjson> [--in …] --out
-maps/_primitive-observations.csv [--append]`. It classifies each node and emits the row.
+maps/_primitive-observations.csv [--append] [--exclude-chrome]`. It classifies each node
+into a kind from the vocabulary below and emits the row. Every row except 00 passes
+`--exclude-chrome`, because the header and footer belong to row 00. The flag drops
+`header*`/`footer*` audit-id subtrees and any `<header>`/`<footer>` outside `<main>`.
+Where a kind came from shape rather than a class name, the `note` column says why: an
+`asChild` link, the wrapper class an INK button's kind came from, or a bordered `<label>`
+wrapping a control. A captured `--state` is noted the same way.
+Rows still need human resolution where the capture has no hook:
+- **Generic `button` rows** — Lovable TabButton, bespoke INK `<a>`/`<button>` actions.
+  Resolve each to a variant.
+- **Kinds the tool cannot detect** — `meta-item`, `nav-link`, `tier-chip`,
+  `accent-block` and Lovable tier labels. Add them by audit-id.
+- **Pseudo-elements** — e.g. INK's `::before` step badges, which are not captured at all.
 
 A rendered capture cannot say *which stylesheet* a rule came from, so `defined_in`,
 `load_scope` and `used_in` come out **empty**. Fill them with the source-side pass below.
@@ -647,6 +674,12 @@ Full contract in `harness-worklist.md`. The parts that bite:
 - **`wp-login.php` is intercepted** by `ink-core`'s `Accounts\AuthRedirects` and sent to
   `/meld-aan`. Log in there; the submit control is `<button name="wp-submit">`, not core's
   `<input id="wp-submit">`.
+- **The `fidelity-capture` session expires.** Authed runs fail with exit 3 ("AUTH
+  EXPIRED … run.sh login") rather than capturing a logged-out page; refresh with
+  `run.sh login` (no data change) and re-run.
+- **Lovable states that need a click** (e.g. `/write`'s editor) are captured with
+  `--click … --state <name>`. They need a Lovable build that carries the page's audit-ids,
+  and an older preview build will report `--click selector matched nothing`.
 - **Capture as `fidelity-capture`, not `admin`** — the admin bar shifts the page ~32px and
   would corrupt every bounding box. That user is a subscriber with
   `show_admin_bar_front = false`.

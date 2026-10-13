@@ -48,6 +48,7 @@ Four items remain before the Stage 1 audit can start at scale.
 | C3 | Fixed viewport, DPR 1, explicit colour scheme | ✅ done |
 | C4 | Force lazy images, return to scroll origin | ✅ done |
 | C5 | **Determinism gate** | ✅ **PASSED** — 3 consecutive captures byte-identical, both sides. `tools/fidelity/determinism-check.sh` |
+| C6 | Per-run gate directory (T1) | ✅ done, uncommitted — each gate writes `tmp/determinism/<side>-<page>@<vp>[-auth][-<state>]/run<i>/` and clears only that directory, so parallel gates cannot delete each other's runs. Capture logs are kept as `run<i>.log` and tailed on failure |
 
 ## D · Auth profiles
 
@@ -56,6 +57,8 @@ Four items remain before the Stage 1 audit can start at scale.
 | D6 | INK `storageState` for a logged-in user | ✅ done — `fidelity-capture` (subscriber, admin bar off), `run.sh login`, `/my-profiel` captured authenticated |
 | D7 | Lovable Supabase session `storageState` | ⏸️ **owner** — needs an account on the hosted Supabase project. Low value: only the header's two buttons change. |
 | D8 | Capture matrix | ✅ settled — anon everywhere; row 02 INK-authed with the header excluded from that diff |
+| D9 | Auth across the toolchain (T4) | ✅ done, uncommitted — `--auth <storageState.json>` on `capture`, `verify` and `determinism-check.sh`. An INK capture under `--auth` must render with the WP `logged-in` body class, and a lapsed `wordpress_logged_in` cookie is caught before launch. Either failure exits 3 and tells you to run `run.sh login`, so a logged-out page is never captured. `verify` refuses an authed capture without `--auth` |
+| D10 | Scripted states (T4) | ✅ done, uncommitted — `--click <selector>` (repeatable, in order, each followed by a settle wait) plus a required `--state <name>`. Output is `<page>@<vp>[-auth][-<state>].ndjson`, and `_meta` gains `state` + `clicks` **only** when a state is driven, so default captures are byte-identical to before. `verify` re-drives the recorded clicks; `determinism-check.sh` passes the flags through |
 
 Auth is not confined to the account pages: the header branches on auth state on **every**
 page (`Header.tsx:60-102`, `header-main.php:83-95`), so every capture is affected.
@@ -66,9 +69,10 @@ page (`Header.tsx:60-102`, `header-main.php:83-95`), so every capture is affecte
 |---|---|---|
 | E9 | `tools/fidelity/diff.mjs` | ✅ done — joins on audit-id, severity-ordered Markdown |
 | E10 | `tools/fidelity/extract-primitives.mjs` | ✅ done — 110 instances / 11 kinds from the homepage alone. Emits `page,side,viewport,component_kind,selector,declarations,audit_id`. |
+| E10a | Classifier gaps from batch 1 (T2) | ✅ done, uncommitted — kinds now come from README §4.1's vocabulary only. Covered: Lovable shadcn `<Button>` and `<Button asChild>` links, mapped by variant class (`literary`→primary, `outline`/`literary-outline`→outline, `sage`, `sage-outline`, `ghost`, `link`→link-underline). INK `core/button` is registered on the `<a>`, with its kind taken from the wrapper's `is-style-*` and the wrapper row dropped. Also: class-less uppercase eyebrows, INK icon tiles (`__icon`/`__ikoon`/`rang-merk`) and Lovable icon tiles (a tinted square holding an `<svg>`), INK `-skakel` (card when surface-shaped, outline when button-shaped) and `-tipe` (pill), `checkbox` (small square native input, or Radix `peer` button), `choice-row`/`card` for bordered `<label>`s wrapping a control, `step-badge`, `list-bullet`, `tier-label` (`__gradering`), and rounded-full Lovable buttons (filter-chip, or button-icon when unlabelled). Hidden inputs, the zero-height toast `<section>` and decorative circles are dropped. `--exclude-chrome` drops header/footer. The `note` column says why a non-obvious kind was chosen |
 | E10b | Source attribution — `defined_in` / `load_scope` / `used_in` | ⬜ **open** — a rendered capture cannot say which stylesheet a rule came from. Needs CDP `CSS.getMatchedStylesForNode`, or a source-side pass. Columns are emitted empty for now. |
 | E11 | Self-verification sampler | ✅ done — `run.sh verify`. Both sides: 30 nodes, 1560 properties, **0 mismatches**. |
-| E12 | Output conventions | ✅ done — `tmp/fidelity-captures/<side>/<page>@<vp>[-auth].ndjson` |
+| E12 | Output conventions | ✅ done — `tmp/fidelity-captures/<side>/<page>@<vp>[-auth][-<state>].ndjson` |
 
 ### Noise suppression in `diff.mjs`
 
@@ -133,6 +137,35 @@ tools/fidelity/run.sh diff \
 
 # the determinism gate — run before trusting any capture
 tools/fidelity/determinism-check.sh https://nuwe-ink.local/ ink tuisblad 1440 3
+
+# authenticated INK capture (refresh an expired session with `run.sh login` first)
+tools/fidelity/run.sh capture --url https://nuwe-ink.local/skryf/ --side ink --page skryf \
+  --viewport 1440 --auth tmp/fidelity-auth/ink.json
+#   -> tmp/fidelity-captures/ink/skryf@1440-auth.ndjson
+
+# drive a state before capture: clicks run in order; --state names the file
+tools/fidelity/run.sh capture --url http://localhost:4173/write --side lovable --page skryf \
+  --viewport 1440 --click '[data-audit-id="skryf-type-card"]' --state editor \
+  --expect '[data-audit-id="skryf-publish-btn"]'
+#   -> tmp/fidelity-captures/lovable/skryf@1440-editor.ndjson
+
+# verify: re-drives the recorded clicks; an authed capture needs --auth again
+tools/fidelity/run.sh verify --capture tmp/fidelity-captures/ink/skryf@1440-auth.ndjson \
+  --sample 30 --auth tmp/fidelity-auth/ink.json
+
+# determinism gate with capture flags passed through (anything from the first --flag on;
+# give '' for an empty expect list). Runs in tmp/determinism/<side>-<page>@<vp>[-auth][-<state>]/
+tools/fidelity/determinism-check.sh https://nuwe-ink.local/skryf/ ink skryf 1440 3 '' \
+  --auth tmp/fidelity-auth/ink.json --click '.ink-skryf-type >> nth=1' --state storie
+
+# primitive register for a non-00 row: header/footer are row 00's, so drop them
+tools/fidelity/run.sh primitives --exclude-chrome \
+  --in tmp/fidelity-captures/lovable/skryf@1440.ndjson --in tmp/fidelity-captures/ink/skryf@1440-auth.ndjson \
+  --out tmp/<page>/prims-raw.csv
+
+# refresh the fidelity-capture session (no data change)
+tools/fidelity/run.sh login --side ink --url https://nuwe-ink.local/wp-login.php \
+  --user fidelity-capture --pass …
 
 # start the Lovable reference server (needs sandbox off; binds :4173)
 npm --prefix ../ink-lovable run build
