@@ -17,8 +17,8 @@ that (R9).
 | 05 | uitdaging-enkel | A | **done** | `7637a50` · lovable `a5021ae` | Resources = disclosed SCOPE gap; 64 ids pair; F10 ("The Prompt" h2) needs an owner call — MISSING unless the Story 12.1 disclosure covers it; closed (`is-gesluit`) state not captured |
 | 06 | skrywer | A | in progress — batch 2 | | |
 | 07 | lees-storie | A | in progress — batch 2 | | |
-| 08a | biblioteek | A | queued | | shares Lovable `/library` with 08b |
-| 08b | opleiding | A | queued | | |
+| 08a | biblioteek | A | in progress — batch 2 | | one agent does 08a + 08b: they share Lovable `/library`, so one id set must serve both |
+| 08b | opleiding | A | in progress — batch 2 | | |
 | 09a | meld-aan | A | queued | | shares Lovable `/auth` with 09b |
 | 09b | registreer | A | queued | | |
 | 10 | wagwoord-herstel | A | queued | | |
@@ -27,7 +27,7 @@ that (R9).
 | 13 | oor-ink | B | queued | | |
 | 14 | uitdagings | B | queued | | |
 | 15–18 | kontak, lidmaatskap, inkpols, ledegids | C | queued | | one batched subagent (kickoff) |
-| 22 | lees-gedig | A | in progress — batch 2 | | |
+| 22 | lees-gedig | A | queued — after 07 | | shares Lovable `ReadStory.tsx` with row 07, so it runs after 07 to avoid id collisions |
 
 ## How the fan-out runs
 
