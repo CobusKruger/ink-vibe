@@ -1,0 +1,58 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+library-shell,,,wp-content/themes/ink-foundation/patterns/opleiding.php,23,pattern shell <section> (padding s-16/s-24/s-64),missing-lovable,O-1: one shell wraps every Lovable section; same id on row 08a
+library-shell-inner,,,wp-content/themes/ink-foundation/patterns/opleiding.php,25,alignwide group <div>,missing-lovable,O-1
+library-archive,,,wp-content/plugins/ink-core/src/Training/Hub.php,499,ink/opleiding-argief root <section>,missing-lovable,O-1; emitted at :499 (empty) and :508 (with cards)
+library-intro,src/pages/Library.tsx,199,wp-content/plugins/ink-core/src/Training/Hub.php,486,intro band,paired,O-2: Lovable full-bleed tinted <section>; INK <div> inside the content column
+library-intro-container,src/pages/Library.tsx,200,,,intro container (px-4 py-16 md:py-20),missing-ink,O-1 MECHANISM: INK padding comes from the pattern shell
+library-intro-inner,src/pages/Library.tsx,201,,,intro max-w-3xl column,missing-ink,O-1
+library-eyebrow,src/pages/Library.tsx,202,wp-content/plugins/ink-core/src/Training/Hub.php,487,eyebrow row (icon + label),paired,O-3: <div> vs <p>
+library-eyebrow-icon,src/pages/Library.tsx,203,wp-content/plugins/ink-core/src/Training/Hub.php,487,eyebrow Library icon,paired,stamped via withAuditId() on the icon() output
+library-eyebrow-text,src/pages/Library.tsx,204,wp-content/plugins/ink-core/src/Training/Hub.php,488,eyebrow label,paired,
+library-h1,src/pages/Library.tsx,206,wp-content/plugins/ink-core/src/Training/Hub.php,489,h1,paired,
+library-lede,src/pages/Library.tsx,209,wp-content/plugins/ink-core/src/Training/Hub.php,490,intro paragraph,paired,
+library-search,src/pages/Library.tsx,216,wp-content/plugins/ink-core/src/Training/Hub.php,623,search container,paired,O-5: Lovable <div>; INK GET <form>
+library-search-icon-wrap,,,wp-content/plugins/ink-core/src/Training/Hub.php,625,positioned span around the search icon,missing-lovable,O-5 MECHANISM
+library-search-icon,src/pages/Library.tsx,217,wp-content/plugins/ink-core/src/Training/Hub.php,625,search svg,paired,
+library-search-input,src/pages/Library.tsx,219,wp-content/plugins/ink-core/src/Training/Hub.php,626,search input,paired,
+library-search-btn,,,wp-content/plugins/ink-core/src/Training/Hub.php,630,Soek submit button,missing-lovable,O-4 EXTRA
+library-shelf,src/pages/Library.tsx,232,wp-content/plugins/ink-core/src/Training/Hub.php,592,featured shelf (Die redakteur se rak),paired,NOT RENDERED on INK: no non-fixture items (limits §6)
+library-shelf-head,src/pages/Library.tsx,233,,,shelf header row,missing-ink,O-6 MECHANISM
+library-shelf-h2,src/pages/Library.tsx,235,wp-content/plugins/ink-core/src/Training/Hub.php,593,shelf h2,paired,NOT RENDERED on INK
+library-shelf-sub,src/pages/Library.tsx,238,wp-content/plugins/ink-core/src/Training/Hub.php,594,shelf subtitle,paired,NOT RENDERED on INK
+library-shelf-grid,src/pages/Library.tsx,243,wp-content/plugins/ink-core/src/Training/Hub.php,595,shelf grid,paired,O-10: <div> grid vs <ul>; NOT RENDERED on INK
+library-shelf-card,src/pages/Library.tsx,245,wp-content/plugins/ink-core/src/Training/Hub.php,600,first featured card,paired,first card only; Lovable ArticleCard <Card> at :343; INK cardHtml() <li> at :746; NOT RENDERED on INK
+library-shelf-card-body,src/pages/Library.tsx,348,,,first featured card: content column,missing-ink,O-14 MECHANISM: the <li> carries the padding itself
+library-shelf-card-meta,src/pages/Library.tsx,349,wp-content/plugins/ink-core/src/Training/Hub.php,728,first featured card: badge + read-time row,paired,NOT RENDERED on INK
+library-shelf-card-badge,src/pages/Library.tsx,350,wp-content/plugins/ink-core/src/Training/Hub.php,731,first featured card: category badge,paired,NOT RENDERED on INK
+library-shelf-card-time,src/pages/Library.tsx,353,wp-content/plugins/ink-core/src/Training/Hub.php,735,first featured card: read time,paired,NOT RENDERED on INK
+library-shelf-card-title,src/pages/Library.tsx,358,wp-content/plugins/ink-core/src/Training/Hub.php,748,first featured card: title,paired,O-11: <h3> vs <a>; NOT RENDERED on INK
+library-shelf-card-excerpt,src/pages/Library.tsx,361,wp-content/plugins/ink-core/src/Training/Hub.php,743,first featured card: excerpt,paired,NOT RENDERED on INK
+library-shelf-card-footer,src/pages/Library.tsx,364,wp-content/plugins/ink-core/src/Training/Hub.php,750,first featured card: author + read row,paired,NOT RENDERED on INK
+library-shelf-card-author,src/pages/Library.tsx,365,wp-content/plugins/ink-core/src/Training/Hub.php,751,first featured card: author,paired,O-13: no "by" prefix; NOT RENDERED on INK
+library-shelf-card-read,src/pages/Library.tsx,366,wp-content/plugins/ink-core/src/Training/Hub.php,752,first featured card: Read affordance,paired,O-12: <span> vs aria-hidden <a>; NOT RENDERED on INK
+library-browse,src/pages/Library.tsx,252,,,categories + grid section,missing-ink,O-1
+library-filters,src/pages/Library.tsx,253,wp-content/plugins/ink-core/src/Training/Hub.php,650,filter row,paired,
+library-filter,src/pages/Library.tsx,259,wp-content/plugins/ink-core/src/Training/Hub.php,659,first (active All/Alles) filter chip,paired,first chip only; O-8 <button> vs <a> from Kernel/ArchiveRender::pill(); id stamped in Hub::filterHtml(); Kernel untouched
+library-filter-icon,src/pages/Library.tsx,267,,,filter chip icon,missing-ink,O-7
+library-count,src/pages/Library.tsx,294,wp-content/plugins/ink-core/src/Training/Hub.php,505,result count line,paired,NOT RENDERED on INK (only with cards)
+library-grid,src/pages/Library.tsx,299,wp-content/plugins/ink-core/src/Training/Hub.php,509,card grid,paired,O-10; NOT RENDERED on INK
+library-card,src/pages/Library.tsx,301,wp-content/plugins/ink-core/src/Training/Hub.php,514,first grid card,paired,first card only; Lovable ArticleCard <Card> at :343; INK cardHtml() <li> at :746; NOT RENDERED on INK
+library-card-body,src/pages/Library.tsx,348,,,first grid card: content column,missing-ink,O-14
+library-card-meta,src/pages/Library.tsx,349,wp-content/plugins/ink-core/src/Training/Hub.php,728,first grid card: badge + read-time row,paired,NOT RENDERED on INK
+library-card-badge,src/pages/Library.tsx,350,wp-content/plugins/ink-core/src/Training/Hub.php,731,first grid card: category badge,paired,NOT RENDERED on INK
+library-card-time,src/pages/Library.tsx,353,wp-content/plugins/ink-core/src/Training/Hub.php,735,first grid card: read time,paired,NOT RENDERED on INK
+library-card-title,src/pages/Library.tsx,358,wp-content/plugins/ink-core/src/Training/Hub.php,748,first grid card: title,paired,O-11; NOT RENDERED on INK
+library-card-excerpt,src/pages/Library.tsx,361,wp-content/plugins/ink-core/src/Training/Hub.php,743,first grid card: excerpt,paired,NOT RENDERED on INK
+library-card-footer,src/pages/Library.tsx,364,wp-content/plugins/ink-core/src/Training/Hub.php,750,first grid card: author + read row,paired,NOT RENDERED on INK
+library-card-author,src/pages/Library.tsx,365,wp-content/plugins/ink-core/src/Training/Hub.php,751,first grid card: author,paired,O-13; NOT RENDERED on INK
+library-card-read,src/pages/Library.tsx,366,wp-content/plugins/ink-core/src/Training/Hub.php,752,first grid card: Read affordance,paired,O-12; NOT RENDERED on INK
+library-pagination,,,wp-content/plugins/ink-core/src/Training/Hub.php,521,prev/next pager,scope,O-15; only when >1 page
+library-empty,src/pages/Library.tsx,275,wp-content/plugins/ink-core/src/Training/Hub.php,688,empty-state box,paired,O-16; unfiltered <p> at :688 / filtered <div> at :693; Lovable not rendered in the default capture
+library-empty-title,src/pages/Library.tsx,276,,,empty-state title,missing-ink,O-16: unfiltered INK puts the title text on the box <p> itself; filtered INK has no title
+library-empty-text,src/pages/Library.tsx,277,wp-content/plugins/ink-core/src/Training/Hub.php,694,empty-state help text,paired,filtered state only; not rendered in either capture
+library-empty-btn,src/pages/Library.tsx,281,wp-content/plugins/ink-core/src/Training/Hub.php,695,clear-filters control,paired,filtered state only; not rendered in either capture
+library-cta,src/pages/Library.tsx,309,wp-content/plugins/ink-core/src/Training/ContributionCta.php,104,closing CTA,paired,O-17: Lovable full-bleed tinted <section>; INK <aside> inside the content column
+library-cta-container,src/pages/Library.tsx,310,,,CTA container,missing-ink,O-17
+library-cta-h2,src/pages/Library.tsx,311,wp-content/plugins/ink-core/src/Training/ContributionCta.php,105,CTA h2,paired,
+library-cta-text,src/pages/Library.tsx,314,wp-content/plugins/ink-core/src/Training/ContributionCta.php,106,CTA text,paired,
+library-cta-btn,src/pages/Library.tsx,318,wp-content/plugins/ink-core/src/Training/ContributionCta.php,109,CTA button,paired,O-18: shadcn <Button literary lg asChild> vs bespoke <a>

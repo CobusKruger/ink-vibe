@@ -1,0 +1,60 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+library-shell,,,wp-content/themes/ink-foundation/patterns/biblioteek.php,23,pattern shell <section> (padding s-16/s-24/s-64),missing-lovable,B-1: one shell wraps every Lovable section; same id on row 08b
+library-shell-inner,,,wp-content/themes/ink-foundation/patterns/biblioteek.php,25,alignwide group <div>,missing-lovable,B-1
+library-archive,,,wp-content/plugins/ink-core/src/Library/Archive.php,507,ink/biblioteek-argief root <section>,missing-lovable,B-1; emitted at :507 (empty) and :512 (with cards)
+library-intro,src/pages/Library.tsx,199,wp-content/plugins/ink-core/src/Library/Archive.php,487,intro band,paired,B-2: Lovable full-bleed tinted <section>; INK <div> inside the content column
+library-intro-container,src/pages/Library.tsx,200,,,intro container (px-4 py-16 md:py-20),missing-ink,B-1 MECHANISM: INK padding comes from the pattern shell
+library-intro-inner,src/pages/Library.tsx,201,,,intro max-w-3xl column,missing-ink,B-1
+library-eyebrow,src/pages/Library.tsx,202,,,eyebrow row (icon + label),missing-ink,B-3
+library-eyebrow-icon,src/pages/Library.tsx,203,,,eyebrow Library icon,missing-ink,B-3
+library-eyebrow-text,src/pages/Library.tsx,204,,,eyebrow label,missing-ink,B-3
+library-h1,src/pages/Library.tsx,206,wp-content/plugins/ink-core/src/Library/Archive.php,488,h1,paired,INK h1 carries the section label (Terms 'biblioteek'); copy is owner territory (R2)
+library-lede,src/pages/Library.tsx,209,,,intro paragraph,missing-ink,B-4
+library-search,src/pages/Library.tsx,216,wp-content/plugins/ink-core/src/Library/Archive.php,572,search container,paired,B-7: Lovable <div>; INK GET <form>
+library-search-icon-wrap,,,wp-content/plugins/ink-core/src/Library/Archive.php,574,positioned span around the search icon,missing-lovable,B-6 MECHANISM
+library-search-icon,src/pages/Library.tsx,217,wp-content/plugins/ink-core/src/Library/Archive.php,574,search svg,paired,stamped via withAuditId() on the icon() output
+library-search-input,src/pages/Library.tsx,219,wp-content/plugins/ink-core/src/Library/Archive.php,575,search input,paired,
+library-search-btn,,,wp-content/plugins/ink-core/src/Library/Archive.php,579,Soek submit button,missing-lovable,B-5 EXTRA
+library-shelf,src/pages/Library.tsx,232,wp-content/plugins/ink-core/src/Library/Archive.php,542,featured shelf,paired,NOT RENDERED on INK: no non-fixture items (limits §6)
+library-shelf-head,src/pages/Library.tsx,233,,,shelf header row,missing-ink,B-9 MECHANISM
+library-shelf-h2,src/pages/Library.tsx,235,wp-content/plugins/ink-core/src/Library/Archive.php,543,shelf h2,paired,NOT RENDERED on INK
+library-shelf-sub,src/pages/Library.tsx,238,,,shelf subtitle,missing-ink,B-8
+library-shelf-grid,src/pages/Library.tsx,243,wp-content/plugins/ink-core/src/Library/Archive.php,544,shelf grid,paired,B-10: <div> grid vs <ul>; NOT RENDERED on INK
+library-shelf-card,src/pages/Library.tsx,245,wp-content/plugins/ink-core/src/Library/Archive.php,549,first featured card,paired,first card only; Lovable ArticleCard <Card> at :343; INK cardHtml() <li> at :682; NOT RENDERED on INK
+library-shelf-card-image,,,wp-content/plugins/ink-core/src/Library/Archive.php,658,first featured card: cover image,missing-lovable,B-18 DIVERGENCE (accepted); only when the item has a thumbnail
+library-shelf-card-body,src/pages/Library.tsx,348,wp-content/plugins/ink-core/src/Library/Archive.php,684,first featured card: content column,paired,NOT RENDERED on INK
+library-shelf-card-meta,src/pages/Library.tsx,349,wp-content/plugins/ink-core/src/Library/Archive.php,664,first featured card: badge + read-time row,paired,NOT RENDERED on INK
+library-shelf-card-badge,src/pages/Library.tsx,350,wp-content/plugins/ink-core/src/Library/Archive.php,667,first featured card: category badge,paired,Lovable <Badge outline> <div>; INK <span>; NOT RENDERED on INK
+library-shelf-card-time,src/pages/Library.tsx,353,wp-content/plugins/ink-core/src/Library/Archive.php,671,first featured card: read time,paired,NOT RENDERED on INK
+library-shelf-card-title,src/pages/Library.tsx,358,wp-content/plugins/ink-core/src/Library/Archive.php,686,first featured card: title,paired,B-15: <h3> vs <a>; NOT RENDERED on INK
+library-shelf-card-excerpt,src/pages/Library.tsx,361,wp-content/plugins/ink-core/src/Library/Archive.php,679,first featured card: excerpt,paired,NOT RENDERED on INK
+library-shelf-card-footer,src/pages/Library.tsx,364,wp-content/plugins/ink-core/src/Library/Archive.php,688,first featured card: author + read row,paired,NOT RENDERED on INK
+library-shelf-card-author,src/pages/Library.tsx,365,wp-content/plugins/ink-core/src/Library/Archive.php,689,first featured card: author,paired,B-17: no "by" prefix; NOT RENDERED on INK
+library-shelf-card-read,src/pages/Library.tsx,366,wp-content/plugins/ink-core/src/Library/Archive.php,690,first featured card: Read affordance,paired,B-16: <span> vs aria-hidden <a>; NOT RENDERED on INK
+library-browse,src/pages/Library.tsx,252,,,categories + grid section,missing-ink,B-1
+library-filters,src/pages/Library.tsx,253,wp-content/plugins/ink-core/src/Library/Archive.php,599,filter row,paired,
+library-filter,src/pages/Library.tsx,259,wp-content/plugins/ink-core/src/Library/Archive.php,608,first (active All/Alles) filter chip,paired,first chip only; B-12 <button> vs <a> from Kernel/ArchiveRender::pill(); id stamped in Archive::filterHtml(); Kernel untouched
+library-filter-icon,src/pages/Library.tsx,267,,,filter chip icon,missing-ink,B-11
+library-count,src/pages/Library.tsx,294,,,result count line,missing-ink,B-14
+library-grid,src/pages/Library.tsx,299,wp-content/plugins/ink-core/src/Library/Archive.php,512,card grid,paired,B-10; NOT RENDERED on INK
+library-card,src/pages/Library.tsx,301,wp-content/plugins/ink-core/src/Library/Archive.php,517,first grid card,paired,first card only; Lovable ArticleCard <Card> at :343; INK cardHtml() <li> at :682; NOT RENDERED on INK
+library-card-image,,,wp-content/plugins/ink-core/src/Library/Archive.php,658,first grid card: cover image,missing-lovable,B-18 DIVERGENCE (accepted)
+library-card-body,src/pages/Library.tsx,348,wp-content/plugins/ink-core/src/Library/Archive.php,684,first grid card: content column,paired,NOT RENDERED on INK
+library-card-meta,src/pages/Library.tsx,349,wp-content/plugins/ink-core/src/Library/Archive.php,664,first grid card: badge + read-time row,paired,NOT RENDERED on INK
+library-card-badge,src/pages/Library.tsx,350,wp-content/plugins/ink-core/src/Library/Archive.php,667,first grid card: category badge,paired,NOT RENDERED on INK
+library-card-time,src/pages/Library.tsx,353,wp-content/plugins/ink-core/src/Library/Archive.php,671,first grid card: read time,paired,NOT RENDERED on INK
+library-card-title,src/pages/Library.tsx,358,wp-content/plugins/ink-core/src/Library/Archive.php,686,first grid card: title,paired,B-15; NOT RENDERED on INK
+library-card-excerpt,src/pages/Library.tsx,361,wp-content/plugins/ink-core/src/Library/Archive.php,679,first grid card: excerpt,paired,NOT RENDERED on INK
+library-card-footer,src/pages/Library.tsx,364,wp-content/plugins/ink-core/src/Library/Archive.php,688,first grid card: author + read row,paired,NOT RENDERED on INK
+library-card-author,src/pages/Library.tsx,365,wp-content/plugins/ink-core/src/Library/Archive.php,689,first grid card: author,paired,B-17; NOT RENDERED on INK
+library-card-read,src/pages/Library.tsx,366,wp-content/plugins/ink-core/src/Library/Archive.php,690,first grid card: Read affordance,paired,B-16; NOT RENDERED on INK
+library-pagination,,,wp-content/plugins/ink-core/src/Library/Archive.php,524,prev/next pager,scope,B-19; only when >1 page
+library-empty,src/pages/Library.tsx,275,wp-content/plugins/ink-core/src/Library/Archive.php,508,empty-state box,paired,B-20/B-21; Lovable renders it only when a filter matches nothing (not in the default capture); INK renders it now (no non-fixture items)
+library-empty-title,src/pages/Library.tsx,276,wp-content/plugins/ink-core/src/Library/Archive.php,508,empty-state title,paired,Lovable not rendered in the default capture
+library-empty-text,src/pages/Library.tsx,277,,,empty-state help text,missing-ink,B-20
+library-empty-btn,src/pages/Library.tsx,281,wp-content/plugins/ink-core/src/Library/Archive.php,503,clear-filters control,paired,B-21: INK only when filtered; neither side rendered in capture
+library-cta,src/pages/Library.tsx,309,,,closing CTA band,missing-ink,B-22
+library-cta-container,src/pages/Library.tsx,310,,,CTA container,missing-ink,B-22
+library-cta-h2,src/pages/Library.tsx,311,,,CTA h2,missing-ink,B-22
+library-cta-text,src/pages/Library.tsx,314,,,CTA text,missing-ink,B-22
+library-cta-btn,src/pages/Library.tsx,318,,,CTA button (literary lg asChild),missing-ink,B-22

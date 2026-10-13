@@ -484,8 +484,8 @@ final class Archive {
 		// The heading + search sit together in an intro band (Library-layout parity —
 		// mirrors Lovable's Library.tsx header section, and Training\Hub::toHtml()'s
 		// established order); the featured shelf, then the genre filter, follow below.
-		$intro = '<div class="ink-biblioteek__intro">'
-			. '<h1 class="ink-biblioteek__heading">' . esc_html( Terms::label( 'biblioteek' ) ) . '</h1>'
+		$intro = '<div class="ink-biblioteek__intro" data-audit-id="library-intro">'
+			. '<h1 class="ink-biblioteek__heading" data-audit-id="library-h1">' . esc_html( Terms::label( 'biblioteek' ) ) . '</h1>'
 			. self::searchHtml( $search_term, $active_genre )
 			. '</div>';
 
@@ -500,25 +500,28 @@ final class Archive {
 
 			if ( $is_filtered ) {
 				$clear_url = (string) remove_query_arg( array( self::GENRE_VAR, self::SEARCH_VAR, self::PAGED_VAR ) );
-				$clear     = '<a class="ink-biblioteek__leeg-skoon" href="' . esc_url( $clear_url ) . '">'
+				$clear     = '<a class="ink-biblioteek__leeg-skoon" data-audit-id="library-empty-btn" href="' . esc_url( $clear_url ) . '">'
 					. esc_html__( 'Vee filters uit', 'ink-core' ) . '</a>';
 			}
 
-			return '<section class="ink-biblioteek alignwide">' . $intro . $controls
-				. '<div class="ink-biblioteek__leeg"><p class="ink-biblioteek__leeg-teks">' . esc_html( $empty ) . '</p>'
+			return '<section class="ink-biblioteek alignwide" data-audit-id="library-archive">' . $intro . $controls
+				. '<div class="ink-biblioteek__leeg" data-audit-id="library-empty"><p class="ink-biblioteek__leeg-teks" data-audit-id="library-empty-title">' . esc_html( $empty ) . '</p>'
 				. $clear . '</div></section>';
 		}
 
-		$html = '<section class="ink-biblioteek alignwide">' . $intro . $controls . '<ul class="ink-biblioteek__list">';
+		$html = '<section class="ink-biblioteek alignwide" data-audit-id="library-archive">' . $intro . $controls . '<ul class="ink-biblioteek__list" data-audit-id="library-grid">';
+
+		$first = true;
 
 		foreach ( $cards as $card ) {
-			$html .= self::cardHtml( $card );
+			$html .= self::cardHtml( $card, '', $first ? 'library-card' : '' );
+			$first = false;
 		}
 
 		$paged     = isset( $nav['paged'] ) ? (int) $nav['paged'] : 1;
 		$max_pages = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;
 
-		$html .= '</ul>' . ArchiveRender::pagination( $paged, $max_pages, 'ink-biblioteek', self::PAGED_VAR ) . '</section>';
+		$html .= '</ul>' . self::withAuditId( ArchiveRender::pagination( $paged, $max_pages, 'ink-biblioteek', self::PAGED_VAR ), 'library-pagination' ) . '</section>';
 
 		return $html;
 	}
@@ -536,12 +539,15 @@ final class Archive {
 			return '';
 		}
 
-		$html = '<div class="ink-biblioteek__uitgelig">'
-			. '<h2 class="ink-biblioteek__uitgelig-titel">' . esc_html__( 'Uitgelig', 'ink-core' ) . '</h2>'
-			. '<ul class="ink-biblioteek__uitgelig-lys">';
+		$html = '<div class="ink-biblioteek__uitgelig" data-audit-id="library-shelf">'
+			. '<h2 class="ink-biblioteek__uitgelig-titel" data-audit-id="library-shelf-h2">' . esc_html__( 'Uitgelig', 'ink-core' ) . '</h2>'
+			. '<ul class="ink-biblioteek__uitgelig-lys" data-audit-id="library-shelf-grid">';
+
+		$first = true;
 
 		foreach ( $featured as $card ) {
-			$html .= self::cardHtml( $card, 'ink-biblioteek__uitgelig-item' );
+			$html .= self::cardHtml( $card, 'ink-biblioteek__uitgelig-item', $first ? 'library-shelf-card' : '' );
+			$first = false;
 		}
 
 		return $html . '</ul></div>';
@@ -563,14 +569,14 @@ final class Archive {
 			? '<input type="hidden" name="' . esc_attr( self::GENRE_VAR ) . '" value="' . esc_attr( $active_genre ) . '" />'
 			: '';
 
-		return '<form class="ink-biblioteek__soek" role="search" method="get">'
+		return '<form class="ink-biblioteek__soek" data-audit-id="library-search" role="search" method="get">'
 			. $hidden
-			. '<span class="ink-biblioteek__soek-ikoon">' . self::icon( self::ICON_SEARCH ) . '</span>'
-			. '<input type="search" class="ink-biblioteek__soek-veld" name="' . esc_attr( self::SEARCH_VAR ) . '"'
+			. '<span class="ink-biblioteek__soek-ikoon" data-audit-id="library-search-icon-wrap">' . self::withAuditId( self::icon( self::ICON_SEARCH ), 'library-search-icon' ) . '</span>'
+			. '<input type="search" class="ink-biblioteek__soek-veld" data-audit-id="library-search-input" name="' . esc_attr( self::SEARCH_VAR ) . '"'
 			. ' value="' . esc_attr( $term ) . '"'
 			. ' placeholder="' . esc_attr__( 'Soek in die biblioteek…', 'ink-core' ) . '"'
 			. ' aria-label="' . esc_attr__( 'Soek in die biblioteek…', 'ink-core' ) . '" />'
-			. '<button type="submit" class="ink-biblioteek__soek-knoppie">' . esc_html__( 'Soek', 'ink-core' ) . '</button>'
+			. '<button type="submit" class="ink-biblioteek__soek-knoppie" data-audit-id="library-search-btn">' . esc_html__( 'Soek', 'ink-core' ) . '</button>'
 			. '</form>';
 	}
 
@@ -590,13 +596,16 @@ final class Archive {
 			return '';
 		}
 
-		$html = '<div class="ink-biblioteek__filter">';
+		$html = '<div class="ink-biblioteek__filter" data-audit-id="library-filters">';
 
-		$html .= ArchiveRender::pill(
-			(string) remove_query_arg( array( self::GENRE_VAR, self::PAGED_VAR ) ),
-			__( 'Alles', 'ink-core' ),
-			( null === $active_genre ),
-			'ink-biblioteek__filter-knoppie'
+		$html .= self::withAuditId(
+			ArchiveRender::pill(
+				(string) remove_query_arg( array( self::GENRE_VAR, self::PAGED_VAR ) ),
+				__( 'Alles', 'ink-core' ),
+				( null === $active_genre ),
+				'ink-biblioteek__filter-knoppie'
+			),
+			'library-filter'
 		);
 
 		foreach ( $genres as $genre ) {
@@ -631,9 +640,10 @@ final class Archive {
 	 *
 	 * @param array{title?:string, permalink?:string, author?:string, genre?:string, excerpt?:string, read_minutes?:int, image?:string} $card  The item.
 	 * @param string                                                                                                                     $extra Optional extra CSS class.
+	 * @param string                                                                                                                     $audit Fidelity-audit id prefix (first card of each repeater only; '' = none).
 	 * @return string
 	 */
-	private static function cardHtml( array $card, string $extra = '' ): string {
+	private static function cardHtml( array $card, string $extra = '', string $audit = '' ): string {
 		$class = 'ink-biblioteek__item' . ( '' !== $extra ? ' ' . $extra : '' );
 
 		$title     = (string) ( $card['title'] ?? '' );
@@ -645,20 +655,20 @@ final class Archive {
 		$read_time = self::readTimeLabel( (int) ( $card['read_minutes'] ?? 0 ) );
 
 		$image_html = '' !== $image
-			? '<div class="ink-biblioteek__item-beeld">' . $image . '</div>'
+			? '<div class="ink-biblioteek__item-beeld"' . self::auditAttr( $audit, '-image' ) . '>' . $image . '</div>'
 			: '';
 
 		$meta = '';
 
 		if ( '' !== $genre || '' !== $read_time ) {
-			$meta = '<div class="ink-biblioteek__item-meta">';
+			$meta = '<div class="ink-biblioteek__item-meta"' . self::auditAttr( $audit, '-meta' ) . '>';
 
 			if ( '' !== $genre ) {
-				$meta .= '<span class="ink-biblioteek__genre">' . esc_html( $genre ) . '</span>';
+				$meta .= '<span class="ink-biblioteek__genre"' . self::auditAttr( $audit, '-badge' ) . '>' . esc_html( $genre ) . '</span>';
 			}
 
 			if ( '' !== $read_time ) {
-				$meta .= '<span class="ink-biblioteek__item-leestyd">' . self::icon( self::ICON_CLOCK )
+				$meta .= '<span class="ink-biblioteek__item-leestyd"' . self::auditAttr( $audit, '-time' ) . '>' . self::icon( self::ICON_CLOCK )
 					. '<span>' . esc_html( $read_time ) . '</span></span>';
 			}
 
@@ -666,19 +676,46 @@ final class Archive {
 		}
 
 		$excerpt_html = '' !== $excerpt
-			? '<p class="ink-biblioteek__item-uittreksel">' . esc_html( $excerpt ) . '</p>'
+			? '<p class="ink-biblioteek__item-uittreksel"' . self::auditAttr( $audit, '-excerpt' ) . '>' . esc_html( $excerpt ) . '</p>'
 			: '';
 
-		return '<li class="' . esc_attr( $class ) . '">'
+		return '<li class="' . esc_attr( $class ) . '"' . self::auditAttr( $audit, '' ) . '>'
 			. $image_html
-			. '<div class="ink-biblioteek__item-inhoud">'
+			. '<div class="ink-biblioteek__item-inhoud"' . self::auditAttr( $audit, '-body' ) . '>'
 			. $meta
-			. '<a class="ink-biblioteek__titel" href="' . esc_url( $permalink ) . '">' . esc_html( $title ) . '</a>'
+			. '<a class="ink-biblioteek__titel"' . self::auditAttr( $audit, '-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $title ) . '</a>'
 			. $excerpt_html
-			. '<div class="ink-biblioteek__item-voet">'
-			. '<span class="ink-biblioteek__outeur">' . esc_html( $author ) . '</span>'
-			. '<a class="ink-biblioteek__lees" href="' . esc_url( $permalink ) . '" tabindex="-1" aria-hidden="true">'
+			. '<div class="ink-biblioteek__item-voet"' . self::auditAttr( $audit, '-footer' ) . '>'
+			. '<span class="ink-biblioteek__outeur"' . self::auditAttr( $audit, '-author' ) . '>' . esc_html( $author ) . '</span>'
+			. '<a class="ink-biblioteek__lees"' . self::auditAttr( $audit, '-read' ) . ' href="' . esc_url( $permalink ) . '" tabindex="-1" aria-hidden="true">'
 			. esc_html__( 'Lees', 'ink-core' ) . self::icon( self::ICON_ARROW ) . '</a>'
 			. '</div></div></li>';
+	}
+
+	/**
+	 * Stamp a fidelity-audit join key (docs/fidelity-remediation/maps/biblioteek.csv)
+	 * onto the first tag of an HTML fragment. Pure. Empty input stays empty.
+	 * Mirrors {@see \Ink\Discovery\WorksArchive}'s helper of the same name.
+	 *
+	 * @param string $html The fragment.
+	 * @param string $id   The audit id.
+	 * @return string
+	 */
+	private static function withAuditId( string $html, string $id ): string {
+		$stamped = preg_replace( '/^<([a-z][a-z0-9]*)\b/i', '<$1 data-audit-id="' . esc_attr( $id ) . '"', $html, 1 );
+
+		return null !== $stamped ? $stamped : $html;
+	}
+
+	/**
+	 * The ` data-audit-id="{prefix}{suffix}"` attribute, or '' when no prefix is
+	 * given (every card but the first of its repeater). Pure.
+	 *
+	 * @param string $prefix The card's audit-id prefix, or ''.
+	 * @param string $suffix The element-role suffix ('' for the card itself).
+	 * @return string
+	 */
+	private static function auditAttr( string $prefix, string $suffix ): string {
+		return '' !== $prefix ? ' data-audit-id="' . esc_attr( $prefix . $suffix ) . '"' : '';
 	}
 }

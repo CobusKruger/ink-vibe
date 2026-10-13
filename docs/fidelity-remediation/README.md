@@ -377,6 +377,18 @@ controls (bookmark, share, highlights tab, panel close) under `button-icon`, and
 highlights-panel / response counters under `count-chip`. Lovable's bare text `Reply`
 button (no variant) is filed under `button-ghost` with the note saying so.
 
+Rows 08a/08b (`biblioteek`, `opleiding`) needed no new kind. They file the following:
+- the dashed empty-state box (`.ink-*__leeg`) under `card`, with a note that it holds no content;
+- the archive pager links (`__vorige`/`__volgende`, rounded-full, bordered) under
+  `button-outline`;
+- Lovable's shadcn `<Badge variant="outline">` card category badge under `pill`, which is the
+  tool's own call;
+- Lovable's class-less serif-italic eyebrow under `eyebrow`, added by hand because it is
+  not uppercase and the tool misses it.
+
+The Lovable instance rows for the shared `/library` reference are recorded once, in
+`_primitive-observations.biblioteek.csv`, so Stage 2 does not count them twice.
+
 `run.sh primitives` also emits a generic `button` fallback. It is not a kind: resolve
 each such row to a variant before it enters the register.
 

@@ -20,9 +20,9 @@ $ink_opleiding_label = function_exists( 'ink_foundation_term' )
 	: 'Opleiding';
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" aria-label="<?php echo esc_attr( $ink_opleiding_label ); ?>" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<section class="wp-block-group alignfull" data-audit-id="library-shell" aria-label="<?php echo esc_attr( $ink_opleiding_label ); ?>" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide">
+	<div class="wp-block-group alignwide" data-audit-id="library-shell-inner">
 		<!-- wp:ink/opleiding-argief /-->
 
 		<!-- wp:ink/opleiding-bydra /-->
