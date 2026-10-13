@@ -9,11 +9,11 @@
 #
 # Capture flags (anything from the first `--flag` on, an optional `--` separator is
 # skipped) are passed through to every capture run: --auth <file>, --click <sel>
-# (repeatable), --state <name>, --mode <all|keyed>. --out and --viewport are owned
-# by this script.
+# (repeatable), --state <name>, --mode <all|keyed>, --scope <sel> --scope-label <name>
+# (T7). --out and --viewport are owned by this script.
 #
 # Each run writes to its own directory, keyed by what it captures (T1):
-#   tmp/determinism/<side>-<page>@<vp>[-auth][-<state>]/run<i>/
+#   tmp/determinism/<side>-<page>@<vp>[-auth][-<state>][-scope-<label>]/run<i>/
 # Only that directory is cleared, so parallel gates on different pages, sides,
 # viewports or states cannot delete each other's runs.
 
@@ -34,18 +34,19 @@ RUNS="${pos[1]:-3}"
 EXPECT="${pos[2]:-}"
 EXTRA=("$@")
 
-AUTH="" STATE=""
+AUTH="" STATE="" SCOPE_LABEL=""
 for ((i = 0; i < ${#EXTRA[@]}; i++)); do
   case "${EXTRA[$i]}" in
     --auth)  AUTH="${EXTRA[$((i + 1))]:-}" ;;
     --state) STATE="${EXTRA[$((i + 1))]:-}" ;;
+    --scope-label) SCOPE_LABEL="${EXTRA[$((i + 1))]:-}" ;;
     --out|--viewport)
       echo "error: ${EXTRA[$i]} is set by determinism-check.sh, do not pass it" >&2
       exit 2 ;;
   esac
 done
 
-NAME="$PAGE@$VP${AUTH:+-auth}${STATE:+-$STATE}"
+NAME="$PAGE@$VP${AUTH:+-auth}${STATE:+-$STATE}${SCOPE_LABEL:+-scope-$SCOPE_LABEL}"
 BASE="$REPO/tmp/determinism/$SIDE-$NAME"
 rm -rf "$BASE"
 mkdir -p "$BASE"

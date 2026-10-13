@@ -10,7 +10,12 @@
  *
  * Usage:
  *   extract-primitives.mjs --in <a.ndjson> [--in <b.ndjson> …] [--out <file.csv>] [--append]
- *                          [--exclude-chrome]
+ *                          [--exclude-chrome] [--no-collapse]
+ *
+ *   Rows identical at several widths collapse into one row with `viewport` =
+ *   `390|768|1440` (README §4.1 register spec; T6). `--no-collapse` keeps one row
+ *   per capture. Pass every viewport's capture in ONE run for the collapse to apply.
+ *   A scoped capture (capture --scope, T7) adds `scope <label>` to the note.
  *
  *   --exclude-chrome  drop the site header and footer (row 00's scope) from every other
  *                     row: any node whose audit-id is `header`/`header-*`/`footer`/`footer-*`,
@@ -118,8 +123,17 @@ const RULES = [
       : ['card', 'bordered <label> wrapping a control (picker card)'];
   } },
 
-  // A member's Gradering as bare text (INK `__gradering`).
-  { kind: 'tier-label', test: (n) => /gradering/.test(cls(n)) && !filled(n) && !bordered(n) },
+  // A member's Gradering (T6). Only a real tier label: an INK `…__gradering` element
+  // holding the tier as bare text (ontdek cards), or the shared `.ink-gradering` badge
+  // root (row 06). NOT a class that merely contains the word — `__lesergradering-titel`
+  // is a heading, `__lesergradering-leeg` empty-state text. The badge's own parts
+  // (`ink-gradering__mark`/`__label`) and a `…__gradering` wrapper around a badge are
+  // not instances of their own: the badge is the primitive.
+  { kind: null, test: (n, ctx) => n.c.some((c) => c.startsWith('ink-gradering__'))
+      || (n.c.some((c) => /__gradering$/.test(c))
+        && ctx.children(n).some((ch) => has(ch, 'ink-gradering'))) },
+  { kind: 'tier-label', test: (n) => n.c.some((c) => c === 'ink-gradering' || /__gradering$/.test(c))
+      && !filled(n) && !bordered(n) },
 
   // Small round/square shapes with no semantic class.
   { kind: 'list-bullet', test: (n, ctx) => square(n) && n.x.w <= 12 && round(n) && filled(n)
@@ -144,6 +158,10 @@ const RULES = [
       && px(n.cs['border-top-left-radius']) >= 8 && px(n.cs['padding-top']) >= 16 },
   { kind: 'button-outline', test: (n) => /(-|__)skakel\b/.test(cls(n)) && bordered(n) && padded(n) && !!n.s },
   { kind: 'pill', test: (n) => /(-|__)tipe\b/.test(cls(n)) && (filled(n) || bordered(n)) && padded(n) },
+  // INK `__genre` (T6): a genre label drawn as a pill (row 06 `.ink-skrywerprofiel__genre`,
+  // the biblioteek card badge `.ink-biblioteek__genre`). Pill-shaped only; a bare-text
+  // genre falls through.
+  { kind: 'pill', test: (n) => n.c.some((c) => /__genre$/.test(c)) && (filled(n) || bordered(n)) && padded(n) },
 
   // Bespoke button-shaped links with no class hook (INK `__aksie`, `__cta`, …): caught
   // by shape and left as a generic `button` for the auditor to resolve to a variant.
@@ -220,16 +238,17 @@ function chromeRoots(recs) {
 
 function parseArgs(argv) {
   const ins = [];
-  let out = null, append = false, excludeChrome = false;
+  let out = null, append = false, excludeChrome = false, collapse = true;
   for (let i = 2; i < argv.length; i += 1) {
     if (argv[i] === '--in') { ins.push(argv[++i]); }
     else if (argv[i] === '--out') { out = argv[++i]; }
     else if (argv[i] === '--append') { append = true; }
     else if (argv[i] === '--exclude-chrome') { excludeChrome = true; }
+    else if (argv[i] === '--no-collapse') { collapse = false; }
     else throw new Error(`Unknown argument "${argv[i]}"`);
   }
-  if (!ins.length) throw new Error('Usage: extract-primitives.mjs --in <capture.ndjson> [--out <file.csv>] [--append] [--exclude-chrome]');
-  return { ins, out, append, excludeChrome };
+  if (!ins.length) throw new Error('Usage: extract-primitives.mjs --in <capture.ndjson> [--out <file.csv>] [--append] [--exclude-chrome] [--no-collapse]');
+  return { ins, out, append, excludeChrome, collapse };
 }
 
 const csv = (v) => {
@@ -285,10 +304,39 @@ for (const file of args.ins) {
       used_in: '',         // source-side
       declarations: decls,
       audit_id: n.a ?? '',
-      note: [meta.state ? `state ${meta.state}` : '', note].filter(Boolean).join('; '),
+      note: [meta.state ? `state ${meta.state}` : '', meta.scopeLabel ? `scope ${meta.scopeLabel}` : '', note]
+        .filter(Boolean).join('; '),
     });
   }
 }
+
+/**
+ * T6 — README §4.1 register spec: an instance whose row is identical at several
+ * widths is ONE row, widths joined with `|`. Matching is per occurrence: the i-th
+ * identical row at one width merges with the i-th at another, so N identical
+ * instances on a page stay N rows. Order is first appearance; widths sort numerically.
+ */
+function collapseViewports(list) {
+  const keyOf = (r) => JSON.stringify([r.page, r.side, r.component_kind, r.selector,
+    r.defined_in, r.load_scope, r.used_in, r.declarations, r.audit_id, r.note]);
+  const seen = new Map();
+  const groups = new Map();
+  for (const r of list) {
+    const k = keyOf(r);
+    const occ = seen.get(`${k}|${r.viewport}`) ?? 0;
+    seen.set(`${k}|${r.viewport}`, occ + 1);
+    const g = `${k}#${occ}`;
+    if (!groups.has(g)) groups.set(g, { row: { ...r }, vps: [] });
+    groups.get(g).vps.push(r.viewport);
+  }
+  return [...groups.values()].map(({ row, vps }) => ({
+    ...row,
+    viewport: [...new Set(vps.map(String))].sort((x, y) => Number(x) - Number(y)).join('|'),
+  }));
+}
+
+const before = rows.length;
+if (args.collapse) rows.splice(0, rows.length, ...collapseViewports(rows));
 
 const HEAD = 'page,side,viewport,component_kind,selector,defined_in,load_scope,used_in,declarations,audit_id,note';
 const body = rows.map((r) => Object.values(r).map(csv).join(',')).join('\n');
@@ -309,4 +357,7 @@ for (const [k, v] of Object.entries(byKind).sort((a, b) => b[1] - a[1])) {
   console.error(`  ${k.padEnd(20)} ${v}`);
 }
 if (args.excludeChrome) console.error(`  (${excluded} header/footer nodes excluded)`);
+if (args.collapse && rows.length !== before) {
+  console.error(`  (${before} per-viewport rows collapsed to ${rows.length}: identical across widths → viewport a|b|c)`);
+}
 console.error('  generic `button` rows are not a kind — resolve each to a variant (README §4.1)');

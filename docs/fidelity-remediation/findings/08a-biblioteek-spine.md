@@ -125,3 +125,57 @@ shape but drop the icons.
 - This document makes **no claim about computed values** (R4). Those are in `08a-biblioteek-drift*.md`,
   which were generated from captures that passed the determinism gate (3/3 identical) and `verify --sample 30`
   (0 mismatches) at 390, 768 and 1440 on both sides.
+
+## 7. Card coverage (qa-bloks, 2026-10-13)
+
+Owner ruling 2026-10-13: measure the cards from `/qa-bloks/`, which embeds `ink/biblioteek-argief`
+with the three `QA FIXTURE — ` items switched back on (`patterns/qa-bloks.php:149-157`). That page
+also embeds `ink/opleiding-argief`, which emits the same `library-*` ids, so the capture is
+**scoped** to the biblioteek block root, `section.ink-biblioteek` (`Archive.php:512`), with
+`capture --scope 'section.ink-biblioteek' --scope-label cards` (harness T7). The scoped capture holds
+no duplicate id. It passed the determinism gate (3/3 identical) and `verify --sample 30`
+(0 mismatches, scope root re-resolved to the same node) at 390, 768 and 1440. The site was confirmed
+current with `deploy-to-local.sh` (dry run: nothing to sync).
+
+**What paired.** 31 ids at every viewport, against the existing Lovable `library@<vp>` captures.
+Of these, the 24 shelf/grid/card ids listed as "NOT RENDERED" in §5 are now measured: `library-shelf`,
+`-shelf-h2`, `-shelf-grid`, `library-grid`, and the full `library-shelf-card*` and `library-card*`
+sets (card, body, meta, badge, time, title, excerpt, footer, author, read). The other 7 are the intro,
+search and filter ids already measured on the live page. Reference-only ids in these diffs are
+expected: the scope excludes the header, footer and everything outside the block.
+
+**Card drifts** (per-element tables in the drift files; the values below hold at all three widths
+unless stated):
+- **Shelf card surface.** INK fills it with opaque `rgb(237, 233, 224)` and a `rgb(233, 194, 180)`
+  border. Lovable uses `bg-cream/60` (`rgba(250, 248, 245, 0.6)`) and a `terracotta/20` border.
+- **Resting shadow.** Every INK card carries `0 2px 12px -2px rgba(24, 29, 37, 0.06)` at rest.
+  Lovable's is `shadow-sm` (`0 1px 2px rgba(0, 0, 0, 0.05)`); the diff table truncates it.
+- **Inner rhythm.** INK's card body is a flex column with a uniform `gap: 8px`, and the meta row
+  packs to the left (`justify-content: normal`). Lovable spaces meta→title 16px, title→excerpt 12px and
+  excerpt→footer 20px, and pushes the read time to the right (`space-between`).
+- **Category pill.** `.ink-biblioteek__genre` pads 4px/12px with an 18px line height. Lovable's
+  `Badge` and INK's opleiding twin (`.ink-opleiding__item-pil`) both pad 2px/10px.
+- **Shelf h2.** 24px/400 at 1440 against Lovable's 30px. The shelf has no band padding of its own
+  (Lovable 64px top and bottom); B-1 already covers this.
+
+**What the scoped capture cannot show:**
+- **Content differences, not styling.** Titles wrap to two lines because of the `QA FIXTURE — `
+  prefix (title height 55px vs 27.5px). The first shelf and grid cards have no cover image, but
+  their siblings do, so the grid row stretches them to 489px. The excerpt (`flex: 1`) then grows to
+  294px to fill the card. Card heights and excerpt heights are therefore fixture artefacts. Badge
+  widths follow the term names.
+- **Cover images (B-18).** `library-card-image` and `library-shelf-card-image` are stamped on the
+  first card only (`Archive.php:658`), and that card has no thumbnail. The image block was not
+  paired or measured. Recorded, not added (no source edits).
+- The excerpt's `display: flow-root` is how Chromium reports `display: -webkit-box` with a line clamp
+  (checked in isolation), so it is not a drift. Hover states, the empty state, the pager and
+  filtered states were not captured.
+- **Page-level layout differs from `/biblioteek/`.** On `/qa-bloks/` the block sits in that page's
+  own full-width shell (`qa-bloks.php:149-157`), which matches the `patterns/biblioteek.php`
+  shell's padding. Widths inside the block are comparable, but bounding-box `y` values are not.
+
+**Files produced:** `findings/08a-biblioteek-drift-cards.md`, `-drift-cards@768.md` and
+`-drift-cards@390.md` (generated). 27 card-level `ink` rows were appended to
+`maps/_primitive-observations.biblioteek.csv` (6 cards, 6 pills, 6 titles, 6 read-times and the
+shelf h2 at 3 widths), each noted `qa-bloks scoped capture`, with attribution taken from the
+existing `source` rows. Captures are in `tmp/fidelity-captures/ink/biblioteek@<vp>-scope-cards.ndjson`.

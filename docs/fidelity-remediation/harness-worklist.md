@@ -58,6 +58,7 @@ Four items remain before the Stage 1 audit can start at scale.
 | D7 | Lovable Supabase session `storageState` | ⏸️ **owner** — needs an account on the hosted Supabase project. Low value: only the header's two buttons change. |
 | D8 | Capture matrix | ✅ settled — anon everywhere; row 02 INK-authed with the header excluded from that diff |
 | D9 | Auth across the toolchain (T4) | ✅ done, uncommitted — `--auth <storageState.json>` on `capture`, `verify` and `determinism-check.sh`. An INK capture under `--auth` must render with the WP `logged-in` body class, and a lapsed `wordpress_logged_in` cookie is caught before launch. Either failure exits 3 and tells you to run `run.sh login`, so a logged-out page is never captured. `verify` refuses an authed capture without `--auth` |
+| D11 | Capture scope (T7) | ✅ done, uncommitted — `--scope '<css>' --scope-label <name>` records only the **first** matching element and its subtree, so a page that embeds several components with the same audit-ids (e.g. `/qa-bloks/`) can be captured one component at a time. Paths stay relative to `<body>`. The output is `<page>@<vp>[-auth][-<state>]-scope-<name>.ndjson`, and `_meta` gains `scope`, `scopeLabel` and `scopePath` **only** when scoped. A selector that matches nothing aborts the capture. `verify` re-resolves the selector live and fails if it no longer lands on `scopePath`. `determinism-check.sh` passes the flags through and names its gate directory with the suffix |
 | D10 | Scripted states (T4) | ✅ done, uncommitted — `--click <selector>` (repeatable, in order, each followed by a settle wait) plus a required `--state <name>`. Output is `<page>@<vp>[-auth][-<state>].ndjson`, and `_meta` gains `state` + `clicks` **only** when a state is driven, so default captures are byte-identical to before. `verify` re-drives the recorded clicks; `determinism-check.sh` passes the flags through |
 
 Auth is not confined to the account pages: the header branches on auth state on **every**
@@ -68,11 +69,13 @@ page (`Header.tsx:60-102`, `header-main.php:83-95`), so every capture is affecte
 | | Item | Status |
 |---|---|---|
 | E9 | `tools/fidelity/diff.mjs` | ✅ done — joins on audit-id, severity-ordered Markdown |
+| E9d | Duplicate audit-ids (T5) | ✅ done, uncommitted — diff **refuses** an input that repeats an audit-id: it exits 2, writes nothing, and lists each duplicated id with its node paths on stderr. It used to pair the last instance silently. `capture` warns on stderr when it writes such a file (stdout unchanged). Fix it with `--scope` or by narrowing the ids |
 | E10 | `tools/fidelity/extract-primitives.mjs` | ✅ done — 110 instances / 11 kinds from the homepage alone. Emits `page,side,viewport,component_kind,selector,declarations,audit_id`. |
 | E10a | Classifier gaps from batch 1 (T2) | ✅ done, uncommitted — kinds now come from README §4.1's vocabulary only. Covered: Lovable shadcn `<Button>` and `<Button asChild>` links, mapped by variant class (`literary`→primary, `outline`/`literary-outline`→outline, `sage`, `sage-outline`, `ghost`, `link`→link-underline). INK `core/button` is registered on the `<a>`, with its kind taken from the wrapper's `is-style-*` and the wrapper row dropped. Also: class-less uppercase eyebrows, INK icon tiles (`__icon`/`__ikoon`/`rang-merk`) and Lovable icon tiles (a tinted square holding an `<svg>`), INK `-skakel` (card when surface-shaped, outline when button-shaped) and `-tipe` (pill), `checkbox` (small square native input, or Radix `peer` button), `choice-row`/`card` for bordered `<label>`s wrapping a control, `step-badge`, `list-bullet`, `tier-label` (`__gradering`), and rounded-full Lovable buttons (filter-chip, or button-icon when unlabelled). Hidden inputs, the zero-height toast `<section>` and decorative circles are dropped. `--exclude-chrome` drops header/footer. The `note` column says why a non-obvious kind was chosen |
+| E10c | Classifier fixes from row 06 (T6) | ✅ done, uncommitted — `tier-label` only for the `.ink-gradering` badge root or a `…__gradering` element holding bare tier text. The badge's `__mark`/`__label` parts and a `…__gradering` wrapper around a badge are dropped, and `__lesergradering*` no longer matches. A pill-shaped INK `__genre` is filed as `pill`. **Viewport collapse:** rows identical across the captures passed in one run become one row with `viewport` = `390\|768\|1440`. Matching is per occurrence, so N identical instances stay N rows; `--no-collapse` opts out. A single-capture run's output is unchanged. A scoped capture adds `scope <name>` to `note` |
 | E10b | Source attribution — `defined_in` / `load_scope` / `used_in` | ⬜ **open** — a rendered capture cannot say which stylesheet a rule came from. Needs CDP `CSS.getMatchedStylesForNode`, or a source-side pass. Columns are emitted empty for now. |
 | E11 | Self-verification sampler | ✅ done — `run.sh verify`. Both sides: 30 nodes, 1560 properties, **0 mismatches**. |
-| E12 | Output conventions | ✅ done — `tmp/fidelity-captures/<side>/<page>@<vp>[-auth][-<state>].ndjson` |
+| E12 | Output conventions | ✅ done — `tmp/fidelity-captures/<side>/<page>@<vp>[-auth][-<state>][-scope-<name>].ndjson` |
 
 ### Noise suppression in `diff.mjs`
 
@@ -129,7 +132,7 @@ tools/fidelity/run.sh capture \
   --url https://nuwe-ink.local/ --side ink --page tuisblad \
   --viewport 1440 --expect '[data-audit-id="hero-h1"],.ink-uitgesoekte-bydraes'
 
-# diff reference against INK
+# diff reference against INK (exits 2, writing nothing, if either side repeats an audit-id)
 tools/fidelity/run.sh diff \
   --a tmp/fidelity-captures/lovable/tuisblad@1440.ndjson \
   --b tmp/fidelity-captures/ink/tuisblad@1440.ndjson \
@@ -158,7 +161,19 @@ tools/fidelity/run.sh verify --capture tmp/fidelity-captures/ink/skryf@1440-auth
 tools/fidelity/determinism-check.sh https://nuwe-ink.local/skryf/ ink skryf 1440 3 '' \
   --auth tmp/fidelity-auth/ink.json --click '.ink-skryf-type >> nth=1' --state storie
 
-# primitive register for a non-00 row: header/footer are row 00's, so drop them
+# scope a capture to ONE component on a page that embeds several with the same ids
+# (here: the biblioteek archive on /qa-bloks/, which also embeds the opleiding hub)
+tools/fidelity/run.sh capture --url https://nuwe-ink.local/qa-bloks/ --side ink --page biblioteek \
+  --viewport 390,768,1440 --scope 'section.ink-biblioteek' --scope-label cards \
+  --expect 'section.ink-biblioteek [data-audit-id="library-card"]'
+#   -> tmp/fidelity-captures/ink/biblioteek@1440-scope-cards.ndjson
+tools/fidelity/determinism-check.sh https://nuwe-ink.local/qa-bloks/ ink biblioteek 1440 3 \
+  'section.ink-biblioteek [data-audit-id="library-card"]' --scope 'section.ink-biblioteek' --scope-label cards
+tools/fidelity/run.sh verify --capture tmp/fidelity-captures/ink/biblioteek@1440-scope-cards.ndjson --sample 30
+#   verify reads the scope from _meta and fails if the selector no longer resolves to the same node
+
+# primitive register for a non-00 row: header/footer are row 00's, so drop them.
+# Pass all three viewports in ONE run so identical rows collapse to 390|768|1440.
 tools/fidelity/run.sh primitives --exclude-chrome \
   --in tmp/fidelity-captures/lovable/skryf@1440.ndjson --in tmp/fidelity-captures/ink/skryf@1440-auth.ndjson \
   --out tmp/<page>/prims-raw.csv

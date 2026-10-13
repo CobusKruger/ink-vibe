@@ -7,9 +7,13 @@
  *
  * Usage:
  *   diff.mjs --a <lovable.ndjson> --b <ink.ndjson> [--out <file.md>]
+ *
+ * Exits 2, writing nothing, if either input repeats a data-audit-id (T5); the
+ * duplicated ids and their node paths are listed on stderr.
  */
 
 import { readFile, writeFile } from 'node:fs/promises';
+import { duplicateIds } from './state.mjs';
 
 // README §6: box model first, then colour, then type, then micro.
 const SEVERITY = [
@@ -90,12 +94,25 @@ async function load(file) {
   const meta = recs[0]?._meta ? recs.shift() : {};
   const byId = new Map();
   for (const r of recs) if (r.a) byId.set(r.a, r);
-  return { meta, recs, byId };
+  return { meta, recs, byId, dups: duplicateIds(recs) };
 }
 
 const args = parseArgs(process.argv);
 const A = await load(args.a);   // reference (Lovable)
 const B = await load(args.b);   // INK
+
+// T5: the join is one record per audit-id. A repeated id would silently pair an
+// arbitrary instance (the last one), so refuse rather than write a wrong finding.
+if (A.dups.length || B.dups.length) {
+  console.error('DIFF REFUSED — duplicate data-audit-id(s); the join would mis-pair silently.');
+  for (const [label, file, dups] of [['reference', args.a, A.dups], ['INK', args.b, B.dups]]) {
+    if (!dups.length) continue;
+    console.error(`\n${label}: ${file}`);
+    for (const [id, paths] of dups) console.error(`  ${id}  ×${paths.length}  at ${paths.join(', ')}`);
+  }
+  console.error('\nNarrow the capture to one component (capture --scope) or make the ids unique.');
+  process.exit(2);
+}
 
 const paired = [...A.byId.keys()].filter((id) => B.byId.has(id));
 const onlyA = [...A.byId.keys()].filter((id) => !B.byId.has(id));

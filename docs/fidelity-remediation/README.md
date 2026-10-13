@@ -169,6 +169,11 @@ tools/fidelity/run.sh capture … --auth tmp/fidelity-auth/ink.json
 tools/fidelity/run.sh capture … --click '<selector>' [--click '<selector>' …] --state <name>
 tools/fidelity/run.sh verify --capture <file> --sample 30 [--auth tmp/fidelity-auth/ink.json]
 tools/fidelity/determinism-check.sh <url> <side> <page> <vp> 3 '<expect>' --auth … --click … --state …
+
+# one component on a page that embeds several with the same ids (e.g. /qa-bloks/):
+tools/fidelity/run.sh capture … --scope '<css selector>' --scope-label <name>
+tools/fidelity/determinism-check.sh <url> <side> <page> <vp> 3 '<expect>' --scope '<css>' --scope-label <name>
+tools/fidelity/run.sh verify --capture <page>@<vp>-scope-<name>.ndjson --sample 30
 ```
 
 `--auth`, `--click` and `--state` work the same way on all three tools.
@@ -177,8 +182,14 @@ tools/fidelity/determinism-check.sh <url> <side> <page> <vp> 3 '<expect>' --auth
 - **`--click`/`--state`:** `--click` needs `--state`, and the output file becomes
   `<page>@<vp>[-auth][-<state>].ndjson`. `verify` re-drives the clicks recorded in the
   capture's `_meta`.
+- **`--scope`/`--scope-label`:** records only the first element matching the selector and its
+  subtree. The output becomes `<page>@<vp>[-auth][-<state>]-scope-<name>.ndjson`, and `_meta`
+  records the scope. `verify` fails if the selector no longer resolves to the same node.
+- **Duplicate ids:** `diff` refuses an input that repeats a `data-audit-id`. It exits 2, writes
+  nothing, and lists the ids and their paths, because the join would otherwise pair an arbitrary
+  instance. `capture` warns about this on stderr. Scope the capture or make the ids unique.
 - **Gate directories:** each determinism gate runs in its own
-  `tmp/determinism/<side>-<page>@<vp>[-auth][-<state>]/`, so parallel gates are safe.
+  `tmp/determinism/<side>-<page>@<vp>[-auth][-<state>][-scope-<name>]/`, so parallel gates are safe.
 
 **Preconditions — all three are gates, not suggestions:**
 
@@ -216,7 +227,9 @@ into a kind from the vocabulary below and emits the row. Every row except 00 pas
 `header*`/`footer*` audit-id subtrees and any `<header>`/`<footer>` outside `<main>`.
 Where a kind came from shape rather than a class name, the `note` column says why: an
 `asChild` link, the wrapper class an INK button's kind came from, or a bordered `<label>`
-wrapping a control. A captured `--state` is noted the same way.
+wrapping a control. A captured `--state` or `--scope` is noted the same way. Pass all three
+viewports' captures in one run: rows identical across widths collapse to one row with
+`viewport` = `390|768|1440`, per the register spec below (`--no-collapse` opts out).
 Rows still need human resolution where the capture has no hook:
 - **Generic `button` rows** — Lovable TabButton, bespoke INK `<a>`/`<button>` actions.
   Resolve each to a variant.

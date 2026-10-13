@@ -13,6 +13,7 @@
  *               [--auth <storageState.json>] [--out <dir>]
  *               [--expect <selector>[,<selector>...]]
  *               [--click <selector> [--click <selector> …] --state <name>]
+ *               [--scope <css selector> --scope-label <name>]
  *
  *   --auth   Playwright storageState from `run.sh login`. On the ink side the capture
  *            aborts (exit 3) unless the page renders with the WP `logged-in` body class.
@@ -20,13 +21,23 @@
  *            each followed by a settle wait. Requires --state.
  *   --state  label for that state; output is <page>@<vp>[-auth][-<state>].ndjson and the
  *            _meta record gains `state` + `clicks` (verify.mjs re-drives from them).
+ *   --scope  record only the FIRST element matching the selector, and its subtree (T7),
+ *            e.g. one archive block on a page that embeds several with the same
+ *            audit-ids. Paths stay relative to <body>, so verify resolves them as
+ *            usual. Requires --scope-label; output is
+ *            <page>@<vp>[-auth][-<state>]-scope-<label>.ndjson and _meta gains
+ *            `scope`, `scopeLabel` and `scopePath`. Aborts if nothing matches.
+ *
+ * A repeated audit-id in the written capture is reported on stderr (T5): diff.mjs
+ * refuses such a file, so narrow the capture (--scope) or fix the ids first.
  */
 
 import { chromium } from 'playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
-  parseFlags, checkStateName, preflightAuth, assertLoggedIn, driveState, exitOnAuthError,
+  parseFlags, checkStateName, checkScope, captureName, duplicateIds,
+  preflightAuth, assertLoggedIn, driveState, exitOnAuthError,
 } from './state.mjs';
 
 const TOOL_VERSION = '1.0.0';
@@ -80,6 +91,7 @@ function parseArgs(argv) {
     if (!a[req]) throw new Error(`Missing required --${req}`);
   }
   checkStateName(a.state, a.click);
+  checkScope(a.scope, a['scope-label']);
   return {
     url: a.url,
     side: a.side,
@@ -91,14 +103,19 @@ function parseArgs(argv) {
     expect: a.expect ? a.expect.split(',') : [],
     clicks: a.click,
     state: a.state ?? null,
+    scope: a.scope ?? null,
+    scopeLabel: a['scope-label'] ?? null,
   };
 }
 
 /** Walk the rendered DOM and serialise each node. Runs in the page.
  *  Playwright passes exactly one argument to an evaluated function. */
-function collect({ props, skipTags, mode }) {
+function collect({ props, skipTags, mode, scope }) {
   const out = [];
   const root = document.body;
+  // T7: walk only the scope's subtree; paths stay relative to <body>.
+  const start = scope ? document.querySelector(scope) : root;
+  if (!start) return { nodes: null, scopePath: null };
 
   const pathOf = (el) => {
     const parts = [];
@@ -153,8 +170,8 @@ function collect({ props, skipTags, mode }) {
     for (const child of el.children) walk(child);
   };
 
-  walk(root);
-  return out;
+  walk(start);
+  return { nodes: out, scopePath: scope ? pathOf(start) : null };
 }
 
 const args = parseArgs(process.argv);
@@ -217,9 +234,12 @@ for (const width of args.viewports) {
     );
   }
 
-  const nodes = await page.evaluate(collect, {
-    props: PROPS, skipTags: [...SKIP_TAGS], mode: args.mode,
+  const { nodes, scopePath } = await page.evaluate(collect, {
+    props: PROPS, skipTags: [...SKIP_TAGS], mode: args.mode, scope: args.scope,
   });
+  if (!nodes) {
+    throw new Error(`--scope matched nothing at ${width}px: ${args.scope} — capture aborted`);
+  }
 
   const meta = {
     _meta: true,
@@ -233,6 +253,8 @@ for (const width of args.viewports) {
     // Only present for a driven state, so a default-state capture is byte-identical
     // to one taken before these flags existed.
     ...(args.state ? { state: args.state, clicks: args.clicks } : {}),
+    // Likewise only for a scoped capture (T7).
+    ...(args.scope ? { scope: args.scope, scopeLabel: args.scopeLabel, scopePath } : {}),
     nodes: nodes.length,
     auditIds: nodes.filter((n) => n.a).length,
     props: PROPS.length,
@@ -240,7 +262,9 @@ for (const width of args.viewports) {
 
   const dir = path.join(args.out, args.side);
   await mkdir(dir, { recursive: true });
-  const name = `${args.page}@${width}${args.auth ? '-auth' : ''}${args.state ? `-${args.state}` : ''}.ndjson`;
+  const name = `${captureName({
+    page: args.page, viewport: width, auth: args.auth, state: args.state, scopeLabel: args.scopeLabel,
+  })}.ndjson`;
   const file = path.join(dir, name);
   await writeFile(
     file,
@@ -249,6 +273,12 @@ for (const width of args.viewports) {
 
   results.push({ file, ...meta });
   console.log(`${file}  ${nodes.length} nodes, ${meta.auditIds} audit-ids`);
+  // T5: warn on stderr (stdout is unchanged) — diff.mjs refuses a duplicated id.
+  const dups = duplicateIds(nodes);
+  if (dups.length) {
+    console.error(`WARNING: ${dups.length} audit-id(s) occur more than once in ${file}; diff will refuse it:`);
+    for (const [id, paths] of dups) console.error(`  ${id}  at ${paths.join(', ')}`);
+  }
   await ctx.close();
 }
 } catch (e) {

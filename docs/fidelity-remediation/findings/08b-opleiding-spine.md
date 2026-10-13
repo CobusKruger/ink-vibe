@@ -113,3 +113,56 @@ The divergence is mostly composition and mechanism:
 - Filtered/empty Lovable states, the INK filtered state and hover states were not captured.
 - No computed-value claim is made here (R4). See `08b-opleiding-drift*.md`, generated from captures
   that passed determinism (3/3) and `verify --sample 30` (0 mismatches) at 390/768/1440, both sides.
+
+## 7. Card coverage (qa-bloks, 2026-10-13)
+
+Owner ruling 2026-10-13: measure the cards from `/qa-bloks/`, which embeds `ink/opleiding-argief`
+with the three `QA FIXTURE — ` articles switched back on (`patterns/qa-bloks.php:127-135`). The same
+page also embeds `ink/biblioteek-argief` with the same `library-*` ids, so the capture is **scoped**
+to the hub's block root, `section.ink-opleiding` (`Hub.php:508`), with
+`capture --scope 'section.ink-opleiding' --scope-label cards` (harness T7). The scoped capture holds
+no duplicate id. It passed the determinism gate (3/3 identical) and `verify --sample 30`
+(0 mismatches, scope root re-resolved to the same node) at 390, 768 and 1440. The site was confirmed
+current with `deploy-to-local.sh` (dry run: nothing to sync).
+
+**What paired.** 35 ids at every viewport, against the existing Lovable `library@<vp>` captures.
+Of these, the 24 shelf/count/grid/card ids listed as unrendered in §5 are now measured:
+`library-shelf`, `-shelf-h2`, `-shelf-sub`, `-shelf-grid`, `library-count`, `library-grid`, and the
+`library-shelf-card*` and `library-card*` sets (card, meta, badge, time, title, excerpt, footer, author,
+read). The other 11 are the intro, search and filter ids already measured on the live page. The closing CTA
+(`ContributionCta`) sits outside the hub block and is not on `/qa-bloks/`, so its 4 ids stay measured
+from the live page only. Reference-only ids in these diffs are expected: the scope excludes the
+header, footer and everything outside the block.
+
+**Card drifts** (per-element tables in the drift files; the values below hold at all three widths
+unless stated):
+- **Shelf card surface.** INK fills it with opaque `rgb(237, 233, 224)` and a `rgb(233, 194, 180)`
+  border. Lovable uses `bg-cream/60` (`rgba(250, 248, 245, 0.6)`) and a `terracotta/20` border.
+- **Resting shadow.** Every INK card carries `0 2px 12px -2px rgba(24, 29, 37, 0.06)` at rest.
+  Lovable's is `shadow-sm` (`0 1px 2px rgba(0, 0, 0, 0.05)`); the diff table truncates it.
+- **Inner rhythm.** The `<li>` itself is the flex column (24px padding, `gap: 8px`; O-14 has no
+  body wrapper), and the meta row packs to the left. Lovable spaces meta→title 16px, title→excerpt
+  12px and excerpt→footer 20px, and pushes the read time to the right (`space-between`). The
+  24px padding matches Lovable's `CardContent p-6`. The 390px vs 440px card width is the systemic
+  `content-box` vs `border-box` difference.
+- **Shelf h2.** 24px/**600** at 1440 against Lovable's 30px/400. The biblioteek twin
+  (`.ink-biblioteek__uitgelig-titel`) is 400. The category pill matches Lovable's `Badge`
+  (2px/10px). Its biblioteek twin does not.
+
+**What the scoped capture cannot show:**
+- **Content differences, not styling.** Titles wrap to two lines because of the `QA FIXTURE — `
+  prefix (55px vs 27.5px). The fixture articles have **no author**, so `library-card-author`
+  renders 0×0 and the author line is unmeasured. Count copy ("3 artikels") and badge widths follow
+  the fixture data.
+- The excerpt's `display: flow-root` is how Chromium reports `display: -webkit-box` with a line clamp
+  (checked in isolation), so it is not a drift. Hover states, the filtered and empty states, and the
+  pager were not captured.
+- **Page-level layout differs from `/opleiding/`.** On `/qa-bloks/` the block sits in that page's
+  own full-width shell (`qa-bloks.php:127-135`). Widths inside the block are comparable, but
+  bounding-box `y` values are not.
+
+**Files produced:** `findings/08b-opleiding-drift-cards.md`, `-drift-cards@768.md` and
+`-drift-cards@390.md` (generated). 27 card-level `ink` rows were appended to
+`maps/_primitive-observations.opleiding.csv` (6 cards, 6 pills, 6 titles, 6 read-times and the
+shelf h2 at 3 widths), each noted `qa-bloks scoped capture`, with attribution taken from the
+existing `source` rows. Captures are in `tmp/fidelity-captures/ink/opleiding@<vp>-scope-cards.ndjson`.
