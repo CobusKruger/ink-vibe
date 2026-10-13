@@ -362,6 +362,21 @@ Row 03 files sort pills and date-archive pills under the existing `filter-chip`;
 column says `sort chip` / `date chip`. It files a card title or writer name rendered as an
 `<a>` (no heading element) under `heading`, with the note saying so.
 
+Added during row 07 (`lees-storie`, `findings/07-lees-storie-primitives.md`):
+
+```
+button-subtle        Lovable's shadcn `variant="subtle"` button (secondary/50 fill, ink
+                     text, no border, no shadow) and its INK replicas (e.g.
+                     .ink-outeur-kaart__sien-alle). Distinct from button-ghost (transparent
+                     at rest) and button-outline (bordered)
+```
+
+Row 07 files the reading page's engagement-bar actions as follows: icon + count controls
+(like, comments link, response upvote) under the existing `button-icon-label`, icon-only
+controls (bookmark, share, highlights tab, panel close) under `button-icon`, and the
+highlights-panel / response counters under `count-chip`. Lovable's bare text `Reply`
+button (no variant) is filed under `button-ghost` with the note saying so.
+
 `run.sh primitives` also emits a generic `button` fallback. It is not a kind: resolve
 each such row to a variant before it enters the register.
 

@@ -1,0 +1,62 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+reading-header,src/pages/ReadStory.tsx,139,wp-content/themes/ink-foundation/patterns/reading-storie.php,73,story header band,paired,Lovable <div>; INK <section>; generic id (shared with lees-gedig)
+reading-header-inner,src/pages/ReadStory.tsx,141,wp-content/themes/ink-foundation/patterns/reading-storie.php,75,centred intro column,paired,Lovable max-w-3xl div; INK .ink-lees-intro (contentSize 768px)
+storie-badge,src/pages/ReadStory.tsx,142,wp-content/themes/ink-foundation/patterns/reading-storie.php,77,type badge pill,paired,pre-existing id; Lovable has no icon on the prose branch
+storie-title,src/pages/ReadStory.tsx,148,wp-content/themes/ink-foundation/functions.php,251,h1,paired,pre-existing id; INK core/post-title render filter
+reading-byline,src/pages/ReadStory.tsx,155,wp-content/themes/ink-foundation/patterns/reading-storie.php,83,byline row,paired,
+reading-byline-author,src/pages/ReadStory.tsx,156,,,author link (avatar + name in one <Link>),missing-ink,S-4 STRUCTURE: INK renders two separate links (core/avatar + core/post-author-name)
+reading-byline-avatar,src/pages/ReadStory.tsx,158,wp-content/themes/ink-foundation/functions.php,295,byline avatar,paired,INK core/avatar render filter
+reading-byline-name,src/pages/ReadStory.tsx,163,wp-content/themes/ink-foundation/functions.php,296,byline author name,paired,Lovable <span>; INK core/post-author-name <div> wrapping an <a>
+reading-byline-sep,src/pages/ReadStory.tsx,165,wp-content/themes/ink-foundation/patterns/reading-storie.php,89,bullet separator,paired,Lovable <span>; INK <p>
+reading-byline-readtime,src/pages/ReadStory.tsx,166,,,read-time meta (clock + N min),missing-ink,S-5 MISSING: INK shows the publish date instead
+reading-byline-date,,,wp-content/themes/ink-foundation/functions.php,297,publish date,missing-lovable,S-5 EXTRA: core/post-date in the slot Lovable gives to read time
+storie-hint,src/pages/ReadStory.tsx,173,wp-content/themes/ink-foundation/patterns/reading-storie.php,97,interaction hint pill,paired,pre-existing id
+reading-hint-icon,src/pages/ReadStory.tsx,183,wp-content/themes/ink-foundation/patterns/reading-storie.php,70,hint icon (highlighter),paired,Lovable lucide svg; INK svg inside an inline-styled span; generic id (row 22 can tag the Heart icon)
+reading-body,src/pages/ReadStory.tsx,193,wp-content/themes/ink-foundation/patterns/reading-storie.php,105,body section,paired,Lovable <article>; INK <section>
+storie-prose,src/pages/ReadStory.tsx,199,wp-content/themes/ink-foundation/functions.php,301,prose column,paired,Lovable .prose-literary (inside a max-w-2xl wrapper); INK core/post-content wrapper (constrained 672px); prose branch only
+storie-paragraph,src/components/reading/HighlightableText.tsx,142,wp-content/themes/ink-foundation/functions.php,270,first paragraph,paired,pre-existing id
+storie-highlight,src/components/reading/HighlightableText.tsx,121,wp-content/themes/ink-foundation/assets/js/highlightable-text.js,87,user highlight <mark>,scope,pre-existing id; exists only after a text selection + confirm (data-writing-free but not deterministic-click reachable); not captured
+storie-highlights-toggle,src/components/reading/HighlightsPanel.tsx,24,wp-content/themes/ink-foundation/assets/js/highlightable-text.js,265,fixed highlights tab,paired,INK JS-built at DOMContentLoaded
+storie-highlights-panel,src/components/reading/HighlightsPanel.tsx,38,wp-content/themes/ink-foundation/assets/js/highlightable-text.js,269,off-canvas highlights panel,paired,closed (off-canvas) at rest on both sides
+storie-engagement-bar,src/pages/ReadStory.tsx,212,wp-content/themes/ink-foundation/patterns/reading-storie.php,111,floating action bar,paired,pre-existing id; S-7 STRUCTURE: Lovable sticky full-width wrapper vs INK single pill node
+reading-engagement-pill,src/pages/ReadStory.tsx,214,,,floating bar pill,missing-ink,S-7: INK folds the pill into the storie-engagement-bar node
+storie-reaksie-tellers,src/pages/ReadStory.tsx,216,wp-content/plugins/ink-core/src/Engagement/ReactionTotals.php,169,like button,paired,pre-existing INK id (ReactionTotals::enkelAuditId :236); added to Lovable with the gedig/storie ternary
+reading-like-icon,src/pages/ReadStory.tsx,220,wp-content/plugins/ink-core/src/Engagement/ReactionTotals.php,251,like heart icon,paired,generic id (shared bar)
+reading-like-count,src/pages/ReadStory.tsx,221,wp-content/plugins/ink-core/src/Engagement/ReactionTotals.php,184,like count,paired,generic id
+reading-comments-link,src/pages/ReadStory.tsx,224,wp-content/plugins/ink-core/src/Engagement/ResponseCount.php,91,comments anchor,paired,generic id
+reading-comments-count,src/pages/ReadStory.tsx,226,wp-content/plugins/ink-core/src/Engagement/ResponseCount.php,93,comments count,paired,generic id
+reading-bookmark-btn,src/pages/ReadStory.tsx,230,wp-content/plugins/ink-core/src/Engagement/ReadingListToggle.php,120,bookmark button,paired,generic id
+reading-share-btn,src/pages/ReadStory.tsx,238,,,share button,missing-ink,S-8 MISSING
+reading-author-band,src/pages/ReadStory.tsx,246,wp-content/themes/ink-foundation/patterns/reading-storie.php,121,author section band,paired,
+reading-author-card,src/pages/ReadStory.tsx,248,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,115,author row,paired,Lovable max-w-2xl flex div; INK section.ink-outeur-kaart inside a 672px constrained group
+reading-author-avatar,src/pages/ReadStory.tsx,250,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,109,author avatar 96px,paired,INK get_avatar extra_attr
+reading-author-body,src/pages/ReadStory.tsx,255,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,117,author text column,paired,
+storie-author-name,src/pages/ReadStory.tsx,256,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,118,author name h3,paired,pre-existing id
+storie-author-bio,src/pages/ReadStory.tsx,257,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,121,author bio,paired,pre-existing id
+reading-author-actions,src/pages/ReadStory.tsx,260,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,124,author action row,paired,
+reading-author-follow,src/pages/ReadStory.tsx,261,wp-content/plugins/ink-core/src/Social/FollowToggle.php,,follow button,scope,S-10: INK renders FollowToggle only for a logged-in viewer who is not the author; that button already carries data-audit-id="skrywer-follow-btn" (row 06) so it cannot also carry this id
+reading-author-all-works,src/pages/ReadStory.tsx,265,wp-content/plugins/ink-core/src/Social/ReadingAuthorCard.php,128,view-all-works link,paired,Lovable Button subtle asChild <a>; INK bespoke <a>
+reading-responses,src/pages/ReadStory.tsx,274,wp-content/themes/ink-foundation/patterns/reading-storie.php,131,responses section,paired,
+reading-responses-inner,src/pages/ReadStory.tsx,276,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,140,responses column,paired,Lovable max-w-2xl div; INK section#kommentaar.ink-reaksies
+reading-responses-h2,src/pages/ReadStory.tsx,277,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,141,responses h2,paired,
+reading-response-form,src/pages/ReadStory.tsx,281,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,272,compose card,paired,Lovable <div>; INK <form>
+reading-response-intro,src/pages/ReadStory.tsx,282,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,274,compose intro text,paired,
+reading-response-types,src/pages/ReadStory.tsx,288,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,276,response-type chip row,paired,Lovable flex <div>; INK <fieldset>
+reading-response-type,src/pages/ReadStory.tsx,292,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,279,first response-type chip,paired,Lovable <button>; INK <label> wrapping a visually-hidden radio (MECHANISM)
+reading-response-input,src/pages/ReadStory.tsx,307,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,287,compose textarea,paired,
+reading-response-actions,src/pages/ReadStory.tsx,314,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,291,submit row,paired,
+reading-response-submit,src/pages/ReadStory.tsx,315,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,292,submit button,paired,disabled at rest on both sides
+reading-response-list,src/pages/ReadStory.tsx,322,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,148,response list,paired,Lovable space-y div; INK <ul>
+reading-response-item,src/pages/ReadStory.tsx,324,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,155,first response card,paired,first instance only; Lovable 3 mock critiques vs INK 1 real response
+reading-response-row,src/pages/ReadStory.tsx,325,,,card inner flex row,missing-ink,S-13 STRUCTURE: INK's <li> card is itself the flex row
+reading-response-avatar,src/pages/ReadStory.tsx,326,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,160,response avatar,paired,
+reading-response-body,src/pages/ReadStory.tsx,327,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,165,response text column,paired,
+reading-response-meta,src/pages/ReadStory.tsx,328,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,166,meta row,paired,
+reading-response-who,,,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,167,badge + author group,missing-lovable,S-14 STRUCTURE: extra wrapper; INK orders badge before author
+reading-response-author,src/pages/ReadStory.tsx,329,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,169,response author,paired,
+reading-response-badge,src/pages/ReadStory.tsx,331,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,168,response type badge,paired,"three conditional spans on Lovable (:331/:336/:341), one renders per item; first instance is insight (Lovable) vs lof (INK) - data, not drift"
+reading-response-date,src/pages/ReadStory.tsx,345,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,171,relative time,paired,
+reading-response-text,src/pages/ReadStory.tsx,347,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,173,response text,paired,
+reading-response-footer,src/pages/ReadStory.tsx,348,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,174,response footer row,paired,
+reading-response-upvote,src/pages/ReadStory.tsx,349,wp-content/plugins/ink-core/src/Engagement/ResponsesList.php,175,upvote,paired,Lovable <button> with ChevronUp + count; INK inert <span> count only (S-15)
+reading-response-reply,src/pages/ReadStory.tsx,353,,,Reply action,divergence,S-16: removed on INK by an implementer disclosure (ResponsesList.php docblock :59-65); owner to confirm

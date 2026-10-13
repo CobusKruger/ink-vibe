@@ -262,9 +262,11 @@
 		toggle.className = 'ink-highlights-toggle';
 		toggle.innerHTML = HIGHLIGHTER_SVG;
 		toggle.setAttribute( 'aria-label', labelPanelTitle );
+		toggle.setAttribute( 'data-audit-id', 'storie-highlights-toggle' );
 
 		panel = document.createElement( 'div' );
 		panel.className = 'ink-highlights-panel';
+		panel.setAttribute( 'data-audit-id', 'storie-highlights-panel' );
 		panel.innerHTML =
 			'<div class="ink-highlights-panel__header">' +
 				'<div class="ink-highlights-panel__title">' + HIGHLIGHTER_SVG + '<span>' + labelPanelTitle + '</span>' +

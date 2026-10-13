@@ -181,7 +181,7 @@ final class ReactionTotals {
 
 		return '<' . $tag . $attrs . '>'
 			. '<span class="ink-reaksie-tellers__hart" aria-hidden="true">' . self::heartOutlineSvg() . '</span>'
-			. '<span class="ink-reaksie-tellers__telling">' . esc_html( (string) $n ) . '</span>'
+			. '<span class="ink-reaksie-tellers__telling" data-audit-id="reading-like-count">' . esc_html( (string) $n ) . '</span>'
 			. '</' . $tag . '>';
 	}
 
@@ -248,6 +248,6 @@ final class ReactionTotals {
 	 * @return string
 	 */
 	private static function heartOutlineSvg(): string {
-		return '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg>';
+		return '<svg data-audit-id="reading-like-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg>';
 	}
 }

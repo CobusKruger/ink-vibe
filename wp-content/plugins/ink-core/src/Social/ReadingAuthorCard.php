@@ -99,24 +99,33 @@ final class ReadingAuthorCard {
 	public static function toHtml( int $author_id, ?bool $following ): string {
 		$name    = (string) get_the_author_meta( 'display_name', $author_id );
 		$bio     = (string) get_the_author_meta( 'description', $author_id );
-		$avatar  = get_avatar( $author_id, 96, '', $name, array( 'class' => 'ink-outeur-kaart__foto' ) );
+		$avatar  = get_avatar(
+			$author_id,
+			96,
+			'',
+			$name,
+			array(
+				'class'      => 'ink-outeur-kaart__foto',
+				'extra_attr' => 'data-audit-id="reading-author-avatar"',
+			)
+		);
 		$profile = (string) get_author_posts_url( $author_id );
 		$prefix  = self::auditIdPrefix();
 
-		$html  = '<section class="ink-outeur-kaart">';
+		$html  = '<section class="ink-outeur-kaart" data-audit-id="reading-author-card">';
 		$html .= '<div class="ink-outeur-kaart__foto-omhulsel">' . (string) $avatar . '</div>';
-		$html .= '<div class="ink-outeur-kaart__inhoud">';
+		$html .= '<div class="ink-outeur-kaart__inhoud" data-audit-id="reading-author-body">';
 		$html .= '<h3 class="ink-outeur-kaart__naam"' . ( null !== $prefix ? ' data-audit-id="' . esc_attr( $prefix ) . '-author-name"' : '' ) . '>' . esc_html( $name ) . '</h3>';
 
 		if ( '' !== trim( $bio ) ) {
 			$html .= '<p class="ink-outeur-kaart__bio"' . ( null !== $prefix ? ' data-audit-id="' . esc_attr( $prefix ) . '-author-bio"' : '' ) . '>' . esc_html( $bio ) . '</p>';
 		}
 
-		$html .= '<div class="ink-outeur-kaart__aksies">';
+		$html .= '<div class="ink-outeur-kaart__aksies" data-audit-id="reading-author-actions">';
 		if ( null !== $following ) {
 			$html .= FollowToggle::toHtml( $author_id, $following );
 		}
-		$html .= '<a class="ink-outeur-kaart__sien-alle" href="' . esc_url( $profile ) . '">'
+		$html .= '<a class="ink-outeur-kaart__sien-alle" data-audit-id="reading-author-all-works" href="' . esc_url( $profile ) . '">'
 			. esc_html( Terms::label( 'sien_alle_werke' ) ) . '</a>';
 		$html .= '</div>';
 

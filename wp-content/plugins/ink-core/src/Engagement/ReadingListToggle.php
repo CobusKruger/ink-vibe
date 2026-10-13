@@ -117,6 +117,7 @@ final class ReadingListToggle {
 		$label   = Terms::label( 'leeslys' );
 
 		return '<button type="button" class="' . esc_attr( $classes ) . '"'
+			. ' data-audit-id="reading-bookmark-btn"'
 			. ' data-ink-post="' . esc_attr( (string) $post_id ) . '"'
 			. ( $guest ? ' data-ink-guest="1"' : '' )
 			. ' aria-pressed="' . ( $saved ? 'true' : 'false' ) . '"'

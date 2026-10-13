@@ -274,6 +274,49 @@ function ink_foundation_audit_id_reading_paragraph( string $block_content ): str
 add_filter( 'render_block_core/post-content', 'ink_foundation_audit_id_reading_paragraph' );
 
 /**
+ * Stamp the reading-page byline (dynamic `core/avatar`, `core/post-author-name`,
+ * `core/post-date`) and the storie/artikel prose wrapper (`core/post-content`'s
+ * own `<div>`) with their fidelity-audit join keys
+ * (docs/fidelity-remediation/maps/lees-storie.csv). The byline ids are generic
+ * (`reading-*`, not page-prefixed) so every reading page that renders the same
+ * byline shares them; the prose wrapper keeps the `storie-` literal of
+ * {@see ink_foundation_audit_id_reading_paragraph()} (Lovable's
+ * `.prose-literary` exists on the prose branch only).
+ *
+ * @param string              $block_content The rendered block.
+ * @param array<string,mixed> $block         The parsed block.
+ */
+function ink_foundation_audit_id_reading_byline( string $block_content, array $block ): string {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'gedig', 'storie', 'artikel' ) ) ) {
+		return $block_content;
+	}
+
+	$targets = array(
+		'core/avatar'           => array( '/<img\b/', '<img data-audit-id="reading-byline-avatar"' ),
+		'core/post-author-name' => array( '/<div\b/', '<div data-audit-id="reading-byline-name"' ),
+		'core/post-date'        => array( '/<div\b/', '<div data-audit-id="reading-byline-date"' ),
+	);
+
+	if ( is_singular( array( 'storie', 'artikel' ) ) ) {
+		$targets['core/post-content'] = array( '/<div\b/', '<div data-audit-id="storie-prose"' );
+	}
+
+	$name = $block['blockName'] ?? '';
+
+	if ( ! is_string( $name ) || ! isset( $targets[ $name ] ) || str_contains( $block_content, $targets[ $name ][1] ) ) {
+		return $block_content;
+	}
+
+	$with_audit_id = preg_replace( $targets[ $name ][0], $targets[ $name ][1], $block_content, 1 );
+
+	return null !== $with_audit_id ? $with_audit_id : $block_content;
+}
+add_filter( 'render_block_core/avatar', 'ink_foundation_audit_id_reading_byline', 10, 2 );
+add_filter( 'render_block_core/post-author-name', 'ink_foundation_audit_id_reading_byline', 10, 2 );
+add_filter( 'render_block_core/post-date', 'ink_foundation_audit_id_reading_byline', 10, 2 );
+add_filter( 'render_block_core/post-content', 'ink_foundation_audit_id_reading_byline', 10, 2 );
+
+/**
  * Stamp the single-uitdaging title and the FIRST paragraph of its authored
  * opdrag (`core/post-content`) with their fidelity-audit join keys
  * (docs/fidelity-remediation/maps/uitdaging-enkel.csv). Both are dynamic core
