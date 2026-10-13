@@ -34,15 +34,15 @@
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"480px"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<section data-audit-id="auth" class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"className":"is-style-card ink-auth-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group is-style-card ink-auth-card">
+	<div data-audit-id="auth-card" class="wp-block-group is-style-card ink-auth-card">
 		<!-- wp:heading {"level":1,"fontSize":"xxl"} -->
-		<h1 class="wp-block-heading has-xxl-font-size"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></h1>
+		<h1 data-audit-id="auth-heading" class="wp-block-heading has-xxl-font-size"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( 'Teken in by jou rekening met jou e-pos en wagwoord.', 'ink-foundation' ); ?></p>
+		<p data-audit-id="auth-intro" class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( 'Teken in by jou rekening met jou e-pos en wagwoord.', 'ink-foundation' ); ?></p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:html -->
@@ -55,39 +55,39 @@
 		$ink_meld_aan_gebruikersnaam = isset( $_GET['log'] ) && is_scalar( $_GET['log'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['log'] ) ) : '';
 		if ( isset( $_GET['meld_aan'] ) && 'fout' === $_GET['meld_aan'] ) :
 			?>
-			<p class="ink-auth-notice ink-auth-notice--fout" role="alert"><?php echo esc_html__( 'Ons kon nie jou aanmelding met daardie besonderhede verwerk nie. Gaan jou gebruikersnaam/e-pos en wagwoord na.', 'ink-foundation' ); ?></p>
+			<p data-audit-id="auth-notice" class="ink-auth-notice ink-auth-notice--fout" role="alert"><?php echo esc_html__( 'Ons kon nie jou aanmelding met daardie besonderhede verwerk nie. Gaan jou gebruikersnaam/e-pos en wagwoord na.', 'ink-foundation' ); ?></p>
 		<?php endif; ?>
-		<form name="loginform" class="ink-auth-form" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>" method="post">
-			<p class="ink-auth-field">
-				<label for="user_login"><?php echo esc_html__( 'Gebruikersnaam of e-pos adres', 'ink-foundation' ); ?></label>
-				<input type="text" name="log" id="user_login" value="<?php echo esc_attr( $ink_meld_aan_gebruikersnaam ); ?>" autocapitalize="off" autocorrect="off" autocomplete="username" required="required" />
+		<form data-audit-id="auth-form" name="loginform" class="ink-auth-form" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>" method="post">
+			<p data-audit-id="auth-email-field" class="ink-auth-field">
+				<label data-audit-id="auth-email-label" for="user_login"><?php echo esc_html__( 'Gebruikersnaam of e-pos adres', 'ink-foundation' ); ?></label>
+				<input data-audit-id="auth-email-input" type="text" name="log" id="user_login" value="<?php echo esc_attr( $ink_meld_aan_gebruikersnaam ); ?>" autocapitalize="off" autocorrect="off" autocomplete="username" required="required" />
 			</p>
-			<p class="ink-auth-field">
-				<span class="ink-auth-field__row">
-					<label for="user_pass"><?php echo esc_html__( 'Wagwoord', 'ink-foundation' ); ?></label>
-					<a class="ink-auth-field__forgot" href="<?php echo esc_url( home_url( '/wagwoord-herstel' ) ); ?>"><?php echo esc_html__( 'Wagwoord vergeet?', 'ink-foundation' ); ?></a>
+			<p data-audit-id="auth-password-field" class="ink-auth-field">
+				<span data-audit-id="auth-password-row" class="ink-auth-field__row">
+					<label data-audit-id="auth-password-label" for="user_pass"><?php echo esc_html__( 'Wagwoord', 'ink-foundation' ); ?></label>
+					<a data-audit-id="auth-forgot-link" class="ink-auth-field__forgot" href="<?php echo esc_url( home_url( '/wagwoord-herstel' ) ); ?>"><?php echo esc_html__( 'Wagwoord vergeet?', 'ink-foundation' ); ?></a>
 				</span>
-				<input type="password" name="pwd" id="user_pass" autocomplete="current-password" required="required" />
+				<input data-audit-id="auth-password-input" type="password" name="pwd" id="user_pass" autocomplete="current-password" required="required" />
 			</p>
-			<p class="ink-auth-remember">
+			<p data-audit-id="auth-remember" class="ink-auth-remember">
 				<label>
-					<input name="rememberme" type="checkbox" id="rememberme" value="forever" />
+					<input data-audit-id="auth-remember-checkbox" name="rememberme" type="checkbox" id="rememberme" value="forever" />
 					<?php echo esc_html__( 'Onthou my', 'ink-foundation' ); ?>
 				</label>
 			</p>
 			<input type="hidden" name="redirect_to" value="<?php echo esc_url( ! empty( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ) : home_url( '/' ) ); ?>" />
-			<p class="ink-auth-submit">
-				<button type="submit" name="wp-submit" class="wp-element-button"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></button>
+			<p data-audit-id="auth-submit-wrap" class="ink-auth-submit">
+				<button data-audit-id="auth-submit" type="submit" name="wp-submit" class="wp-element-button"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></button>
 			</p>
 		</form>
 		<!-- /wp:html -->
 <?php if ( function_exists( 'ink_foundation_social_login_available' ) && ink_foundation_social_login_available() ) : ?>
 		<!-- wp:separator {"className":"is-style-wide"} -->
-		<hr class="wp-block-separator has-alpha-channel-opacity is-style-wide"/>
+		<hr data-audit-id="auth-divider" class="wp-block-separator has-alpha-channel-opacity is-style-wide"/>
 		<!-- /wp:separator -->
 
 		<!-- wp:paragraph {"align":"center","fontSize":"sm","textColor":"muted-text"} -->
-		<p class="has-text-align-center has-muted-text-color has-text-color has-sm-font-size">
+		<p data-audit-id="auth-divider-text" class="has-text-align-center has-muted-text-color has-text-color has-sm-font-size">
 			<?php
 			// Social divider line (human-authored Afrikaans).
 			echo esc_html__( 'Of gebruik eerder', 'ink-foundation' );
@@ -96,11 +96,11 @@
 		<!-- /wp:paragraph -->
 
 		<!-- wp:html -->
-		<div class="ink-social-login-buttons"><?php ink_foundation_social_login_buttons(); ?></div>
+		<div data-audit-id="auth-oauth" class="ink-social-login-buttons"><?php ink_foundation_social_login_buttons(); ?></div>
 		<!-- /wp:html -->
 
 		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-sm-font-size">
+		<p data-audit-id="auth-oauth-consent" class="has-muted-text-color has-text-color has-sm-font-size">
 			<?php
 			// POPIA social-login consent note (human-authored Afrikaans).
 			$ink_privacy_url = function_exists( 'get_privacy_policy_url' ) ? get_privacy_policy_url() : '';
@@ -119,7 +119,7 @@
 <?php endif; ?>
 
 		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-sm-font-size">Nog nie &#8217;n lid nie? <a href="/registreer">Registreer</a></p>
+		<p data-audit-id="auth-switch" class="has-muted-text-color has-text-color has-sm-font-size">Nog nie &#8217;n lid nie? <a data-audit-id="auth-switch-link" href="/registreer">Registreer</a></p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->

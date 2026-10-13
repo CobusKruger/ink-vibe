@@ -389,6 +389,24 @@ Rows 08a/08b (`biblioteek`, `opleiding`) needed no new kind. They file the follo
 The Lovable instance rows for the shared `/library` reference are recorded once, in
 `_primitive-observations.biblioteek.csv`, so Stage 2 does not count them twice.
 
+Added during rows 09a/09b (`meld-aan`, `registreer`, `findings/09a-meld-aan-primitives.md`):
+
+```
+divider              horizontal rule, optionally with a centred label ('or continue with');
+                     Lovable: a border-t span with an overlaid bg-card label; INK: core/separator
+                     + a paragraph. The tool files the label as card and its wrapper as eyebrow
+```
+
+Rows 09a/09b file the following under existing kinds:
+- shadcn TabsTrigger and TabsList under `tab`;
+- text links ("Forgot?", the INK sign-in/sign-up switch link) under `link-underline`;
+- Lovable's muted "← Back to Inkwell" link under `nav-link`;
+- the INK remember-me `<label>` under `form-label`, with a note.
+
+They drop RegistrationGuard's off-screen honeypot (`.ink-reg-hp`), which the tool files as
+`form-label` + `form-field`. The Lovable rows for the shared `/auth` reference, sign-up state
+included, are recorded once, in `_primitive-observations.meld-aan.csv`.
+
 `run.sh primitives` also emits a generic `button` fallback. It is not a kind: resolve
 each such row to a variant before it enters the register.
 

@@ -1,0 +1,41 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+auth,src/pages/Auth.tsx,67,wp-content/themes/ink-foundation/patterns/auth-register.php,34,page wrapper / auth section,paired,R3: Lovable min-h-screen flex-centred <div>; INK alignfull <section> with s-64/s-24 padding
+auth-inner,src/pages/Auth.tsx,68,,,max-w-md column,missing-ink,R3 MECHANISM: INK sizes the card itself via the section's constrained layout (contentSize 480px)
+auth-logo,src/pages/Auth.tsx,69,,,brand lock-up link,missing-ink,R2
+auth-logo-icon,src/pages/Auth.tsx,70,,,feather svg,missing-ink,R2
+auth-logo-text,src/pages/Auth.tsx,71,,,wordmark,missing-ink,R2
+auth-card,src/pages/Auth.tsx,74,wp-content/themes/ink-foundation/patterns/auth-register.php,36,card,paired,
+auth-tabs,src/pages/Auth.tsx,75,,,Tabs root,missing-ink,R4 SCOPE: INK splits sign-in and sign-up into two pages (inventory row 09)
+auth-tabs-list,src/pages/Auth.tsx,76,,,tab list,missing-ink,R4
+auth-tab-signin,src/pages/Auth.tsx,77,,,sign-in tab trigger (inactive in this state),missing-ink,R4/R5: INK counterpart is the auth-switch cross-page link
+auth-tab-signup,src/pages/Auth.tsx,78,,,sign-up tab trigger (active in this state),missing-ink,R4
+auth-tab-panel-signin,src/pages/Auth.tsx,81,,,sign-in TabsContent (empty and hidden in this state),missing-ink,R4
+auth-tab-panel-signup,src/pages/Auth.tsx,102,,,sign-up TabsContent,missing-ink,R4
+auth-heading,,,wp-content/themes/ink-foundation/patterns/auth-register.php,38,h1,missing-lovable,R6
+auth-intro,,,wp-content/themes/ink-foundation/patterns/auth-register.php,42,lede,missing-lovable,R7
+auth-notice,,,wp-content/themes/ink-foundation/patterns/auth-register.php,51,registration outcome notice,missing-lovable,R16: two mutually exclusive branches (voltooi :51; fout :56); renders only with ?registreer=; not captured
+auth-secondary-btn,,,wp-content/themes/ink-foundation/patterns/auth-register.php,52,'Teken in' button after success,missing-lovable,R16: voltooi branch only; not captured
+auth-form,src/pages/Auth.tsx,103,wp-content/themes/ink-foundation/patterns/auth-register.php,58,form,paired,
+auth-username-field,,,wp-content/themes/ink-foundation/patterns/auth-register.php,59,username field wrapper,missing-lovable,R8 SCOPE
+auth-username-label,,,wp-content/themes/ink-foundation/patterns/auth-register.php,60,username label,missing-lovable,R8
+auth-username-input,,,wp-content/themes/ink-foundation/patterns/auth-register.php,61,username input,missing-lovable,R8
+auth-field-hint,src/pages/Auth.tsx,111,wp-content/themes/ink-foundation/patterns/auth-register.php,62,field hint (first),paired,R10: role pairing only. Lovable's hint sits under the password; INK's first hint sits under gebruikersnaam
+auth-email-field,src/pages/Auth.tsx,104,wp-content/themes/ink-foundation/patterns/auth-register.php,64,e-mail field wrapper,paired,R11: <div> vs <p>; INK is the second field and Lovable the first
+auth-email-label,src/pages/Auth.tsx,105,wp-content/themes/ink-foundation/patterns/auth-register.php,65,e-mail label,paired,
+auth-email-input,src/pages/Auth.tsx,106,wp-content/themes/ink-foundation/patterns/auth-register.php,66,e-mail input,paired,
+auth-password-field,src/pages/Auth.tsx,108,,,password field wrapper,missing-ink,R9 SCOPE
+auth-password-label,src/pages/Auth.tsx,109,,,password label,missing-ink,R9
+auth-password-input,src/pages/Auth.tsx,110,,,password input,missing-ink,R9
+auth-submit-wrap,,,wp-content/themes/ink-foundation/patterns/auth-register.php,70,<p> around the submit,missing-lovable,R12
+auth-submit,src/pages/Auth.tsx,113,wp-content/themes/ink-foundation/patterns/auth-register.php,71,submit button,paired,R12: Lovable Button variant=literary; INK raw <button class=wp-element-button> with no block-style wrapper
+auth-divider,src/pages/Auth.tsx,120,wp-content/themes/ink-foundation/patterns/auth-register.php,78,'or continue with' divider,scope,R13: INK <hr> renders only when social login is available (default off); absent from the capture
+auth-divider-line,src/pages/Auth.tsx,122,,,divider rule,scope,R13: INK has no separate line element (its <hr> is the rule)
+auth-divider-text,src/pages/Auth.tsx,125,wp-content/themes/ink-foundation/patterns/auth-register.php,82,divider label,scope,R13
+auth-oauth,src/pages/Auth.tsx,129,wp-content/themes/ink-foundation/patterns/auth-register.php,91,OAuth button grid,scope,R13: INK container is painted by a social-login plugin (none active)
+auth-oauth-google,src/pages/Auth.tsx,130,,,Google button,scope,R13: plugin-painted on INK
+auth-oauth-apple,src/pages/Auth.tsx,133,,,Apple button,scope,R13: plugin-painted on INK
+auth-oauth-consent,,,wp-content/themes/ink-foundation/patterns/auth-register.php,95,POPIA social-login consent note,missing-lovable,R13: latent (gated with the social section)
+auth-switch,,,wp-content/themes/ink-foundation/patterns/auth-register.php,115,sign-in switch line,missing-lovable,R5 MECHANISM: stands in for auth-tab-signin
+auth-switch-link,,,wp-content/themes/ink-foundation/patterns/auth-register.php,115,Teken in link,missing-lovable,R5
+auth-back,src/pages/Auth.tsx,139,,,back line,missing-ink,R14
+auth-back-link,src/pages/Auth.tsx,140,,,back-to-home link,missing-ink,R14

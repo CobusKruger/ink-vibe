@@ -1,0 +1,40 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+auth,src/pages/Auth.tsx,67,wp-content/themes/ink-foundation/patterns/auth-login.php,37,page wrapper / auth section,paired,M3: Lovable min-h-screen flex-centred <div>; INK alignfull <section> with s-64/s-24 padding
+auth-inner,src/pages/Auth.tsx,68,,,max-w-md column,missing-ink,M3 MECHANISM: INK sizes the card itself via the section's constrained layout (contentSize 480px)
+auth-logo,src/pages/Auth.tsx,69,,,brand lock-up link,missing-ink,M2
+auth-logo-icon,src/pages/Auth.tsx,70,,,feather svg,missing-ink,M2
+auth-logo-text,src/pages/Auth.tsx,71,,,wordmark,missing-ink,M2
+auth-card,src/pages/Auth.tsx,74,wp-content/themes/ink-foundation/patterns/auth-login.php,39,card,paired,
+auth-tabs,src/pages/Auth.tsx,75,,,Tabs root,missing-ink,M4 SCOPE: INK splits sign-in and sign-up into two pages (inventory row 09)
+auth-tabs-list,src/pages/Auth.tsx,76,,,tab list,missing-ink,M4
+auth-tab-signin,src/pages/Auth.tsx,77,,,sign-in tab trigger (active),missing-ink,M4
+auth-tab-signup,src/pages/Auth.tsx,78,,,sign-up tab trigger,missing-ink,M4/M5: INK counterpart is the auth-switch cross-page link
+auth-tab-panel-signin,src/pages/Auth.tsx,81,,,sign-in TabsContent,missing-ink,M4
+auth-tab-panel-signup,src/pages/Auth.tsx,102,,,sign-up TabsContent (empty and hidden at rest),missing-ink,M4; this panel is row 09b's reference
+auth-heading,,,wp-content/themes/ink-foundation/patterns/auth-login.php,41,h1,missing-lovable,M6
+auth-intro,,,wp-content/themes/ink-foundation/patterns/auth-login.php,45,lede,missing-lovable,M7
+auth-notice,,,wp-content/themes/ink-foundation/patterns/auth-login.php,58,failed-login notice,missing-lovable,M14: renders only with ?meld_aan=fout; not captured
+auth-form,src/pages/Auth.tsx,82,wp-content/themes/ink-foundation/patterns/auth-login.php,60,form,paired,
+auth-email-field,src/pages/Auth.tsx,83,wp-content/themes/ink-foundation/patterns/auth-login.php,61,e-mail field wrapper,paired,M8: <div> vs <p>
+auth-email-label,src/pages/Auth.tsx,84,wp-content/themes/ink-foundation/patterns/auth-login.php,62,e-mail label,paired,
+auth-email-input,src/pages/Auth.tsx,85,wp-content/themes/ink-foundation/patterns/auth-login.php,63,e-mail input,paired,M15: type=email vs type=text (username or e-mail)
+auth-password-field,src/pages/Auth.tsx,87,wp-content/themes/ink-foundation/patterns/auth-login.php,65,password field wrapper,paired,M8: <div> vs <p>
+auth-password-row,src/pages/Auth.tsx,88,wp-content/themes/ink-foundation/patterns/auth-login.php,66,label + forgot-link row,paired,M8: <div> vs <span>
+auth-password-label,src/pages/Auth.tsx,89,wp-content/themes/ink-foundation/patterns/auth-login.php,67,password label,paired,
+auth-forgot-link,src/pages/Auth.tsx,90,wp-content/themes/ink-foundation/patterns/auth-login.php,68,forgot-password link,paired,
+auth-password-input,src/pages/Auth.tsx,94,wp-content/themes/ink-foundation/patterns/auth-login.php,70,password input,paired,
+auth-remember,,,wp-content/themes/ink-foundation/patterns/auth-login.php,72,remember-me row,divergence,M10: disclosed auth.css:172-174 (implementer comment; owner to confirm)
+auth-remember-checkbox,,,wp-content/themes/ink-foundation/patterns/auth-login.php,74,remember-me checkbox,divergence,M10
+auth-submit-wrap,,,wp-content/themes/ink-foundation/patterns/auth-login.php,79,<p> around the submit,missing-lovable,M9
+auth-submit,src/pages/Auth.tsx,96,wp-content/themes/ink-foundation/patterns/auth-login.php,80,submit button,paired,M9: Lovable Button variant=literary; INK raw <button class=wp-element-button> with no block-style wrapper
+auth-divider,src/pages/Auth.tsx,120,wp-content/themes/ink-foundation/patterns/auth-login.php,86,'or continue with' divider,scope,M11: INK <hr> renders only when social login is available (default off); absent from the capture
+auth-divider-line,src/pages/Auth.tsx,122,,,divider rule,scope,M11: INK has no separate line element (its <hr> is the rule)
+auth-divider-text,src/pages/Auth.tsx,125,wp-content/themes/ink-foundation/patterns/auth-login.php,90,divider label,scope,M11
+auth-oauth,src/pages/Auth.tsx,129,wp-content/themes/ink-foundation/patterns/auth-login.php,99,OAuth button grid,scope,M11: INK container is painted by a social-login plugin (none active)
+auth-oauth-google,src/pages/Auth.tsx,130,,,Google button,scope,M11: plugin-painted on INK
+auth-oauth-apple,src/pages/Auth.tsx,133,,,Apple button,scope,M11: plugin-painted on INK
+auth-oauth-consent,,,wp-content/themes/ink-foundation/patterns/auth-login.php,103,POPIA social-login consent note,missing-lovable,M12: latent (gated with the social section)
+auth-switch,,,wp-content/themes/ink-foundation/patterns/auth-login.php,122,sign-up switch line,missing-lovable,M5 MECHANISM: stands in for auth-tab-signup
+auth-switch-link,,,wp-content/themes/ink-foundation/patterns/auth-login.php,122,Registreer link,missing-lovable,M5
+auth-back,src/pages/Auth.tsx,139,,,back line,missing-ink,M13
+auth-back-link,src/pages/Auth.tsx,140,,,back-to-home link,missing-ink,M13
