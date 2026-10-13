@@ -103,7 +103,7 @@ final class ReadingList {
 	 * @return string
 	 */
 	public static function toHtml( array $cards ): string {
-		$html = '<section class="ink-leeslys"><h2 class="ink-leeslys__heading">' . esc_html( Terms::label( 'leeslys' ) ) . '</h2>';
+		$html = '<section class="ink-leeslys"><h2 class="ink-leeslys__heading" data-audit-id="profiel-reading-title">' . esc_html( Terms::label( 'leeslys' ) ) . '</h2>';
 
 		if ( array() === $cards ) {
 			// Empty state — matches every sibling My Profiel section
@@ -117,19 +117,22 @@ final class ReadingList {
 			// tracked in docs/afrikaans-translation-sheet.md (ID
 			// LEESLYS-LEEG-BODY) / docs/afrikaans-copy-worklist.md until a
 			// human ratifies it; `composer copy:scan` tracks it as debt.
-			$html .= '<div class="ink-leeslys__leeg">'
-				. '<p class="ink-leeslys__leeg-titel">' . esc_html__( 'Nog niks gestoor nie.', 'ink-core' ) . '</p>'
-				. '<p class="ink-leeslys__leeg-beskrywing">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — Leeslys empty-state body copy not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</p>'
+			$html .= '<div class="ink-leeslys__leeg" data-audit-id="profiel-reading-empty">'
+				. '<p class="ink-leeslys__leeg-titel" data-audit-id="profiel-reading-empty-title">' . esc_html__( 'Nog niks gestoor nie.', 'ink-core' ) . '</p>'
+				. '<p class="ink-leeslys__leeg-beskrywing" data-audit-id="profiel-reading-empty-body">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — Leeslys empty-state body copy not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</p>'
 				. '</div></section>';
 
 			return $html;
 		}
 
-		$html .= '<ul class="ink-leeslys__list">';
-		foreach ( $cards as $card ) {
-			$html .= '<li class="ink-leeslys__item">'
-				. '<span class="ink-leeslys__type">' . esc_html( Terms::label( $card['type'] ) ) . '</span>'
-				. '<a class="ink-leeslys__title" href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>'
+		$html .= '<ul class="ink-leeslys__list" data-audit-id="profiel-reading-list">';
+		foreach ( array_values( $cards ) as $i => $card ) {
+			// Fidelity join keys on the FIRST card only (maps/my-profiel.csv).
+			$audit = static fn( string $suffix ): string => 0 === $i ? ' data-audit-id="profiel-reading-' . $suffix . '"' : '';
+
+			$html .= '<li class="ink-leeslys__item"' . $audit( 'card' ) . '>'
+				. '<span class="ink-leeslys__type"' . $audit( 'type' ) . '>' . esc_html( Terms::label( $card['type'] ) ) . '</span>'
+				. '<a class="ink-leeslys__title"' . $audit( 'card-title' ) . ' href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>'
 				. '</li>';
 		}
 		$html .= '</ul></section>';

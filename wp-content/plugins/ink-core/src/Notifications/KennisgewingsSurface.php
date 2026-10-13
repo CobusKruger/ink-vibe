@@ -291,13 +291,13 @@ final class KennisgewingsSurface {
 	 * @return string
 	 */
 	public static function toHtml( array $rows ): string {
-		$heading = '<h2 class="ink-kennisgewings__titel">' . esc_html__( 'Kennisgewings', 'ink-core' ) . '</h2>';
-		$button  = '<button type="button" class="ink-kennisgewings__merk-alles" data-ink-kennisgewings-merk-alles>'
+		$heading = '<h2 class="ink-kennisgewings__titel" data-audit-id="profiel-notif-title">' . esc_html__( 'Kennisgewings', 'ink-core' ) . '</h2>';
+		$button  = '<button type="button" class="ink-kennisgewings__merk-alles" data-ink-kennisgewings-merk-alles data-audit-id="profiel-notif-mark-btn">'
 			. esc_html__( 'Merk alles as gelees', 'ink-core' ) . '</button>';
 		// Same "kop" (header row: heading + one action) shape BydraesSurface already
 		// uses (`.ink-bydraes__kop`) — reused, not reinvented, so the tab-shell CSS
 		// can style one shared "panel header row" recipe across both.
-		$kop = '<div class="ink-kennisgewings__kop">' . $heading . $button . '</div>';
+		$kop = '<div class="ink-kennisgewings__kop" data-audit-id="profiel-notif-head">' . $heading . $button . '</div>';
 
 		if ( array() === $rows ) {
 			// No ratified copy exists yet for this empty state (ui-copy-translations.md's
@@ -306,17 +306,19 @@ final class KennisgewingsSurface {
 			$empty = __( '[NEEDS HUMAN AFRIKAANS] — Kennisgewings empty-state copy not yet authored in ui-copy-translations.md.', 'ink-core' );
 
 			return '<section class="ink-kennisgewings">' . $kop
-				. '<p class="ink-kennisgewings__leeg">' . esc_html( $empty ) . '</p></section>';
+				. '<p class="ink-kennisgewings__leeg" data-audit-id="profiel-notif-empty">' . esc_html( $empty ) . '</p></section>';
 		}
 
-		$html = '<section class="ink-kennisgewings">' . $kop . '<ul class="ink-kennisgewings__lys">';
+		$html = '<section class="ink-kennisgewings">' . $kop . '<ul class="ink-kennisgewings__lys" data-audit-id="profiel-notif-card">';
 
-		foreach ( $rows as $row ) {
+		foreach ( array_values( $rows ) as $i => $row ) {
 			$status  = ! empty( $row['unread'] ) ? 'unread' : 'gelees';
 			$classes = 'ink-kennisgewings__item' . ( 'unread' === $status ? ' is-unread' : '' );
+			// Fidelity join keys on the FIRST row only (maps/my-profiel.csv).
+			$audit = static fn( string $suffix ): string => 0 === $i ? ' data-audit-id="profiel-notif-' . $suffix . '"' : '';
 
-			$html .= '<li class="' . esc_attr( $classes ) . '" data-ink-kennisgewing-status="' . esc_attr( $status ) . '">'
-				. '<p class="ink-kennisgewings__teks">' . esc_html( (string) $row['text'] ) . '</p>'
+			$html .= '<li class="' . esc_attr( $classes ) . '"' . $audit( 'item' ) . ' data-ink-kennisgewing-status="' . esc_attr( $status ) . '">'
+				. '<p class="ink-kennisgewings__teks"' . $audit( 'text' ) . '>' . esc_html( (string) $row['text'] ) . '</p>'
 				. '</li>';
 		}
 

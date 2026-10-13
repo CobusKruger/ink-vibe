@@ -64,7 +64,7 @@ $ink_badge        = function_exists( 'ink_foundation_gradering_badge' )
 $ink_tagline      = class_exists( '\Ink\Social\Tagline' )
 	? \Ink\Social\Tagline::get( $ink_user_id )
 	: '';
-$ink_avatar       = function_exists( 'get_avatar' ) ? (string) get_avatar( $ink_user_id, 112 ) : '';
+$ink_avatar       = function_exists( 'get_avatar' ) ? (string) get_avatar( $ink_user_id, 112, '', '', array( 'extra_attr' => 'data-audit-id="profiel-identity-avatar"' ) ) : '';
 $ink_display_name = (string) get_the_author_meta( 'display_name', $ink_user_id );
 $ink_public_url   = (string) get_author_posts_url( $ink_user_id );
 
@@ -100,7 +100,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 ?>
 <?php // Identity band (My Profiel rebuild, Tier-0 structural match to Profile.tsx's <section className="border-b border-border bg-cream/40">): a full-bleed tinted band housing ONLY the identity strip, distinct from the tab-shell section below (Lovable never puts the tabs inside this band). ?>
 <!-- wp:group {"tagName":"section","className":"ink-profiel-identiteit-band","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-40","bottom":"var:preset|spacing|s-40","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-profiel-identiteit-band" style="padding-top:var(--wp--preset--spacing--s-40);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-40);padding-left:var(--wp--preset--spacing--s-24)">
+<section class="wp-block-group alignfull ink-profiel-identiteit-band" data-audit-id="profiel-identity" style="padding-top:var(--wp--preset--spacing--s-40);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-40);padding-left:var(--wp--preset--spacing--s-24)">
 	<?php // WIDTH BUG FIX (product-owner live-inspection pass): this wrapper redundantly
 	// re-declared "layout":{"type":"constrained"} — the SAME bug already found and
 	// fixed on ontdek.php (Theme-Fidelity fourth-pass re-audit, page 11): re-declaring
@@ -112,39 +112,39 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 	// 768px inside a 1368px .alignwide ancestor). Dropping the redundant "layout"
 	// leaves this a plain flow group, so the identity strip fills the full wide width. ?>
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
-	<div class="wp-block-group alignwide">
+	<div class="wp-block-group alignwide" data-audit-id="profiel-identity-container">
 
 		<?php // Identity strip (My Profiel rebuild §5.1): avatar, "Jou profiel" eyebrow, serif H1 name, Gradering badge + wins-needed, tagline, three actions. ?>
 		<!-- wp:group {"className":"ink-profiel-identiteit","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"flex","justifyContent":"space-between","verticalAlignment":"center","flexWrap":"wrap"}} -->
-		<div class="wp-block-group ink-profiel-identiteit">
+		<div class="wp-block-group ink-profiel-identiteit" data-audit-id="profiel-identity-row">
 
 			<!-- wp:group {"className":"ink-profiel-identiteit__persoon","style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"flex","verticalAlignment":"center","flexWrap":"nowrap"}} -->
-			<div class="wp-block-group ink-profiel-identiteit__persoon">
+			<div class="wp-block-group ink-profiel-identiteit__persoon" data-audit-id="profiel-identity-person">
 <?php if ( '' !== $ink_avatar ) : ?>
 				<!-- wp:html -->
-				<div class="ink-profiel-identiteit__avatar"><?php echo $ink_avatar; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_avatar() returns a fully-escaped <img>. ?></div>
+				<div class="ink-profiel-identiteit__avatar" data-audit-id="profiel-identity-avatar-wrap"><?php echo $ink_avatar; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_avatar() returns a fully-escaped <img>. ?></div>
 				<!-- /wp:html -->
 <?php endif; ?>
 				<!-- wp:group {"className":"ink-profiel-identiteit__inhoud","layout":{"type":"constrained"}} -->
-				<div class="wp-block-group ink-profiel-identiteit__inhoud">
+				<div class="wp-block-group ink-profiel-identiteit__inhoud" data-audit-id="profiel-identity-text">
 					<!-- wp:paragraph {"fontSize":"xs","className":"ink-profiel-identiteit__etiket"} -->
-					<p class="has-xs-font-size ink-profiel-identiteit__etiket"><?php echo esc_html__( 'Jou profiel', 'ink-foundation' ); ?></p>
+					<p class="has-xs-font-size ink-profiel-identiteit__etiket" data-audit-id="profiel-identity-eyebrow"><?php echo esc_html__( 'Jou profiel', 'ink-foundation' ); ?></p>
 					<!-- /wp:paragraph -->
 
 					<!-- wp:heading {"level":1,"fontSize":"xxl","className":"ink-profiel-identiteit__naam"} -->
-					<h1 class="wp-block-heading has-xxl-font-size ink-profiel-identiteit__naam" data-ink-profiel-veld="naam"><?php echo esc_html( $ink_display_name ); ?></h1>
+					<h1 class="wp-block-heading has-xxl-font-size ink-profiel-identiteit__naam" data-ink-profiel-veld="naam" data-audit-id="profiel-identity-name"><?php echo esc_html( $ink_display_name ); ?></h1>
 					<!-- /wp:heading -->
 <?php if ( '' !== $ink_badge || '' !== $ink_wins_needed ) : ?>
 					<!-- wp:group {"className":"ink-profiel-identiteit__gradering","layout":{"type":"flex","verticalAlignment":"center","flexWrap":"wrap"}} -->
-					<div class="wp-block-group ink-profiel-identiteit__gradering">
+					<div class="wp-block-group ink-profiel-identiteit__gradering" data-audit-id="profiel-identity-gradering">
 	<?php if ( '' !== $ink_badge ) : ?>
 						<!-- wp:html -->
-						<?php echo $ink_badge; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink-core bridge returns escaped, token-only badge markup. ?>
+						<?php echo preg_replace( '/^<span\b/', '<span data-audit-id="profiel-identity-gradering-badge"', $ink_badge, 1 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink-core bridge returns escaped, token-only badge markup. ?>
 						<!-- /wp:html -->
 <?php endif; ?>
 	<?php if ( '' !== $ink_wins_needed ) : ?>
 						<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text","className":"ink-my-profiel__wins-needed"} -->
-						<p class="has-muted-text-color has-text-color has-sm-font-size ink-my-profiel__wins-needed"><?php echo esc_html( $ink_wins_needed ); ?></p>
+						<p class="has-muted-text-color has-text-color has-sm-font-size ink-my-profiel__wins-needed" data-audit-id="profiel-identity-wins-needed"><?php echo esc_html( $ink_wins_needed ); ?></p>
 						<!-- /wp:paragraph -->
 <?php endif; ?>
 					</div>
@@ -152,7 +152,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 <?php endif; ?>
 					<?php // Two REAL bugs found live (Tier 2, profiel-edit.js's server-render-then-flip pattern): (1) this whole <p> was PHP-conditional on a non-empty tagline, so a member's FIRST-EVER tagline save had no element for the JS's [data-ink-profiel-veld="leuse"] selector to find — the identity strip silently never updated until reload; (2) even once the <p> existed, the JS's `el.textContent = data.tagline` blindly overwrote the PHP-baked literal quote-mark characters, since that selector sat on the SAME element as the quotes. Fixed by ALWAYS rendering the wrapper with the quote marks as PERMANENT sibling text, moving [data-ink-profiel-veld="leuse"] onto an INNER span (so the JS's existing textContent-only update never touches the quotes), and adding a separate wrapper attribute purely for the empty/non-empty visibility toggle — never bare empty quotes, but now a CSS concern, not a markup-presence one. ?>
 					<!-- wp:paragraph {"fontSize":"md","className":"ink-profiel-identiteit__leuse<?php echo '' === $ink_tagline ? ' is-empty' : ''; ?>"} -->
-					<p class="has-md-font-size ink-profiel-identiteit__leuse<?php echo '' === $ink_tagline ? ' is-empty' : ''; ?>" data-ink-profiel-leuse-wrap>&#8220;<span data-ink-profiel-veld="leuse"><?php echo esc_html( $ink_tagline ); ?></span>&#8221;</p>
+					<p class="has-md-font-size ink-profiel-identiteit__leuse<?php echo '' === $ink_tagline ? ' is-empty' : ''; ?>" data-ink-profiel-leuse-wrap data-audit-id="profiel-identity-tagline">&#8220;<span data-ink-profiel-veld="leuse"><?php echo esc_html( $ink_tagline ); ?></span>&#8221;</p>
 					<!-- /wp:paragraph -->
 				</div>
 				<!-- /wp:group -->
@@ -160,20 +160,20 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 			<!-- /wp:group -->
 
 			<!-- wp:group {"className":"ink-profiel-identiteit__aksies","layout":{"type":"flex","flexWrap":"wrap"}} -->
-			<div class="wp-block-group ink-profiel-identiteit__aksies">
+			<div class="wp-block-group ink-profiel-identiteit__aksies" data-audit-id="profiel-identity-actions">
 				<?php // A real <button>, not a link — matches Lovable's onClick-only "Edit profile" control and the codebase's own convention for JS-triggered controls (vasgespel/volg toggles are also <button type="button">, never <a>). Styled directly via the BEM class in profiel.css (Tier-2 finding: a bare button never matches the `.wp-block-button.is-style-*` selector chain a real is-style-outline needs, so that className was a dead no-op — removed rather than left as a misleading label). ?>
 				<!-- wp:html -->
-				<button type="button" class="wp-element-button ink-profiel-identiteit__wysig" data-ink-profiel-redigeer-trigger><?php echo esc_html__( 'Wysig profiel', 'ink-foundation' ); ?></button>
+				<button type="button" class="wp-element-button ink-profiel-identiteit__wysig" data-ink-profiel-redigeer-trigger data-audit-id="profiel-identity-edit-btn"><?php echo esc_html__( 'Wysig profiel', 'ink-foundation' ); ?></button>
 				<!-- /wp:html -->
 
 				<!-- wp:buttons {"layout":{"type":"flex","flexWrap":"wrap"}} -->
-				<div class="wp-block-buttons">
+				<div class="wp-block-buttons" data-audit-id="profiel-identity-buttons">
 					<!-- wp:button {"className":"is-style-ink-primary"} -->
-					<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/skryf/' ) ); ?>"><?php echo esc_html__( 'Nuwe bydrae', 'ink-foundation' ); ?></a></div>
+					<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link wp-element-button" data-audit-id="profiel-identity-new-btn" href="<?php echo esc_url( home_url( '/skryf/' ) ); ?>"><?php echo esc_html__( 'Nuwe bydrae', 'ink-foundation' ); ?></a></div>
 					<!-- /wp:button -->
 
 					<!-- wp:button {"className":"is-style-subtle"} -->
-					<div class="wp-block-button is-style-subtle"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( $ink_public_url ); ?>"><?php echo esc_html__( 'Sien openbare bladsy', 'ink-foundation' ); ?></a></div>
+					<div class="wp-block-button is-style-subtle"><a class="wp-block-button__link wp-element-button" data-audit-id="profiel-identity-public-btn" href="<?php echo esc_url( $ink_public_url ); ?>"><?php echo esc_html__( 'Sien openbare bladsy', 'ink-foundation' ); ?></a></div>
 					<!-- /wp:button -->
 				</div>
 				<!-- /wp:buttons -->
@@ -193,7 +193,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 
 <?php // Tab shell + all 7 panels — a SEPARATE full-bleed section from the identity band above (Tier-0 structural match: Lovable's tabs live in their own `container mx-auto px-4 py-10`, not inside the bordered identity <section>). ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
+<section class="wp-block-group alignfull" data-audit-id="profiel-tabs-section" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
 	<?php // WIDTH BUG FIX — same root cause as the identity band above: the redundant
 	// "layout":{"type":"constrained"} clamped the tab nav AND every one of the 7
 	// panel sections below (none carry their own alignwide/alignfull) to contentSize
@@ -201,43 +201,43 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 	// (.ink-profiel-tabs / #bydraes both measured 768px before this fix). Dropped for
 	// the same reason, matching ontdek.php's own proven fix for this exact mistake. ?>
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-32"}}} -->
-	<div class="wp-block-group alignwide">
+	<div class="wp-block-group alignwide" data-audit-id="profiel-tabs-wide">
 
 		<?php // Tab shell (My Profiel rebuild §5.2): 7 ratified tabs, mirroring ontdek-tabs.js's progressive-enhancement mechanics (data-ink-profiel-tab/-panel, [hidden], #hash). ?>
 		<!-- wp:group {"tagName":"nav","className":"ink-profiel-tabs","lock":{"move":true,"remove":true},"layout":{"type":"flex","flexWrap":"wrap"}} -->
-		<nav class="wp-block-group ink-profiel-tabs" aria-label="<?php esc_attr_e( 'My profiel-oortjies', 'ink-foundation' ); ?>">
-			<button type="button" class="ink-profiel-tabs__knoppie is-active" data-ink-profiel-tab="oorsig" aria-selected="true"><?php echo esc_html__( 'Oorsig', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="bydraes" aria-selected="false"><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="leeslys" aria-selected="false"><?php echo esc_html__( 'Leeslys', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="wie-ek-volg" aria-selected="false"><?php echo esc_html__( 'Wie ek volg', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="aktiwiteit" aria-selected="false"><?php echo esc_html__( 'Aktiwiteit', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="kennisgewings" aria-selected="false"><?php echo esc_html__( 'Kennisgewings', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="lidmaatskap" aria-selected="false"><?php echo esc_html__( 'Lidmaatskap', 'ink-foundation' ); ?></button>
+		<nav class="wp-block-group ink-profiel-tabs" data-audit-id="profiel-tablist" aria-label="<?php esc_attr_e( 'My profiel-oortjies', 'ink-foundation' ); ?>">
+			<button type="button" class="ink-profiel-tabs__knoppie is-active" data-ink-profiel-tab="oorsig" data-audit-id="profiel-tab-overview" aria-selected="true"><?php echo esc_html__( 'Oorsig', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="bydraes" data-audit-id="profiel-tab-posts" aria-selected="false"><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="leeslys" data-audit-id="profiel-tab-reading" aria-selected="false"><?php echo esc_html__( 'Leeslys', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="wie-ek-volg" data-audit-id="profiel-tab-following" aria-selected="false"><?php echo esc_html__( 'Wie ek volg', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="aktiwiteit" data-audit-id="profiel-tab-activity" aria-selected="false"><?php echo esc_html__( 'Aktiwiteit', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="kennisgewings" data-audit-id="profiel-tab-notifications" aria-selected="false"><?php echo esc_html__( 'Kennisgewings', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="lidmaatskap" data-audit-id="profiel-tab-membership" aria-selected="false"><?php echo esc_html__( 'Lidmaatskap', 'ink-foundation' ); ?></button>
 		</nav>
 		<!-- /wp:group -->
 
 		<?php // Oorsig (§5.3): "Oor my" (2/3) + "In 'n oogopslag" (1/3) + "Onlangse aktiwiteit". ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
-		<section class="wp-block-group ink-profiel-panel" id="oorsig" data-ink-profiel-panel="oorsig">
+		<section class="wp-block-group ink-profiel-panel" id="oorsig" data-ink-profiel-panel="oorsig" data-audit-id="profiel-overview">
 
 			<!-- wp:columns {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s-24","top":"var:preset|spacing|s-24"}}}} -->
-			<div class="wp-block-columns">
+			<div class="wp-block-columns" data-audit-id="profiel-overview-grid">
 
 				<?php // "Oor my" — bio + Wysig affordance (2/3-width, matches Lovable's lg:col-span-2). ?>
 				<!-- wp:column {"width":"66.66%","lock":{"move":true,"remove":true}} -->
-				<div class="wp-block-column" style="flex-basis:66.66%">
+				<div class="wp-block-column" data-audit-id="profiel-about-col" style="flex-basis:66.66%">
 					<!-- wp:group {"className":"is-style-card ink-profiel-oormy","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
-					<div class="wp-block-group is-style-card ink-profiel-oormy">
+					<div class="wp-block-group is-style-card ink-profiel-oormy" data-audit-id="profiel-about-card">
 						<?php // Heading + "Wysig" affordance side by side (Tier-0 structural match to Profile.tsx's <div className="flex items-center justify-between mb-3"> — Lovable's Edit control sits beside the "About" heading, not after the bio text). ?>
 						<!-- wp:html -->
-						<div class="ink-profiel-oormy__kop">
-							<h3 class="ink-profiel-oormy__titel"><?php echo esc_html__( 'Oor my', 'ink-foundation' ); ?></h3>
-							<button type="button" class="wp-element-button ink-profiel-oormy__wysig" data-ink-profiel-redigeer-trigger><?php echo esc_html__( 'Wysig', 'ink-foundation' ); ?></button>
+						<div class="ink-profiel-oormy__kop" data-audit-id="profiel-about-head">
+							<h3 class="ink-profiel-oormy__titel" data-audit-id="profiel-about-title"><?php echo esc_html__( 'Oor my', 'ink-foundation' ); ?></h3>
+							<button type="button" class="wp-element-button ink-profiel-oormy__wysig" data-ink-profiel-redigeer-trigger data-audit-id="profiel-about-edit-btn"><?php echo esc_html__( 'Wysig', 'ink-foundation' ); ?></button>
 						</div>
 						<!-- /wp:html -->
 
 						<!-- wp:paragraph {"className":"ink-profiel-oormy__bio"} -->
-						<p class="ink-profiel-oormy__bio" data-ink-profiel-veld="bio"><?php
+						<p class="ink-profiel-oormy__bio" data-ink-profiel-veld="bio" data-audit-id="profiel-about-bio"><?php
 						echo '' !== $ink_bio
 							? esc_html( $ink_bio )
 							// No ratified Afrikaans exists yet for a "no bio" fallback — flagged
@@ -254,18 +254,18 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 
 				<?php // "In 'n oogopslag" — Bydraes / Wie ek volg / Ongelees + membership one-liner (1/3-width). ?>
 				<!-- wp:column {"width":"33.33%","lock":{"move":true,"remove":true}} -->
-				<div class="wp-block-column" style="flex-basis:33.33%">
+				<div class="wp-block-column" data-audit-id="profiel-glance-col" style="flex-basis:33.33%">
 					<!-- wp:group {"className":"is-style-card ink-profiel-oogopslag","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
-					<div class="wp-block-group is-style-card ink-profiel-oogopslag">
+					<div class="wp-block-group is-style-card ink-profiel-oogopslag" data-audit-id="profiel-glance-card">
 						<!-- wp:heading {"level":3,"fontSize":"lg"} -->
-						<h3 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( "In 'n oogopslag", 'ink-foundation' ); ?></h3>
+						<h3 class="wp-block-heading has-lg-font-size" data-audit-id="profiel-glance-title"><?php echo esc_html__( "In 'n oogopslag", 'ink-foundation' ); ?></h3>
 						<!-- /wp:heading -->
 
 						<!-- wp:html -->
-						<dl class="ink-profiel-oogopslag__lys">
-							<div class="ink-profiel-oogopslag__stat">
-								<dt><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></dt>
-								<dd><?php echo esc_html( number_format_i18n( count( $ink_bydraes ) ) ); ?></dd>
+						<dl class="ink-profiel-oogopslag__lys" data-audit-id="profiel-glance-stats">
+							<div class="ink-profiel-oogopslag__stat" data-audit-id="profiel-glance-stat">
+								<dt data-audit-id="profiel-glance-stat-label"><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></dt>
+								<dd data-audit-id="profiel-glance-stat-value"><?php echo esc_html( number_format_i18n( count( $ink_bydraes ) ) ); ?></dd>
 							</div>
 							<div class="ink-profiel-oogopslag__stat">
 								<dt><?php echo esc_html__( 'Wie ek volg', 'ink-foundation' ); ?></dt>
@@ -279,7 +279,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 						<!-- /wp:html -->
 <?php if ( null !== $ink_hernu_datum && '' !== $ink_hernu_datum ) : ?>
 						<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text","className":"ink-profiel-oogopslag__lidmaatskap"} -->
-						<p class="has-muted-text-color has-text-color has-sm-font-size ink-profiel-oogopslag__lidmaatskap"><?php
+						<p class="has-muted-text-color has-text-color has-sm-font-size ink-profiel-oogopslag__lidmaatskap" data-audit-id="profiel-glance-membership"><?php
 						echo esc_html(
 							sprintf(
 								/* translators: %s: the member's next renewal date. */
@@ -300,15 +300,15 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 
 			<?php // "Onlangse aktiwiteit" — first 3 Kennisgewings rows (§7 decision 4). Empty → heading-only shell (no invented copy), mirroring SkrywerProfiel::toHtml()'s "keep the empty shell" precedent for its own no-data card. ?>
 			<!-- wp:group {"className":"is-style-card ink-profiel-onlangs","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
-			<div class="wp-block-group is-style-card ink-profiel-onlangs">
+			<div class="wp-block-group is-style-card ink-profiel-onlangs" data-audit-id="profiel-recent-card">
 				<!-- wp:heading {"level":3,"fontSize":"lg"} -->
-				<h3 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( 'Onlangse aktiwiteit', 'ink-foundation' ); ?></h3>
+				<h3 class="wp-block-heading has-lg-font-size" data-audit-id="profiel-recent-title"><?php echo esc_html__( 'Onlangse aktiwiteit', 'ink-foundation' ); ?></h3>
 				<!-- /wp:heading -->
 <?php if ( array() !== $ink_onlangs ) : ?>
 				<!-- wp:html -->
-				<ul class="ink-profiel-onlangs__lys">
-<?php foreach ( $ink_onlangs as $ink_kennisgewing ) : ?>
-					<li class="ink-profiel-onlangs__item<?php echo ! empty( $ink_kennisgewing['unread'] ) ? ' is-unread' : ''; ?>"><?php echo esc_html( (string) $ink_kennisgewing['text'] ); ?></li>
+				<ul class="ink-profiel-onlangs__lys" data-audit-id="profiel-recent-list">
+<?php foreach ( $ink_onlangs as $ink_onlangs_i => $ink_kennisgewing ) : ?>
+					<li class="ink-profiel-onlangs__item<?php echo ! empty( $ink_kennisgewing['unread'] ) ? ' is-unread' : ''; ?>"<?php echo 0 === $ink_onlangs_i ? ' data-audit-id="profiel-recent-item"' : ''; ?>><?php echo esc_html( (string) $ink_kennisgewing['text'] ); ?></li>
 <?php endforeach; ?>
 				</ul>
 				<!-- /wp:html -->
@@ -321,35 +321,35 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 
 		<?php // Bydraes (§5.4): the unified per-post render (title+type+date+read-count+pin+edit/view in one row), replacing the two previously separate blocks (Story 9.5 pin-management, Story 9.12 read-counts) — same underlying data, one render. ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-		<section class="wp-block-group ink-profiel-panel" id="bydraes" data-ink-profiel-panel="bydraes">
+		<section class="wp-block-group ink-profiel-panel" id="bydraes" data-ink-profiel-panel="bydraes" data-audit-id="profiel-posts">
 			<!-- wp:ink/bydraes /-->
 		</section>
 		<!-- /wp:group -->
 
 		<?php // Leeslys — Story 7.7's block moved as-is (§5.5 says "move it as-is into this tab"; the empty-state copy fix is a separate later change). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-		<section class="wp-block-group ink-profiel-panel" id="leeslys" data-ink-profiel-panel="leeslys">
+		<section class="wp-block-group ink-profiel-panel" id="leeslys" data-ink-profiel-panel="leeslys" data-audit-id="profiel-reading">
 			<!-- wp:ink/leeslys /-->
 		</section>
 		<!-- /wp:group -->
 
 		<?php // Wie ek volg (§5.6) — the following-list block (Api::followeeIdsFor() resolved to writer cards + reused FollowToggle unfollow control). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-		<section class="wp-block-group ink-profiel-panel" id="wie-ek-volg" data-ink-profiel-panel="wie-ek-volg">
+		<section class="wp-block-group ink-profiel-panel" id="wie-ek-volg" data-ink-profiel-panel="wie-ek-volg" data-audit-id="profiel-following">
 			<!-- wp:ink/volg-lys /-->
 		</section>
 		<!-- /wp:group -->
 
 		<?php // Aktiwiteit — Story 9.3's following-feed moved as-is (§5.7 says "move it into this tab as-is structurally"; the richer card restyle is later). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-		<section class="wp-block-group ink-profiel-panel" id="aktiwiteit" data-ink-profiel-panel="aktiwiteit">
+		<section class="wp-block-group ink-profiel-panel" id="aktiwiteit" data-ink-profiel-panel="aktiwiteit" data-audit-id="profiel-activity">
 			<!-- wp:ink/volg-voer /-->
 		</section>
 		<!-- /wp:group -->
 
 		<?php // Kennisgewings (§5.8) — the read-model's rendered list + "Merk alles as gelees" button; $ink_kennisgewings_html computed above (guarded ink-core bridge). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-		<section class="wp-block-group ink-profiel-panel" id="kennisgewings" data-ink-profiel-panel="kennisgewings">
+		<section class="wp-block-group ink-profiel-panel" id="kennisgewings" data-ink-profiel-panel="kennisgewings" data-audit-id="profiel-notifications">
 			<!-- wp:html -->
 			<?php echo $ink_kennisgewings_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- KennisgewingsSurface::toHtml() escapes internally. ?>
 			<!-- /wp:html -->
@@ -358,28 +358,28 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 
 		<?php // Lidmaatskap — Story 4.5's renewal pattern (data plumbing untouched per strategy §2) + the left-hand status card (§5.9). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-		<section class="wp-block-group ink-profiel-panel" id="lidmaatskap" data-ink-profiel-panel="lidmaatskap">
+		<section class="wp-block-group ink-profiel-panel" id="lidmaatskap" data-ink-profiel-panel="lidmaatskap" data-audit-id="profiel-membership">
 <?php if ( $ink_lidmaatskap_aktief ) : ?>
 			<?php // Status card only when the member genuinely has an active INK membership (never fabricated) — narrower left column, renewal section takes the rest (§5.9). ?>
 			<!-- wp:columns {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s-24","top":"var:preset|spacing|s-24"}}}} -->
-			<div class="wp-block-columns">
+			<div class="wp-block-columns" data-audit-id="profiel-membership-grid">
 				<!-- wp:column {"width":"33.33%","lock":{"move":true,"remove":true}} -->
 				<div class="wp-block-column" style="flex-basis:33.33%">
 					<!-- wp:group {"className":"is-style-card ink-lidmaatskap-status","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
-					<div class="wp-block-group is-style-card ink-lidmaatskap-status">
+					<div class="wp-block-group is-style-card ink-lidmaatskap-status" data-audit-id="profiel-membership-status-card">
 						<!-- wp:paragraph {"fontSize":"xs","className":"ink-lidmaatskap-status__etiket"} -->
-						<p class="has-xs-font-size ink-lidmaatskap-status__etiket"><?php echo esc_html__( 'INK-lid', 'ink-foundation' ); ?></p>
+						<p class="has-xs-font-size ink-lidmaatskap-status__etiket" data-audit-id="profiel-membership-status-label"><?php echo esc_html__( 'INK-lid', 'ink-foundation' ); ?></p>
 						<!-- /wp:paragraph -->
 
 						<!-- wp:heading {"level":3,"fontSize":"lg"} -->
-						<h3 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( 'Aktiewe lidmaatskap', 'ink-foundation' ); ?></h3>
+						<h3 class="wp-block-heading has-lg-font-size" data-audit-id="profiel-membership-status-title"><?php echo esc_html__( 'Aktiewe lidmaatskap', 'ink-foundation' ); ?></h3>
 						<!-- /wp:heading -->
 
 						<!-- wp:html -->
-						<dl class="ink-lidmaatskap-status__lys">
-							<div class="ink-lidmaatskap-status__ry">
-								<dt><?php echo esc_html__( 'Status', 'ink-foundation' ); ?></dt>
-								<dd><?php echo esc_html__( 'Aktief', 'ink-foundation' ); ?></dd>
+						<dl class="ink-lidmaatskap-status__lys" data-audit-id="profiel-membership-status-list">
+							<div class="ink-lidmaatskap-status__ry" data-audit-id="profiel-membership-status-row">
+								<dt data-audit-id="profiel-membership-status-dt"><?php echo esc_html__( 'Status', 'ink-foundation' ); ?></dt>
+								<dd data-audit-id="profiel-membership-status-dd"><?php echo esc_html__( 'Aktief', 'ink-foundation' ); ?></dd>
 							</div>
 <?php if ( null !== $ink_hernu_datum ) : ?>
 							<div class="ink-lidmaatskap-status__ry">

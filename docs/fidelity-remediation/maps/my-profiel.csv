@@ -1,0 +1,189 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+profiel-identity,src/pages/Profile.tsx,173,wp-content/themes/ink-foundation/patterns/my-profiel.php,103,identity band <section>,paired,S1
+profiel-identity-container,src/pages/Profile.tsx,174,wp-content/themes/ink-foundation/patterns/my-profiel.php,115,identity container,paired,Lovable container (padding) vs INK alignwide div (padding on the section) — MECHANISM
+profiel-identity-row,src/pages/Profile.tsx,175,wp-content/themes/ink-foundation/patterns/my-profiel.php,119,identity flex row,paired,F2: INK nests avatar+text in an extra __persoon group
+profiel-identity-avatar-wrap,src/pages/Profile.tsx,176,wp-content/themes/ink-foundation/patterns/my-profiel.php,125,avatar wrapper,paired,
+profiel-identity-avatar,src/pages/Profile.tsx,177,wp-content/themes/ink-foundation/patterns/my-profiel.php,67,avatar,paired,Lovable Radix Avatar root; INK get_avatar() <img> (extra_attr)
+profiel-identity-camera-btn,src/pages/Profile.tsx,185,,,camera overlay button,missing-ink,F3
+profiel-identity-text,src/pages/Profile.tsx,190,wp-content/themes/ink-foundation/patterns/my-profiel.php,129,identity text column,paired,
+profiel-identity-eyebrow,src/pages/Profile.tsx,191,wp-content/themes/ink-foundation/patterns/my-profiel.php,131,eyebrow Your profile / Jou profiel,paired,
+profiel-identity-name,src/pages/Profile.tsx,194,wp-content/themes/ink-foundation/patterns/my-profiel.php,135,h1 name,paired,
+profiel-identity-tagline,src/pages/Profile.tsx,195,wp-content/themes/ink-foundation/patterns/my-profiel.php,155,italic tagline,paired,INK hidden (is-empty) for the capture user: no tagline set
+profiel-identity-actions,src/pages/Profile.tsx,197,wp-content/themes/ink-foundation/patterns/my-profiel.php,163,action group,paired,F5: INK nests two of three actions in a wp-block-buttons wrapper
+profiel-identity-edit-btn,src/pages/Profile.tsx,198,wp-content/themes/ink-foundation/patterns/my-profiel.php,166,Edit profile / Wysig profiel,paired,F4: Pencil icon missing on INK
+profiel-identity-new-btn,src/pages/Profile.tsx,202,wp-content/themes/ink-foundation/patterns/my-profiel.php,172,New post / Nuwe bydrae,paired,F4: PenLine icon missing on INK
+profiel-identity-public-btn,src/pages/Profile.tsx,208,wp-content/themes/ink-foundation/patterns/my-profiel.php,176,View public page / Sien openbare bladsy,paired,F4: ArrowRight icon missing on INK
+profiel-tabs-section,src/pages/Profile.tsx,218,wp-content/themes/ink-foundation/patterns/my-profiel.php,196,tab-shell section,paired,Lovable section is the container; INK section + alignwide div
+profiel-tablist,src/pages/Profile.tsx,220,wp-content/themes/ink-foundation/patterns/my-profiel.php,208,tab bar,divergence,"F7: segmented pill (Lovable) vs underline tabs (INK, strategy §5.2) — owner to confirm"
+profiel-tab-overview,src/pages/Profile.tsx,221,wp-content/themes/ink-foundation/patterns/my-profiel.php,209,tab Overview / Oorsig,paired,
+profiel-tab-posts,src/pages/Profile.tsx,222,wp-content/themes/ink-foundation/patterns/my-profiel.php,210,tab Posts / Bydraes,paired,
+profiel-tab-icon,src/pages/Profile.tsx,223,,,tab icon (first: BookOpen),missing-ink,F8: no tab carries an icon on INK
+profiel-tab-reading,src/pages/Profile.tsx,225,wp-content/themes/ink-foundation/patterns/my-profiel.php,211,tab Reading list / Leeslys,paired,
+profiel-tab-badge,src/pages/Profile.tsx,228,,,tab count badge (first: reading),missing-ink,F9
+profiel-tab-following,src/pages/Profile.tsx,233,wp-content/themes/ink-foundation/patterns/my-profiel.php,212,tab Following / Wie ek volg,paired,
+profiel-tab-activity,src/pages/Profile.tsx,241,wp-content/themes/ink-foundation/patterns/my-profiel.php,213,tab Activity / Aktiwiteit,paired,
+profiel-tab-notifications,src/pages/Profile.tsx,244,wp-content/themes/ink-foundation/patterns/my-profiel.php,214,tab Notifications / Kennisgewings,paired,
+profiel-tab-badge-unread,src/pages/Profile.tsx,247,,,filled unread badge,missing-ink,F9 (strategy §5.8 point 3 plans it)
+profiel-tab-membership,src/pages/Profile.tsx,252,wp-content/themes/ink-foundation/patterns/my-profiel.php,215,tab Membership / Lidmaatskap,paired,
+profiel-overview,src/pages/Profile.tsx,259,wp-content/themes/ink-foundation/patterns/my-profiel.php,221,Overview panel,paired,
+profiel-overview-grid,src/pages/Profile.tsx,260,wp-content/themes/ink-foundation/patterns/my-profiel.php,224,3-col grid / columns,paired,MECHANISM grid vs wp-block-columns; F11 768px clamp
+profiel-about-card,src/pages/Profile.tsx,261,wp-content/themes/ink-foundation/patterns/my-profiel.php,230,About card,paired,Lovable Card (padding on CardContent) vs is-style-card group
+profiel-about-head,src/pages/Profile.tsx,263,wp-content/themes/ink-foundation/patterns/my-profiel.php,233,About heading row,paired,
+profiel-about-title,src/pages/Profile.tsx,264,wp-content/themes/ink-foundation/patterns/my-profiel.php,234,About / Oor my,paired,F12: h2 vs h3
+profiel-about-edit-btn,src/pages/Profile.tsx,265,wp-content/themes/ink-foundation/patterns/my-profiel.php,235,Edit / Wysig ghost,paired,F4: Pencil icon missing on INK
+profiel-about-bio,src/pages/Profile.tsx,269,wp-content/themes/ink-foundation/patterns/my-profiel.php,240,bio paragraph,paired,INK renders the copy-debt placeholder (no bio for the capture user)
+profiel-glance-card,src/pages/Profile.tsx,273,wp-content/themes/ink-foundation/patterns/my-profiel.php,259,At a glance card,paired,
+profiel-glance-title,src/pages/Profile.tsx,275,wp-content/themes/ink-foundation/patterns/my-profiel.php,261,At a glance / In 'n oogopslag,paired,F12: h2 vs h3
+profiel-glance-stats,src/pages/Profile.tsx,276,wp-content/themes/ink-foundation/patterns/my-profiel.php,265,stat grid / dl,paired,
+profiel-glance-stat,src/pages/Profile.tsx,277,wp-content/themes/ink-foundation/patterns/my-profiel.php,266,stat (first),paired,
+profiel-glance-stat-value,src/pages/Profile.tsx,762,wp-content/themes/ink-foundation/patterns/my-profiel.php,268,stat value,paired,INK <dd> reordered above <dt> by CSS order
+profiel-glance-stat-label,src/pages/Profile.tsx,763,wp-content/themes/ink-foundation/patterns/my-profiel.php,267,stat label,paired,
+profiel-glance-separator,src/pages/Profile.tsx,281,,,Separator,missing-ink,MECHANISM: INK uses border-top on the membership line
+profiel-glance-membership,src/pages/Profile.tsx,282,wp-content/themes/ink-foundation/patterns/my-profiel.php,282,membership one-liner,paired,INK conditional on a renewal date — not rendered for the capture user (non-member); F13 crown icon missing
+profiel-recent-card,src/pages/Profile.tsx,290,wp-content/themes/ink-foundation/patterns/my-profiel.php,303,Recent activity card,paired,
+profiel-recent-head,src/pages/Profile.tsx,292,,,Recent activity heading row,missing-ink,MECHANISM: INK h3 is a direct child
+profiel-recent-title,src/pages/Profile.tsx,293,wp-content/themes/ink-foundation/patterns/my-profiel.php,305,Recent activity / Onlangse aktiwiteit,paired,F12: h2 vs h3
+profiel-recent-list,src/pages/Profile.tsx,295,wp-content/themes/ink-foundation/patterns/my-profiel.php,309,notification list,paired,INK not rendered for the capture user (no kennisgewings)
+profiel-recent-item,src/pages/Profile.tsx,297,wp-content/themes/ink-foundation/patterns/my-profiel.php,311,notification row (first),paired,not rendered on INK; INK row = text only
+profiel-recent-icon,src/pages/Profile.tsx,779,,,row icon tile,missing-ink,F14
+profiel-recent-body,src/pages/Profile.tsx,786,,,row text column,missing-ink,MECHANISM: INK li holds the text directly
+profiel-recent-text,src/pages/Profile.tsx,787,,,row text,missing-ink,MECHANISM: INK li holds the text directly
+profiel-recent-time,src/pages/Profile.tsx,788,,,row time ago,missing-ink,F14
+profiel-recent-dot,src/pages/Profile.tsx,790,,,unread dot,missing-ink,INK ::before pseudo on the LEFT (profiel.css:352) — not capturable
+profiel-posts,src/pages/Profile.tsx,305,wp-content/themes/ink-foundation/patterns/my-profiel.php,324,Posts panel,paired,
+profiel-posts-head,src/pages/Profile.tsx,306,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,186,Posts heading row,paired,
+profiel-posts-title,src/pages/Profile.tsx,307,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,187,Your posts / Jou bydraes,paired,
+profiel-posts-new-btn,src/pages/Profile.tsx,308,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,188,New post / Nuwe bydrae,paired,F4: icon missing
+profiel-posts-list,src/pages/Profile.tsx,314,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,201,post card list,paired,INK not rendered (capture user has no posts)
+profiel-posts-card,src/pages/Profile.tsx,316,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,213,post card (first),paired,not rendered on INK
+profiel-posts-card-body,src/pages/Profile.tsx,318,,,card text column,missing-ink,MECHANISM
+profiel-posts-card-meta,src/pages/Profile.tsx,319,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,214,badge row,paired,not rendered on INK; INK puts the date in this row
+profiel-posts-type,src/pages/Profile.tsx,320,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,215,type badge,paired,not rendered on INK
+profiel-posts-status,src/pages/Profile.tsx,325,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,218,status badge,paired,not rendered on INK; always Gepubliseer (strategy §7.3)
+profiel-posts-card-title,src/pages/Profile.tsx,335,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,225,post title,paired,not rendered on INK; F17 h3 vs <a>
+profiel-posts-stats,src/pages/Profile.tsx,336,,,date + likes + comments row,missing-ink,"F18: INK shows read count instead (SCOPE, strategy §5.4)"
+profiel-posts-date,src/pages/Profile.tsx,337,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,221,date,paired,not rendered on INK
+profiel-posts-actions,src/pages/Profile.tsx,346,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,226,action group,paired,MECHANISM: INK __voet also holds the read count + pin toggle
+profiel-posts-edit-btn,src/pages/Profile.tsx,347,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,235,Edit / Wysig,paired,not rendered on INK
+profiel-posts-view-btn,src/pages/Profile.tsx,351,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,230,View / Sien,paired,not rendered on INK; DIVERGENCE primary vs ghost (profiel.css:494-499)
+profiel-reading,src/pages/Profile.tsx,363,wp-content/themes/ink-foundation/patterns/my-profiel.php,331,Reading list panel,paired,
+profiel-reading-head,src/pages/Profile.tsx,364,,,heading row,missing-ink,F19
+profiel-reading-head-text,src/pages/Profile.tsx,365,,,heading text column,missing-ink,F19
+profiel-reading-title,src/pages/Profile.tsx,366,wp-content/plugins/ink-core/src/Engagement/ReadingList.php,106,Your reading list / Leeslys,paired,
+profiel-reading-sub,src/pages/Profile.tsx,367,,,subtitle,missing-ink,F19
+profiel-reading-find-btn,src/pages/Profile.tsx,371,,,Find more to read,missing-ink,F19
+profiel-reading-list,src/pages/Profile.tsx,383,wp-content/plugins/ink-core/src/Engagement/ReadingList.php,128,saved-work list,paired,INK not rendered (empty list)
+profiel-reading-card,src/pages/Profile.tsx,386,wp-content/plugins/ink-core/src/Engagement/ReadingList.php,133,saved-work card (first),paired,not rendered on INK
+profiel-reading-card-meta,src/pages/Profile.tsx,389,,,badge + read time row,missing-ink,F20
+profiel-reading-type,src/pages/Profile.tsx,392,wp-content/plugins/ink-core/src/Engagement/ReadingList.php,134,type badge,paired,not rendered on INK
+profiel-reading-time,src/pages/Profile.tsx,402,,,read time,missing-ink,F20
+profiel-reading-card-title,src/pages/Profile.tsx,409,wp-content/plugins/ink-core/src/Engagement/ReadingList.php,135,work title link,paired,not rendered on INK
+profiel-reading-byline,src/pages/Profile.tsx,413,,,by author,missing-ink,F20
+profiel-reading-actions,src/pages/Profile.tsx,420,,,Read + Remove group,missing-ink,F20
+profiel-reading-read-btn,src/pages/Profile.tsx,421,,,Read,missing-ink,F20
+profiel-reading-remove-btn,src/pages/Profile.tsx,427,,,Remove,missing-ink,F20
+profiel-reading-empty,src/pages/Profile.tsx,380,wp-content/plugins/ink-core/src/Engagement/ReadingList.php,120,empty-state box,paired,captured: Lovable reading-empty state vs INK reading
+profiel-reading-empty-title,src/pages/Profile.tsx,807,wp-content/plugins/ink-core/src/Engagement/ReadingList.php,121,empty title,paired,
+profiel-reading-empty-body,src/pages/Profile.tsx,808,wp-content/plugins/ink-core/src/Engagement/ReadingList.php,122,empty body,paired,INK body is a copy-debt placeholder
+profiel-reading-empty-btn,src/pages/Profile.tsx,810,,,Browse works CTA,missing-ink,F21
+profiel-following,src/pages/Profile.tsx,445,wp-content/themes/ink-foundation/patterns/my-profiel.php,338,Following panel,paired,
+profiel-following-head,src/pages/Profile.tsx,446,wp-content/plugins/ink-core/src/Social/FollowingList.php,139,heading row,paired,INK renders __kop only when populated — absent in the captured empty state (F22)
+profiel-following-head-text,src/pages/Profile.tsx,447,wp-content/plugins/ink-core/src/Social/FollowingList.php,125,heading text column,paired,
+profiel-following-title,src/pages/Profile.tsx,448,wp-content/plugins/ink-core/src/Social/FollowingList.php,117,Writers you follow / Skrywers wat jy volg,paired,
+profiel-following-sub,src/pages/Profile.tsx,449,wp-content/plugins/ink-core/src/Social/FollowingList.php,118,subtitle,paired,
+profiel-following-discover-btn,src/pages/Profile.tsx,453,wp-content/plugins/ink-core/src/Social/FollowingList.php,137,Discover writers,paired,INK populated state only (F22)
+profiel-following-grid,src/pages/Profile.tsx,465,wp-content/plugins/ink-core/src/Social/FollowingList.php,139,writer card grid,paired,not rendered on INK
+profiel-following-card,src/pages/Profile.tsx,468,wp-content/plugins/ink-core/src/Social/FollowingList.php,153,writer card (first),paired,not rendered on INK
+profiel-following-avatar,src/pages/Profile.tsx,470,wp-content/plugins/ink-core/src/Social/FollowingList.php,147,writer avatar,paired,not rendered on INK
+profiel-following-card-text,src/pages/Profile.tsx,474,wp-content/plugins/ink-core/src/Social/FollowingList.php,155,name + bio column,paired,not rendered on INK
+profiel-following-name,src/pages/Profile.tsx,478,wp-content/plugins/ink-core/src/Social/FollowingList.php,156,writer name,paired,not rendered on INK; F23 <a> vs <span>
+profiel-following-bio,src/pages/Profile.tsx,482,wp-content/plugins/ink-core/src/Social/FollowingList.php,159,writer bio,paired,not rendered on INK
+profiel-following-unfollow-btn,src/pages/Profile.tsx,494,,,unfollow icon button,missing-ink,F24: INK FollowToggle text button already carries skrywer-follow-btn (FollowToggle.php:110) — cannot pair; duplicates when >1 card
+profiel-following-empty,src/pages/Profile.tsx,462,wp-content/plugins/ink-core/src/Social/FollowingList.php,126,empty-state box,paired,
+profiel-following-empty-title,src/pages/Profile.tsx,807,wp-content/plugins/ink-core/src/Social/FollowingList.php,127,empty title,paired,
+profiel-following-empty-body,src/pages/Profile.tsx,808,wp-content/plugins/ink-core/src/Social/FollowingList.php,128,empty body,paired,
+profiel-following-empty-btn,src/pages/Profile.tsx,810,wp-content/plugins/ink-core/src/Social/FollowingList.php,129,Browse writers / Ontdek skrywers,paired,
+profiel-activity,src/pages/Profile.tsx,507,wp-content/themes/ink-foundation/patterns/my-profiel.php,345,Activity panel,paired,
+profiel-activity-head,src/pages/Profile.tsx,508,,,heading row,missing-ink,F25
+profiel-activity-head-text,src/pages/Profile.tsx,509,,,heading text column,missing-ink,F25
+profiel-activity-title,src/pages/Profile.tsx,510,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,220,Activity from your follows / Aktiwiteit van wie jy volg,paired,
+profiel-activity-sub,src/pages/Profile.tsx,511,,,subtitle,missing-ink,F25
+profiel-activity-card,src/pages/Profile.tsx,524,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,236,feed card,paired,INK ul.ink-volg-voer__list is the card (MECHANISM); not rendered
+profiel-activity-list,src/pages/Profile.tsx,526,,,feed list,missing-ink,MECHANISM: one element on INK (card = list)
+profiel-activity-item,src/pages/Profile.tsx,528,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,264,feed row (first),paired,not rendered on INK
+profiel-activity-avatar,src/pages/Profile.tsx,533,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,273,author avatar,paired,not rendered on INK; F26 avatar inside the author link
+profiel-activity-body,src/pages/Profile.tsx,535,,,row text column,missing-ink,F26
+profiel-activity-action,src/pages/Profile.tsx,536,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,290,published a new ... line,paired,not rendered on INK; copy-debt placeholder
+profiel-activity-author,src/pages/Profile.tsx,537,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,275,author name,paired,not rendered on INK
+profiel-activity-time,src/pages/Profile.tsx,541,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,295,days ago,paired,not rendered on INK
+profiel-activity-title-link,src/pages/Profile.tsx,546,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,301,work title,paired,not rendered on INK
+profiel-activity-excerpt,src/pages/Profile.tsx,550,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,304,excerpt,paired,not rendered on INK
+profiel-activity-footer,src/pages/Profile.tsx,553,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,307,counts + Read row,paired,not rendered on INK
+profiel-activity-read-btn,src/pages/Profile.tsx,560,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,312,Read,paired,not rendered on INK
+profiel-activity-empty,src/pages/Profile.tsx,521,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,226,empty state,paired,F27: Lovable dashed box; INK bare <p>
+profiel-activity-empty-title,src/pages/Profile.tsx,807,,,empty title,missing-ink,F27
+profiel-activity-empty-body,src/pages/Profile.tsx,808,,,empty body,missing-ink,F27: INK copy sits on the <p> paired above
+profiel-activity-empty-btn,src/pages/Profile.tsx,810,,,Find writers CTA,missing-ink,F27
+profiel-notifications,src/pages/Profile.tsx,577,wp-content/themes/ink-foundation/patterns/my-profiel.php,352,Notifications panel,paired,
+profiel-notif-head,src/pages/Profile.tsx,578,wp-content/plugins/ink-core/src/Notifications/KennisgewingsSurface.php,300,heading row,paired,
+profiel-notif-title,src/pages/Profile.tsx,579,wp-content/plugins/ink-core/src/Notifications/KennisgewingsSurface.php,294,Notifications / Kennisgewings,paired,
+profiel-notif-mark-btn,src/pages/Profile.tsx,580,wp-content/plugins/ink-core/src/Notifications/KennisgewingsSurface.php,295,Mark all as read / Merk alles as gelees,paired,
+profiel-notif-card,src/pages/Profile.tsx,584,wp-content/plugins/ink-core/src/Notifications/KennisgewingsSurface.php,312,notification card,paired,INK ul is the card; not rendered (no kennisgewings)
+profiel-notif-item,src/pages/Profile.tsx,588,wp-content/plugins/ink-core/src/Notifications/KennisgewingsSurface.php,320,notification row (first),paired,not rendered on INK
+profiel-notif-icon,src/pages/Profile.tsx,779,,,type icon tile,missing-ink,F28: INK ::before tile has no icon (profiel.css:774)
+profiel-notif-body,src/pages/Profile.tsx,786,,,text column,missing-ink,MECHANISM
+profiel-notif-text,src/pages/Profile.tsx,787,wp-content/plugins/ink-core/src/Notifications/KennisgewingsSurface.php,321,notification text,paired,not rendered on INK
+profiel-notif-time,src/pages/Profile.tsx,788,,,time ago,missing-ink,F28
+profiel-notif-dot,src/pages/Profile.tsx,790,,,unread dot,missing-ink,INK ::after pseudo (profiel.css:803) — not capturable
+profiel-membership,src/pages/Profile.tsx,596,wp-content/themes/ink-foundation/patterns/my-profiel.php,361,Membership panel,paired,
+profiel-membership-grid,src/pages/Profile.tsx,597,wp-content/themes/ink-foundation/patterns/my-profiel.php,365,status + renew grid,paired,INK columns only for active members — not rendered for the capture user
+profiel-membership-status-card,src/pages/Profile.tsx,598,wp-content/themes/ink-foundation/patterns/my-profiel.php,369,status card,paired,not rendered on INK (non-member)
+profiel-membership-status-label,src/pages/Profile.tsx,600,wp-content/themes/ink-foundation/patterns/my-profiel.php,371,Inkwell Member row / INK-lid eyebrow,paired,not rendered; F30 role swap
+profiel-membership-status-title,src/pages/Profile.tsx,604,wp-content/themes/ink-foundation/patterns/my-profiel.php,375,Active subscription / Aktiewe lidmaatskap,paired,not rendered; F30 p vs h3
+profiel-membership-status-separator,src/pages/Profile.tsx,605,,,Separator,missing-ink,MECHANISM: border-top on the dl
+profiel-membership-status-list,src/pages/Profile.tsx,606,wp-content/themes/ink-foundation/patterns/my-profiel.php,379,status dl,paired,not rendered
+profiel-membership-status-row,src/pages/Profile.tsx,607,wp-content/themes/ink-foundation/patterns/my-profiel.php,380,status row (first),paired,not rendered
+profiel-membership-status-dt,src/pages/Profile.tsx,608,wp-content/themes/ink-foundation/patterns/my-profiel.php,381,Status,paired,not rendered
+profiel-membership-status-dd,src/pages/Profile.tsx,609,wp-content/themes/ink-foundation/patterns/my-profiel.php,382,Active / Aktief,paired,not rendered
+profiel-membership-status-dot,src/pages/Profile.tsx,610,,,active dot,missing-ink,F30
+profiel-membership-renew,src/pages/Profile.tsx,628,wp-content/themes/ink-foundation/patterns/lidmaatskap-hernu.php,75,renew card / hernu section,paired,F31: Lovable Card vs INK padded alignfull band
+profiel-membership-renew-title,src/pages/Profile.tsx,630,wp-content/themes/ink-foundation/patterns/lidmaatskap-hernu.php,79,Renew membership / Hernieu lidmaatskap,paired,F31: h3 vs h2
+profiel-membership-renew-desc,src/pages/Profile.tsx,631,wp-content/themes/ink-foundation/patterns/lidmaatskap-hernu.php,83,renew description,paired,
+profiel-membership-plans,src/pages/Profile.tsx,634,wp-content/themes/ink-foundation/patterns/lidmaatskap-hernu.php,87,plan grid,paired,
+profiel-membership-plan,src/pages/Profile.tsx,640,wp-content/themes/ink-foundation/patterns/lidmaatskap-hernu.php,109,plan tile (first),divergence,"selectable tile vs purchase card — disclosed strategy §2/§5.9, profiel.css:859-866"
+profiel-membership-plan-label,src/pages/Profile.tsx,649,wp-content/themes/ink-foundation/patterns/lidmaatskap-hernu.php,111,plan label,paired,
+profiel-membership-plan-price,src/pages/Profile.tsx,652,wp-content/themes/ink-foundation/patterns/lidmaatskap-hernu.php,115,plan price,paired,"DIVERGENCE data: ZAR from WooCommerce, no savings (strategy §2)"
+profiel-membership-plan-period,src/pages/Profile.tsx,654,,,/ Nmo suffix,missing-ink,F32
+profiel-membership-renew-footer,src/pages/Profile.tsx,668,,,note + CTA row,missing-ink,F32
+profiel-membership-renew-note,src/pages/Profile.tsx,669,,,ad-free note,missing-ink,F32
+profiel-membership-renew-btn,src/pages/Profile.tsx,672,wp-content/themes/ink-foundation/patterns/lidmaatskap-hernu.php,135,Renew CTA,divergence,Lovable one CTA; INK per-plan CTA (first plan's) — disclosed strategy §2
+profiel-edit-overlay,src/pages/Profile.tsx,685,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,127,modal overlay,paired,captured state edit; F34 INK overlay clamped to 800px
+profiel-edit-card,src/pages/Profile.tsx,686,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,129,modal window,paired,
+profiel-edit-title,src/pages/Profile.tsx,688,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,133,Edit profile / Wysig profiel,paired,h3 vs h2
+profiel-edit-form,src/pages/Profile.tsx,689,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,143,field stack / form,paired,
+profiel-edit-avatar-row,src/pages/Profile.tsx,690,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,139,avatar row,paired,
+profiel-edit-avatar,src/pages/Profile.tsx,691,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,140,modal avatar,paired,
+profiel-edit-photo-label,src/pages/Profile.tsx,695,,,Change photo,missing-ink,DIVERGENCE (disclosed ProfileEditor.php:39-50: avatar read-only)
+profiel-edit-field,src/pages/Profile.tsx,706,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,144,name field (first),paired,
+profiel-edit-label,src/pages/Profile.tsx,707,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,145,Name / Naam,paired,
+profiel-edit-input,src/pages/Profile.tsx,711,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,146,name input,paired,
+profiel-edit-textarea,src/pages/Profile.tsx,733,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,158,bio textarea,paired,
+profiel-edit-actions,src/pages/Profile.tsx,742,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,159,Cancel + Save,paired,
+profiel-edit-cancel-btn,src/pages/Profile.tsx,743,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,162,Cancel,paired,INK label is copy-debt placeholder
+profiel-edit-save-btn,src/pages/Profile.tsx,746,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,163,Save changes,paired,INK label is copy-debt placeholder
+profiel-identity-person,,,wp-content/themes/ink-foundation/patterns/my-profiel.php,122,avatar + text group,missing-lovable,F2 extra wrapper
+profiel-identity-gradering,,,wp-content/themes/ink-foundation/patterns/my-profiel.php,139,Gradering row,scope,F6 owner decision strategy §7.5
+profiel-identity-gradering-badge,,,wp-content/themes/ink-foundation/patterns/my-profiel.php,142,Gradering badge,scope,F6
+profiel-identity-wins-needed,,,wp-content/themes/ink-foundation/patterns/my-profiel.php,147,wins-needed subtext,scope,"F6 (private-only, FR-40)"
+profiel-identity-buttons,,,wp-content/themes/ink-foundation/patterns/my-profiel.php,170,wp-block-buttons wrapper,missing-lovable,F5
+profiel-tabs-wide,,,wp-content/themes/ink-foundation/patterns/my-profiel.php,204,alignwide inner group,missing-lovable,MECHANISM
+profiel-about-col,,,wp-content/themes/ink-foundation/patterns/my-profiel.php,228,66.66% column,missing-lovable,MECHANISM
+profiel-glance-col,,,wp-content/themes/ink-foundation/patterns/my-profiel.php,257,33.33% column,missing-lovable,MECHANISM
+profiel-posts-empty,,,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,198,no-posts empty state,scope,F16: Lovable has no posts empty state; copy-debt placeholder
+profiel-posts-readers,,,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,227,read count,scope,F18 strategy §5.4
+profiel-posts-pin,,,wp-content/plugins/ink-core/src/Social/BydraesSurface.php,210,pin toggle,scope,F18 strategy §3/§5.4
+profiel-activity-kop,,,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,268,avatar + name + action row,missing-lovable,F26
+profiel-activity-author-link,,,wp-content/plugins/ink-core/src/Social/FollowingFeed.php,278,author link wrapping avatar,missing-lovable,F26
+profiel-notif-empty,,,wp-content/plugins/ink-core/src/Notifications/KennisgewingsSurface.php,309,no-notifications empty state,scope,F29: Lovable has none; copy-debt placeholder
+profiel-membership-renew-wide,,,wp-content/themes/ink-foundation/patterns/lidmaatskap-hernu.php,77,alignwide inner group,missing-lovable,MECHANISM
+profiel-edit-backdrop,,,wp-content/plugins/ink-core/src/Social/ProfileEditor.php,128,modal backdrop,missing-lovable,MECHANISM: Lovable overlay paints its own backdrop

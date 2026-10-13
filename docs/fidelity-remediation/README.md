@@ -407,6 +407,24 @@ They drop RegistrationGuard's off-screen honeypot (`.ink-reg-hp`), which the too
 `form-label` + `form-field`. The Lovable rows for the shared `/auth` reference, sign-up state
 included, are recorded once, in `_primitive-observations.meld-aan.csv`.
 
+Added during row 02 (`my-profiel`, `findings/02-my-profiel-primitives.md`):
+
+```
+status-dot           small filled dot that signals state (unread, active) rather than marking
+                     a list item; Lovable h-2 w-2 rounded-full spans, INK ::before/::after
+                     pseudo-elements. The tool files it as list-bullet
+```
+
+Row 02 files the following under existing kinds:
+- tab count badges under `count-chip`;
+- Lovable's selectable plan `<button>` tiles under `card`;
+- the dashed empty-state boxes and the INK edit-modal window under `card`;
+- the Radix Avatar root (the tool says `pill`) under `avatar`;
+- the "Change photo" `<label>` under `link-underline`.
+
+It drops the tab-panel and ink-core block-root `<section>`s that the tool tags as
+`section-band`.
+
 `run.sh primitives` also emits a generic `button` fallback. It is not a kind: resolve
 each such row to a variant before it enters the register.
 

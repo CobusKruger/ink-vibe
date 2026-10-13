@@ -217,26 +217,26 @@ final class FollowingFeed {
 		// Heading + empty-state copy are human-authored, approved Afrikaans from
 		// ui-copy-translations.md (My Profiel — Volg/Aktiwiteit, lines 751/753/755).
 		// Zero AI Afrikaans.
-		$heading = '<h2 class="ink-volg-voer__heading">' . esc_html__( 'Aktiwiteit van wie jy volg', 'ink-core' ) . '</h2>';
+		$heading = '<h2 class="ink-volg-voer__heading" data-audit-id="profiel-activity-title">' . esc_html__( 'Aktiwiteit van wie jy volg', 'ink-core' ) . '</h2>';
 
 		if ( self::STATE_NO_FOLLOWS === $state ) {
 			$msg = __( "Volg 'n skrywer om hul nuwe stukke in jou aktiwiteitsvoer te sien.", 'ink-core' );
 
 			return '<section class="ink-volg-voer">' . $heading
-				. '<p class="ink-volg-voer__leeg">' . esc_html( $msg ) . '</p></section>';
+				. '<p class="ink-volg-voer__leeg" data-audit-id="profiel-activity-empty">' . esc_html( $msg ) . '</p></section>';
 		}
 
 		if ( array() === $cards ) {
 			$msg = __( 'Nuwe werk van hierdie skrywers verskyn in jou aktiwiteitsvoer.', 'ink-core' );
 
 			return '<section class="ink-volg-voer">' . $heading
-				. '<p class="ink-volg-voer__leeg">' . esc_html( $msg ) . '</p></section>';
+				. '<p class="ink-volg-voer__leeg" data-audit-id="profiel-activity-empty">' . esc_html( $msg ) . '</p></section>';
 		}
 
-		$html = '<section class="ink-volg-voer">' . $heading . '<ul class="ink-volg-voer__list">';
+		$html = '<section class="ink-volg-voer">' . $heading . '<ul class="ink-volg-voer__list" data-audit-id="profiel-activity-card">';
 
-		foreach ( $cards as $card ) {
-			$html .= self::cardHtml( $card );
+		foreach ( array_values( $cards ) as $i => $card ) {
+			$html .= self::cardHtml( $card, 0 === $i );
 		}
 
 		$html .= '</ul></section>';
@@ -248,9 +248,11 @@ final class FollowingFeed {
 	 * One activity-feed card. Pure — Terms + escaping only.
 	 *
 	 * @param array{title:string, permalink:string, type:string, author:string, authorUrl?:string, authorAvatar?:string, excerpt?:string, daysAgo?:string, hartjies?:int, hartjieLabel?:string, gemeenskap?:int} $card The work.
+	 * @param bool $first Whether this is the feed's first card (carries the fidelity join keys, maps/my-profiel.csv).
 	 * @return string
 	 */
-	private static function cardHtml( array $card ): string {
+	private static function cardHtml( array $card, bool $first = false ): string {
+		$audit = static fn( string $suffix ): string => $first ? ' data-audit-id="profiel-activity-' . $suffix . '"' : '';
 		$author_url = isset( $card['authorUrl'] ) ? (string) $card['authorUrl'] : '';
 		$avatar     = isset( $card['authorAvatar'] ) ? (string) $card['authorAvatar'] : '';
 		$excerpt    = isset( $card['excerpt'] ) ? (string) $card['excerpt'] : '';
@@ -259,23 +261,23 @@ final class FollowingFeed {
 		$h_label    = isset( $card['hartjieLabel'] ) ? (string) $card['hartjieLabel'] : '';
 		$gemeenskap = isset( $card['gemeenskap'] ) ? (int) $card['gemeenskap'] : 0;
 
-		$html = '<li class="ink-volg-voer__item">';
+		$html = '<li class="ink-volg-voer__item"' . $audit( 'item' ) . '>';
 
 		// Kop: author avatar + name (linked to their public profile) + the
 		// "published a new [type] · [N]d ago" action line.
-		$html .= '<div class="ink-volg-voer__kop">';
+		$html .= '<div class="ink-volg-voer__kop"' . $audit( 'kop' ) . '>';
 
 		$author_html = '';
 		if ( '' !== $avatar ) {
 			// Avatar is core-generated, already-escaped <img> markup.
-			$author_html .= $avatar;
+			$author_html .= $first ? (string) preg_replace( '/<img\b/', '<img data-audit-id="profiel-activity-avatar"', $avatar, 1 ) : $avatar;
 		}
-		$author_html .= '<span class="ink-volg-voer__outeur-naam">' . esc_html( $card['author'] ) . '</span>';
+		$author_html .= '<span class="ink-volg-voer__outeur-naam"' . $audit( 'author' ) . '>' . esc_html( $card['author'] ) . '</span>';
 
 		if ( '' !== $author_url ) {
-			$html .= '<a class="ink-volg-voer__outeur-skakel" href="' . esc_url( $author_url ) . '">' . $author_html . '</a>';
+			$html .= '<a class="ink-volg-voer__outeur-skakel"' . $audit( 'author-link' ) . ' href="' . esc_url( $author_url ) . '">' . $author_html . '</a>';
 		} else {
-			$html .= '<span class="ink-volg-voer__outeur-skakel">' . $author_html . '</span>';
+			$html .= '<span class="ink-volg-voer__outeur-skakel"' . $audit( 'author-link' ) . '>' . $author_html . '</span>';
 		}
 
 		// The connecting "published a new [type]" action-phrase has no ratified
@@ -285,29 +287,29 @@ final class FollowingFeed {
 		// VOLG-VOER-AKSIE / docs/afrikaans-copy-worklist.md. The type label and
 		// days-ago timing either side of it ARE already-ratified/established
 		// sources (Terms::label() / WorkCardFacts::daysAgoLabel()), not new copy.
-		$html .= '<span class="ink-volg-voer__aksie">'
+		$html .= '<span class="ink-volg-voer__aksie"' . $audit( 'action' ) . '>'
 			. esc_html__( '[NEEDS HUMAN AFRIKAANS] — Aktiwiteitsvoer se "published a new [type]" aksiefrase nog nie outeur in ui-copy-translations.md nie.', 'ink-core' )
 			. ' <span class="ink-volg-voer__tipe">' . esc_html( Terms::label( $card['type'] ) ) . '</span>';
 
 		if ( '' !== $days_ago ) {
-			$html .= ' &middot; <span class="ink-volg-voer__tyd">' . esc_html( $days_ago ) . '</span>';
+			$html .= ' &middot; <span class="ink-volg-voer__tyd"' . $audit( 'time' ) . '>' . esc_html( $days_ago ) . '</span>';
 		}
 
 		$html .= '</span>';
 		$html .= '</div>'; // .ink-volg-voer__kop
 
-		$html .= '<a class="ink-volg-voer__title" href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>';
+		$html .= '<a class="ink-volg-voer__title"' . $audit( 'title-link' ) . ' href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>';
 
 		if ( '' !== $excerpt ) {
-			$html .= '<p class="ink-volg-voer__uittreksel">' . esc_html( $excerpt ) . '</p>';
+			$html .= '<p class="ink-volg-voer__uittreksel"' . $audit( 'excerpt' ) . '>' . esc_html( $excerpt ) . '</p>';
 		}
 
-		$html .= '<div class="ink-volg-voer__voet">'
+		$html .= '<div class="ink-volg-voer__voet"' . $audit( 'footer' ) . '>'
 			. '<span class="ink-volg-voer__tellings">'
 			. '<span class="ink-volg-voer__telling" aria-label="' . esc_attr( $h_label ) . '"><span aria-hidden="true">&#9825;</span> ' . esc_html( number_format_i18n( $hartjies ) ) . '</span>'
 			. '<span class="ink-volg-voer__telling"><span aria-hidden="true">&#128172;</span> ' . esc_html( number_format_i18n( $gemeenskap ) ) . '</span>'
 			. '</span>'
-			. '<a class="ink-volg-voer__lees" href="' . esc_url( $card['permalink'] ) . '" tabindex="-1" aria-hidden="true">'
+			. '<a class="ink-volg-voer__lees"' . $audit( 'read-btn' ) . ' href="' . esc_url( $card['permalink'] ) . '" tabindex="-1" aria-hidden="true">'
 			. esc_html__( 'Lees', 'ink-core' ) . self::icon( self::ICON_ARROW )
 			. '</a>'
 			. '</div>';

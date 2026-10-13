@@ -92,7 +92,7 @@ test( 'a non-empty profile list is unaffected by the empty-state copy', function
 
 	$html = ReadingList::toHtml( $cards );
 
-	expect( $html )->toContain( '<ul class="ink-leeslys__list">' );
+	expect( $html )->toContain( '<ul class="ink-leeslys__list" data-audit-id="profiel-reading-list">' );
 	expect( $html )->toContain( 'ink-leeslys__item' );
 	expect( $html )->not->toContain( 'ink-leeslys__leeg' );
 	expect( $html )->not->toContain( 'Nog niks gestoor nie.' );

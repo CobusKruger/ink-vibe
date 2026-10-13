@@ -114,19 +114,19 @@ final class FollowingList {
 		// Heading + intro + empty-state copy are human-authored, approved
 		// Afrikaans from ui-copy-translations.md (My Profiel — Volg/Aktiwiteit,
 		// lines 757/758/759/760/761). Zero AI Afrikaans.
-		$heading = '<h2 class="ink-volg-lys__heading">' . esc_html__( 'Skrywers wat jy volg', 'ink-core' ) . '</h2>';
-		$intro   = '<p class="ink-volg-lys__intro">' . esc_html__( 'Nuwe werk van hierdie skrywers verskyn in jou aktiwiteitsvoer.', 'ink-core' ) . '</p>';
+		$heading = '<h2 class="ink-volg-lys__heading" data-audit-id="profiel-following-title">' . esc_html__( 'Skrywers wat jy volg', 'ink-core' ) . '</h2>';
+		$intro   = '<p class="ink-volg-lys__intro" data-audit-id="profiel-following-sub">' . esc_html__( 'Nuwe werk van hierdie skrywers verskyn in jou aktiwiteitsvoer.', 'ink-core' ) . '</p>';
 
 		if ( array() === $writers ) {
 			$empty_title = __( "Jy volg nog niemand nie", 'ink-core' );
 			$empty_body  = __( "Volg 'n skrywer om hul nuwe stukke in jou aktiwiteitsvoer te sien.", 'ink-core' );
 			$cta         = __( 'Ontdek skrywers', 'ink-core' );
 
-			return '<section class="ink-volg-lys"><div class="ink-volg-lys__kop-teks">' . $heading . $intro . '</div>'
-				. '<div class="ink-volg-lys__leeg">'
-				. '<p class="ink-volg-lys__leeg-titel">' . esc_html( $empty_title ) . '</p>'
-				. '<p class="ink-volg-lys__leeg-teks">' . esc_html( $empty_body ) . '</p>'
-				. '<a class="ink-volg-lys__ontdek" href="' . esc_url( home_url( '/ontdek/' ) ) . '">' . esc_html( $cta ) . '</a>'
+			return '<section class="ink-volg-lys"><div class="ink-volg-lys__kop-teks" data-audit-id="profiel-following-head-text">' . $heading . $intro . '</div>'
+				. '<div class="ink-volg-lys__leeg" data-audit-id="profiel-following-empty">'
+				. '<p class="ink-volg-lys__leeg-titel" data-audit-id="profiel-following-empty-title">' . esc_html( $empty_title ) . '</p>'
+				. '<p class="ink-volg-lys__leeg-teks" data-audit-id="profiel-following-empty-body">' . esc_html( $empty_body ) . '</p>'
+				. '<a class="ink-volg-lys__ontdek" data-audit-id="profiel-following-empty-btn" href="' . esc_url( home_url( '/ontdek/' ) ) . '">' . esc_html( $cta ) . '</a>'
 				. '</div></section>';
 		}
 
@@ -134,21 +134,29 @@ final class FollowingList {
 		// always-visible "Discover writers" button, not only the empty state's) —
 		// reuses the SAME "Ontdek skrywers" copy/URL the empty state above already
 		// carries; no new string, no new destination.
-		$cta_persistent = '<a class="ink-volg-lys__ontdek-kop" href="' . esc_url( home_url( '/ontdek/' ) ) . '">' . esc_html__( 'Ontdek skrywers', 'ink-core' ) . '</a>';
+		$cta_persistent = '<a class="ink-volg-lys__ontdek-kop" data-audit-id="profiel-following-discover-btn" href="' . esc_url( home_url( '/ontdek/' ) ) . '">' . esc_html__( 'Ontdek skrywers', 'ink-core' ) . '</a>';
 
-		$html = '<section class="ink-volg-lys"><div class="ink-volg-lys__kop"><div class="ink-volg-lys__kop-teks">' . $heading . $intro . '</div>' . $cta_persistent . '</div><ul class="ink-volg-lys__grid">';
+		$html = '<section class="ink-volg-lys"><div class="ink-volg-lys__kop" data-audit-id="profiel-following-head"><div class="ink-volg-lys__kop-teks" data-audit-id="profiel-following-head-text">' . $heading . $intro . '</div>' . $cta_persistent . '</div><ul class="ink-volg-lys__grid" data-audit-id="profiel-following-grid">';
 
-		foreach ( $writers as $writer ) {
+		foreach ( array_values( $writers ) as $i => $writer ) {
+			// Fidelity join keys on the FIRST card only (maps/my-profiel.csv).
+			$audit  = static fn( string $suffix ): string => 0 === $i ? ' data-audit-id="profiel-following-' . $suffix . '"' : '';
+			$avatar = (string) $writer['avatar'];
+
+			if ( 0 === $i ) {
+				$avatar = (string) preg_replace( '/<img\b/', '<img data-audit-id="profiel-following-avatar"', $avatar, 1 );
+			}
+
 			// name + bio share ONE column beside the avatar/unfollow-button (Tier-2
 			// live finding: without this wrapper both were direct flex children of
 			// the <li> row, so a bio rendered BESIDE the name instead of under it).
-			$html .= '<li class="ink-volg-lys__item is-style-card" data-ink-remove-on-unfollow>'
-				. '<div class="ink-volg-lys__foto">' . (string) $writer['avatar'] . '</div>'
-				. '<div class="ink-volg-lys__inhoud">'
-				. '<span class="ink-volg-lys__naam">' . esc_html( (string) $writer['name'] ) . '</span>';
+			$html .= '<li class="ink-volg-lys__item is-style-card"' . $audit( 'card' ) . ' data-ink-remove-on-unfollow>'
+				. '<div class="ink-volg-lys__foto"' . $audit( 'avatar-wrap' ) . '>' . $avatar . '</div>'
+				. '<div class="ink-volg-lys__inhoud"' . $audit( 'card-text' ) . '>'
+				. '<span class="ink-volg-lys__naam"' . $audit( 'name' ) . '>' . esc_html( (string) $writer['name'] ) . '</span>';
 
 			if ( '' !== trim( (string) $writer['bio'] ) ) {
-				$html .= '<p class="ink-volg-lys__bio"><em>' . esc_html( (string) $writer['bio'] ) . '</em></p>';
+				$html .= '<p class="ink-volg-lys__bio"' . $audit( 'bio' ) . '><em>' . esc_html( (string) $writer['bio'] ) . '</em></p>';
 			}
 
 			$html .= '</div>' . FollowToggle::toHtml( (int) $writer['id'], true )

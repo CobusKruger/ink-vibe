@@ -183,9 +183,9 @@ final class BydraesSurface {
 		// (`ui-copy-translations.md` "Bydraes-blad" / "Identiteitsstrook"), no new
 		// REST/JS mechanism (§5.4).
 		$html = '<section class="ink-bydraes">'
-			. '<div class="ink-bydraes__kop">'
-			. '<h2 class="ink-bydraes__titel">' . esc_html__( 'Jou bydraes', 'ink-core' ) . '</h2>'
-			. '<a class="ink-bydraes__nuwe wp-element-button" href="' . esc_url( home_url( '/skryf/' ) ) . '">' . esc_html__( 'Nuwe bydrae', 'ink-core' ) . '</a>'
+			. '<div class="ink-bydraes__kop" data-audit-id="profiel-posts-head">'
+			. '<h2 class="ink-bydraes__titel" data-audit-id="profiel-posts-title">' . esc_html__( 'Jou bydraes', 'ink-core' ) . '</h2>'
+			. '<a class="ink-bydraes__nuwe wp-element-button" data-audit-id="profiel-posts-new-btn" href="' . esc_url( home_url( '/skryf/' ) ) . '">' . esc_html__( 'Nuwe bydrae', 'ink-core' ) . '</a>'
 			. '</div>';
 
 		if ( array() === $rows ) {
@@ -195,37 +195,44 @@ final class BydraesSurface {
 			// docs/afrikaans-copy-worklist.md).
 			$empty = __( '[NEEDS HUMAN AFRIKAANS] — Bydraes-tab empty-state copy not yet authored in ui-copy-translations.md.', 'ink-core' );
 
-			return $html . '<p class="ink-bydraes__leeg">' . esc_html( $empty ) . '</p></section>';
+			return $html . '<p class="ink-bydraes__leeg" data-audit-id="profiel-posts-empty">' . esc_html( $empty ) . '</p></section>';
 		}
 
-		$html .= '<ul class="ink-bydraes__lys">';
+		$html .= '<ul class="ink-bydraes__lys" data-audit-id="profiel-posts-list">';
 
-		foreach ( $rows as $row ) {
+		foreach ( array_values( $rows ) as $i => $row ) {
 			$edit_url = (string) $row['edit_url'];
+			// Fidelity join keys on the FIRST row only (maps/my-profiel.csv) — ids are unique per page.
+			$audit = static fn( string $suffix ): string => 0 === $i ? ' data-audit-id="profiel-posts-' . $suffix . '"' : '';
+			$pin   = PinnedWorksManager::toggleHtml( (int) $row['id'], ! empty( $row['is_pinned'] ) );
 
-			$html .= '<li class="ink-bydraes__item is-style-card">'
-				. '<div class="ink-bydraes__meta">'
-				. '<span class="ink-bydraes__tipe">' . esc_html( (string) $row['type_label'] ) . '</span>'
+			if ( 0 === $i ) {
+				$pin = (string) preg_replace( '/^<button\b/', '<button data-audit-id="profiel-posts-pin"', $pin, 1 );
+			}
+
+			$html .= '<li class="ink-bydraes__item is-style-card"' . $audit( 'card' ) . '>'
+				. '<div class="ink-bydraes__meta"' . $audit( 'card-meta' ) . '>'
+				. '<span class="ink-bydraes__tipe"' . $audit( 'type' ) . '>' . esc_html( (string) $row['type_label'] ) . '</span>'
 				// Always "Gepubliseer" — never "Konsep" (§7 decision 3, no draft
 				// concept exists in the submission flow to render one).
-				. '<span class="ink-bydraes__status">' . esc_html__( 'Gepubliseer', 'ink-core' ) . '</span>';
+				. '<span class="ink-bydraes__status"' . $audit( 'status' ) . '>' . esc_html__( 'Gepubliseer', 'ink-core' ) . '</span>';
 
 			if ( '' !== (string) $row['date'] ) {
-				$html .= '<span class="ink-bydraes__datum">' . esc_html( (string) $row['date'] ) . '</span>';
+				$html .= '<span class="ink-bydraes__datum"' . $audit( 'date' ) . '>' . esc_html( (string) $row['date'] ) . '</span>';
 			}
 
 			$html .= '</div>'
-				. '<a class="ink-bydraes__werk-titel" href="' . esc_url( (string) $row['view_url'] ) . '">' . esc_html( (string) $row['title'] ) . '</a>'
-				. '<div class="ink-bydraes__voet">'
-				. '<span class="ink-bydraes__lesers">' . esc_html( (string) $row['read_label'] ) . '</span>'
+				. '<a class="ink-bydraes__werk-titel"' . $audit( 'card-title' ) . ' href="' . esc_url( (string) $row['view_url'] ) . '">' . esc_html( (string) $row['title'] ) . '</a>'
+				. '<div class="ink-bydraes__voet"' . $audit( 'actions' ) . '>'
+				. '<span class="ink-bydraes__lesers"' . $audit( 'readers' ) . '>' . esc_html( (string) $row['read_label'] ) . '</span>'
 				// The EXACT vasgespel.js-wired toggle markup — see the class docblock.
-				. PinnedWorksManager::toggleHtml( (int) $row['id'], ! empty( $row['is_pinned'] ) )
-				. '<a class="ink-bydraes__sien" href="' . esc_url( (string) $row['view_url'] ) . '">' . esc_html__( 'Sien', 'ink-core' ) . '</a>';
+				. $pin
+				. '<a class="ink-bydraes__sien"' . $audit( 'view-btn' ) . ' href="' . esc_url( (string) $row['view_url'] ) . '">' . esc_html__( 'Sien', 'ink-core' ) . '</a>';
 
 			if ( '' !== $edit_url ) {
 				// Graceful degrade: get_edit_post_link() returns '' when the current
 				// user lacks edit capability on the post — never a broken/empty href.
-				$html .= '<a class="ink-bydraes__wysig" href="' . esc_url( $edit_url ) . '">' . esc_html__( 'Wysig', 'ink-core' ) . '</a>';
+				$html .= '<a class="ink-bydraes__wysig"' . $audit( 'edit-btn' ) . ' href="' . esc_url( $edit_url ) . '">' . esc_html__( 'Wysig', 'ink-core' ) . '</a>';
 			}
 
 			$html .= '</div>'
