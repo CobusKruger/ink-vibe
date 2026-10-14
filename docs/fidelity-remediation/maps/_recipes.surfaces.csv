@@ -109,11 +109,11 @@ pill,tint,font-weight,all,500,lovable-measured,lees-storie:storie-badge; lees-ge
 pill,tint,gap,all,6px,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
 pill,tint,color,all,"rgb(236, 59, 19)",lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,token primary; text = tone
 pill,tint,height,all,28px,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
-pill,tint,background-color:accent,all,"rgba(82, 122, 102, 0.15)",lovable-measured,lees-gedig:gedig-badge,needs-ruling,accent tint is 15% here and on skrywer-workcard-pinned but 10% on reading-response-badge and uitdaging-device-chip - Lovable conflicts with itself
+pill,tint,background-color:accent,all,"rgba(82, 122, 102, 0.1)",owner-ruling,stage-2-rulings.md NR-3,canonical,NR-3: sage tints behind badges and chips are 10%; was lovable-measured: lees-gedig:gedig-badge
 pill,tint-sm,box-sizing,all,border-box,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
 pill,tint-sm,padding,all,2px 10px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
 pill,tint-sm,border,all,0,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
-pill,tint-sm,background-color,all,"rgba(82, 122, 102, 0.15)",lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,accent at 15%
+pill,tint-sm,background-color,all,"rgba(82, 122, 102, 0.1)",owner-ruling,stage-2-rulings.md NR-3,canonical,NR-3: sage tints behind badges and chips are 10%; was lovable-measured: skrywer:skrywer-workcard-pinned (Lovable L7)
 pill,tint-sm,border-radius,all,9999px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
 pill,tint-sm,font-size,all,12px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
 pill,tint-sm,line-height,all,16px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
@@ -134,7 +134,7 @@ pill,hint,box-sizing,all,border-box,lovable-measured,lees-storie:storie-hint; le
 pill,hint,display,all,inline-flex,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
 pill,hint,padding,all,8px 16px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
 pill,hint,border,all,0,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
-pill,hint,background-color,all,"rgba(255, 234, 128, 0.2)",lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,"storie: highlight at 20% (text ink); gedig: accent rgba(82,122,102,0.15) (text accent)"
+pill,hint,background-color,all,"rgba(255, 234, 128, 0.2)",lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,"storie: highlight at 20% (text ink); gedig: accent rgba(82,122,102,0.1) per NR-3 (text accent)"
 pill,hint,border-radius,all,9999px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
 pill,hint,font-size,all,14px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
 pill,hint,line-height,all,20px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
@@ -206,7 +206,7 @@ meta-item,sm,font-size,all,14px,lovable-measured,"uitdaging-enkel:uitdaging-meta
 meta-item,sm,line-height,all,20px,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
 meta-item,sm,font-weight,all,400,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
 meta-item,sm,icon-size,all,16px,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
-meta-item,sm,gap,all,6px,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",needs-ruling,6px on 7 Lovable instances; featured-card-stat/featured-lead-stat use 4px (gap-1). Icon is 14px on skrywer-meta-joined
+meta-item,sm,gap,all,6px,owner-ruling,stage-2-rulings.md NR-4,canonical,"NR-4: icon-to-text gap in small meta items is 6px; was lovable-measured: uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)"
 meta-item,md,color,all,"rgb(103, 111, 126)",lovable-measured,lees-storie:reading-byline-readtime (Lovable L5),canonical,token muted-foreground -> muted-text
 meta-item,md,font-size,all,16px,lovable-measured,lees-storie:reading-byline-readtime (Lovable L5),canonical,
 meta-item,md,line-height,all,24px,lovable-measured,lees-storie:reading-byline-readtime (Lovable L5),canonical,
@@ -279,13 +279,26 @@ icon-tile,circle-lg,border-radius,all,9999px,lovable-measured,skryf:skryf-type-c
 icon-tile,circle-lg,background-color,all,"rgba(236, 59, 19, 0.1)",lovable-measured,skryf:skryf-type-card-icon (Lovable L3/L6/L7),canonical,"per type: primary / accent rgba(82,122,102,0.1) / ink rgba(24,29,37,0.1)"
 icon-tile,circle-lg,size,all,48px,lovable-measured,skryf:skryf-type-card-icon (Lovable L3/L6/L7),canonical,
 icon-tile,circle-lg,icon-size,all,20px,lovable-measured,skryf:skryf-type-card-icon (Lovable L3/L6/L7),canonical,
-tier-label,base,color,all,"rgb(82, 122, 102)",most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"token accent (sage); no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
-tier-label,base,font-family,all,Inter,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
-tier-label,base,font-size,all,12px,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
-tier-label,base,line-height,all,18px,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
-tier-label,base,font-weight,all,400,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
-tier-label,base,text-transform,all,uppercase,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
-tier-label,base,letter-spacing,all,0.96px (0.08em),most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
+tier-label,base,color,all,tier tone (see brons / silwer / goud),owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: tier labels use their tier colours; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,base,font-family,all,Inter,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: base typography kept (INK most-used); no Lovable reference; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,base,font-size,all,12px,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: base typography kept (INK most-used); no Lovable reference; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,base,line-height,all,18px,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: base typography kept (INK most-used); no Lovable reference; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,base,font-weight,all,400,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: base typography kept (INK most-used); no Lovable reference; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,base,text-transform,all,uppercase,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: base typography kept (INK most-used); no Lovable reference; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,base,letter-spacing,all,0.96px (0.08em),owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: base typography kept (INK most-used); no Lovable reference; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,chip,padding,all,2px 10px,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: PROPOSED: the 12px pill geometry (pill tint-sm, skrywer-workcard-pinned); no Lovable tier label exists"
+tier-label,chip,border-radius,all,9999px,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: sage-chip pattern (Challenge.tsx:214, rounded-full)"
+tier-label,chip,border,all,1px solid <tier> at 20%,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: darker border, as the sage chip (border-sage/20, Challenge.tsx:214)"
+tier-label,chip,background-color,all,<tier> at 10%,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: lighter background, as the sage chip (bg-sage/10, Challenge.tsx:214; NR-3)"
+tier-label,brons,color,all,"rgb(166, 117, 76)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: INK theme token brons #A6754C
+tier-label,brons,background-color,all,"rgba(166, 117, 76, 0.1)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: token brons at 10%
+tier-label,brons,border-color,all,"rgba(166, 117, 76, 0.2)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: token brons at 20%
+tier-label,silwer,color,all,"rgb(154, 163, 173)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: INK theme token silwer #9AA3AD; FLAG: tone text on its 10% tint is below WCAG AA at 12px (Stage 3 may need a darker text shade)
+tier-label,silwer,background-color,all,"rgba(154, 163, 173, 0.1)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: token silwer at 10%
+tier-label,silwer,border-color,all,"rgba(154, 163, 173, 0.2)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: token silwer at 20%
+tier-label,goud,color,all,"rgb(201, 184, 138)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: INK theme token goud #C9B88A; FLAG: tone text on its 10% tint is below WCAG AA at 12px (Stage 3 may need a darker text shade)
+tier-label,goud,background-color,all,"rgba(201, 184, 138, 0.1)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: token goud at 10%
+tier-label,goud,border-color,all,"rgba(201, 184, 138, 0.2)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: token goud at 20%
 meta-row,base,display,all,flex,lovable-measured,"tuisblad:challenge-card-meta,featured-card-stats,featured-lead-stats (Lovable L1)",canonical,
 meta-row,base,flex-wrap,all,wrap,lovable-measured,"tuisblad:challenge-card-meta,featured-card-stats,featured-lead-stats (Lovable L1)",canonical,
 meta-row,base,gap,all,16px,lovable-measured,"tuisblad:challenge-card-meta,featured-card-stats,featured-lead-stats (Lovable L1)",canonical,INK challenge-card-meta uses 24px
@@ -327,13 +340,13 @@ count-chip,highlight,border-radius,all,9999px,lovable-measured,"lees-storie:high
 status-dot,base,size,all,8px,lovable-measured,"my-profiel:profiel-recent-dot,profiel-notif-dot,profiel-membership-status-dot (Lovable L1/L2)",canonical,INK ::before on onlangs is 6px (profiel.css:352)
 status-dot,base,border-radius,all,9999px,lovable-measured,"my-profiel:profiel-recent-dot,profiel-notif-dot,profiel-membership-status-dot (Lovable L1/L2)",canonical,
 status-dot,base,background-color,all,"rgb(236, 59, 19)",lovable-measured,"my-profiel:profiel-recent-dot,profiel-notif-dot,profiel-membership-status-dot (Lovable L1/L2)",canonical,"token primary; unread = primary; active = accent rgb(82, 122, 102)"
-notice,base,padding,all,12px 16px,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
-notice,base,border-radius,all,6px,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
-notice,base,border,all,1px solid <tone>,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
-notice,base,background-color,all,<tone> at 10%,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
-notice,base,color,all,ink-text,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
-notice,base,font-size,all,14px,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
-notice,base,line-height,all,21px,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
+notice,base,padding,all,12px 16px,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
+notice,base,border-radius,all,6px,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
+notice,base,border,all,1px solid <tone>,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
+notice,base,background-color,all,<tone> at 10%,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
+notice,base,color,all,ink-text,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
+notice,base,font-size,all,14px,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
+notice,base,line-height,all,21px,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
 list-bullet,base,size,all,6px,lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,
 list-bullet,base,border-radius,all,9999px,lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,
 list-bullet,base,background-color,all,"rgb(236, 59, 19)",lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,token primary

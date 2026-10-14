@@ -1,21 +1,20 @@
 # Primitive synthesis — Stage 2
 
-**Status:** awaiting owner ratification (README §4.7). Stage 3 does not start until the
-rulings below are made and this document is marked ratified.
+**Status:** Ratified 2026-10-14. Owner rulings: [`../stage-2-rulings.md`](../stage-2-rulings.md).
 
 The input is the merged register `maps/_primitive-observations.csv`: 1,896 rows, 38 kinds,
 22 pages. Three agents each synthesised one group of kinds. Their detailed reports hold,
 per kind, the variant count, a property-level diff and the justification for the chosen
 recipe:
 
-| Group | Kinds | Report | Recipe rows (canonical / needs-ruling) |
+| Group | Kinds | Report | Recipe rows (all canonical / of which owner-ruling) |
 |---|---|---|---|
-| type-layout | heading, section-band, eyebrow | [_primitive-synthesis.type-layout.md](_primitive-synthesis.type-layout.md) | 153 (109 / 44) |
-| surfaces | card, pill, meta-item, avatar, tier-chip, icon-tile, badge, tier-label, meta-row, accent-block, step-badge, count-chip, status-dot, notice, list-bullet, divider | [_primitive-synthesis.surfaces.md](_primitive-synthesis.surfaces.md) | 347 (331 / 16) |
-| controls | button-* (8 kinds), search-button, filter-chip, tab, nav-link, link-underline, form-field, form-label, form-hint, search-field, checkbox, choice-row | [_primitive-synthesis.controls.md](_primitive-synthesis.controls.md) | 202 (195 / 7) |
+| type-layout | heading, section-band, eyebrow | [_primitive-synthesis.type-layout.md](_primitive-synthesis.type-layout.md) | 155 (155 / 45) |
+| surfaces | card, pill, meta-item, avatar, tier-chip, icon-tile, badge, tier-label, meta-row, accent-block, step-badge, count-chip, status-dot, notice, list-bullet, divider | [_primitive-synthesis.surfaces.md](_primitive-synthesis.surfaces.md) | 360 (360 / 30) |
+| controls | button-* (8 kinds), search-button, filter-chip, tab, nav-link, link-underline, form-field, form-label, form-hint, search-field, checkbox, choice-row | [_primitive-synthesis.controls.md](_primitive-synthesis.controls.md) | 230 (230 / 41) |
 
-The merged recipe table is [`maps/_recipes.csv`](../maps/_recipes.csv), with 702 rows and
-this header:
+The merged recipe table is [`maps/_recipes.csv`](../maps/_recipes.csv), with 745 rows (0
+`needs-ruling`) and this header:
 `component_kind,variant,property,viewport,value,source,evidence,status,note`.
 The per-group CSVs `maps/_recipes.<group>.csv` are its sources. Edit those, then re-merge.
 
@@ -27,65 +26,62 @@ The per-group CSVs `maps/_recipes.<group>.csv` are its sources. Edit those, then
   1. **Line-height 1.5 on small text.** Lovable sets fixed leading on xs/sm/lg text
      (16/20/28px), while INK uses 1.5. Small text, controls and chips render 1–2px taller.
   2. **Missing font weights.** `theme.json` sets no heading weight, so headings render at
-     700. Lovable uses 600, or 400 on some pages (see HR-1). Registered button styles set
+     700. Lovable uses 600 (400 on some pages; HR-1 rules 600). Registered button styles set
      no weight either, so those buttons render at 400 instead of 500.
   3. **Fluid size presets.** The xxl/xxxl/hero sizes produce in-between values Lovable
      never uses, and one element can be sized by up to four layers.
   4. **No shared button base.** All Lovable buttons share one base: inline-flex, gap 8,
-     weight 500, radius 6, and four sizes. INK restates button styles per consumer. The
-     `ink-ghost` and `ink-sage-outline` block styles also use Lora where Lovable uses
-     Inter.
+     weight 500, radius 6, and four sizes. INK restates button styles per consumer.
+     Font: serif on every button (BTN-FONT), overriding Lovable's Inter base.
   5. **content-box sizing.** Bordered avatars render 4–8px too large.
   6. **Shadows at rest.** INK puts `shadow.sm` on every card; Lovable cards have none at
      rest.
-  7. **Token drift.** Several INK palette values differ from Lovable's (TOK-1 below).
+  7. **Token drift.** Several INK palette values differ from Lovable's (TOK-1: adopt Lovable's).
 - **Container gutter:** Lovable uses 16px, INK 24px. This is canonical (Lovable), not a
   ruling.
 
-## Owner rulings needed
+## Owner rulings (applied)
 
-The IDs refer to the group reports, where each item lists its options and evidence.
+Full text: [`../stage-2-rulings.md`](../stage-2-rulings.md). Rows decided by a ruling carry
+`source=owner-ruling`, `evidence=stage-2-rulings.md <ID>`. LEG-1/2, BTN-FONT and FORMS are
+labels for that doc's unnumbered sections.
 
-### Cross-cutting (decide first; these change many recipes)
-
-| ID | Question |
+| ID | Ruling |
 |---|---|
-| TOK-1 (controls TOKEN-1 = surfaces NR-5, NR-6) | Adopt Lovable's palette values where INK's tokens drift: card/#FFF vs surface-alt, foreground, background, border, muted-foreground, secondary and gold-muted (the last differs visibly). INK has no token matching Tailwind's shadow-sm or shadow-lg; should they be added? |
-| HR-1 | Heading weight: Lovable uses 400 on my-profiel, skrywer and biblioteek but 600 elsewhere, at the same sizes. One weight site-wide, or per page family? |
-| SB-1 | Section vertical padding: three steps (48/64/80), a flat 64, or responsive? |
-| NR-3 | The sage tint is 15% in some places and 10% in others. |
+| TOK-1, BTN-2, BTN-3 | General rule: Lovable wins on colour, spacing, size, weight, leading. Lovable palette + shadow-sm/-lg; no pill buttons; neutral outline hovers to sage. |
+| HR-1 | Section headings 36px, weight 600; `*-regular` variants collapse to 600. |
+| HR-2 | Work-card titles weight 400 (20 / 27.5). |
+| HR-3 | Home hero and community hero are distinct; keep both. |
+| HR-4 | CTA-band heading 30 / 36 / 48; white on brand, cream on ink. |
+| SB-1 | Lovable's per-section padding; reading pages tighter (48). |
+| SB-3 | Cream bands `bg-secondary/30` = `rgba(240, 235, 230, 0.3)` everywhere. |
+| EB-1 | Keep both eyebrows (centred tracked, left-aligned base). |
+| EB-2 | Stat labels 12px uppercase. |
+| BTN-1 | CTA buttons serif 18px, 48px high. |
+| LEG-1 | "Explore stories": transparent, 2px white border, white text; hover white fill, terracotta text. Fixed in Lovable. |
+| LEG-2 | "Read Full Story": `border-gold/40`, filled hover `bg-gold text-ink border-gold`, serif. Fixed in Lovable. |
+| BTN-FONT | Every button is serif; not chips, tabs, the Reply text button or counted icon buttons. |
+| LBL-1 | Form labels line-height 20px. |
+| NR-1 | Tier labels: brons / silwer / goud tokens, 10% fill, 20% border (sage-chip pattern). |
+| NR-2 | Keep INK's notice styling. |
+| NR-3 | Sage tints 10%. |
+| NR-4 | Small meta-item icon gap 6px. |
+| SRCH-1 | Keep "Soek" as a brand-primary button; input and button both 40px. |
+| CHIP-1 | Ontdek date chip = sage chip (`Challenge.tsx:214`). |
+| FORMS | Contact form and any field without a Lovable sibling use the `/auth` field and button recipe. |
 
-### Per component
+### Owed by Stage 3/4
 
-| ID | Kind | Question |
-|---|---|---|
-| HR-2 | heading | Work-card title: 20/28 at weight 600, or 20/27.5 at 400? |
-| HR-3 | heading | Home hero and gemeenskap hero use two different h1 scales. Keep both? |
-| HR-4 | heading | CTA heading on a dark or brand band: two size scales, and white or cream? |
-| SB-3 | section-band | Cream tint: 0.4 (eight bands) or 0.3 (skrywer-werk)? |
-| EB-1 | eyebrow | Section eyebrow: sm with 0.05em tracking, or xs with 0.2em? |
-| EB-2 | eyebrow | Two stat labels deviate from the rest. |
-| BTN-1 | button-outline | The two Lovable on-dark outline buttons contradict each other. |
-| BTN-2 | button-primary | The lidmaatskap pill button contradicts the "never a pill" rule in `functions.php`. |
-| BTN-3 | button-outline | The neutral outline has no registered style, and its hover was never measured. |
-| SRCH-1 | search-button | INK-only "Soek" button (the pending row 08a ruling). |
-| CHIP-1 | filter-chip | INK-only ontdek date chip. |
-| LBL-1 | form-label | Lovable labels use two line-heights, 14px and 20px. |
-| NR-1 | tier-label | No Lovable reference, because the writers tab was never paired. The most-used INK variant is proposed. |
-| NR-2 | notice | No Lovable reference. The most-used INK variant is proposed. |
-| NR-4 | meta-item | Small-icon gap: 6px (7 instances) or 4px (2)? |
-
-### Capture gaps (not rulings; fix in tooling before Stage 3 verification)
-
-- The capture does not record `border-bottom` or `background-image`. As a result, the
-  gradient band and some border details are unmeasured.
-- Lovable's padding on the inner container of cream bands was not captured.
+| Item | Note |
+|---|---|
+| NR-2 script | A small script that sets the Afrikaans required-field validity message "Vul hierdie veld in" (`setCustomValidity`) on every form with `required` fields. No CSS rows. |
+| Proposed values | Flagged `PROPOSED` in notes: tier-label chip padding (2px 10px), date-chip active state (solid sage). Silwer/goud tier text fails AA at 12px (flagged). |
+| `border-bottom` | Still not in the capture property set. `background-image` always was (capture.mjs since 86ce11e); the gradient band is now measured. |
 
 ## Vocabulary changes proposed
 
-None of these has been applied, so the register and recipes still use the Stage-1 kinds.
-If ratified, they should be applied in Stage 3, when `primitives.css` class names are
-chosen.
+Not applied; decided at Stage 3 kickoff, when `primitives.css` class names are chosen.
+The register and recipes still use the Stage-1 kinds.
 
 - **heading:** add a role dimension (h1-index, h2-section, …). The recipes already use the
   role as the `variant`.
@@ -111,4 +107,5 @@ chosen.
 
 The group scripts live in `tmp/stage2/<group>/` (gitignored, re-runnable). The merge step
 checks the 9-column header and concatenates the groups in the order type-layout, surfaces,
-controls.
+controls. The rulings were applied by `tmp/stage2/close/apply_rulings.py` (`--write`,
+sandbox off), which re-merges the same way; its captures are in `tmp/stage2/close/captures/`.

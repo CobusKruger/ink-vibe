@@ -10,6 +10,7 @@ button-size,base,font-weight,all,500,lovable-measured,all 51 Lovable <Button> in
 button-size,base,focus-visible,all,outline 2px solid primary; outline-offset 2px,block-style,functions.php:1500-1503 (ink-primary; same in ink-outline/ghost/sage/sage-outline),canonical,Lovable ring-2 ring-ring ring-offset-2 = same geometry; not captured (state)
 button-size,base,disabled,all,opacity 0.5; pointer-events none,block-style,functions.php:1504-1506,canonical,Lovable disabled:opacity-50 disabled:pointer-events-none; lees-storie:reading-response-submit renders disabled at rest
 button-size,base,transition,all,all 0.15s ease,block-style,functions.php:1495,canonical,
+button-size,base,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,"BTN-FONT: every button uses the serif: primary, outline, ghost, sage-outline, subtle, search and CTA. NOT filter-chip, tab, the bare Reply text button or the counted icon buttons (button-icon-label). Overrides the shadcn base's Inter"
 button-size,sm,height,all,36px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,
 button-size,sm,padding,all,0px 12px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,
 button-size,sm,font-size,all,14px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,
@@ -30,6 +31,11 @@ button-size,xl,padding,all,0px 40px,lovable-measured,tuisblad:cta-btn-primary; t
 button-size,xl,font-size,all,18px,lovable-measured,tuisblad:cta-btn-primary; tuisblad:cta-btn-secondary,canonical,
 button-size,xl,line-height,all,28px,lovable-measured,tuisblad:cta-btn-primary; tuisblad:cta-btn-secondary,canonical,INK inherits body 1.5 → 21px/27px on 14px/18px buttons
 button-size,xl,border-radius,all,8px,lovable-measured,tuisblad:cta-btn-primary; tuisblad:cta-btn-secondary,canonical,
+button-size,cta,recipe,all,button-size xl,owner-ruling,stage-2-rulings.md BTN-1,canonical,BTN-1: all CTA buttons use the xl size
+button-size,cta,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: measured tuisblad cta-btn-primary / cta-btn-secondary (stage-2 close capture); applies to every CTA button, incl. gemeenskap-cta-btn-* (Lovable renders Inter 16px, 44px there)"
+button-size,cta,font-size,all,18px,owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: measured tuisblad cta-btn-primary / cta-btn-secondary (stage-2 close capture); applies to every CTA button, incl. gemeenskap-cta-btn-* (Lovable renders Inter 16px, 44px there)"
+button-size,cta,line-height,all,28px,owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: measured tuisblad cta-btn-primary / cta-btn-secondary (stage-2 close capture); applies to every CTA button, incl. gemeenskap-cta-btn-* (Lovable renders Inter 16px, 44px there)"
+button-size,cta,height,all,48px,owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: measured tuisblad cta-btn-primary / cta-btn-secondary (stage-2 close capture); applies to every CTA button, incl. gemeenskap-cta-btn-* (Lovable renders Inter 16px, 44px there)"
 button-primary,base,size,all,button-size (default|sm|lg|xl),lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,inherits the shared base
 button-primary,base,background-color,all,"rgb(236, 59, 19)",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,token primary
 button-primary,base,color,all,"rgb(255, 255, 255)",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,"primary-foreground; INK surface-alt rgb(253, 252, 250); token-delta: see ruling TOKEN-1"
@@ -42,7 +48,8 @@ button-primary,on-dark,background-color,all,"rgb(255, 255, 255)",lovable-measure
 button-primary,on-dark,color,all,"rgb(236, 59, 19)",lovable-measured,tuisblad:cta-btn-primary,canonical,
 button-primary,on-dark,box-shadow,all,none,lovable-measured,tuisblad:cta-btn-primary,canonical,
 button-primary,on-dark,font-family,all,"Lora, Georgia, serif",lovable-measured,tuisblad:cta-btn-primary,canonical,
-button-primary,pill,border-radius,all,9999px,most-used,lidmaatskap:lidmaatskap-plan-btn; functions.php:1461-1470,needs-ruling,"Treatment C only (is-style-pill); conflicts with functions.php:1478 ""never a pill"" — ruling BTN-2"
+button-primary,pill,border-radius,all,6px,owner-ruling,stage-2-rulings.md BTN-2,canonical,BTN-2: no pill buttons (general rule); lidmaatskap-plan-btn takes the standard button radius; was most-used: lidmaatskap:lidmaatskap-plan-btn; functions.php:1461-1470
+button-primary,form-submit,recipe,all,button-primary base + button-size default; width 100%,owner-ruling,stage-2-rulings.md FORMS,canonical,"FORMS: the /auth submit recipe (meld-aan:auth-submit, Auth.tsx:96 variant literary w-full) for the contact form and any form without a Lovable equivalent"
 button-outline,base,size,all,button-size (default|lg),lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
 button-outline,base,background-color,all,transparent,lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
 button-outline,base,color,all,"rgb(236, 59, 19)",lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
@@ -53,18 +60,23 @@ button-outline,base,hover,all,"background primary; color rgb(255, 255, 255)",blo
 button-outline,neutral,background-color,all,"rgb(250, 248, 245)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,background; INK surface; token-delta: see ruling TOKEN-1
 button-outline,neutral,color,all,"rgb(24, 29, 37)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,foreground; INK ink-text; token-delta: see ruling TOKEN-1
 button-outline,neutral,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,input/border; token-delta: see ruling TOKEN-1
-button-outline,neutral,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,
+button-outline,neutral,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: Lovable renders Inter; was lovable-measured: gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple
 button-outline,neutral,box-shadow,all,none,lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,
-button-outline,neutral,hover,all,background accent; color accent-foreground,token,ink-lovable button.tsx:14 (class only; state not captured),needs-ruling,no registered block style and no measured hover — ruling BTN-3
-button-outline,gold,border-color,all,"rgba(232, 177, 48, 0.3)",lovable-measured,tuisblad:winner-btn,canonical,neutral + gold/30 border; hover bg gold/10 (class only)
-button-outline,gold,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,tuisblad:winner-btn,canonical,INK winner-btn renders Lora; transparent bg vs Lovable background
-button-outline,on-dark,background-color,all,"transparent | rgb(250, 248, 245)",lovable-measured,gemeenskap:gemeenskap-cta-btn-secondary vs tuisblad:cta-btn-secondary,needs-ruling,"the two Lovable references conflict (bg, font Inter vs Lora, text colour) — ruling BTN-1"
-button-outline,on-dark,border,all,"1px solid rgba(250, 248, 245, 0.3)",lovable-measured,gemeenskap:gemeenskap-cta-btn-secondary; tuisblad:cta-btn-secondary (white/0.3),needs-ruling,both Lovable = 1px at 30% alpha; INK tuisblad uses 2px solid surface-alt — ruling BTN-1
+button-outline,neutral,hover,all,"background rgb(82, 122, 102); color rgb(253, 253, 252)",owner-ruling,stage-2-rulings.md BTN-3,canonical,"BTN-3: Lovable's sage hover, measured on gemeenskap-hero-btn-secondary (stage-2 close one-off Playwright hover (tmp/stage2/close/hover*.mjs)); border unchanged rgb(231, 225, 218); was token: ink-lovable button.tsx:14 (class only; state not captured)"
+button-outline,gold,border-color,all,"rgba(232, 177, 48, 0.4)",owner-ruling,stage-2-rulings.md LEG-2,canonical,"LEG-2: border-gold/40, measured tuisblad winner-btn (stage-2 close capture) after the Lovable fix (ChallengeSection.tsx:83); was lovable-measured: tuisblad:winner-btn"
+button-outline,gold,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: measured tuisblad winner-btn (stage-2 close capture) after the Lovable fix; was lovable-measured: tuisblad:winner-btn
+button-outline,gold,hover,all,"background rgb(232, 177, 48); color rgb(24, 29, 37); border-color rgb(232, 177, 48)",owner-ruling,stage-2-rulings.md LEG-2,canonical,"LEG-2: filled hover (hover:bg-gold hover:text-ink hover:border-gold, ChallengeSection.tsx:83), measured (stage-2 close one-off Playwright hover (tmp/stage2/close/hover*.mjs))"
+button-outline,on-dark,background-color,all,transparent,owner-ruling,stage-2-rulings.md LEG-1,canonical,LEG-1: measured tuisblad cta-btn-secondary (stage-2 close capture) after the Lovable fix (CallToAction.tsx:35); also applies to gemeenskap-cta-btn-secondary; was lovable-measured: gemeenskap:gemeenskap-cta-btn-secondary vs tuisblad:cta-btn-secondary
+button-outline,on-dark,border,all,"2px solid rgb(255, 255, 255)",owner-ruling,stage-2-rulings.md LEG-1,canonical,LEG-1: measured tuisblad cta-btn-secondary (stage-2 close capture); was lovable-measured: gemeenskap:gemeenskap-cta-btn-secondary; tuisblad:cta-btn-secondary (white/0.3)
+button-outline,on-dark,color,all,"rgb(255, 255, 255)",owner-ruling,stage-2-rulings.md LEG-1,canonical,LEG-1: measured tuisblad cta-btn-secondary (stage-2 close capture)
+button-outline,on-dark,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md LEG-1,canonical,LEG-1: measured tuisblad cta-btn-secondary (stage-2 close capture); BTN-1
+button-outline,on-dark,size,all,button-size cta,owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: CTA button: serif 18px, 48px"
+button-outline,on-dark,hover,all,"background rgb(255, 255, 255); color rgb(236, 59, 19)",owner-ruling,stage-2-rulings.md LEG-1,canonical,"LEG-1: inverts to white fill and terracotta text (hover:bg-primary-foreground hover:text-terracotta, CallToAction.tsx:35), measured (stage-2 close one-off Playwright hover (tmp/stage2/close/hover*.mjs))"
 button-ghost,base,size,all,button-size sm,lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,every Lovable ghost instance is sm (36px)
 button-ghost,base,background-color,all,transparent,lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,
 button-ghost,base,color,all,"rgb(24, 29, 37)",lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,foreground; token-delta: see ruling TOKEN-1
 button-ghost,base,border,all,0,lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,
-button-ghost,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,registered ink-ghost declares display (functions.php:1558) and INK header renders Lora 400 — Lovable wins
+button-ghost,base,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: Lovable renders Inter; was lovable-measured: tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2)
 button-ghost,base,box-shadow,all,none,lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,
 button-ghost,base,hover,all,background accent; color surface-alt,block-style,functions.php:1563-1566,canonical,Lovable hover:bg-accent hover:text-accent-foreground; not captured
 button-ghost,muted,color,all,"rgb(103, 111, 126)",lovable-measured,skryf:skryf-change-type-btn; my-profiel:profiel-activity-read-btn,canonical,muted-foreground; token-delta: see ruling TOKEN-1
@@ -72,14 +84,14 @@ button-subtle,base,size,all,button-size (default|sm),lovable-measured,lees-stori
 button-subtle,base,background-color,all,"rgba(240, 235, 230, 0.5)",lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,"secondary/50; INK secondary rgb(237, 233, 224)/0.5; token-delta: see ruling TOKEN-1"
 button-subtle,base,color,all,"rgb(24, 29, 37)",lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,foreground; token-delta: see ruling TOKEN-1
 button-subtle,base,border,all,0,lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,
-button-subtle,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,
+button-subtle,base,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: Lovable renders Inter; was lovable-measured: lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5)
 button-subtle,base,box-shadow,all,none,lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,
 button-subtle,base,hover background-color,all,secondary,token,ink-lovable button.tsx:23 (class only; not captured),canonical,no registered block style exists; is-style-subtle lives in profiel.css:141 only
 button-sage-outline,base,size,all,button-size lg,lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,
 button-sage-outline,base,background-color,all,transparent,lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,
 button-sage-outline,base,color,all,"rgb(82, 122, 102)",lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,accent
 button-sage-outline,base,border,all,"2px solid rgb(82, 122, 102)",lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,
-button-sage-outline,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,registered ink-sage-outline declares display (functions.php:1616); both INK instances render Lora — Lovable wins
+button-sage-outline,base,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: Lovable renders Inter; was lovable-measured: tuisblad:sponsors-btn; oor-ink:sponsors-btn
 button-sage-outline,base,box-shadow,all,none,lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,
 button-sage-outline,base,hover,all,background accent; color surface-alt,block-style,functions.php:1621-1624,canonical,
 button-icon,base,display,all,block,lovable-measured,lees-storie:reading-bookmark-btn; lees-storie:reading-share-btn; lees-gedig:reading-bookmark-btn; lees-gedig:reading-share-btn,canonical,"bare icon action: unstyled <button>, 20px icon box"
@@ -100,10 +112,14 @@ button-icon-label,base,gap,all,8px,lovable-measured,lees-storie:storie-reaksie-t
 button-icon-label,base,padding,all,0px,lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,
 button-icon-label,base,background-color,all,transparent,lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,
 button-icon-label,base,color,all,"rgb(103, 111, 126)",lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,muted-foreground; token-delta: see ruling TOKEN-1
-button-icon-label,base,font,all,"16px/24px Inter, system-ui, sans-serif 400",lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,INK comments link 14px/21px
+button-icon-label,base,font,all,"16px/24px Inter, system-ui, sans-serif 400",lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,INK comments link 14px/21px; excluded from BTN-FONT (counted icon button) — keeps Inter
 button-icon-label,sm,font,all,"14px/20px Inter, system-ui, sans-serif 400",lovable-measured,lees-storie:reading-response-upvote; lees-gedig:reading-response-upvote,canonical,INK renders an inert <span> with no icon
 button-icon-label,sm,gap,all,4px,lovable-measured,lees-storie:reading-response-upvote; lees-gedig:reading-response-upvote,canonical,
-search-button,base,recipe,all,button-primary + button-size default,most-used,ontdek:search-btn; biblioteek:library-search-btn; opleiding:library-search-btn,needs-ruling,"no Lovable instance (Lovable searches as-you-type); INK-only, 3 variants — ruling SRCH-1 (= pending row 08a ""Soek button SCOPE?"")"
+search-button,base,recipe,all,button-primary + button-size default,owner-ruling,stage-2-rulings.md SRCH-1,canonical,"SRCH-1: keep the Soek button, styled like every other brand-colour button; was most-used: ontdek:search-btn; biblioteek:library-search-btn; opleiding:library-search-btn"
+search-button,base,height,all,40px,owner-ruling,stage-2-rulings.md SRCH-1,canonical,SRCH-1: the input and the button are both 40px
+search-button,base,background-color,all,"rgb(236, 59, 19)",owner-ruling,stage-2-rulings.md SRCH-1,canonical,SRCH-1: brand primary (= button-primary base)
+search-button,base,color,all,"rgb(255, 255, 255)",owner-ruling,stage-2-rulings.md SRCH-1,canonical,SRCH-1: primary-foreground (= button-primary base)
+search-button,base,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: search button is in the serif scope
 filter-chip,base,height,all,38px,lovable-measured,ontdek:stories-filter; ontdek:stories-filter-active; biblioteek:library-filter,canonical,INK 39px (line-height 21px)
 filter-chip,base,padding,all,8px 16px,lovable-measured,ontdek:stories-filter; ontdek:stories-filter-active; biblioteek:library-filter,canonical,
 filter-chip,base,border-radius,all,9999px,lovable-measured,ontdek:stories-filter; ontdek:stories-filter-active; biblioteek:library-filter,canonical,
@@ -127,7 +143,16 @@ filter-chip,choice,border,all,0,lovable-measured,lees-storie:reading-response-ty
 filter-chip,choice,background-color,all,"rgba(240, 235, 230, 0.5)",lovable-measured,lees-storie:reading-response-type; lees-gedig:reading-response-type,canonical,unselected only; selected state not captured
 filter-chip,choice,color,all,"rgb(103, 111, 126)",lovable-measured,lees-storie:reading-response-type; lees-gedig:reading-response-type,canonical,token-delta: see ruling TOKEN-1
 filter-chip,choice,font-weight,all,500,lovable-measured,lees-storie:reading-response-type; lees-gedig:reading-response-type,canonical,INK 400
-filter-chip,date,recipe,all,xs 12px/18px; padding 4px 12px; active fill accent,most-used,ontdek:stories-date; ontdek:stories-date-active,needs-ruling,"INK-only (ontdek date archive), no Lovable sibling — ruling CHIP-1"
+filter-chip,date,recipe,all,pill tint-bordered (sage chip),owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: keep the ontdek date filter, styled like the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip); was most-used: ontdek:stories-date; ontdek:stories-date-active"
+filter-chip,date,padding,all,4px 12px,owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip)"
+filter-chip,date,height,all,30px,owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip)"
+filter-chip,date,border-radius,all,9999px,owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip)"
+filter-chip,date,font,all,"14px/20px Inter, system-ui, sans-serif 500",owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip); chips keep Lovable's font"
+filter-chip,date,background-color,all,"rgba(82, 122, 102, 0.1)",owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip); sage at 10% (NR-3)"
+filter-chip,date,border,all,"1px solid rgba(82, 122, 102, 0.2)",owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip); sage at 20%"
+filter-chip,date,color,all,"rgb(82, 122, 102)",owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip)"
+filter-chip,date-active,background-color,all,"rgb(82, 122, 102)",owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: PROPOSED: the sage chip has no active state; solid sage fill keeps the existing INK ""active fill accent"""
+filter-chip,date-active,color,all,"rgb(253, 253, 252)",owner-ruling,stage-2-rulings.md CHIP-1,canonical,CHIP-1: PROPOSED: accent-foreground on the sage fill (as the measured BTN-3 sage hover)
 tab,base,display,all,inline-flex,lovable-measured,ontdek:tabs-tab; ontdek:tabs-tab-active,canonical,underline tab (Lovable TabButton)
 tab,base,gap,all,8px,lovable-measured,ontdek:tabs-tab; ontdek:tabs-tab-active,canonical,
 tab,base,padding,all,16px 20px,lovable-measured,ontdek:tabs-tab; ontdek:tabs-tab-active,canonical,
@@ -170,9 +195,11 @@ form-field,base,font-size,768|1440,14px,lovable-measured,meld-aan:auth-email-inp
 form-field,base,line-height,768|1440,20px,lovable-measured,meld-aan:auth-email-input@768|1440,canonical,
 form-field,textarea,font,all,"14px/20px Inter, system-ui, sans-serif",lovable-measured,lees-storie:reading-response-input; lees-gedig:reading-response-input; my-profiel:profiel-edit-textarea,canonical,all viewports (shadcn Textarea is text-sm)
 form-field,textarea,min-height,all,80px,lovable-measured,lees-storie:reading-response-input; lees-gedig:reading-response-input; my-profiel:profiel-edit-textarea,canonical,rendered 100px / 118px; INK reaksies 77px with 12px padding
+form-field,no-lovable-equivalent,recipe,all,form-field base (the /auth input recipe),owner-ruling,stage-2-rulings.md FORMS,canonical,FORMS: contact form inputs and every input with no Lovable sibling use meld-aan:auth-email-input (Auth.tsx:85)
 form-label,base,font,all,"14px Inter, system-ui, sans-serif 500",lovable-measured,meld-aan:auth-email-label; meld-aan:auth-password-label; wagwoord-herstel:auth-email-label; skryf:skryf-title-label,canonical,
 form-label,base,color,all,"rgb(24, 29, 37)",lovable-measured,meld-aan:auth-email-label; meld-aan:auth-password-label; wagwoord-herstel:auth-email-label; skryf:skryf-title-label,canonical,token-delta: see ruling TOKEN-1
-form-label,base,line-height,all,14px | 20px,lovable-measured,meld-aan:auth-email-label (14px) vs skryf:skryf-title-label (20px),needs-ruling,Lovable conflicts (shadcn Label leading-none vs plain label); INK 21px everywhere — ruling LBL-1
+form-label,base,line-height,all,20px,owner-ruling,stage-2-rulings.md LBL-1,canonical,LBL-1: form labels have a 20px line-height; was lovable-measured: meld-aan:auth-email-label (14px) vs skryf:skryf-title-label (20px)
+form-label,no-lovable-equivalent,recipe,all,form-label base (the /auth label recipe),owner-ruling,stage-2-rulings.md FORMS,canonical,"FORMS: contact form labels follow meld-aan:auth-email-label (Auth.tsx:84), at the LBL-1 line-height"
 form-label,caps,font,all,"12px/16px Inter, system-ui, sans-serif 400",lovable-measured,my-profiel:profiel-edit-label,canonical,INK 12px/18px
 form-label,caps,text-transform,all,uppercase,lovable-measured,my-profiel:profiel-edit-label,canonical,
 form-label,caps,letter-spacing,all,0.6px,lovable-measured,my-profiel:profiel-edit-label,canonical,tracking-wider (0.05em); INK 0.96px
@@ -189,6 +216,7 @@ search-field,base,font-size,390,16px,lovable-measured,ontdek:search-input@390,ca
 search-field,base,line-height,390,24px,lovable-measured,ontdek:search-input@390,canonical,
 search-field,base,font-size,768|1440,14px,lovable-measured,ontdek:search-input@768|1440,canonical,
 search-field,base,line-height,768|1440,20px,lovable-measured,ontdek:search-input@768|1440,canonical,
+search-field,with-button,height,all,40px,owner-ruling,stage-2-rulings.md SRCH-1,canonical,"SRCH-1: a search input beside the Soek button is 40px (Lovable search-field base is 48px, without a button)"
 checkbox,base,size,all,16px x 16px,lovable-measured,skryf:skryf-checkbox-input (Lovable editor state),canonical,
 checkbox,base,border,all,"1px solid rgb(236, 59, 19)",lovable-measured,skryf:skryf-checkbox-input (Lovable editor state),canonical,INK renders native UA controls (no border/radius computed)
 checkbox,base,border-radius,all,4px,lovable-measured,skryf:skryf-checkbox-input (Lovable editor state),canonical,radius.sm

@@ -16,18 +16,18 @@ heading,h1-entity,font-size,1440,48px,lovable-measured,uitdaging-enkel uitdaging
 heading,h1-entity,line-height,390,37.5px,lovable-measured,uitdaging-enkel uitdaging-title; skrywer skrywer-name,canonical,
 heading,h1-entity,line-height,768,48px,lovable-measured,uitdaging-enkel uitdaging-title; skrywer skrywer-name,canonical,
 heading,h1-entity,line-height,1440,48px,lovable-measured,uitdaging-enkel uitdaging-title; skrywer skrywer-name,canonical,
-heading,h1-hero,font-size,390,30px,lovable-measured,tuisblad hero-h1,needs-ruling,HR-3: home hero scale vs gemeenskap landing hero scale
-heading,h1-hero,font-size,768,36px,lovable-measured,tuisblad hero-h1,needs-ruling,HR-3: home hero scale vs gemeenskap landing hero scale
-heading,h1-hero,font-size,1440,48px,lovable-measured,tuisblad hero-h1,needs-ruling,HR-3: home hero scale vs gemeenskap landing hero scale
-heading,h1-hero,line-height,390,37.5px,lovable-measured,tuisblad hero-h1,needs-ruling,HR-3
-heading,h1-hero,line-height,768,40px,lovable-measured,tuisblad hero-h1,needs-ruling,HR-3
-heading,h1-hero,line-height,1440,48px,lovable-measured,tuisblad hero-h1,needs-ruling,HR-3
-heading,h1-hero-landing,font-size,390,36px,lovable-measured,gemeenskap gemeenskap-hero-h1,needs-ruling,HR-3
-heading,h1-hero-landing,font-size,768,60px,lovable-measured,gemeenskap gemeenskap-hero-h1,needs-ruling,HR-3
-heading,h1-hero-landing,font-size,1440,60px,lovable-measured,gemeenskap gemeenskap-hero-h1,needs-ruling,HR-3
-heading,h1-hero-landing,line-height,390,39.6px,lovable-measured,gemeenskap gemeenskap-hero-h1,needs-ruling,HR-3 (leading-[1.1] at 390)
-heading,h1-hero-landing,line-height,768,60px,lovable-measured,gemeenskap gemeenskap-hero-h1,needs-ruling,HR-3 (leading-[1.1] at 390)
-heading,h1-hero-landing,line-height,1440,60px,lovable-measured,gemeenskap gemeenskap-hero-h1,needs-ruling,HR-3 (leading-[1.1] at 390)
+heading,h1-hero,font-size,390,30px,owner-ruling,stage-2-rulings.md HR-3,canonical,HR-3: home hero and community hero are different things; keep both; was lovable-measured: tuisblad hero-h1
+heading,h1-hero,font-size,768,36px,owner-ruling,stage-2-rulings.md HR-3,canonical,HR-3: home hero and community hero are different things; keep both; was lovable-measured: tuisblad hero-h1
+heading,h1-hero,font-size,1440,48px,owner-ruling,stage-2-rulings.md HR-3,canonical,HR-3: home hero and community hero are different things; keep both; was lovable-measured: tuisblad hero-h1
+heading,h1-hero,line-height,390,37.5px,owner-ruling,stage-2-rulings.md HR-3,canonical,HR-3: home hero and community hero are different things; keep both; was lovable-measured: tuisblad hero-h1
+heading,h1-hero,line-height,768,40px,owner-ruling,stage-2-rulings.md HR-3,canonical,HR-3: home hero and community hero are different things; keep both; was lovable-measured: tuisblad hero-h1
+heading,h1-hero,line-height,1440,48px,owner-ruling,stage-2-rulings.md HR-3,canonical,HR-3: home hero and community hero are different things; keep both; was lovable-measured: tuisblad hero-h1
+heading,h1-hero-landing,font-size,390,36px,owner-ruling,stage-2-rulings.md HR-3,canonical,HR-3: home hero and community hero are different things; keep both; was lovable-measured: gemeenskap gemeenskap-hero-h1
+heading,h1-hero-landing,font-size,768,60px,owner-ruling,stage-2-rulings.md HR-3,canonical,HR-3: home hero and community hero are different things; keep both; was lovable-measured: gemeenskap gemeenskap-hero-h1
+heading,h1-hero-landing,font-size,1440,60px,owner-ruling,stage-2-rulings.md HR-3,canonical,HR-3: home hero and community hero are different things; keep both; was lovable-measured: gemeenskap gemeenskap-hero-h1
+heading,h1-hero-landing,line-height,390,39.6px,owner-ruling,stage-2-rulings.md HR-3,canonical,HR-3: home hero and community hero are different things; keep both; was lovable-measured: gemeenskap gemeenskap-hero-h1
+heading,h1-hero-landing,line-height,768,60px,owner-ruling,stage-2-rulings.md HR-3,canonical,HR-3: home hero and community hero are different things; keep both; was lovable-measured: gemeenskap gemeenskap-hero-h1
+heading,h1-hero-landing,line-height,1440,60px,owner-ruling,stage-2-rulings.md HR-3,canonical,HR-3: home hero and community hero are different things; keep both; was lovable-measured: gemeenskap gemeenskap-hero-h1
 heading,h1-reading,font-size,390,30px,lovable-measured,lees-storie storie-title,canonical,
 heading,h1-reading,font-size,768,36px,lovable-measured,lees-storie storie-title,canonical,
 heading,h1-reading,font-size,1440,48px,lovable-measured,lees-storie storie-title,canonical,
@@ -48,24 +48,25 @@ heading,h2-section,font-size,1440,36px,lovable-measured,"8 ids / 4 pages: tuisbl
 heading,h2-section,line-height,390,36px,lovable-measured,same 8 ids,canonical,
 heading,h2-section,line-height,768,40px,lovable-measured,same 8 ids,canonical,
 heading,h2-section,line-height,1440,40px,lovable-measured,same 8 ids,canonical,
-heading,h2-section-regular,font-weight,all,400,lovable-measured,"skrywer werk-title, cta-title; biblioteek library-cta-h2; my-profiel profiel-identity-name",needs-ruling,"HR-1: same size/line-height as h2-section, weight 400"
+heading,h2-section-regular,font-weight,all,600,owner-ruling,stage-2-rulings.md HR-1,canonical,"HR-1: heading weight 600 site-wide; this variant collapses into its parent role; was lovable-measured: skrywer werk-title, cta-title; biblioteek library-cta-h2; my-profiel profiel-identity-name"
 heading,h2-sub,font-size,390,24px,lovable-measured,tuisblad+uitdagings challenge-card-title; tuisblad+oor-ink sponsors-h2; uitdaging-enkel uitdaging-prompt-h2,canonical,
 heading,h2-sub,font-size,768,30px,lovable-measured,tuisblad+uitdagings challenge-card-title; tuisblad+oor-ink sponsors-h2; uitdaging-enkel uitdaging-prompt-h2,canonical,
 heading,h2-sub,font-size,1440,30px,lovable-measured,tuisblad+uitdagings challenge-card-title; tuisblad+oor-ink sponsors-h2; uitdaging-enkel uitdaging-prompt-h2,canonical,
 heading,h2-sub,line-height,390,32px,lovable-measured,same 5 instances,canonical,
 heading,h2-sub,line-height,768,36px,lovable-measured,same 5 instances,canonical,
 heading,h2-sub,line-height,1440,36px,lovable-measured,same 5 instances,canonical,
-heading,h2-sub-regular,font-weight,all,400,lovable-measured,skrywer skrywer-oor-title; biblioteek library-shelf-h2,needs-ruling,"HR-1: same size as h2-sub, weight 400"
+heading,h2-sub-regular,font-weight,all,600,owner-ruling,stage-2-rulings.md HR-1,canonical,HR-1: heading weight 600 site-wide; this variant collapses into its parent role; was lovable-measured: skrywer skrywer-oor-title; biblioteek library-shelf-h2
 heading,h2-block,font-size,all,24px,lovable-measured,"tuisblad winner-title, featured-lead-title; gemeenskap card-writers-h2; lees-storie+lees-gedig reading-responses-h2; wagwoord-herstel+terugstel auth-heading",canonical,
 heading,h2-block,line-height,all,32px,lovable-measured,same 7 instances,canonical,INK renders xxl fluid 20.27/21.71/24 at 390/768/1440: fluid preset is off-scale
-heading,h2-block-regular,font-weight,all,400,lovable-measured,"my-profiel profiel-{activity,following,notif,posts,reading}-title (@1440 only)",needs-ruling,HR-1
-heading,h2-on-dark,font-size,390,30px,lovable-measured,tuisblad cta-h2 (36@768); gemeenskap gemeenskap-cta-h2 (48@768),needs-ruling,HR-4: two scales
-heading,h2-on-dark,font-size,768,36px | 48px,lovable-measured,tuisblad cta-h2 (36@768); gemeenskap gemeenskap-cta-h2 (48@768),needs-ruling,HR-4: two scales
-heading,h2-on-dark,font-size,1440,48px,lovable-measured,tuisblad cta-h2 (36@768); gemeenskap gemeenskap-cta-h2 (48@768),needs-ruling,HR-4: two scales
-heading,h2-on-dark,line-height,390,36px,lovable-measured,tuisblad cta-h2; gemeenskap gemeenskap-cta-h2,needs-ruling,HR-4
-heading,h2-on-dark,line-height,768,40px | 48px,lovable-measured,tuisblad cta-h2; gemeenskap gemeenskap-cta-h2,needs-ruling,HR-4
-heading,h2-on-dark,line-height,1440,48px,lovable-measured,tuisblad cta-h2; gemeenskap gemeenskap-cta-h2,needs-ruling,HR-4
-heading,h2-on-dark,color,all,"rgb(255, 255, 255) | rgb(250, 248, 245)",lovable-measured,"tuisblad cta-h2 (white, on terracotta gradient); gemeenskap gemeenskap-cta-h2 (cream, on ink band)",needs-ruling,"HR-4: may be legitimately surface-dependent (primary-foreground vs background); INK uses surface-alt rgb(253,252,250) for both"
+heading,h2-block-regular,font-weight,all,600,owner-ruling,stage-2-rulings.md HR-1,canonical,"HR-1: heading weight 600 site-wide; this variant collapses into its parent role; was lovable-measured: my-profiel profiel-{activity,following,notif,posts,reading}-title (@1440 only)"
+heading,h2-on-dark,font-size,390,30px,owner-ruling,stage-2-rulings.md HR-4,canonical,HR-4: CTA-band heading 30 / 36 / 48px (re-measured tuisblad cta-h2 stage-2 close capture); was lovable-measured: tuisblad cta-h2 (36@768); gemeenskap gemeenskap-cta-h2 (48@768)
+heading,h2-on-dark,font-size,768,36px,owner-ruling,stage-2-rulings.md HR-4,canonical,HR-4: CTA-band heading 30 / 36 / 48px (re-measured tuisblad cta-h2 stage-2 close capture); was lovable-measured: tuisblad cta-h2 (36@768); gemeenskap gemeenskap-cta-h2 (48@768)
+heading,h2-on-dark,font-size,1440,48px,owner-ruling,stage-2-rulings.md HR-4,canonical,HR-4: CTA-band heading 30 / 36 / 48px (re-measured tuisblad cta-h2 stage-2 close capture); was lovable-measured: tuisblad cta-h2 (36@768); gemeenskap gemeenskap-cta-h2 (48@768)
+heading,h2-on-dark,line-height,390,36px,owner-ruling,stage-2-rulings.md HR-4,canonical,HR-4: text-3xl/4xl/5xl pairs (re-measured tuisblad cta-h2 stage-2 close capture); was lovable-measured: tuisblad cta-h2; gemeenskap gemeenskap-cta-h2
+heading,h2-on-dark,line-height,768,40px,owner-ruling,stage-2-rulings.md HR-4,canonical,HR-4: text-3xl/4xl/5xl pairs (re-measured tuisblad cta-h2 stage-2 close capture); was lovable-measured: tuisblad cta-h2; gemeenskap gemeenskap-cta-h2
+heading,h2-on-dark,line-height,1440,48px,owner-ruling,stage-2-rulings.md HR-4,canonical,HR-4: text-3xl/4xl/5xl pairs (re-measured tuisblad cta-h2 stage-2 close capture); was lovable-measured: tuisblad cta-h2; gemeenskap gemeenskap-cta-h2
+heading,h2-on-dark,color (on brand band),all,"rgb(255, 255, 255)",owner-ruling,stage-2-rulings.md HR-4,canonical,"HR-4: white on the brand (terracotta) band; was lovable-measured: tuisblad cta-h2 (white, on terracotta gradient); gemeenskap gemeenskap-cta-h2 (cream, on ink band)"
+heading,h2-on-dark,color (on ink band),all,"rgb(250, 248, 245)",owner-ruling,stage-2-rulings.md HR-4,canonical,HR-4: cream on the dark (ink) band; lovable-measured gemeenskap gemeenskap-cta-h2
 heading,h3-spotlight,font-size,390,20px,lovable-measured,tuisblad hero-spotlight-title,canonical,
 heading,h3-spotlight,font-size,768,24px,lovable-measured,tuisblad hero-spotlight-title,canonical,
 heading,h3-spotlight,font-size,1440,24px,lovable-measured,tuisblad hero-spotlight-title,canonical,
@@ -75,12 +76,12 @@ heading,h3-spotlight,line-height,1440,32px,lovable-measured,tuisblad hero-spotli
 heading,h3,font-size,all,20px,lovable-measured,"gemeenskap hiw-col-h3, principle-title; skryf type-card-label; uitdaging-enkel devices-h3; lees-storie+lees-gedig author-name",canonical,
 heading,h3,line-height,all,28px,lovable-measured,same 6 ids,canonical,INK renders 24px (1.2) everywhere except skryf (30px)
 heading,h3-card,font-size,all,20px,lovable-measured,tuisblad featured-card-title; uitdaging-enkel uitdaging-entry-title,canonical,
-heading,h3-card,line-height,all,28px | 27.5px,lovable-measured,"tuisblad featured-card-title (28) vs ontdek stories-card-title, skrywer workcard-title, biblioteek library-card-title (27.5, leading-snug)",needs-ruling,HR-2
-heading,h3-card,font-weight,all,600 | 400,lovable-measured,"tuisblad+uitdaging-enkel (600, 18 inst.) vs ontdek+skrywer+biblioteek (400, 24 inst.)",needs-ruling,"HR-2: one work-card title, two treatments"
-heading,h3-regular,font-weight,all,400,lovable-measured,"my-profiel profiel-{about,glance,recent,edit,membership-renew}-title",needs-ruling,"HR-1: h3 size, weight 400"
+heading,h3-card,line-height,all,27.5px,owner-ruling,stage-2-rulings.md HR-2,canonical,"HR-2: leading-snug, as on every weight-400 Lovable work-card title; was lovable-measured: tuisblad featured-card-title (28) vs ontdek stories-card-title, skrywer workcard-title, biblioteek library-card-title (27.5, leading-snug)"
+heading,h3-card,font-weight,all,400,owner-ruling,stage-2-rulings.md HR-2,canonical,"HR-2: work-card titles weight 400; was lovable-measured: tuisblad+uitdaging-enkel (600, 18 inst.) vs ontdek+skrywer+biblioteek (400, 24 inst.)"
+heading,h3-regular,font-weight,all,600,owner-ruling,stage-2-rulings.md HR-1,canonical,"HR-1: heading weight 600 site-wide; this variant collapses into its parent role; was lovable-measured: my-profiel profiel-{about,glance,recent,edit,membership-renew}-title"
 heading,h4,font-size,all,18px,lovable-measured,"uitdaging-enkel uitdaging-rules-h3, uitdaging-resource-title",canonical,INK has no paired instance (resources = disclosed SCOPE gap)
 heading,h4,line-height,all,28px,lovable-measured,same 2 ids,canonical,
-heading,h4-regular,font-weight,all,400,lovable-measured,my-profiel profiel-posts-card-title (@1440),needs-ruling,HR-1
+heading,h4-regular,font-weight,all,600,owner-ruling,stage-2-rulings.md HR-1,canonical,HR-1: heading weight 600 site-wide; this variant collapses into its parent role; was lovable-measured: my-profiel profiel-posts-card-title (@1440)
 heading,h5,font-size,all,16px,lovable-measured,tuisblad footer-col-heading; lees-storie highlights-panel h3,canonical,
 heading,h5,line-height,all,24px,lovable-measured,same,canonical,INK footer-col-heading 19.2px / 700 (theme.json + functions.php:1846 sets family only)
 heading,h5-list-item,font-weight,all,500,lovable-measured,gemeenskap gemeenskap-card-writers-item-title,canonical,size/line-height = h5
@@ -90,18 +91,18 @@ section-band,base,padding-right,all,0px,lovable-measured,as padding-left,canonic
 section-band,base,border-top-color,all,"rgb(231, 225, 218)",lovable-measured,all lovable band rows,canonical,"token border; INK #E8E4DC = rgb(232,228,220) is a token-value delta"
 section-band,base,border-top-left-radius,all,0px,lovable-measured,"all lovable bands (cta-band 24px is a panel, not a band)",canonical,
 section-band,base,background-color,all,"rgba(0, 0, 0, 0)",lovable-measured,17 content sections,canonical,default surface = transparent over page background
-section-band,base,padding-top,390,64px,most-used,content+tint+gradient bands: 64px modal at 768/1440 (11 of 25); 48px (10) narrowly over 64px (9) at 390,needs-ruling,"SB-1: Lovable uses 48 / 64 / 80 and responsive pairs (py-12 md:py-16, py-16 md:py-20, py-10 md:py-14, py-12 md:py-20)"
-section-band,base,padding-bottom,390,64px,most-used,as padding-top,needs-ruling,SB-1
-section-band,base,padding-top,768,64px,most-used,content+tint+gradient bands: 64px modal at 768/1440 (11 of 25); 48px (10) narrowly over 64px (9) at 390,needs-ruling,"SB-1: Lovable uses 48 / 64 / 80 and responsive pairs (py-12 md:py-16, py-16 md:py-20, py-10 md:py-14, py-12 md:py-20)"
-section-band,base,padding-bottom,768,64px,most-used,as padding-top,needs-ruling,SB-1
-section-band,base,padding-top,1440,64px,most-used,content+tint+gradient bands: 64px modal at 768/1440 (11 of 25); 48px (10) narrowly over 64px (9) at 390,needs-ruling,"SB-1: Lovable uses 48 / 64 / 80 and responsive pairs (py-12 md:py-16, py-16 md:py-20, py-10 md:py-14, py-12 md:py-20)"
-section-band,base,padding-bottom,1440,64px,most-used,as padding-top,needs-ruling,SB-1
-section-band,sm,padding-top,all,48px,lovable-measured,"lees-storie+lees-gedig reading-responses, reading-body, reading-author-band, reading-header",needs-ruling,SB-1 (reading pages use 48 throughout)
-section-band,sm,padding-bottom,all,48px,lovable-measured,same,needs-ruling,SB-1
-section-band,lg,padding-top,all,80px,lovable-measured,"gemeenskap value, spotlight, principles; tuisblad cta; tuisblad hero@768+",needs-ruling,SB-1
-section-band,lg,padding-bottom,all,80px,lovable-measured,same,needs-ruling,SB-1; tuisblad cta bottom 64 in INK is DIVERGENCE (accepted) cta-band.php:21
-section-band,tint-cream,background-color,all,"rgba(250, 248, 245, 0.4)",lovable-measured,"gemeenskap-hero, profiel-identity, ontdek intro, library-intro, gemeenskap stats+hiw, skrywer-stats, library-cta",needs-ruling,SB-3: skrywer-werk uses cream/30 (1 of 9); recommend 0.4. Token background/surface (INK surface #F8F6F2 is a token-value delta)
-section-band,tint-cream,padding-top,all,unmeasured (inner container),lovable-measured,Lovable puts py on the inner .container for every cream band (outer py = 0),needs-ruling,capture the inner container before Stage 3; do not compare INK outer padding to Lovable outer 0
+section-band,base,padding-top,390,64px,owner-ruling,stage-2-rulings.md SB-1,canonical,"SB-1: keep Lovable's per-section padding (48 / 64 / 80 and responsive pairs, read per section from its Lovable source); 64px is only the default for a section with no Lovable reference; was most-used: content+tint+gradient bands: 64px modal at 768/1440 (11 of 25); 48px (10) narrowly over 64px (9) at 390"
+section-band,base,padding-bottom,390,64px,owner-ruling,stage-2-rulings.md SB-1,canonical,"SB-1: keep Lovable's per-section padding (48 / 64 / 80 and responsive pairs, read per section from its Lovable source); 64px is only the default for a section with no Lovable reference; was most-used: as padding-top"
+section-band,base,padding-top,768,64px,owner-ruling,stage-2-rulings.md SB-1,canonical,"SB-1: keep Lovable's per-section padding (48 / 64 / 80 and responsive pairs, read per section from its Lovable source); 64px is only the default for a section with no Lovable reference; was most-used: content+tint+gradient bands: 64px modal at 768/1440 (11 of 25); 48px (10) narrowly over 64px (9) at 390"
+section-band,base,padding-bottom,768,64px,owner-ruling,stage-2-rulings.md SB-1,canonical,"SB-1: keep Lovable's per-section padding (48 / 64 / 80 and responsive pairs, read per section from its Lovable source); 64px is only the default for a section with no Lovable reference; was most-used: as padding-top"
+section-band,base,padding-top,1440,64px,owner-ruling,stage-2-rulings.md SB-1,canonical,"SB-1: keep Lovable's per-section padding (48 / 64 / 80 and responsive pairs, read per section from its Lovable source); 64px is only the default for a section with no Lovable reference; was most-used: content+tint+gradient bands: 64px modal at 768/1440 (11 of 25); 48px (10) narrowly over 64px (9) at 390"
+section-band,base,padding-bottom,1440,64px,owner-ruling,stage-2-rulings.md SB-1,canonical,"SB-1: keep Lovable's per-section padding (48 / 64 / 80 and responsive pairs, read per section from its Lovable source); 64px is only the default for a section with no Lovable reference; was most-used: as padding-top"
+section-band,sm,padding-top,all,48px,owner-ruling,stage-2-rulings.md SB-1,canonical,"SB-1: per-section Lovable padding; reading pages are deliberately tighter (sm); was lovable-measured: lees-storie+lees-gedig reading-responses, reading-body, reading-author-band, reading-header"
+section-band,sm,padding-bottom,all,48px,owner-ruling,stage-2-rulings.md SB-1,canonical,SB-1: per-section Lovable padding; reading pages are deliberately tighter (sm); was lovable-measured: same
+section-band,lg,padding-top,all,80px,owner-ruling,stage-2-rulings.md SB-1,canonical,"SB-1: per-section Lovable padding; was lovable-measured: gemeenskap value, spotlight, principles; tuisblad cta; tuisblad hero@768+"
+section-band,lg,padding-bottom,all,80px,owner-ruling,stage-2-rulings.md SB-1,canonical,SB-1: per-section Lovable padding; was lovable-measured: same
+section-band,tint-cream,background-color,all,"rgba(240, 235, 230, 0.3)",owner-ruling,stage-2-rulings.md SB-3,canonical,"SB-3: bg-secondary/30 on every cream band incl. skrywer-werk; computed from the Lovable token (secondary hsl(35 25% 92%) at 30%), measured on tuisblad challenge (ChallengeSection.tsx:6) in the stage-2 close capture; same value as tint-stone; was lovable-measured: gemeenskap-hero, profiel-identity, ontdek intro, library-intro, gemeenskap stats+hiw, skrywer-stats, library-cta"
+section-band,tint-cream,padding-top,all,per section (inner .container py),owner-ruling,stage-2-rulings.md SB-1,canonical,"SB-1: Lovable puts py on the inner .container (outer py 0); take each band's py from its Lovable section, e.g. skrywer-werk-container py-12 md:py-16 (Writer.tsx:318); was lovable-measured: Lovable puts py on the inner .container for every cream band (outer py = 0)"
 section-band,intro,border-top-width,all,0px,lovable-measured,"gemeenskap-hero, profiel-identity, ontdek intro, library-intro",canonical,intro = tint-cream + bottom rule (class border-b); border-bottom is NOT in the capture property set - verify by capture
 section-band,strip,border-top-width,all,1px,lovable-measured,"gemeenskap stats, hiw; skrywer stats; library-cta; skrywer-werk",canonical,strip = tint-cream + border-y/border-t
 section-band,tint-stone,background-color,all,"rgba(240, 235, 230, 0.3)",lovable-measured,tuisblad challenge; uitdaging-enkel resources; lees-storie+lees-gedig reading-author-band; lees-storie reading-header,canonical,token secondary/30 (INK secondary #EDE9E0 token-value delta). INK lees-gedig reading-header uses surface/50 instead (reading-gedig.php:85)
@@ -109,7 +110,7 @@ section-band,tint-stone,border-top-width,all,1px | 0px,lovable-measured,"author-
 section-band,tint-stone-soft,background-color,all,"rgba(240, 235, 230, 0.2)",lovable-measured,tuisblad sponsors; oor-ink sponsors,canonical,INK oor-ink sponsors band renders transparent
 section-band,dark,background-color,all,"rgb(24, 29, 37)",lovable-measured,gemeenskap gemeenskap-cta,canonical,token ink-text as surface; pair with heading h2-on-dark
 section-band,dark,border-top-width,all,1px,lovable-measured,gemeenskap gemeenskap-cta,canonical,INK renders 0
-section-band,gradient,background-image,all,"linear-gradient(to bottom right, primary/10, background, accent/10)",lovable-measured,uitdaging-enkel uitdaging-cta (class bg-gradient-to-br from-terracotta/10 via-background to-sage/10),needs-ruling,"background-image is not in the capture property set (computed bg-color transparent): value from class, needs a capture to canonise (R4)"
+section-band,gradient,background-image,all,"linear-gradient(to right bottom, rgba(236, 59, 19, 0.1), rgb(250, 248, 245), rgba(82, 122, 102, 0.1))",lovable-measured,uitdaging-enkel uitdaging-cta @390|768|1440 (stage-2 close capture),canonical,computed value; capture.mjs has recorded background-image since 86ce11e (the register extract dropped it). Class bg-gradient-to-br from-terracotta/10 via-background to-sage/10
 section-band,gradient,border-top-width,all,1px,lovable-measured,uitdaging-enkel uitdaging-cta,canonical,
 section-band,gradient,padding-top,all,64px,lovable-measured,uitdaging-enkel uitdaging-cta,canonical,
 section-band,gradient,padding-bottom,all,64px,lovable-measured,uitdaging-enkel uitdaging-cta,canonical,
@@ -123,9 +124,9 @@ eyebrow,base,letter-spacing,all,0.05em,lovable-measured,"tuisblad featured-eyebr
 eyebrow,base,text-transform,all,uppercase,lovable-measured,"tuisblad featured-eyebrow; uitdaging-enkel resources-eyebrow, entries-eyebrow (+ sponsors-eyebrow x2)",canonical,
 eyebrow,base,color,all,"rgb(236, 59, 19)",lovable-measured,"tuisblad featured-eyebrow; uitdaging-enkel resources-eyebrow, entries-eyebrow (+ sponsors-eyebrow x2)",canonical,token primary
 eyebrow,accent,color,all,"rgb(82, 122, 102)",lovable-measured,tuisblad sponsors-eyebrow; oor-ink sponsors-eyebrow,canonical,token accent (sage)
-eyebrow,tracked,font-size,all,12px,lovable-measured,"gemeenskap hero-eyebrow, spotlight-eyebrow, principles-eyebrow",needs-ruling,EB-1: a second section-eyebrow recipe (xs / 0.2em) vs base (sm / 0.05em); INK copies it to oor-ink + kontak hero eyebrows
-eyebrow,tracked,line-height,all,16px,lovable-measured,"gemeenskap hero-eyebrow, spotlight-eyebrow, principles-eyebrow",needs-ruling,EB-1: a second section-eyebrow recipe (xs / 0.2em) vs base (sm / 0.05em); INK copies it to oor-ink + kontak hero eyebrows
-eyebrow,tracked,letter-spacing,all,0.2em,lovable-measured,"gemeenskap hero-eyebrow, spotlight-eyebrow, principles-eyebrow",needs-ruling,EB-1: a second section-eyebrow recipe (xs / 0.2em) vs base (sm / 0.05em); INK copies it to oor-ink + kontak hero eyebrows
+eyebrow,tracked,font-size,all,12px,owner-ruling,stage-2-rulings.md EB-1,canonical,"EB-1: keep both eyebrows: centred tracked (xs / 0.2em) and left-aligned base (sm / 0.05em) serve different purposes; was lovable-measured: gemeenskap hero-eyebrow, spotlight-eyebrow, principles-eyebrow"
+eyebrow,tracked,line-height,all,16px,owner-ruling,stage-2-rulings.md EB-1,canonical,"EB-1: keep both eyebrows: centred tracked (xs / 0.2em) and left-aligned base (sm / 0.05em) serve different purposes; was lovable-measured: gemeenskap hero-eyebrow, spotlight-eyebrow, principles-eyebrow"
+eyebrow,tracked,letter-spacing,all,0.2em,owner-ruling,stage-2-rulings.md EB-1,canonical,"EB-1: keep both eyebrows: centred tracked (xs / 0.2em) and left-aligned base (sm / 0.05em) serve different purposes; was lovable-measured: gemeenskap hero-eyebrow, spotlight-eyebrow, principles-eyebrow"
 eyebrow,muted,font-size,all,12px,lovable-measured,my-profiel profiel-identity-eyebrow; gemeenskap spotlight-card-label,canonical,
 eyebrow,muted,line-height,all,16px,lovable-measured,my-profiel profiel-identity-eyebrow; gemeenskap spotlight-card-label,canonical,
 eyebrow,muted,font-weight,all,400,lovable-measured,my-profiel profiel-identity-eyebrow; gemeenskap spotlight-card-label,canonical,
@@ -150,8 +151,9 @@ eyebrow,stat-label,font-weight,all,400,lovable-measured,"my-profiel glance-stat-
 eyebrow,stat-label,letter-spacing,all,0.025em,lovable-measured,"my-profiel glance-stat-label; uitdaging-enkel prize-label; skrywer stat-{rating,works,followers,likes}-label (6 of 8)",canonical,
 eyebrow,stat-label,text-transform,all,uppercase,lovable-measured,"my-profiel glance-stat-label; uitdaging-enkel prize-label; skrywer stat-{rating,works,followers,likes}-label (6 of 8)",canonical,
 eyebrow,stat-label,color,all,"rgb(103, 111, 126)",lovable-measured,"my-profiel glance-stat-label; uitdaging-enkel prize-label; skrywer stat-{rating,works,followers,likes}-label (6 of 8)",canonical,
-eyebrow,stat-label-lg,font-size,all,14px,lovable-measured,"gemeenskap gemeenskap-stat-label (Statistieke section, MISSING on INK)",needs-ruling,"EB-2: sm / 0.05em stat label vs xs / 0.025em; plus skrywer-prestasies-title (Lora, 0.05em) - INK renders it as an h2 heading"
-eyebrow,stat-label-lg,letter-spacing,all,0.05em,lovable-measured,gemeenskap gemeenskap-stat-label,needs-ruling,EB-2
+eyebrow,stat-label-lg,font-size,all,12px,owner-ruling,stage-2-rulings.md EB-2,canonical,"EB-2: stat labels 12px uppercase; collapses into stat-label; was lovable-measured: gemeenskap gemeenskap-stat-label (Statistieke section, MISSING on INK)"
+eyebrow,stat-label-lg,letter-spacing,all,0.025em,owner-ruling,stage-2-rulings.md EB-2,canonical,EB-2: collapses into stat-label (tracking follows stat-label); was lovable-measured: gemeenskap gemeenskap-stat-label
+eyebrow,stat-label-lg,text-transform,all,uppercase,owner-ruling,stage-2-rulings.md EB-2,canonical,EB-2: stat labels uppercase
 card,base,box-sizing,all,border-box,lovable-measured,"my-profiel:profiel-about-card; skrywer:skrywer-workcard; ontdek:stories-card; biblioteek:library-card (Lovable L8, 36 inst)",canonical,
 card,base,background-color,all,"rgb(253, 253, 252)",lovable-measured,"my-profiel:profiel-about-card; skrywer:skrywer-workcard; ontdek:stories-card; biblioteek:library-card (Lovable L8, 36 inst)",canonical,token card -> surface-alt
 card,base,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,"my-profiel:profiel-about-card; skrywer:skrywer-workcard; ontdek:stories-card; biblioteek:library-card (Lovable L8, 36 inst)",canonical,
@@ -262,11 +264,11 @@ pill,tint,font-weight,all,500,lovable-measured,lees-storie:storie-badge; lees-ge
 pill,tint,gap,all,6px,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
 pill,tint,color,all,"rgb(236, 59, 19)",lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,token primary; text = tone
 pill,tint,height,all,28px,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
-pill,tint,background-color:accent,all,"rgba(82, 122, 102, 0.15)",lovable-measured,lees-gedig:gedig-badge,needs-ruling,accent tint is 15% here and on skrywer-workcard-pinned but 10% on reading-response-badge and uitdaging-device-chip - Lovable conflicts with itself
+pill,tint,background-color:accent,all,"rgba(82, 122, 102, 0.1)",owner-ruling,stage-2-rulings.md NR-3,canonical,NR-3: sage tints behind badges and chips are 10%; was lovable-measured: lees-gedig:gedig-badge
 pill,tint-sm,box-sizing,all,border-box,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
 pill,tint-sm,padding,all,2px 10px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
 pill,tint-sm,border,all,0,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
-pill,tint-sm,background-color,all,"rgba(82, 122, 102, 0.15)",lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,accent at 15%
+pill,tint-sm,background-color,all,"rgba(82, 122, 102, 0.1)",owner-ruling,stage-2-rulings.md NR-3,canonical,NR-3: sage tints behind badges and chips are 10%; was lovable-measured: skrywer:skrywer-workcard-pinned (Lovable L7)
 pill,tint-sm,border-radius,all,9999px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
 pill,tint-sm,font-size,all,12px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
 pill,tint-sm,line-height,all,16px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
@@ -287,7 +289,7 @@ pill,hint,box-sizing,all,border-box,lovable-measured,lees-storie:storie-hint; le
 pill,hint,display,all,inline-flex,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
 pill,hint,padding,all,8px 16px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
 pill,hint,border,all,0,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
-pill,hint,background-color,all,"rgba(255, 234, 128, 0.2)",lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,"storie: highlight at 20% (text ink); gedig: accent rgba(82,122,102,0.15) (text accent)"
+pill,hint,background-color,all,"rgba(255, 234, 128, 0.2)",lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,"storie: highlight at 20% (text ink); gedig: accent rgba(82,122,102,0.1) per NR-3 (text accent)"
 pill,hint,border-radius,all,9999px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
 pill,hint,font-size,all,14px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
 pill,hint,line-height,all,20px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
@@ -359,7 +361,7 @@ meta-item,sm,font-size,all,14px,lovable-measured,"uitdaging-enkel:uitdaging-meta
 meta-item,sm,line-height,all,20px,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
 meta-item,sm,font-weight,all,400,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
 meta-item,sm,icon-size,all,16px,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
-meta-item,sm,gap,all,6px,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",needs-ruling,6px on 7 Lovable instances; featured-card-stat/featured-lead-stat use 4px (gap-1). Icon is 14px on skrywer-meta-joined
+meta-item,sm,gap,all,6px,owner-ruling,stage-2-rulings.md NR-4,canonical,"NR-4: icon-to-text gap in small meta items is 6px; was lovable-measured: uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)"
 meta-item,md,color,all,"rgb(103, 111, 126)",lovable-measured,lees-storie:reading-byline-readtime (Lovable L5),canonical,token muted-foreground -> muted-text
 meta-item,md,font-size,all,16px,lovable-measured,lees-storie:reading-byline-readtime (Lovable L5),canonical,
 meta-item,md,line-height,all,24px,lovable-measured,lees-storie:reading-byline-readtime (Lovable L5),canonical,
@@ -432,13 +434,26 @@ icon-tile,circle-lg,border-radius,all,9999px,lovable-measured,skryf:skryf-type-c
 icon-tile,circle-lg,background-color,all,"rgba(236, 59, 19, 0.1)",lovable-measured,skryf:skryf-type-card-icon (Lovable L3/L6/L7),canonical,"per type: primary / accent rgba(82,122,102,0.1) / ink rgba(24,29,37,0.1)"
 icon-tile,circle-lg,size,all,48px,lovable-measured,skryf:skryf-type-card-icon (Lovable L3/L6/L7),canonical,
 icon-tile,circle-lg,icon-size,all,20px,lovable-measured,skryf:skryf-type-card-icon (Lovable L3/L6/L7),canonical,
-tier-label,base,color,all,"rgb(82, 122, 102)",most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"token accent (sage); no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
-tier-label,base,font-family,all,Inter,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
-tier-label,base,font-size,all,12px,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
-tier-label,base,line-height,all,18px,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
-tier-label,base,font-weight,all,400,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
-tier-label,base,text-transform,all,uppercase,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
-tier-label,base,letter-spacing,all,0.96px (0.08em),most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
+tier-label,base,color,all,tier tone (see brons / silwer / goud),owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: tier labels use their tier colours; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,base,font-family,all,Inter,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: base typography kept (INK most-used); no Lovable reference; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,base,font-size,all,12px,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: base typography kept (INK most-used); no Lovable reference; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,base,line-height,all,18px,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: base typography kept (INK most-used); no Lovable reference; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,base,font-weight,all,400,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: base typography kept (INK most-used); no Lovable reference; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,base,text-transform,all,uppercase,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: base typography kept (INK most-used); no Lovable reference; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,base,letter-spacing,all,0.96px (0.08em),owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: base typography kept (INK most-used); no Lovable reference; was most-used: ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)"
+tier-label,chip,padding,all,2px 10px,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: PROPOSED: the 12px pill geometry (pill tint-sm, skrywer-workcard-pinned); no Lovable tier label exists"
+tier-label,chip,border-radius,all,9999px,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: sage-chip pattern (Challenge.tsx:214, rounded-full)"
+tier-label,chip,border,all,1px solid <tier> at 20%,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: darker border, as the sage chip (border-sage/20, Challenge.tsx:214)"
+tier-label,chip,background-color,all,<tier> at 10%,owner-ruling,stage-2-rulings.md NR-1,canonical,"NR-1: lighter background, as the sage chip (bg-sage/10, Challenge.tsx:214; NR-3)"
+tier-label,brons,color,all,"rgb(166, 117, 76)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: INK theme token brons #A6754C
+tier-label,brons,background-color,all,"rgba(166, 117, 76, 0.1)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: token brons at 10%
+tier-label,brons,border-color,all,"rgba(166, 117, 76, 0.2)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: token brons at 20%
+tier-label,silwer,color,all,"rgb(154, 163, 173)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: INK theme token silwer #9AA3AD; FLAG: tone text on its 10% tint is below WCAG AA at 12px (Stage 3 may need a darker text shade)
+tier-label,silwer,background-color,all,"rgba(154, 163, 173, 0.1)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: token silwer at 10%
+tier-label,silwer,border-color,all,"rgba(154, 163, 173, 0.2)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: token silwer at 20%
+tier-label,goud,color,all,"rgb(201, 184, 138)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: INK theme token goud #C9B88A; FLAG: tone text on its 10% tint is below WCAG AA at 12px (Stage 3 may need a darker text shade)
+tier-label,goud,background-color,all,"rgba(201, 184, 138, 0.1)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: token goud at 10%
+tier-label,goud,border-color,all,"rgba(201, 184, 138, 0.2)",owner-ruling,stage-2-rulings.md NR-1,canonical,NR-1: token goud at 20%
 meta-row,base,display,all,flex,lovable-measured,"tuisblad:challenge-card-meta,featured-card-stats,featured-lead-stats (Lovable L1)",canonical,
 meta-row,base,flex-wrap,all,wrap,lovable-measured,"tuisblad:challenge-card-meta,featured-card-stats,featured-lead-stats (Lovable L1)",canonical,
 meta-row,base,gap,all,16px,lovable-measured,"tuisblad:challenge-card-meta,featured-card-stats,featured-lead-stats (Lovable L1)",canonical,INK challenge-card-meta uses 24px
@@ -480,13 +495,13 @@ count-chip,highlight,border-radius,all,9999px,lovable-measured,"lees-storie:high
 status-dot,base,size,all,8px,lovable-measured,"my-profiel:profiel-recent-dot,profiel-notif-dot,profiel-membership-status-dot (Lovable L1/L2)",canonical,INK ::before on onlangs is 6px (profiel.css:352)
 status-dot,base,border-radius,all,9999px,lovable-measured,"my-profiel:profiel-recent-dot,profiel-notif-dot,profiel-membership-status-dot (Lovable L1/L2)",canonical,
 status-dot,base,background-color,all,"rgb(236, 59, 19)",lovable-measured,"my-profiel:profiel-recent-dot,profiel-notif-dot,profiel-membership-status-dot (Lovable L1/L2)",canonical,"token primary; unread = primary; active = accent rgb(82, 122, 102)"
-notice,base,padding,all,12px 16px,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
-notice,base,border-radius,all,6px,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
-notice,base,border,all,1px solid <tone>,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
-notice,base,background-color,all,<tone> at 10%,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
-notice,base,color,all,ink-text,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
-notice,base,font-size,all,14px,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
-notice,base,line-height,all,21px,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
+notice,base,padding,all,12px 16px,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
+notice,base,border-radius,all,6px,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
+notice,base,border,all,1px solid <tone>,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
+notice,base,background-color,all,<tone> at 10%,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
+notice,base,color,all,ink-text,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
+notice,base,font-size,all,14px,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
+notice,base,line-height,all,21px,owner-ruling,stage-2-rulings.md NR-2,canonical,"NR-2: keep INK's notice styling as is (auth.css:152-170); the Afrikaans required-field message is a script fix, not CSS; was most-used: wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170"
 list-bullet,base,size,all,6px,lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,
 list-bullet,base,border-radius,all,9999px,lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,
 list-bullet,base,background-color,all,"rgb(236, 59, 19)",lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,token primary
@@ -510,6 +525,7 @@ button-size,base,font-weight,all,500,lovable-measured,all 51 Lovable <Button> in
 button-size,base,focus-visible,all,outline 2px solid primary; outline-offset 2px,block-style,functions.php:1500-1503 (ink-primary; same in ink-outline/ghost/sage/sage-outline),canonical,Lovable ring-2 ring-ring ring-offset-2 = same geometry; not captured (state)
 button-size,base,disabled,all,opacity 0.5; pointer-events none,block-style,functions.php:1504-1506,canonical,Lovable disabled:opacity-50 disabled:pointer-events-none; lees-storie:reading-response-submit renders disabled at rest
 button-size,base,transition,all,all 0.15s ease,block-style,functions.php:1495,canonical,
+button-size,base,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,"BTN-FONT: every button uses the serif: primary, outline, ghost, sage-outline, subtle, search and CTA. NOT filter-chip, tab, the bare Reply text button or the counted icon buttons (button-icon-label). Overrides the shadcn base's Inter"
 button-size,sm,height,all,36px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,
 button-size,sm,padding,all,0px 12px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,
 button-size,sm,font-size,all,14px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,
@@ -530,6 +546,11 @@ button-size,xl,padding,all,0px 40px,lovable-measured,tuisblad:cta-btn-primary; t
 button-size,xl,font-size,all,18px,lovable-measured,tuisblad:cta-btn-primary; tuisblad:cta-btn-secondary,canonical,
 button-size,xl,line-height,all,28px,lovable-measured,tuisblad:cta-btn-primary; tuisblad:cta-btn-secondary,canonical,INK inherits body 1.5 → 21px/27px on 14px/18px buttons
 button-size,xl,border-radius,all,8px,lovable-measured,tuisblad:cta-btn-primary; tuisblad:cta-btn-secondary,canonical,
+button-size,cta,recipe,all,button-size xl,owner-ruling,stage-2-rulings.md BTN-1,canonical,BTN-1: all CTA buttons use the xl size
+button-size,cta,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: measured tuisblad cta-btn-primary / cta-btn-secondary (stage-2 close capture); applies to every CTA button, incl. gemeenskap-cta-btn-* (Lovable renders Inter 16px, 44px there)"
+button-size,cta,font-size,all,18px,owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: measured tuisblad cta-btn-primary / cta-btn-secondary (stage-2 close capture); applies to every CTA button, incl. gemeenskap-cta-btn-* (Lovable renders Inter 16px, 44px there)"
+button-size,cta,line-height,all,28px,owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: measured tuisblad cta-btn-primary / cta-btn-secondary (stage-2 close capture); applies to every CTA button, incl. gemeenskap-cta-btn-* (Lovable renders Inter 16px, 44px there)"
+button-size,cta,height,all,48px,owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: measured tuisblad cta-btn-primary / cta-btn-secondary (stage-2 close capture); applies to every CTA button, incl. gemeenskap-cta-btn-* (Lovable renders Inter 16px, 44px there)"
 button-primary,base,size,all,button-size (default|sm|lg|xl),lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,inherits the shared base
 button-primary,base,background-color,all,"rgb(236, 59, 19)",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,token primary
 button-primary,base,color,all,"rgb(255, 255, 255)",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,"primary-foreground; INK surface-alt rgb(253, 252, 250); token-delta: see ruling TOKEN-1"
@@ -542,7 +563,8 @@ button-primary,on-dark,background-color,all,"rgb(255, 255, 255)",lovable-measure
 button-primary,on-dark,color,all,"rgb(236, 59, 19)",lovable-measured,tuisblad:cta-btn-primary,canonical,
 button-primary,on-dark,box-shadow,all,none,lovable-measured,tuisblad:cta-btn-primary,canonical,
 button-primary,on-dark,font-family,all,"Lora, Georgia, serif",lovable-measured,tuisblad:cta-btn-primary,canonical,
-button-primary,pill,border-radius,all,9999px,most-used,lidmaatskap:lidmaatskap-plan-btn; functions.php:1461-1470,needs-ruling,"Treatment C only (is-style-pill); conflicts with functions.php:1478 ""never a pill"" — ruling BTN-2"
+button-primary,pill,border-radius,all,6px,owner-ruling,stage-2-rulings.md BTN-2,canonical,BTN-2: no pill buttons (general rule); lidmaatskap-plan-btn takes the standard button radius; was most-used: lidmaatskap:lidmaatskap-plan-btn; functions.php:1461-1470
+button-primary,form-submit,recipe,all,button-primary base + button-size default; width 100%,owner-ruling,stage-2-rulings.md FORMS,canonical,"FORMS: the /auth submit recipe (meld-aan:auth-submit, Auth.tsx:96 variant literary w-full) for the contact form and any form without a Lovable equivalent"
 button-outline,base,size,all,button-size (default|lg),lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
 button-outline,base,background-color,all,transparent,lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
 button-outline,base,color,all,"rgb(236, 59, 19)",lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
@@ -553,18 +575,23 @@ button-outline,base,hover,all,"background primary; color rgb(255, 255, 255)",blo
 button-outline,neutral,background-color,all,"rgb(250, 248, 245)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,background; INK surface; token-delta: see ruling TOKEN-1
 button-outline,neutral,color,all,"rgb(24, 29, 37)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,foreground; INK ink-text; token-delta: see ruling TOKEN-1
 button-outline,neutral,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,input/border; token-delta: see ruling TOKEN-1
-button-outline,neutral,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,
+button-outline,neutral,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: Lovable renders Inter; was lovable-measured: gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple
 button-outline,neutral,box-shadow,all,none,lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,
-button-outline,neutral,hover,all,background accent; color accent-foreground,token,ink-lovable button.tsx:14 (class only; state not captured),needs-ruling,no registered block style and no measured hover — ruling BTN-3
-button-outline,gold,border-color,all,"rgba(232, 177, 48, 0.3)",lovable-measured,tuisblad:winner-btn,canonical,neutral + gold/30 border; hover bg gold/10 (class only)
-button-outline,gold,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,tuisblad:winner-btn,canonical,INK winner-btn renders Lora; transparent bg vs Lovable background
-button-outline,on-dark,background-color,all,"transparent | rgb(250, 248, 245)",lovable-measured,gemeenskap:gemeenskap-cta-btn-secondary vs tuisblad:cta-btn-secondary,needs-ruling,"the two Lovable references conflict (bg, font Inter vs Lora, text colour) — ruling BTN-1"
-button-outline,on-dark,border,all,"1px solid rgba(250, 248, 245, 0.3)",lovable-measured,gemeenskap:gemeenskap-cta-btn-secondary; tuisblad:cta-btn-secondary (white/0.3),needs-ruling,both Lovable = 1px at 30% alpha; INK tuisblad uses 2px solid surface-alt — ruling BTN-1
+button-outline,neutral,hover,all,"background rgb(82, 122, 102); color rgb(253, 253, 252)",owner-ruling,stage-2-rulings.md BTN-3,canonical,"BTN-3: Lovable's sage hover, measured on gemeenskap-hero-btn-secondary (stage-2 close one-off Playwright hover (tmp/stage2/close/hover*.mjs)); border unchanged rgb(231, 225, 218); was token: ink-lovable button.tsx:14 (class only; state not captured)"
+button-outline,gold,border-color,all,"rgba(232, 177, 48, 0.4)",owner-ruling,stage-2-rulings.md LEG-2,canonical,"LEG-2: border-gold/40, measured tuisblad winner-btn (stage-2 close capture) after the Lovable fix (ChallengeSection.tsx:83); was lovable-measured: tuisblad:winner-btn"
+button-outline,gold,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: measured tuisblad winner-btn (stage-2 close capture) after the Lovable fix; was lovable-measured: tuisblad:winner-btn
+button-outline,gold,hover,all,"background rgb(232, 177, 48); color rgb(24, 29, 37); border-color rgb(232, 177, 48)",owner-ruling,stage-2-rulings.md LEG-2,canonical,"LEG-2: filled hover (hover:bg-gold hover:text-ink hover:border-gold, ChallengeSection.tsx:83), measured (stage-2 close one-off Playwright hover (tmp/stage2/close/hover*.mjs))"
+button-outline,on-dark,background-color,all,transparent,owner-ruling,stage-2-rulings.md LEG-1,canonical,LEG-1: measured tuisblad cta-btn-secondary (stage-2 close capture) after the Lovable fix (CallToAction.tsx:35); also applies to gemeenskap-cta-btn-secondary; was lovable-measured: gemeenskap:gemeenskap-cta-btn-secondary vs tuisblad:cta-btn-secondary
+button-outline,on-dark,border,all,"2px solid rgb(255, 255, 255)",owner-ruling,stage-2-rulings.md LEG-1,canonical,LEG-1: measured tuisblad cta-btn-secondary (stage-2 close capture); was lovable-measured: gemeenskap:gemeenskap-cta-btn-secondary; tuisblad:cta-btn-secondary (white/0.3)
+button-outline,on-dark,color,all,"rgb(255, 255, 255)",owner-ruling,stage-2-rulings.md LEG-1,canonical,LEG-1: measured tuisblad cta-btn-secondary (stage-2 close capture)
+button-outline,on-dark,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md LEG-1,canonical,LEG-1: measured tuisblad cta-btn-secondary (stage-2 close capture); BTN-1
+button-outline,on-dark,size,all,button-size cta,owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: CTA button: serif 18px, 48px"
+button-outline,on-dark,hover,all,"background rgb(255, 255, 255); color rgb(236, 59, 19)",owner-ruling,stage-2-rulings.md LEG-1,canonical,"LEG-1: inverts to white fill and terracotta text (hover:bg-primary-foreground hover:text-terracotta, CallToAction.tsx:35), measured (stage-2 close one-off Playwright hover (tmp/stage2/close/hover*.mjs))"
 button-ghost,base,size,all,button-size sm,lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,every Lovable ghost instance is sm (36px)
 button-ghost,base,background-color,all,transparent,lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,
 button-ghost,base,color,all,"rgb(24, 29, 37)",lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,foreground; token-delta: see ruling TOKEN-1
 button-ghost,base,border,all,0,lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,
-button-ghost,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,registered ink-ghost declares display (functions.php:1558) and INK header renders Lora 400 — Lovable wins
+button-ghost,base,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: Lovable renders Inter; was lovable-measured: tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2)
 button-ghost,base,box-shadow,all,none,lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,
 button-ghost,base,hover,all,background accent; color surface-alt,block-style,functions.php:1563-1566,canonical,Lovable hover:bg-accent hover:text-accent-foreground; not captured
 button-ghost,muted,color,all,"rgb(103, 111, 126)",lovable-measured,skryf:skryf-change-type-btn; my-profiel:profiel-activity-read-btn,canonical,muted-foreground; token-delta: see ruling TOKEN-1
@@ -572,14 +599,14 @@ button-subtle,base,size,all,button-size (default|sm),lovable-measured,lees-stori
 button-subtle,base,background-color,all,"rgba(240, 235, 230, 0.5)",lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,"secondary/50; INK secondary rgb(237, 233, 224)/0.5; token-delta: see ruling TOKEN-1"
 button-subtle,base,color,all,"rgb(24, 29, 37)",lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,foreground; token-delta: see ruling TOKEN-1
 button-subtle,base,border,all,0,lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,
-button-subtle,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,
+button-subtle,base,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: Lovable renders Inter; was lovable-measured: lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5)
 button-subtle,base,box-shadow,all,none,lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,
 button-subtle,base,hover background-color,all,secondary,token,ink-lovable button.tsx:23 (class only; not captured),canonical,no registered block style exists; is-style-subtle lives in profiel.css:141 only
 button-sage-outline,base,size,all,button-size lg,lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,
 button-sage-outline,base,background-color,all,transparent,lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,
 button-sage-outline,base,color,all,"rgb(82, 122, 102)",lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,accent
 button-sage-outline,base,border,all,"2px solid rgb(82, 122, 102)",lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,
-button-sage-outline,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,registered ink-sage-outline declares display (functions.php:1616); both INK instances render Lora — Lovable wins
+button-sage-outline,base,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: Lovable renders Inter; was lovable-measured: tuisblad:sponsors-btn; oor-ink:sponsors-btn
 button-sage-outline,base,box-shadow,all,none,lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,
 button-sage-outline,base,hover,all,background accent; color surface-alt,block-style,functions.php:1621-1624,canonical,
 button-icon,base,display,all,block,lovable-measured,lees-storie:reading-bookmark-btn; lees-storie:reading-share-btn; lees-gedig:reading-bookmark-btn; lees-gedig:reading-share-btn,canonical,"bare icon action: unstyled <button>, 20px icon box"
@@ -600,10 +627,14 @@ button-icon-label,base,gap,all,8px,lovable-measured,lees-storie:storie-reaksie-t
 button-icon-label,base,padding,all,0px,lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,
 button-icon-label,base,background-color,all,transparent,lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,
 button-icon-label,base,color,all,"rgb(103, 111, 126)",lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,muted-foreground; token-delta: see ruling TOKEN-1
-button-icon-label,base,font,all,"16px/24px Inter, system-ui, sans-serif 400",lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,INK comments link 14px/21px
+button-icon-label,base,font,all,"16px/24px Inter, system-ui, sans-serif 400",lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,INK comments link 14px/21px; excluded from BTN-FONT (counted icon button) — keeps Inter
 button-icon-label,sm,font,all,"14px/20px Inter, system-ui, sans-serif 400",lovable-measured,lees-storie:reading-response-upvote; lees-gedig:reading-response-upvote,canonical,INK renders an inert <span> with no icon
 button-icon-label,sm,gap,all,4px,lovable-measured,lees-storie:reading-response-upvote; lees-gedig:reading-response-upvote,canonical,
-search-button,base,recipe,all,button-primary + button-size default,most-used,ontdek:search-btn; biblioteek:library-search-btn; opleiding:library-search-btn,needs-ruling,"no Lovable instance (Lovable searches as-you-type); INK-only, 3 variants — ruling SRCH-1 (= pending row 08a ""Soek button SCOPE?"")"
+search-button,base,recipe,all,button-primary + button-size default,owner-ruling,stage-2-rulings.md SRCH-1,canonical,"SRCH-1: keep the Soek button, styled like every other brand-colour button; was most-used: ontdek:search-btn; biblioteek:library-search-btn; opleiding:library-search-btn"
+search-button,base,height,all,40px,owner-ruling,stage-2-rulings.md SRCH-1,canonical,SRCH-1: the input and the button are both 40px
+search-button,base,background-color,all,"rgb(236, 59, 19)",owner-ruling,stage-2-rulings.md SRCH-1,canonical,SRCH-1: brand primary (= button-primary base)
+search-button,base,color,all,"rgb(255, 255, 255)",owner-ruling,stage-2-rulings.md SRCH-1,canonical,SRCH-1: primary-foreground (= button-primary base)
+search-button,base,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: search button is in the serif scope
 filter-chip,base,height,all,38px,lovable-measured,ontdek:stories-filter; ontdek:stories-filter-active; biblioteek:library-filter,canonical,INK 39px (line-height 21px)
 filter-chip,base,padding,all,8px 16px,lovable-measured,ontdek:stories-filter; ontdek:stories-filter-active; biblioteek:library-filter,canonical,
 filter-chip,base,border-radius,all,9999px,lovable-measured,ontdek:stories-filter; ontdek:stories-filter-active; biblioteek:library-filter,canonical,
@@ -627,7 +658,16 @@ filter-chip,choice,border,all,0,lovable-measured,lees-storie:reading-response-ty
 filter-chip,choice,background-color,all,"rgba(240, 235, 230, 0.5)",lovable-measured,lees-storie:reading-response-type; lees-gedig:reading-response-type,canonical,unselected only; selected state not captured
 filter-chip,choice,color,all,"rgb(103, 111, 126)",lovable-measured,lees-storie:reading-response-type; lees-gedig:reading-response-type,canonical,token-delta: see ruling TOKEN-1
 filter-chip,choice,font-weight,all,500,lovable-measured,lees-storie:reading-response-type; lees-gedig:reading-response-type,canonical,INK 400
-filter-chip,date,recipe,all,xs 12px/18px; padding 4px 12px; active fill accent,most-used,ontdek:stories-date; ontdek:stories-date-active,needs-ruling,"INK-only (ontdek date archive), no Lovable sibling — ruling CHIP-1"
+filter-chip,date,recipe,all,pill tint-bordered (sage chip),owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: keep the ontdek date filter, styled like the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip); was most-used: ontdek:stories-date; ontdek:stories-date-active"
+filter-chip,date,padding,all,4px 12px,owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip)"
+filter-chip,date,height,all,30px,owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip)"
+filter-chip,date,border-radius,all,9999px,owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip)"
+filter-chip,date,font,all,"14px/20px Inter, system-ui, sans-serif 500",owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip); chips keep Lovable's font"
+filter-chip,date,background-color,all,"rgba(82, 122, 102, 0.1)",owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip); sage at 10% (NR-3)"
+filter-chip,date,border,all,"1px solid rgba(82, 122, 102, 0.2)",owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip); sage at 20%"
+filter-chip,date,color,all,"rgb(82, 122, 102)",owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: the sage chip, Challenge.tsx:214 (pill tint-bordered, measured uitdaging-enkel:uitdaging-device-chip)"
+filter-chip,date-active,background-color,all,"rgb(82, 122, 102)",owner-ruling,stage-2-rulings.md CHIP-1,canonical,"CHIP-1: PROPOSED: the sage chip has no active state; solid sage fill keeps the existing INK ""active fill accent"""
+filter-chip,date-active,color,all,"rgb(253, 253, 252)",owner-ruling,stage-2-rulings.md CHIP-1,canonical,CHIP-1: PROPOSED: accent-foreground on the sage fill (as the measured BTN-3 sage hover)
 tab,base,display,all,inline-flex,lovable-measured,ontdek:tabs-tab; ontdek:tabs-tab-active,canonical,underline tab (Lovable TabButton)
 tab,base,gap,all,8px,lovable-measured,ontdek:tabs-tab; ontdek:tabs-tab-active,canonical,
 tab,base,padding,all,16px 20px,lovable-measured,ontdek:tabs-tab; ontdek:tabs-tab-active,canonical,
@@ -670,9 +710,11 @@ form-field,base,font-size,768|1440,14px,lovable-measured,meld-aan:auth-email-inp
 form-field,base,line-height,768|1440,20px,lovable-measured,meld-aan:auth-email-input@768|1440,canonical,
 form-field,textarea,font,all,"14px/20px Inter, system-ui, sans-serif",lovable-measured,lees-storie:reading-response-input; lees-gedig:reading-response-input; my-profiel:profiel-edit-textarea,canonical,all viewports (shadcn Textarea is text-sm)
 form-field,textarea,min-height,all,80px,lovable-measured,lees-storie:reading-response-input; lees-gedig:reading-response-input; my-profiel:profiel-edit-textarea,canonical,rendered 100px / 118px; INK reaksies 77px with 12px padding
+form-field,no-lovable-equivalent,recipe,all,form-field base (the /auth input recipe),owner-ruling,stage-2-rulings.md FORMS,canonical,FORMS: contact form inputs and every input with no Lovable sibling use meld-aan:auth-email-input (Auth.tsx:85)
 form-label,base,font,all,"14px Inter, system-ui, sans-serif 500",lovable-measured,meld-aan:auth-email-label; meld-aan:auth-password-label; wagwoord-herstel:auth-email-label; skryf:skryf-title-label,canonical,
 form-label,base,color,all,"rgb(24, 29, 37)",lovable-measured,meld-aan:auth-email-label; meld-aan:auth-password-label; wagwoord-herstel:auth-email-label; skryf:skryf-title-label,canonical,token-delta: see ruling TOKEN-1
-form-label,base,line-height,all,14px | 20px,lovable-measured,meld-aan:auth-email-label (14px) vs skryf:skryf-title-label (20px),needs-ruling,Lovable conflicts (shadcn Label leading-none vs plain label); INK 21px everywhere — ruling LBL-1
+form-label,base,line-height,all,20px,owner-ruling,stage-2-rulings.md LBL-1,canonical,LBL-1: form labels have a 20px line-height; was lovable-measured: meld-aan:auth-email-label (14px) vs skryf:skryf-title-label (20px)
+form-label,no-lovable-equivalent,recipe,all,form-label base (the /auth label recipe),owner-ruling,stage-2-rulings.md FORMS,canonical,"FORMS: contact form labels follow meld-aan:auth-email-label (Auth.tsx:84), at the LBL-1 line-height"
 form-label,caps,font,all,"12px/16px Inter, system-ui, sans-serif 400",lovable-measured,my-profiel:profiel-edit-label,canonical,INK 12px/18px
 form-label,caps,text-transform,all,uppercase,lovable-measured,my-profiel:profiel-edit-label,canonical,
 form-label,caps,letter-spacing,all,0.6px,lovable-measured,my-profiel:profiel-edit-label,canonical,tracking-wider (0.05em); INK 0.96px
@@ -689,6 +731,7 @@ search-field,base,font-size,390,16px,lovable-measured,ontdek:search-input@390,ca
 search-field,base,line-height,390,24px,lovable-measured,ontdek:search-input@390,canonical,
 search-field,base,font-size,768|1440,14px,lovable-measured,ontdek:search-input@768|1440,canonical,
 search-field,base,line-height,768|1440,20px,lovable-measured,ontdek:search-input@768|1440,canonical,
+search-field,with-button,height,all,40px,owner-ruling,stage-2-rulings.md SRCH-1,canonical,"SRCH-1: a search input beside the Soek button is 40px (Lovable search-field base is 48px, without a button)"
 checkbox,base,size,all,16px x 16px,lovable-measured,skryf:skryf-checkbox-input (Lovable editor state),canonical,
 checkbox,base,border,all,"1px solid rgb(236, 59, 19)",lovable-measured,skryf:skryf-checkbox-input (Lovable editor state),canonical,INK renders native UA controls (no border/radius computed)
 checkbox,base,border-radius,all,4px,lovable-measured,skryf:skryf-checkbox-input (Lovable editor state),canonical,radius.sm
