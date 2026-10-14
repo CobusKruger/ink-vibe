@@ -4,8 +4,11 @@ Running status of the Stage 1 audit, one row per inventory row in `agent-brief.m
 Updated by the lead (orchestrating) session as each page is committed. Method and rules:
 `README.md`. Kickoff instructions: `stage-1-kickoff.md`.
 
-**Stage 1 is complete when every row below is `done`.** Stage 2 does not start before
-that (R9).
+**Stage 1 is COMPLETE (2026-10-14).** Every row below is `done`; four are `done (partial)`
+with the gap recorded. The per-page registers are merged into
+`maps/_primitive-observations.csv` (1,896 rows, 22 pages) by
+`tools/fidelity/merge-register.py`. Stage 2 (synthesis) needs the owner decisions in
+"Owner decisions needed" below and ratification of `maps/_recipes.csv` (README §4.7).
 
 | Row | Page | Treatment | Status | Commit(s) | Notes |
 |---|---|---|---|---|---|
@@ -21,12 +24,15 @@ that (R9).
 | 08b | opleiding | A | **done** | `1b9c83d` · lovable `c4df0b2` · cards: uncommitted | **Cards now measured via `/qa-bloks/`** (spine §7): 35 ids pair, including all 24 shelf/count/grid/card ids; gates pass. `findings/08b-opleiding-drift-cards*.md`. Fixture articles have no author, so the author line is unmeasured. Shelf h2 is 600 here and 400 on 08a. Search button renders in Arial (no font-family) |
 | 09a | meld-aan | A | **done** | see 09b | 12 ids pair. Owner calls: tabs split → SCOPE or STRUCTURE (M4/R4); should auth pages carry header/footer (M1/R1); remember-me rests on an implementer comment (M10); brand lock-up + back link (M2/M13) |
 | 09b | registreer | A | **done** | `5dd2136` · lovable `31db630` (09a + 09b) | 8 ids pair. **Owner call:** registreer asks username + e-mail with no password (WP core) vs Lovable's e-mail + password (R9). Not captured: fout/voltooi notices, focus/hover, toast, social section (gated off) |
-| 10 | wagwoord-herstel | A | queued | | |
-| 11 | wagwoord-terugstel | C | queued | | |
-| 12 | vier-nul-vier | C | queued | | |
-| 13 | oor-ink | B | queued | | |
-| 14 | uitdagings | B | queued | | |
-| 15–18 | kontak, lidmaatskap, inkpols, ledegids | C | queued | | one batched subagent (kickoff) |
+| 10 | wagwoord-herstel | A | **done** | `5eafcd4` · lovable `f766ded` | 11 ids pair (reuses `auth-*`); sent/fout states captured via GET. Frame differs (chrome + top-aligned card vs Lovable's centred full-height screen); no brand lock-up |
+| 11 | wagwoord-terugstel | C | **done** | `5eafcd4` · lovable `f766ded` | Stock unstyled core screen: all 22 visible nodes off-token. **Load-scope bug:** `wp-login-brand.css` loads only for `action=rp/resetpass`, not `lostpassword`. Branded `action=rp` screen not audited (needs a reset key = data write). Core-screen copy: "Meld aan" (retired term), "Registreer" → `/register/` ("Page not found"), English "Change" |
+| 12 | vier-nul-vier | C | **done** | `464eb49` | 404 falls back to `index.html`: header, empty `<main>`, footer — no heading/message/home link, English `<title>`. Lovable NotFound captured for reference |
+| 13 | oor-ink | B | **done** | `1d37891` | Sponsor block copies the homepage strip without its two fixes (768 vs 1368 wide, no tint); chips/CTA in Lora vs Inter; remainder 0 off-token |
+| 14 | uitdagings | B | **done** | `1d37891` | **Live bug S-U1:** `/uitdagings/` 301s to an unrelated post; archive is `/uitdaging/` (captured there). Header nav, oor-ink link and a QA fixture point at the wrong URL. Card: radius 8 vs 16, title 20 vs 30px, 4 Lovable elements missing, "Lees meer" link hidden until hover vs filled Submit button |
+| 15 | kontak | C | **done** | `464eb49` | 0 off-token; CTA size declared 3×; 3 `form-hint` definitions; result notice not captured |
+| 16 | lidmaatskap | C | **done** | `464eb49` | 0 off-token. **Live bugs:** all plans R50,00 → same `add-to-cart=926`; literal backslash ("\’n") in descriptions |
+| 17 | inkpols | C | **done (partial)** | `464eb49` | 0 issues in the DB → only the empty state renders; list cards + single page instrumented but unmeasured. **Latent bug:** no CSS exists for any `ink-inkpols*` class |
+| 18 | ledegids | C | **done** | `464eb49` | 30 off-token (pill padding 2px, bio line-height 1.6); QA user accounts listed publicly |
 | 22 | lees-gedig | A | **done** `2a4574b` · lovable `9db3869` | Owner calls: INK pre-fills hearts/highlights for every line any reader reacted to (disclosed `functions.php:583-588`; Lovable shows none at rest); dedication field; poetry-specific response copy. **Live bug:** artikel floating heart is a clickable button but its script only loads on gedig/storie. Hover heart, logged-in and response cards not captured | | shares Lovable `ReadStory.tsx` with row 07, so it runs after 07 to avoid id collisions |
 
 ## How the fan-out runs
@@ -60,6 +66,42 @@ Fix these between batches, never while subagents are running.
 | T6 | row 06 | `extract-primitives` (post-T2) tags anything containing "gradering" as `tier-label`, misses INK `__genre` pills, and writes one row per viewport instead of collapsing identical ones (README §4.1 register spec). | **fixed (T5–T7 commit)** — `tier-label` only for `.ink-gradering` or a `…__gradering` element (badge parts and badge wrappers dropped, `__lesergradering*` no longer matched); a pill-shaped `__genre` is a `pill`; identical rows across the captures passed in one run collapse to `390\|768\|1440` (per occurrence; `--no-collapse` opts out) |
 | T3 | row 03 | `capture.mjs` waited on every incomplete image, so a lazy `<img>` in a `display:none` tab panel hung the capture forever. Row 03 patched it to wait only on rendered images (against its brief, which forbade harness edits; the fix is sound and leaves computed values untouched). | **fixed** `9367c86` |
 
+## Owner decisions needed
+
+Collected from the per-row notes above. None of these were decided by the audit.
+
+**Live bugs on the site today** (recorded, not fixed — Stage 1 changes no behaviour):
+1. `/uitdagings/` 301s to an unrelated post; the archive is `/uitdaging/` — change the slug
+   or the three links (row 14, S-U1).
+2. Lidmaatskap and the My Profiel renewal: all plans show R50,00 → same `add-to-cart=926`
+   (rows 02, 16).
+3. Literal backslash "Skep \’n…" / "\’n" in copy (`skryf.php:23-24`, lidmaatskap) (rows 04, 16).
+4. `[NEEDS HUMAN AFRIKAANS]` placeholders visible on My Profiel (row 02).
+5. My Profiel edit-modal overlay doesn't cover the viewport (row 02, F34).
+6. Artikel floating heart is clickable but its script never loads on artikel (row 22).
+7. 404 page is empty — no heading, message or home link (row 12).
+8. `wp-login.php?action=lostpassword` renders unbranded and links to a broken
+   `/register/`; redirect it to `/wagwoord-herstel/` or brand it (row 11).
+9. QA user accounts listed publicly on `/ledegids` (row 18).
+10. InkPols cards have no CSS at all — invisible today only because no issues exist (row 17).
+
+**Coverage (to finish the partial rows):**
+- Seed `fidelity-capture` with profile data, or approve a second capture user (row 02).
+- Seed an InkPols QA-fixture issue so list + single can be measured (row 17).
+- Approve writing a reset key to the capture user to audit the branded `action=rp` screen (row 11).
+
+**Design/scope rulings** (each finding cites file:line in its spine doc):
+- Row 04: one form vs Lovable's two steps (S-2).
+- Row 05: is "The Prompt" h2 covered by the Story 12.1 single-body decision (F10)?
+- Row 06: Follow hidden from guests (F22); no location field (F3); pinned-only list (F16); works breakdown (F8).
+- Row 07: read time vs date (S-5/S-6); share button (S-8); Reply/upvote disclosures (S-15/S-16).
+- Row 08a/08b: "Soek" button SCOPE?; biblioteek cover-image divergence; copy — "Biblioteek" h1, missing "deur".
+- Rows 09a/09b: tabs split (SCOPE vs STRUCTURE); header/footer on auth pages; remember-me; brand lock-up + back link; registreer has no password field (WP core).
+- Row 02: avatar editing deferred vs §7.1 (F3/F35); underline vs pill tabs (F7).
+- Row 14: how closely the list card follows Lovable's feature card (S-U11/S-U12). Row 13: sponsor chips as links / live data (S-6/S-7).
+- Row 22: pre-filled aggregate hearts at rest; dedication field; poetry-specific response copy.
+- Row 12: build a real 404 template (needs authored Afrikaans copy).
+
 ## Log
 
 - **2026-10-12** — Row 00 completed (Phases 4/4b). Found that `nuwe-ink.local` had been
@@ -70,6 +112,13 @@ Fix these between batches, never while subagents are running.
 - **2026-10-13** — Batch 1 complete (01, 03, 04, 05). Every row needed a page-private
   workaround for T1 and T2, and row 04 for T4. Harness fixes for T1/T2/T4 go in before
   batch 2.
+- **2026-10-14** — Stage 1 complete. All 22 inventory rows audited and committed in both
+  repos; register merged. Batches 2–4 were interrupted four more times by the account
+  usage limit and resumed. Tooling T1–T7 all fixed. Follow-ups for Stage 2: the three
+  ad-hoc OFF-TOKEN scripts (`tmp/rows-c/`, `tmp/r1314/`, `tmp/fidelity-password/`) should
+  become one `tools/fidelity/off-token` tool; `targets.json` row 14 still says
+  `/uitdagings/`; README §9's "wp-login.php is intercepted" holds for POST only — a plain
+  GET returns the core screen (row 11).
 - **2026-10-13** — Tooling pass for T5/T6/T7 (uncommitted). Unscoped captures are
   byte-identical to before (tuisblad@1440, both sides), and so is diff output
   (`01-gemeenskap-drift.md`). Rows 08a/08b cards are measured from `/qa-bloks/` with
