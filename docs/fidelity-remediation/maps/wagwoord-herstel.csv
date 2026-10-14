@@ -1,0 +1,21 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+auth,src/pages/ForgotPassword.tsx,30,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,30,page wrapper / auth section,paired,W3 MECHANISM: Lovable min-h-screen flex-centred <div>; INK alignfull <section> with s-64/s-24 padding inside the template <main>
+auth-inner,src/pages/ForgotPassword.tsx,31,,,max-w-md column,missing-ink,W4 MECHANISM: INK sizes the card itself via the section's constrained layout (contentSize 480px)
+auth-logo,src/pages/ForgotPassword.tsx,32,,,brand lock-up link,missing-ink,W2
+auth-logo-icon,src/pages/ForgotPassword.tsx,33,,,feather svg,missing-ink,W2
+auth-logo-text,src/pages/ForgotPassword.tsx,34,,,wordmark,missing-ink,W2
+auth-card,src/pages/ForgotPassword.tsx,37,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,32,card,paired,
+auth-heading,src/pages/ForgotPassword.tsx,38,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,34,h1,paired,W15: weight disclosed auth.css:27-36 (implementer comment)
+auth-intro,src/pages/ForgotPassword.tsx,39,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,38,lede,paired,
+auth-sent,src/pages/ForgotPassword.tsx,44,,,sent-state wrapper (div.text-sm),missing-ink,W10/W11: Lovable sent state needs a submission; not captured
+auth-notice,src/pages/ForgotPassword.tsx,45,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,47,sent-state message,paired,"W11/W12: INK bordered tinted notice (?wagwoord=gestuur) vs Lovable plain paragraph; INK fout branch :52 shares the id (mutually exclusive). Lovable side not captured (needs a submission); INK captured as wagwoord-herstel-gestuur / -fout"
+auth-secondary-btn,src/pages/ForgotPassword.tsx,48,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,48,'back to sign in' outline button (sent state),paired,W10: Lovable side not captured (needs a submission); INK captured as wagwoord-herstel-gestuur
+auth-form,src/pages/ForgotPassword.tsx,53,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,54,form,paired,
+auth-email-field,src/pages/ForgotPassword.tsx,54,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,55,field wrapper,paired,W7: <div> vs <p>
+auth-email-label,src/pages/ForgotPassword.tsx,55,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,56,field label,paired,
+auth-email-input,src/pages/ForgotPassword.tsx,56,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,57,field input,paired,W5 SCOPE: type=email vs type=text (e-pos of gebruikersnaam)
+auth-field-hint,,,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,58,field hint,missing-lovable,W6
+auth-submit-wrap,,,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,62,<p> around the submit,missing-lovable,W8
+auth-submit,src/pages/ForgotPassword.tsx,58,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,63,submit button,paired,W8: Lovable Button variant=literary; INK raw <button class=wp-element-button> with no block-style wrapper
+auth-switch,src/pages/ForgotPassword.tsx,61,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,69,back-to-sign-in line,paired,W9 STRUCTURE: Lovable inside the form; INK a core/paragraph after the form
+auth-switch-link,src/pages/ForgotPassword.tsx,62,wp-content/themes/ink-foundation/patterns/auth-forgot-password.php,69,back-to-sign-in link,paired,W9

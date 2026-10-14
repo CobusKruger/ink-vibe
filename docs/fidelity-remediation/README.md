@@ -461,6 +461,20 @@ under existing kinds:
 
 They drop the ink-core block-root `<section>`s (`ink-borg-erkenning`, `ink-uitdagings`).
 
+Added during rows 10/11 (`wagwoord-herstel`, `wagwoord-terugstel`,
+`findings/10-wagwoord-herstel-primitives.md`):
+
+```
+notice               inline status / alert message box — padded, bordered or left-ruled,
+                     tinted by state (success / danger / info): INK .ink-auth-notice--ok|--fout,
+                     WordPress core .notice.notice-info. The tool does not classify it; add by hand
+```
+
+Rows 10/11 file the following under existing kinds:
+- `<input type=submit>` buttons, which the tool files as `form-field`, under their button variant;
+- Lovable's muted "← Back to sign in" link under `nav-link`, as on row 09;
+- INK's `.ink-auth-secondary` under `button-outline`.
+
 `run.sh primitives` also emits a generic `button` fallback. It is not a kind: resolve
 each such row to a variant before it enters the register.
 
