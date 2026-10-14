@@ -450,6 +450,17 @@ They drop the kontak off-screen honeypot (`.ink-kontak-vorm__hp`) and the ink-co
 rendered, so it was not filed. If a later pass captures it, it needs a kind (an alert banner), and none in the
 list fits.
 
+Added during rows 13/14 (`oor-ink`, `uitdagings`; Treatment B): no new kind. They file the following
+under existing kinds:
+- each sponsor chip on both sides (`.ink-borg-erkenning__item--*`; Lovable `px-6 py-3 rounded-lg`) under
+  `tier-chip`, every instance, added by hand;
+- `.ink-borg-erkenning__cta` (generic `button`) under `button-sage-outline`, and the Oor INK *Kontak ons*
+  core/button (primary colour attributes, no block style) under `button-primary`;
+- the challenge-list card `<li>` under `card` and its title `<a>` under `heading`;
+- the "Lees meer" hover-reveal text link under `link-underline`.
+
+They drop the ink-core block-root `<section>`s (`ink-borg-erkenning`, `ink-uitdagings`).
+
 `run.sh primitives` also emits a generic `button` fallback. It is not a kind: resolve
 each such row to a variant before it enters the register.
 

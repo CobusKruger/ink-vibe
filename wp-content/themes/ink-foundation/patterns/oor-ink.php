@@ -30,23 +30,23 @@
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-oor-ink-hero","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-oor-ink-hero" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<section data-audit-id="oor-ink-hero" class="wp-block-group alignfull ink-oor-ink-hero" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:paragraph {"style":{"typography":{"fontStyle":"normal","fontWeight":"500","textTransform":"uppercase","letterSpacing":"0.2em"}},"fontSize":"xs","textColor":"primary"} -->
-		<p class="has-primary-color has-text-color has-xs-font-size" style="font-style:normal;font-weight:500;letter-spacing:0.2em;text-transform:uppercase">Oor INK</p>
+		<p data-audit-id="oor-ink-hero-eyebrow" class="has-primary-color has-text-color has-xs-font-size" style="font-style:normal;font-weight:500;letter-spacing:0.2em;text-transform:uppercase">Oor INK</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
-		<h1 class="wp-block-heading has-xxxl-font-size">Ons missie</h1>
+		<h1 data-audit-id="oor-ink-hero-h1" class="wp-block-heading has-xxxl-font-size">Ons missie</h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"lg"} -->
-		<p class="has-lg-font-size">INK is &#8217;n niewinsgerigte literêre tuiste gebou rondom &#8217;n eenvoudige idee: dat deurdagte skryfwerk lesers verdien, en dat albei &#8217;n beter plek verdien om mekaar te vind.</p>
+		<p data-audit-id="oor-ink-hero-lede" class="has-lg-font-size">INK is &#8217;n niewinsgerigte literêre tuiste gebou rondom &#8217;n eenvoudige idee: dat deurdagte skryfwerk lesers verdien, en dat albei &#8217;n beter plek verdien om mekaar te vind.</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-md-font-size">&#8217;n Tuiste vir skrywers en lesers, wat sinvolle literêre bande smee sedert 2018.</p>
+		<p data-audit-id="oor-ink-hero-sub" class="has-muted-text-color has-text-color has-md-font-size">&#8217;n Tuiste vir skrywers en lesers, wat sinvolle literêre bande smee sedert 2018.</p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
@@ -54,15 +54,15 @@
 <!-- /wp:group -->
 
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-oor-ink-org","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull has-surface-alt-background-color has-background ink-oor-ink-org" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<section data-audit-id="oor-ink-org" class="wp-block-group alignfull has-surface-alt-background-color has-background ink-oor-ink-org" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
-		<h2 class="wp-block-heading has-xxl-font-size">Ons organisasie</h2>
+		<h2 data-audit-id="oor-ink-org-h2" class="wp-block-heading has-xxl-font-size">Ons organisasie</h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md"} -->
-		<p class="has-md-font-size">INK is &#8217;n niewinsgerigte gemeenskapsorganisasie, gestig in 2018.</p>
+		<p data-audit-id="oor-ink-org-text" class="has-md-font-size">INK is &#8217;n niewinsgerigte gemeenskapsorganisasie, gestig in 2018.</p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
@@ -70,21 +70,21 @@
 <!-- /wp:group -->
 
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-oor-ink-kontak","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-oor-ink-kontak" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<section data-audit-id="oor-ink-kontak" class="wp-block-group alignfull ink-oor-ink-kontak" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
-		<h2 class="wp-block-heading has-xxl-font-size">Kontak</h2>
+		<h2 data-audit-id="oor-ink-kontak-h2" class="wp-block-heading has-xxl-font-size">Kontak</h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-md-font-size">Het jy &#8217;n vraag of wil jy by INK betrokke raak? Ons hoor graag van jou.</p>
+		<p data-audit-id="oor-ink-kontak-text" class="has-muted-text-color has-text-color has-md-font-size">Het jy &#8217;n vraag of wil jy by INK betrokke raak? Ons hoor graag van jou.</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:buttons {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
-		<div class="wp-block-buttons">
+		<div data-audit-id="oor-ink-kontak-actions" class="wp-block-buttons">
 			<!-- wp:button {"backgroundColor":"primary","textColor":"surface-alt"} -->
-			<div class="wp-block-button"><a class="wp-block-button__link has-surface-alt-color has-primary-background-color has-text-color has-background wp-element-button" href="/kontak">Kontak ons</a></div>
+			<div class="wp-block-button"><a data-audit-id="oor-ink-kontak-btn" class="wp-block-button__link has-surface-alt-color has-primary-background-color has-text-color has-background wp-element-button" href="/kontak">Kontak ons</a></div>
 			<!-- /wp:button -->
 		</div>
 		<!-- /wp:buttons -->
@@ -96,16 +96,16 @@
 <!-- wp:pattern {"slug":"ink-foundation/borg-erkenning"} /-->
 
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-oor-ink-meer","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull has-surface-alt-background-color has-background ink-oor-ink-meer" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<section data-audit-id="oor-ink-meer" class="wp-block-group alignfull has-surface-alt-background-color has-background ink-oor-ink-meer" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
-		<h2 class="wp-block-heading has-xxl-font-size">Meer oor INK</h2>
+		<h2 data-audit-id="oor-ink-meer-h2" class="wp-block-heading has-xxl-font-size">Meer oor INK</h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:list -->
-		<ul>
-			<li><a href="/gemeenskap">Die INK-gemeenskap</a></li>
+		<ul data-audit-id="oor-ink-meer-list">
+			<li data-audit-id="oor-ink-meer-item"><a data-audit-id="oor-ink-meer-link" href="/gemeenskap">Die INK-gemeenskap</a></li>
 			<li><a href="/uitdagings">Maandelikse uitdagings</a></li>
 			<li><a href="/kontak">Word &#8217;n borg</a></li>
 		</ul>

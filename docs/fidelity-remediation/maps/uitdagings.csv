@@ -1,0 +1,17 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+challenge-card,src/components/home/ChallengeSection.tsx,10,wp-content/plugins/ink-core/src/Challenges/Archive.php,323,challenge card,paired,"TREATMENT A REGION ROOT. Lovable ref = the homepage feature card (rendered on /); INK = FIRST <li> of the ink/uitdaging-argief list (a different renderer from row 00's CurrentChallenge kenmerk, same ids; Archive.php never renders on the homepage)"
+challenge-card-corner,src/components/home/ChallengeSection.tsx,11,,,corner tint,missing-ink,
+challenge-card-head,src/components/home/ChallengeSection.tsx,13,wp-content/plugins/ink-core/src/Challenges/Archive.php,295,top row of the card,paired,"positional pairing: Lovable icon + month eyebrow; INK tema pill + countdown pill (STRUCTURE). Absent on INK when the challenge has neither tema nor deadline"
+challenge-card-icon,src/components/home/ChallengeSection.tsx,14,,,trophy tile,missing-ink,
+challenge-card-eyebrow,src/components/home/ChallengeSection.tsx,17,,,month eyebrow ('January Challenge'),missing-ink,
+challenge-card-theme-pill,,,wp-content/plugins/ink-core/src/Challenges/Archive.php,298,tema pill,missing-lovable,INK-only (data the mockup card does not carry)
+challenge-card-status-pill,,,wp-content/plugins/ink-core/src/Challenges/Archive.php,302,countdown / status pill,missing-lovable,INK-only; same class as row 05's uitdaging-meta-status
+challenge-card-title,src/components/home/ChallengeSection.tsx,20,wp-content/plugins/ink-core/src/Challenges/Archive.php,325,card title,paired,Lovable <h2>; INK <a> (no heading element)
+challenge-card-desc,src/components/home/ChallengeSection.tsx,24,,,description,missing-ink,INK card carries no excerpt/description
+challenge-card-meta,src/components/home/ChallengeSection.tsx,30,wp-content/plugins/ink-core/src/Challenges/Archive.php,311,meta row,paired,"INK __item-voet: bordered footer row holding the date + the 'Lees meer' link; only emitted when a deadline exists"
+challenge-card-meta-item,src/components/home/ChallengeSection.tsx,31,wp-content/plugins/ink-core/src/Challenges/Archive.php,312,meta item (first: calendar + date),paired,"Lovable 'Ends Jan 31'; INK 'Sluitingsdatum: <date>'"
+challenge-card-btn,src/components/home/ChallengeSection.tsx,41,wp-content/plugins/ink-core/src/Challenges/Archive.php,317,card CTA,paired,"Lovable literary <button> 'Submit Your Entry'; INK hover-reveal text link 'Lees meer' (opacity 0, aria-hidden, tabindex -1). END OF TREATMENT A REGION"
+uitdagings,,,wp-content/themes/ink-foundation/patterns/uitdaging.php,23,archive section band,scope,TREATMENT C (no Lovable source)
+uitdagings-intro,,,wp-content/plugins/ink-core/src/Challenges/Archive.php,356,intro (bordered header),scope,TREATMENT C
+uitdagings-h1,,,wp-content/plugins/ink-core/src/Challenges/Archive.php,357,h1 'Uitdagings',scope,TREATMENT C
+uitdagings-list,,,wp-content/plugins/ink-core/src/Challenges/Archive.php,368,card grid <ul>,scope,TREATMENT C; the grid holding the A-region cards

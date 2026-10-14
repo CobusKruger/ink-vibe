@@ -240,6 +240,7 @@ final class Archive {
 					'deadline'  => null !== $deadline ? Deadline::format( $deadline ) : '',
 					'countdown' => self::countdownLabel( $deadline, $now ),
 					'is_open'   => null !== $deadline && Sast::isThroughEndOfDay( $deadline, $now ),
+					'audit'     => array() === $cards,
 				)
 			);
 		}
@@ -271,7 +272,11 @@ final class Archive {
 	 * useful when scanning a whole grid of cards than the single-page's static
 	 * status word, while its is-oop/is-gesluit colour coding stays identical.
 	 *
-	 * @param array{title:string, permalink:string, tema?:string, deadline?:string, countdown?:string, is_open?:bool} $card The challenge.
+	 * Fidelity-audit join keys (`data-audit-id`, docs/fidelity-remediation/maps/uitdagings.csv)
+	 * are emitted only when `audit` is true — the FIRST card of the list (repeaters:
+	 * first instance only).
+	 *
+	 * @param array{title:string, permalink:string, tema?:string, deadline?:string, countdown?:string, is_open?:bool, audit?:bool} $card The challenge.
 	 * @return string
 	 */
 	public static function cardHtml( array $card ): string {
@@ -281,18 +286,20 @@ final class Archive {
 		$deadline  = isset( $card['deadline'] ) ? (string) $card['deadline'] : '';
 		$countdown = isset( $card['countdown'] ) ? (string) $card['countdown'] : '';
 		$permalink = isset( $card['permalink'] ) ? (string) $card['permalink'] : '';
+		$audit     = ! empty( $card['audit'] );
+		$aid       = static fn ( string $id ): string => $audit ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
 
 		$meta = '';
 
 		if ( '' !== $tema || '' !== $countdown ) {
-			$meta = '<div class="ink-uitdagings__item-meta">';
+			$meta = '<div class="ink-uitdagings__item-meta"' . $aid( 'challenge-card-head' ) . '>';
 
 			if ( '' !== $tema ) {
-				$meta .= '<span class="ink-uitdagings__tema-pil">' . esc_html( $tema ) . '</span>';
+				$meta .= '<span class="ink-uitdagings__tema-pil"' . $aid( 'challenge-card-theme-pill' ) . '>' . esc_html( $tema ) . '</span>';
 			}
 
 			if ( '' !== $countdown ) {
-				$meta .= '<span class="ink-uitdaging__toestand-pil ' . esc_attr( $state ) . '">' . esc_html( $countdown ) . '</span>';
+				$meta .= '<span class="ink-uitdaging__toestand-pil ' . esc_attr( $state ) . '"' . $aid( 'challenge-card-status-pill' ) . '>' . esc_html( $countdown ) . '</span>';
 			}
 
 			$meta .= '</div>';
@@ -301,21 +308,21 @@ final class Archive {
 		$voet = '';
 
 		if ( '' !== $deadline ) {
-			$voet = '<div class="ink-uitdagings__item-voet">'
-				. '<span class="ink-uitdaging__sluitingsdatum-ry">'
+			$voet = '<div class="ink-uitdagings__item-voet"' . $aid( 'challenge-card-meta' ) . '>'
+				. '<span class="ink-uitdaging__sluitingsdatum-ry"' . $aid( 'challenge-card-meta-item' ) . '>'
 				. self::icon( self::ICON_CALENDAR )
 				. '<span class="ink-uitdaging__sluitingsdatum-etiket">' . esc_html( Terms::label( 'sluitingsdatum' ) ) . ': </span>'
 				. '<time class="ink-uitdaging__sluitingsdatum">' . esc_html( $deadline ) . '</time>'
 				. '</span>'
-				. '<a class="ink-uitdagings__lees" href="' . esc_url( $permalink ) . '" tabindex="-1" aria-hidden="true">'
+				. '<a class="ink-uitdagings__lees"' . $aid( 'challenge-card-btn' ) . ' href="' . esc_url( $permalink ) . '" tabindex="-1" aria-hidden="true">'
 				. esc_html__( 'Lees meer', 'ink-core' ) . self::icon( self::ICON_ARROW )
 				. '</a>'
 				. '</div>';
 		}
 
-		return '<li class="ink-uitdagings__item ' . esc_attr( $state ) . '">'
+		return '<li class="ink-uitdagings__item ' . esc_attr( $state ) . '"' . $aid( 'challenge-card' ) . '>'
 			. $meta
-			. '<a class="ink-uitdagings__titel" href="' . esc_url( $permalink ) . '">' . esc_html( $card['title'] ) . '</a>'
+			. '<a class="ink-uitdagings__titel"' . $aid( 'challenge-card-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $card['title'] ) . '</a>'
 			. $voet
 			. '</li>';
 	}
@@ -346,8 +353,8 @@ final class Archive {
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
-		$intro = '<div class="ink-uitdagings__intro">'
-			. '<h1 class="ink-uitdagings__heading">' . esc_html( Terms::label( 'uitdaging_plural' ) ) . '</h1>'
+		$intro = '<div class="ink-uitdagings__intro" data-audit-id="uitdagings-intro">'
+			. '<h1 class="ink-uitdagings__heading" data-audit-id="uitdagings-h1">' . esc_html( Terms::label( 'uitdaging_plural' ) ) . '</h1>'
 			. '</div>';
 
 		if ( array() === $cards ) {
@@ -358,7 +365,7 @@ final class Archive {
 				. '<p class="ink-uitdagings__leeg">' . esc_html( $empty ) . '</p></section>';
 		}
 
-		$html = '<section class="ink-uitdagings alignwide">' . $intro . '<ul class="ink-uitdagings__list">' . implode( '', $cards ) . '</ul>';
+		$html = '<section class="ink-uitdagings alignwide">' . $intro . '<ul class="ink-uitdagings__list" data-audit-id="uitdagings-list">' . implode( '', $cards ) . '</ul>';
 
 		$paged     = isset( $nav['paged'] ) ? (int) $nav['paged'] : 1;
 		$max_pages = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;

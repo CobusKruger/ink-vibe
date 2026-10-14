@@ -138,30 +138,48 @@ final class RecognitionSection {
 		$description = Terms::label( 'borge_beskrywing' );
 		$cta_label   = Terms::label( 'word_borg' );
 
-		$html = '<section class="ink-borg-erkenning" aria-label="' . esc_attr( $eyebrow ) . '">'
-			. '<p class="ink-borg-erkenning__etiket">' . esc_html( $eyebrow ) . '</p>'
-			. '<h2 class="ink-borg-erkenning__titel">' . esc_html( $heading ) . '</h2>'
-			. '<p class="ink-borg-erkenning__beskrywing">' . esc_html( $description ) . '</p>';
+		$html = '<section class="ink-borg-erkenning" data-audit-id="sponsors-inner" aria-label="' . esc_attr( $eyebrow ) . '">'
+			. '<p class="ink-borg-erkenning__etiket" data-audit-id="sponsors-eyebrow">' . esc_html( $eyebrow ) . '</p>'
+			. '<h2 class="ink-borg-erkenning__titel" data-audit-id="sponsors-h2">' . esc_html( $heading ) . '</h2>'
+			. '<p class="ink-borg-erkenning__beskrywing" data-audit-id="sponsors-intro">' . esc_html( $description ) . '</p>';
 
 		if ( array() !== $sponsors ) {
-			$html .= '<ul class="ink-borg-erkenning__rooster">';
+			$html .= '<ul class="ink-borg-erkenning__rooster" data-audit-id="sponsors-grid">';
+
+			// Fidelity-audit join keys go on the FIRST item of each tier only, mirroring
+			// Lovable's `SponsorsSection.tsx` (docs/fidelity-remediation/maps/oor-ink.csv).
+			$audit_ids = array(
+				'goud'   => 'sponsors-chip-gold',
+				'silwer' => 'sponsors-chip-silver',
+				'brons'  => 'sponsors-chip-bronze',
+			);
 
 			foreach ( $sponsors as $sponsor ) {
-				$slug  = HomepageStrip::tierSlug( $sponsor->tier );
-				$html .= '<li class="ink-borg-erkenning__item ink-borg-erkenning__item--' . esc_attr( $slug ) . '">'
-					. SponsorLink::html(
-						$sponsor,
-						'ink-borg-erkenning__logo',
-						'ink-borg-erkenning__naam',
-						'ink-borg-erkenning__skakel'
-					)
+				$slug = HomepageStrip::tierSlug( $sponsor->tier );
+				$aid  = $audit_ids[ $slug ] ?? '';
+				unset( $audit_ids[ $slug ] );
+
+				$link = SponsorLink::html(
+					$sponsor,
+					'ink-borg-erkenning__logo',
+					'ink-borg-erkenning__naam',
+					'ink-borg-erkenning__skakel'
+				);
+
+				if ( '' !== $aid ) {
+					$link = str_replace( 'class="ink-borg-erkenning__naam"', 'class="ink-borg-erkenning__naam" data-audit-id="' . esc_attr( $aid . '-name' ) . '"', $link );
+				}
+
+				$html .= '<li class="ink-borg-erkenning__item ink-borg-erkenning__item--' . esc_attr( $slug ) . '"'
+					. ( '' !== $aid ? ' data-audit-id="' . esc_attr( $aid ) . '"' : '' ) . '>'
+					. $link
 					. '</li>';
 			}
 
 			$html .= '</ul>';
 		}
 
-		$html .= '<a class="ink-borg-erkenning__cta" href="' . esc_url( self::contactUrl() ) . '">'
+		$html .= '<a class="ink-borg-erkenning__cta" data-audit-id="sponsors-btn" href="' . esc_url( self::contactUrl() ) . '">'
 			. self::heartIcon() . esc_html( $cta_label ) . '</a>';
 
 		return $html . '</section>';

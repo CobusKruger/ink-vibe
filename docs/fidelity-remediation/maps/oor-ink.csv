@@ -1,0 +1,32 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+sponsors,src/components/home/SponsorsSection.tsx,15,wp-content/themes/ink-foundation/patterns/borg-erkenning.php,20,sponsor band,paired,"TREATMENT A REGION ROOT. Lovable ref is the homepage section (rendered on /); INK <section> of the borg-erkenning pattern. Same id as row 00's <aside> in borg-strook.php — different page, no duplicate"
+sponsors-inner,,,wp-content/plugins/ink-core/src/Sponsors/RecognitionSection.php,141,inner <section> of ink/borg-erkenning,missing-lovable,INK block wrapper (as row 00)
+sponsors-eyebrow,src/components/home/SponsorsSection.tsx,17,wp-content/plugins/ink-core/src/Sponsors/RecognitionSection.php,142,eyebrow,paired,Lovable <span>; INK <p>
+sponsors-h2,src/components/home/SponsorsSection.tsx,20,wp-content/plugins/ink-core/src/Sponsors/RecognitionSection.php,143,h2,paired,
+sponsors-intro,src/components/home/SponsorsSection.tsx,23,wp-content/plugins/ink-core/src/Sponsors/RecognitionSection.php,144,intro,paired,
+sponsors-grid,src/components/home/SponsorsSection.tsx,29,wp-content/plugins/ink-core/src/Sponsors/RecognitionSection.php,147,chip list,paired,<ul>/<li> vs flex <div>s (MECHANISM); emitted only when an active sponsor exists
+sponsors-chip-gold,src/components/home/SponsorsSection.tsx,32,wp-content/plugins/ink-core/src/Sponsors/RecognitionSection.php,173,first gold chip,paired,first item of each tier; present on INK only if an active sponsor has that tier
+sponsors-chip-gold-name,src/components/home/SponsorsSection.tsx,46,wp-content/plugins/ink-core/src/Sponsors/RecognitionSection.php,170,first gold chip name,paired,"SponsorLink name span, stamped in RecognitionSection; absent when the sponsor has a logo"
+sponsors-chip-silver,src/components/home/SponsorsSection.tsx,32,wp-content/plugins/ink-core/src/Sponsors/RecognitionSection.php,173,first silver chip,paired,first item of each tier
+sponsors-chip-silver-name,src/components/home/SponsorsSection.tsx,46,wp-content/plugins/ink-core/src/Sponsors/RecognitionSection.php,170,first silver chip name,paired,"absent when the sponsor has a logo"
+sponsors-chip-bronze,src/components/home/SponsorsSection.tsx,32,wp-content/plugins/ink-core/src/Sponsors/RecognitionSection.php,173,first bronze chip,paired,first item of each tier
+sponsors-chip-bronze-name,src/components/home/SponsorsSection.tsx,46,wp-content/plugins/ink-core/src/Sponsors/RecognitionSection.php,170,first bronze chip name,paired,"absent when the sponsor has a logo"
+sponsors-btn,src/components/home/SponsorsSection.tsx,56,wp-content/plugins/ink-core/src/Sponsors/RecognitionSection.php,182,become-a-sponsor CTA,paired,Lovable sage-outline <button>; INK <a>. END OF TREATMENT A REGION
+oor-ink-hero,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,33,mission section,scope,TREATMENT C (no Lovable source)
+oor-ink-hero-eyebrow,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,37,eyebrow 'Oor INK',scope,TREATMENT C
+oor-ink-hero-h1,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,41,h1 'Ons missie',scope,TREATMENT C
+oor-ink-hero-lede,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,45,lede (lg),scope,TREATMENT C
+oor-ink-hero-sub,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,49,muted sub-line,scope,TREATMENT C
+oor-ink-org,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,57,organisation section (surface-alt band),scope,TREATMENT C
+oor-ink-org-h2,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,61,h2 'Ons organisasie',scope,TREATMENT C
+oor-ink-org-text,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,65,paragraph,scope,TREATMENT C
+oor-ink-kontak,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,73,contact section,scope,TREATMENT C
+oor-ink-kontak-h2,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,77,h2 'Kontak',scope,TREATMENT C
+oor-ink-kontak-text,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,81,muted paragraph,scope,TREATMENT C
+oor-ink-kontak-actions,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,85,core/buttons row,scope,TREATMENT C
+oor-ink-kontak-btn,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,87,'Kontak ons' primary button,scope,TREATMENT C; core/button with colour attrs (no is-style-ink-primary)
+oor-ink-meer,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,99,more-links section (surface-alt band),scope,TREATMENT C
+oor-ink-meer-h2,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,103,h2 'Meer oor INK',scope,TREATMENT C
+oor-ink-meer-list,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,107,core/list,scope,TREATMENT C
+oor-ink-meer-item,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,108,first list item,scope,TREATMENT C; first instance only
+oor-ink-meer-link,,,wp-content/themes/ink-foundation/patterns/oor-ink.php,108,first list link,scope,TREATMENT C; first instance only
