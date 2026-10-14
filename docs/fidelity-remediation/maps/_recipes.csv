@@ -1,0 +1,703 @@
+component_kind,variant,property,viewport,value,source,evidence,status,note
+heading,base,font-family,all,"Lora, Georgia, serif",lovable-measured,all 144 lovable heading rows (src/index.css:140-142 sets h1-h6 serif),canonical,token font-family.heading; INK gemeenskap-card-writers-item-title renders Inter (theme.json .ink-gemeenskap-card ul li h3)
+heading,base,color,all,"rgb(24, 29, 37)",lovable-measured,all lovable heading rows except on-dark,canonical,"token ink-text (Lovable --foreground hsl(220 20% 12%)); INK ink-text #1A1D21 = rgb(26,29,33) is a TOKEN-VALUE delta, out of this recipe"
+heading,base,font-weight,all,600,lovable-measured,"88 of 144 lovable heading rows (400: 48, 500: 8); every h1",canonical,Lovable base weight is 400 (preflight) + explicit font-semibold per use; INK theme.json styles.elements.heading sets NO weight -> UA 700 on every unclassed heading. Regular-weight siblings: see HR-1
+heading,base,font-style,all,normal,lovable-measured,all lovable heading rows except gedig-title,canonical,
+heading,base,line-height,all,per size step (see variants),lovable-measured,Tailwind text-* pairs: 16/24 18/28 20/28 24/32 30/36 36/40 48/48 60/60,canonical,INK theme.json elements.heading line-height custom.tight 1.2 is wrong for every step except 30px; theme has no per-step line-height token
+heading,h1-index,font-size,390,36px,lovable-measured,ontdek intro-h1; biblioteek library-h1,canonical,
+heading,h1-index,font-size,768,48px,lovable-measured,ontdek intro-h1; biblioteek library-h1,canonical,
+heading,h1-index,font-size,1440,60px,lovable-measured,ontdek intro-h1; biblioteek library-h1,canonical,
+heading,h1-index,line-height,390,45px,lovable-measured,ontdek intro-h1; biblioteek library-h1,canonical,390 = leading-tight 1.25; 768/1440 = text-5xl/6xl line-height 1
+heading,h1-index,line-height,768,48px,lovable-measured,ontdek intro-h1; biblioteek library-h1,canonical,390 = leading-tight 1.25; 768/1440 = text-5xl/6xl line-height 1
+heading,h1-index,line-height,1440,60px,lovable-measured,ontdek intro-h1; biblioteek library-h1,canonical,390 = leading-tight 1.25; 768/1440 = text-5xl/6xl line-height 1
+heading,h1-entity,font-size,390,30px,lovable-measured,uitdaging-enkel uitdaging-title; skrywer skrywer-name,canonical,
+heading,h1-entity,font-size,768,48px,lovable-measured,uitdaging-enkel uitdaging-title; skrywer skrywer-name,canonical,
+heading,h1-entity,font-size,1440,48px,lovable-measured,uitdaging-enkel uitdaging-title; skrywer skrywer-name,canonical,
+heading,h1-entity,line-height,390,37.5px,lovable-measured,uitdaging-enkel uitdaging-title; skrywer skrywer-name,canonical,
+heading,h1-entity,line-height,768,48px,lovable-measured,uitdaging-enkel uitdaging-title; skrywer skrywer-name,canonical,
+heading,h1-entity,line-height,1440,48px,lovable-measured,uitdaging-enkel uitdaging-title; skrywer skrywer-name,canonical,
+heading,h1-hero,font-size,390,30px,lovable-measured,tuisblad hero-h1,needs-ruling,HR-3: home hero scale vs gemeenskap landing hero scale
+heading,h1-hero,font-size,768,36px,lovable-measured,tuisblad hero-h1,needs-ruling,HR-3: home hero scale vs gemeenskap landing hero scale
+heading,h1-hero,font-size,1440,48px,lovable-measured,tuisblad hero-h1,needs-ruling,HR-3: home hero scale vs gemeenskap landing hero scale
+heading,h1-hero,line-height,390,37.5px,lovable-measured,tuisblad hero-h1,needs-ruling,HR-3
+heading,h1-hero,line-height,768,40px,lovable-measured,tuisblad hero-h1,needs-ruling,HR-3
+heading,h1-hero,line-height,1440,48px,lovable-measured,tuisblad hero-h1,needs-ruling,HR-3
+heading,h1-hero-landing,font-size,390,36px,lovable-measured,gemeenskap gemeenskap-hero-h1,needs-ruling,HR-3
+heading,h1-hero-landing,font-size,768,60px,lovable-measured,gemeenskap gemeenskap-hero-h1,needs-ruling,HR-3
+heading,h1-hero-landing,font-size,1440,60px,lovable-measured,gemeenskap gemeenskap-hero-h1,needs-ruling,HR-3
+heading,h1-hero-landing,line-height,390,39.6px,lovable-measured,gemeenskap gemeenskap-hero-h1,needs-ruling,HR-3 (leading-[1.1] at 390)
+heading,h1-hero-landing,line-height,768,60px,lovable-measured,gemeenskap gemeenskap-hero-h1,needs-ruling,HR-3 (leading-[1.1] at 390)
+heading,h1-hero-landing,line-height,1440,60px,lovable-measured,gemeenskap gemeenskap-hero-h1,needs-ruling,HR-3 (leading-[1.1] at 390)
+heading,h1-reading,font-size,390,30px,lovable-measured,lees-storie storie-title,canonical,
+heading,h1-reading,font-size,768,36px,lovable-measured,lees-storie storie-title,canonical,
+heading,h1-reading,font-size,1440,48px,lovable-measured,lees-storie storie-title,canonical,
+heading,h1-reading,line-height,390,36px,lovable-measured,lees-storie storie-title,canonical,
+heading,h1-reading,line-height,768,40px,lovable-measured,lees-storie storie-title,canonical,
+heading,h1-reading,line-height,1440,48px,lovable-measured,lees-storie storie-title,canonical,
+heading,h1-reading-poem,font-size,390,30px,lovable-measured,lees-gedig gedig-title,canonical,
+heading,h1-reading-poem,font-size,768,36px,lovable-measured,lees-gedig gedig-title,canonical,
+heading,h1-reading-poem,font-size,1440,36px,lovable-measured,lees-gedig gedig-title,canonical,
+heading,h1-reading-poem,line-height,390,36px,lovable-measured,lees-gedig gedig-title,canonical,
+heading,h1-reading-poem,line-height,768,40px,lovable-measured,lees-gedig gedig-title,canonical,
+heading,h1-reading-poem,line-height,1440,40px,lovable-measured,lees-gedig gedig-title,canonical,
+heading,h1-reading-poem,font-style,all,italic,lovable-measured,lees-gedig gedig-title,canonical,
+heading,h1-reading-poem,letter-spacing,all,-0.025em,lovable-measured,"lees-gedig gedig-title (-0.75px@30, -0.9px@36)",canonical,tracking-tight
+heading,h2-section,font-size,390,30px,lovable-measured,"8 ids / 4 pages: tuisblad featured-h2; gemeenskap hiw-h2, principles-h2, spotlight-h2; skryf skryf-intro-h1; uitdaging-enkel resources-h2, entries-h2, cta-h2",canonical,
+heading,h2-section,font-size,768,36px,lovable-measured,"8 ids / 4 pages: tuisblad featured-h2; gemeenskap hiw-h2, principles-h2, spotlight-h2; skryf skryf-intro-h1; uitdaging-enkel resources-h2, entries-h2, cta-h2",canonical,
+heading,h2-section,font-size,1440,36px,lovable-measured,"8 ids / 4 pages: tuisblad featured-h2; gemeenskap hiw-h2, principles-h2, spotlight-h2; skryf skryf-intro-h1; uitdaging-enkel resources-h2, entries-h2, cta-h2",canonical,
+heading,h2-section,line-height,390,36px,lovable-measured,same 8 ids,canonical,
+heading,h2-section,line-height,768,40px,lovable-measured,same 8 ids,canonical,
+heading,h2-section,line-height,1440,40px,lovable-measured,same 8 ids,canonical,
+heading,h2-section-regular,font-weight,all,400,lovable-measured,"skrywer werk-title, cta-title; biblioteek library-cta-h2; my-profiel profiel-identity-name",needs-ruling,"HR-1: same size/line-height as h2-section, weight 400"
+heading,h2-sub,font-size,390,24px,lovable-measured,tuisblad+uitdagings challenge-card-title; tuisblad+oor-ink sponsors-h2; uitdaging-enkel uitdaging-prompt-h2,canonical,
+heading,h2-sub,font-size,768,30px,lovable-measured,tuisblad+uitdagings challenge-card-title; tuisblad+oor-ink sponsors-h2; uitdaging-enkel uitdaging-prompt-h2,canonical,
+heading,h2-sub,font-size,1440,30px,lovable-measured,tuisblad+uitdagings challenge-card-title; tuisblad+oor-ink sponsors-h2; uitdaging-enkel uitdaging-prompt-h2,canonical,
+heading,h2-sub,line-height,390,32px,lovable-measured,same 5 instances,canonical,
+heading,h2-sub,line-height,768,36px,lovable-measured,same 5 instances,canonical,
+heading,h2-sub,line-height,1440,36px,lovable-measured,same 5 instances,canonical,
+heading,h2-sub-regular,font-weight,all,400,lovable-measured,skrywer skrywer-oor-title; biblioteek library-shelf-h2,needs-ruling,"HR-1: same size as h2-sub, weight 400"
+heading,h2-block,font-size,all,24px,lovable-measured,"tuisblad winner-title, featured-lead-title; gemeenskap card-writers-h2; lees-storie+lees-gedig reading-responses-h2; wagwoord-herstel+terugstel auth-heading",canonical,
+heading,h2-block,line-height,all,32px,lovable-measured,same 7 instances,canonical,INK renders xxl fluid 20.27/21.71/24 at 390/768/1440: fluid preset is off-scale
+heading,h2-block-regular,font-weight,all,400,lovable-measured,"my-profiel profiel-{activity,following,notif,posts,reading}-title (@1440 only)",needs-ruling,HR-1
+heading,h2-on-dark,font-size,390,30px,lovable-measured,tuisblad cta-h2 (36@768); gemeenskap gemeenskap-cta-h2 (48@768),needs-ruling,HR-4: two scales
+heading,h2-on-dark,font-size,768,36px | 48px,lovable-measured,tuisblad cta-h2 (36@768); gemeenskap gemeenskap-cta-h2 (48@768),needs-ruling,HR-4: two scales
+heading,h2-on-dark,font-size,1440,48px,lovable-measured,tuisblad cta-h2 (36@768); gemeenskap gemeenskap-cta-h2 (48@768),needs-ruling,HR-4: two scales
+heading,h2-on-dark,line-height,390,36px,lovable-measured,tuisblad cta-h2; gemeenskap gemeenskap-cta-h2,needs-ruling,HR-4
+heading,h2-on-dark,line-height,768,40px | 48px,lovable-measured,tuisblad cta-h2; gemeenskap gemeenskap-cta-h2,needs-ruling,HR-4
+heading,h2-on-dark,line-height,1440,48px,lovable-measured,tuisblad cta-h2; gemeenskap gemeenskap-cta-h2,needs-ruling,HR-4
+heading,h2-on-dark,color,all,"rgb(255, 255, 255) | rgb(250, 248, 245)",lovable-measured,"tuisblad cta-h2 (white, on terracotta gradient); gemeenskap gemeenskap-cta-h2 (cream, on ink band)",needs-ruling,"HR-4: may be legitimately surface-dependent (primary-foreground vs background); INK uses surface-alt rgb(253,252,250) for both"
+heading,h3-spotlight,font-size,390,20px,lovable-measured,tuisblad hero-spotlight-title,canonical,
+heading,h3-spotlight,font-size,768,24px,lovable-measured,tuisblad hero-spotlight-title,canonical,
+heading,h3-spotlight,font-size,1440,24px,lovable-measured,tuisblad hero-spotlight-title,canonical,
+heading,h3-spotlight,line-height,390,27.5px,lovable-measured,tuisblad hero-spotlight-title,canonical,
+heading,h3-spotlight,line-height,768,32px,lovable-measured,tuisblad hero-spotlight-title,canonical,
+heading,h3-spotlight,line-height,1440,32px,lovable-measured,tuisblad hero-spotlight-title,canonical,
+heading,h3,font-size,all,20px,lovable-measured,"gemeenskap hiw-col-h3, principle-title; skryf type-card-label; uitdaging-enkel devices-h3; lees-storie+lees-gedig author-name",canonical,
+heading,h3,line-height,all,28px,lovable-measured,same 6 ids,canonical,INK renders 24px (1.2) everywhere except skryf (30px)
+heading,h3-card,font-size,all,20px,lovable-measured,tuisblad featured-card-title; uitdaging-enkel uitdaging-entry-title,canonical,
+heading,h3-card,line-height,all,28px | 27.5px,lovable-measured,"tuisblad featured-card-title (28) vs ontdek stories-card-title, skrywer workcard-title, biblioteek library-card-title (27.5, leading-snug)",needs-ruling,HR-2
+heading,h3-card,font-weight,all,600 | 400,lovable-measured,"tuisblad+uitdaging-enkel (600, 18 inst.) vs ontdek+skrywer+biblioteek (400, 24 inst.)",needs-ruling,"HR-2: one work-card title, two treatments"
+heading,h3-regular,font-weight,all,400,lovable-measured,"my-profiel profiel-{about,glance,recent,edit,membership-renew}-title",needs-ruling,"HR-1: h3 size, weight 400"
+heading,h4,font-size,all,18px,lovable-measured,"uitdaging-enkel uitdaging-rules-h3, uitdaging-resource-title",canonical,INK has no paired instance (resources = disclosed SCOPE gap)
+heading,h4,line-height,all,28px,lovable-measured,same 2 ids,canonical,
+heading,h4-regular,font-weight,all,400,lovable-measured,my-profiel profiel-posts-card-title (@1440),needs-ruling,HR-1
+heading,h5,font-size,all,16px,lovable-measured,tuisblad footer-col-heading; lees-storie highlights-panel h3,canonical,
+heading,h5,line-height,all,24px,lovable-measured,same,canonical,INK footer-col-heading 19.2px / 700 (theme.json + functions.php:1846 sets family only)
+heading,h5-list-item,font-weight,all,500,lovable-measured,gemeenskap gemeenskap-card-writers-item-title,canonical,size/line-height = h5
+section-band,base,display,all,block,lovable-measured,43 of 51 lovable band rows,canonical,
+section-band,base,padding-left,all,0px,lovable-measured,every full-bleed lovable band (outer <section>),canonical,"gutter belongs to the inner container (proposed kind `container`), not the band; INK alignfull groups carry 24px on the band itself"
+section-band,base,padding-right,all,0px,lovable-measured,as padding-left,canonical,
+section-band,base,border-top-color,all,"rgb(231, 225, 218)",lovable-measured,all lovable band rows,canonical,"token border; INK #E8E4DC = rgb(232,228,220) is a token-value delta"
+section-band,base,border-top-left-radius,all,0px,lovable-measured,"all lovable bands (cta-band 24px is a panel, not a band)",canonical,
+section-band,base,background-color,all,"rgba(0, 0, 0, 0)",lovable-measured,17 content sections,canonical,default surface = transparent over page background
+section-band,base,padding-top,390,64px,most-used,content+tint+gradient bands: 64px modal at 768/1440 (11 of 25); 48px (10) narrowly over 64px (9) at 390,needs-ruling,"SB-1: Lovable uses 48 / 64 / 80 and responsive pairs (py-12 md:py-16, py-16 md:py-20, py-10 md:py-14, py-12 md:py-20)"
+section-band,base,padding-bottom,390,64px,most-used,as padding-top,needs-ruling,SB-1
+section-band,base,padding-top,768,64px,most-used,content+tint+gradient bands: 64px modal at 768/1440 (11 of 25); 48px (10) narrowly over 64px (9) at 390,needs-ruling,"SB-1: Lovable uses 48 / 64 / 80 and responsive pairs (py-12 md:py-16, py-16 md:py-20, py-10 md:py-14, py-12 md:py-20)"
+section-band,base,padding-bottom,768,64px,most-used,as padding-top,needs-ruling,SB-1
+section-band,base,padding-top,1440,64px,most-used,content+tint+gradient bands: 64px modal at 768/1440 (11 of 25); 48px (10) narrowly over 64px (9) at 390,needs-ruling,"SB-1: Lovable uses 48 / 64 / 80 and responsive pairs (py-12 md:py-16, py-16 md:py-20, py-10 md:py-14, py-12 md:py-20)"
+section-band,base,padding-bottom,1440,64px,most-used,as padding-top,needs-ruling,SB-1
+section-band,sm,padding-top,all,48px,lovable-measured,"lees-storie+lees-gedig reading-responses, reading-body, reading-author-band, reading-header",needs-ruling,SB-1 (reading pages use 48 throughout)
+section-band,sm,padding-bottom,all,48px,lovable-measured,same,needs-ruling,SB-1
+section-band,lg,padding-top,all,80px,lovable-measured,"gemeenskap value, spotlight, principles; tuisblad cta; tuisblad hero@768+",needs-ruling,SB-1
+section-band,lg,padding-bottom,all,80px,lovable-measured,same,needs-ruling,SB-1; tuisblad cta bottom 64 in INK is DIVERGENCE (accepted) cta-band.php:21
+section-band,tint-cream,background-color,all,"rgba(250, 248, 245, 0.4)",lovable-measured,"gemeenskap-hero, profiel-identity, ontdek intro, library-intro, gemeenskap stats+hiw, skrywer-stats, library-cta",needs-ruling,SB-3: skrywer-werk uses cream/30 (1 of 9); recommend 0.4. Token background/surface (INK surface #F8F6F2 is a token-value delta)
+section-band,tint-cream,padding-top,all,unmeasured (inner container),lovable-measured,Lovable puts py on the inner .container for every cream band (outer py = 0),needs-ruling,capture the inner container before Stage 3; do not compare INK outer padding to Lovable outer 0
+section-band,intro,border-top-width,all,0px,lovable-measured,"gemeenskap-hero, profiel-identity, ontdek intro, library-intro",canonical,intro = tint-cream + bottom rule (class border-b); border-bottom is NOT in the capture property set - verify by capture
+section-band,strip,border-top-width,all,1px,lovable-measured,"gemeenskap stats, hiw; skrywer stats; library-cta; skrywer-werk",canonical,strip = tint-cream + border-y/border-t
+section-band,tint-stone,background-color,all,"rgba(240, 235, 230, 0.3)",lovable-measured,tuisblad challenge; uitdaging-enkel resources; lees-storie+lees-gedig reading-author-band; lees-storie reading-header,canonical,token secondary/30 (INK secondary #EDE9E0 token-value delta). INK lees-gedig reading-header uses surface/50 instead (reading-gedig.php:85)
+section-band,tint-stone,border-top-width,all,1px | 0px,lovable-measured,"author-band, resources = 1px (border-y); challenge, reading-header = 0 (reading-header border-b)",canonical,"border is a per-use modifier, not part of the surface"
+section-band,tint-stone-soft,background-color,all,"rgba(240, 235, 230, 0.2)",lovable-measured,tuisblad sponsors; oor-ink sponsors,canonical,INK oor-ink sponsors band renders transparent
+section-band,dark,background-color,all,"rgb(24, 29, 37)",lovable-measured,gemeenskap gemeenskap-cta,canonical,token ink-text as surface; pair with heading h2-on-dark
+section-band,dark,border-top-width,all,1px,lovable-measured,gemeenskap gemeenskap-cta,canonical,INK renders 0
+section-band,gradient,background-image,all,"linear-gradient(to bottom right, primary/10, background, accent/10)",lovable-measured,uitdaging-enkel uitdaging-cta (class bg-gradient-to-br from-terracotta/10 via-background to-sage/10),needs-ruling,"background-image is not in the capture property set (computed bg-color transparent): value from class, needs a capture to canonise (R4)"
+section-band,gradient,border-top-width,all,1px,lovable-measured,uitdaging-enkel uitdaging-cta,canonical,
+section-band,gradient,padding-top,all,64px,lovable-measured,uitdaging-enkel uitdaging-cta,canonical,
+section-band,gradient,padding-bottom,all,64px,lovable-measured,uitdaging-enkel uitdaging-cta,canonical,
+section-band,container,padding-left,all,16px,lovable-measured,"9 lovable .container px-4 sections (gemeenskap value/spotlight/principles, skrywer-cta, biblioteek shelf/browse, profiel tabs, ontdek stories, skrywer oor grid)",canonical,"PROPOSED kind `container`; INK bands use 24px (s-24). max-width not captured (Lovable container 2xl:1400px, tailwind.config.ts:8-14 - source only)"
+section-band,container,padding-right,all,16px,lovable-measured,as padding-left,canonical,PROPOSED kind `container`
+eyebrow,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,"tuisblad featured-eyebrow; uitdaging-enkel resources-eyebrow, entries-eyebrow (+ sponsors-eyebrow x2)",canonical,
+eyebrow,base,font-size,all,14px,lovable-measured,"tuisblad featured-eyebrow; uitdaging-enkel resources-eyebrow, entries-eyebrow (+ sponsors-eyebrow x2)",canonical,
+eyebrow,base,font-weight,all,500,lovable-measured,"tuisblad featured-eyebrow; uitdaging-enkel resources-eyebrow, entries-eyebrow (+ sponsors-eyebrow x2)",canonical,
+eyebrow,base,line-height,all,20px,lovable-measured,"tuisblad featured-eyebrow; uitdaging-enkel resources-eyebrow, entries-eyebrow (+ sponsors-eyebrow x2)",canonical,INK renders 21px (body 1.5)
+eyebrow,base,letter-spacing,all,0.05em,lovable-measured,"tuisblad featured-eyebrow; uitdaging-enkel resources-eyebrow, entries-eyebrow (+ sponsors-eyebrow x2)",canonical,0.7px measured (tracking-wider); INK uses 0.08em (1.12px) in home.css:815/1114 and theme.json .ink-borg-erkenning__etiket
+eyebrow,base,text-transform,all,uppercase,lovable-measured,"tuisblad featured-eyebrow; uitdaging-enkel resources-eyebrow, entries-eyebrow (+ sponsors-eyebrow x2)",canonical,
+eyebrow,base,color,all,"rgb(236, 59, 19)",lovable-measured,"tuisblad featured-eyebrow; uitdaging-enkel resources-eyebrow, entries-eyebrow (+ sponsors-eyebrow x2)",canonical,token primary
+eyebrow,accent,color,all,"rgb(82, 122, 102)",lovable-measured,tuisblad sponsors-eyebrow; oor-ink sponsors-eyebrow,canonical,token accent (sage)
+eyebrow,tracked,font-size,all,12px,lovable-measured,"gemeenskap hero-eyebrow, spotlight-eyebrow, principles-eyebrow",needs-ruling,EB-1: a second section-eyebrow recipe (xs / 0.2em) vs base (sm / 0.05em); INK copies it to oor-ink + kontak hero eyebrows
+eyebrow,tracked,line-height,all,16px,lovable-measured,"gemeenskap hero-eyebrow, spotlight-eyebrow, principles-eyebrow",needs-ruling,EB-1: a second section-eyebrow recipe (xs / 0.2em) vs base (sm / 0.05em); INK copies it to oor-ink + kontak hero eyebrows
+eyebrow,tracked,letter-spacing,all,0.2em,lovable-measured,"gemeenskap hero-eyebrow, spotlight-eyebrow, principles-eyebrow",needs-ruling,EB-1: a second section-eyebrow recipe (xs / 0.2em) vs base (sm / 0.05em); INK copies it to oor-ink + kontak hero eyebrows
+eyebrow,muted,font-size,all,12px,lovable-measured,my-profiel profiel-identity-eyebrow; gemeenskap spotlight-card-label,canonical,
+eyebrow,muted,line-height,all,16px,lovable-measured,my-profiel profiel-identity-eyebrow; gemeenskap spotlight-card-label,canonical,
+eyebrow,muted,font-weight,all,400,lovable-measured,my-profiel profiel-identity-eyebrow; gemeenskap spotlight-card-label,canonical,
+eyebrow,muted,letter-spacing,all,0.05em,lovable-measured,my-profiel profiel-identity-eyebrow; gemeenskap spotlight-card-label,canonical,0.6px measured; INK 0.08em (0.96px) profiel.css:53
+eyebrow,muted,color,all,"rgb(103, 111, 126)",lovable-measured,my-profiel profiel-identity-eyebrow; gemeenskap spotlight-card-label,canonical,token muted-text (INK #6B7280 token-value delta)
+eyebrow,kicker-serif,font-family,all,"Lora, Georgia, serif",lovable-measured,skrywer skrywer-werk-kicker-text; biblioteek library-eyebrow-text; ontdek intro-eyebrow (Browse.tsx:392-394 same markup),canonical,
+eyebrow,kicker-serif,font-style,all,italic,lovable-measured,skrywer skrywer-werk-kicker-text; biblioteek library-eyebrow-text; ontdek intro-eyebrow (Browse.tsx:392-394 same markup),canonical,
+eyebrow,kicker-serif,font-size,all,14px,lovable-measured,skrywer skrywer-werk-kicker-text; biblioteek library-eyebrow-text; ontdek intro-eyebrow (Browse.tsx:392-394 same markup),canonical,text span; the row is a flex gap-8px holding a 16px icon (row font 16/24)
+eyebrow,kicker-serif,line-height,all,20px,lovable-measured,skrywer skrywer-werk-kicker-text; biblioteek library-eyebrow-text; ontdek intro-eyebrow (Browse.tsx:392-394 same markup),canonical,
+eyebrow,kicker-serif,letter-spacing,all,0.025em,lovable-measured,skrywer skrywer-werk-kicker-text; biblioteek library-eyebrow-text; ontdek intro-eyebrow (Browse.tsx:392-394 same markup),canonical,
+eyebrow,kicker-serif,font-weight,all,400,lovable-measured,skrywer skrywer-werk-kicker-text; biblioteek library-eyebrow-text; ontdek intro-eyebrow (Browse.tsx:392-394 same markup),canonical,
+eyebrow,kicker-serif,text-transform,all,none,lovable-measured,skrywer skrywer-werk-kicker-text; biblioteek library-eyebrow-text; ontdek intro-eyebrow (Browse.tsx:392-394 same markup),canonical,
+eyebrow,kicker-serif,color,all,"rgb(236, 59, 19)",lovable-measured,skrywer skrywer-werk-kicker-text; biblioteek library-eyebrow-text; ontdek intro-eyebrow (Browse.tsx:392-394 same markup),canonical,
+eyebrow,card,font-size,all,14px,lovable-measured,tuisblad+uitdagings challenge-card-eyebrow; tuisblad winner-eyebrow-text,canonical,"colour per use: primary (challenge) | gold rgb(232,177,48) (winner); INK winner text renders Lora 600"
+eyebrow,card,line-height,all,20px,lovable-measured,tuisblad+uitdagings challenge-card-eyebrow; tuisblad winner-eyebrow-text,canonical,
+eyebrow,card,font-weight,all,500,lovable-measured,tuisblad+uitdagings challenge-card-eyebrow; tuisblad winner-eyebrow-text,canonical,
+eyebrow,card,text-transform,all,none,lovable-measured,tuisblad+uitdagings challenge-card-eyebrow; tuisblad winner-eyebrow-text,canonical,
+eyebrow,card,letter-spacing,all,normal,lovable-measured,tuisblad+uitdagings challenge-card-eyebrow; tuisblad winner-eyebrow-text,canonical,
+eyebrow,stat-label,font-size,all,12px,lovable-measured,"my-profiel glance-stat-label; uitdaging-enkel prize-label; skrywer stat-{rating,works,followers,likes}-label (6 of 8)",canonical,PROPOSED kind `stat-label`; INK profiel.css:303 dt uses 0.05em + lh 18
+eyebrow,stat-label,line-height,all,16px,lovable-measured,"my-profiel glance-stat-label; uitdaging-enkel prize-label; skrywer stat-{rating,works,followers,likes}-label (6 of 8)",canonical,
+eyebrow,stat-label,font-weight,all,400,lovable-measured,"my-profiel glance-stat-label; uitdaging-enkel prize-label; skrywer stat-{rating,works,followers,likes}-label (6 of 8)",canonical,
+eyebrow,stat-label,letter-spacing,all,0.025em,lovable-measured,"my-profiel glance-stat-label; uitdaging-enkel prize-label; skrywer stat-{rating,works,followers,likes}-label (6 of 8)",canonical,
+eyebrow,stat-label,text-transform,all,uppercase,lovable-measured,"my-profiel glance-stat-label; uitdaging-enkel prize-label; skrywer stat-{rating,works,followers,likes}-label (6 of 8)",canonical,
+eyebrow,stat-label,color,all,"rgb(103, 111, 126)",lovable-measured,"my-profiel glance-stat-label; uitdaging-enkel prize-label; skrywer stat-{rating,works,followers,likes}-label (6 of 8)",canonical,
+eyebrow,stat-label-lg,font-size,all,14px,lovable-measured,"gemeenskap gemeenskap-stat-label (Statistieke section, MISSING on INK)",needs-ruling,"EB-2: sm / 0.05em stat label vs xs / 0.025em; plus skrywer-prestasies-title (Lora, 0.05em) - INK renders it as an h2 heading"
+eyebrow,stat-label-lg,letter-spacing,all,0.05em,lovable-measured,gemeenskap gemeenskap-stat-label,needs-ruling,EB-2
+card,base,box-sizing,all,border-box,lovable-measured,"my-profiel:profiel-about-card; skrywer:skrywer-workcard; ontdek:stories-card; biblioteek:library-card (Lovable L8, 36 inst)",canonical,
+card,base,background-color,all,"rgb(253, 253, 252)",lovable-measured,"my-profiel:profiel-about-card; skrywer:skrywer-workcard; ontdek:stories-card; biblioteek:library-card (Lovable L8, 36 inst)",canonical,token card -> surface-alt
+card,base,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,"my-profiel:profiel-about-card; skrywer:skrywer-workcard; ontdek:stories-card; biblioteek:library-card (Lovable L8, 36 inst)",canonical,
+card,base,border-radius,all,8px,lovable-measured,"my-profiel:profiel-about-card; skrywer:skrywer-workcard; ontdek:stories-card; biblioteek:library-card (Lovable L8, 36 inst)",canonical,
+card,base,box-shadow,all,"rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",lovable-measured,"my-profiel:profiel-about-card; skrywer:skrywer-workcard; ontdek:stories-card; biblioteek:library-card (Lovable L8, 36 inst)",canonical,Tailwind shadow-sm; no INK preset has this value (INK shadow.sm = Lovable shadow-card) - Stage 3 needs a token; only property where registered is-style-card (functions.php:1431) differs
+card,base,padding,all,24px,lovable-measured,"my-profiel:profiel-about-card; skrywer:skrywer-workcard; ontdek:stories-card; biblioteek:library-card (Lovable L8, 36 inst)",canonical,"Lovable pads the CardContent child (p-6, measured my-profiel@1440 profiel-about-card/0); one box in INK"
+card,base-lg,padding,all,32px,lovable-measured,meld-aan:auth-card; wagwoord-herstel:auth-card (Lovable L20),canonical,
+card,base-lg,inherits,all,base,lovable-measured,meld-aan:auth-card,canonical,all other properties = base (measured identical)
+card,shelf,background-color,all,"rgba(250, 248, 245, 0.6)",lovable-measured,"biblioteek:library-shelf-card (Lovable L19, 3 inst)",canonical,token background at 60%
+card,shelf,border-color,all,"rgba(236, 59, 19, 0.2)",lovable-measured,"biblioteek:library-shelf-card (Lovable L19, 3 inst)",canonical,token primary at 20%
+card,shelf,inherits,all,base,lovable-measured,biblioteek:library-shelf-card,canonical,radius/shadow/padding = base
+card,feature,box-sizing,all,border-box,lovable-measured,"tuisblad:featured-card,featured-lead; uitdaging-enkel:uitdaging-entry-card,uitdaging-resource-card; lees-storie:reading-response-item,reading-response-form (Lovable L1/L5/L16/L17, 19 inst)",canonical,
+card,feature,background-color,all,"rgb(253, 253, 252)",lovable-measured,"tuisblad:featured-card,featured-lead; uitdaging-enkel:uitdaging-entry-card,uitdaging-resource-card; lees-storie:reading-response-item,reading-response-form (Lovable L1/L5/L16/L17, 19 inst)",canonical,token card -> surface-alt
+card,feature,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,"tuisblad:featured-card,featured-lead; uitdaging-enkel:uitdaging-entry-card,uitdaging-resource-card; lees-storie:reading-response-item,reading-response-form (Lovable L1/L5/L16/L17, 19 inst)",canonical,
+card,feature,border-radius,all,12px,lovable-measured,"tuisblad:featured-card,featured-lead; uitdaging-enkel:uitdaging-entry-card,uitdaging-resource-card; lees-storie:reading-response-item,reading-response-form (Lovable L1/L5/L16/L17, 19 inst)",canonical,
+card,feature,padding,all,24px,lovable-measured,"tuisblad:featured-card,featured-lead; uitdaging-enkel:uitdaging-entry-card,uitdaging-resource-card; lees-storie:reading-response-item,reading-response-form (Lovable L1/L5/L16/L17, 19 inst)",canonical,
+card,feature,box-shadow,all,none,lovable-measured,"tuisblad:featured-card,featured-lead; uitdaging-enkel:uitdaging-entry-card,uitdaging-resource-card; lees-storie:reading-response-item,reading-response-form (Lovable L1/L5/L16/L17, 19 inst)",canonical,no shadow at rest; registered is-style-ink-card (functions.php:1644) adds shadow.sm at rest - the one property it differs on
+card,feature,hover,all,"translateY(-4px); box-shadow rgba(24, 29, 37, 0.12) 0px 12px 40px -8px",block-style,tuisblad:featured-card (card-hover class),canonical,Lovable card-hover (index.css:177-180) = is-style-ink-card:hover (functions.php:1652); hover not captured - block style is the evidence
+card,feature-hero,padding,390,24px,lovable-measured,"tuisblad:hero-spotlight (Lovable L1@390, L4@768|1440)",canonical,
+card,feature-hero,padding,768|1440,32px,lovable-measured,"tuisblad:hero-spotlight (Lovable L1@390, L4@768|1440)",canonical,
+card,feature-hero,inherits,all,feature,lovable-measured,tuisblad:hero-spotlight,canonical,
+card,soft,box-sizing,all,border-box,lovable-measured,tuisblad:challenge-card; uitdagings:challenge-card (Lovable L2),canonical,
+card,soft,background-color,all,"rgb(253, 253, 252)",lovable-measured,tuisblad:challenge-card; uitdagings:challenge-card (Lovable L2),canonical,token card -> surface-alt
+card,soft,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,tuisblad:challenge-card; uitdagings:challenge-card (Lovable L2),canonical,
+card,soft,border-radius,all,16px,lovable-measured,tuisblad:challenge-card; uitdagings:challenge-card (Lovable L2),canonical,
+card,soft,padding,all,32px,lovable-measured,tuisblad:challenge-card; uitdagings:challenge-card (Lovable L2),canonical,
+card,soft,box-shadow,all,"rgba(24, 29, 37, 0.08) 0px 4px 20px -4px",lovable-measured,tuisblad:challenge-card; uitdagings:challenge-card (Lovable L2),canonical,token shadow.md
+card,soft-sm,padding,all,24px,lovable-measured,uitdaging-enkel:uitdaging-rules (Lovable L15),canonical,
+card,soft-sm,inherits,all,soft,lovable-measured,uitdaging-enkel:uitdaging-rules,canonical,
+card,panel,box-sizing,all,border-box,lovable-measured,"gemeenskap:gemeenskap-card-writers,gemeenskap-card-readers (Lovable L6/L7)",canonical,
+card,panel,background-color,all,"rgb(253, 253, 252)",lovable-measured,"gemeenskap:gemeenskap-card-writers,gemeenskap-card-readers (Lovable L6/L7)",canonical,token card -> surface-alt
+card,panel,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,"gemeenskap:gemeenskap-card-writers,gemeenskap-card-readers (Lovable L6/L7)",canonical,
+card,panel,border-radius,all,8px,lovable-measured,"gemeenskap:gemeenskap-card-writers,gemeenskap-card-readers (Lovable L6/L7)",canonical,
+card,panel,box-shadow,all,none,lovable-measured,"gemeenskap:gemeenskap-card-writers,gemeenskap-card-readers (Lovable L6/L7)",canonical,
+card,panel,padding,390,32px,lovable-measured,"gemeenskap:gemeenskap-card-writers,gemeenskap-card-readers (Lovable L6/L7)",canonical,gemeenskap-spotlight-card is p-8 at every width (MISSING on INK)
+card,panel,padding,768|1440,40px,lovable-measured,"gemeenskap:gemeenskap-card-writers,gemeenskap-card-readers (Lovable L6/L7)",canonical,gemeenskap-spotlight-card is p-8 at every width (MISSING on INK)
+card,panel-sm,padding,all,20px,lovable-measured,skryf:skryf-challenges (Lovable L13),canonical,
+card,panel-sm,inherits,all,panel,lovable-measured,skryf:skryf-challenges,canonical,
+card,selectable,box-sizing,all,border-box,lovable-measured,"my-profiel:profiel-membership-plan (Lovable L9 rest, L10 selected)",canonical,
+card,selectable,background-color,all,"rgba(0, 0, 0, 0)",lovable-measured,"my-profiel:profiel-membership-plan (Lovable L9 rest, L10 selected)",canonical,
+card,selectable,border,all,"2px solid rgb(231, 225, 218)",lovable-measured,"my-profiel:profiel-membership-plan (Lovable L9 rest, L10 selected)",canonical,
+card,selectable,border-radius,all,8px,lovable-measured,"my-profiel:profiel-membership-plan (Lovable L9 rest, L10 selected)",canonical,
+card,selectable,padding,all,16px,lovable-measured,"my-profiel:profiel-membership-plan (Lovable L9 rest, L10 selected)",canonical,
+card,selectable,border-color:selected,all,"rgb(236, 59, 19)",lovable-measured,"my-profiel (selected plan tile, no id)",canonical,token primary
+card,selectable,background-color:selected,all,"rgba(236, 59, 19, 0.05)",lovable-measured,"my-profiel (selected plan tile, no id)",canonical,token primary at 5%
+card,selectable-lg,box-sizing,all,border-box,lovable-measured,"skryf:skryf-type-card (Lovable L12@390, L14@768|1440)",canonical,
+card,selectable-lg,background-color,all,"rgb(253, 253, 252)",lovable-measured,"skryf:skryf-type-card (Lovable L12@390, L14@768|1440)",canonical,token card -> surface-alt
+card,selectable-lg,border,all,"2px solid rgb(231, 225, 218)",lovable-measured,"skryf:skryf-type-card (Lovable L12@390, L14@768|1440)",canonical,
+card,selectable-lg,border-radius,all,12px,lovable-measured,"skryf:skryf-type-card (Lovable L12@390, L14@768|1440)",canonical,
+card,selectable-lg,box-shadow,all,none,lovable-measured,"skryf:skryf-type-card (Lovable L12@390, L14@768|1440)",canonical,
+card,selectable-lg,padding,390,24px,lovable-measured,"skryf:skryf-type-card (Lovable L12@390, L14@768|1440)",canonical,
+card,selectable-lg,padding,768|1440,28px,lovable-measured,"skryf:skryf-type-card (Lovable L12@390, L14@768|1440)",canonical,
+card,empty,box-sizing,all,border-box,lovable-measured,"my-profiel:profiel-reading-empty,profiel-following-empty,profiel-activity-empty (Lovable L11)",canonical,
+card,empty,background-color,all,"rgba(0, 0, 0, 0)",lovable-measured,"my-profiel:profiel-reading-empty,profiel-following-empty,profiel-activity-empty (Lovable L11)",canonical,
+card,empty,border,all,"1px dashed rgb(231, 225, 218)",lovable-measured,"my-profiel:profiel-reading-empty,profiel-following-empty,profiel-activity-empty (Lovable L11)",canonical,
+card,empty,border-radius,all,8px,lovable-measured,"my-profiel:profiel-reading-empty,profiel-following-empty,profiel-activity-empty (Lovable L11)",canonical,
+card,empty,padding,all,64px 0px,lovable-measured,"my-profiel:profiel-reading-empty,profiel-following-empty,profiel-activity-empty (Lovable L11)",canonical,INK biblioteek/opleiding __leeg add 24px inline padding
+card,empty,box-shadow,all,none,lovable-measured,"my-profiel:profiel-reading-empty,profiel-following-empty,profiel-activity-empty (Lovable L11)",canonical,
+card,winner,box-sizing,all,border-box,lovable-measured,tuisblad:winner-card (Lovable L3),canonical,
+card,winner,background-color,all,"rgba(0, 0, 0, 0)",lovable-measured,tuisblad:winner-card (Lovable L3),canonical,
+card,winner,background-image,all,"linear-gradient(to right bottom, rgba(232, 177, 48, 0.1), rgba(217, 201, 166, 0.2))",lovable-measured,tuisblad:winner-card (Lovable L3),canonical,"gold/10 -> gold-muted/20; INK gold-muted #C9B88A != Lovable 217,201,166"
+card,winner,border,all,"1px solid rgba(217, 201, 166, 0.3)",lovable-measured,tuisblad:winner-card (Lovable L3),canonical,gold-muted at 30%
+card,winner,border-radius,all,16px,lovable-measured,tuisblad:winner-card (Lovable L3),canonical,
+card,winner,padding,all,32px,lovable-measured,tuisblad:winner-card (Lovable L3),canonical,
+card,winner,box-shadow,all,none,lovable-measured,tuisblad:winner-card (Lovable L3),canonical,
+card,sheet,background-color,all,"rgb(253, 253, 252)",lovable-measured,lees-storie:storie-highlights-panel (Lovable L18),canonical,token card -> surface-alt
+card,sheet,border-left,all,"1px solid rgb(231, 225, 218)",lovable-measured,lees-storie:storie-highlights-panel (Lovable L18),canonical,
+card,sheet,border-radius,all,0px,lovable-measured,lees-storie:storie-highlights-panel (Lovable L18),canonical,
+card,sheet,box-shadow,all,"rgba(24, 29, 37, 0.12) 0px 12px 40px -8px",lovable-measured,lees-storie:storie-highlights-panel (Lovable L18),canonical,token shadow.lg
+card,sheet,width,all,320px,lovable-measured,lees-storie:storie-highlights-panel (Lovable L18),canonical,
+pill,outline,box-sizing,all,border-box,lovable-measured,"biblioteek:library-card-badge; skrywer:skrywer-genre-pill; ontdek:stories-card-pill; my-profiel:profiel-posts-type (Lovable L2-L4, 32 inst)",canonical,
+pill,outline,display,all,inline-flex,lovable-measured,"biblioteek:library-card-badge; skrywer:skrywer-genre-pill; ontdek:stories-card-pill; my-profiel:profiel-posts-type (Lovable L2-L4, 32 inst)",canonical,
+pill,outline,padding,all,2px 10px,lovable-measured,"biblioteek:library-card-badge; skrywer:skrywer-genre-pill; ontdek:stories-card-pill; my-profiel:profiel-posts-type (Lovable L2-L4, 32 inst)",canonical,
+pill,outline,border,all,"1px solid rgba(236, 59, 19, 0.4)",lovable-measured,"biblioteek:library-card-badge; skrywer:skrywer-genre-pill; ontdek:stories-card-pill; my-profiel:profiel-posts-type (Lovable L2-L4, 32 inst)",canonical,"tone at 40%: primary default; accent rgba(82,122,102,0.4) and muted-fg rgba(103,111,126,0.4) seen"
+pill,outline,background-color,all,"rgba(0, 0, 0, 0)",lovable-measured,"biblioteek:library-card-badge; skrywer:skrywer-genre-pill; ontdek:stories-card-pill; my-profiel:profiel-posts-type (Lovable L2-L4, 32 inst)",canonical,
+pill,outline,border-radius,all,9999px,lovable-measured,"biblioteek:library-card-badge; skrywer:skrywer-genre-pill; ontdek:stories-card-pill; my-profiel:profiel-posts-type (Lovable L2-L4, 32 inst)",canonical,
+pill,outline,font-family,all,Inter,lovable-measured,"biblioteek:library-card-badge; skrywer:skrywer-genre-pill; ontdek:stories-card-pill; my-profiel:profiel-posts-type (Lovable L2-L4, 32 inst)",canonical,
+pill,outline,font-size,all,12px,lovable-measured,"biblioteek:library-card-badge; skrywer:skrywer-genre-pill; ontdek:stories-card-pill; my-profiel:profiel-posts-type (Lovable L2-L4, 32 inst)",canonical,
+pill,outline,line-height,all,16px,lovable-measured,"biblioteek:library-card-badge; skrywer:skrywer-genre-pill; ontdek:stories-card-pill; my-profiel:profiel-posts-type (Lovable L2-L4, 32 inst)",canonical,
+pill,outline,font-weight,all,600,lovable-measured,"biblioteek:library-card-badge; skrywer:skrywer-genre-pill; ontdek:stories-card-pill; my-profiel:profiel-posts-type (Lovable L2-L4, 32 inst)",canonical,
+pill,outline,color,all,"rgb(236, 59, 19)",lovable-measured,"biblioteek:library-card-badge; skrywer:skrywer-genre-pill; ontdek:stories-card-pill; my-profiel:profiel-posts-type (Lovable L2-L4, 32 inst)",canonical,token primary; text = tone
+pill,outline,height,all,22px,lovable-measured,"biblioteek:library-card-badge; skrywer:skrywer-genre-pill; ontdek:stories-card-pill; my-profiel:profiel-posts-type (Lovable L2-L4, 32 inst)",canonical,rendered box
+pill,soft,box-sizing,all,border-box,lovable-measured,"tuisblad:featured-card-pill; uitdaging-enkel:uitdaging-entry-type (Lovable L1, 7 inst)",canonical,
+pill,soft,display,all,inline-flex,lovable-measured,"tuisblad:featured-card-pill; uitdaging-enkel:uitdaging-entry-type (Lovable L1, 7 inst)",canonical,
+pill,soft,padding,all,4px 10px,lovable-measured,"tuisblad:featured-card-pill; uitdaging-enkel:uitdaging-entry-type (Lovable L1, 7 inst)",canonical,
+pill,soft,background-color,all,"rgb(240, 235, 230)",lovable-measured,"tuisblad:featured-card-pill; uitdaging-enkel:uitdaging-entry-type (Lovable L1, 7 inst)",canonical,token secondary
+pill,soft,border,all,0,lovable-measured,"tuisblad:featured-card-pill; uitdaging-enkel:uitdaging-entry-type (Lovable L1, 7 inst)",canonical,
+pill,soft,border-radius,all,9999px,lovable-measured,"tuisblad:featured-card-pill; uitdaging-enkel:uitdaging-entry-type (Lovable L1, 7 inst)",canonical,
+pill,soft,font-family,all,Inter,lovable-measured,"tuisblad:featured-card-pill; uitdaging-enkel:uitdaging-entry-type (Lovable L1, 7 inst)",canonical,
+pill,soft,font-size,all,12px,lovable-measured,"tuisblad:featured-card-pill; uitdaging-enkel:uitdaging-entry-type (Lovable L1, 7 inst)",canonical,
+pill,soft,line-height,all,16px,lovable-measured,"tuisblad:featured-card-pill; uitdaging-enkel:uitdaging-entry-type (Lovable L1, 7 inst)",canonical,
+pill,soft,font-weight,all,500,lovable-measured,"tuisblad:featured-card-pill; uitdaging-enkel:uitdaging-entry-type (Lovable L1, 7 inst)",canonical,
+pill,soft,color,all,"rgb(24, 29, 37)",lovable-measured,"tuisblad:featured-card-pill; uitdaging-enkel:uitdaging-entry-type (Lovable L1, 7 inst)",canonical,token foreground -> ink-text
+pill,soft,height,all,24px,lovable-measured,"tuisblad:featured-card-pill; uitdaging-enkel:uitdaging-entry-type (Lovable L1, 7 inst)",canonical,
+pill,soft-xs,padding,all,2px 8px,lovable-measured,uitdaging-enkel:uitdaging-resource-tag (Lovable L6),canonical,
+pill,soft-xs,height,all,20px,lovable-measured,uitdaging-enkel:uitdaging-resource-tag (Lovable L6),canonical,
+pill,soft-xs,inherits,all,soft,lovable-measured,uitdaging-enkel:uitdaging-resource-tag,canonical,
+pill,tint,box-sizing,all,border-box,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
+pill,tint,display,all,inline-flex,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
+pill,tint,padding,all,4px 12px,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
+pill,tint,border,all,0,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
+pill,tint,background-color,all,"rgba(236, 59, 19, 0.1)",lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,tone primary at 10%
+pill,tint,border-radius,all,9999px,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
+pill,tint,font-family,all,Inter,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
+pill,tint,font-size,all,14px,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
+pill,tint,line-height,all,20px,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
+pill,tint,font-weight,all,500,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
+pill,tint,gap,all,6px,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
+pill,tint,color,all,"rgb(236, 59, 19)",lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,token primary; text = tone
+pill,tint,height,all,28px,lovable-measured,lees-storie:storie-badge; lees-gedig:gedig-badge (Lovable L8/L11),canonical,
+pill,tint,background-color:accent,all,"rgba(82, 122, 102, 0.15)",lovable-measured,lees-gedig:gedig-badge,needs-ruling,accent tint is 15% here and on skrywer-workcard-pinned but 10% on reading-response-badge and uitdaging-device-chip - Lovable conflicts with itself
+pill,tint-sm,box-sizing,all,border-box,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
+pill,tint-sm,padding,all,2px 10px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
+pill,tint-sm,border,all,0,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
+pill,tint-sm,background-color,all,"rgba(82, 122, 102, 0.15)",lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,accent at 15%
+pill,tint-sm,border-radius,all,9999px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
+pill,tint-sm,font-size,all,12px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
+pill,tint-sm,line-height,all,16px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
+pill,tint-sm,font-weight,all,600,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
+pill,tint-sm,color,all,"rgb(82, 122, 102)",lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,token accent (sage)
+pill,tint-sm,height,all,20px,lovable-measured,skrywer:skrywer-workcard-pinned (Lovable L7),canonical,
+pill,tint-bordered,box-sizing,all,border-box,lovable-measured,uitdaging-enkel:uitdaging-device-chip (Lovable L5),canonical,
+pill,tint-bordered,padding,all,4px 12px,lovable-measured,uitdaging-enkel:uitdaging-device-chip (Lovable L5),canonical,
+pill,tint-bordered,background-color,all,"rgba(82, 122, 102, 0.1)",lovable-measured,uitdaging-enkel:uitdaging-device-chip (Lovable L5),canonical,accent at 10%
+pill,tint-bordered,border,all,"1px solid rgba(82, 122, 102, 0.2)",lovable-measured,uitdaging-enkel:uitdaging-device-chip (Lovable L5),canonical,accent at 20%
+pill,tint-bordered,border-radius,all,9999px,lovable-measured,uitdaging-enkel:uitdaging-device-chip (Lovable L5),canonical,
+pill,tint-bordered,font-size,all,14px,lovable-measured,uitdaging-enkel:uitdaging-device-chip (Lovable L5),canonical,
+pill,tint-bordered,line-height,all,20px,lovable-measured,uitdaging-enkel:uitdaging-device-chip (Lovable L5),canonical,
+pill,tint-bordered,font-weight,all,500,lovable-measured,uitdaging-enkel:uitdaging-device-chip (Lovable L5),canonical,
+pill,tint-bordered,color,all,"rgb(82, 122, 102)",lovable-measured,uitdaging-enkel:uitdaging-device-chip (Lovable L5),canonical,token accent (sage)
+pill,tint-bordered,height,all,30px,lovable-measured,uitdaging-enkel:uitdaging-device-chip (Lovable L5),canonical,
+pill,hint,box-sizing,all,border-box,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
+pill,hint,display,all,inline-flex,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
+pill,hint,padding,all,8px 16px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
+pill,hint,border,all,0,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
+pill,hint,background-color,all,"rgba(255, 234, 128, 0.2)",lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,"storie: highlight at 20% (text ink); gedig: accent rgba(82,122,102,0.15) (text accent)"
+pill,hint,border-radius,all,9999px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
+pill,hint,font-size,all,14px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
+pill,hint,line-height,all,20px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
+pill,hint,font-weight,all,400,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
+pill,hint,gap,all,8px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
+pill,hint,height,all,36px,lovable-measured,lees-storie:storie-hint; lees-gedig:gedig-hint (Lovable L9/L12),canonical,
+pill,floating-bar,box-sizing,all,border-box,lovable-measured,"lees-storie,lees-gedig:reading-engagement-pill (Lovable L10)",canonical,
+pill,floating-bar,display,all,flex,lovable-measured,"lees-storie,lees-gedig:reading-engagement-pill (Lovable L10)",canonical,
+pill,floating-bar,padding,all,12px 24px,lovable-measured,"lees-storie,lees-gedig:reading-engagement-pill (Lovable L10)",canonical,
+pill,floating-bar,background-color,all,"rgba(253, 253, 252, 0.95)",lovable-measured,"lees-storie,lees-gedig:reading-engagement-pill (Lovable L10)",canonical,card at 95% + backdrop blur
+pill,floating-bar,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,"lees-storie,lees-gedig:reading-engagement-pill (Lovable L10)",canonical,
+pill,floating-bar,border-radius,all,9999px,lovable-measured,"lees-storie,lees-gedig:reading-engagement-pill (Lovable L10)",canonical,
+pill,floating-bar,box-shadow,all,"rgba(24, 29, 37, 0.12) 0px 12px 40px -8px",lovable-measured,"lees-storie,lees-gedig:reading-engagement-pill (Lovable L10)",canonical,token shadow.lg
+pill,floating-bar,height,all,50px,lovable-measured,"lees-storie,lees-gedig:reading-engagement-pill (Lovable L10)",canonical,
+pill,floating-bar,width,390,358px,lovable-measured,"lees-storie,lees-gedig:reading-engagement-pill (Lovable L10)",canonical,Lovable max-w-md; INK bar is fit-content (~180px)
+pill,floating-bar,width,768|1440,448px,lovable-measured,"lees-storie,lees-gedig:reading-engagement-pill (Lovable L10)",canonical,Lovable max-w-md; INK bar is fit-content (~180px)
+badge,tint-lg,box-sizing,all,border-box,lovable-measured,tuisblad:hero-badge (Lovable L1),canonical,
+badge,tint-lg,display,all,inline-block,lovable-measured,tuisblad:hero-badge (Lovable L1),canonical,
+badge,tint-lg,padding,all,6px 16px,lovable-measured,tuisblad:hero-badge (Lovable L1),canonical,
+badge,tint-lg,background-color,all,"rgba(236, 59, 19, 0.1)",lovable-measured,tuisblad:hero-badge (Lovable L1),canonical,primary at 10%
+badge,tint-lg,border,all,0,lovable-measured,tuisblad:hero-badge (Lovable L1),canonical,
+badge,tint-lg,border-radius,all,9999px,lovable-measured,tuisblad:hero-badge (Lovable L1),canonical,
+badge,tint-lg,font-size,all,14px,lovable-measured,tuisblad:hero-badge (Lovable L1),canonical,
+badge,tint-lg,line-height,all,20px,lovable-measured,tuisblad:hero-badge (Lovable L1),canonical,
+badge,tint-lg,font-weight,all,500,lovable-measured,tuisblad:hero-badge (Lovable L1),canonical,
+badge,tint-lg,color,all,"rgb(236, 59, 19)",lovable-measured,tuisblad:hero-badge (Lovable L1),canonical,token primary
+badge,tint-lg,height,all,32px,lovable-measured,tuisblad:hero-badge (Lovable L1),canonical,
+badge,tint-caps,box-sizing,all,border-box,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,
+badge,tint-caps,display,all,inline-flex,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,
+badge,tint-caps,padding,all,4px 12px,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,
+badge,tint-caps,background-color,all,"rgba(236, 59, 19, 0.1)",lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,primary at 10%
+badge,tint-caps,border,all,0,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,
+badge,tint-caps,border-radius,all,9999px,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,
+badge,tint-caps,font-size,all,12px,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,
+badge,tint-caps,line-height,all,16px,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,
+badge,tint-caps,font-weight,all,600,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,
+badge,tint-caps,text-transform,all,uppercase,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,
+badge,tint-caps,letter-spacing,all,0.3px,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,
+badge,tint-caps,gap,all,6px,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,
+badge,tint-caps,color,all,"rgb(236, 59, 19)",lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,token primary
+badge,tint-caps,height,all,24px,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,
+badge,tint-caps,icon-size,all,14px,lovable-measured,tuisblad:hero-spotlight-badge; uitdaging-enkel:uitdaging-badge (Lovable L2/L3),canonical,svg in hero-spotlight-badge
+badge,tint-xs,box-sizing,all,border-box,lovable-measured,"lees-storie,lees-gedig:reading-response-badge (Lovable L4-L6)",canonical,
+badge,tint-xs,display,all,inline-flex,lovable-measured,"lees-storie,lees-gedig:reading-response-badge (Lovable L4-L6)",canonical,
+badge,tint-xs,padding,all,2px 8px,lovable-measured,"lees-storie,lees-gedig:reading-response-badge (Lovable L4-L6)",canonical,
+badge,tint-xs,border,all,0,lovable-measured,"lees-storie,lees-gedig:reading-response-badge (Lovable L4-L6)",canonical,
+badge,tint-xs,background-color,all,"rgba(82, 122, 102, 0.1)",lovable-measured,"lees-storie,lees-gedig:reading-response-badge (Lovable L4-L6)",canonical,"tone at 10%: accent (insight), gold rgba(232,177,48,0.1) (praise), primary (suggestion)"
+badge,tint-xs,border-radius,all,9999px,lovable-measured,"lees-storie,lees-gedig:reading-response-badge (Lovable L4-L6)",canonical,
+badge,tint-xs,font-size,all,12px,lovable-measured,"lees-storie,lees-gedig:reading-response-badge (Lovable L4-L6)",canonical,
+badge,tint-xs,line-height,all,16px,lovable-measured,"lees-storie,lees-gedig:reading-response-badge (Lovable L4-L6)",canonical,
+badge,tint-xs,font-weight,all,400,lovable-measured,"lees-storie,lees-gedig:reading-response-badge (Lovable L4-L6)",canonical,
+badge,tint-xs,gap,all,4px,lovable-measured,"lees-storie,lees-gedig:reading-response-badge (Lovable L4-L6)",canonical,
+badge,tint-xs,color,all,"rgb(82, 122, 102)",lovable-measured,"lees-storie,lees-gedig:reading-response-badge (Lovable L4-L6)",canonical,token accent (sage); text = tone
+badge,tint-xs,height,all,20px,lovable-measured,"lees-storie,lees-gedig:reading-response-badge (Lovable L4-L6)",canonical,
+meta-item,xs,display,all,inline-flex,lovable-measured,"biblioteek:library-card-time; tuisblad:featured-card-time; ontdek:stories-card-time; skrywer:skrywer-workcard-*; uitdaging-enkel:uitdaging-entry-* (Lovable L1/L4/L6, 31 inst)",canonical,
+meta-item,xs,align-items,all,center,lovable-measured,"biblioteek:library-card-time; tuisblad:featured-card-time; ontdek:stories-card-time; skrywer:skrywer-workcard-*; uitdaging-enkel:uitdaging-entry-* (Lovable L1/L4/L6, 31 inst)",canonical,
+meta-item,xs,color,all,"rgb(103, 111, 126)",lovable-measured,"biblioteek:library-card-time; tuisblad:featured-card-time; ontdek:stories-card-time; skrywer:skrywer-workcard-*; uitdaging-enkel:uitdaging-entry-* (Lovable L1/L4/L6, 31 inst)",canonical,token muted-foreground -> muted-text
+meta-item,xs,font-family,all,Inter,lovable-measured,"biblioteek:library-card-time; tuisblad:featured-card-time; ontdek:stories-card-time; skrywer:skrywer-workcard-*; uitdaging-enkel:uitdaging-entry-* (Lovable L1/L4/L6, 31 inst)",canonical,
+meta-item,xs,font-size,all,12px,lovable-measured,"biblioteek:library-card-time; tuisblad:featured-card-time; ontdek:stories-card-time; skrywer:skrywer-workcard-*; uitdaging-enkel:uitdaging-entry-* (Lovable L1/L4/L6, 31 inst)",canonical,
+meta-item,xs,line-height,all,16px,lovable-measured,"biblioteek:library-card-time; tuisblad:featured-card-time; ontdek:stories-card-time; skrywer:skrywer-workcard-*; uitdaging-enkel:uitdaging-entry-* (Lovable L1/L4/L6, 31 inst)",canonical,
+meta-item,xs,font-weight,all,400,lovable-measured,"biblioteek:library-card-time; tuisblad:featured-card-time; ontdek:stories-card-time; skrywer:skrywer-workcard-*; uitdaging-enkel:uitdaging-entry-* (Lovable L1/L4/L6, 31 inst)",canonical,
+meta-item,xs,gap,all,4px,lovable-measured,"biblioteek:library-card-time; tuisblad:featured-card-time; ontdek:stories-card-time; skrywer:skrywer-workcard-*; uitdaging-enkel:uitdaging-entry-* (Lovable L1/L4/L6, 31 inst)",canonical,
+meta-item,xs,icon-size,all,12px,lovable-measured,"biblioteek:library-card-time; tuisblad:featured-card-time; ontdek:stories-card-time; skrywer:skrywer-workcard-*; uitdaging-enkel:uitdaging-entry-* (Lovable L1/L4/L6, 31 inst)",canonical,
+meta-item,sm,display,all,inline-flex,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
+meta-item,sm,align-items,all,center,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
+meta-item,sm,color,all,"rgb(103, 111, 126)",lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,token muted-foreground -> muted-text
+meta-item,sm,font-family,all,Inter,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
+meta-item,sm,font-size,all,14px,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
+meta-item,sm,line-height,all,20px,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
+meta-item,sm,font-weight,all,400,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
+meta-item,sm,icon-size,all,16px,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",canonical,
+meta-item,sm,gap,all,6px,lovable-measured,"uitdaging-enkel:uitdaging-meta-deadline,-participants,-pick; skrywer:skrywer-meta-joined,-location; tuisblad,uitdagings:challenge-card-meta-item (Lovable L2/L3, 9 inst)",needs-ruling,6px on 7 Lovable instances; featured-card-stat/featured-lead-stat use 4px (gap-1). Icon is 14px on skrywer-meta-joined
+meta-item,md,color,all,"rgb(103, 111, 126)",lovable-measured,lees-storie:reading-byline-readtime (Lovable L5),canonical,token muted-foreground -> muted-text
+meta-item,md,font-size,all,16px,lovable-measured,lees-storie:reading-byline-readtime (Lovable L5),canonical,
+meta-item,md,line-height,all,24px,lovable-measured,lees-storie:reading-byline-readtime (Lovable L5),canonical,
+meta-item,md,gap,all,4px,lovable-measured,lees-storie:reading-byline-readtime (Lovable L5),canonical,
+meta-item,md,icon-size,all,16px,lovable-measured,lees-storie:reading-byline-readtime (Lovable L5),canonical,byline read time vs INK date = pending owner call row 07 S-5/S-6
+avatar,base,box-sizing,all,border-box,lovable-measured,"tuisblad:featured-card-avatar; lees-storie:reading-response-avatar; ontdek:stories-card-avatar (Lovable L2, 16 inst)",canonical,"INK avatars are content-box: winner 52 vs 48, profile 120 vs 112, skrywer 168 vs 160"
+avatar,base,border-radius,all,9999px,lovable-measured,"tuisblad:featured-card-avatar; lees-storie:reading-response-avatar; ontdek:stories-card-avatar (Lovable L2, 16 inst)",canonical,
+avatar,base,object-fit,all,cover,lovable-measured,"tuisblad:featured-card-avatar; lees-storie:reading-response-avatar; ontdek:stories-card-avatar (Lovable L2, 16 inst)",canonical,
+avatar,base,border,all,0,lovable-measured,"tuisblad:featured-card-avatar; lees-storie:reading-response-avatar; ontdek:stories-card-avatar (Lovable L2, 16 inst)",canonical,
+avatar,base,background-color,all,"rgba(0, 0, 0, 0)",lovable-measured,"tuisblad:featured-card-avatar; lees-storie:reading-response-avatar; ontdek:stories-card-avatar (Lovable L2, 16 inst)",canonical,
+avatar,base,size-scale,all,28px | 32px | 40px | 48px | 64px | 96px,lovable-measured,ontdek:stories-card-avatar 28; tuisblad:featured-card-avatar 32; lees-storie:reading-byline-avatar 40; my-profiel:profiel-following-avatar 48; my-profiel:profiel-edit-avatar 64; lees-storie:reading-author-avatar 96,canonical,rendered box sizes; INK writers-card 56px(+1px border) has no Lovable reference (writers tab unpaired)
+avatar,ring,border,all,"4px solid rgb(250, 248, 245)",lovable-measured,"lees-storie,lees-gedig:reading-author-avatar (Lovable L8)",canonical,token background -> surface
+avatar,profile,border,all,"4px solid rgb(250, 248, 245)",lovable-measured,my-profiel:profiel-identity-avatar (Lovable L5),canonical,
+avatar,profile,box-shadow,all,"rgba(24, 29, 37, 0.08) 0px 4px 20px -4px",lovable-measured,my-profiel:profiel-identity-avatar (Lovable L5),canonical,token shadow.md
+avatar,profile,size,390,96px,lovable-measured,my-profiel:profiel-identity-avatar (Lovable L5),canonical,
+avatar,profile,size,768|1440,112px,lovable-measured,my-profiel:profiel-identity-avatar (Lovable L5),canonical,
+avatar,hero,border,all,"4px solid rgb(250, 248, 245)",lovable-measured,skrywer:skrywer-avatar (Lovable L7),canonical,
+avatar,hero,box-shadow,all,"rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",lovable-measured,skrywer:skrywer-avatar (Lovable L7),canonical,Tailwind shadow-lg; INK uses shadow.lg (= shadow-elevated) - no INK preset matches
+avatar,hero,size,390,128px,lovable-measured,skrywer:skrywer-avatar (Lovable L7),canonical,
+avatar,hero,size,768|1440,160px,lovable-measured,skrywer:skrywer-avatar (Lovable L7),canonical,
+avatar,gold-ring,border,all,"2px solid rgba(232, 177, 48, 0.3)",lovable-measured,tuisblad:winner-avatar (Lovable L1),canonical,gold at 30%; INK uses gold-muted at 30%
+avatar,gold-ring,size,all,48px,lovable-measured,tuisblad:winner-avatar (Lovable L1),canonical,
+avatar,initials,size,all,40px,lovable-measured,gemeenskap:gemeenskap-spotlight-card-avatar (Lovable L3/L4),canonical,
+avatar,initials,display,all,flex,lovable-measured,gemeenskap:gemeenskap-spotlight-card-avatar (Lovable L3/L4),canonical,
+avatar,initials,background-color,all,"rgba(236, 59, 19, 0.2)",lovable-measured,gemeenskap:gemeenskap-spotlight-card-avatar (Lovable L3/L4),canonical,"tone at 20% (primary) / 30% (accent rgba(82,122,102,0.3))"
+avatar,initials,font-family,all,Lora,lovable-measured,gemeenskap:gemeenskap-spotlight-card-avatar (Lovable L3/L4),canonical,
+avatar,initials,color,all,"rgb(236, 59, 19)",lovable-measured,gemeenskap:gemeenskap-spotlight-card-avatar (Lovable L3/L4),canonical,token primary
+tier-chip,base,box-sizing,all,border-box,lovable-measured,"tuisblad:sponsors-chip-*; oor-ink:sponsors-chip-* (Lovable L1-L6, 12 inst)",canonical,
+tier-chip,base,padding,all,12px 24px,lovable-measured,"tuisblad:sponsors-chip-*; oor-ink:sponsors-chip-* (Lovable L1-L6, 12 inst)",canonical,
+tier-chip,base,border-radius,all,8px,lovable-measured,"tuisblad:sponsors-chip-*; oor-ink:sponsors-chip-* (Lovable L1-L6, 12 inst)",canonical,
+tier-chip,base,font-family,all,Inter,lovable-measured,"tuisblad:sponsors-chip-*; oor-ink:sponsors-chip-* (Lovable L1-L6, 12 inst)",canonical,INK renders Lora 500 (heading font) - row 13 finding
+tier-chip,base,font-size,all,16px,lovable-measured,"tuisblad:sponsors-chip-*; oor-ink:sponsors-chip-* (Lovable L1-L6, 12 inst)",canonical,
+tier-chip,base,line-height,all,24px,lovable-measured,"tuisblad:sponsors-chip-*; oor-ink:sponsors-chip-* (Lovable L1-L6, 12 inst)",canonical,
+tier-chip,base,font-weight,all,400,lovable-measured,"tuisblad:sponsors-chip-*; oor-ink:sponsors-chip-* (Lovable L1-L6, 12 inst)",canonical,
+tier-chip,goud,background-color,all,"rgba(232, 177, 48, 0.1)",lovable-measured,"tuisblad,oor-ink:sponsors-chip-gold",canonical,gold at 10%; INK uses goud (#C9B88A) not gold
+tier-chip,goud,border,all,"1px solid rgba(232, 177, 48, 0.2)",lovable-measured,"tuisblad,oor-ink:sponsors-chip-gold",canonical,gold at 20%
+tier-chip,goud,height,all,54px,lovable-measured,"tuisblad,oor-ink:sponsors-chip-gold",canonical,inner name is text-lg (18/28): INK chip root 18px
+tier-chip,silwer,background-color,all,"rgb(240, 235, 230)",lovable-measured,"tuisblad,oor-ink:sponsors-chip-silver",canonical,token secondary
+tier-chip,silwer,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,"tuisblad,oor-ink:sponsors-chip-silver",canonical,
+tier-chip,silwer,height,all,50px,lovable-measured,"tuisblad,oor-ink:sponsors-chip-silver",canonical,
+tier-chip,brons,background-color,all,"rgba(243, 240, 237, 0.5)",lovable-measured,"tuisblad,oor-ink:sponsors-chip-bronze",canonical,token muted at 50%; INK uses secondary at 50%
+tier-chip,brons,border,all,0,lovable-measured,"tuisblad,oor-ink:sponsors-chip-bronze",canonical,INK keeps a 1px transparent border (+2px)
+tier-chip,brons,height,all,48px,lovable-measured,"tuisblad,oor-ink:sponsors-chip-bronze",canonical,
+icon-tile,square,box-sizing,all,border-box,lovable-measured,"tuisblad,uitdagings:challenge-card-icon; tuisblad:winner-eyebrow-icon (Lovable L1/L2)",canonical,
+icon-tile,square,display,all,inline-flex,lovable-measured,"tuisblad,uitdagings:challenge-card-icon; tuisblad:winner-eyebrow-icon (Lovable L1/L2)",canonical,
+icon-tile,square,padding,all,8px,lovable-measured,"tuisblad,uitdagings:challenge-card-icon; tuisblad:winner-eyebrow-icon (Lovable L1/L2)",canonical,
+icon-tile,square,border-radius,all,8px,lovable-measured,"tuisblad,uitdagings:challenge-card-icon; tuisblad:winner-eyebrow-icon (Lovable L1/L2)",canonical,
+icon-tile,square,background-color,all,"rgba(236, 59, 19, 0.1)",lovable-measured,"tuisblad,uitdagings:challenge-card-icon; tuisblad:winner-eyebrow-icon (Lovable L1/L2)",canonical,tone at 10% (primary); gold tile is gold at 20%
+icon-tile,square,size,all,36px,lovable-measured,"tuisblad,uitdagings:challenge-card-icon; tuisblad:winner-eyebrow-icon (Lovable L1/L2)",canonical,INK renders 32px: 16px glyph + content-box
+icon-tile,square,icon-size,all,20px,lovable-measured,"tuisblad,uitdagings:challenge-card-icon; tuisblad:winner-eyebrow-icon (Lovable L1/L2)",canonical,
+icon-tile,square-sm,box-sizing,all,border-box,lovable-measured,"my-profiel:profiel-recent-icon,profiel-notif-icon; skrywer:skrywer-prestasie-icon (Lovable L4/L5)",canonical,
+icon-tile,square-sm,padding,all,8px,lovable-measured,"my-profiel:profiel-recent-icon,profiel-notif-icon; skrywer:skrywer-prestasie-icon (Lovable L4/L5)",canonical,
+icon-tile,square-sm,border-radius,all,6px,lovable-measured,"my-profiel:profiel-recent-icon,profiel-notif-icon; skrywer:skrywer-prestasie-icon (Lovable L4/L5)",canonical,
+icon-tile,square-sm,background-color,all,"rgba(236, 59, 19, 0.1)",lovable-measured,"my-profiel:profiel-recent-icon,profiel-notif-icon; skrywer:skrywer-prestasie-icon (Lovable L4/L5)",canonical,"primary at 10%; neutral = muted rgb(243,240,237)"
+icon-tile,square-sm,size,all,32px,lovable-measured,"my-profiel:profiel-recent-icon,profiel-notif-icon; skrywer:skrywer-prestasie-icon (Lovable L4/L5)",canonical,
+icon-tile,square-sm,icon-size,all,16px,lovable-measured,"my-profiel:profiel-recent-icon,profiel-notif-icon; skrywer:skrywer-prestasie-icon (Lovable L4/L5)",canonical,
+icon-tile,square-lg,box-sizing,all,border-box,lovable-measured,uitdaging-enkel:uitdaging-resource-icon (Lovable L8),canonical,
+icon-tile,square-lg,padding,all,12px,lovable-measured,uitdaging-enkel:uitdaging-resource-icon (Lovable L8),canonical,
+icon-tile,square-lg,border-radius,all,8px,lovable-measured,uitdaging-enkel:uitdaging-resource-icon (Lovable L8),canonical,
+icon-tile,square-lg,background-color,all,"rgba(236, 59, 19, 0.1)",lovable-measured,uitdaging-enkel:uitdaging-resource-icon (Lovable L8),canonical,
+icon-tile,square-lg,size,all,44px,lovable-measured,uitdaging-enkel:uitdaging-resource-icon (Lovable L8),canonical,
+icon-tile,square-lg,icon-size,all,20px,lovable-measured,uitdaging-enkel:uitdaging-resource-icon (Lovable L8),canonical,
+icon-tile,circle,display,all,flex,lovable-measured,gemeenskap:gemeenskap-card-writers-icon; skryf:skryf-type-indicator-icon (Lovable L3),canonical,
+icon-tile,circle,border-radius,all,9999px,lovable-measured,gemeenskap:gemeenskap-card-writers-icon; skryf:skryf-type-indicator-icon (Lovable L3),canonical,
+icon-tile,circle,background-color,all,"rgba(236, 59, 19, 0.1)",lovable-measured,gemeenskap:gemeenskap-card-writers-icon; skryf:skryf-type-indicator-icon (Lovable L3),canonical,
+icon-tile,circle,size,all,40px,lovable-measured,gemeenskap:gemeenskap-card-writers-icon; skryf:skryf-type-indicator-icon (Lovable L3),canonical,
+icon-tile,circle,icon-size,all,20px,lovable-measured,gemeenskap:gemeenskap-card-writers-icon; skryf:skryf-type-indicator-icon (Lovable L3),canonical,
+icon-tile,circle-lg,display,all,flex,lovable-measured,skryf:skryf-type-card-icon (Lovable L3/L6/L7),canonical,
+icon-tile,circle-lg,border-radius,all,9999px,lovable-measured,skryf:skryf-type-card-icon (Lovable L3/L6/L7),canonical,
+icon-tile,circle-lg,background-color,all,"rgba(236, 59, 19, 0.1)",lovable-measured,skryf:skryf-type-card-icon (Lovable L3/L6/L7),canonical,"per type: primary / accent rgba(82,122,102,0.1) / ink rgba(24,29,37,0.1)"
+icon-tile,circle-lg,size,all,48px,lovable-measured,skryf:skryf-type-card-icon (Lovable L3/L6/L7),canonical,
+icon-tile,circle-lg,icon-size,all,20px,lovable-measured,skryf:skryf-type-card-icon (Lovable L3/L6/L7),canonical,
+tier-label,base,color,all,"rgb(82, 122, 102)",most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"token accent (sage); no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
+tier-label,base,font-family,all,Inter,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
+tier-label,base,font-size,all,12px,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
+tier-label,base,line-height,all,18px,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
+tier-label,base,font-weight,all,400,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
+tier-label,base,text-transform,all,uppercase,most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
+tier-label,base,letter-spacing,all,0.96px (0.08em),most-used,"ontdek:writers-card-grade,surfaces-grade; ledegids:writers-card-grade (INK I2, 5 inst)",needs-ruling,"no Lovable instance captured (writers tab is React state, row 03); options: canonise this INK variant, or capture the Lovable tab first"
+meta-row,base,display,all,flex,lovable-measured,"tuisblad:challenge-card-meta,featured-card-stats,featured-lead-stats (Lovable L1)",canonical,
+meta-row,base,flex-wrap,all,wrap,lovable-measured,"tuisblad:challenge-card-meta,featured-card-stats,featured-lead-stats (Lovable L1)",canonical,
+meta-row,base,gap,all,16px,lovable-measured,"tuisblad:challenge-card-meta,featured-card-stats,featured-lead-stats (Lovable L1)",canonical,INK challenge-card-meta uses 24px
+meta-row,base,color,all,"rgb(103, 111, 126)",lovable-measured,"tuisblad:challenge-card-meta,featured-card-stats,featured-lead-stats (Lovable L1)",canonical,token muted-foreground -> muted-text
+meta-row,base,font-size,all,14px,lovable-measured,"tuisblad:challenge-card-meta,featured-card-stats,featured-lead-stats (Lovable L1)",canonical,
+meta-row,base,line-height,all,20px,lovable-measured,"tuisblad:challenge-card-meta,featured-card-stats,featured-lead-stats (Lovable L1)",canonical,
+meta-row,tight,display,all,flex,lovable-measured,"tuisblad:featured-card-meta,featured-lead-meta (Lovable L2)",canonical,
+meta-row,tight,align-items,all,center,lovable-measured,"tuisblad:featured-card-meta,featured-lead-meta (Lovable L2)",canonical,
+meta-row,tight,gap,all,8px,lovable-measured,"tuisblad:featured-card-meta,featured-lead-meta (Lovable L2)",canonical,
+accent-block,base,border-left,all,"2px solid rgb(236, 59, 19)",lovable-measured,"gemeenskap:gemeenskap-principle-card (Lovable L1, identical on INK)",canonical,left colour from border-terracotta (only width is in the capture allowlist)
+accent-block,base,padding,all,8px 0px 8px 24px,lovable-measured,"gemeenskap:gemeenskap-principle-card (Lovable L1, identical on INK)",canonical,
+accent-block,base,background-color,all,"rgba(0, 0, 0, 0)",lovable-measured,"gemeenskap:gemeenskap-principle-card (Lovable L1, identical on INK)",canonical,
+accent-block,base,border-radius,all,0px,lovable-measured,"gemeenskap:gemeenskap-principle-card (Lovable L1, identical on INK)",canonical,
+step-badge,base,display,all,flex,lovable-measured,"gemeenskap:gemeenskap-hiw-step-badge (Lovable L1, 6 inst)",canonical,
+step-badge,base,size,all,32px,lovable-measured,"gemeenskap:gemeenskap-hiw-step-badge (Lovable L1, 6 inst)",canonical,
+step-badge,base,border-radius,all,9999px,lovable-measured,"gemeenskap:gemeenskap-hiw-step-badge (Lovable L1, 6 inst)",canonical,
+step-badge,base,background-color,all,"rgba(236, 59, 19, 0.1)",lovable-measured,"gemeenskap:gemeenskap-hiw-step-badge (Lovable L1, 6 inst)",canonical,
+step-badge,base,color,all,"rgb(236, 59, 19)",lovable-measured,"gemeenskap:gemeenskap-hiw-step-badge (Lovable L1, 6 inst)",canonical,token primary
+step-badge,base,font-family,all,Lora,lovable-measured,"gemeenskap:gemeenskap-hiw-step-badge (Lovable L1, 6 inst)",canonical,
+step-badge,base,font-size,all,16px,lovable-measured,"gemeenskap:gemeenskap-hiw-step-badge (Lovable L1, 6 inst)",canonical,
+step-badge,base,line-height,all,24px,lovable-measured,"gemeenskap:gemeenskap-hiw-step-badge (Lovable L1, 6 inst)",canonical,
+step-badge,base,font-weight,all,600,lovable-measured,"gemeenskap:gemeenskap-hiw-step-badge (Lovable L1, 6 inst)",canonical,
+count-chip,outline,inherits,all,pill.outline,lovable-measured,my-profiel:profiel-tab-badge (Lovable L1/L3),canonical,identical box to pill outline; tone accent or primary
+count-chip,outline,height,all,22px,lovable-measured,my-profiel:profiel-tab-badge (Lovable L1/L3),canonical,
+count-chip,solid,box-sizing,all,border-box,lovable-measured,my-profiel:profiel-tab-badge-unread (Lovable L2),canonical,
+count-chip,solid,padding,all,2px 10px,lovable-measured,my-profiel:profiel-tab-badge-unread (Lovable L2),canonical,
+count-chip,solid,border,all,0,lovable-measured,my-profiel:profiel-tab-badge-unread (Lovable L2),canonical,
+count-chip,solid,background-color,all,"rgb(236, 59, 19)",lovable-measured,my-profiel:profiel-tab-badge-unread (Lovable L2),canonical,token primary
+count-chip,solid,color,all,"rgb(255, 255, 255)",lovable-measured,my-profiel:profiel-tab-badge-unread (Lovable L2),canonical,
+count-chip,solid,border-radius,all,9999px,lovable-measured,my-profiel:profiel-tab-badge-unread (Lovable L2),canonical,
+count-chip,solid,font-size,all,12px,lovable-measured,my-profiel:profiel-tab-badge-unread (Lovable L2),canonical,
+count-chip,solid,line-height,all,16px,lovable-measured,my-profiel:profiel-tab-badge-unread (Lovable L2),canonical,
+count-chip,solid,font-weight,all,600,lovable-measured,my-profiel:profiel-tab-badge-unread (Lovable L2),canonical,
+count-chip,solid,height,all,20px,lovable-measured,my-profiel:profiel-tab-badge-unread (Lovable L2),canonical,
+count-chip,highlight,padding,all,2px 8px,lovable-measured,"lees-storie:highlights-panel count (Lovable L4, no id)",canonical,
+count-chip,highlight,border,all,0,lovable-measured,"lees-storie:highlights-panel count (Lovable L4, no id)",canonical,
+count-chip,highlight,background-color,all,"rgb(255, 234, 128)",lovable-measured,"lees-storie:highlights-panel count (Lovable L4, no id)",canonical,token highlight
+count-chip,highlight,border-radius,all,9999px,lovable-measured,"lees-storie:highlights-panel count (Lovable L4, no id)",canonical,
+status-dot,base,size,all,8px,lovable-measured,"my-profiel:profiel-recent-dot,profiel-notif-dot,profiel-membership-status-dot (Lovable L1/L2)",canonical,INK ::before on onlangs is 6px (profiel.css:352)
+status-dot,base,border-radius,all,9999px,lovable-measured,"my-profiel:profiel-recent-dot,profiel-notif-dot,profiel-membership-status-dot (Lovable L1/L2)",canonical,
+status-dot,base,background-color,all,"rgb(236, 59, 19)",lovable-measured,"my-profiel:profiel-recent-dot,profiel-notif-dot,profiel-membership-status-dot (Lovable L1/L2)",canonical,"token primary; unread = primary; active = accent rgb(82, 122, 102)"
+notice,base,padding,all,12px 16px,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
+notice,base,border-radius,all,6px,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
+notice,base,border,all,1px solid <tone>,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
+notice,base,background-color,all,<tone> at 10%,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
+notice,base,color,all,ink-text,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
+notice,base,font-size,all,14px,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
+notice,base,line-height,all,21px,most-used,wagwoord-herstel:auth-notice (INK I1/I2); auth.css:152-170,needs-ruling,"no Lovable notice/alert captured; tone = success (ok) / danger (fout); same recipe re-declared for kontak (.ink-kontak-vorm__notice, not rendered)"
+list-bullet,base,size,all,6px,lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,
+list-bullet,base,border-radius,all,9999px,lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,
+list-bullet,base,background-color,all,"rgb(236, 59, 19)",lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,token primary
+list-bullet,base,margin-top,all,6px,lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,
+divider,base,border-top,all,"1px solid rgb(231, 225, 218)",lovable-measured,meld-aan:auth-divider-line (Lovable L1),canonical,
+divider,base,height,all,1px,lovable-measured,meld-aan:auth-divider-line (Lovable L1),canonical,
+divider,label,padding,all,0px 8px,lovable-measured,meld-aan:auth-divider-text (Lovable L2),canonical,
+divider,label,background-color,all,"rgb(253, 253, 252)",lovable-measured,meld-aan:auth-divider-text (Lovable L2),canonical,token card -> surface-alt; masks the rule
+divider,label,color,all,"rgb(103, 111, 126)",lovable-measured,meld-aan:auth-divider-text (Lovable L2),canonical,token muted-foreground -> muted-text
+divider,label,font-size,all,12px,lovable-measured,meld-aan:auth-divider-text (Lovable L2),canonical,
+divider,label,line-height,all,16px,lovable-measured,meld-aan:auth-divider-text (Lovable L2),canonical,
+divider,label,text-transform,all,uppercase,lovable-measured,meld-aan:auth-divider-text (Lovable L2),canonical,
+button-size,base,display,all,inline-flex,lovable-measured,tuisblad:challenge-card-btn; meld-aan:auth-submit,canonical,"computed 'flex' on other instances = blockified flex item, not a different recipe"
+button-size,base,align-items,all,center,lovable-measured,all 51 Lovable <Button> instances (button-primary/outline/ghost/subtle/sage-outline),canonical,
+button-size,base,justify-content,all,center,lovable-measured,all 51 Lovable <Button> instances (button-primary/outline/ghost/subtle/sage-outline),canonical,
+button-size,base,gap,all,8px,lovable-measured,all 51 Lovable <Button> instances (button-primary/outline/ghost/subtle/sage-outline),canonical,INK: normal on most replicas (no gap declared)
+button-size,base,white-space,all,nowrap,lovable-measured,all 51 Lovable <Button> instances (button-primary/outline/ghost/subtle/sage-outline),canonical,
+button-size,base,box-sizing,all,border-box,lovable-measured,all 51 Lovable <Button> instances (button-primary/outline/ghost/subtle/sage-outline),canonical,
+button-size,base,border-radius,all,6px,lovable-measured,all 51 Lovable <Button> instances (button-primary/outline/ghost/subtle/sage-outline),canonical,radius.md; xl overrides to 8px
+button-size,base,font-weight,all,500,lovable-measured,all 51 Lovable <Button> instances (button-primary/outline/ghost/subtle/sage-outline),canonical,INK renders 400 wherever only a registered block style applies (none declares a weight)
+button-size,base,focus-visible,all,outline 2px solid primary; outline-offset 2px,block-style,functions.php:1500-1503 (ink-primary; same in ink-outline/ghost/sage/sage-outline),canonical,Lovable ring-2 ring-ring ring-offset-2 = same geometry; not captured (state)
+button-size,base,disabled,all,opacity 0.5; pointer-events none,block-style,functions.php:1504-1506,canonical,Lovable disabled:opacity-50 disabled:pointer-events-none; lees-storie:reading-response-submit renders disabled at rest
+button-size,base,transition,all,all 0.15s ease,block-style,functions.php:1495,canonical,
+button-size,sm,height,all,36px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,
+button-size,sm,padding,all,0px 12px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,
+button-size,sm,font-size,all,14px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,
+button-size,sm,line-height,all,20px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,INK inherits body 1.5 → 21px/27px on 14px/18px buttons
+button-size,sm,border-radius,all,6px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,
+button-size,default,height,all,40px,lovable-measured,tuisblad:challenge-card-btn; meld-aan:auth-submit; skrywer:skrywer-share-btn,canonical,
+button-size,default,padding,all,8px 16px,lovable-measured,tuisblad:challenge-card-btn; meld-aan:auth-submit; skrywer:skrywer-share-btn,canonical,
+button-size,default,font-size,all,14px,lovable-measured,tuisblad:challenge-card-btn; meld-aan:auth-submit; skrywer:skrywer-share-btn,canonical,
+button-size,default,line-height,all,20px,lovable-measured,tuisblad:challenge-card-btn; meld-aan:auth-submit; skrywer:skrywer-share-btn,canonical,INK inherits body 1.5 → 21px/27px on 14px/18px buttons
+button-size,default,border-radius,all,6px,lovable-measured,tuisblad:challenge-card-btn; meld-aan:auth-submit; skrywer:skrywer-share-btn,canonical,
+button-size,lg,height,all,44px,lovable-measured,tuisblad:hero-btn-primary; uitdaging-enkel:uitdaging-btn-outline; skryf:skryf-draft-btn,canonical,
+button-size,lg,padding,all,0px 32px,lovable-measured,tuisblad:hero-btn-primary; uitdaging-enkel:uitdaging-btn-outline; skryf:skryf-draft-btn,canonical,
+button-size,lg,font-size,all,16px,lovable-measured,tuisblad:hero-btn-primary; uitdaging-enkel:uitdaging-btn-outline; skryf:skryf-draft-btn,canonical,
+button-size,lg,line-height,all,24px,lovable-measured,tuisblad:hero-btn-primary; uitdaging-enkel:uitdaging-btn-outline; skryf:skryf-draft-btn,canonical,
+button-size,lg,border-radius,all,6px,lovable-measured,tuisblad:hero-btn-primary; uitdaging-enkel:uitdaging-btn-outline; skryf:skryf-draft-btn,canonical,
+button-size,xl,height,all,48px,lovable-measured,tuisblad:cta-btn-primary; tuisblad:cta-btn-secondary,canonical,
+button-size,xl,padding,all,0px 40px,lovable-measured,tuisblad:cta-btn-primary; tuisblad:cta-btn-secondary,canonical,
+button-size,xl,font-size,all,18px,lovable-measured,tuisblad:cta-btn-primary; tuisblad:cta-btn-secondary,canonical,
+button-size,xl,line-height,all,28px,lovable-measured,tuisblad:cta-btn-primary; tuisblad:cta-btn-secondary,canonical,INK inherits body 1.5 → 21px/27px on 14px/18px buttons
+button-size,xl,border-radius,all,8px,lovable-measured,tuisblad:cta-btn-primary; tuisblad:cta-btn-secondary,canonical,
+button-primary,base,size,all,button-size (default|sm|lg|xl),lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,inherits the shared base
+button-primary,base,background-color,all,"rgb(236, 59, 19)",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,token primary
+button-primary,base,color,all,"rgb(255, 255, 255)",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,"primary-foreground; INK surface-alt rgb(253, 252, 250); token-delta: see ruling TOKEN-1"
+button-primary,base,border,all,0,lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,
+button-primary,base,font-family,all,"Lora, Georgia, serif",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,display; INK opleiding:library-cta-btn renders Inter
+button-primary,base,box-shadow,all,"rgba(24, 29, 37, 0.08) 0px 4px 20px -4px",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,shadow.md; missing on 9 INK replicas
+button-primary,base,hover background-color,all,primary-light,block-style,functions.php:1497-1499,canonical,Lovable hover:bg-terracotta-light; state not captured
+button-primary,on-dark,size,all,button-size xl,lovable-measured,tuisblad:cta-btn-primary,canonical,
+button-primary,on-dark,background-color,all,"rgb(255, 255, 255)",lovable-measured,tuisblad:cta-btn-primary,canonical,INK surface-alt; token-delta: see ruling TOKEN-1
+button-primary,on-dark,color,all,"rgb(236, 59, 19)",lovable-measured,tuisblad:cta-btn-primary,canonical,
+button-primary,on-dark,box-shadow,all,none,lovable-measured,tuisblad:cta-btn-primary,canonical,
+button-primary,on-dark,font-family,all,"Lora, Georgia, serif",lovable-measured,tuisblad:cta-btn-primary,canonical,
+button-primary,pill,border-radius,all,9999px,most-used,lidmaatskap:lidmaatskap-plan-btn; functions.php:1461-1470,needs-ruling,"Treatment C only (is-style-pill); conflicts with functions.php:1478 ""never a pill"" — ruling BTN-2"
+button-outline,base,size,all,button-size (default|lg),lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
+button-outline,base,background-color,all,transparent,lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
+button-outline,base,color,all,"rgb(236, 59, 19)",lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
+button-outline,base,border,all,"2px solid rgb(236, 59, 19)",lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
+button-outline,base,font-family,all,"Lora, Georgia, serif",lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
+button-outline,base,box-shadow,all,none,lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
+button-outline,base,hover,all,"background primary; color rgb(255, 255, 255)",block-style,functions.php:1525-1528,canonical,Lovable hover:bg-terracotta hover:text-primary-foreground; not captured
+button-outline,neutral,background-color,all,"rgb(250, 248, 245)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,background; INK surface; token-delta: see ruling TOKEN-1
+button-outline,neutral,color,all,"rgb(24, 29, 37)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,foreground; INK ink-text; token-delta: see ruling TOKEN-1
+button-outline,neutral,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,input/border; token-delta: see ruling TOKEN-1
+button-outline,neutral,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,
+button-outline,neutral,box-shadow,all,none,lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,
+button-outline,neutral,hover,all,background accent; color accent-foreground,token,ink-lovable button.tsx:14 (class only; state not captured),needs-ruling,no registered block style and no measured hover — ruling BTN-3
+button-outline,gold,border-color,all,"rgba(232, 177, 48, 0.3)",lovable-measured,tuisblad:winner-btn,canonical,neutral + gold/30 border; hover bg gold/10 (class only)
+button-outline,gold,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,tuisblad:winner-btn,canonical,INK winner-btn renders Lora; transparent bg vs Lovable background
+button-outline,on-dark,background-color,all,"transparent | rgb(250, 248, 245)",lovable-measured,gemeenskap:gemeenskap-cta-btn-secondary vs tuisblad:cta-btn-secondary,needs-ruling,"the two Lovable references conflict (bg, font Inter vs Lora, text colour) — ruling BTN-1"
+button-outline,on-dark,border,all,"1px solid rgba(250, 248, 245, 0.3)",lovable-measured,gemeenskap:gemeenskap-cta-btn-secondary; tuisblad:cta-btn-secondary (white/0.3),needs-ruling,both Lovable = 1px at 30% alpha; INK tuisblad uses 2px solid surface-alt — ruling BTN-1
+button-ghost,base,size,all,button-size sm,lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,every Lovable ghost instance is sm (36px)
+button-ghost,base,background-color,all,transparent,lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,
+button-ghost,base,color,all,"rgb(24, 29, 37)",lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,foreground; token-delta: see ruling TOKEN-1
+button-ghost,base,border,all,0,lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,
+button-ghost,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,registered ink-ghost declares display (functions.php:1558) and INK header renders Lora 400 — Lovable wins
+button-ghost,base,box-shadow,all,none,lovable-measured,tuisblad:header-btn-signin; my-profiel:profiel-about-edit-btn; my-profiel:profiel-posts-view-btn (+2),canonical,
+button-ghost,base,hover,all,background accent; color surface-alt,block-style,functions.php:1563-1566,canonical,Lovable hover:bg-accent hover:text-accent-foreground; not captured
+button-ghost,muted,color,all,"rgb(103, 111, 126)",lovable-measured,skryf:skryf-change-type-btn; my-profiel:profiel-activity-read-btn,canonical,muted-foreground; token-delta: see ruling TOKEN-1
+button-subtle,base,size,all,button-size (default|sm),lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,
+button-subtle,base,background-color,all,"rgba(240, 235, 230, 0.5)",lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,"secondary/50; INK secondary rgb(237, 233, 224)/0.5; token-delta: see ruling TOKEN-1"
+button-subtle,base,color,all,"rgb(24, 29, 37)",lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,foreground; token-delta: see ruling TOKEN-1
+button-subtle,base,border,all,0,lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,
+button-subtle,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,
+button-subtle,base,box-shadow,all,none,lovable-measured,lees-storie:reading-author-all-works; my-profiel:profiel-identity-public-btn; my-profiel:profiel-notif-mark-btn (+5),canonical,
+button-subtle,base,hover background-color,all,secondary,token,ink-lovable button.tsx:23 (class only; not captured),canonical,no registered block style exists; is-style-subtle lives in profiel.css:141 only
+button-sage-outline,base,size,all,button-size lg,lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,
+button-sage-outline,base,background-color,all,transparent,lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,
+button-sage-outline,base,color,all,"rgb(82, 122, 102)",lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,accent
+button-sage-outline,base,border,all,"2px solid rgb(82, 122, 102)",lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,
+button-sage-outline,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,registered ink-sage-outline declares display (functions.php:1616); both INK instances render Lora — Lovable wins
+button-sage-outline,base,box-shadow,all,none,lovable-measured,tuisblad:sponsors-btn; oor-ink:sponsors-btn,canonical,
+button-sage-outline,base,hover,all,background accent; color surface-alt,block-style,functions.php:1621-1624,canonical,
+button-icon,base,display,all,block,lovable-measured,lees-storie:reading-bookmark-btn; lees-storie:reading-share-btn; lees-gedig:reading-bookmark-btn; lees-gedig:reading-share-btn,canonical,"bare icon action: unstyled <button>, 20px icon box"
+button-icon,base,padding,all,0px,lovable-measured,lees-storie:reading-bookmark-btn; lees-storie:reading-share-btn; lees-gedig:reading-bookmark-btn; lees-gedig:reading-share-btn,canonical,
+button-icon,base,height,all,20px,lovable-measured,lees-storie:reading-bookmark-btn; lees-storie:reading-share-btn; lees-gedig:reading-bookmark-btn; lees-gedig:reading-share-btn,canonical,INK 21px (UA 13.33px Arial line box)
+button-icon,base,background-color,all,transparent,lovable-measured,lees-storie:reading-bookmark-btn; lees-storie:reading-share-btn; lees-gedig:reading-bookmark-btn; lees-gedig:reading-share-btn,canonical,
+button-icon,base,color,all,"rgb(103, 111, 126)",lovable-measured,lees-storie:reading-bookmark-btn; lees-storie:reading-share-btn; lees-gedig:reading-bookmark-btn; lees-gedig:reading-share-btn,canonical,muted-foreground; token-delta: see ruling TOKEN-1
+button-icon,base,border,all,0,lovable-measured,lees-storie:reading-bookmark-btn; lees-storie:reading-share-btn; lees-gedig:reading-bookmark-btn; lees-gedig:reading-share-btn,canonical,
+button-icon,base,font,all,"16px/24px Inter, system-ui, sans-serif",lovable-measured,lees-storie:reading-bookmark-btn; lees-storie:reading-share-btn; lees-gedig:reading-bookmark-btn; lees-gedig:reading-share-btn,canonical,INK inherits UA 13.33px Arial — needs a button font reset
+button-icon,menu-toggle,padding,all,8px,lovable-measured,tuisblad:header-menu-toggle@390,canonical,"40px box, color foreground; INK 24px / 0 padding"
+button-icon,menu-toggle,height,all,40px,lovable-measured,tuisblad:header-menu-toggle@390,canonical,
+button-icon,menu-toggle,color,all,"rgb(24, 29, 37)",lovable-measured,tuisblad:header-menu-toggle@390,canonical,
+button-icon,round,size,all,32px x 32px; padding 8px; border-radius 9999px,lovable-measured,ontdek:stories-card-save; my-profiel:profiel-identity-camera-btn,canonical,fill varies: background/80 + muted-fg (save) or primary + white (camera)
+button-icon,highlight-tab,box,all,"height 40px; padding 12px 8px; radius 8px; gap 4px; bg rgb(255, 234, 128); shadow.md",lovable-measured,lees-storie:storie-highlights-toggle,canonical,highlight token; INK 38px (UA font)
+button-icon,panel-close,box,all,padding 4px; radius 4px; transparent; color foreground,lovable-measured,lees-storie: highlights-panel close (no id),canonical,
+button-icon-label,base,display,all,flex,lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,
+button-icon-label,base,gap,all,8px,lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,INK comments link 4px
+button-icon-label,base,padding,all,0px,lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,
+button-icon-label,base,background-color,all,transparent,lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,
+button-icon-label,base,color,all,"rgb(103, 111, 126)",lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,muted-foreground; token-delta: see ruling TOKEN-1
+button-icon-label,base,font,all,"16px/24px Inter, system-ui, sans-serif 400",lovable-measured,lees-storie:storie-reaksie-tellers; lees-storie:reading-comments-link; lees-gedig:gedig-reaksie-tellers; lees-gedig:reading-comments-link,canonical,INK comments link 14px/21px
+button-icon-label,sm,font,all,"14px/20px Inter, system-ui, sans-serif 400",lovable-measured,lees-storie:reading-response-upvote; lees-gedig:reading-response-upvote,canonical,INK renders an inert <span> with no icon
+button-icon-label,sm,gap,all,4px,lovable-measured,lees-storie:reading-response-upvote; lees-gedig:reading-response-upvote,canonical,
+search-button,base,recipe,all,button-primary + button-size default,most-used,ontdek:search-btn; biblioteek:library-search-btn; opleiding:library-search-btn,needs-ruling,"no Lovable instance (Lovable searches as-you-type); INK-only, 3 variants — ruling SRCH-1 (= pending row 08a ""Soek button SCOPE?"")"
+filter-chip,base,height,all,38px,lovable-measured,ontdek:stories-filter; ontdek:stories-filter-active; biblioteek:library-filter,canonical,INK 39px (line-height 21px)
+filter-chip,base,padding,all,8px 16px,lovable-measured,ontdek:stories-filter; ontdek:stories-filter-active; biblioteek:library-filter,canonical,
+filter-chip,base,border-radius,all,9999px,lovable-measured,ontdek:stories-filter; ontdek:stories-filter-active; biblioteek:library-filter,canonical,
+filter-chip,base,font,all,"14px/20px Inter, system-ui, sans-serif 400",lovable-measured,ontdek:stories-filter; ontdek:stories-filter-active; biblioteek:library-filter,canonical,
+filter-chip,base,gap,all,8px,lovable-measured,ontdek:stories-filter; ontdek:stories-filter-active; biblioteek:library-filter,canonical,
+filter-chip,base,background-color,all,"rgb(250, 248, 245)",lovable-measured,"ontdek:stories-filter; biblioteek (inactive, no id)",canonical,inactive; INK biblioteek/opleiding inactive render transparent; token-delta: see ruling TOKEN-1
+filter-chip,base,color,all,"rgb(24, 29, 37)",lovable-measured,ontdek:stories-filter,canonical,inactive; token-delta: see ruling TOKEN-1
+filter-chip,base,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,ontdek:stories-filter,canonical,inactive; token-delta: see ruling TOKEN-1
+filter-chip,active,background-color,all,"rgb(236, 59, 19)",lovable-measured,ontdek:stories-filter-active; biblioteek:library-filter,canonical,
+filter-chip,active,color,all,"rgb(255, 255, 255)",lovable-measured,ontdek:stories-filter-active,canonical,token-delta: see ruling TOKEN-1
+filter-chip,active,border-color,all,"rgb(236, 59, 19)",lovable-measured,ontdek:stories-filter-active,canonical,
+filter-chip,sort,height,all,32px,lovable-measured,ontdek:stories-sort-pill; ontdek:stories-sort-active,canonical,INK 33px
+filter-chip,sort,padding,all,6px 12px,lovable-measured,ontdek:stories-sort-pill; ontdek:stories-sort-active,canonical,
+filter-chip,sort,border,all,0,lovable-measured,ontdek:stories-sort-pill; ontdek:stories-sort-active,canonical,
+filter-chip,sort,background-color,all,transparent,lovable-measured,ontdek:stories-sort-pill,canonical,inactive
+filter-chip,sort,color,all,"rgb(103, 111, 126)",lovable-measured,ontdek:stories-sort-pill,canonical,inactive; token-delta: see ruling TOKEN-1
+filter-chip,sort-active,background-color,all,"rgb(240, 235, 230)",lovable-measured,ontdek:stories-sort-active,canonical,token-delta: see ruling TOKEN-1
+filter-chip,sort-active,color,all,"rgb(24, 29, 37)",lovable-measured,ontdek:stories-sort-active,canonical,token-delta: see ruling TOKEN-1
+filter-chip,choice,height,all,36px,lovable-measured,lees-storie:reading-response-type; lees-gedig:reading-response-type,canonical,INK 37px
+filter-chip,choice,border,all,0,lovable-measured,lees-storie:reading-response-type; lees-gedig:reading-response-type,canonical,
+filter-chip,choice,background-color,all,"rgba(240, 235, 230, 0.5)",lovable-measured,lees-storie:reading-response-type; lees-gedig:reading-response-type,canonical,unselected only; selected state not captured
+filter-chip,choice,color,all,"rgb(103, 111, 126)",lovable-measured,lees-storie:reading-response-type; lees-gedig:reading-response-type,canonical,token-delta: see ruling TOKEN-1
+filter-chip,choice,font-weight,all,500,lovable-measured,lees-storie:reading-response-type; lees-gedig:reading-response-type,canonical,INK 400
+filter-chip,date,recipe,all,xs 12px/18px; padding 4px 12px; active fill accent,most-used,ontdek:stories-date; ontdek:stories-date-active,needs-ruling,"INK-only (ontdek date archive), no Lovable sibling — ruling CHIP-1"
+tab,base,display,all,inline-flex,lovable-measured,ontdek:tabs-tab; ontdek:tabs-tab-active,canonical,underline tab (Lovable TabButton)
+tab,base,gap,all,8px,lovable-measured,ontdek:tabs-tab; ontdek:tabs-tab-active,canonical,
+tab,base,padding,all,16px 20px,lovable-measured,ontdek:tabs-tab; ontdek:tabs-tab-active,canonical,
+tab,base,height,all,54px,lovable-measured,ontdek:tabs-tab; ontdek:tabs-tab-active,canonical,INK 51px: line-height normal vs 20px
+tab,base,font,all,"14px/20px Inter, system-ui, sans-serif 500",lovable-measured,ontdek:tabs-tab; ontdek:tabs-tab-active,canonical,
+tab,base,border-bottom,all,2px solid transparent,lovable-measured,ontdek:tabs-tab,canonical,
+tab,base,margin-bottom,all,-1px,token,ink-lovable class -mb-px (not captured),canonical,
+tab,base,color,all,"rgb(103, 111, 126)",lovable-measured,ontdek:tabs-tab,canonical,inactive; token-delta: see ruling TOKEN-1
+tab,active,color,all,"rgb(24, 29, 37)",lovable-measured,ontdek:tabs-tab-active,canonical,token-delta: see ruling TOKEN-1
+tab,active,border-bottom-color,all,"rgb(236, 59, 19)",lovable-measured,ontdek:tabs-tab-active,canonical,
+tab,segmented,height,all,32px,lovable-measured,my-profiel:profiel-tab-*; meld-aan:auth-tab-signin; meld-aan:auth-tab-signup,canonical,shadcn TabsTrigger; INK has no segmented tab (ruling F7 / M4 pending)
+tab,segmented,padding,all,6px 12px,lovable-measured,my-profiel:profiel-tab-*; meld-aan:auth-tab-signin; meld-aan:auth-tab-signup,canonical,
+tab,segmented,border-radius,all,4px,lovable-measured,my-profiel:profiel-tab-*; meld-aan:auth-tab-signin; meld-aan:auth-tab-signup,canonical,radius.sm
+tab,segmented,font,all,"14px/20px Inter, system-ui, sans-serif 500",lovable-measured,my-profiel:profiel-tab-*; meld-aan:auth-tab-signin; meld-aan:auth-tab-signup,canonical,
+tab,segmented,color,all,"rgb(103, 111, 126)",lovable-measured,my-profiel:profiel-tab-*; meld-aan:auth-tab-signin; meld-aan:auth-tab-signup,canonical,inactive; token-delta: see ruling TOKEN-1
+tab,segmented-active,background-color,all,"rgb(250, 248, 245)",lovable-measured,my-profiel:profiel-tab-overview; meld-aan:auth-tab-signin,canonical,token-delta: see ruling TOKEN-1
+tab,segmented-active,color,all,"rgb(24, 29, 37)",lovable-measured,my-profiel:profiel-tab-overview,canonical,token-delta: see ruling TOKEN-1
+tab,segmented-active,box-shadow,all,"rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",lovable-measured,my-profiel:profiel-tab-overview,canonical,Tailwind shadow-sm; INK shadow.sm preset is 0 2px 12px -2px — not the same value
+tab,segmented-list,box,all,"height 40px; padding 4px; radius 6px; bg rgb(243, 240, 237)",lovable-measured,meld-aan:auth-tabs-list,canonical,
+nav-link,base,font,all,"16px/24px Inter, system-ui, sans-serif 400",lovable-measured,tuisblad:header-nav-home ... header-nav-community,canonical,header nav
+nav-link,base,color,all,"rgb(103, 111, 126)",lovable-measured,tuisblad:header-nav-home ... header-nav-community,canonical,muted-foreground; token-delta: see ruling TOKEN-1
+nav-link,base,text-decoration,all,none,lovable-measured,tuisblad:header-nav-home ... header-nav-community,canonical,
+nav-link,base,hover,all,"color foreground; underline-slide ::after (2px primary, width 0→100%, 0.3s)",block-style,"functions.php header nav (::after, register row tuisblad functions.php:1684/1698)",canonical,matches ink-lovable index.css:182-199 .underline-slide; state not captured
+nav-link,footer,font,all,"14px/20px Inter, system-ui, sans-serif 400",lovable-measured,tuisblad:footer-col-link; meld-aan:auth-back-link; wagwoord-herstel:auth-switch-link,canonical,INK footer 14px/21px
+nav-link,footer,color,all,"rgb(103, 111, 126)",lovable-measured,tuisblad:footer-col-link; meld-aan:auth-back-link; wagwoord-herstel:auth-switch-link,canonical,"hover foreground, no underline-slide; token-delta: see ruling TOKEN-1"
+link-underline,base,color,all,"rgb(236, 59, 19)",lovable-measured,skrywer:skrywer-werk-all-link; meld-aan:auth-forgot-link; my-profiel:profiel-edit-photo-label; wagwoord-terugstel:auth-notice-link,canonical,
+link-underline,base,font,all,"inherit size; Inter, system-ui, sans-serif 400",lovable-measured,skrywer:skrywer-werk-all-link; meld-aan:auth-forgot-link; my-profiel:profiel-edit-photo-label; wagwoord-terugstel:auth-notice-link,canonical,"size follows context: 14px/20px (sien-alle, notice), 12px/16px (forgot); INK uses 1.5 line-height"
+link-underline,base,text-decoration,all,none at rest; underline on hover,lovable-measured,skrywer:skrywer-werk-all-link; meld-aan:auth-forgot-link; my-profiel:profiel-edit-photo-label; wagwoord-terugstel:auth-notice-link,canonical,INK auth links render underlined at rest (theme.json elements.link)
+link-underline,slide,hover,all,color primary-light; underline-slide ::after,token,tuisblad:featured-all-link (class text-terracotta hover:text-terracotta-light underline-slide),canonical,16px/24px; INK .ink-underline-slide is home.css-only (page-scoped)
+form-field,base,height,all,40px,lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,"INK kontak 35px, skryf 36px, profiel 38px"
+form-field,base,padding,all,8px 12px,lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,
+form-field,base,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,input; token-delta: see ruling TOKEN-1
+form-field,base,border-radius,all,6px,lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,
+form-field,base,background-color,all,"rgb(250, 248, 245)",lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,background; INK reaksies input renders UA white/black; token-delta: see ruling TOKEN-1
+form-field,base,color,all,"rgb(24, 29, 37)",lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,token-delta: see ruling TOKEN-1
+form-field,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,skryf title/body override to Lora (display)
+form-field,base,font-size,390,16px,lovable-measured,meld-aan:auth-email-input@390; wagwoord-herstel:auth-email-input@390,canonical,shadcn Input text-base md:text-sm; INK renders 14px at 390
+form-field,base,line-height,390,24px,lovable-measured,meld-aan:auth-email-input@390,canonical,
+form-field,base,font-size,768|1440,14px,lovable-measured,meld-aan:auth-email-input@768|1440,canonical,
+form-field,base,line-height,768|1440,20px,lovable-measured,meld-aan:auth-email-input@768|1440,canonical,
+form-field,textarea,font,all,"14px/20px Inter, system-ui, sans-serif",lovable-measured,lees-storie:reading-response-input; lees-gedig:reading-response-input; my-profiel:profiel-edit-textarea,canonical,all viewports (shadcn Textarea is text-sm)
+form-field,textarea,min-height,all,80px,lovable-measured,lees-storie:reading-response-input; lees-gedig:reading-response-input; my-profiel:profiel-edit-textarea,canonical,rendered 100px / 118px; INK reaksies 77px with 12px padding
+form-label,base,font,all,"14px Inter, system-ui, sans-serif 500",lovable-measured,meld-aan:auth-email-label; meld-aan:auth-password-label; wagwoord-herstel:auth-email-label; skryf:skryf-title-label,canonical,
+form-label,base,color,all,"rgb(24, 29, 37)",lovable-measured,meld-aan:auth-email-label; meld-aan:auth-password-label; wagwoord-herstel:auth-email-label; skryf:skryf-title-label,canonical,token-delta: see ruling TOKEN-1
+form-label,base,line-height,all,14px | 20px,lovable-measured,meld-aan:auth-email-label (14px) vs skryf:skryf-title-label (20px),needs-ruling,Lovable conflicts (shadcn Label leading-none vs plain label); INK 21px everywhere — ruling LBL-1
+form-label,caps,font,all,"12px/16px Inter, system-ui, sans-serif 400",lovable-measured,my-profiel:profiel-edit-label,canonical,INK 12px/18px
+form-label,caps,text-transform,all,uppercase,lovable-measured,my-profiel:profiel-edit-label,canonical,
+form-label,caps,letter-spacing,all,0.6px,lovable-measured,my-profiel:profiel-edit-label,canonical,tracking-wider (0.05em); INK 0.96px
+form-label,caps,color,all,"rgb(103, 111, 126)",lovable-measured,my-profiel:profiel-edit-label,canonical,token-delta: see ruling TOKEN-1
+form-hint,base,font,all,"12px/16px Inter, system-ui, sans-serif 400",lovable-measured,skryf:skryf-challenges-hint; meld-aan:auth-field-hint (signup state),canonical,INK 12px/18px on all 6 instances
+form-hint,base,color,all,"rgb(103, 111, 126)",lovable-measured,skryf:skryf-challenges-hint; meld-aan:auth-field-hint (signup state),canonical,token-delta: see ruling TOKEN-1
+search-field,base,height,all,48px,lovable-measured,ontdek:search-input; biblioteek:library-search-input,canonical,INK 43 / 50 / 39px on three pages
+search-field,base,padding,all,8px 12px 8px 44px,lovable-measured,ontdek:search-input; biblioteek:library-search-input,canonical,pl-11 leaves room for the leading search icon
+search-field,base,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,ontdek:search-input; biblioteek:library-search-input,canonical,token-delta: see ruling TOKEN-1
+search-field,base,border-radius,all,6px,lovable-measured,ontdek:search-input; biblioteek:library-search-input,canonical,
+search-field,base,background-color,all,"rgb(250, 248, 245)",lovable-measured,ontdek:search-input; biblioteek:library-search-input,canonical,INK ontdek surface / biblioteek+opleiding surface-alt; token-delta: see ruling TOKEN-1
+search-field,base,color,all,"rgb(24, 29, 37)",lovable-measured,ontdek:search-input; biblioteek:library-search-input,canonical,INK ontdek renders UA black
+search-field,base,font-size,390,16px,lovable-measured,ontdek:search-input@390,canonical,
+search-field,base,line-height,390,24px,lovable-measured,ontdek:search-input@390,canonical,
+search-field,base,font-size,768|1440,14px,lovable-measured,ontdek:search-input@768|1440,canonical,
+search-field,base,line-height,768|1440,20px,lovable-measured,ontdek:search-input@768|1440,canonical,
+checkbox,base,size,all,16px x 16px,lovable-measured,skryf:skryf-checkbox-input (Lovable editor state),canonical,
+checkbox,base,border,all,"1px solid rgb(236, 59, 19)",lovable-measured,skryf:skryf-checkbox-input (Lovable editor state),canonical,INK renders native UA controls (no border/radius computed)
+checkbox,base,border-radius,all,4px,lovable-measured,skryf:skryf-checkbox-input (Lovable editor state),canonical,radius.sm
+checkbox,base,background-color,all,transparent,lovable-measured,skryf:skryf-checkbox-input (Lovable editor state),canonical,unchecked
+checkbox,checked,background-color,all,"rgb(236, 59, 19)",token,ink-lovable checkbox.tsx (data-[state=checked]; not captured),canonical,check glyph primary-foreground
+choice-row,base,display,all,flex; align-items flex-start,lovable-measured,skryf:skryf-checkbox,canonical,
+choice-row,base,gap,all,12px,lovable-measured,skryf:skryf-checkbox,canonical,
+choice-row,base,padding,all,12px,lovable-measured,skryf:skryf-checkbox,canonical,
+choice-row,base,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,skryf:skryf-checkbox,canonical,token-delta: see ruling TOKEN-1
+choice-row,base,border-radius,all,6px,lovable-measured,skryf:skryf-checkbox,canonical,
+choice-row,base,background-color,all,transparent,lovable-measured,skryf:skryf-checkbox,canonical,
+choice-row,base,hover background-color,all,"rgba(240, 235, 230, 0.5)",token,ink-lovable class hover:bg-secondary/50 (not captured),canonical,

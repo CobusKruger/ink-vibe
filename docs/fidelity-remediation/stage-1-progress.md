@@ -123,3 +123,14 @@ Collected from the per-row notes above. None of these were decided by the audit.
   byte-identical to before (tuisblad@1440, both sides), and so is diff output
   (`01-gemeenskap-drift.md`). Rows 08a/08b cards are measured from `/qa-bloks/` with
   scoped captures, and both rows are now `done`.
+- **2026-10-14** — Stage 2 (synthesis, README §4.7) started. The 38 kinds in the merged
+  register are split three ways, one fresh agent each: `type-layout` (heading,
+  section-band, eyebrow), `surfaces` (card, pill, meta-*, chips, badges and so on) and
+  `controls` (buttons, links, tabs, form fields). Each agent writes
+  `findings/_primitive-synthesis.<group>.md` and `maps/_recipes.<group>.csv`. The lead
+  merges them into `_primitive-synthesis.md` and `_recipes.csv` for owner ratification.
+  The shared brief is in `tmp/stage2-brief.md`.
+- **2026-10-14** — Stage 2 synthesis done. The output is `_recipes.csv`, 702 rows: 635
+  canonical and 67 needs-ruling. `findings/_primitive-synthesis.md` lists the 19 owner
+  rulings, two capture gaps, and the proposed vocabulary changes. Stage 3 is gated on
+  ratification.
