@@ -148,11 +148,11 @@ final class Viewer {
 		}
 
 		if ( $flipbook_available ) {
-			return '<div class="ink-inkpols-leser">' . $shortcode_output . '</div>';
+			return '<div class="ink-inkpols-leser" data-audit-id="inkpols-single-viewer">' . $shortcode_output . '</div>';
 		}
 
-		return '<div class="ink-inkpols-leser ink-inkpols-leser--terugval">'
-			. '<a class="ink-inkpols-leser__skakel" href="' . esc_url( $pdf_url ) . '">'
+		return '<div class="ink-inkpols-leser ink-inkpols-leser--terugval" data-audit-id="inkpols-single-viewer">'
+			. '<a class="ink-inkpols-leser__skakel" data-audit-id="inkpols-single-pdf-link" href="' . esc_url( $pdf_url ) . '">'
 			. esc_html( Terms::label( 'inkpols_lees_uitgawe' ) )
 			. '</a></div>';
 	}

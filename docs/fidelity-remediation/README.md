@@ -438,6 +438,18 @@ Row 02 files the following under existing kinds:
 It drops the tab-panel and ink-core block-root `<section>`s that the tool tags as
 `section-band`.
 
+Added during rows 12/15–18 (`vier-nul-vier`, `kontak`, `lidmaatskap`, `inkpols`, `ledegids`; Treatment C):
+no new kind. They file the following under existing kinds:
+- a raw `<button class="wp-element-button">` and an `is-style-pill` core/button with a primary fill (the tool
+  says generic `button` / "wrapper has no registered variant") under `button-primary`;
+- the kontak field hint and the privacy note (`xs`, muted) under `form-hint`, added by hand;
+- `core/details.is-style-card` FAQ items under `card`.
+
+They drop the kontak off-screen honeypot (`.ink-kontak-vorm__hp`) and the ink-core block-root `<section>`s
+(`ink-inkpols`, `ink-ontdek-skrywers`). The kontak result notice (`.ink-kontak-vorm__notice--ok|--fout`) was not
+rendered, so it was not filed. If a later pass captures it, it needs a kind (an alert banner), and none in the
+list fits.
+
 `run.sh primitives` also emits a generic `button` fallback. It is not a kind: resolve
 each such row to a variant before it enters the register.
 

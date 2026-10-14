@@ -1,0 +1,28 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+inkpols-section,,,wp-content/themes/ink-foundation/patterns/inkpols.php,23,archive section,scope,Treatment C: no Lovable source; status scope = INK-only element audited against the token set
+inkpols-inner,,,wp-content/themes/ink-foundation/patterns/inkpols.php,25,alignwide wrapper,scope,
+inkpols-archive,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,193,ink/inkpols-argief root <section>,scope,line 197 = populated branch
+inkpols-heading,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,187,h1 InkPols,scope,
+inkpols-empty,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,194,empty state 'Geen Uitgawes gevind nie.',scope,the only state that renders: zero inkpols_uitgawe posts exist
+inkpols-year,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,205,first year group,scope,NOT RENDERED (no issues); first group only
+inkpols-year-title,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,208,year h2,scope,NOT RENDERED
+inkpols-list,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,211,issue list <ul>,scope,NOT RENDERED
+inkpols-card,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,254,first issue card (li.is-style-card),scope,NOT RENDERED; first card only
+inkpols-cover-link,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,238,cover link,scope,NOT RENDERED
+inkpols-cover,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,239,cover img,scope,NOT RENDERED
+inkpols-title,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,256,issue title link,scope,NOT RENDERED
+inkpols-date,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,243,issue date,scope,NOT RENDERED
+inkpols-volume,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,247,volume,scope,NOT RENDERED
+inkpols-teaser,,,wp-content/plugins/ink-core/src/InkPols/Archive.php,251,teaser,scope,NOT RENDERED
+inkpols-single-header,,,wp-content/themes/ink-foundation/patterns/reading-inkpols.php,24,single: header section,scope,NOT RENDERED: no published inkpols_uitgawe exists (none in any status)
+inkpols-single-header-inner,,,wp-content/themes/ink-foundation/patterns/reading-inkpols.php,26,single: 768px stack,scope,NOT RENDERED
+inkpols-single-eyebrow,,,wp-content/themes/ink-foundation/patterns/reading-inkpols.php,28,single: type eyebrow (accent),scope,NOT RENDERED
+inkpols-single-meta,,,wp-content/plugins/ink-core/src/InkPols/SingleIssue.php,102,single: ink/inkpols-besonderhede root,scope,NOT RENDERED
+inkpols-single-cover,,,wp-content/plugins/ink-core/src/InkPols/SingleIssue.php,81,single: cover img,scope,NOT RENDERED
+inkpols-single-date,,,wp-content/plugins/ink-core/src/InkPols/SingleIssue.php,85,single: date,scope,NOT RENDERED
+inkpols-single-volume,,,wp-content/plugins/ink-core/src/InkPols/SingleIssue.php,89,single: volume,scope,NOT RENDERED
+inkpols-single-teaser,,,wp-content/plugins/ink-core/src/InkPols/SingleIssue.php,93,single: teaser,scope,NOT RENDERED
+inkpols-single-viewer-section,,,wp-content/themes/ink-foundation/patterns/reading-inkpols.php,40,single: viewer section,scope,NOT RENDERED
+inkpols-single-viewer,,,wp-content/plugins/ink-core/src/InkPols/Viewer.php,151,single: ink/inkpols-leser root,scope,NOT RENDERED; line 154 = fallback (no flipbook plugin) branch
+inkpols-single-pdf-link,,,wp-content/plugins/ink-core/src/InkPols/Viewer.php,155,single: 'Lees die uitgawe' fallback link,scope,NOT RENDERED
+inkpols-single-body,,,wp-content/themes/ink-foundation/patterns/reading-inkpols.php,50,single: post-content section,scope,NOT RENDERED; post-title (core/post-title) has no id (dynamic block — would need a render filter)

@@ -26,15 +26,15 @@ $ink_ledegids_label = function_exists( 'ink_foundation_term' )
 	: 'Ledegids';
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-24)">
+<section class="wp-block-group alignfull" data-audit-id="ledegids-intro" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide">
+	<div class="wp-block-group alignwide" data-audit-id="ledegids-intro-inner">
 		<!-- wp:heading {"level":1,"fontSize":"xxl"} -->
-		<h1 class="wp-block-heading has-xxl-font-size"><?php echo esc_html( $ink_ledegids_label ); ?></h1>
+		<h1 class="wp-block-heading has-xxl-font-size" data-audit-id="ledegids-h1"><?php echo esc_html( $ink_ledegids_label ); ?></h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( 'Ontdek die skrywers van die gemeenskap.', 'ink-foundation' ); ?></p>
+		<p class="has-muted-text-color has-text-color has-md-font-size" data-audit-id="ledegids-lede"><?php echo esc_html__( 'Ontdek die skrywers van die gemeenskap.', 'ink-foundation' ); ?></p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
@@ -42,9 +42,9 @@ $ink_ledegids_label = function_exists( 'ink_foundation_term' )
 <!-- /wp:group -->
 
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<section class="wp-block-group alignfull" data-audit-id="ledegids-directory" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide">
+	<div class="wp-block-group alignwide" data-audit-id="ledegids-directory-inner">
 		<!-- wp:ink/ontdek-skrywers /-->
 	</div>
 	<!-- /wp:group -->

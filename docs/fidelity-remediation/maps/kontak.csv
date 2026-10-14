@@ -1,0 +1,19 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+kontak-hero,,,wp-content/themes/ink-foundation/patterns/kontak.php,29,hero section (640px constrained),scope,Treatment C: no Lovable source; status scope = INK-only element audited against the token set
+kontak-hero-inner,,,wp-content/themes/ink-foundation/patterns/kontak.php,31,blockGap s-24 stack,scope,
+kontak-eyebrow,,,wp-content/themes/ink-foundation/patterns/kontak.php,33,plain eyebrow 'Kontak',scope,
+kontak-h1,,,wp-content/themes/ink-foundation/patterns/kontak.php,37,h1 xxxl,scope,32px pin via .ink-kontak-hero (theme.json styles.css)
+kontak-lede,,,wp-content/themes/ink-foundation/patterns/kontak.php,41,lede lg muted,scope,
+kontak-form,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,151,ink/kontak-vorm form,scope,
+kontak-field,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,156,first field row (Naam),scope,the subject row (3rd) carries no id; same markup as this one
+kontak-label,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,156,field label (Naam),scope,
+kontak-input,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,158,text input (Naam),scope,
+kontak-input-email,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,161,email input,scope,distinct input type
+kontak-field-message,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,165,message field row,scope,
+kontak-label-message,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,165,message label,scope,
+kontak-hint,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,167,field hint (wenk),scope,
+kontak-textarea,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,169,message textarea,scope,
+kontak-privacy,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,174,privacy note,scope,
+kontak-submit-row,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,176,submit wrapper <p>,scope,
+kontak-submit,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,176,submit button (wp-element-button),scope,
+kontak-notice,,,wp-content/plugins/ink-core/src/Forms/ContactForm.php,218,result notice (ok / fout),scope,NOT CAPTURED: renders only with ?ink_kontak=<slug> after a round-trip; no form submitted (brief)

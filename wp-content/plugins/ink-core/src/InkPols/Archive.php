@@ -184,29 +184,35 @@ final class Archive {
 	 * @return string
 	 */
 	public static function toHtml( array $groups ): string {
-		$heading = '<h1 class="ink-inkpols__heading">' . esc_html( Terms::label( 'inkpols' ) ) . '</h1>';
+		$heading = '<h1 class="ink-inkpols__heading" data-audit-id="inkpols-heading">' . esc_html( Terms::label( 'inkpols' ) ) . '</h1>';
 
 		if ( array() === $groups ) {
 			/* translators: %s: the Uitgawes (issues) plural label. */
 			$empty = sprintf( __( 'Geen %s gevind nie.', 'ink-core' ), Terms::label( 'inkpols_uitgawe_plural' ) );
 
-			return '<section class="ink-inkpols">' . $heading
-				. '<p class="ink-inkpols__leeg">' . esc_html( $empty ) . '</p></section>';
+			return '<section class="ink-inkpols" data-audit-id="inkpols-archive">' . $heading
+				. '<p class="ink-inkpols__leeg" data-audit-id="inkpols-empty">' . esc_html( $empty ) . '</p></section>';
 		}
 
-		$html = '<section class="ink-inkpols">' . $heading;
+		$html = '<section class="ink-inkpols" data-audit-id="inkpols-archive">' . $heading;
+
+		// Fidelity-audit join keys (docs/fidelity-remediation/maps/inkpols.csv) go on
+		// the FIRST year group and its FIRST card only, so the ids stay unique.
+		$first = true;
 
 		foreach ( $groups as $group ) {
-			$html .= '<section class="ink-inkpols__jaar">';
+			$aid   = static fn ( string $id ): string => $first ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
+			$html .= '<section class="ink-inkpols__jaar"' . $aid( 'inkpols-year' ) . '>';
 
 			if ( '' !== $group['year'] ) {
-				$html .= '<h2 class="ink-inkpols__jaar-titel">' . esc_html( $group['year'] ) . '</h2>';
+				$html .= '<h2 class="ink-inkpols__jaar-titel"' . $aid( 'inkpols-year-title' ) . '>' . esc_html( $group['year'] ) . '</h2>';
 			}
 
-			$html .= '<ul class="ink-inkpols__lys">';
+			$html .= '<ul class="ink-inkpols__lys"' . $aid( 'inkpols-list' ) . '>';
 
 			foreach ( $group['issues'] as $issue ) {
-				$html .= self::card( $issue );
+				$html .= self::card( $issue, $first );
+				$first = false;
 			}
 
 			$html .= '</ul></section>';
@@ -220,32 +226,34 @@ final class Archive {
 	 * teaser. Pure — escaping only.
 	 *
 	 * @param Issue $issue The issue read-model.
+	 * @param bool  $audit Stamp the fidelity-audit join keys (first card only).
 	 * @return string
 	 */
-	public static function card( Issue $issue ): string {
+	public static function card( Issue $issue, bool $audit = false ): string {
 		$permalink = (string) get_permalink( $issue->postId );
 		$cover_url = $issue->coverUrl();
+		$aid       = static fn ( string $id ): string => $audit ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
 
 		$cover = '' !== $cover_url
-			? '<a class="ink-inkpols__omslag-skakel" href="' . esc_url( $permalink ) . '">'
-				. '<img class="ink-inkpols__omslag" src="' . esc_url( $cover_url ) . '" alt="' . esc_attr( $issue->title ) . '" /></a>'
+			? '<a class="ink-inkpols__omslag-skakel"' . $aid( 'inkpols-cover-link' ) . ' href="' . esc_url( $permalink ) . '">'
+				. '<img class="ink-inkpols__omslag"' . $aid( 'inkpols-cover' ) . ' src="' . esc_url( $cover_url ) . '" alt="' . esc_attr( $issue->title ) . '" /></a>'
 			: '';
 
 		$date = '' !== $issue->displayDate()
-			? '<span class="ink-inkpols__datum">' . esc_html( $issue->displayDate() ) . '</span>'
+			? '<span class="ink-inkpols__datum"' . $aid( 'inkpols-date' ) . '>' . esc_html( $issue->displayDate() ) . '</span>'
 			: '';
 
 		$volume = '' !== $issue->volume
-			? '<span class="ink-inkpols__volume">' . esc_html( $issue->volume ) . '</span>'
+			? '<span class="ink-inkpols__volume"' . $aid( 'inkpols-volume' ) . '>' . esc_html( $issue->volume ) . '</span>'
 			: '';
 
 		$teaser = '' !== $issue->teaser
-			? '<p class="ink-inkpols__voorskou">' . esc_html( $issue->teaser ) . '</p>'
+			? '<p class="ink-inkpols__voorskou"' . $aid( 'inkpols-teaser' ) . '>' . esc_html( $issue->teaser ) . '</p>'
 			: '';
 
-		return '<li class="ink-inkpols__item is-style-card">'
+		return '<li class="ink-inkpols__item is-style-card"' . $aid( 'inkpols-card' ) . '>'
 			. $cover
-			. '<a class="ink-inkpols__titel" href="' . esc_url( $permalink ) . '">' . esc_html( $issue->title ) . '</a>'
+			. '<a class="ink-inkpols__titel"' . $aid( 'inkpols-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $issue->title ) . '</a>'
 			. $date
 			. $volume
 			. $teaser

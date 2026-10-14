@@ -148,32 +148,32 @@ final class ContactForm {
 	 * @return string
 	 */
 	public static function toHtml( string $nonce_field, string $action_url, string $notice = '' ): string {
-		$html  = '<form class="ink-kontak-vorm" method="post" action="' . esc_url( $action_url ) . '">';
+		$html  = '<form class="ink-kontak-vorm" data-audit-id="kontak-form" method="post" action="' . esc_url( $action_url ) . '">';
 		$html .= self::noticeHtml( $notice );
 
 		$html .= $nonce_field
 			. '<input type="hidden" name="action" value="' . esc_attr( self::POST_ACTION ) . '" />'
-			. '<p class="ink-kontak-vorm__veld"><label for="' . esc_attr( self::FIELD_NAME ) . '">'
+			. '<p class="ink-kontak-vorm__veld" data-audit-id="kontak-field"><label data-audit-id="kontak-label" for="' . esc_attr( self::FIELD_NAME ) . '">'
 				. esc_html__( 'Naam', 'ink-core' ) . '</label>'
-				. '<input type="text" id="' . esc_attr( self::FIELD_NAME ) . '" name="' . esc_attr( self::FIELD_NAME ) . '" required="required" /></p>'
+				. '<input type="text" data-audit-id="kontak-input" id="' . esc_attr( self::FIELD_NAME ) . '" name="' . esc_attr( self::FIELD_NAME ) . '" required="required" /></p>'
 			. '<p class="ink-kontak-vorm__veld"><label for="' . esc_attr( self::FIELD_EMAIL ) . '">'
 				. esc_html__( 'E-pos', 'ink-core' ) . '</label>'
-				. '<input type="email" id="' . esc_attr( self::FIELD_EMAIL ) . '" name="' . esc_attr( self::FIELD_EMAIL ) . '" required="required" /></p>'
+				. '<input type="email" data-audit-id="kontak-input-email" id="' . esc_attr( self::FIELD_EMAIL ) . '" name="' . esc_attr( self::FIELD_EMAIL ) . '" required="required" /></p>'
 			. '<p class="ink-kontak-vorm__veld"><label for="' . esc_attr( self::FIELD_SUBJECT ) . '">'
 				. esc_html__( 'Onderwerp (opsioneel)', 'ink-core' ) . '</label>'
 				. '<input type="text" id="' . esc_attr( self::FIELD_SUBJECT ) . '" name="' . esc_attr( self::FIELD_SUBJECT ) . '" /></p>'
-			. '<p class="ink-kontak-vorm__veld"><label for="' . esc_attr( self::FIELD_MESSAGE ) . '">'
+			. '<p class="ink-kontak-vorm__veld" data-audit-id="kontak-field-message"><label data-audit-id="kontak-label-message" for="' . esc_attr( self::FIELD_MESSAGE ) . '">'
 				. esc_html__( 'Boodskap', 'ink-core' ) . '</label>'
-				. '<span class="ink-kontak-vorm__wenk" id="' . esc_attr( self::FIELD_MESSAGE ) . '-wenk">'
+				. '<span class="ink-kontak-vorm__wenk" data-audit-id="kontak-hint" id="' . esc_attr( self::FIELD_MESSAGE ) . '-wenk">'
 					. esc_html__( 'Hoe ons kan help?', 'ink-core' ) . '</span>'
-				. '<textarea id="' . esc_attr( self::FIELD_MESSAGE ) . '" name="' . esc_attr( self::FIELD_MESSAGE ) . '" rows="6" required="required" aria-describedby="' . esc_attr( self::FIELD_MESSAGE ) . '-wenk"></textarea></p>'
+				. '<textarea data-audit-id="kontak-textarea" id="' . esc_attr( self::FIELD_MESSAGE ) . '" name="' . esc_attr( self::FIELD_MESSAGE ) . '" rows="6" required="required" aria-describedby="' . esc_attr( self::FIELD_MESSAGE ) . '-wenk"></textarea></p>'
 			// Honeypot: visually hidden, must stay empty. A filled value is a bot.
 			. '<p class="ink-kontak-vorm__hp" aria-hidden="true" style="position:absolute;left:-9999px;">'
 				. '<label for="' . esc_attr( self::FIELD_HONEYPOT ) . '">' . esc_html__( 'Los hierdie veld leeg', 'ink-core' ) . '</label>'
 				. '<input type="text" id="' . esc_attr( self::FIELD_HONEYPOT ) . '" name="' . esc_attr( self::FIELD_HONEYPOT ) . '" tabindex="-1" autocomplete="off" /></p>'
-			. '<p class="ink-kontak-vorm__privaatheid">'
+			. '<p class="ink-kontak-vorm__privaatheid" data-audit-id="kontak-privacy">'
 				. esc_html__( 'Ons gebruik jou besonderhede net om op hierdie boodskap te antwoord.', 'ink-core' ) . '</p>'
-			. '<p class="ink-kontak-vorm__stuur"><button type="submit" class="wp-element-button">'
+			. '<p class="ink-kontak-vorm__stuur" data-audit-id="kontak-submit-row"><button type="submit" class="wp-element-button" data-audit-id="kontak-submit">'
 				. esc_html__( 'Stuur boodskap', 'ink-core' ) . '</button></p>';
 
 		return $html . '</form>';
@@ -215,7 +215,7 @@ final class ContactForm {
 	 * @return string
 	 */
 	private static function notice( string $variant, string $role, string $text ): string {
-		return '<p class="ink-kontak-vorm__notice ink-kontak-vorm__notice--' . $variant . '" role="' . $role . '">'
+		return '<p class="ink-kontak-vorm__notice ink-kontak-vorm__notice--' . $variant . '" data-audit-id="kontak-notice" role="' . $role . '">'
 			. $text . '</p>';
 	}
 

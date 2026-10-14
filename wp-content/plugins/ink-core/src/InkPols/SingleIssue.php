@@ -78,19 +78,19 @@ final class SingleIssue {
 		$cover_url = $issue->coverUrl();
 
 		$cover = '' !== $cover_url
-			? '<img class="ink-inkpols-besonderhede__omslag" src="' . esc_url( $cover_url ) . '" alt="' . esc_attr( $issue->title ) . '" />'
+			? '<img class="ink-inkpols-besonderhede__omslag" data-audit-id="inkpols-single-cover" src="' . esc_url( $cover_url ) . '" alt="' . esc_attr( $issue->title ) . '" />'
 			: '';
 
 		$date = '' !== $issue->displayDate()
-			? '<p class="ink-inkpols-besonderhede__datum">' . esc_html( $issue->displayDate() ) . '</p>'
+			? '<p class="ink-inkpols-besonderhede__datum" data-audit-id="inkpols-single-date">' . esc_html( $issue->displayDate() ) . '</p>'
 			: '';
 
 		$volume = '' !== $issue->volume
-			? '<p class="ink-inkpols-besonderhede__volume">' . esc_html( $issue->volume ) . '</p>'
+			? '<p class="ink-inkpols-besonderhede__volume" data-audit-id="inkpols-single-volume">' . esc_html( $issue->volume ) . '</p>'
 			: '';
 
 		$teaser = '' !== $issue->teaser
-			? '<p class="ink-inkpols-besonderhede__voorskou">' . esc_html( $issue->teaser ) . '</p>'
+			? '<p class="ink-inkpols-besonderhede__voorskou" data-audit-id="inkpols-single-teaser">' . esc_html( $issue->teaser ) . '</p>'
 			: '';
 
 		$body = $cover . $date . $volume . $teaser;
@@ -99,7 +99,7 @@ final class SingleIssue {
 			return '';
 		}
 
-		return '<div class="ink-inkpols-besonderhede">' . $body . '</div>';
+		return '<div class="ink-inkpols-besonderhede" data-audit-id="inkpols-single-meta">' . $body . '</div>';
 	}
 
 	/**

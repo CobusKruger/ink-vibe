@@ -26,19 +26,19 @@
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-kontak-hero","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"640px"}} -->
-<section class="wp-block-group alignfull ink-kontak-hero" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<section class="wp-block-group alignfull ink-kontak-hero" data-audit-id="kontak-hero" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group">
+	<div class="wp-block-group" data-audit-id="kontak-hero-inner">
 		<!-- wp:paragraph {"style":{"typography":{"fontStyle":"normal","fontWeight":"500","textTransform":"uppercase","letterSpacing":"0.2em"}},"fontSize":"xs","textColor":"primary"} -->
-		<p class="has-primary-color has-text-color has-xs-font-size" style="font-style:normal;font-weight:500;letter-spacing:0.2em;text-transform:uppercase">Kontak</p>
+		<p class="has-primary-color has-text-color has-xs-font-size" data-audit-id="kontak-eyebrow" style="font-style:normal;font-weight:500;letter-spacing:0.2em;text-transform:uppercase">Kontak</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
-		<h1 class="wp-block-heading has-xxxl-font-size">Kom in kontak met INK</h1>
+		<h1 class="wp-block-heading has-xxxl-font-size" data-audit-id="kontak-h1">Kom in kontak met INK</h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"lg","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-lg-font-size">Het jy &#8217;n vraag, &#8217;n voorstel, of wil jy as borg betrokke raak? Stuur ons &#8217;n boodskap.</p>
+		<p class="has-muted-text-color has-text-color has-lg-font-size" data-audit-id="kontak-lede">Het jy &#8217;n vraag, &#8217;n voorstel, of wil jy as borg betrokke raak? Stuur ons &#8217;n boodskap.</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:ink/kontak-vorm /-->

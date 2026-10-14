@@ -1,0 +1,26 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+ledegids-intro,,,wp-content/themes/ink-foundation/patterns/ledegids.php,29,intro section,scope,Treatment C: no Lovable source; status scope = INK-only element audited against the token set
+ledegids-intro-inner,,,wp-content/themes/ink-foundation/patterns/ledegids.php,31,alignwide stack,scope,
+ledegids-h1,,,wp-content/themes/ink-foundation/patterns/ledegids.php,33,h1 xxl (Ledegids),scope,
+ledegids-lede,,,wp-content/themes/ink-foundation/patterns/ledegids.php,37,lede md muted,scope,
+ledegids-directory,,,wp-content/themes/ink-foundation/patterns/ledegids.php,45,directory section,scope,
+ledegids-directory-inner,,,wp-content/themes/ink-foundation/patterns/ledegids.php,47,alignwide wrapper,scope,
+writers-archive,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,256,ink/ontdek-skrywers root,scope,id owned by row 03 (maps/ontdek.csv); reused here unchanged
+writers-heading,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,242,h2 Skrywers,scope,row 03 id; renders below this page's own h1
+writers-controls,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,349,controls row,scope,row 03 id
+writers-filters,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,349,genre filter group,scope,row 03 id
+writers-filter-active,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,358,active genre pill (Almal),scope,row 03 id
+writers-filter,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,370,first inactive genre pill,scope,row 03 id
+writers-sort,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,374,sort group,scope,row 03 id
+writers-sort-active,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,376,active sort pill,scope,row 03 id
+writers-sort-pill,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,376,inactive sort pill,scope,row 03 id
+writers-grid,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,256,writer card list,scope,row 03 id
+writers-card,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,308,first writer card,scope,row 03 id; first card only
+writers-card-head,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,309,card head row,scope,row 03 id
+writers-card-avatar,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,312,avatar img,scope,row 03 id; gravatar default image
+writers-card-head-text,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,316,name + grade column,scope,row 03 id
+writers-card-name,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,317,writer name link,scope,row 03 id
+writers-card-grade,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,318,gradering label,scope,row 03 id
+writers-card-genres,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,322,genre pill row,scope,row 03 id
+writers-card-genre,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,327,first genre pill,scope,row 03 id
+writers-card-bio,,,wp-content/plugins/ink-core/src/Discovery/SkrywersTab.php,335,bio,scope,row 03 id

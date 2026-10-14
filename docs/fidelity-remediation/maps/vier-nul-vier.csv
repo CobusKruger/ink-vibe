@@ -1,0 +1,3 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+vier-nul-vier-main,,,wp-content/themes/ink-foundation/templates/index.html,4,<main> of the fallback template,scope,Treatment C (owner ruling); Lovable NotFound.tsx captured for reference only and carries no ids. index.html is WP's last-resort template so this id also renders on any other route that falls through to it
+vier-nul-vier-inner,,,wp-content/themes/ink-foundation/templates/index.html,6,alignwide wrapper (renders empty on a 404),scope,post-title + post-content inside it emit nothing on a 404 — no heading / message / home link (see findings/12-vier-nul-vier-conformance.md structural note)

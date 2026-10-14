@@ -1,0 +1,31 @@
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+lidmaatskap-hero,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,70,hero section,scope,Treatment C: no Lovable source; status scope = INK-only element audited against the token set
+lidmaatskap-hero-inner,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,72,alignwide stack,scope,
+lidmaatskap-h1,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,74,h1 xxxl (Aansluitingsopsies),scope,
+lidmaatskap-lede,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,78,lede lg muted,scope,
+lidmaatskap-plans,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,86,plans section,scope,
+lidmaatskap-plans-grid,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,88,core/columns,scope,
+lidmaatskap-plan-col,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,103,first column,scope,first plan only ($ink_plan_first)
+lidmaatskap-plan-card,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,105,is-style-card plan card,scope,first plan only
+lidmaatskap-plan-term,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,107,term h2 xl,scope,first plan only
+lidmaatskap-plan-price,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,111,price xxl bold,scope,first plan only; all three plans render R50
+lidmaatskap-plan-desc,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,130,description md muted,scope,first plan only; copy renders a literal backslash (\’n)
+lidmaatskap-plan-actions,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,134,core/buttons,scope,first plan only
+lidmaatskap-plan-btn,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,137,is-style-pill 'Sluit aan' link,scope,first plan only; line 141 = disabled 'Binnekort beskikbaar' branch (not rendered here)
+lidmaatskap-benefits,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,158,benefits section,scope,
+lidmaatskap-benefits-inner,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,160,alignwide stack,scope,
+lidmaatskap-benefits-h2,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,162,h2 xxl,scope,
+lidmaatskap-benefits-list,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,166,core/list,scope,
+lidmaatskap-benefits-item,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,168,first list item,scope,
+lidmaatskap-faq,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,186,FAQ section,scope,
+lidmaatskap-faq-inner,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,188,alignwide stack,scope,
+lidmaatskap-faq-h2,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,190,h2 xxl,scope,
+lidmaatskap-faq-item,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,194,first details (is-style-card),scope,
+lidmaatskap-faq-summary,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,194,summary row,scope,
+lidmaatskap-faq-label,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,194,question label,scope,
+lidmaatskap-faq-icon,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,194,chevron svg,scope,id injected into ink_foundation_icon() output for the first item only
+lidmaatskap-faq-answer,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,196,answer paragraph,scope,closed <details>: unrendered (0×0) in the default capture
+lidmaatskap-cta,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,222,secondary CTA band,scope,
+lidmaatskap-cta-inner,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,224,stack,scope,
+lidmaatskap-cta-h2,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,226,h2 xxxl centred,scope,
+lidmaatskap-cta-text,,,wp-content/themes/ink-foundation/patterns/lidmaatskap.php,230,text lg muted centred,scope,
