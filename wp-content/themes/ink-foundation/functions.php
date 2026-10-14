@@ -64,6 +64,74 @@ function ink_foundation_register_pattern_categories(): void {
 add_action( 'init', 'ink_foundation_register_pattern_categories' );
 
 /**
+ * Enqueue the shared primitives stylesheet on EVERY front-end page (Fidelity
+ * remediation Stage 3, `docs/fidelity-remediation/README.md` §4.7).
+ *
+ * `primitives.css` is the single home of every primitive recipe (buttons, cards,
+ * pills, chips, tabs, form controls, headings, section bands …) — R8: a
+ * page-scoped sheet may not define or redefine one. Deliberately UNGATED (no
+ * is_page()/is_singular() condition), and hooked at priority 5 so it is enqueued
+ * — and therefore printed — ahead of the page-scoped sheets (priority 10).
+ * Presentation only (three-layer separation holds).
+ */
+function ink_foundation_enqueue_primitives(): void {
+	$theme = wp_get_theme();
+
+	wp_enqueue_style(
+		'ink-foundation-primitives',
+		get_theme_file_uri( 'assets/css/primitives.css' ),
+		array(),
+		(string) $theme->get( 'Version' )
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_primitives', 5 );
+
+/**
+ * Load the same primitives into the block editor, so the registered block
+ * styles (whose CSS now lives in `primitives.css`, not in an `inline_style`)
+ * still preview correctly in the Site/Post Editor.
+ */
+function ink_foundation_editor_primitives(): void {
+	add_editor_style( 'assets/css/primitives.css' );
+}
+add_action( 'after_setup_theme', 'ink_foundation_editor_primitives' );
+
+/**
+ * Enqueue the Afrikaans required-field message on every front-end page
+ * (Stage 2 ruling NR-2).
+ *
+ * The browser's native "Please fill out this field." bubble ignores the page
+ * language; `required-validity.js` sets the field's custom validity message to
+ * "Vul hierdie veld in" when a `required` field is submitted empty, and clears it
+ * on input. Site-wide because every form with `required` fields needs it; the
+ * script is tiny, delegated at the document, and does nothing on a page without
+ * forms.
+ */
+function ink_foundation_enqueue_required_validity(): void {
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-required-validity',
+		get_theme_file_uri( 'assets/js/required-validity.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		)
+	);
+
+	wp_localize_script(
+		'ink-foundation-required-validity',
+		'inkRequiredValidity',
+		array(
+			'message' => __( 'Vul hierdie veld in', 'ink-foundation' ),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_required_validity' );
+
+/**
  * Enqueue the Skryf live-counter enhancement + stylesheet on the Skryf page only
  * (Story 6.2; stylesheet added in the Theme Visual-Fidelity Phase 2 pass, page 8).
  *
@@ -1413,259 +1481,90 @@ function ink_foundation_qa_fixture_include_uitdagings( mixed $include ): mixed {
 add_filter( 'ink_uitdaging_argief_include_fixtures', 'ink_foundation_qa_fixture_include_uitdagings' ); // Ink\Challenges\Archive::INCLUDE_FIXTURES_FILTER.
 
 /**
- * Register the core block style variations (card / button / emphasis).
+ * Register the core block style variations (card / button / emphasis / header /
+ * footer).
  *
- * These are token-driven presentation treatments applied to any block instance
- * (the composition patterns consume them). All CSS values resolve to theme.json
- * tokens via the generated `--wp--preset--*` / `--wp--custom--*` custom properties
- * — zero hardcoded colours, spacing, radius, or type sizes (Gate A). Labels are
- * Afrikaans, sentence case (Gate D).
+ * Fidelity remediation Stage 3 (README §4.7 step 5): a registered style's
+ * `inline_style` must not restate a recipe that lives in
+ * `assets/css/primitives.css`. The card and button variations are therefore
+ * registered WITHOUT an inline_style — their CSS is the primitives recipe, bound
+ * to the `.is-style-*` selector there (and loaded into the editor via
+ * {@see ink_foundation_editor_primitives()}). The registrations stay so the
+ * styles remain pickable in the editor and existing block markup keeps its
+ * class. Header / footer / emphasis keep the composition-specific CSS that is
+ * not a primitive recipe. Labels are Afrikaans, sentence case (Gate D).
  */
 function ink_foundation_register_block_styles(): void {
-	// Card: a bordered, soft-shadowed, rounded surface container.
+	// Card: primitives `card` base (surface, border, radius 8, shadow-sm, p-6).
 	register_block_style(
 		'core/group',
 		array(
-			'name'         => 'card',
-			'label'        => __( 'Kaart', 'ink-foundation' ),
-			'inline_style' => '.wp-block-group.is-style-card{'
-				. 'background-color:var(--wp--preset--color--surface-alt);'
-				. 'border:1px solid var(--wp--preset--color--border);'
-				. 'border-radius:var(--wp--custom--radius--lg);'
-				. 'box-shadow:var(--wp--preset--shadow--sm);'
-				. 'padding:var(--wp--preset--spacing--s-24);'
-				. '}',
+			'name'  => 'card',
+			'label' => __( 'Kaart', 'ink-foundation' ),
 		)
 	);
 
-	// Card (details): the same bordered, rounded, soft-shadowed surface as the group
-	// card, registered for core/details so the FAQ accordions (Lidmaatskap-blad,
-	// Story 4.4) actually pick up the treatment — the group registration's selector
-	// (`.wp-block-group.is-style-card`) does NOT match a `core/details` block, so the
-	// className was previously a no-op. Token-only (Gate A).
+	// Card (details): the same card surface for core/details (FAQ accordions,
+	// Lidmaatskap-blad, Story 4.4) — the group selector does not match a details block.
 	register_block_style(
 		'core/details',
 		array(
-			'name'         => 'card',
-			'label'        => __( 'Kaart', 'ink-foundation' ),
-			'inline_style' => '.wp-block-details.is-style-card{'
-				. 'background-color:var(--wp--preset--color--surface-alt);'
-				. 'border:1px solid var(--wp--preset--color--border);'
-				. 'border-radius:var(--wp--custom--radius--lg);'
-				. 'box-shadow:var(--wp--preset--shadow--sm);'
-				. '}',
+			'name'  => 'card',
+			'label' => __( 'Kaart', 'ink-foundation' ),
 		)
 	);
 
-	// Pill: a fully-rounded button variant (distinct from core fill + is-style-outline).
+	// Pill: kept registered only so existing markup keeps a valid style. BTN-2 (no
+	// pill buttons): primitives.css gives `is-style-pill` the standard primary recipe.
 	register_block_style(
 		'core/button',
 		array(
-			'name'         => 'pill',
-			'label'        => __( 'Pil', 'ink-foundation' ),
-			'inline_style' => '.wp-block-button.is-style-pill .wp-block-button__link{'
-				. 'border-radius:var(--wp--custom--radius--full);'
-				. '}',
+			'name'  => 'pill',
+			'label' => __( 'Pil', 'ink-foundation' ),
 		)
 	);
 
-	// INK button variants (Epic 19, §0.1 / §9). Colour/border/radius/font +
-	// :hover + a visible :focus-visible ring (2px primary + 2px offset, a11y) are
-	// carried on the block-style inline_style so they load site-wide (not only on
-	// the front page). Button SIZE is NOT a block style (register_block_style is a
-	// single radio axis, so size x variant can't combine) — size is baked
-	// per-instance in the locked patterns, or via the ink-btn-* utilities in
-	// home.css. Radius is capped at radius.md (6px) / radius.lg (8px) — never a
-	// pill. Token-only (Gate A); all colour/type resolves to --wp--preset--*.
-	//
-	// is-style-ink-primary — literary: primary fill / surface-alt text / shadow.md,
-	// hover -> primary-light.
-	register_block_style(
-		'core/button',
-		array(
-			'name'         => 'ink-primary',
-			'label'        => __( 'INK primêr', 'ink-foundation' ),
-			'inline_style' => '.wp-block-button.is-style-ink-primary .wp-block-button__link{'
-				. 'background-color:var(--wp--preset--color--primary);'
-				. 'color:var(--wp--preset--color--surface-alt);'
-				. 'font-family:var(--wp--preset--font-family--display);'
-				. 'border:0;'
-				. 'border-radius:var(--wp--custom--radius--md);'
-				. 'box-shadow:var(--wp--preset--shadow--md);'
-				. 'transition:all .15s ease;'
-				. '}'
-				. '.wp-block-button.is-style-ink-primary .wp-block-button__link:hover{'
-				. 'background-color:var(--wp--preset--color--primary-light);'
-				. '}'
-				. '.wp-block-button.is-style-ink-primary .wp-block-button__link:focus-visible{'
-				. 'outline:2px solid var(--wp--preset--color--primary);'
-				. 'outline-offset:2px;'
-				. '}'
-				. '.wp-block-button.is-style-ink-primary .wp-block-button__link:disabled{'
-				. 'opacity:.5;'
-				. '}',
-		)
+	// INK button variants (Epic 19, §0.1 / §9; Stage 3). All button recipes —
+	// the shared base (inline-flex, gap 8, weight 500, radius 6, serif per
+	// BTN-FONT), the four sizes, the colour layer, :hover, the :focus-visible ring
+	// and :disabled — live in primitives.css, bound to
+	// `.wp-block-button.is-style-<name> > .wp-block-button__link`. Size stays a
+	// wrapper class (`ink-btn-sm|lg|xl`), because a block style is a single radio
+	// axis and size x variant can't combine.
+	$button_styles = array(
+		'ink-primary'      => __( 'INK primêr', 'ink-foundation' ),
+		'ink-outline'      => __( 'INK omlyn', 'ink-foundation' ),
+		'ink-ghost'        => __( 'INK skim', 'ink-foundation' ),
+		'ink-sage'         => __( 'INK salie', 'ink-foundation' ),
+		'ink-sage-outline' => __( 'INK salie omlyn', 'ink-foundation' ),
 	);
 
-	// is-style-ink-outline — 2px primary border / primary text, hover -> fill
-	// primary + surface-alt text.
-	register_block_style(
-		'core/button',
-		array(
-			'name'         => 'ink-outline',
-			'label'        => __( 'INK omlyn', 'ink-foundation' ),
-			'inline_style' => '.wp-block-button.is-style-ink-outline .wp-block-button__link{'
-				. 'background-color:transparent;'
-				. 'color:var(--wp--preset--color--primary);'
-				. 'font-family:var(--wp--preset--font-family--display);'
-				. 'border:2px solid var(--wp--preset--color--primary);'
-				. 'border-radius:var(--wp--custom--radius--md);'
-				. 'transition:all .15s ease;'
-				. '}'
-				. '.wp-block-button.is-style-ink-outline .wp-block-button__link:hover{'
-				. 'background-color:var(--wp--preset--color--primary);'
-				. 'color:var(--wp--preset--color--surface-alt);'
-				. '}'
-				. '.wp-block-button.is-style-ink-outline .wp-block-button__link:focus-visible{'
-				. 'outline:2px solid var(--wp--preset--color--primary);'
-				. 'outline-offset:2px;'
-				. '}'
-				. '.wp-block-button.is-style-ink-outline .wp-block-button__link:disabled{'
-				. 'opacity:.5;'
-				. '}',
-		)
-	);
+	foreach ( $button_styles as $name => $label ) {
+		register_block_style(
+			'core/button',
+			array(
+				'name'  => $name,
+				'label' => $label,
+			)
+		);
+	}
 
-	// is-style-ink-ghost — transparent / ink-text at rest, hover -> accent
-	// (sage) fill + surface-alt text. Added for the header's logged-out "Teken
-	// in" action (Epic 19 fourth-pass fidelity fix, 2026-09-05): Lovable's
-	// header pairs a `variant="ghost"` Sign-in button with a `variant="literary"`
-	// (ink-primary) Join button — confirmed live (`preview--quill-muse-heart.
-	// lovable.app`) at rest: transparent background, `rgb(24,29,37)` (ink-text)
-	// label, 36px/0 12px/6px-radius box, no border. Ghost's hover state
-	// (`hover:bg-accent hover:text-accent-foreground`) resolves to Lovable's own
-	// sage-toned `--accent`/near-white `--accent-foreground` custom-property
-	// pair (`src/index.css`) — mapped here to INK's own `accent`/`surface-alt`
-	// tokens, the closest existing equivalents.
-	register_block_style(
-		'core/button',
-		array(
-			'name'         => 'ink-ghost',
-			'label'        => __( 'INK skim', 'ink-foundation' ),
-			'inline_style' => '.wp-block-button.is-style-ink-ghost .wp-block-button__link{'
-				. 'background-color:transparent;'
-				. 'color:var(--wp--preset--color--ink-text);'
-				. 'font-family:var(--wp--preset--font-family--display);'
-				. 'border:0;'
-				. 'border-radius:var(--wp--custom--radius--md);'
-				. 'transition:all .15s ease;'
-				. '}'
-				. '.wp-block-button.is-style-ink-ghost .wp-block-button__link:hover{'
-				. 'background-color:var(--wp--preset--color--accent);'
-				. 'color:var(--wp--preset--color--surface-alt);'
-				. '}'
-				. '.wp-block-button.is-style-ink-ghost .wp-block-button__link:focus-visible{'
-				. 'outline:2px solid var(--wp--preset--color--primary);'
-				. 'outline-offset:2px;'
-				. '}'
-				. '.wp-block-button.is-style-ink-ghost .wp-block-button__link:disabled{'
-				. 'opacity:.5;'
-				. '}',
-		)
-	);
-
-	// is-style-ink-sage — accent (sage) fill / surface-alt text, hover ->
-	// accent-light (used by the §7 borg strip CTA).
-	register_block_style(
-		'core/button',
-		array(
-			'name'         => 'ink-sage',
-			'label'        => __( 'INK salie', 'ink-foundation' ),
-			'inline_style' => '.wp-block-button.is-style-ink-sage .wp-block-button__link{'
-				. 'background-color:var(--wp--preset--color--accent);'
-				. 'color:var(--wp--preset--color--surface-alt);'
-				. 'font-family:var(--wp--preset--font-family--display);'
-				. 'border:0;'
-				. 'border-radius:var(--wp--custom--radius--md);'
-				. 'box-shadow:var(--wp--preset--shadow--md);'
-				. 'transition:all .15s ease;'
-				. '}'
-				. '.wp-block-button.is-style-ink-sage .wp-block-button__link:hover{'
-				. 'background-color:var(--wp--preset--color--accent-light);'
-				. '}'
-				. '.wp-block-button.is-style-ink-sage .wp-block-button__link:focus-visible{'
-				. 'outline:2px solid var(--wp--preset--color--primary);'
-				. 'outline-offset:2px;'
-				. '}'
-				. '.wp-block-button.is-style-ink-sage .wp-block-button__link:disabled{'
-				. 'opacity:.5;'
-				. '}',
-		)
-	);
-
-	// is-style-ink-sage-outline — 2px accent border / accent text, hover -> fill
-	// accent + surface-alt text.
-	register_block_style(
-		'core/button',
-		array(
-			'name'         => 'ink-sage-outline',
-			'label'        => __( 'INK salie omlyn', 'ink-foundation' ),
-			'inline_style' => '.wp-block-button.is-style-ink-sage-outline .wp-block-button__link{'
-				. 'background-color:transparent;'
-				. 'color:var(--wp--preset--color--accent);'
-				. 'font-family:var(--wp--preset--font-family--display);'
-				. 'border:2px solid var(--wp--preset--color--accent);'
-				. 'border-radius:var(--wp--custom--radius--md);'
-				. 'transition:all .15s ease;'
-				. '}'
-				. '.wp-block-button.is-style-ink-sage-outline .wp-block-button__link:hover{'
-				. 'background-color:var(--wp--preset--color--accent);'
-				. 'color:var(--wp--preset--color--surface-alt);'
-				. '}'
-				. '.wp-block-button.is-style-ink-sage-outline .wp-block-button__link:focus-visible{'
-				. 'outline:2px solid var(--wp--preset--color--primary);'
-				. 'outline-offset:2px;'
-				. '}'
-				. '.wp-block-button.is-style-ink-sage-outline .wp-block-button__link:disabled{'
-				. 'opacity:.5;'
-				. '}',
-		)
-	);
-
-	// INK card (Epic 19, §0.5) — bordered, soft-shadowed surface with a
-	// reduced-motion-safe hover-lift (translateY(-4px) + shadow.lg). Distinct from
-	// the plain `is-style-card` (no lift). Used by the hero challenge card + the
-	// featured story cards (19.3 / 19.4). Token-only (Gate A).
+	// INK card (Epic 19, §0.5): primitives `card feature` — radius 12, no shadow at
+	// rest, reduced-motion-safe hover lift (translateY(-4px) + shadow.lg).
 	register_block_style(
 		'core/group',
 		array(
-			'name'         => 'ink-card',
-			'label'        => __( 'INK-kaart', 'ink-foundation' ),
-			'inline_style' => '.wp-block-group.is-style-ink-card{'
-				. 'background-color:var(--wp--preset--color--surface-alt);'
-				. 'border:1px solid var(--wp--preset--color--border);'
-				. 'border-radius:var(--wp--custom--radius--xl);'
-				. 'box-shadow:var(--wp--preset--shadow--sm);'
-				. 'padding:var(--wp--preset--spacing--s-24);'
-				. 'transition:transform .3s ease, box-shadow .3s ease;'
-				. '}'
-				. '.wp-block-group.is-style-ink-card:hover{'
-				. 'transform:translateY(-4px);'
-				. 'box-shadow:var(--wp--preset--shadow--lg);'
-				. '}'
-				. '@media (prefers-reduced-motion:reduce){'
-				. '.wp-block-group.is-style-ink-card{transition:none;}'
-				. '.wp-block-group.is-style-ink-card:hover{transform:none;}'
-				. '}',
+			'name'  => 'ink-card',
+			'label' => __( 'INK-kaart', 'ink-foundation' ),
 		)
 	);
 
 	// INK header (Epic 19, §1) — the site-wide sticky header treatment. Applied
 	// to the header pattern's outer group. Header CSS CANNOT live in home.css
 	// (front-page-only); the header renders on every page, so its sticky /
-	// translucent-surface / backdrop-blur / bottom-border / 64px-row / nav
-	// hover+underline+focus treatment ships here as a block-style inline_style
-	// (loads site-wide). Token-only (Gate A); the surface/95 translucency uses
+	// translucent-surface / backdrop-blur / bottom-border / 64px-row treatment
+	// ships here as a block-style inline_style (loads site-wide); the nav links
+	// themselves are the primitives `nav-link` recipe (primitives.css). Token-only (Gate A); the surface/95 translucency uses
 	// the color-mix convention with an opaque `surface` fallback first (§0.7).
 	//
 	// The translucent surface + backdrop-blur live on a `::before` decorative
@@ -1751,37 +1650,9 @@ function ink_foundation_register_block_styles(): void {
 				. '@media (prefers-reduced-motion:reduce){'
 				. '.wp-block-group.is-style-ink-header .ink-header-feather{transition:none;}'
 				. '}'
-				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content{'
-				. 'position:relative;'
-				. 'color:var(--wp--preset--color--muted-text);'
-				. 'transition:color .15s ease;'
-				. '}'
-				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content::after{'
-				. 'content:"";'
-				. 'position:absolute;'
-				. 'left:0;'
-				. 'bottom:-2px;'
-				. 'width:0;'
-				. 'height:2px;'
-				. 'background-color:var(--wp--preset--color--primary);'
-				. 'transition:width .3s ease;'
-				. '}'
-				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:hover,'
-				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:focus-visible{'
-				. 'color:var(--wp--preset--color--ink-text);'
-				. '}'
-				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:hover::after,'
-				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:focus-visible::after{'
-				. 'width:100%;'
-				. '}'
-				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:focus-visible{'
-				. 'outline:2px solid var(--wp--preset--color--primary);'
-				. 'outline-offset:2px;'
-				. '}'
-				. '@media (prefers-reduced-motion:reduce){'
-				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content,'
-				. '.wp-block-group.is-style-ink-header .wp-block-navigation-item__content::after{transition:none;}'
-				. '}'
+				// The nav links' muted colour, hover/focus colour, underline-slide and
+				// focus ring are the primitives `nav-link` recipe (primitives.css binds
+				// it to `.is-style-ink-header .wp-block-navigation-item__content`).
 				// Mobile menu overlay (< 600px, WP core's own breakpoint for the
 				// hamburger toggle): the nav block's desktop `justifyContent:"right"`
 				// (correct for the horizontal row) was also right-aligning the
@@ -1806,9 +1677,10 @@ function ink_foundation_register_block_styles(): void {
 	// INK footer (Epic 19, §10) — the site-wide footer treatment. Like the header,
 	// the footer renders on EVERY page, so its treatment CANNOT live in home.css
 	// (front-page-only): the secondary/30 band, 1px top border, 80px top margin, the
-	// 4-column grid that collapses to one column < 768px, the brand row, the muted
-	// link columns (hover -> text), and the bottom bar + filled-terracotta heart all
-	// ship here as a block-style inline_style (loads site-wide). Token-only (Gate A);
+	// 4-column grid that collapses to one column < 768px, the brand row, and the
+	// bottom bar + filled-terracotta heart all ship here as a block-style
+	// inline_style (loads site-wide); the column links are the primitives
+	// `nav-link footer` recipe (primitives.css). Token-only (Gate A);
 	// the secondary/30 tint uses the color-mix convention with an opaque `secondary`
 	// fallback first (§0.7).
 	register_block_style(
@@ -1845,7 +1717,6 @@ function ink_foundation_register_block_styles(): void {
 				. '}'
 				. '.wp-block-group.is-style-ink-footer .ink-footer-kolom h3{'
 				. 'margin:0 0 var(--wp--preset--spacing--s-16);'
-				. 'font-family:var(--wp--preset--font-family--heading);'
 				. '}'
 				. '.wp-block-group.is-style-ink-footer .ink-footer-lys{'
 				. 'list-style:none;'
@@ -1855,16 +1726,8 @@ function ink_foundation_register_block_styles(): void {
 				. 'flex-direction:column;'
 				. 'gap:var(--wp--preset--spacing--s-8);'
 				. '}'
-				. '.wp-block-group.is-style-ink-footer .ink-footer-lys a{'
-				. 'color:var(--wp--preset--color--muted-text);'
-				. 'font-size:var(--wp--preset--font-size--sm);'
-				. 'text-decoration:none;'
-				. 'transition:color .15s ease;'
-				. '}'
-				. '.wp-block-group.is-style-ink-footer .ink-footer-lys a:hover,'
-				. '.wp-block-group.is-style-ink-footer .ink-footer-lys a:focus-visible{'
-				. 'color:var(--wp--preset--color--ink-text);'
-				. '}'
+				// The column links are the primitives `nav-link footer` recipe
+				// (primitives.css binds it to `.is-style-ink-footer .ink-footer-lys a`).
 				. '.wp-block-group.is-style-ink-footer .ink-footer-onderbalk{'
 				. 'margin-top:var(--wp--preset--spacing--s-40);'
 				. 'padding-top:var(--wp--preset--spacing--s-24);'
@@ -1879,9 +1742,6 @@ function ink_foundation_register_block_styles(): void {
 				. '}'
 				. '.wp-block-group.is-style-ink-footer .ink-footer-hart__ikoon{'
 				. 'color:var(--wp--preset--color--primary);'
-				. '}'
-				. '@media (prefers-reduced-motion:reduce){'
-				. '.wp-block-group.is-style-ink-footer .ink-footer-lys a{transition:none;}'
 				. '}',
 		)
 	);

@@ -1,0 +1,2114 @@
+/**
+ * INK Foundation — shared primitives (Fidelity remediation, Stage 3).
+ *
+ * The single home of every primitive recipe in
+ * `docs/fidelity-remediation/maps/_recipes.csv` (ratified Stage 2, owner rulings in
+ * `docs/fidelity-remediation/stage-2-rulings.md`). One definition per primitive.
+ * Enqueued site-wide, unconditionally, AHEAD of the page-scoped sheets
+ * (`ink_foundation_enqueue_primitives()`), and loaded into the block editor via
+ * `add_editor_style()` so the registered block styles still preview there.
+ *
+ * R8: after Stage 3, any primitive definition outside this file is a defect.
+ * Class vocabulary: `tmp/stage3/class-map.md` (component_kind | variant | class).
+ *
+ * Breakpoints match the theme: mobile-first, `md` = 768px, `lg` = 1024px. The
+ * recipe viewports 390 / 768 / 1440 map to base / md / lg.
+ *
+ * Tokens: every value that equals a theme.json token uses it. TOK-1 moved the
+ * palette to Lovable's values, so `--wp--preset--color--*` now resolve to the
+ * Lovable colours (ink-text = foreground, surface = background, surface-alt =
+ * card, muted-text = muted-foreground, border = border/input, secondary,
+ * primary-foreground). Tints use `color-mix(... N%, transparent)` = Tailwind
+ * `/N` opacity. Fixed Tailwind line-heights (16/20/24/28/...) are raw rem: the
+ * theme has no fixed-leading token and its `xxl`/`xxxl`/`hero` font-size presets
+ * are fluid, so 24px / 32px are raw rem too.
+ *
+ * Block-style bindings: the registered `is-style-*` variations in functions.php
+ * no longer carry their own CSS (Stage 3 step 5); their selectors are listed
+ * here next to the matching `ink-*` class.
+ */
+
+/* ==========================================================================
+   0. Base resets (X4: unstyled native controls) and element defaults
+   ========================================================================== */
+
+:where(button, input, select, textarea, optgroup) {
+	font: inherit;
+	color: inherit;
+}
+
+/* heading base: Lovable font-semibold; theme.json elements.heading sets no weight. */
+:where(h1, h2, h3, h4, h5, h6) {
+	font-weight: 600;
+}
+
+/* ==========================================================================
+   1. Heading roles (component_kind heading)
+   ========================================================================== */
+
+.ink-heading-h1-index,
+.ink-heading-h1-entity,
+.ink-heading-h1-hero,
+.ink-heading-h1-hero-landing,
+.ink-heading-h1-reading,
+.ink-heading-h1-reading-poem,
+.ink-heading-h2-section,
+.ink-heading-h2-sub,
+.ink-heading-h2-block,
+.ink-heading-h2-on-dark,
+.ink-heading-h3-spotlight,
+.ink-heading-h3,
+.ink-heading-h3-card,
+.ink-heading-h4,
+.ink-heading-h5,
+.ink-heading-h5-list-item {
+	font-family: var(--wp--preset--font-family--heading);
+	font-style: normal;
+	font-weight: 600;
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* h1-index: 36/45 → 48/48 → 60/60 */
+.ink-heading-h1-index {
+	font-size: var(--wp--preset--font-size--xxxxl);
+	line-height: 2.8125rem;
+}
+
+/* h1-entity: 30/37.5 → 48/48 */
+.ink-heading-h1-entity {
+	font-size: var(--wp--preset--font-size--hero-sm);
+	line-height: 2.34375rem;
+}
+
+/* h1-hero (home hero, HR-3): 30/37.5 → 36/40 → 48/48 */
+.ink-heading-h1-hero {
+	font-size: var(--wp--preset--font-size--hero-sm);
+	line-height: 2.34375rem;
+}
+
+/* h1-hero-landing (community hero, HR-3): 36/39.6 → 60/60 */
+.ink-heading-h1-hero-landing {
+	font-size: var(--wp--preset--font-size--xxxxl);
+	line-height: 2.475rem;
+}
+
+/* h1-reading: 30/36 → 36/40 → 48/48 */
+.ink-heading-h1-reading {
+	font-size: var(--wp--preset--font-size--hero-sm);
+	line-height: 2.25rem;
+}
+
+/* h1-reading-poem: 30/36 → 36/40, italic, tracking-tight */
+.ink-heading-h1-reading-poem {
+	font-size: var(--wp--preset--font-size--hero-sm);
+	line-height: 2.25rem;
+	font-style: italic;
+	letter-spacing: -0.025em;
+}
+
+/* h2-section (HR-1: 600): 30/36 → 36/40 */
+.ink-heading-h2-section {
+	font-size: var(--wp--preset--font-size--hero-sm);
+	line-height: 2.25rem;
+}
+
+/* h2-sub: 24/32 → 30/36 */
+.ink-heading-h2-sub {
+	font-size: 1.5rem;
+	line-height: 2rem;
+}
+
+/* h2-block: 24/32 */
+.ink-heading-h2-block {
+	font-size: 1.5rem;
+	line-height: 2rem;
+}
+
+/* h2-on-dark (HR-4): 30/36 → 36/40 → 48/48; white on the brand band, cream on ink */
+.ink-heading-h2-on-dark {
+	font-size: var(--wp--preset--font-size--hero-sm);
+	line-height: 2.25rem;
+	color: var(--wp--preset--color--primary-foreground, #fff);
+}
+
+.ink-band--dark .ink-heading-h2-on-dark,
+.ink-heading-h2-on-dark.ink-heading--on-ink {
+	color: var(--wp--preset--color--surface);
+}
+
+/* h3-spotlight: 20/27.5 → 24/32 */
+.ink-heading-h3-spotlight {
+	font-size: var(--wp--preset--font-size--xl);
+	line-height: 1.71875rem;
+}
+
+/* h3: 20/28 */
+.ink-heading-h3 {
+	font-size: var(--wp--preset--font-size--xl);
+	line-height: 1.75rem;
+}
+
+/* h3-card (HR-2): 20/27.5, weight 400 */
+.ink-heading-h3-card {
+	font-size: var(--wp--preset--font-size--xl);
+	line-height: 1.71875rem;
+	font-weight: 400;
+}
+
+/* h4: 18/28 */
+.ink-heading-h4 {
+	font-size: var(--wp--preset--font-size--lg);
+	line-height: 1.75rem;
+}
+
+/* h5: 16/24; h5-list-item: same, weight 500 */
+.ink-heading-h5,
+.ink-heading-h5-list-item {
+	font-size: var(--wp--preset--font-size--md);
+	line-height: 1.5rem;
+}
+
+.ink-heading-h5-list-item {
+	font-weight: 500;
+}
+
+@media (min-width: 768px) {
+	.ink-heading-h1-index,
+	.ink-heading-h1-entity {
+		font-size: var(--wp--preset--font-size--xxxxxl);
+		line-height: 3rem;
+	}
+
+	.ink-heading-h1-hero,
+	.ink-heading-h1-reading,
+	.ink-heading-h1-reading-poem,
+	.ink-heading-h2-section,
+	.ink-heading-h2-on-dark {
+		font-size: var(--wp--preset--font-size--xxxxl);
+		line-height: 2.5rem;
+	}
+
+	.ink-heading-h1-hero-landing {
+		font-size: var(--wp--preset--font-size--xxxxxxl);
+		line-height: 3.75rem;
+	}
+
+	.ink-heading-h2-sub {
+		font-size: var(--wp--preset--font-size--hero-sm);
+		line-height: 2.25rem;
+	}
+
+	.ink-heading-h3-spotlight {
+		font-size: 1.5rem;
+		line-height: 2rem;
+	}
+}
+
+@media (min-width: 1024px) {
+	.ink-heading-h1-index {
+		font-size: var(--wp--preset--font-size--xxxxxxl);
+		line-height: 3.75rem;
+	}
+
+	.ink-heading-h1-hero,
+	.ink-heading-h1-reading,
+	.ink-heading-h2-on-dark {
+		font-size: var(--wp--preset--font-size--xxxxxl);
+		line-height: 3rem;
+	}
+}
+
+/* ==========================================================================
+   2. Section band + container (component_kind section-band; proposed `container`)
+   ========================================================================== */
+
+.ink-band {
+	display: block;
+	box-sizing: border-box;
+	padding: var(--wp--preset--spacing--s-64) 0;
+	border-radius: 0;
+	border-color: var(--wp--preset--color--border);
+	background-color: transparent;
+}
+
+/* SB-1: reading pages are deliberately tighter (48); lg = 80; flush = 0 when the
+   inner container carries the py (Lovable puts py on .container for cream bands). */
+.ink-band--sm {
+	padding-top: var(--wp--preset--spacing--s-48);
+	padding-bottom: var(--wp--preset--spacing--s-48);
+}
+
+.ink-band--lg {
+	padding-top: var(--wp--preset--spacing--s-80);
+	padding-bottom: var(--wp--preset--spacing--s-80);
+}
+
+/* py-12 md:py-16 — the common responsive pair (e.g. skrywer-werk). */
+.ink-band--step {
+	padding-top: var(--wp--preset--spacing--s-48);
+	padding-bottom: var(--wp--preset--spacing--s-48);
+}
+
+.ink-band--flush {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+/* SB-3: every cream band is bg-secondary/30 (tint-cream = tint-stone). */
+.ink-band--cream,
+.ink-band--stone,
+.ink-band--intro,
+.ink-band--strip {
+	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 30%, transparent);
+}
+
+.ink-band--stone-soft {
+	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 20%, transparent);
+}
+
+.ink-band--dark {
+	background-color: var(--wp--preset--color--ink-text);
+	color: var(--wp--preset--color--surface);
+	border-top: 1px solid var(--wp--preset--color--border);
+}
+
+.ink-band--gradient {
+	background-image: linear-gradient(
+		to bottom right,
+		color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent),
+		var(--wp--preset--color--surface),
+		color-mix(in srgb, var(--wp--preset--color--accent) 10%, transparent)
+	);
+	border-top: 1px solid var(--wp--preset--color--border);
+}
+
+/* Border modifiers (per-use, not part of the surface). */
+.ink-band--border-y,
+.ink-band--strip {
+	border-top: 1px solid var(--wp--preset--color--border);
+	border-bottom: 1px solid var(--wp--preset--color--border);
+}
+
+.ink-band--border-t {
+	border-top: 1px solid var(--wp--preset--color--border);
+}
+
+.ink-band--border-b,
+.ink-band--intro {
+	border-bottom: 1px solid var(--wp--preset--color--border);
+}
+
+/* container: Lovable `.container mx-auto px-4` (centered, 1400px at 2xl). */
+.ink-container {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 1400px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: var(--wp--preset--spacing--s-16);
+	padding-right: var(--wp--preset--spacing--s-16);
+}
+
+@media (min-width: 768px) {
+	.ink-band--step {
+		padding-top: var(--wp--preset--spacing--s-64);
+		padding-bottom: var(--wp--preset--spacing--s-64);
+	}
+}
+
+/* ==========================================================================
+   3. Eyebrow + stat label (component_kind eyebrow; proposed `stat-label`)
+   ========================================================================== */
+
+.ink-eyebrow {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: 500;
+	line-height: 1.25rem;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-eyebrow--accent {
+	color: var(--wp--preset--color--accent);
+}
+
+/* EB-1: the centred tracked eyebrow (xs / 0.2em) */
+.ink-eyebrow--tracked {
+	font-size: var(--wp--preset--font-size--xs);
+	line-height: 1rem;
+	letter-spacing: 0.2em;
+}
+
+.ink-eyebrow--muted {
+	font-size: var(--wp--preset--font-size--xs);
+	line-height: 1rem;
+	font-weight: 400;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* kicker-serif: italic Lora, sentence case; the row is a flex gap-8 holding a 16px icon */
+.ink-eyebrow--kicker {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	font-family: var(--wp--preset--font-family--display);
+	font-style: italic;
+	font-weight: 400;
+	letter-spacing: 0.025em;
+	text-transform: none;
+}
+
+.ink-eyebrow--kicker svg {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+}
+
+/* card eyebrow: sentence case, colour per use (primary default, gold for the winner card) */
+.ink-eyebrow--card {
+	letter-spacing: normal;
+	text-transform: none;
+}
+
+.ink-eyebrow--gold {
+	color: var(--wp--preset--color--gold);
+}
+
+/* stat-label (EB-2): 12/16 uppercase tracking-wide muted */
+.ink-stat-label {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xs);
+	font-weight: 400;
+	line-height: 1rem;
+	letter-spacing: 0.025em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* ==========================================================================
+   4. Tones (shared by pill / badge / icon-tile / avatar initials / status-dot /
+   notice). A component reads `--ink-tone`; default primary.
+   ========================================================================== */
+
+.ink-tone-primary { --ink-tone: var(--wp--preset--color--primary); }
+.ink-tone-accent { --ink-tone: var(--wp--preset--color--accent); }
+.ink-tone-gold { --ink-tone: var(--wp--preset--color--gold); }
+.ink-tone-muted { --ink-tone: var(--wp--preset--color--muted-text); }
+.ink-tone-ink { --ink-tone: var(--wp--preset--color--ink-text); }
+.ink-tone-success { --ink-tone: var(--wp--preset--color--success); }
+.ink-tone-danger { --ink-tone: var(--wp--preset--color--danger); }
+
+/* ==========================================================================
+   5. Card (component_kind card)
+   ========================================================================== */
+
+/* base: radius 8, shadow-sm (Tailwind), p-6 */
+.ink-card,
+.ink-card--lg,
+.ink-card--shelf,
+.wp-block-group.is-style-card,
+.wp-block-details.is-style-card {
+	box-sizing: border-box;
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+	box-shadow: var(--wp--preset--shadow--xs);
+}
+
+.ink-card,
+.wp-block-group.is-style-card {
+	padding: var(--wp--preset--spacing--s-24);
+}
+
+/* base-lg: the auth card (p-8) */
+.ink-card--lg {
+	padding: var(--wp--preset--spacing--s-32);
+}
+
+/* shelf: background/60 + primary/20 border */
+.ink-card--shelf {
+	background-color: color-mix(in srgb, var(--wp--preset--color--surface) 60%, transparent);
+	border-color: color-mix(in srgb, var(--wp--preset--color--primary) 20%, transparent);
+}
+
+/* feature: radius 12, no shadow at rest, hover lift (card-hover) — = is-style-ink-card */
+.ink-card--feature,
+.ink-card--feature-hero,
+.wp-block-group.is-style-ink-card {
+	box-sizing: border-box;
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--xl);
+	box-shadow: none;
+	padding: var(--wp--preset--spacing--s-24);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ink-card--feature:hover,
+.ink-card--feature-hero:hover,
+.wp-block-group.is-style-ink-card:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+/* soft: radius 16, p-8, shadow-soft (= shadow.md) */
+.ink-card--soft,
+.ink-card--soft-sm {
+	box-sizing: border-box;
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--xxl);
+	box-shadow: var(--wp--preset--shadow--md);
+	padding: var(--wp--preset--spacing--s-32);
+}
+
+.ink-card--soft-sm {
+	padding: var(--wp--preset--spacing--s-24);
+}
+
+/* panel: radius 8, no shadow, p-8 → md:p-10; panel-sm p-5 */
+.ink-card--panel,
+.ink-card--panel-sm {
+	box-sizing: border-box;
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+	box-shadow: none;
+	padding: var(--wp--preset--spacing--s-32);
+}
+
+.ink-card--panel-sm {
+	padding: 20px;
+}
+
+/* selectable: 2px border tile; selected = primary border + primary/5 */
+.ink-card--selectable,
+.ink-card--selectable-lg {
+	box-sizing: border-box;
+	background-color: transparent;
+	border: 2px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+	box-shadow: none;
+	padding: var(--wp--preset--spacing--s-16);
+	cursor: pointer;
+	transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.ink-card--selectable-lg {
+	background-color: var(--wp--preset--color--surface-alt);
+	border-radius: var(--wp--custom--radius--xl);
+	padding: var(--wp--preset--spacing--s-24);
+}
+
+.ink-card--selectable.is-selected,
+.ink-card--selectable[aria-checked="true"],
+.ink-card--selectable[aria-pressed="true"],
+.ink-card--selectable:has(input:checked),
+.ink-card--selectable-lg.is-selected,
+.ink-card--selectable-lg[aria-checked="true"],
+.ink-card--selectable-lg[aria-pressed="true"],
+.ink-card--selectable-lg:has(input:checked) {
+	border-color: var(--wp--preset--color--primary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 5%, transparent);
+}
+
+/* empty state: dashed, py-16 */
+.ink-card--empty {
+	box-sizing: border-box;
+	background-color: transparent;
+	border: 1px dashed var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+	box-shadow: none;
+	padding: var(--wp--preset--spacing--s-64) 0;
+	text-align: center;
+}
+
+/* winner: gold gradient, radius 16, p-8 */
+.ink-card--winner {
+	box-sizing: border-box;
+	background-color: transparent;
+	background-image: linear-gradient(
+		to bottom right,
+		color-mix(in srgb, var(--wp--preset--color--gold) 10%, transparent),
+		color-mix(in srgb, var(--wp--preset--color--gold-muted) 20%, transparent)
+	);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--gold-muted) 30%, transparent);
+	border-radius: var(--wp--custom--radius--xxl);
+	box-shadow: none;
+	padding: var(--wp--preset--spacing--s-32);
+}
+
+/* sheet: the side panel (highlights) */
+.ink-sheet {
+	box-sizing: border-box;
+	width: 320px;
+	max-width: 100%;
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 0;
+	border-left: 1px solid var(--wp--preset--color--border);
+	border-radius: 0;
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+@media (min-width: 768px) {
+	.ink-card--feature-hero,
+	.ink-card--selectable-lg {
+		padding: var(--wp--preset--spacing--s-32);
+	}
+
+	.ink-card--selectable-lg {
+		padding: 28px;
+	}
+
+	.ink-card--panel {
+		padding: var(--wp--preset--spacing--s-40);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-card--feature,
+	.ink-card--feature-hero,
+	.wp-block-group.is-style-ink-card {
+		transition: none;
+	}
+
+	.ink-card--feature:hover,
+	.ink-card--feature-hero:hover,
+	.wp-block-group.is-style-ink-card:hover {
+		transform: none;
+	}
+}
+
+/* ==========================================================================
+   6. Pill / badge / count-chip — one component (`.ink-pill`)
+   ========================================================================== */
+
+.ink-pill {
+	--ink-tone: var(--wp--preset--color--primary);
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-4);
+	width: -moz-fit-content;
+	width: fit-content;
+	margin: 0;
+	border: 0;
+	border-radius: var(--wp--custom--radius--full);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xs);
+	font-weight: 500;
+	line-height: 1rem;
+	white-space: nowrap;
+}
+
+.ink-pill svg {
+	flex-shrink: 0;
+	width: 12px;
+	height: 12px;
+}
+
+/* outline (pill outline, count-chip outline): tone/40 border, tone text, 2px 10px, 600 */
+.ink-pill--outline {
+	padding: 2px 10px;
+	border: 1px solid color-mix(in srgb, var(--ink-tone) 40%, transparent);
+	background-color: transparent;
+	color: var(--ink-tone);
+	font-weight: 600;
+}
+
+/* soft: secondary fill, foreground text, 4px 10px; soft-xs 2px 8px */
+.ink-pill--soft {
+	padding: var(--wp--preset--spacing--s-4) 10px;
+	background-color: var(--wp--preset--color--secondary);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-pill--soft-xs {
+	padding: 2px var(--wp--preset--spacing--s-8);
+	background-color: var(--wp--preset--color--secondary);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* tint: tone/10, 14/20, 4px 12px, gap 6 (storie/gedig badge). NR-3: sage tints are 10%. */
+.ink-pill--tint {
+	gap: var(--wp--preset--spacing--s-6);
+	padding: var(--wp--preset--spacing--s-4) var(--wp--preset--spacing--s-12);
+	background-color: color-mix(in srgb, var(--ink-tone) 10%, transparent);
+	color: var(--ink-tone);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+.ink-pill--tint svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* tint-sm: sage/10, sage text, 12/16 600, 2px 10px (pinned) */
+.ink-pill--tint-sm {
+	--ink-tone: var(--wp--preset--color--accent);
+	padding: 2px 10px;
+	background-color: color-mix(in srgb, var(--ink-tone) 10%, transparent);
+	color: var(--ink-tone);
+	font-weight: 600;
+}
+
+/* tint-bordered: the sage chip (Challenge.tsx:214): sage/10 fill, sage/20 border, 14/20 */
+.ink-pill--tint-bordered {
+	--ink-tone: var(--wp--preset--color--accent);
+	padding: var(--wp--preset--spacing--s-4) var(--wp--preset--spacing--s-12);
+	border: 1px solid color-mix(in srgb, var(--ink-tone) 20%, transparent);
+	background-color: color-mix(in srgb, var(--ink-tone) 10%, transparent);
+	color: var(--ink-tone);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+/* hint: highlight/20 (storie) | accent/10 (gedig: add .ink-tone-accent), 8px 16px, 14/20 400 */
+.ink-pill--hint {
+	gap: var(--wp--preset--spacing--s-8);
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-16);
+	background-color: color-mix(in srgb, var(--wp--preset--color--highlight) 20%, transparent);
+	color: var(--wp--preset--color--ink-text);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: 400;
+	line-height: 1.25rem;
+	white-space: normal;
+}
+
+.ink-pill--hint.ink-tone-accent {
+	background-color: color-mix(in srgb, var(--wp--preset--color--accent) 10%, transparent);
+	color: var(--wp--preset--color--accent);
+}
+
+.ink-pill--hint svg {
+	width: 16px;
+	height: 16px;
+}
+
+/* badge tint-lg (hero badge): inline-block, primary/10, 6px 16px, 14/20 */
+.ink-pill--tint-lg {
+	display: inline-block;
+	padding: var(--wp--preset--spacing--s-6) var(--wp--preset--spacing--s-16);
+	background-color: color-mix(in srgb, var(--ink-tone) 10%, transparent);
+	color: var(--ink-tone);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+/* badge tint-caps: primary/10, 12/16 600 uppercase tracking-wide, gap 6, icon 14 */
+.ink-pill--caps {
+	gap: var(--wp--preset--spacing--s-6);
+	padding: var(--wp--preset--spacing--s-4) var(--wp--preset--spacing--s-12);
+	background-color: color-mix(in srgb, var(--ink-tone) 10%, transparent);
+	color: var(--ink-tone);
+	font-weight: 600;
+	letter-spacing: 0.3px;
+	text-transform: uppercase;
+}
+
+.ink-pill--caps svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* badge tint-xs (response badge): tone/10 (accent default; gold / primary per type), 2px 8px, 400 */
+.ink-pill--tint-xs {
+	--ink-tone: var(--wp--preset--color--accent);
+	padding: 2px var(--wp--preset--spacing--s-8);
+	background-color: color-mix(in srgb, var(--ink-tone) 10%, transparent);
+	color: var(--ink-tone);
+	font-weight: 400;
+}
+
+/* count-chip solid (unread): primary fill, white, 2px 10px, 600 */
+.ink-pill--count {
+	padding: 2px 10px;
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary-foreground, #fff);
+	font-weight: 600;
+}
+
+/* count-chip highlight: highlight fill, 2px 8px */
+.ink-pill--highlight {
+	padding: 2px var(--wp--preset--spacing--s-8);
+	background-color: var(--wp--preset--color--highlight);
+	color: var(--wp--preset--color--highlight-foreground);
+}
+
+/* tone overrides must follow the variant rules that set a default --ink-tone */
+.ink-pill.ink-tone-primary { --ink-tone: var(--wp--preset--color--primary); }
+.ink-pill.ink-tone-accent { --ink-tone: var(--wp--preset--color--accent); }
+.ink-pill.ink-tone-gold { --ink-tone: var(--wp--preset--color--gold); }
+.ink-pill.ink-tone-muted { --ink-tone: var(--wp--preset--color--muted-text); }
+
+/* ==========================================================================
+   7. Toolbar (the floating engagement bar, filed as pill floating-bar)
+   ========================================================================== */
+
+.ink-toolbar {
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	width: 100%;
+	max-width: 28rem;
+	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-24);
+	background-color: color-mix(in srgb, var(--wp--preset--color--surface-alt) 95%, transparent);
+	-webkit-backdrop-filter: blur(4px);
+	backdrop-filter: blur(4px);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--full);
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+/* ==========================================================================
+   8. Meta item + meta row (component_kind meta-item, meta-row)
+   ========================================================================== */
+
+.ink-meta,
+.ink-meta--sm,
+.ink-meta--md {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-4);
+	margin: 0;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xs);
+	font-weight: 400;
+	line-height: 1rem;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-meta svg {
+	flex-shrink: 0;
+	width: 12px;
+	height: 12px;
+}
+
+/* sm (NR-4: gap 6) */
+.ink-meta--sm {
+	gap: var(--wp--preset--spacing--s-6);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+.ink-meta--md {
+	font-size: var(--wp--preset--font-size--md);
+	line-height: 1.5rem;
+}
+
+.ink-meta--sm svg,
+.ink-meta--md svg {
+	width: 16px;
+	height: 16px;
+}
+
+.ink-meta-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--s-16);
+	margin: 0;
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-meta-row--tight {
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+}
+
+/* ==========================================================================
+   9. Circle shapes: avatar, step badge, status dot (shared round shape)
+   ========================================================================== */
+
+.ink-avatar,
+.ink-step-badge,
+.ink-status-dot,
+.ink-icon-tile--circle,
+.ink-icon-tile--circle-lg {
+	box-sizing: border-box;
+	flex-shrink: 0;
+	border-radius: var(--wp--custom--radius--full);
+}
+
+.ink-avatar {
+	display: block;
+	width: 40px;
+	height: 40px;
+	object-fit: cover;
+	overflow: hidden;
+	border: 0;
+	background-color: transparent;
+}
+
+.ink-avatar img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: inherit;
+}
+
+/* size scale (rendered box, border-box) */
+.ink-avatar--28 { width: 28px; height: 28px; }
+.ink-avatar--32 { width: 32px; height: 32px; }
+.ink-avatar--40 { width: 40px; height: 40px; }
+.ink-avatar--48 { width: 48px; height: 48px; }
+.ink-avatar--64 { width: 64px; height: 64px; }
+.ink-avatar--96 { width: 96px; height: 96px; }
+
+/* ring (reading author): 4px background ring */
+.ink-avatar--ring {
+	border: 4px solid var(--wp--preset--color--surface);
+}
+
+/* profile (my-profiel identity): ring + shadow-soft, 96 → 112 */
+.ink-avatar--profile {
+	width: 96px;
+	height: 96px;
+	border: 4px solid var(--wp--preset--color--surface);
+	box-shadow: var(--wp--preset--shadow--md);
+}
+
+/* hero (skrywer): ring + Tailwind shadow-lg, 128 → 160 */
+.ink-avatar--hero {
+	width: 128px;
+	height: 128px;
+	border: 4px solid var(--wp--preset--color--surface);
+	box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* gold-ring (winner): 2px gold/30, 48 */
+.ink-avatar--gold-ring {
+	width: 48px;
+	height: 48px;
+	border: 2px solid color-mix(in srgb, var(--wp--preset--color--gold) 30%, transparent);
+}
+
+/* initials: 40, tone/20 fill (accent: 30%), Lora, tone text */
+.ink-avatar--initials {
+	--ink-tone: var(--wp--preset--color--primary);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: color-mix(in srgb, var(--ink-tone) 20%, transparent);
+	color: var(--ink-tone);
+	font-family: var(--wp--preset--font-family--display);
+}
+
+.ink-avatar--initials.ink-tone-accent {
+	--ink-tone: var(--wp--preset--color--accent);
+	background-color: color-mix(in srgb, var(--ink-tone) 30%, transparent);
+}
+
+.ink-step-badge {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
+	color: var(--wp--preset--color--primary);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--md);
+	font-weight: 600;
+	line-height: 1.5rem;
+}
+
+/* status dot: unread = primary; active = accent */
+.ink-status-dot {
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	background-color: var(--wp--preset--color--primary);
+}
+
+.ink-status-dot--active {
+	background-color: var(--wp--preset--color--accent);
+}
+
+@media (min-width: 768px) {
+	.ink-avatar--profile {
+		width: 112px;
+		height: 112px;
+	}
+
+	.ink-avatar--hero {
+		width: 160px;
+		height: 160px;
+	}
+}
+
+/* ==========================================================================
+   10. Icon tile (component_kind icon-tile)
+   ========================================================================== */
+
+.ink-icon-tile,
+.ink-icon-tile--sm,
+.ink-icon-tile--lg,
+.ink-icon-tile--circle,
+.ink-icon-tile--circle-lg {
+	--ink-tone: var(--wp--preset--color--primary);
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 36px;
+	height: 36px;
+	padding: var(--wp--preset--spacing--s-8);
+	border-radius: var(--wp--custom--radius--lg);
+	background-color: color-mix(in srgb, var(--ink-tone) 10%, transparent);
+	color: var(--ink-tone);
+}
+
+.ink-icon-tile svg,
+.ink-icon-tile--lg svg,
+.ink-icon-tile--circle svg,
+.ink-icon-tile--circle-lg svg {
+	width: 20px;
+	height: 20px;
+}
+
+.ink-icon-tile--sm {
+	width: 32px;
+	height: 32px;
+	border-radius: var(--wp--custom--radius--md);
+}
+
+.ink-icon-tile--sm svg {
+	width: 16px;
+	height: 16px;
+}
+
+.ink-icon-tile--lg {
+	width: 44px;
+	height: 44px;
+	padding: var(--wp--preset--spacing--s-12);
+}
+
+.ink-icon-tile--circle {
+	display: flex;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border-radius: var(--wp--custom--radius--full);
+}
+
+.ink-icon-tile--circle-lg {
+	display: flex;
+	width: 48px;
+	height: 48px;
+	padding: 0;
+	border-radius: var(--wp--custom--radius--full);
+}
+
+/* the gold tile is gold/20; the neutral tile is muted */
+.ink-icon-tile--gold {
+	--ink-tone: var(--wp--preset--color--gold);
+	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 20%, transparent);
+}
+
+.ink-icon-tile--neutral {
+	background-color: var(--wp--preset--color--muted);
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-icon-tile.ink-tone-accent,
+.ink-icon-tile--sm.ink-tone-accent,
+.ink-icon-tile--lg.ink-tone-accent,
+.ink-icon-tile--circle.ink-tone-accent,
+.ink-icon-tile--circle-lg.ink-tone-accent { --ink-tone: var(--wp--preset--color--accent); }
+
+.ink-icon-tile.ink-tone-ink,
+.ink-icon-tile--sm.ink-tone-ink,
+.ink-icon-tile--lg.ink-tone-ink,
+.ink-icon-tile--circle.ink-tone-ink,
+.ink-icon-tile--circle-lg.ink-tone-ink { --ink-tone: var(--wp--preset--color--ink-text); }
+
+/* ==========================================================================
+   11. Tier chip (sponsor tiers) and tier label (NR-1)
+   ========================================================================== */
+
+.ink-tier-chip {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-24);
+	border: 0;
+	border-radius: var(--wp--custom--radius--lg);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--md);
+	font-weight: 400;
+	line-height: 1.5rem;
+}
+
+/* goud: gold/10, gold/20 border, name text-lg (18/28) → 54px */
+.ink-tier-chip--goud {
+	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 10%, transparent);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--gold) 20%, transparent);
+	font-size: var(--wp--preset--font-size--lg);
+	line-height: 1.75rem;
+}
+
+/* silwer: secondary fill, border → 50px */
+.ink-tier-chip--silwer {
+	background-color: var(--wp--preset--color--secondary);
+	border: 1px solid var(--wp--preset--color--border);
+}
+
+/* brons: muted/50, no border → 48px */
+.ink-tier-chip--brons {
+	background-color: color-mix(in srgb, var(--wp--preset--color--muted) 50%, transparent);
+	border: 0;
+}
+
+/* tier label: INK typography (12/18 uppercase .08em) on the sage-chip shape
+   (tier/10 fill, tier/20 border). Text uses the darker *-text tokens so it passes
+   WCAG AA at 12px on its own tint (stage-3 decision; base tones fail AA). */
+.ink-tier-label {
+	--ink-tier: var(--wp--preset--color--brons);
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	width: -moz-fit-content;
+	width: fit-content;
+	margin: 0;
+	padding: 2px 10px;
+	border: 1px solid color-mix(in srgb, var(--ink-tier) 20%, transparent);
+	border-radius: var(--wp--custom--radius--full);
+	background-color: color-mix(in srgb, var(--ink-tier) 10%, transparent);
+	color: var(--wp--preset--color--brons-text, #88603e);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xs);
+	font-weight: 400;
+	line-height: 1.125rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.ink-tier-label--brons {
+	--ink-tier: var(--wp--preset--color--brons);
+	color: var(--wp--preset--color--brons-text, #88603e);
+}
+
+.ink-tier-label--silwer {
+	--ink-tier: var(--wp--preset--color--silwer);
+	color: var(--wp--preset--color--silwer-text, #606b76);
+}
+
+.ink-tier-label--goud {
+	--ink-tier: var(--wp--preset--color--goud);
+	color: var(--wp--preset--color--goud-text, #7a6838);
+}
+
+/* ==========================================================================
+   12. Accent block, list bullet, divider, notice
+   ========================================================================== */
+
+.ink-accent-block {
+	box-sizing: border-box;
+	padding: var(--wp--preset--spacing--s-8) 0 var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-24);
+	border: 0;
+	border-left: 2px solid var(--wp--preset--color--primary);
+	border-radius: 0;
+	background-color: transparent;
+}
+
+.ink-list-bullet {
+	display: inline-block;
+	flex-shrink: 0;
+	width: 6px;
+	height: 6px;
+	margin-top: var(--wp--preset--spacing--s-6);
+	border-radius: var(--wp--custom--radius--full);
+	background-color: var(--wp--preset--color--primary);
+}
+
+/* divider: a 1px rule; with a label, the rule runs either side of the text */
+.ink-divider {
+	display: block;
+	height: 0;
+	margin: 0;
+	border: 0;
+	border-top: 1px solid var(--wp--preset--color--border);
+}
+
+.ink-divider--label {
+	display: flex;
+	align-items: center;
+	height: auto;
+	border-top: 0;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xs);
+	line-height: 1rem;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-divider--label::before,
+.ink-divider--label::after {
+	content: "";
+	flex: 1 1 0;
+	border-top: 1px solid var(--wp--preset--color--border);
+}
+
+.ink-divider__label {
+	padding: 0 var(--wp--preset--spacing--s-8);
+	background-color: var(--wp--preset--color--surface-alt);
+}
+
+/* notice (NR-2: INK's auth.css recipe kept): tone border, tone/10 fill */
+.ink-notice {
+	--ink-tone: var(--wp--preset--color--success);
+	box-sizing: border-box;
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-16);
+	border: 1px solid var(--ink-tone);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: color-mix(in srgb, var(--ink-tone) 10%, transparent);
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.5;
+}
+
+.ink-notice--ok { --ink-tone: var(--wp--preset--color--success); }
+.ink-notice--fout { --ink-tone: var(--wp--preset--color--danger); }
+.ink-notice--info { --ink-tone: var(--wp--preset--color--accent); }
+
+/* ==========================================================================
+   13. Buttons — shared base (button-base), sizes, variants
+   Serif on every button (BTN-FONT). Block-style bindings:
+   `.wp-block-button.is-style-<name> > .wp-block-button__link`; size wrappers
+   `.wp-block-button.ink-btn-{sm,lg,xl}` keep their existing names.
+   ========================================================================== */
+
+.ink-btn,
+.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-pill) > .wp-block-button__link {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--wp--preset--spacing--s-8);
+	height: 40px;
+	margin: 0;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-16);
+	border: 0;
+	border-radius: var(--wp--custom--radius--md);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--sm);
+	font-style: normal;
+	font-weight: 500;
+	line-height: 1.25rem;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.ink-btn svg,
+.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-pill) > .wp-block-button__link svg {
+	flex-shrink: 0;
+	width: 16px;
+	height: 16px;
+	pointer-events: none;
+}
+
+.ink-btn:focus-visible,
+.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-pill) > .wp-block-button__link:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+.ink-btn:disabled,
+.ink-btn[aria-disabled="true"],
+.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-pill) > .wp-block-button__link:disabled,
+.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-pill) > .wp-block-button__link[aria-disabled="true"] {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+/* sizes (button-size sm / lg / xl; cta = xl, BTN-1). default (40 / 8 16 / 14/20) is the base. */
+.ink-btn--sm,
+.wp-block-button.ink-btn-sm > .wp-block-button__link {
+	height: 36px;
+	padding: 0 var(--wp--preset--spacing--s-12);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+.ink-btn--lg,
+.wp-block-button.ink-btn-lg > .wp-block-button__link {
+	height: 44px;
+	padding: 0 var(--wp--preset--spacing--s-32);
+	font-size: var(--wp--preset--font-size--md);
+	line-height: 1.5rem;
+}
+
+.ink-btn--xl,
+.ink-btn--cta,
+.wp-block-button:is(.ink-btn-xl, .ink-btn-cta) > .wp-block-button__link {
+	height: 48px;
+	padding: 0 var(--wp--preset--spacing--s-40);
+	border-radius: var(--wp--custom--radius--lg);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--lg);
+	line-height: 1.75rem;
+}
+
+/* form-submit (FORMS): full width */
+.ink-btn--block,
+.wp-block-button.ink-btn-block > .wp-block-button__link {
+	display: flex;
+	width: 100%;
+}
+
+/* primary (Lovable `literary`) */
+.ink-btn--primary,
+.wp-block-button.is-style-ink-primary > .wp-block-button__link {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary-foreground, #fff);
+	border: 0;
+	box-shadow: var(--wp--preset--shadow--md);
+}
+
+.ink-btn--primary:hover,
+.wp-block-button.is-style-ink-primary > .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--primary-light);
+	color: var(--wp--preset--color--primary-foreground, #fff);
+}
+
+/* primary on-dark (CTA band): white fill, terracotta text, no shadow; hover white/90 */
+.ink-btn--on-dark {
+	background-color: var(--wp--preset--color--primary-foreground, #fff);
+	color: var(--wp--preset--color--primary);
+	border: 0;
+	box-shadow: none;
+}
+
+.ink-btn--on-dark:hover {
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary-foreground, #fff) 90%, transparent);
+	color: var(--wp--preset--color--primary);
+}
+
+/* outline (Lovable `literary-outline`): 2px primary */
+.ink-btn--outline,
+.wp-block-button.is-style-ink-outline > .wp-block-button__link {
+	background-color: transparent;
+	color: var(--wp--preset--color--primary);
+	border: 2px solid var(--wp--preset--color--primary);
+	box-shadow: none;
+}
+
+.ink-btn--outline:hover,
+.wp-block-button.is-style-ink-outline > .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary-foreground, #fff);
+}
+
+/* neutral outline (shadcn `outline`): 1px border, background fill; BTN-3 sage hover */
+.ink-btn--neutral,
+.ink-btn--gold,
+.wp-block-button.is-style-ink-neutral > .wp-block-button__link {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--ink-text);
+	border: 1px solid var(--wp--preset--color--border);
+	box-shadow: none;
+}
+
+.ink-btn--neutral:hover,
+.wp-block-button.is-style-ink-neutral > .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+/* gold (LEG-2): border gold/40, foreground text; filled hover gold / ink / gold */
+.ink-btn--gold {
+	border-color: color-mix(in srgb, var(--wp--preset--color--gold) 40%, transparent);
+}
+
+.ink-btn--gold:hover {
+	background-color: var(--wp--preset--color--gold);
+	color: var(--wp--preset--color--ink-text);
+	border-color: var(--wp--preset--color--gold);
+}
+
+/* outline on-dark (LEG-1, "Explore stories"): transparent, 2px white, white text;
+   hover inverts to white fill + terracotta text */
+.ink-btn--outline-on-dark {
+	background-color: transparent;
+	color: var(--wp--preset--color--primary-foreground, #fff);
+	border: 2px solid var(--wp--preset--color--primary-foreground, #fff);
+	box-shadow: none;
+}
+
+.ink-btn--outline-on-dark:hover {
+	background-color: var(--wp--preset--color--primary-foreground, #fff);
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-btn--outline-on-dark:focus-visible,
+.ink-btn--on-dark:focus-visible {
+	outline-color: var(--wp--preset--color--primary-foreground, #fff);
+}
+
+/* ghost: transparent, foreground; hover sage fill. Lovable ghost is always sm. */
+.ink-btn--ghost,
+.ink-btn--ghost-muted,
+.wp-block-button.is-style-ink-ghost > .wp-block-button__link {
+	background-color: transparent;
+	color: var(--wp--preset--color--ink-text);
+	border: 0;
+	box-shadow: none;
+}
+
+.ink-btn--ghost-muted {
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-btn--ghost:hover,
+.ink-btn--ghost-muted:hover,
+.wp-block-button.is-style-ink-ghost > .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+/* subtle: secondary/50, hover secondary */
+.ink-btn--subtle,
+.wp-block-button.is-style-subtle > .wp-block-button__link {
+	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 50%, transparent);
+	color: var(--wp--preset--color--ink-text);
+	border: 0;
+	box-shadow: none;
+}
+
+.ink-btn--subtle:hover,
+.wp-block-button.is-style-subtle > .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--secondary);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* sage (Lovable `sage`): sage fill, accent-foreground, shadow-sm; hover sage-light */
+.ink-btn--sage,
+.wp-block-button.is-style-ink-sage > .wp-block-button__link {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--surface-alt);
+	border: 0;
+	box-shadow: var(--wp--preset--shadow--xs);
+}
+
+.ink-btn--sage:hover,
+.wp-block-button.is-style-ink-sage > .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--accent-light);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+/* sage-outline: 2px sage; hover sage fill */
+.ink-btn--sage-outline,
+.wp-block-button.is-style-ink-sage-outline > .wp-block-button__link {
+	background-color: transparent;
+	color: var(--wp--preset--color--accent);
+	border: 2px solid var(--wp--preset--color--accent);
+	box-shadow: none;
+}
+
+.ink-btn--sage-outline:hover,
+.wp-block-button.is-style-ink-sage-outline > .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+/* BTN-2: no pill buttons — the legacy `is-style-pill` takes the primary recipe */
+.wp-block-button.is-style-pill > .wp-block-button__link {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary-foreground, #fff);
+	box-shadow: var(--wp--preset--shadow--md);
+}
+
+.wp-block-button.is-style-pill > .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--primary-light);
+}
+
+/* bare text button (the "Reply" action): not a ghost button; keeps Inter */
+.ink-text-button {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: var(--wp--preset--color--muted-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: 400;
+	line-height: 1.25rem;
+	cursor: pointer;
+	transition: color 0.15s ease;
+}
+
+.ink-text-button:hover {
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* ==========================================================================
+   14. Icon buttons (button-icon) and counted icon buttons (button-icon-label)
+   Not in the serif scope (BTN-FONT): they keep Inter.
+   ========================================================================== */
+
+.ink-icon-btn {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background-color: transparent;
+	color: var(--wp--preset--color--muted-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--md);
+	font-weight: 400;
+	line-height: 1.5rem;
+	cursor: pointer;
+	transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.ink-icon-btn svg {
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+}
+
+.ink-icon-btn:hover {
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-icon-btn.is-active,
+.ink-icon-btn[aria-pressed="true"] {
+	color: var(--wp--preset--color--accent);
+}
+
+/* menu toggle: p-2, 40px box, foreground */
+.ink-icon-btn--menu {
+	width: 40px;
+	height: 40px;
+	padding: var(--wp--preset--spacing--s-8);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-icon-btn--menu svg {
+	width: 24px;
+	height: 24px;
+}
+
+/* round: 32px circle, p-2; save = background/80 + muted; camera = primary + white */
+.ink-icon-btn--round {
+	width: 32px;
+	height: 32px;
+	padding: var(--wp--preset--spacing--s-8);
+	border-radius: var(--wp--custom--radius--full);
+	background-color: color-mix(in srgb, var(--wp--preset--color--surface) 80%, transparent);
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-icon-btn--round svg {
+	width: 16px;
+	height: 16px;
+}
+
+.ink-icon-btn--round-primary {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary-foreground, #fff);
+}
+
+.ink-icon-btn--round-primary:hover {
+	background-color: var(--wp--preset--color--primary-light);
+	color: var(--wp--preset--color--primary-foreground, #fff);
+}
+
+/* highlight tab: 40px, 12px 8px, radius 8, gap 4, highlight fill, shadow-soft */
+.ink-icon-btn--highlight-tab {
+	gap: var(--wp--preset--spacing--s-4);
+	height: 40px;
+	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-8);
+	border-radius: var(--wp--custom--radius--lg);
+	background-color: var(--wp--preset--color--highlight);
+	color: var(--wp--preset--color--highlight-foreground);
+	box-shadow: var(--wp--preset--shadow--md);
+}
+
+.ink-icon-btn--highlight-tab svg {
+	width: 16px;
+	height: 16px;
+}
+
+/* panel close: p-1, radius 4, foreground */
+.ink-icon-btn--panel-close {
+	padding: var(--wp--preset--spacing--s-4);
+	border-radius: var(--wp--custom--radius--sm);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-icon-btn:focus-visible,
+.ink-icon-label:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+/* counted icon button (like / comment / upvote): 16/24 gap 8; sm 14/20 gap 4 */
+.ink-icon-label {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background-color: transparent;
+	color: var(--wp--preset--color--muted-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--md);
+	font-weight: 400;
+	line-height: 1.5rem;
+	text-decoration: none;
+	cursor: pointer;
+	transition: color 0.15s ease;
+}
+
+.ink-icon-label svg {
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+}
+
+.ink-icon-label:hover {
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-icon-label.is-active,
+.ink-icon-label[aria-pressed="true"] {
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-icon-label--sm {
+	gap: var(--wp--preset--spacing--s-4);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+.ink-icon-label--sm svg {
+	width: 16px;
+	height: 16px;
+}
+
+/* ==========================================================================
+   15. Filter chips (filter-chip: base/active, sort, choice, date) — keep Inter
+   ========================================================================== */
+
+.ink-chip {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	margin: 0;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-16);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--full);
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: 400;
+	line-height: 1.25rem;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.ink-chip svg {
+	flex-shrink: 0;
+	width: 14px;
+	height: 14px;
+}
+
+.ink-chip:hover {
+	border-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-chip.is-active,
+.ink-chip[aria-pressed="true"],
+.ink-chip[aria-current="true"],
+.ink-chip[aria-current="page"] {
+	background-color: var(--wp--preset--color--primary);
+	border-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary-foreground, #fff);
+}
+
+.ink-chip:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+/* sort pill: 6px 12px, no border, transparent muted; active secondary / foreground */
+.ink-chip--sort {
+	padding: var(--wp--preset--spacing--s-6) var(--wp--preset--spacing--s-12);
+	border: 0;
+	background-color: transparent;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-chip--sort:hover {
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-chip--sort.is-active,
+.ink-chip--sort[aria-pressed="true"],
+.ink-chip--sort[aria-current="true"],
+.ink-chip--sort[aria-current="page"] {
+	background-color: var(--wp--preset--color--secondary);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* choice (response type): secondary/50, muted, 500, no border; selected secondary + ring primary/30 */
+.ink-chip--choice {
+	border: 0;
+	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 50%, transparent);
+	color: var(--wp--preset--color--muted-text);
+	font-weight: 500;
+}
+
+.ink-chip--choice:hover {
+	background-color: var(--wp--preset--color--secondary);
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-chip--choice.is-active,
+.ink-chip--choice[aria-pressed="true"],
+.ink-chip--choice:has(input:checked) {
+	background-color: var(--wp--preset--color--secondary);
+	color: var(--wp--preset--color--ink-text);
+	box-shadow: 0 0 0 2px color-mix(in srgb, var(--wp--preset--color--primary) 30%, transparent);
+}
+
+/* date (CHIP-1): the sage chip; active = solid sage + accent-foreground (proposed) */
+.ink-chip--date {
+	padding: var(--wp--preset--spacing--s-4) var(--wp--preset--spacing--s-12);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--accent) 20%, transparent);
+	background-color: color-mix(in srgb, var(--wp--preset--color--accent) 10%, transparent);
+	color: var(--wp--preset--color--accent);
+	font-weight: 500;
+}
+
+.ink-chip--date:hover {
+	border-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--accent);
+}
+
+.ink-chip--date.is-active,
+.ink-chip--date[aria-pressed="true"],
+.ink-chip--date[aria-current="true"],
+.ink-chip--date[aria-current="page"] {
+	background-color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--surface-alt);
+}
+
+/* ==========================================================================
+   16. Tabs: underline tab (TabButton) and segmented (shadcn Tabs) — keep Inter
+   ========================================================================== */
+
+.ink-tab {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	margin: 0 0 -1px;
+	padding: var(--wp--preset--spacing--s-16) 20px;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	border-radius: 0;
+	background-color: transparent;
+	color: var(--wp--preset--color--muted-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: 500;
+	line-height: 1.25rem;
+	text-decoration: none;
+	cursor: pointer;
+	transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.ink-tab svg {
+	flex-shrink: 0;
+	width: 16px;
+	height: 16px;
+}
+
+.ink-tab:hover {
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-tab.is-active,
+.ink-tab[aria-selected="true"],
+.ink-tab[aria-current="page"] {
+	border-bottom-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-segmented {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 40px;
+	padding: var(--wp--preset--spacing--s-4);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: var(--wp--preset--color--muted);
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-segmented__tab {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	padding: var(--wp--preset--spacing--s-6) var(--wp--preset--spacing--s-12);
+	border: 0;
+	border-radius: var(--wp--custom--radius--sm);
+	background-color: transparent;
+	color: var(--wp--preset--color--muted-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: 500;
+	line-height: 1.25rem;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.ink-segmented__tab.is-active,
+.ink-segmented__tab[aria-selected="true"],
+.ink-segmented__tab[aria-current="page"] {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--ink-text);
+	box-shadow: var(--wp--preset--shadow--xs);
+}
+
+.ink-tab:focus-visible,
+.ink-segmented__tab:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+/* ==========================================================================
+   17. Links: nav link (header / footer), link, underline-slide
+   ========================================================================== */
+
+.ink-underline-slide,
+.ink-link--slide,
+.ink-nav-link,
+.wp-block-group.is-style-ink-header .wp-block-navigation-item__content {
+	position: relative;
+}
+
+.ink-underline-slide::after,
+.ink-link--slide::after,
+.ink-nav-link::after,
+.wp-block-group.is-style-ink-header .wp-block-navigation-item__content::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -2px;
+	width: 0;
+	height: 2px;
+	background-color: var(--wp--preset--color--primary);
+	transition: width 0.3s ease;
+}
+
+.ink-underline-slide:hover::after,
+.ink-underline-slide:focus-visible::after,
+.ink-link--slide:hover::after,
+.ink-link--slide:focus-visible::after,
+.ink-nav-link:hover::after,
+.ink-nav-link:focus-visible::after,
+.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:hover::after,
+.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:focus-visible::after {
+	width: 100%;
+}
+
+/* nav link (header): Inter 16/24 muted; hover foreground + underline-slide */
+.ink-nav-link,
+.wp-block-group.is-style-ink-header .wp-block-navigation-item__content {
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: var(--wp--preset--font-size--md);
+	font-weight: 400;
+	line-height: 1.5rem;
+	color: var(--wp--preset--color--muted-text);
+	text-decoration: none;
+	transition: color 0.15s ease;
+}
+
+/* nav link footer / back links: 14/20 muted, hover foreground, no slide */
+.ink-nav-link--footer,
+.wp-block-group.is-style-ink-footer .ink-footer-lys a {
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: 400;
+	line-height: 1.25rem;
+	color: var(--wp--preset--color--muted-text);
+	text-decoration: none;
+	transition: color 0.15s ease;
+}
+
+.ink-nav-link--footer::after {
+	content: none;
+}
+
+.ink-nav-link:hover,
+.ink-nav-link:focus-visible,
+.ink-nav-link--footer:hover,
+.ink-nav-link--footer:focus-visible,
+.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:hover,
+.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:focus-visible,
+.wp-block-group.is-style-ink-footer .ink-footer-lys a:hover,
+.wp-block-group.is-style-ink-footer .ink-footer-lys a:focus-visible {
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-nav-link:focus-visible,
+.wp-block-group.is-style-ink-header .wp-block-navigation-item__content:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+/* link (link-underline): primary, Inter, size inherited, underline on hover only */
+.ink-link,
+.ink-link--slide {
+	color: var(--wp--preset--color--primary);
+	font-family: var(--wp--preset--font-family--body);
+	font-weight: 400;
+	text-decoration: none;
+	transition: color 0.15s ease;
+}
+
+.ink-link:hover {
+	text-decoration: underline;
+}
+
+/* slide (featured "all" link): 16/24, hover primary-light + underline-slide */
+.ink-link--slide {
+	font-size: var(--wp--preset--font-size--md);
+	line-height: 1.5rem;
+}
+
+.ink-link--slide:hover {
+	color: var(--wp--preset--color--primary-light);
+	text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-underline-slide::after,
+	.ink-link--slide::after,
+	.ink-nav-link::after,
+	.wp-block-group.is-style-ink-header .wp-block-navigation-item__content,
+	.wp-block-group.is-style-ink-header .wp-block-navigation-item__content::after,
+	.wp-block-group.is-style-ink-footer .ink-footer-lys a {
+		transition: none;
+	}
+}
+
+/* ==========================================================================
+   18. Forms: field, textarea, label, hint, search field, checkbox, choice row
+   FORMS ruling: the /auth recipe is the default for every field without a
+   Lovable sibling — applied at zero specificity to bare text-like controls, so
+   any explicit class still wins.
+   ========================================================================== */
+
+:where(
+	input:not([type]),
+	input[type="text"],
+	input[type="email"],
+	input[type="password"],
+	input[type="url"],
+	input[type="tel"],
+	input[type="number"],
+	input[type="search"],
+	input[type="date"],
+	select,
+	textarea
+),
+.ink-field,
+.ink-search-field {
+	box-sizing: border-box;
+	height: 40px;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-12);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--md);
+	font-weight: 400;
+	line-height: 1.5rem;
+}
+
+.ink-field {
+	width: 100%;
+}
+
+:where(textarea),
+textarea.ink-field,
+.ink-field--textarea {
+	height: auto;
+	min-height: 80px;
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+:where(input, select, textarea)::placeholder,
+.ink-field::placeholder,
+.ink-search-field::placeholder {
+	color: var(--wp--preset--color--muted-text);
+	opacity: 1;
+}
+
+:where(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="button"], [type="reset"], [type="range"], [type="color"], [type="file"]), select, textarea):focus-visible,
+.ink-field:focus-visible,
+.ink-search-field:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 2px var(--wp--preset--color--surface), 0 0 0 4px var(--wp--preset--color--primary);
+}
+
+:where(input, select, textarea):disabled,
+.ink-field:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+/* search field: 48px, room for the leading icon (pl-11); with the Soek button 40px (SRCH-1) */
+.ink-search-field {
+	width: 100%;
+	height: 48px;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-8) 44px;
+}
+
+.ink-search-field--with-button {
+	height: 40px;
+}
+
+/* label: Inter 14 500, LBL-1 20px */
+.ink-label {
+	display: block;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: 500;
+	line-height: 1.25rem;
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* caps label (my-profiel edit): 12/16 400 uppercase 0.05em muted */
+.ink-label--caps {
+	font-size: var(--wp--preset--font-size--xs);
+	font-weight: 400;
+	line-height: 1rem;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-hint {
+	display: block;
+	margin: 0;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xs);
+	font-weight: 400;
+	line-height: 1rem;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* checkbox: 16px, 1px primary border, radius 4; checked = primary fill + white check */
+:where(input[type="checkbox"], input[type="radio"]) {
+	accent-color: var(--wp--preset--color--primary);
+}
+
+.ink-checkbox {
+	box-sizing: border-box;
+	-webkit-appearance: none;
+	appearance: none;
+	display: inline-block;
+	flex-shrink: 0;
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+	border: 1px solid var(--wp--preset--color--primary);
+	border-radius: var(--wp--custom--radius--sm);
+	background-color: transparent;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 12px 12px;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+.ink-checkbox:checked {
+	background-color: var(--wp--preset--color--primary);
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+
+.ink-checkbox:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 2px var(--wp--preset--color--surface), 0 0 0 4px var(--wp--preset--color--primary);
+}
+
+.ink-checkbox:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+/* choice row: flex start, gap 12, p-3, 1px border, radius 6; hover secondary/50 */
+.ink-choice {
+	box-sizing: border-box;
+	display: flex;
+	align-items: flex-start;
+	gap: var(--wp--preset--spacing--s-12);
+	padding: var(--wp--preset--spacing--s-12);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: transparent;
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+}
+
+.ink-choice:hover {
+	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 50%, transparent);
+}
+
+@media (min-width: 768px) {
+	:where(
+		input:not([type]),
+		input[type="text"],
+		input[type="email"],
+		input[type="password"],
+		input[type="url"],
+		input[type="tel"],
+		input[type="number"],
+		input[type="search"],
+		input[type="date"],
+		select
+	),
+	.ink-field,
+	.ink-search-field {
+		font-size: var(--wp--preset--font-size--sm);
+		line-height: 1.25rem;
+	}
+}
