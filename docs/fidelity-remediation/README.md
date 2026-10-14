@@ -673,13 +673,16 @@ docs/fidelity-remediation/
   stage-1-kickoff.md              ← paste-ready brief to start the audit
   stage-1-progress.md             ← live per-row status + fan-out mechanics (lead-maintained)
   harness-worklist.md             ← capture-harness tool contract + environment facts
+  stage-2-rulings.md              ← owner rulings that ratified Stage 2. AUTHORITATIVE:
+                                     overrides the synthesis and the recipes on conflict
   findings/
     00-tuisblad-spine.md          ← first finding (also the method's worked example)
     01-primitives-audit.md        ← early partial sample; evidence + seed rows (§4.7)
     NN-<page-slug>-spine.md       ← Phase 2 output, hand-written
     NN-<page-slug>-drift.md       ← Phase 4 output, GENERATED — do not hand-edit
-    _primitive-synthesis.md       ← STAGE 2 output: variant counts, property diffs,
-                                     chosen canonical recipe per kind
+    _primitive-synthesis.md       ← STAGE 2 output (index): links the three group
+                                     reports, summarises rulings. RATIFIED 2026-10-14
+    _primitive-synthesis.<group>.md ← per-group detail (type-layout, surfaces, controls)
   maps/
     <page-slug>.csv               ← Phase 3 output: the audit-id join table
     _primitive-observations.csv   ← STAGE 1, append-only. One row per primitive
@@ -687,6 +690,7 @@ docs/fidelity-remediation/
     _recipes.csv                  ← STAGE 2 output: the ratified canonical recipe
                                      per component kind. Input to Stage 3 and to
                                      every Treatment C conformance audit (§4.6).
+                                     Merged from _recipes.<group>.csv — edit those.
 ```
 
 The shared stylesheet that Stage 3 builds lives in the theme, not here:

@@ -134,3 +134,29 @@ Collected from the per-row notes above. None of these were decided by the audit.
   canonical and 67 needs-ruling. `findings/_primitive-synthesis.md` lists the 19 owner
   rulings, two capture gaps, and the proposed vocabulary changes. Stage 3 is gated on
   ratification.
+- **2026-10-14** — Stage 2 RATIFIED (52b3ab8; ink-lovable 71c0847).
+  - The owner rulings are in `stage-2-rulings.md`, and they are authoritative.
+  - `_recipes.csv` has 745 rows, all canonical; 116 come from owner rulings.
+  - Lovable's "Explore stories" and "Read Full Story" buttons were fixed for legibility
+    and made serif, then re-measured.
+  - The gradient `background-image` was always captured; it was the register
+    extraction that dropped it.
+  - The Stage 2 working scripts are in `tmp/stage2/` (gitignored).
+
+  **Carried into Stage 3:**
+  1. Decide the vocabulary proposals (§"Vocabulary changes proposed" in the
+     synthesis) at kickoff. They set the class names in `primitives.css`. The lead
+     recommends adopting them as proposed.
+  2. The owner should eyeball three proposed (unmeasured) values:
+     - tier-chip padding, 2px 10px;
+     - the active date chip, solid sage with white text;
+     - the silwer and goud tier text, which fails WCAG AA at 12px. Those colours are INK
+       theme tokens; a darker text shade would fix it.
+  3. NR-2 needs a script, not CSS: an Afrikaans required-field message ("Vul hierdie
+     veld in") on every form with `required` fields.
+  4. The Stage 1 live bugs and coverage gaps listed above are still open. They are
+     independent of Stage 3.
+  5. The Stage 3 plan is README §4.7. One agent builds `primitives.css`, enqueues it
+     and reconciles the block styles. Then up to three agents in parallel migrate
+     consumers and delete the bespoke definitions. A final verification pass re-runs
+     Phase 4 on a sample of pages. Deploy to local before every INK capture.
