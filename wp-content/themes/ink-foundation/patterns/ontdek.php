@@ -74,11 +74,11 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div data-audit-id="tabs-container" class="wp-block-group alignwide">
 		<nav data-audit-id="tabs-list" class="ink-ontdek-tabs" aria-label="<?php esc_attr_e( 'Ontdek-oortjies', 'ink-foundation' ); ?>">
-			<button data-audit-id="tabs-tab-active" type="button" class="ink-ontdek-tabs__knoppie is-active" data-ink-ontdek-tab="bydraes" aria-selected="true">
+			<button data-audit-id="tabs-tab-active" type="button" class="ink-ontdek-tabs__knoppie ink-tab is-active" data-ink-ontdek-tab="bydraes" aria-selected="true">
 				<svg data-audit-id="tabs-tab-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ink-icon" aria-hidden="true" focusable="false"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M15 8h-5"/><path d="M15 12h-5"/></svg>
 				<span><?php echo esc_html( $ink_bydraes_label ); ?></span>
 			</button>
-			<button data-audit-id="tabs-tab" type="button" class="ink-ontdek-tabs__knoppie" data-ink-ontdek-tab="skrywers" aria-selected="false">
+			<button data-audit-id="tabs-tab" type="button" class="ink-ontdek-tabs__knoppie ink-tab" data-ink-ontdek-tab="skrywers" aria-selected="false">
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ink-icon" aria-hidden="true" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
 				<span><?php echo esc_html( $ink_skrywers_label ); ?></span>
 			</button>

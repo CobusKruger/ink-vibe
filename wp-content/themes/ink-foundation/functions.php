@@ -1058,14 +1058,14 @@ add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_skrywer_deel' );
 /**
  * Enqueue the home (Tuisblad) stylesheet on the front page only (Epic 19, §0.8).
  *
- * The theme.json `css` string only carries the ink-core widget styles; the
- * home-page shared primitives that need @keyframes / ::before / gradient-clip
- * (fade-up, underline-slide, the .ink-hero-texture plus-pattern layer, the
- * .ink-text-gradient accent, the ink-btn-* sizing utilities, and the
- * prefers-reduced-motion base) live in a real enqueued stylesheet. Gated to the
- * front page, mirroring the script-enqueue pattern above and versioned to the
- * theme so cache-busting rides the theme version. Presentation only — no
- * business logic (three-layer separation holds).
+ * home.css holds ONLY the home page's own layout and decoration (the hero grid
+ * and plus-pattern texture, the .ink-text-gradient accent, fade-up / hover-scale
+ * motion, the card corner tints and crown watermark, the grids and per-element
+ * rhythm, the CTA panel, and the prefers-reduced-motion base). Every primitive the
+ * home markup uses — buttons and their sizes, cards, pills, headings, bands — is a
+ * class from primitives.css, enqueued site-wide (Fidelity remediation Stage 3, R8).
+ * Gated to the front page, versioned to the theme so cache-busting rides the theme
+ * version. Presentation only — no business logic (three-layer separation holds).
  *
  * Also loads on the QA/component gallery page ({@see INK_FOUNDATION_QA_GALLERY_SLUG})
  * — that page renders the SAME home-page dynamic blocks (`ink/huidige-uitdaging`,

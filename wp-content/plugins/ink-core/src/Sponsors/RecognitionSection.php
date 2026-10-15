@@ -139,8 +139,8 @@ final class RecognitionSection {
 		$cta_label   = Terms::label( 'word_borg' );
 
 		$html = '<section class="ink-borg-erkenning" data-audit-id="sponsors-inner" aria-label="' . esc_attr( $eyebrow ) . '">'
-			. '<p class="ink-borg-erkenning__etiket" data-audit-id="sponsors-eyebrow">' . esc_html( $eyebrow ) . '</p>'
-			. '<h2 class="ink-borg-erkenning__titel" data-audit-id="sponsors-h2">' . esc_html( $heading ) . '</h2>'
+			. '<p class="ink-borg-erkenning__etiket ink-eyebrow ink-eyebrow--accent" data-audit-id="sponsors-eyebrow">' . esc_html( $eyebrow ) . '</p>'
+			. '<h2 class="ink-borg-erkenning__titel ink-heading-h2-sub" data-audit-id="sponsors-h2">' . esc_html( $heading ) . '</h2>'
 			. '<p class="ink-borg-erkenning__beskrywing" data-audit-id="sponsors-intro">' . esc_html( $description ) . '</p>';
 
 		if ( array() !== $sponsors ) {
@@ -170,7 +170,7 @@ final class RecognitionSection {
 					$link = str_replace( 'class="ink-borg-erkenning__naam"', 'class="ink-borg-erkenning__naam" data-audit-id="' . esc_attr( $aid . '-name' ) . '"', $link );
 				}
 
-				$html .= '<li class="ink-borg-erkenning__item ink-borg-erkenning__item--' . esc_attr( $slug ) . '"'
+				$html .= '<li class="ink-borg-erkenning__item ink-borg-erkenning__item--' . esc_attr( $slug ) . ' ink-tier-chip ink-tier-chip--' . esc_attr( $slug ) . '"'
 					. ( '' !== $aid ? ' data-audit-id="' . esc_attr( $aid ) . '"' : '' ) . '>'
 					. $link
 					. '</li>';
@@ -179,7 +179,7 @@ final class RecognitionSection {
 			$html .= '</ul>';
 		}
 
-		$html .= '<a class="ink-borg-erkenning__cta" data-audit-id="sponsors-btn" href="' . esc_url( self::contactUrl() ) . '">'
+		$html .= '<a class="ink-borg-erkenning__cta ink-btn ink-btn--lg ink-btn--sage-outline" data-audit-id="sponsors-btn" href="' . esc_url( self::contactUrl() ) . '">'
 			. self::heartIcon() . esc_html( $cta_label ) . '</a>';
 
 		return $html . '</section>';

@@ -97,12 +97,19 @@ final class FollowToggle {
 	/**
 	 * Build the toggle button HTML. Pure — Terms + escaping only.
 	 *
-	 * @param int  $skrywer_id The target skrywer.
-	 * @param bool $following  Whether the viewer already follows them.
+	 * Shared button primitive (primitives.css): Volg = `ink-btn--primary`, Volg tans =
+	 * `ink-btn--subtle` (Lovable Writer.tsx `literary` / `subtle`); `volg.js` swaps the
+	 * two variant classes alongside `is-following`. `$size` is the context's button
+	 * size (`sm` | `lg` | '' = default 40px), never a page-scoped size rule.
+	 *
+	 * @param int    $skrywer_id The target skrywer.
+	 * @param bool   $following  Whether the viewer already follows them.
+	 * @param string $size       Optional button size modifier: '', 'sm' or 'lg'.
 	 * @return string
 	 */
-	public static function toHtml( int $skrywer_id, bool $following ): string {
-		$classes = 'ink-volg-knoppie' . ( $following ? ' is-following' : '' );
+	public static function toHtml( int $skrywer_id, bool $following, string $size = '' ): string {
+		$size    = in_array( $size, array( 'sm', 'lg' ), true ) ? ' ink-btn--' . $size : '';
+		$classes = 'ink-btn' . $size . ' ' . ( $following ? 'ink-btn--subtle' : 'ink-btn--primary' ) . ' ink-volg-knoppie' . ( $following ? ' is-following' : '' );
 		$label   = $following ? Terms::label( 'volg_tans' ) : Terms::label( 'volg' );
 
 		return '<button type="button" class="' . esc_attr( $classes ) . '"'

@@ -103,7 +103,7 @@ final class SkrywerProfiel {
 		$profile = array(
 			'name'            => (string) get_the_author_meta( 'display_name', $author_id ),
 			'bio'             => (string) get_the_author_meta( 'description', $author_id ),
-			'avatar'          => function_exists( 'get_avatar' ) ? (string) get_avatar( $author_id, 160 ) : '',
+			'avatar'          => function_exists( 'get_avatar' ) ? (string) get_avatar( $author_id, 160, '', '', array( 'class' => 'ink-avatar ink-avatar--hero' ) ) : '',
 			'cover'           => class_exists( CoverImage::class ) ? CoverImage::urlFor( $author_id, 'large' ) : '',
 			'badge'           => self::graderingBadge( $author_id ),
 			'volgeling'       => Api::volgelingLabel( Api::followerCount( $author_id ) ),
@@ -448,12 +448,12 @@ final class SkrywerProfiel {
 			$html .= '<div class="ink-skrywerprofiel__genres" data-audit-id="skrywer-genres">';
 			foreach ( array_values( $genres ) as $genre_index => $genre ) {
 				// Audit-id on the FIRST pill only (repeater convention, maps/skrywer.csv).
-				$html .= '<span class="ink-skrywerprofiel__genre"' . ( 0 === $genre_index ? ' data-audit-id="skrywer-genre-pill"' : '' ) . '>' . esc_html( (string) $genre ) . '</span>';
+				$html .= '<span class="ink-pill ink-pill--outline ink-skrywerprofiel__genre"' . ( 0 === $genre_index ? ' data-audit-id="skrywer-genre-pill"' : '' ) . '>' . esc_html( (string) $genre ) . '</span>';
 			}
 			$html .= '</div>';
 		}
 
-		$html .= '<h1 class="ink-skrywerprofiel__naam" data-audit-id="skrywer-name">' . esc_html( $name ) . '</h1>';
+		$html .= '<h1 class="ink-heading-h1-entity ink-skrywerprofiel__naam" data-audit-id="skrywer-name">' . esc_html( $name ) . '</h1>';
 
 		if ( '' !== $badge ) {
 			// Badge is self-built escaped markup from graderingBadge().
@@ -461,10 +461,10 @@ final class SkrywerProfiel {
 		}
 
 		$html .= '<div class="ink-skrywerprofiel__meta" data-audit-id="skrywer-meta">'
-			. '<span class="ink-skrywerprofiel__volgelinge" data-audit-id="skrywer-meta-followers">' . esc_html( $volgeling ) . '</span>';
+			. '<span class="ink-meta ink-meta--sm ink-skrywerprofiel__volgelinge" data-audit-id="skrywer-meta-followers">' . esc_html( $volgeling ) . '</span>';
 
 		if ( '' !== $joined ) {
-			$html .= '<span class="ink-skrywerprofiel__aangesluit" data-audit-id="skrywer-meta-joined">' . esc_html( $joined ) . '</span>';
+			$html .= '<span class="ink-meta ink-meta--sm ink-skrywerprofiel__aangesluit" data-audit-id="skrywer-meta-joined">' . esc_html( $joined ) . '</span>';
 		}
 
 		$html .= '</div>';
@@ -480,7 +480,7 @@ final class SkrywerProfiel {
 			// The confirmation string is the ratified toast copy verbatim
 			// (`ui-copy-translations.md` "Profile link copied to your clipboard" ->
 			// "Profielskakel gekopieër na jou knipbord") — never invented here.
-			$html .= '<button type="button" class="ink-skrywerprofiel__deel" data-audit-id="skrywer-share-btn" data-ink-deel-url="' . esc_url( $share_url ) . '" data-ink-deel-label="' . esc_attr__( 'Deel', 'ink-core' ) . '" data-ink-deel-gekopieer="' . esc_attr__( 'Profielskakel gekopieër na jou knipbord', 'ink-core' ) . '">'
+			$html .= '<button type="button" class="ink-btn ink-btn--outline ink-skrywerprofiel__deel" data-audit-id="skrywer-share-btn" data-ink-deel-url="' . esc_url( $share_url ) . '" data-ink-deel-label="' . esc_attr__( 'Deel', 'ink-core' ) . '" data-ink-deel-gekopieer="' . esc_attr__( 'Profielskakel gekopieër na jou knipbord', 'ink-core' ) . '">'
 				. esc_html__( 'Deel', 'ink-core' ) . '</button>';
 		}
 
@@ -496,7 +496,7 @@ final class SkrywerProfiel {
 			if ( $rating_count > 0 ) {
 				$average = isset( $aggregate['average'] ) ? (float) $aggregate['average'] : 0.0;
 				$html   .= '<div class="ink-skrywerprofiel__stat" data-audit-id="skrywer-stat-rating">'
-					. '<span class="ink-skrywerprofiel__stat-etiket" data-audit-id="skrywer-stat-rating-label">' . esc_html__( 'Lesergradering', 'ink-core' ) . '</span>'
+					. '<span class="ink-stat-label ink-skrywerprofiel__stat-etiket" data-audit-id="skrywer-stat-rating-label">' . esc_html__( 'Lesergradering', 'ink-core' ) . '</span>'
 					. '<span class="ink-skrywerprofiel__stat-waarde" data-audit-id="skrywer-rating-value">' . esc_html( number_format_i18n( $average, 1 ) ) . '</span>'
 					. '<span class="ink-skrywerprofiel__stat-sterre" data-audit-id="skrywer-rating-stars" aria-hidden="true">' . self::starsHtml( $average ) . '</span>'
 					. '</div>';
@@ -511,7 +511,7 @@ final class SkrywerProfiel {
 					)
 				);
 				$html     .= '<div class="ink-skrywerprofiel__stat" data-audit-id="skrywer-stat-works">'
-					. '<span class="ink-skrywerprofiel__stat-etiket" data-audit-id="skrywer-stat-works-label">' . esc_html__( 'Werke', 'ink-core' ) . '</span>'
+					. '<span class="ink-stat-label ink-skrywerprofiel__stat-etiket" data-audit-id="skrywer-stat-works-label">' . esc_html__( 'Werke', 'ink-core' ) . '</span>'
 					. '<span class="ink-skrywerprofiel__stat-waarde" data-audit-id="skrywer-stat-works-value">' . esc_html( number_format_i18n( $works['total'] ) ) . '</span>'
 					. '<span class="ink-skrywerprofiel__stat-detail" data-audit-id="skrywer-stat-works-detail">' . $breakdown . '</span>'
 					. '</div>';
@@ -519,7 +519,7 @@ final class SkrywerProfiel {
 
 			if ( $hartjies > 0 ) {
 				$html .= '<div class="ink-skrywerprofiel__stat" data-audit-id="skrywer-stat-likes">'
-					. '<span class="ink-skrywerprofiel__stat-etiket" data-audit-id="skrywer-stat-likes-label">' . esc_html__( 'Hartjies', 'ink-core' ) . '</span>'
+					. '<span class="ink-stat-label ink-skrywerprofiel__stat-etiket" data-audit-id="skrywer-stat-likes-label">' . esc_html__( 'Hartjies', 'ink-core' ) . '</span>'
 					. '<span class="ink-skrywerprofiel__stat-waarde" data-audit-id="skrywer-stat-likes-value">' . esc_html( number_format_i18n( $hartjies ) ) . '</span>'
 					. '</div>';
 			}
@@ -536,7 +536,7 @@ final class SkrywerProfiel {
 		if ( '' !== trim( $bio ) ) {
 			$html .= '<div class="ink-skrywerprofiel__oor" data-audit-id="skrywer-oor">'
 				/* translators: %s: the writer's first name. */
-				. '<h2 class="ink-skrywerprofiel__oor-titel" data-audit-id="skrywer-oor-title">' . esc_html( sprintf( __( 'Oor %s', 'ink-core' ), $first_name ) ) . '</h2>'
+				. '<h2 class="ink-heading-h2-sub ink-skrywerprofiel__oor-titel" data-audit-id="skrywer-oor-title">' . esc_html( sprintf( __( 'Oor %s', 'ink-core' ), $first_name ) ) . '</h2>'
 				. '<p class="ink-skrywerprofiel__bio" data-audit-id="skrywer-bio">' . esc_html( $bio ) . '</p>'
 				. '</div>';
 		}
@@ -544,14 +544,14 @@ final class SkrywerProfiel {
 		// Accomplishments — real Gradering-history rows (Tiers audit log).
 		if ( array() !== $accomplishments ) {
 			$html .= '<div class="ink-skrywerprofiel__prestasies" data-audit-id="skrywer-prestasies" data-ink-slot="prestasies">'
-				. '<h2 class="ink-skrywerprofiel__prestasies-titel" data-audit-id="skrywer-prestasies-title">' . esc_html__( 'Prestasies', 'ink-core' ) . '</h2>'
+				. '<h2 class="ink-eyebrow ink-eyebrow--muted ink-skrywerprofiel__prestasies-titel" data-audit-id="skrywer-prestasies-title">' . esc_html__( 'Prestasies', 'ink-core' ) . '</h2>'
 				. '<div class="ink-skrywerprofiel__prestasies-lys" data-audit-id="skrywer-prestasies-list">';
 
 			foreach ( array_values( $accomplishments ) as $item_index => $item ) {
 				// Audit-ids on the FIRST row only (repeater convention, maps/skrywer.csv).
 				$aid   = static fn ( string $role ): string => 0 === $item_index ? ' data-audit-id="skrywer-prestasie' . $role . '"' : '';
-				$html .= '<div class="ink-skrywerprofiel__prestasie"' . $aid( '' ) . '>'
-					. '<span class="ink-skrywerprofiel__prestasie-ikoon"' . $aid( '-icon' ) . ' aria-hidden="true">&#9733;</span>'
+				$html .= '<div class="ink-card ink-skrywerprofiel__prestasie"' . $aid( '' ) . '>'
+					. '<span class="ink-icon-tile ink-icon-tile--sm ink-skrywerprofiel__prestasie-ikoon"' . $aid( '-icon' ) . ' aria-hidden="true">&#9733;</span>'
 					. '<span class="ink-skrywerprofiel__prestasie-teks"' . $aid( '-text' ) . '>'
 					. '<span class="ink-skrywerprofiel__prestasie-etiket"' . $aid( '-label' ) . '>' . esc_html( (string) $item['label'] ) . '</span>';
 
@@ -565,7 +565,7 @@ final class SkrywerProfiel {
 			$html .= '</div></div>';
 		} else {
 			// No Gradering history yet — keep the empty shell (pre-existing behaviour).
-			$html .= '<div class="ink-skrywerprofiel__prestasies" data-audit-id="skrywer-prestasies"><h2 class="ink-skrywerprofiel__prestasies-titel" data-audit-id="skrywer-prestasies-title">' . esc_html__( 'Prestasies', 'ink-core' ) . '</h2></div>';
+			$html .= '<div class="ink-skrywerprofiel__prestasies" data-audit-id="skrywer-prestasies"><h2 class="ink-eyebrow ink-eyebrow--muted ink-skrywerprofiel__prestasies-titel" data-audit-id="skrywer-prestasies-title">' . esc_html__( 'Prestasies', 'ink-core' ) . '</h2></div>';
 		}
 
 		$html .= '</div>'; // .ink-skrywerprofiel__oor-prestasies
@@ -574,9 +574,9 @@ final class SkrywerProfiel {
 		// werk" copy). Heading only when there is at least one pin; nothing when empty.
 		if ( array() !== $pinned ) {
 			$html .= '<div class="ink-skrywerprofiel__vasgespel" data-audit-id="skrywer-werk" data-ink-slot="vasgespelde-werke">'
-				. '<p class="ink-skrywerprofiel__vasgespel-kicker" data-audit-id="skrywer-werk-kicker">' . esc_html__( 'Uitgesoekte werk', 'ink-core' ) . '</p>'
+				. '<p class="ink-eyebrow ink-eyebrow--kicker ink-skrywerprofiel__vasgespel-kicker" data-audit-id="skrywer-werk-kicker">' . esc_html__( 'Uitgesoekte werk', 'ink-core' ) . '</p>'
 				/* translators: %s: the writer's first name. */
-				. '<h2 class="ink-skrywerprofiel__vasgespel-titel" data-audit-id="skrywer-werk-title">' . esc_html( sprintf( __( "'n Saamgestelde leeslys, in %s se eie volgorde.", 'ink-core' ), $first_name ) ) . '</h2>'
+				. '<h2 class="ink-heading-h2-section ink-skrywerprofiel__vasgespel-titel" data-audit-id="skrywer-werk-title">' . esc_html( sprintf( __( "'n Saamgestelde leeslys, in %s se eie volgorde.", 'ink-core' ), $first_name ) ) . '</h2>'
 				. '<ul class="ink-skrywerprofiel__vasgespel-lys" data-audit-id="skrywer-werk-grid">';
 
 			foreach ( array_values( $pinned ) as $card_index => $card ) {
@@ -588,9 +588,9 @@ final class SkrywerProfiel {
 				$h_label    = isset( $card['hartjieLabel'] ) ? (string) $card['hartjieLabel'] : '';
 				$gemeenskap = isset( $card['gemeenskap'] ) ? (int) $card['gemeenskap'] : 0;
 
-				$html .= '<li class="ink-skrywerprofiel__vasgespel-item is-style-card"' . $aid( '' ) . '>'
-					. '<span class="ink-skrywerprofiel__vasgespel-tipe"' . $aid( '-type' ) . '>' . esc_html( Terms::label( (string) $card['type'] ) ) . '</span>'
-					. '<a class="ink-skrywerprofiel__vasgespel-titel-skakel"' . $aid( '-title' ) . ' href="' . esc_url( (string) $card['permalink'] ) . '">' . esc_html( (string) $card['title'] ) . '</a>';
+				$html .= '<li class="ink-card ink-skrywerprofiel__vasgespel-item"' . $aid( '' ) . '>'
+					. '<span class="ink-pill ink-pill--outline ink-skrywerprofiel__vasgespel-tipe"' . $aid( '-type' ) . '>' . esc_html( Terms::label( (string) $card['type'] ) ) . '</span>'
+					. '<a class="ink-heading-h3-card ink-skrywerprofiel__vasgespel-titel-skakel"' . $aid( '-title' ) . ' href="' . esc_url( (string) $card['permalink'] ) . '">' . esc_html( (string) $card['title'] ) . '</a>';
 
 				if ( '' !== $excerpt ) {
 					$html .= '<p class="ink-skrywerprofiel__vasgespel-uittreksel"' . $aid( '-excerpt' ) . '>' . esc_html( $excerpt ) . '</p>';
@@ -599,12 +599,12 @@ final class SkrywerProfiel {
 				$html .= '<div class="ink-skrywerprofiel__vasgespel-voet"' . $aid( '-footer' ) . '>';
 
 				if ( '' !== $days_ago ) {
-					$html .= '<span class="ink-skrywerprofiel__vasgespel-tyd"' . $aid( '-age' ) . '>' . esc_html( $days_ago ) . '</span>';
+					$html .= '<span class="ink-meta ink-skrywerprofiel__vasgespel-tyd"' . $aid( '-age' ) . '>' . esc_html( $days_ago ) . '</span>';
 				}
 
 				$html .= '<span class="ink-skrywerprofiel__vasgespel-tellings"' . $aid( '-stats' ) . '>'
-					. '<span class="ink-skrywerprofiel__vasgespel-telling"' . $aid( '-stat' ) . ' aria-label="' . esc_attr( $h_label ) . '"><span aria-hidden="true">&#9825;</span> ' . esc_html( number_format_i18n( $hartjies_n ) ) . '</span>'
-					. '<span class="ink-skrywerprofiel__vasgespel-telling"><span aria-hidden="true">&#128172;</span> ' . esc_html( number_format_i18n( $gemeenskap ) ) . '</span>'
+					. '<span class="ink-meta ink-skrywerprofiel__vasgespel-telling"' . $aid( '-stat' ) . ' aria-label="' . esc_attr( $h_label ) . '"><span aria-hidden="true">&#9825;</span> ' . esc_html( number_format_i18n( $hartjies_n ) ) . '</span>'
+					. '<span class="ink-meta ink-skrywerprofiel__vasgespel-telling"><span aria-hidden="true">&#128172;</span> ' . esc_html( number_format_i18n( $gemeenskap ) ) . '</span>'
 					. '</span>';
 
 				$html .= '</div></li>';
@@ -616,7 +616,7 @@ final class SkrywerProfiel {
 			// the literal (house single-source convention); the bare duplicate here had
 			// to be corrected by hand when the product owner replaced "werke" with
 			// "skrywes" sitewide on 2026-09-05.
-			$html .= '<a class="ink-skrywerprofiel__sien-alle" data-audit-id="skrywer-werk-all-link" href="' . esc_url( home_url( '/ontdek/' ) ) . '">' . esc_html( Terms::label( 'sien_alle_werke' ) ) . '</a>';
+			$html .= '<a class="ink-link ink-skrywerprofiel__sien-alle" data-audit-id="skrywer-werk-all-link" href="' . esc_url( home_url( '/ontdek/' ) ) . '">' . esc_html( Terms::label( 'sien_alle_werke' ) ) . '</a>';
 
 			$html .= '</div>';
 		}
@@ -630,17 +630,22 @@ final class SkrywerProfiel {
 		// discover more writers.
 		$html .= '<div class="ink-skrywerprofiel__cta" data-audit-id="skrywer-cta">'
 			/* translators: %s: the writer's first name. */
-			. '<h2 class="ink-skrywerprofiel__cta-titel" data-audit-id="skrywer-cta-title">' . esc_html( sprintf( __( "Moenie %s se volgende stuk misloop nie.", 'ink-core' ), $first_name ) ) . '</h2>'
+			. '<h2 class="ink-heading-h2-section ink-skrywerprofiel__cta-titel" data-audit-id="skrywer-cta-title">' . esc_html( sprintf( __( "Moenie %s se volgende stuk misloop nie.", 'ink-core' ), $first_name ) ) . '</h2>'
 			. '<p class="ink-skrywerprofiel__cta-teks" data-audit-id="skrywer-cta-text">' . esc_html__( 'Volg om nuwe stories in jou leesvloei te ontvang, en wees die eerste om \'n deurdagte nota te los wanneer hulle publiseer.', 'ink-core' ) . '</p>'
 			. '<div class="ink-skrywerprofiel__cta-aksies" data-audit-id="skrywer-cta-actions">';
 
 		if ( '' !== $volg ) {
 			// The same FollowToggle markup as the header action; re-keyed here so the
 			// CTA instance carries its own fidelity join key (maps/skrywer.csv).
-			$html .= str_replace( 'data-audit-id="skrywer-follow-btn"', 'data-audit-id="skrywer-cta-follow-btn"', $volg );
+			// The CTA instance is Lovable's `size="lg"` follow button (Writer.tsx:357).
+			$html .= str_replace(
+				array( 'data-audit-id="skrywer-follow-btn"', 'class="ink-btn ink-btn--' ),
+				array( 'data-audit-id="skrywer-cta-follow-btn"', 'class="ink-btn ink-btn--lg ink-btn--' ),
+				$volg
+			);
 		}
 
-		$html .= '<a class="ink-skrywerprofiel__cta-ontdek" data-audit-id="skrywer-cta-discover-btn" href="' . esc_url( home_url( '/ontdek/' ) ) . '">' . esc_html__( 'Ontdek meer skrywers', 'ink-core' ) . '</a>'
+		$html .= '<a class="ink-btn ink-btn--lg ink-btn--outline ink-skrywerprofiel__cta-ontdek" data-audit-id="skrywer-cta-discover-btn" href="' . esc_url( home_url( '/ontdek/' ) ) . '">' . esc_html__( 'Ontdek meer skrywers', 'ink-core' ) . '</a>'
 			. '</div></div>';
 
 		$html .= '</section>';
@@ -693,7 +698,7 @@ final class SkrywerProfiel {
 		$count = isset( $aggregate['count'] ) ? (int) $aggregate['count'] : 0;
 
 		$html = '<section class="ink-skrywerprofiel__lesergradering" data-audit-id="skrywer-lesergradering">'
-			. '<h2 class="ink-skrywerprofiel__lesergradering-titel" data-audit-id="skrywer-lesergradering-title">' . esc_html__( 'Lesergradering', 'ink-core' ) . '</h2>';
+			. '<h2 class="ink-heading-h2-block ink-skrywerprofiel__lesergradering-titel" data-audit-id="skrywer-lesergradering-title">' . esc_html__( 'Lesergradering', 'ink-core' ) . '</h2>';
 
 		if ( $count <= 0 ) {
 			$html .= '<p class="ink-skrywerprofiel__lesergradering-leeg" data-audit-id="skrywer-lesergradering-empty">' . esc_html__( 'Nog geen oordele nie.', 'ink-core' ) . '</p></section>';

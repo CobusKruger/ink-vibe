@@ -64,7 +64,7 @@ $ink_badge        = function_exists( 'ink_foundation_gradering_badge' )
 $ink_tagline      = class_exists( '\Ink\Social\Tagline' )
 	? \Ink\Social\Tagline::get( $ink_user_id )
 	: '';
-$ink_avatar       = function_exists( 'get_avatar' ) ? (string) get_avatar( $ink_user_id, 112, '', '', array( 'extra_attr' => 'data-audit-id="profiel-identity-avatar"' ) ) : '';
+$ink_avatar       = function_exists( 'get_avatar' ) ? (string) get_avatar( $ink_user_id, 112, '', '', array( 'class' => 'ink-avatar ink-avatar--profile', 'extra_attr' => 'data-audit-id="profiel-identity-avatar"' ) ) : '';
 $ink_display_name = (string) get_the_author_meta( 'display_name', $ink_user_id );
 $ink_public_url   = (string) get_author_posts_url( $ink_user_id );
 
@@ -99,8 +99,8 @@ $ink_lid_sedert        = class_exists( '\Ink\Entitlement\Api' ) ? \Ink\Entitleme
 $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_sedert );
 ?>
 <?php // Identity band (My Profiel rebuild, Tier-0 structural match to Profile.tsx's <section className="border-b border-border bg-cream/40">): a full-bleed tinted band housing ONLY the identity strip, distinct from the tab-shell section below (Lovable never puts the tabs inside this band). ?>
-<!-- wp:group {"tagName":"section","className":"ink-profiel-identiteit-band","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-40","bottom":"var:preset|spacing|s-40","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-profiel-identiteit-band" data-audit-id="profiel-identity" style="padding-top:var(--wp--preset--spacing--s-40);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-40);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","className":"ink-band ink-band--intro ink-profiel-identiteit-band","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-40","bottom":"var:preset|spacing|s-40","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-band ink-band--intro ink-profiel-identiteit-band" data-audit-id="profiel-identity" style="padding-top:var(--wp--preset--spacing--s-40);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-40);padding-left:var(--wp--preset--spacing--s-24)">
 	<?php // WIDTH BUG FIX (product-owner live-inspection pass): this wrapper redundantly
 	// re-declared "layout":{"type":"constrained"} — the SAME bug already found and
 	// fixed on ontdek.php (Theme-Fidelity fourth-pass re-audit, page 11): re-declaring
@@ -127,12 +127,12 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 <?php endif; ?>
 				<!-- wp:group {"className":"ink-profiel-identiteit__inhoud","layout":{"type":"constrained"}} -->
 				<div class="wp-block-group ink-profiel-identiteit__inhoud" data-audit-id="profiel-identity-text">
-					<!-- wp:paragraph {"fontSize":"xs","className":"ink-profiel-identiteit__etiket"} -->
-					<p class="has-xs-font-size ink-profiel-identiteit__etiket" data-audit-id="profiel-identity-eyebrow"><?php echo esc_html__( 'Jou profiel', 'ink-foundation' ); ?></p>
+					<!-- wp:paragraph {"className":"ink-eyebrow ink-eyebrow--muted ink-profiel-identiteit__etiket"} -->
+					<p class="ink-eyebrow ink-eyebrow--muted ink-profiel-identiteit__etiket" data-audit-id="profiel-identity-eyebrow"><?php echo esc_html__( 'Jou profiel', 'ink-foundation' ); ?></p>
 					<!-- /wp:paragraph -->
 
-					<!-- wp:heading {"level":1,"fontSize":"xxl","className":"ink-profiel-identiteit__naam"} -->
-					<h1 class="wp-block-heading has-xxl-font-size ink-profiel-identiteit__naam" data-ink-profiel-veld="naam" data-audit-id="profiel-identity-name"><?php echo esc_html( $ink_display_name ); ?></h1>
+					<!-- wp:heading {"level":1,"className":"ink-heading-h2-section ink-profiel-identiteit__naam"} -->
+					<h1 class="wp-block-heading ink-heading-h2-section ink-profiel-identiteit__naam" data-ink-profiel-veld="naam" data-audit-id="profiel-identity-name"><?php echo esc_html( $ink_display_name ); ?></h1>
 					<!-- /wp:heading -->
 <?php if ( '' !== $ink_badge || '' !== $ink_wins_needed ) : ?>
 					<!-- wp:group {"className":"ink-profiel-identiteit__gradering","layout":{"type":"flex","verticalAlignment":"center","flexWrap":"wrap"}} -->
@@ -161,9 +161,9 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 
 			<!-- wp:group {"className":"ink-profiel-identiteit__aksies","layout":{"type":"flex","flexWrap":"wrap"}} -->
 			<div class="wp-block-group ink-profiel-identiteit__aksies" data-audit-id="profiel-identity-actions">
-				<?php // A real <button>, not a link — matches Lovable's onClick-only "Edit profile" control and the codebase's own convention for JS-triggered controls (vasgespel/volg toggles are also <button type="button">, never <a>). Styled directly via the BEM class in profiel.css (Tier-2 finding: a bare button never matches the `.wp-block-button.is-style-*` selector chain a real is-style-outline needs, so that className was a dead no-op — removed rather than left as a misleading label). ?>
+				<?php // A real <button>, not a link — matches Lovable's onClick-only "Edit profile" control and the codebase's own convention for JS-triggered controls (vasgespel/volg toggles are also <button type="button">, never <a>). Styled by the shared `ink-btn ink-btn--outline` primitive (primitives.css), which — unlike the `.wp-block-button.is-style-*` block-style chain — matches a bare button. ?>
 				<!-- wp:html -->
-				<button type="button" class="wp-element-button ink-profiel-identiteit__wysig" data-ink-profiel-redigeer-trigger data-audit-id="profiel-identity-edit-btn"><?php echo esc_html__( 'Wysig profiel', 'ink-foundation' ); ?></button>
+				<button type="button" class="ink-btn ink-btn--outline ink-profiel-identiteit__wysig" data-ink-profiel-redigeer-trigger data-audit-id="profiel-identity-edit-btn"><?php echo esc_html__( 'Wysig profiel', 'ink-foundation' ); ?></button>
 				<!-- /wp:html -->
 
 				<!-- wp:buttons {"layout":{"type":"flex","flexWrap":"wrap"}} -->
@@ -206,13 +206,13 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		<?php // Tab shell (My Profiel rebuild §5.2): 7 ratified tabs, mirroring ontdek-tabs.js's progressive-enhancement mechanics (data-ink-profiel-tab/-panel, [hidden], #hash). ?>
 		<!-- wp:group {"tagName":"nav","className":"ink-profiel-tabs","lock":{"move":true,"remove":true},"layout":{"type":"flex","flexWrap":"wrap"}} -->
 		<nav class="wp-block-group ink-profiel-tabs" data-audit-id="profiel-tablist" aria-label="<?php esc_attr_e( 'My profiel-oortjies', 'ink-foundation' ); ?>">
-			<button type="button" class="ink-profiel-tabs__knoppie is-active" data-ink-profiel-tab="oorsig" data-audit-id="profiel-tab-overview" aria-selected="true"><?php echo esc_html__( 'Oorsig', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="bydraes" data-audit-id="profiel-tab-posts" aria-selected="false"><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="leeslys" data-audit-id="profiel-tab-reading" aria-selected="false"><?php echo esc_html__( 'Leeslys', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="wie-ek-volg" data-audit-id="profiel-tab-following" aria-selected="false"><?php echo esc_html__( 'Wie ek volg', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="aktiwiteit" data-audit-id="profiel-tab-activity" aria-selected="false"><?php echo esc_html__( 'Aktiwiteit', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="kennisgewings" data-audit-id="profiel-tab-notifications" aria-selected="false"><?php echo esc_html__( 'Kennisgewings', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-profiel-tabs__knoppie" data-ink-profiel-tab="lidmaatskap" data-audit-id="profiel-tab-membership" aria-selected="false"><?php echo esc_html__( 'Lidmaatskap', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-tab ink-profiel-tabs__knoppie is-active" data-ink-profiel-tab="oorsig" data-audit-id="profiel-tab-overview" aria-selected="true"><?php echo esc_html__( 'Oorsig', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="bydraes" data-audit-id="profiel-tab-posts" aria-selected="false"><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="leeslys" data-audit-id="profiel-tab-reading" aria-selected="false"><?php echo esc_html__( 'Leeslys', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="wie-ek-volg" data-audit-id="profiel-tab-following" aria-selected="false"><?php echo esc_html__( 'Wie ek volg', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="aktiwiteit" data-audit-id="profiel-tab-activity" aria-selected="false"><?php echo esc_html__( 'Aktiwiteit', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="kennisgewings" data-audit-id="profiel-tab-notifications" aria-selected="false"><?php echo esc_html__( 'Kennisgewings', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="lidmaatskap" data-audit-id="profiel-tab-membership" aria-selected="false"><?php echo esc_html__( 'Lidmaatskap', 'ink-foundation' ); ?></button>
 		</nav>
 		<!-- /wp:group -->
 
@@ -231,8 +231,8 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 						<?php // Heading + "Wysig" affordance side by side (Tier-0 structural match to Profile.tsx's <div className="flex items-center justify-between mb-3"> — Lovable's Edit control sits beside the "About" heading, not after the bio text). ?>
 						<!-- wp:html -->
 						<div class="ink-profiel-oormy__kop" data-audit-id="profiel-about-head">
-							<h3 class="ink-profiel-oormy__titel" data-audit-id="profiel-about-title"><?php echo esc_html__( 'Oor my', 'ink-foundation' ); ?></h3>
-							<button type="button" class="wp-element-button ink-profiel-oormy__wysig" data-ink-profiel-redigeer-trigger data-audit-id="profiel-about-edit-btn"><?php echo esc_html__( 'Wysig', 'ink-foundation' ); ?></button>
+							<h3 class="ink-heading-h3 ink-profiel-oormy__titel" data-audit-id="profiel-about-title"><?php echo esc_html__( 'Oor my', 'ink-foundation' ); ?></h3>
+							<button type="button" class="ink-btn ink-btn--sm ink-btn--ghost ink-profiel-oormy__wysig" data-ink-profiel-redigeer-trigger data-audit-id="profiel-about-edit-btn"><?php echo esc_html__( 'Wysig', 'ink-foundation' ); ?></button>
 						</div>
 						<!-- /wp:html -->
 
@@ -257,22 +257,22 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 				<div class="wp-block-column" data-audit-id="profiel-glance-col" style="flex-basis:33.33%">
 					<!-- wp:group {"className":"is-style-card ink-profiel-oogopslag","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 					<div class="wp-block-group is-style-card ink-profiel-oogopslag" data-audit-id="profiel-glance-card">
-						<!-- wp:heading {"level":3,"fontSize":"lg"} -->
-						<h3 class="wp-block-heading has-lg-font-size" data-audit-id="profiel-glance-title"><?php echo esc_html__( "In 'n oogopslag", 'ink-foundation' ); ?></h3>
+						<!-- wp:heading {"level":3,"className":"ink-heading-h3"} -->
+						<h3 class="wp-block-heading ink-heading-h3" data-audit-id="profiel-glance-title"><?php echo esc_html__( "In 'n oogopslag", 'ink-foundation' ); ?></h3>
 						<!-- /wp:heading -->
 
 						<!-- wp:html -->
 						<dl class="ink-profiel-oogopslag__lys" data-audit-id="profiel-glance-stats">
 							<div class="ink-profiel-oogopslag__stat" data-audit-id="profiel-glance-stat">
-								<dt data-audit-id="profiel-glance-stat-label"><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></dt>
+								<dt class="ink-stat-label" data-audit-id="profiel-glance-stat-label"><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></dt>
 								<dd data-audit-id="profiel-glance-stat-value"><?php echo esc_html( number_format_i18n( count( $ink_bydraes ) ) ); ?></dd>
 							</div>
 							<div class="ink-profiel-oogopslag__stat">
-								<dt><?php echo esc_html__( 'Wie ek volg', 'ink-foundation' ); ?></dt>
+								<dt class="ink-stat-label"><?php echo esc_html__( 'Wie ek volg', 'ink-foundation' ); ?></dt>
 								<dd><?php echo esc_html( number_format_i18n( $ink_volg_getal ) ); ?></dd>
 							</div>
 							<div class="ink-profiel-oogopslag__stat">
-								<dt><?php echo esc_html__( 'Ongelees', 'ink-foundation' ); ?></dt>
+								<dt class="ink-stat-label"><?php echo esc_html__( 'Ongelees', 'ink-foundation' ); ?></dt>
 								<dd><?php echo esc_html( number_format_i18n( $ink_ongelees ) ); ?></dd>
 							</div>
 						</dl>
@@ -301,14 +301,14 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 			<?php // "Onlangse aktiwiteit" — first 3 Kennisgewings rows (§7 decision 4). Empty → heading-only shell (no invented copy), mirroring SkrywerProfiel::toHtml()'s "keep the empty shell" precedent for its own no-data card. ?>
 			<!-- wp:group {"className":"is-style-card ink-profiel-onlangs","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 			<div class="wp-block-group is-style-card ink-profiel-onlangs" data-audit-id="profiel-recent-card">
-				<!-- wp:heading {"level":3,"fontSize":"lg"} -->
-				<h3 class="wp-block-heading has-lg-font-size" data-audit-id="profiel-recent-title"><?php echo esc_html__( 'Onlangse aktiwiteit', 'ink-foundation' ); ?></h3>
+				<!-- wp:heading {"level":3,"className":"ink-heading-h3"} -->
+				<h3 class="wp-block-heading ink-heading-h3" data-audit-id="profiel-recent-title"><?php echo esc_html__( 'Onlangse aktiwiteit', 'ink-foundation' ); ?></h3>
 				<!-- /wp:heading -->
 <?php if ( array() !== $ink_onlangs ) : ?>
 				<!-- wp:html -->
 				<ul class="ink-profiel-onlangs__lys" data-audit-id="profiel-recent-list">
 <?php foreach ( $ink_onlangs as $ink_onlangs_i => $ink_kennisgewing ) : ?>
-					<li class="ink-profiel-onlangs__item<?php echo ! empty( $ink_kennisgewing['unread'] ) ? ' is-unread' : ''; ?>"<?php echo 0 === $ink_onlangs_i ? ' data-audit-id="profiel-recent-item"' : ''; ?>><?php echo esc_html( (string) $ink_kennisgewing['text'] ); ?></li>
+					<li class="ink-profiel-onlangs__item<?php echo ! empty( $ink_kennisgewing['unread'] ) ? ' is-unread' : ''; ?>"<?php echo 0 === $ink_onlangs_i ? ' data-audit-id="profiel-recent-item"' : ''; ?>><?php echo ! empty( $ink_kennisgewing['unread'] ) ? '<span class="ink-status-dot"' . ( 0 === $ink_onlangs_i ? ' data-audit-id="profiel-recent-dot"' : '' ) . ' aria-hidden="true"></span>' : ''; ?><?php echo esc_html( (string) $ink_kennisgewing['text'] ); ?></li>
 <?php endforeach; ?>
 				</ul>
 				<!-- /wp:html -->
@@ -367,12 +367,12 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 				<div class="wp-block-column" style="flex-basis:33.33%">
 					<!-- wp:group {"className":"is-style-card ink-lidmaatskap-status","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 					<div class="wp-block-group is-style-card ink-lidmaatskap-status" data-audit-id="profiel-membership-status-card">
-						<!-- wp:paragraph {"fontSize":"xs","className":"ink-lidmaatskap-status__etiket"} -->
-						<p class="has-xs-font-size ink-lidmaatskap-status__etiket" data-audit-id="profiel-membership-status-label"><?php echo esc_html__( 'INK-lid', 'ink-foundation' ); ?></p>
+						<!-- wp:paragraph {"className":"ink-eyebrow ink-lidmaatskap-status__etiket"} -->
+						<p class="ink-eyebrow ink-lidmaatskap-status__etiket" data-audit-id="profiel-membership-status-label"><?php echo esc_html__( 'INK-lid', 'ink-foundation' ); ?></p>
 						<!-- /wp:paragraph -->
 
-						<!-- wp:heading {"level":3,"fontSize":"lg"} -->
-						<h3 class="wp-block-heading has-lg-font-size" data-audit-id="profiel-membership-status-title"><?php echo esc_html__( 'Aktiewe lidmaatskap', 'ink-foundation' ); ?></h3>
+						<!-- wp:heading {"level":3,"className":"ink-heading-h3"} -->
+						<h3 class="wp-block-heading ink-heading-h3" data-audit-id="profiel-membership-status-title"><?php echo esc_html__( 'Aktiewe lidmaatskap', 'ink-foundation' ); ?></h3>
 						<!-- /wp:heading -->
 
 						<!-- wp:html -->

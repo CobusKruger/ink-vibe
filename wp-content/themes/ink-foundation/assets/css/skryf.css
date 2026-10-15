@@ -1,41 +1,16 @@
 /**
  * INK Foundation — Skryf (share-your-work) stylesheet.
  *
- * Theme visual-fidelity Phase 2, page 8 (`docs/theme-fidelity-rework-plan.md`).
- * Before this file the Skryf form had ZERO CSS anywhere — every control (radio
- * fieldset, title input, body textarea, challenge checkboxes, file pickers,
- * submit buttons) rendered as raw unstyled browser chrome, the same bug shape
- * already found and fixed on opleiding/biblioteek/uitdagings-list. Enqueued on
- * the Skryf page ONLY via ink_foundation_enqueue_skryf_assets() (functions.php),
- * mirroring the home.css / is-page() gating pattern.
- *
- * Presentation only — no business logic (three-layer separation holds).
- * TOKENS ONLY (Gate A): every colour / spacing / radius / type value resolves
- * to a theme.json custom property. Numbers measured directly against the live
- * Lovable reference (`/write`) via getComputedStyle — see the plan doc's page-8
- * tracking row for the session note.
+ * Page-specific LAYOUT and per-instance overrides only. Every primitive on this
+ * page lives in `primitives.css` (Fidelity remediation Stage 3, R8): headings
+ * `ink-heading-h2-section` / `-h2-sub` / `-h3`, type card `ink-card
+ * ink-card--selectable-lg`, icon tile `ink-icon-tile--circle-lg` + `ink-tone-*`,
+ * challenges card `ink-card--panel-sm`, choice row `ink-choice`, checkbox
+ * `ink-checkbox`, label/field/hint `ink-label` / `ink-field` / `ink-hint`,
+ * buttons `ink-btn ink-btn--lg ink-btn--neutral|--primary`, notice `ink-notice`,
+ * success card `ink-card--panel`, eyebrow `ink-eyebrow`.
+ * Lovable reference: `ink-lovable/src/pages/Write.tsx`. Enqueued on Skryf only.
  */
-
-/* ── Intro heading — responsive size to match Lovable's text-3xl -> md:text-4xl.
-   Centering itself is set on the block (textAlign/align), not here. font-weight
-   is explicit because the browser/theme default for a bare <h1> is bold (700);
-   Lovable's own h1 here is font-semibold (600) — same per-heading override shape
-   as hero.php's h1 (Epic-19 theme-fidelity re-audit finding).
-   Mobile size is a FIXED 30px (1.875rem), not the `xxxl` token — that token is
-   still a fluid clamp() sitewide (documented open item, theme-fidelity-audit-
-   handoff.md §4), which measured 25.33px at a 500px viewport against Lovable's
-   fixed 30px text-3xl at the same width. Page-scoped pin, same recipe already
-   applied on gemeenskap/lidmaatskap/oor-ink (third-pass re-audit finding). */
-.ink-skryf-title {
-	font-size: 1.875rem;
-	font-weight: var(--wp--custom--font-weight--semibold);
-}
-
-@media (min-width: 768px) {
-	.ink-skryf-title {
-		font-size: var(--wp--preset--font-size--xxxxl);
-	}
-}
 
 /* ── Form shell ───────────────────────────────────────────────────────────── */
 .ink-skryf-form {
@@ -45,31 +20,24 @@
 	margin-top: var(--wp--preset--spacing--s-32);
 }
 
-/* Reset browser fieldset/legend chrome everywhere in the form before re-styling. */
-.ink-skryf-form fieldset {
+/* Zero-specificity fieldset reset, so the card classes on a fieldset win. */
+:where(.ink-skryf-form fieldset) {
+	min-width: 0;
 	margin: 0;
 	padding: 0;
 	border: 0;
-	min-width: 0;
 }
 
-.ink-skryf-form legend {
-	padding: 0;
+:where(.ink-skryf-form legend) {
 	width: 100%;
-	font-family: var(--wp--preset--font-family--body);
-	font-size: var(--wp--preset--font-size--sm);
-	font-weight: var(--wp--custom--font-weight--medium);
-	color: var(--wp--preset--color--ink-text);
+	padding: 0;
+}
+
+.ink-skryf-types > legend {
 	margin-bottom: var(--wp--preset--spacing--s-16);
 }
 
-/* ── §1 Type selector — card grid (icon + label + description) ──────────────
-   Lovable's own /write flow is a two-phase picker (pick a type, THEN the rest
-   of the form appears, with a "Change type" link back). This form keeps all
-   fields visible at once with a native 3-way radio fieldset — deliberately NOT
-   reproducing the two-phase JS flow (higher risk, no functional upside for a
-   short form), but the visual language (icon circle, card, per-type colour,
-   hover/selected states) matches card-for-card. */
+/* ── §1 Type selector — grid of selectable cards ──────────────────────────── */
 .ink-skryf-types {
 	display: grid;
 	grid-template-columns: 1fr;
@@ -91,20 +59,9 @@
 .ink-skryf-type {
 	position: relative;
 	display: block;
-	cursor: pointer;
-	padding: var(--wp--preset--spacing--s-24);
-	border: 2px solid var(--wp--preset--color--border);
-	border-radius: var(--wp--custom--radius--xl);
-	background-color: var(--wp--preset--color--surface-alt);
-	transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* Lovable's own hover className declares hover:shadow-[var(--shadow-elevated)],
-   but that custom property is never actually defined anywhere in its stylesheet
-   (Epic-19 re-audit finding, the same "declared but doesn't resolve" gotcha as
-   the handoff doc's font-loading note) — the REAL measured hover behaviour is a
-   per-type accent border-colour change with NO shadow change at all. Matching
-   the measured computed reality, not the unresolved source intent. */
+/* Per-type hover border (Write.tsx `accentClasses[...].border`). */
 .ink-skryf-type--gedig:hover {
 	border-color: var(--wp--preset--color--primary);
 }
@@ -117,24 +74,12 @@
 	border-color: var(--wp--preset--color--ink-text);
 }
 
-.ink-skryf-type:has(input:checked) {
-	border-color: var(--wp--preset--color--primary);
-	box-shadow: var(--wp--preset--shadow--md);
-}
-
 .ink-skryf-type:has(input:focus-visible) {
 	outline: 2px solid var(--wp--preset--color--primary);
 	outline-offset: 2px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.ink-skryf-type {
-		transition: none;
-	}
-}
-
-/* Native radio kept in the a11y tree + tabbable (never display:none), just
-   visually reduced to a small marker in the card's corner. */
+/* Native radio kept in the a11y tree + tabbable, reduced to a corner marker. */
 .ink-skryf-type input[type="radio"] {
 	position: absolute;
 	top: var(--wp--preset--spacing--s-16);
@@ -142,235 +87,109 @@
 	width: 16px;
 	height: 16px;
 	margin: 0;
-	accent-color: var(--wp--preset--color--primary);
 }
 
 .ink-skryf-type__icon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 48px;
-	height: 48px;
 	margin-bottom: var(--wp--preset--spacing--s-16);
-	border-radius: var(--wp--custom--radius--full);
-}
-
-.ink-skryf-type__icon .ink-icon {
-	width: 20px;
-	height: 20px;
-}
-
-/* Per-type colour: gedig = primary (feather), storie = accent/sage (book-open),
-   artikel = ink-text (newspaper) — matches Lovable's terracotta/sage/foreground
-   icon-tile recipe exactly. */
-.ink-skryf-type__icon--gedig {
-	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
-	color: var(--wp--preset--color--primary);
-}
-
-.ink-skryf-type__icon--storie {
-	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--accent) 10%, transparent);
-	color: var(--wp--preset--color--accent);
-}
-
-.ink-skryf-type__icon--artikel {
-	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--ink-text) 10%, transparent);
-	color: var(--wp--preset--color--ink-text);
 }
 
 .ink-skryf-type__label {
 	display: block;
-	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--xl);
-	font-weight: var(--wp--custom--font-weight--semibold);
-	color: var(--wp--preset--color--ink-text);
 	margin-bottom: var(--wp--preset--spacing--s-8);
 }
 
 .ink-skryf-type__desc {
 	display: block;
 	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.625; /* Tailwind leading-relaxed */
 	color: var(--wp--preset--color--muted-text);
-	line-height: var(--wp--custom--line-height--relaxed);
 }
 
-/* ── §2 Text fields — title input + body textarea ────────────────────────── */
+/* ── §2 Text fields — Write.tsx per-instance overrides on the shared field ── */
 .ink-skryf-field {
 	margin: 0;
 }
 
-.ink-skryf-field label {
-	display: block;
+.ink-skryf-field > .ink-label {
 	margin-bottom: var(--wp--preset--spacing--s-8);
-	font-family: var(--wp--preset--font-family--body);
-	font-size: var(--wp--preset--font-size--sm);
-	font-weight: var(--wp--custom--font-weight--medium);
-	color: var(--wp--preset--color--ink-text);
 }
 
-.ink-skryf-form input[type="text"],
-.ink-skryf-form input[type="file"],
-.ink-skryf-form textarea {
-	width: 100%;
-	box-sizing: border-box;
-	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-12);
-	border: 1px solid var(--wp--preset--color--border);
-	border-radius: var(--wp--custom--radius--md);
-	background-color: var(--wp--preset--color--surface);
-	color: var(--wp--preset--color--ink-text);
-	font-size: var(--wp--preset--font-size--sm);
-}
-
-/* Title + body mirror Lovable's font-serif content fields; the file pickers
-   (INK-specific, §4) are UI chrome, not authored content, so they stay on the
-   body typeface like every other control label/button (Epic-19 re-audit
-   finding — they'd inherited the serif rule above with no reason to). */
-.ink-skryf-form input[type="text"],
-.ink-skryf-form textarea {
+/* Title: `font-serif text-lg`. */
+.ink-skryf-form #ink-skryf-title {
 	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--lg);
+	line-height: 1.75rem;
 }
 
-.ink-skryf-form input[type="file"] {
-	font-family: var(--wp--preset--font-family--body);
-}
-
-.ink-skryf-form input[type="text"]::placeholder,
-.ink-skryf-form textarea::placeholder {
-	color: var(--wp--preset--color--muted-text);
-}
-
-.ink-skryf-form input[type="text"]:focus-visible,
-.ink-skryf-form textarea:focus-visible {
-	outline: none;
-	box-shadow: 0 0 0 2px var(--wp--preset--color--surface), 0 0 0 4px var(--wp--preset--color--primary);
-}
-
-/* Body field: label + live counter share one row (Lovable "Your Poem … 0 lines
-   · 0 words"), the textarea sits full-width below (markup order: label,
-   counter, textarea). */
+/* Body: label + live counter on one row, textarea full width below;
+   `min-h-[400px] font-serif text-base leading-relaxed resize-none`. */
 .ink-skryf-field--body {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: baseline;
+	align-items: center;
 	column-gap: var(--wp--preset--spacing--s-16);
-}
-
-.ink-skryf-field--body label {
-	margin-bottom: var(--wp--preset--spacing--s-8);
 }
 
 .ink-skryf-field--body .ink-skryf-counter {
 	margin-left: auto;
-	font-size: var(--wp--preset--font-size--xs);
-	color: var(--wp--preset--color--muted-text);
+	margin-bottom: var(--wp--preset--spacing--s-8);
 }
 
-.ink-skryf-field--body textarea {
+.ink-skryf-form #ink-skryf-body {
 	flex-basis: 100%;
 	min-height: 400px;
+	font-family: var(--wp--preset--font-family--display);
 	font-size: var(--wp--preset--font-size--md);
 	line-height: var(--wp--custom--line-height--relaxed);
-	resize: none; /* matches Lovable's Textarea (resize-none) exactly */
+	resize: none;
 }
 
-/* ── §3 Active challenges — checkbox card list ────────────────────────────── */
-/* `.ink-skryf-form fieldset` (a class + an element = specificity 0,1,1) beats a
-   bare `.ink-skryf-challenges` (0,1,0) regardless of source order, so the reset
-   above was silently zeroing this fieldset's own padding/border/radius/background
-   — the box rendered completely flush, no card boundary at all (Epic-19 re-audit
-   finding; the 74d3d0b commit's "bordered card rows" claim never actually took
-   effect). Qualifying with the element name matches the reset's specificity
-   class-for-class and beats it via the extra `.ink-skryf-form` ancestor class. */
-.ink-skryf-form fieldset.ink-skryf-challenges {
-	padding: var(--wp--preset--spacing--s-16);
-	border: 1px solid var(--wp--preset--color--border);
-	border-radius: var(--wp--custom--radius--lg);
-	background-color: var(--wp--preset--color--surface-alt);
-}
-
-/* Lovable's "Active challenges" title is body text (Inter, text-sm, font-medium),
-   NOT a heading — the original display/md/semibold treatment here was simply
-   measured wrong (Epic-19 re-audit finding). */
-.ink-skryf-challenges legend {
+/* ── §3 Active challenges ─────────────────────────────────────────────────── */
+.ink-skryf-challenges > legend {
 	display: flex;
 	align-items: center;
-	gap: var(--wp--preset--spacing--s-8);
+	gap: var(--wp--preset--spacing--s-12);
 	margin-bottom: var(--wp--preset--spacing--s-4);
-	font-family: var(--wp--preset--font-family--body);
-	font-size: var(--wp--preset--font-size--sm);
-	font-weight: var(--wp--custom--font-weight--medium);
 }
 
-.ink-skryf-challenges legend .ink-icon {
+.ink-skryf-challenges > legend .ink-icon {
 	width: 20px;
 	height: 20px;
 	color: var(--wp--preset--color--primary);
 }
 
 .ink-skryf-challenges__hint {
-	margin: 0 0 var(--wp--preset--spacing--s-16);
-	font-size: var(--wp--preset--font-size--xs);
-	color: var(--wp--preset--color--muted-text);
-}
-
-.ink-skryf-challenge {
-	display: flex;
-	align-items: flex-start;
-	gap: var(--wp--preset--spacing--s-12);
-	padding: var(--wp--preset--spacing--s-12);
-	border: 1px solid var(--wp--preset--color--border);
-	border-radius: var(--wp--custom--radius--md);
-	cursor: pointer;
-	transition: background-color 0.15s ease;
+	margin-bottom: var(--wp--preset--spacing--s-16);
 }
 
 .ink-skryf-challenge + .ink-skryf-challenge {
 	margin-top: var(--wp--preset--spacing--s-8);
 }
 
-.ink-skryf-challenge:hover {
-	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 50%, transparent);
+.ink-skryf-challenge .ink-checkbox {
+	margin-top: 2px;
 }
 
-/* Checked state (border/background turn primary-tinted) — the resting/hover
-   states were already replicated from Lovable, but the checked state itself was
-   never added, so a ticked challenge looked identical to an unticked one
-   (Epic-19 re-audit finding). */
+.ink-skryf-challenge span {
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: 500;
+	line-height: 1.25rem;
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* PENDING PRIMITIVE: `ink-choice` has no checked state in primitives.css yet;
+   Lovable (Write.tsx:353) uses `border-terracotta bg-terracotta/5`. Requested
+   for primitives.css in the Stage 3b Set C report — delete this rule when it
+   lands there. */
 .ink-skryf-challenge:has(input:checked) {
 	border-color: var(--wp--preset--color--primary);
 	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 5%, transparent);
 }
 
-.ink-skryf-challenge span {
-	font-family: var(--wp--preset--font-family--body);
-	font-size: var(--wp--preset--font-size--sm);
-	font-weight: var(--wp--custom--font-weight--medium);
-	color: var(--wp--preset--color--ink-text);
-}
-
-.ink-skryf-challenge input[type="checkbox"] {
-	width: 16px;
-	height: 16px;
-	margin-top: 2px;
-	flex-shrink: 0;
-	accent-color: var(--wp--preset--color--primary);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.ink-skryf-challenge {
-		transition: none;
-	}
-}
-
-/* ── §4 File pickers (INK-specific — Stories 6.4/6.5, no Lovable equivalent) ─
-   Styled to the same field convention as the title/body inputs; the native
-   file-selector-button is re-skinned to a small neutral pill rather than left
-   as raw OS chrome. */
+/* ── §4 File pickers (INK-only, Stories 6.4/6.5) — the /auth field with the
+   native file-selector-button skinned, not left as OS chrome. ── */
 .ink-skryf-form input[type="file"] {
+	height: auto;
 	cursor: pointer;
 }
 
@@ -383,20 +202,11 @@
 	color: var(--wp--preset--color--ink-text);
 	font-family: var(--wp--preset--font-family--body);
 	font-size: var(--wp--preset--font-size--xs);
-	font-weight: var(--wp--custom--font-weight--medium);
+	font-weight: 500;
 	cursor: pointer;
-	transition: background-color 0.15s ease;
 }
 
-.ink-skryf-form input[type="file"]::file-selector-button:hover {
-	background-color: var(--wp--preset--color--border);
-}
-
-/* ── §5 Actions — Stoor konsep (neutral) / Plaas (ink-primary recipe) ────────
-   These are raw <button>s inside wp:html (not wp:buttons blocks), so the
-   is-style-ink-primary block-style CSS doesn't reach them; the primary recipe
-   is replicated here on its own class instead (same pattern as
-   .ink-huidige-uitdaging__aksie in home.css). */
+/* ── §5 Actions row ───────────────────────────────────────────────────────── */
 .ink-skryf-actions {
 	display: flex;
 	flex-direction: column;
@@ -411,126 +221,38 @@
 	}
 }
 
-.ink-skryf-actions button {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-height: 44px;
-	padding: 0 var(--wp--preset--spacing--s-32);
-	border-radius: var(--wp--custom--radius--md);
-	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--md);
-	font-weight: var(--wp--custom--font-weight--medium);
-	cursor: pointer;
-	transition: background-color 0.15s ease, opacity 0.15s ease;
-}
-
-.ink-skryf-actions button:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary);
-	outline-offset: 2px;
-}
-
-/* Disabled Plaas button — was a real, previously-unfixed gap: the button was
-   NEVER disabled regardless of empty title/body (matches the exact "button
-   never disabled" bug class first flagged on lees-gedig's publish control).
-   `skryf-counter.js` toggles the native `disabled` attribute; this rule makes
-   that state visually distinct, matching Lovable's measured disabled Publish
-   button exactly (opacity:.5, cursor:default, pointer-events:none). Save
-   Draft is deliberately NEVER disabled here — Lovable's own Save Draft button
-   has no disabled logic either (Write.tsx), so this only targets Plaas. */
-.ink-skryf-submit:disabled {
-	opacity: 0.5;
-	cursor: default;
-	pointer-events: none;
-}
-
-/* `.ink-skryf-actions button` (class + element = 0,1,1) outranks a bare
-   `.ink-skryf-draft` (0,1,0) regardless of source order — qualifying with the
-   element name matches it class-for-class-and-element (Epic-19 re-audit
-   finding: same specificity-gap shape as the challenges fieldset above). */
-button.ink-skryf-draft {
-	/* Lovable's outline "Save Draft" button is Inter, NOT the serif "literary"
-	   variant's Lora — the generic .ink-skryf-actions button rule above put both
-	   buttons on the display (serif) family; only Plaas/Publish should be serif. */
-	font-family: var(--wp--preset--font-family--body);
-}
-
-.ink-skryf-draft {
-	border: 1px solid var(--wp--preset--color--border);
-	background-color: var(--wp--preset--color--surface);
-	color: var(--wp--preset--color--ink-text);
-}
-
-.ink-skryf-draft:hover {
-	background-color: var(--wp--preset--color--secondary);
-}
-
-.ink-skryf-submit {
-	border: 0;
-	background-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--surface-alt);
-	box-shadow: var(--wp--preset--shadow--md);
-}
-
-.ink-skryf-submit:hover {
-	background-color: var(--wp--preset--color--primary-light);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.ink-skryf-actions button {
-		transition: none;
-	}
-}
-
-/* ── §6 Denial notice (entitlement gate, Story 6.8) ──────────────────────── */
+/* ── §6 Denial notice (entitlement gate, Story 6.8) — `ink-notice` in the
+   warning tone (no `ink-notice--*` warning modifier exists). ── */
 .ink-skryf-denial {
-	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-16);
-	border: 1px solid var(--wp--preset--color--warning);
-	border-radius: var(--wp--custom--radius--md);
-	background-color: color-mix(in srgb, var(--wp--preset--color--warning) 10%, transparent);
-	color: var(--wp--preset--color--ink-text);
+	--ink-tone: var(--wp--preset--color--warning);
 }
 
-/* ── §7 Success screen (post-plaas) ──────────────────────────────────────────
-   Before this, the success state had ZERO CSS — a plain unbordered heading and
-   two bare inline text links, none of Lovable's banner-card/icon/button
-   treatment (Epic-19 third-pass re-audit finding: the prior pass never
-   actually submitted the form for real, so roughly half of this page's total
-   content — this whole view — went unverified). The "Lift another writer
-   today" 3-card community-works grid Lovable shows below this banner is
-   flagged, not built here — see the PHP comment at its call site. */
+/* ── §7 Success screen (post-plaas) ───────────────────────────────────────── */
 .ink-skryf-success {
 	max-width: 640px;
 	margin: 0 auto;
-	padding: var(--wp--preset--spacing--s-32) var(--wp--preset--spacing--s-24);
-	border: 1px solid var(--wp--preset--color--border);
-	border-radius: var(--wp--custom--radius--xl);
-	background-color: var(--wp--preset--color--surface-alt);
 	text-align: center;
 }
 
-@media (min-width: 768px) {
-	.ink-skryf-success {
-		padding: var(--wp--preset--spacing--s-40) var(--wp--preset--spacing--s-32);
-	}
+/* PENDING PRIMITIVE: Lovable's success card is `rounded-2xl` (16px) on the
+   panel recipe (Write.tsx:157) — no such card variant exists yet; requested in
+   the Stage 3b Set C report. */
+.ink-skryf-success.ink-card--panel {
+	border-radius: var(--wp--custom--radius--xxl);
 }
 
-.ink-skryf-success__icon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+/* PENDING PRIMITIVE: a 64px circle tile with a 32px glyph (Write.tsx:158,
+   `w-16 h-16` / `h-8 w-8`) — no such icon-tile size exists yet; requested in
+   the Stage 3b Set C report. */
+.ink-skryf-success__icon.ink-icon-tile--circle-lg {
 	width: 64px;
 	height: 64px;
 	margin: 0 auto var(--wp--preset--spacing--s-16);
-	border-radius: var(--wp--custom--radius--full);
-	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
 }
 
 .ink-skryf-success__icon .ink-icon {
 	width: 32px;
 	height: 32px;
-	color: var(--wp--preset--color--primary);
 }
 
 .ink-skryf-success__heading {
@@ -544,31 +266,16 @@ button.ink-skryf-draft {
 }
 
 .ink-skryf-success__cta {
+	gap: var(--wp--preset--spacing--s-12);
 	margin-top: var(--wp--preset--spacing--s-24);
 }
 
-.ink-skryf-success__cta .wp-block-button__link {
-	min-height: 44px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	padding-left: var(--wp--preset--spacing--s-32);
-	padding-right: var(--wp--preset--spacing--s-32);
-}
-
-/* Eyebrow — icon + uppercase tracked label, matches Lovable's
-   "<Users/> Read & respond" recipe (Write.tsx success screen) exactly. */
+/* Eyebrow — `ink-eyebrow` as an icon row (Write.tsx:184). */
 .ink-skryf-success__eyebrow {
 	display: flex;
 	align-items: center;
 	gap: var(--wp--preset--spacing--s-8);
-	margin: var(--wp--preset--spacing--s-48) 0 0;
-	color: var(--wp--preset--color--primary);
-	font-family: var(--wp--preset--font-family--body);
-	font-size: var(--wp--preset--font-size--sm);
-	font-weight: var(--wp--custom--font-weight--medium);
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
+	margin-top: var(--wp--preset--spacing--s-48);
 }
 
 .ink-skryf-success__eyebrow .ink-icon {

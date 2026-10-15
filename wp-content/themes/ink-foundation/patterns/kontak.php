@@ -16,11 +16,9 @@
  * No live Lovable route exists for this page (MISSING_IN_CURRENT_LOVABLE_REPO,
  * page-map.csv) — fidelity target is internal design-system consistency with
  * the 14 already-verified pages, same approach as page 13/lidmaatskap. Eyebrow
- * matched to the sitewide plain-eyebrow recipe (xs/primary/500/0.2em, see
- * oor-ink.php/gemeenskap.php); the `ink-kontak-hero` class scopes the still-open
- * "xxxl" fluid-clamp() font-size pin (theme.json global styles.css) the same way
- * `ink-lidmaatskap-hero`/`ink-oor-ink-hero` already do. The form itself had ZERO
- * CSS before this pass — see assets/css/kontak.css.
+ * and h1 use the shared primitives (`ink-eyebrow--tracked`, `ink-heading-h1-index`,
+ * Fidelity remediation Stage 3); the form's controls use the /auth recipe — see
+ * assets/css/kontak.css.
  *
  * @package Ink\Foundation
  */
@@ -29,12 +27,12 @@
 <section class="wp-block-group alignfull ink-kontak-hero" data-audit-id="kontak-hero" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group" data-audit-id="kontak-hero-inner">
-		<!-- wp:paragraph {"style":{"typography":{"fontStyle":"normal","fontWeight":"500","textTransform":"uppercase","letterSpacing":"0.2em"}},"fontSize":"xs","textColor":"primary"} -->
-		<p class="has-primary-color has-text-color has-xs-font-size" data-audit-id="kontak-eyebrow" style="font-style:normal;font-weight:500;letter-spacing:0.2em;text-transform:uppercase">Kontak</p>
+		<!-- wp:paragraph {"className":"ink-eyebrow ink-eyebrow--tracked"} -->
+		<p class="ink-eyebrow ink-eyebrow--tracked" data-audit-id="kontak-eyebrow">Kontak</p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
-		<h1 class="wp-block-heading has-xxxl-font-size" data-audit-id="kontak-h1">Kom in kontak met INK</h1>
+		<!-- wp:heading {"level":1,"className":"ink-heading-h1-index"} -->
+		<h1 class="wp-block-heading ink-heading-h1-index" data-audit-id="kontak-h1">Kom in kontak met INK</h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"lg","textColor":"muted-text"} -->

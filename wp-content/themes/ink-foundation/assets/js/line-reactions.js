@@ -84,7 +84,7 @@
 
 		var btn = document.createElement( 'button' );
 		btn.type = 'button';
-		btn.className = 'ink-gedig__react';
+		btn.className = 'ink-gedig__react ink-icon-btn';
 		btn.setAttribute( 'aria-label', cfg.label || 'Merk hierdie reël' );
 		btn.setAttribute( 'aria-pressed', 'false' );
 		btn.innerHTML = HEART_SVG;

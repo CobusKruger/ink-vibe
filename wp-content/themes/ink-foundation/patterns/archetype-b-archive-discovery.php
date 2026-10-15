@@ -19,16 +19,16 @@
 
 		<!-- wp:buttons {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"flex","flexWrap":"wrap"}} -->
 		<div class="wp-block-buttons">
-			<!-- wp:button {"className":"is-style-pill","backgroundColor":"primary","textColor":"surface-alt"} -->
-			<div class="wp-block-button is-style-pill"><a class="wp-block-button__link has-surface-alt-color has-primary-background-color has-text-color has-background wp-element-button" href="#">Alles</a></div>
+			<!-- wp:button {"className":"is-style-ink-primary"} -->
+			<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link wp-element-button" href="#">Alles</a></div>
 			<!-- /wp:button -->
 
-			<!-- wp:button {"className":"is-style-pill is-style-outline","textColor":"primary"} -->
-			<div class="wp-block-button is-style-pill is-style-outline"><a class="wp-block-button__link has-primary-color has-text-color wp-element-button" href="#">Filter</a></div>
+			<!-- wp:button {"className":"is-style-ink-outline"} -->
+			<div class="wp-block-button is-style-ink-outline"><a class="wp-block-button__link wp-element-button" href="#">Filter</a></div>
 			<!-- /wp:button -->
 
-			<!-- wp:button {"className":"is-style-pill is-style-outline","textColor":"primary"} -->
-			<div class="wp-block-button is-style-pill is-style-outline"><a class="wp-block-button__link has-primary-color has-text-color wp-element-button" href="#">Sorteer</a></div>
+			<!-- wp:button {"className":"is-style-ink-outline"} -->
+			<div class="wp-block-button is-style-ink-outline"><a class="wp-block-button__link wp-element-button" href="#">Sorteer</a></div>
 			<!-- /wp:button -->
 		</div>
 		<!-- /wp:buttons -->
@@ -45,12 +45,12 @@
 		<div class="wp-block-column">
 			<!-- wp:group {"className":"is-style-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 			<div class="wp-block-group is-style-card">
-				<!-- wp:paragraph {"style":{"typography":{"fontStyle":"normal","fontWeight":"600","textTransform":"uppercase","letterSpacing":"0.08em"}},"fontSize":"xs","textColor":"accent"} -->
-				<p class="has-accent-color has-text-color has-xs-font-size" style="font-style:normal;font-weight:600;letter-spacing:0.08em;text-transform:uppercase">Tipe</p>
+				<!-- wp:paragraph {"className":"ink-pill ink-pill\u002d\u002dtint-sm"} -->
+				<p class="ink-pill ink-pill--tint-sm">Tipe</p>
 				<!-- /wp:paragraph -->
 
-				<!-- wp:heading {"level":3,"fontSize":"lg"} -->
-				<h3 class="wp-block-heading has-lg-font-size">Titel van die inskrywing</h3>
+				<!-- wp:heading {"level":3,"className":"ink-heading-h3-card"} -->
+				<h3 class="wp-block-heading ink-heading-h3-card">Titel van die inskrywing</h3>
 				<!-- /wp:heading -->
 
 				<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
@@ -69,12 +69,12 @@
 		<div class="wp-block-column">
 			<!-- wp:group {"className":"is-style-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 			<div class="wp-block-group is-style-card">
-				<!-- wp:paragraph {"style":{"typography":{"fontStyle":"normal","fontWeight":"600","textTransform":"uppercase","letterSpacing":"0.08em"}},"fontSize":"xs","textColor":"accent"} -->
-				<p class="has-accent-color has-text-color has-xs-font-size" style="font-style:normal;font-weight:600;letter-spacing:0.08em;text-transform:uppercase">Tipe</p>
+				<!-- wp:paragraph {"className":"ink-pill ink-pill\u002d\u002dtint-sm"} -->
+				<p class="ink-pill ink-pill--tint-sm">Tipe</p>
 				<!-- /wp:paragraph -->
 
-				<!-- wp:heading {"level":3,"fontSize":"lg"} -->
-				<h3 class="wp-block-heading has-lg-font-size">Titel van die inskrywing</h3>
+				<!-- wp:heading {"level":3,"className":"ink-heading-h3-card"} -->
+				<h3 class="wp-block-heading ink-heading-h3-card">Titel van die inskrywing</h3>
 				<!-- /wp:heading -->
 
 				<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
@@ -93,12 +93,12 @@
 		<div class="wp-block-column">
 			<!-- wp:group {"className":"is-style-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 			<div class="wp-block-group is-style-card">
-				<!-- wp:paragraph {"style":{"typography":{"fontStyle":"normal","fontWeight":"600","textTransform":"uppercase","letterSpacing":"0.08em"}},"fontSize":"xs","textColor":"accent"} -->
-				<p class="has-accent-color has-text-color has-xs-font-size" style="font-style:normal;font-weight:600;letter-spacing:0.08em;text-transform:uppercase">Tipe</p>
+				<!-- wp:paragraph {"className":"ink-pill ink-pill\u002d\u002dtint-sm"} -->
+				<p class="ink-pill ink-pill--tint-sm">Tipe</p>
 				<!-- /wp:paragraph -->
 
-				<!-- wp:heading {"level":3,"fontSize":"lg"} -->
-				<h3 class="wp-block-heading has-lg-font-size">Titel van die inskrywing</h3>
+				<!-- wp:heading {"level":3,"className":"ink-heading-h3-card"} -->
+				<h3 class="wp-block-heading ink-heading-h3-card">Titel van die inskrywing</h3>
 				<!-- /wp:heading -->
 
 				<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->

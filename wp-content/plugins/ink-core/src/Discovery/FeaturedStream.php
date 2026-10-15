@@ -298,11 +298,11 @@ final class FeaturedStream {
 		// as independent literals.
 		$header = '<div class="' . esc_attr( $base . '__kop' ) . '" data-audit-id="featured-head">'
 			. '<div class="' . esc_attr( $base . '__kop-teks' ) . '" data-audit-id="featured-head-text">'
-			. '<p class="' . esc_attr( $base . '__boskrif' ) . '" data-audit-id="featured-eyebrow">' . esc_html__( 'Die redakteur se keuse', 'ink-core' ) . '</p>'
-			. '<h2 id="' . esc_attr( $title_id ) . '" class="' . esc_attr( $base . '__titel' ) . '" data-audit-id="featured-h2">'
+			. '<p class="' . esc_attr( $base . '__boskrif ink-eyebrow' ) . '" data-audit-id="featured-eyebrow">' . esc_html__( 'Die redakteur se keuse', 'ink-core' ) . '</p>'
+			. '<h2 id="' . esc_attr( $title_id ) . '" class="' . esc_attr( $base . '__titel ink-heading-h2-section' ) . '" data-audit-id="featured-h2">'
 			. esc_html__( 'In die kollig', 'ink-core' ) . '</h2>'
 			. '</div>'
-			. '<a class="' . esc_attr( $base . '__alles ink-underline-slide' ) . '" data-audit-id="featured-all-link" href="' . esc_url( self::allWorksUrl() ) . '">'
+			. '<a class="' . esc_attr( $base . '__alles ink-link ink-link--slide' ) . '" data-audit-id="featured-all-link" href="' . esc_url( self::allWorksUrl() ) . '">'
 			. esc_html( Terms::label( 'sien_alle_werke' ) ) . '</a>'
 			. '</div>';
 
@@ -316,8 +316,8 @@ final class FeaturedStream {
 			$cards .= self::cardHtml( $item, 0 === $index, $audit_prefixes[ $index ] ?? '' );
 		}
 
-		return '<section class="' . esc_attr( $base . ' alignfull' ) . '" data-audit-id="featured" aria-labelledby="' . esc_attr( $title_id ) . '">'
-			. '<div class="' . esc_attr( $base . '__houer' ) . '" data-audit-id="featured-container">'
+		return '<section class="' . esc_attr( $base . ' alignfull ink-band' ) . '" data-audit-id="featured" aria-labelledby="' . esc_attr( $title_id ) . '">'
+			. '<div class="' . esc_attr( $base . '__houer ink-container' ) . '" data-audit-id="featured-container">'
 			. $header
 			. '<div class="' . esc_attr( $base . '__rooster' ) . '" data-audit-id="featured-grid">' . $cards . '</div>'
 			. '</div></section>';
@@ -339,7 +339,9 @@ final class FeaturedStream {
 	 */
 	private static function cardHtml( array $item, bool $featured, string $aid = '' ): string {
 		$base    = 'ink-uitgesoekte-bydraes';
-		$classes = $base . '__kaart' . ( $featured ? ' ' . $base . '__kaart--uitgesoek' : '' );
+		$classes = $base . '__kaart ink-card--feature' . ( $featured ? ' ' . $base . '__kaart--uitgesoek' : '' );
+		// Primitives: the spanning card's title is `heading h2-block`, a standard card's `h3-card`.
+		$title_role = $featured ? 'ink-heading-h2-block' : 'ink-heading-h3-card';
 
 		$title    = (string) ( $item['title'] ?? '' );
 		$url      = (string) ( $item['url'] ?? '' );
@@ -354,7 +356,7 @@ final class FeaturedStream {
 		$out = '<article class="' . esc_attr( $classes ) . '"' . self::auditId( $aid ) . '>'
 			. '<div class="' . esc_attr( $base . '__kaart-inhoud' ) . '"' . self::auditId( $aid, 'body' ) . '>'
 			. self::metaTopHtml( $base, $category, $type, (int) ( $item['read_minutes'] ?? 0 ), $aid )
-			. '<h3 class="' . esc_attr( $base . '__werk' ) . '"' . self::auditId( $aid, 'title' ) . '>' . $title_html . '</h3>';
+			. '<h3 class="' . esc_attr( $base . '__werk ' . $title_role ) . '"' . self::auditId( $aid, 'title' ) . '>' . $title_html . '</h3>';
 
 		if ( '' !== $excerpt ) {
 			$out .= '<p class="' . esc_attr( $base . '__uittreksel' ) . '"' . self::auditId( $aid, 'excerpt' ) . '>' . esc_html( $excerpt ) . '</p>';
@@ -387,13 +389,13 @@ final class FeaturedStream {
 	 * @return string
 	 */
 	private static function metaTopHtml( string $base, string $category, string $type, int $minutes, string $aid = '' ): string {
-		$out = '<div class="' . esc_attr( $base . '__meta-top' ) . '"' . self::auditId( $aid, 'meta' ) . '>';
+		$out = '<div class="' . esc_attr( $base . '__meta-top ink-meta-row ink-meta-row--tight' ) . '"' . self::auditId( $aid, 'meta' ) . '>';
 
 		if ( '' !== $category ) {
-			$pil_classes = $base . '__pil';
+			$pil_classes = $base . '__pil ink-pill ink-pill--soft';
 
 			if ( in_array( $type, PostTypes::readableTypes(), true ) ) {
-				$pil_classes .= ' ' . $base . '__pil--' . $type;
+				$pil_classes .= ' ' . $base . '__pil--' . $type . ' ' . self::pillTone( $type );
 			}
 
 			$out .= '<span class="' . esc_attr( $pil_classes ) . '"' . self::auditId( $aid, 'pill' ) . '>' . esc_html( $category ) . '</span>';
@@ -402,13 +404,30 @@ final class FeaturedStream {
 		$read_time = ReadingTime::label( $minutes );
 
 		if ( '' !== $read_time ) {
-			$out .= '<span class="' . esc_attr( $base . '__leestyd' ) . '"' . self::auditId( $aid, 'time' ) . '>'
+			$out .= '<span class="' . esc_attr( $base . '__leestyd ink-meta' ) . '"' . self::auditId( $aid, 'time' ) . '>'
 				. self::icon( self::ICON_CLOCK )
 				. '<span>' . esc_html( $read_time ) . '</span>'
 				. '</span>';
 		}
 
 		return $out . '</div>';
+	}
+
+	/**
+	 * The primitives tone class for a bydrae type's pill (sage / brand / grey), matching
+	 * the reading pages' type badge. Pure.
+	 *
+	 * @param string $type The bydrae post type.
+	 * @return string
+	 */
+	private static function pillTone( string $type ): string {
+		$tones = array(
+			'gedig'   => 'ink-tone-accent',
+			'storie'  => 'ink-tone-primary',
+			'artikel' => 'ink-tone-muted',
+		);
+
+		return $tones[ $type ] ?? '';
 	}
 
 	/**
@@ -427,7 +446,7 @@ final class FeaturedStream {
 
 		if ( '' !== $avatar ) {
 			// Avatar alt falls back to the author name so it is never empty (a11y).
-			$author_html .= '<img class="' . esc_attr( $base . '__foto' ) . '"' . self::auditId( $aid, 'avatar' ) . ' src="' . esc_url( $avatar ) . '" '
+			$author_html .= '<img class="' . esc_attr( $base . '__foto ink-avatar ink-avatar--32' ) . '"' . self::auditId( $aid, 'avatar' ) . ' src="' . esc_url( $avatar ) . '" '
 				. 'alt="' . esc_attr( $author ) . '" width="32" height="32" loading="lazy" decoding="async" />';
 		}
 
@@ -440,7 +459,7 @@ final class FeaturedStream {
 		$hart_count     = (int) ( $item['hart_count'] ?? 0 );
 		$response_count = (int) ( $item['response_count'] ?? 0 );
 
-		$counts = '<div class="' . esc_attr( $base . '__tellers' ) . '"' . self::auditId( $aid, 'stats' ) . '>'
+		$counts = '<div class="' . esc_attr( $base . '__tellers ink-meta-row' ) . '"' . self::auditId( $aid, 'stats' ) . '>'
 			. self::countHtml( $base, self::ICON_HEART, $hart_count, EngagementApi::hartjieCountLabel( $hart_count ), self::auditId( $aid, 'stat' ) )
 			. self::countHtml( $base, self::ICON_MESSAGE, $response_count, self::responseCountLabel( $response_count ) )
 			. '</div>';
@@ -460,7 +479,7 @@ final class FeaturedStream {
 	 * @return string
 	 */
 	private static function countHtml( string $base, string $icon, int $count, string $label, string $audit = '' ): string {
-		return '<span class="' . esc_attr( $base . '__teller' ) . '"' . $audit . ' aria-label="' . esc_attr( $label ) . '">'
+		return '<span class="' . esc_attr( $base . '__teller ink-meta ink-meta--sm' ) . '"' . $audit . ' aria-label="' . esc_attr( $label ) . '">'
 			. self::icon( $icon )
 			. '<span aria-hidden="true">' . esc_html( (string) $count ) . '</span>'
 			. '</span>';

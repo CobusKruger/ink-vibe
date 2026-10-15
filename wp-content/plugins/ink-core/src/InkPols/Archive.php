@@ -184,7 +184,7 @@ final class Archive {
 	 * @return string
 	 */
 	public static function toHtml( array $groups ): string {
-		$heading = '<h1 class="ink-inkpols__heading" data-audit-id="inkpols-heading">' . esc_html( Terms::label( 'inkpols' ) ) . '</h1>';
+		$heading = '<h1 class="ink-inkpols__heading ink-heading-h1-index" data-audit-id="inkpols-heading">' . esc_html( Terms::label( 'inkpols' ) ) . '</h1>';
 
 		if ( array() === $groups ) {
 			/* translators: %s: the Uitgawes (issues) plural label. */
@@ -205,7 +205,7 @@ final class Archive {
 			$html .= '<section class="ink-inkpols__jaar"' . $aid( 'inkpols-year' ) . '>';
 
 			if ( '' !== $group['year'] ) {
-				$html .= '<h2 class="ink-inkpols__jaar-titel"' . $aid( 'inkpols-year-title' ) . '>' . esc_html( $group['year'] ) . '</h2>';
+				$html .= '<h2 class="ink-inkpols__jaar-titel ink-heading-h2-block"' . $aid( 'inkpols-year-title' ) . '>' . esc_html( $group['year'] ) . '</h2>';
 			}
 
 			$html .= '<ul class="ink-inkpols__lys"' . $aid( 'inkpols-list' ) . '>';
@@ -240,20 +240,20 @@ final class Archive {
 			: '';
 
 		$date = '' !== $issue->displayDate()
-			? '<span class="ink-inkpols__datum"' . $aid( 'inkpols-date' ) . '>' . esc_html( $issue->displayDate() ) . '</span>'
+			? '<span class="ink-inkpols__datum ink-meta"' . $aid( 'inkpols-date' ) . '>' . esc_html( $issue->displayDate() ) . '</span>'
 			: '';
 
 		$volume = '' !== $issue->volume
-			? '<span class="ink-inkpols__volume"' . $aid( 'inkpols-volume' ) . '>' . esc_html( $issue->volume ) . '</span>'
+			? '<span class="ink-inkpols__volume ink-meta"' . $aid( 'inkpols-volume' ) . '>' . esc_html( $issue->volume ) . '</span>'
 			: '';
 
 		$teaser = '' !== $issue->teaser
 			? '<p class="ink-inkpols__voorskou"' . $aid( 'inkpols-teaser' ) . '>' . esc_html( $issue->teaser ) . '</p>'
 			: '';
 
-		return '<li class="ink-inkpols__item is-style-card"' . $aid( 'inkpols-card' ) . '>'
+		return '<li class="ink-inkpols__item ink-card"' . $aid( 'inkpols-card' ) . '>'
 			. $cover
-			. '<a class="ink-inkpols__titel"' . $aid( 'inkpols-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $issue->title ) . '</a>'
+			. '<a class="ink-inkpols__titel ink-heading-h3-card"' . $aid( 'inkpols-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $issue->title ) . '</a>'
 			. $date
 			. $volume
 			. $teaser

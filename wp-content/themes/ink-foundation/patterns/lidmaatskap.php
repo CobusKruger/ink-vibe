@@ -70,8 +70,8 @@ if ( empty( $ink_plans ) ) {
 <section class="wp-block-group alignfull ink-lidmaatskap-hero" data-audit-id="lidmaatskap-hero" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide" data-audit-id="lidmaatskap-hero-inner">
-		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
-		<h1 class="wp-block-heading has-xxxl-font-size" data-audit-id="lidmaatskap-h1"><?php echo esc_html( $ink_plan_noun ); ?></h1>
+		<!-- wp:heading {"level":1,"className":"ink-heading-h1-index"} -->
+		<h1 class="wp-block-heading ink-heading-h1-index" data-audit-id="lidmaatskap-h1"><?php echo esc_html( $ink_plan_noun ); ?></h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"lg","textColor":"muted-text"} -->
@@ -103,8 +103,8 @@ foreach ( $ink_plans as $ink_plan ) :
 		<div class="wp-block-column"<?php echo $ink_aid( 'lidmaatskap-plan-col' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- self-escaped attribute. ?>>
 			<!-- wp:group {"className":"is-style-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 			<div class="wp-block-group is-style-card"<?php echo $ink_aid( 'lidmaatskap-plan-card' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- self-escaped attribute. ?>>
-				<!-- wp:heading {"level":2,"fontSize":"xl"} -->
-				<h2 class="wp-block-heading has-xl-font-size"<?php echo $ink_aid( 'lidmaatskap-plan-term' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- self-escaped attribute. ?>><?php echo esc_html( $ink_term_label ); ?></h2>
+				<!-- wp:heading {"level":2,"className":"ink-heading-h3"} -->
+				<h2 class="wp-block-heading ink-heading-h3"<?php echo $ink_aid( 'lidmaatskap-plan-term' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- self-escaped attribute. ?>><?php echo esc_html( $ink_term_label ); ?></h2>
 				<!-- /wp:heading -->
 
 				<!-- wp:paragraph {"fontSize":"xxl","style":{"typography":{"fontWeight":"var:custom|font-weight|bold"}}} -->
@@ -133,12 +133,12 @@ foreach ( $ink_plans as $ink_plan ) :
 				<!-- wp:buttons {"lock":{"move":true,"remove":true},"layout":{"type":"flex","justifyContent":"center"}} -->
 				<div class="wp-block-buttons"<?php echo $ink_aid( 'lidmaatskap-plan-actions' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- self-escaped attribute. ?>>
 	<?php if ( $ink_is_available && null !== $ink_purchase_url && '' !== (string) $ink_purchase_url ) : ?>
-					<!-- wp:button {"backgroundColor":"primary","textColor":"surface-alt","width":100,"className":"is-style-pill"} -->
-					<div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-pill"><a class="wp-block-button__link has-surface-alt-color has-primary-background-color has-text-color has-background wp-element-button"<?php echo $ink_aid( 'lidmaatskap-plan-btn' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- self-escaped attribute. ?> href="<?php echo esc_url( (string) $ink_purchase_url ); ?>"><?php echo esc_html__( 'Sluit aan', 'ink-foundation' ); ?></a></div>
+					<!-- wp:button {"width":100,"className":"is-style-ink-primary ink-btn-lg"} -->
+					<div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-ink-primary ink-btn-lg"><a class="wp-block-button__link wp-element-button"<?php echo $ink_aid( 'lidmaatskap-plan-btn' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- self-escaped attribute. ?> href="<?php echo esc_url( (string) $ink_purchase_url ); ?>"><?php echo esc_html__( 'Sluit aan', 'ink-foundation' ); ?></a></div>
 					<!-- /wp:button -->
 	<?php else : ?>
-					<!-- wp:button {"backgroundColor":"secondary","textColor":"muted-text","width":100,"className":"is-style-pill"} -->
-					<div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-pill"><a class="wp-block-button__link has-muted-text-color has-secondary-background-color has-text-color has-background wp-element-button"<?php echo $ink_aid( 'lidmaatskap-plan-btn' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- self-escaped attribute. ?> aria-disabled="true" tabindex="-1"><?php echo esc_html__( 'Binnekort beskikbaar', 'ink-foundation' ); ?></a></div>
+					<!-- wp:button {"width":100,"className":"is-style-subtle ink-btn-lg"} -->
+					<div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-subtle ink-btn-lg"><a class="wp-block-button__link wp-element-button"<?php echo $ink_aid( 'lidmaatskap-plan-btn' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- self-escaped attribute. ?> aria-disabled="true" tabindex="-1"><?php echo esc_html__( 'Binnekort beskikbaar', 'ink-foundation' ); ?></a></div>
 					<!-- /wp:button -->
 	<?php endif; ?>
 				</div>
@@ -158,8 +158,8 @@ foreach ( $ink_plans as $ink_plan ) :
 <section class="wp-block-group alignfull ink-lidmaatskap-benefits" data-audit-id="lidmaatskap-benefits" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide" data-audit-id="lidmaatskap-benefits-inner">
-		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
-		<h2 class="wp-block-heading has-xxl-font-size" data-audit-id="lidmaatskap-benefits-h2"><?php echo esc_html__( 'Wat jou lidmaatskap insluit', 'ink-foundation' ); ?></h2>
+		<!-- wp:heading {"level":2,"className":"ink-heading-h2-block"} -->
+		<h2 class="wp-block-heading ink-heading-h2-block" data-audit-id="lidmaatskap-benefits-h2"><?php echo esc_html__( 'Wat jou lidmaatskap insluit', 'ink-foundation' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:list {"className":"is-style-default","style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
@@ -186,8 +186,8 @@ foreach ( $ink_plans as $ink_plan ) :
 <section class="wp-block-group alignfull ink-lidmaatskap-faq" data-audit-id="lidmaatskap-faq" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide" data-audit-id="lidmaatskap-faq-inner">
-		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
-		<h2 class="wp-block-heading has-xxl-font-size" data-audit-id="lidmaatskap-faq-h2"><?php echo esc_html__( 'Vrae oor lidmaatskap', 'ink-foundation' ); ?></h2>
+		<!-- wp:heading {"level":2,"className":"ink-heading-h2-block"} -->
+		<h2 class="wp-block-heading ink-heading-h2-block" data-audit-id="lidmaatskap-faq-h2"><?php echo esc_html__( 'Vrae oor lidmaatskap', 'ink-foundation' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:details {"lock":{"move":true,"remove":true},"className":"is-style-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}}} -->
@@ -222,8 +222,8 @@ foreach ( $ink_plans as $ink_plan ) :
 <section class="wp-block-group alignfull has-ink-text-color has-secondary-background-color has-text-color has-background ink-lidmaatskap-cta" data-audit-id="lidmaatskap-cta" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group" data-audit-id="lidmaatskap-cta-inner">
-		<!-- wp:heading {"textAlign":"center","level":2,"fontSize":"xxxl"} -->
-		<h2 class="wp-block-heading has-text-align-center has-xxxl-font-size" data-audit-id="lidmaatskap-cta-h2"><?php echo esc_html__( 'Sluit vandag by INK aan', 'ink-foundation' ); ?></h2>
+		<!-- wp:heading {"textAlign":"center","level":2,"className":"ink-heading-h2-section"} -->
+		<h2 class="wp-block-heading has-text-align-center ink-heading-h2-section" data-audit-id="lidmaatskap-cta-h2"><?php echo esc_html__( 'Sluit vandag by INK aan', 'ink-foundation' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"align":"center","fontSize":"lg","textColor":"muted-text"} -->

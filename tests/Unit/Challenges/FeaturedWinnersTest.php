@@ -120,7 +120,7 @@ test( 'toHtml renders no section-level heading, only winner CARDS in algehele-we
 	expect( $html )->toContain( 'ink-wenner-kollig__rang-teks' );
 
 	// Each work title is an h3 linked to its permalink.
-	expect( $html )->toContain( '<h3 class="ink-wenner-kollig__werk">' );
+	expect( $html )->toContain( '<h3 class="ink-wenner-kollig__werk ink-heading-h2-block">' );
 
 	// Algehele wenner's work appears before the ordinary wenner's work.
 	expect( strpos( $html, 'Algehele werk' ) )->toBeLessThan( strpos( $html, 'Tweede werk' ) );

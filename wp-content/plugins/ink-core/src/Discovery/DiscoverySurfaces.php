@@ -236,7 +236,7 @@ final class DiscoverySurfaces {
 	 * Run a `WP_User_Query` and map its ids to skrywer cards.
 	 *
 	 * @param array<string, mixed> $args The query args.
-	 * @return list<array{name:string, profile_url:string, gradering:string}>
+	 * @return list<array{name:string, profile_url:string, gradering:string, tier?:string}>
 	 */
 	private static function cardsFromUserQuery( array $args ): array {
 		$query = new \WP_User_Query( $args );
@@ -248,7 +248,7 @@ final class DiscoverySurfaces {
 	 * Map writer ids to skrywer cards.
 	 *
 	 * @param list<int> $ids The writer ids.
-	 * @return list<array{name:string, profile_url:string, gradering:string}>
+	 * @return list<array{name:string, profile_url:string, gradering:string, tier?:string}>
 	 */
 	private static function cardsFromIds( array $ids ): array {
 		$cards = array();
@@ -264,6 +264,7 @@ final class DiscoverySurfaces {
 				'name'        => (string) get_the_author_meta( 'display_name', $uid ),
 				'profile_url' => (string) get_author_posts_url( $uid ),
 				'gradering'   => Terms::label( TiersApi::forUser( $uid )->value ),
+				'tier'        => TiersApi::forUser( $uid )->value,
 			);
 		}
 
@@ -273,7 +274,7 @@ final class DiscoverySurfaces {
 	/**
 	 * Build the surfaces HTML — a titled row per NON-EMPTY surface. Pure.
 	 *
-	 * @param array<string, list<array{name:string, profile_url:string, gradering:string}>> $surfaces Surface key → cards.
+	 * @param array<string, list<array{name:string, profile_url:string, gradering:string, tier?:string}>> $surfaces Surface key → cards.
 	 * @return string
 	 */
 	public static function toHtml( array $surfaces ): string {
@@ -289,15 +290,15 @@ final class DiscoverySurfaces {
 			$aid = static fn ( string $id, bool $on ): string => $on ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
 
 			$html .= '<section class="ink-ontdek-vlak ink-ontdek-vlak--' . esc_attr( (string) $key ) . '"' . $aid( 'surfaces-row', $first_row ) . '>'
-				. '<h2 class="ink-ontdek-vlak__titel"' . $aid( 'surfaces-title', $first_row ) . '>' . esc_html( self::surfaceLabel( (string) $key ) ) . '</h2>'
+				. '<h2 class="ink-ontdek-vlak__titel ink-heading-h3"' . $aid( 'surfaces-title', $first_row ) . '>' . esc_html( self::surfaceLabel( (string) $key ) ) . '</h2>'
 				. '<ul class="ink-ontdek-vlak__lys"' . $aid( 'surfaces-list', $first_row ) . '>';
 
 			$first_item = $first_row;
 
 			foreach ( $cards as $card ) {
-				$html .= '<li class="ink-ontdek-vlak__item is-style-card"' . $aid( 'surfaces-item', $first_item ) . '>'
-					. '<a class="ink-ontdek-vlak__naam"' . $aid( 'surfaces-name', $first_item ) . ' href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
-					. '<span class="ink-ontdek-vlak__gradering"' . $aid( 'surfaces-grade', $first_item ) . '>' . esc_html( $card['gradering'] ) . '</span>'
+				$html .= '<li class="ink-ontdek-vlak__item ink-card"' . $aid( 'surfaces-item', $first_item ) . '>'
+					. '<a class="ink-ontdek-vlak__naam ink-heading-h3-card"' . $aid( 'surfaces-name', $first_item ) . ' href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
+					. '<span class="' . esc_attr( 'ink-ontdek-vlak__gradering ' . SkrywersTab::tierLabelClasses( (string) ( $card['tier'] ?? '' ) ) ) . '"' . $aid( 'surfaces-grade', $first_item ) . '>' . esc_html( $card['gradering'] ) . '</span>'
 					. '</li>';
 
 				$first_item = false;

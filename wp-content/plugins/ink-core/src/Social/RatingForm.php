@@ -97,8 +97,8 @@ final class RatingForm {
 	 * @return string
 	 */
 	public static function toHtml( int $skrywer_id ): string {
-		$html = '<form class="ink-leseroordeel-vorm" data-ink-skrywer="' . esc_attr( (string) $skrywer_id ) . '">'
-			. '<h2 class="ink-leseroordeel-vorm__titel">' . esc_html__( 'Beoordeel hierdie skrywer', 'ink-core' ) . '</h2>'
+		$html = '<form class="ink-card ink-leseroordeel-vorm" data-ink-skrywer="' . esc_attr( (string) $skrywer_id ) . '">'
+			. '<h2 class="ink-heading-h2-block ink-leseroordeel-vorm__titel">' . esc_html__( 'Beoordeel hierdie skrywer', 'ink-core' ) . '</h2>'
 			. '<fieldset class="ink-leseroordeel-vorm__sterre">'
 			. '<legend>' . esc_html__( 'Jou gradering', 'ink-core' ) . '</legend>';
 
@@ -110,11 +110,11 @@ final class RatingForm {
 		}
 
 		$html .= '</fieldset>'
-			. '<label class="ink-leseroordeel-vorm__resensie-etiket" for="ink-oordeel-resensie">'
+			. '<label class="ink-label ink-leseroordeel-vorm__resensie-etiket" for="ink-oordeel-resensie">'
 			. esc_html__( 'Jou resensie (opsioneel)', 'ink-core' ) . '</label>'
-			. '<textarea id="ink-oordeel-resensie" name="ink-oordeel-resensie" class="ink-leseroordeel-vorm__resensie"></textarea>'
-			. '<button type="submit" class="ink-leseroordeel-vorm__stuur">' . esc_html__( 'Stuur oordeel', 'ink-core' ) . '</button>'
-			. '<p class="ink-leseroordeel-vorm__nota">' . esc_html__( 'Jou oordeel word eers gemodereer voordat dit gewys word.', 'ink-core' ) . '</p>'
+			. '<textarea id="ink-oordeel-resensie" name="ink-oordeel-resensie" class="ink-field ink-field--textarea ink-leseroordeel-vorm__resensie"></textarea>'
+			. '<button type="submit" class="ink-btn ink-btn--primary ink-leseroordeel-vorm__stuur">' . esc_html__( 'Stuur oordeel', 'ink-core' ) . '</button>'
+			. '<p class="ink-hint ink-leseroordeel-vorm__nota">' . esc_html__( 'Jou oordeel word eers gemodereer voordat dit gewys word.', 'ink-core' ) . '</p>'
 			. '</form>';
 
 		return $html;

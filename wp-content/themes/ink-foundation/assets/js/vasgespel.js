@@ -42,6 +42,9 @@
 		} ).then( function ( data ) {
 			var nowPinned = !! ( data && data.pinned );
 			button.classList.toggle( 'is-pinned', nowPinned );
+			// Shared button primitive (primitives.css): pinned = primary, unpinned = outline.
+			button.classList.toggle( 'ink-btn--primary', nowPinned );
+			button.classList.toggle( 'ink-btn--outline', ! nowPinned );
 			button.setAttribute( 'aria-pressed', nowPinned ? 'true' : 'false' );
 			button.textContent = nowPinned ? cfg.pinnedText : cfg.unpinnedText;
 		} ).catch( function () {

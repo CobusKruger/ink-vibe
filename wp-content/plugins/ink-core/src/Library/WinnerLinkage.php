@@ -149,7 +149,7 @@ final class WinnerLinkage {
 
 		foreach ( $links as $link ) {
 			$html .= '<li class="ink-biblioteek-uitdaging__item">'
-				. '<a class="ink-biblioteek-uitdaging__skakel" href="' . esc_url( $link['permalink'] ) . '">'
+				. '<a class="ink-biblioteek-uitdaging__skakel ink-link" href="' . esc_url( $link['permalink'] ) . '">'
 				. esc_html( $link['title'] ) . '</a></li>';
 		}
 

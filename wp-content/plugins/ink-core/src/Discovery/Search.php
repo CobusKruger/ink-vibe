@@ -174,6 +174,7 @@ final class Search {
 				'name'        => (string) get_the_author_meta( 'display_name', $uid ),
 				'profile_url' => (string) get_author_posts_url( $uid ),
 				'gradering'   => Terms::label( TiersApi::forUser( $uid )->value ),
+				'tier'        => TiersApi::forUser( $uid )->value,
 			);
 		}
 
@@ -200,7 +201,7 @@ final class Search {
 	 *
 	 * @param string                                                                  $raw_query The raw (unfolded) query, for the input value + heading.
 	 * @param list<array{title:string, permalink:string, type:string, author:string}> $works     Work results.
-	 * @param list<array{name:string, profile_url:string, gradering:string}>          $skrywers  Skrywer results.
+	 * @param list<array{name:string, profile_url:string, gradering:string, tier?:string}> $skrywers  Skrywer results.
 	 * @return string
 	 */
 	public static function toHtml( string $raw_query, array $works, array $skrywers ): string {
@@ -211,12 +212,12 @@ final class Search {
 
 		$html = '<section class="ink-ontdek-soek" data-audit-id="search"><form class="ink-ontdek-soek__form" data-audit-id="search-form" role="search" method="get">'
 			. '<div class="ink-ontdek-soek__veld-houer" data-audit-id="search-field-wrap">' . $icon
-			. '<input type="search" class="ink-ontdek-soek__veld" data-audit-id="search-input" name="' . esc_attr( self::QUERY_VAR ) . '"'
+			. '<input type="search" class="ink-ontdek-soek__veld ink-search-field ink-search-field--with-button" data-audit-id="search-input" name="' . esc_attr( self::QUERY_VAR ) . '"'
 			. ' value="' . esc_attr( $raw_query ) . '"'
 			. ' placeholder="' . esc_attr__( 'Vind stories, gedigte of skrywers...', 'ink-core' ) . '"'
 			. ' aria-label="' . esc_attr__( 'Vind stories, gedigte of skrywers...', 'ink-core' ) . '" />'
 			. '</div>'
-			. '<button type="submit" class="ink-ontdek-soek__knoppie" data-audit-id="search-btn">' . esc_html__( 'Soek', 'ink-core' ) . '</button>'
+			. '<button type="submit" class="ink-ontdek-soek__knoppie ink-btn ink-btn--primary" data-audit-id="search-btn">' . esc_html__( 'Soek', 'ink-core' ) . '</button>'
 			. '</form>';
 
 		if ( '' === $raw_query ) {
@@ -230,13 +231,13 @@ final class Search {
 		}
 
 		if ( array() !== $works ) {
-			$html .= '<h2 class="ink-ontdek-soek__groep">' . esc_html( Terms::label( 'bydrae_plural' ) ) . '</h2><ul class="ink-ontdek-soek__werke">';
+			$html .= '<h2 class="ink-ontdek-soek__groep ink-heading-h3">' . esc_html( Terms::label( 'bydrae_plural' ) ) . '</h2><ul class="ink-ontdek-soek__werke">';
 
 			foreach ( $works as $work ) {
-				$html .= '<li class="ink-ontdek-soek__werk is-style-card">'
-					. '<span class="ink-ontdek-soek__tipe">' . esc_html( Terms::label( $work['type'] ) ) . '</span>'
-					. '<a class="ink-ontdek-soek__titel" href="' . esc_url( $work['permalink'] ) . '">' . esc_html( $work['title'] ) . '</a>'
-					. '<span class="ink-ontdek-soek__outeur">' . esc_html( $work['author'] ) . '</span>'
+				$html .= '<li class="ink-ontdek-soek__werk ink-card">'
+					. '<span class="' . esc_attr( 'ink-ontdek-soek__tipe ink-pill ink-pill--tint-sm ' . self::typeTone( (string) $work['type'] ) ) . '">' . esc_html( Terms::label( $work['type'] ) ) . '</span>'
+					. '<a class="ink-ontdek-soek__titel ink-heading-h3-card" href="' . esc_url( $work['permalink'] ) . '">' . esc_html( $work['title'] ) . '</a>'
+					. '<span class="ink-ontdek-soek__outeur ink-meta ink-meta--sm">' . esc_html( $work['author'] ) . '</span>'
 					. '</li>';
 			}
 
@@ -244,12 +245,12 @@ final class Search {
 		}
 
 		if ( array() !== $skrywers ) {
-			$html .= '<h2 class="ink-ontdek-soek__groep">' . esc_html( Terms::label( 'skrywer_plural' ) ) . '</h2><ul class="ink-ontdek-soek__skrywers">';
+			$html .= '<h2 class="ink-ontdek-soek__groep ink-heading-h3">' . esc_html( Terms::label( 'skrywer_plural' ) ) . '</h2><ul class="ink-ontdek-soek__skrywers">';
 
 			foreach ( $skrywers as $skrywer ) {
-				$html .= '<li class="ink-ontdek-soek__skrywer is-style-card">'
-					. '<a class="ink-ontdek-soek__naam" href="' . esc_url( $skrywer['profile_url'] ) . '">' . esc_html( $skrywer['name'] ) . '</a>'
-					. '<span class="ink-ontdek-soek__gradering">' . esc_html( $skrywer['gradering'] ) . '</span>'
+				$html .= '<li class="ink-ontdek-soek__skrywer ink-card">'
+					. '<a class="ink-ontdek-soek__naam ink-heading-h3-card" href="' . esc_url( $skrywer['profile_url'] ) . '">' . esc_html( $skrywer['name'] ) . '</a>'
+					. '<span class="' . esc_attr( 'ink-ontdek-soek__gradering ' . SkrywersTab::tierLabelClasses( (string) ( $skrywer['tier'] ?? '' ) ) ) . '">' . esc_html( $skrywer['gradering'] ) . '</span>'
 					. '</li>';
 			}
 
@@ -257,5 +258,23 @@ final class Search {
 		}
 
 		return $html . '</section>';
+	}
+
+	/**
+	 * The pill tone for a work type — the same per-type tones as the Ontdek works
+	 * card (sage gedig / brand storie / muted artikel). Pure.
+	 *
+	 * @param string $type The bydrae post type.
+	 * @return string
+	 */
+	private static function typeTone( string $type ): string {
+		switch ( $type ) {
+			case \Ink\Content\PostTypes::GEDIG:
+				return 'ink-tone-accent';
+			case \Ink\Content\PostTypes::STORIE:
+				return 'ink-tone-primary';
+			default:
+				return 'ink-tone-muted';
+		}
 	}
 }

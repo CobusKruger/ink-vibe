@@ -16,7 +16,7 @@
  * same reading-page baseline already established by reading-storie.php/
  * reading-gedig.php (Library.tsx has no dedicated single-article reading route to
  * mirror 1:1, so this follows the site's own established reading-page convention
- * instead — pill type badge via the shared `.ink-lees-tipe` class, centered larger
+ * instead — pill type badge via the shared `ink-pill ink-pill--tint` primitive, centered larger
  * title, centered avatar byline) — a resource-article genre treatment distinct from
  * both (accent/sage tint, no reaction/save-to-list widgets, no drop-cap prose: this
  * is an instructional guide, not a creative work).
@@ -32,11 +32,11 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained","contentSize":"768px"}} -->
 	<div class="wp-block-group">
-		<!-- wp:paragraph {"className":"ink-lees-tipe","textAlign":"center","style":{"typography":{"fontStyle":"normal","fontWeight":"500"}},"fontSize":"sm","textColor":"accent"} -->
-		<p class="ink-lees-tipe has-text-align-center has-accent-color has-text-color has-sm-font-size" style="font-style:normal;font-weight:500"><?php echo esc_html( $ink_type_label ); ?></p>
+		<!-- wp:paragraph {"className":"ink-pill ink-pill\u002d\u002dtint ink-tone-accent","textAlign":"center"} -->
+		<p class="ink-pill ink-pill--tint ink-tone-accent has-text-align-center"><?php echo esc_html( $ink_type_label ); ?></p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:post-title {"level":1,"textAlign":"center","fontSize":"xxxxl","style":{"typography":{"fontWeight":"600"}}} /-->
+		<!-- wp:post-title {"level":1,"textAlign":"center","className":"ink-heading-h1-reading"} /-->
 
 		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-8"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
 		<div class="wp-block-group">

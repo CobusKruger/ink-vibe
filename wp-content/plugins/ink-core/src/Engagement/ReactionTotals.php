@@ -165,7 +165,7 @@ final class ReactionTotals {
 		$anchor   = $post_id > 0 ? self::firstAnchorFor( $post_id ) : null;
 		$tag      = null !== $anchor ? 'button' : 'div';
 
-		$attrs = ' class="ink-reaksie-tellers ink-reaksie-tellers--enkel"'
+		$attrs = ' class="ink-reaksie-tellers ink-reaksie-tellers--enkel ink-icon-label"'
 			. ( null !== $audit_id ? ' data-audit-id="' . esc_attr( $audit_id ) . '"' : '' )
 			. ' aria-label="' . esc_attr( ReactionCounts::label( Reaction::Hartjie, $n ) ) . '"';
 

@@ -178,6 +178,7 @@ final class SkrywersTab {
 				'name'        => (string) get_the_author_meta( 'display_name', $uid ),
 				'profile_url' => (string) get_author_posts_url( $uid ),
 				'gradering'   => Terms::label( TiersApi::forUser( $uid )->value ),
+				'tier'        => TiersApi::forUser( $uid )->value,
 				'bio'         => (string) get_the_author_meta( 'description', $uid ),
 				'avatar_url'  => (string) get_avatar_url( $uid, array( 'size' => 128 ) ),
 				'genres'      => self::genreLabelsFor( $uid ),
@@ -234,12 +235,12 @@ final class SkrywersTab {
 	/**
 	 * Build the skrywers HTML. Pure — Terms + escaping only.
 	 *
-	 * @param list<array{name:string, profile_url:string, gradering:string, bio:string, avatar_url:string, genres:list<string>}> $cards The writers.
+	 * @param list<array{name:string, profile_url:string, gradering:string, tier?:string, bio:string, avatar_url:string, genres:list<string>}> $cards The writers.
 	 * @param array{paged:int, max_pages:int, genre?:string|null, sort?:string}          $nav   Render context.
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
-		$heading  = '<h2 class="ink-ontdek-skrywers__heading" data-audit-id="writers-heading">' . esc_html( Terms::label( 'skrywer_plural' ) ) . '</h2>';
+		$heading  = '<h2 class="ink-ontdek-skrywers__heading ink-heading-h2-block" data-audit-id="writers-heading">' . esc_html( Terms::label( 'skrywer_plural' ) ) . '</h2>';
 		$controls = self::controlsHtml(
 			$nav['genre'] ?? null,
 			isset( $nav['sort'] ) ? (string) $nav['sort'] : self::SORT_NUWE
@@ -296,7 +297,7 @@ final class SkrywersTab {
 	/**
 	 * One skrywer card. Pure — escaping only.
 	 *
-	 * @param array{name:string, profile_url:string, gradering:string, bio:string, avatar_url?:string, genres?:list<string>} $card  The card row.
+	 * @param array{name:string, profile_url:string, gradering:string, tier?:string, bio:string, avatar_url?:string, genres?:list<string>} $card  The card row.
 	 * @param bool                                                                                                          $audit Stamp the fidelity-audit join keys (first card only).
 	 * @return string
 	 */
@@ -305,17 +306,17 @@ final class SkrywersTab {
 		$genres = isset( $card['genres'] ) && is_array( $card['genres'] ) ? $card['genres'] : array();
 		$aid    = static fn ( string $id, bool $on = true ): string => ( $audit && $on ) ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
 
-		$html = '<li class="ink-ontdek-skrywers__item is-style-card"' . $aid( 'writers-card' ) . '>'
+		$html = '<li class="ink-ontdek-skrywers__item ink-card"' . $aid( 'writers-card' ) . '>'
 			. '<div class="ink-ontdek-skrywers__kop"' . $aid( 'writers-card-head' ) . '>';
 
 		if ( '' !== $avatar ) {
-			$html .= '<img class="ink-ontdek-skrywers__foto"' . $aid( 'writers-card-avatar' ) . ' src="' . esc_url( $avatar ) . '" '
+			$html .= '<img class="ink-ontdek-skrywers__foto ink-avatar"' . $aid( 'writers-card-avatar' ) . ' src="' . esc_url( $avatar ) . '" '
 				. 'alt="' . esc_attr( $card['name'] ) . '" width="56" height="56" loading="lazy" decoding="async" />';
 		}
 
 		$html .= '<div class="ink-ontdek-skrywers__kop-teks"' . $aid( 'writers-card-head-text' ) . '>'
-			. '<a class="ink-ontdek-skrywers__naam"' . $aid( 'writers-card-name' ) . ' href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
-			. '<span class="ink-ontdek-skrywers__gradering"' . $aid( 'writers-card-grade' ) . '>' . esc_html( $card['gradering'] ) . '</span>'
+			. '<a class="ink-ontdek-skrywers__naam ink-heading-h3-card"' . $aid( 'writers-card-name' ) . ' href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
+			. '<span class="' . esc_attr( 'ink-ontdek-skrywers__gradering ' . self::tierLabelClasses( (string) ( $card['tier'] ?? '' ) ) ) . '"' . $aid( 'writers-card-grade' ) . '>' . esc_html( $card['gradering'] ) . '</span>'
 			. '</div></div>';
 
 		if ( array() !== $genres ) {
@@ -324,7 +325,7 @@ final class SkrywersTab {
 			$first_genre = true;
 
 			foreach ( $genres as $genre_label ) {
-				$html       .= '<span class="ink-ontdek-skrywers__genre-pil"' . $aid( 'writers-card-genre', $first_genre ) . '>' . esc_html( $genre_label ) . '</span>';
+				$html       .= '<span class="ink-ontdek-skrywers__genre-pil ink-pill ink-pill--outline"' . $aid( 'writers-card-genre', $first_genre ) . '>' . esc_html( $genre_label ) . '</span>';
 				$first_genre = false;
 			}
 
@@ -336,6 +337,21 @@ final class SkrywersTab {
 		}
 
 		return $html . '</li>';
+	}
+
+	/**
+	 * The shared tier-label classes (primitives.css `ink-tier-label`, NR-1) for a
+	 * Gradering value — `ink-tier-label ink-tier-label--{tier}`. Pure. A value outside
+	 * the known tiers (or '') gets the bare base label. Shared by the Ontdek writer
+	 * card, the search results and the discovery surfaces.
+	 *
+	 * @param string $tier The Gradering value (`brons`/`silwer`/`goud`/`meester`), or ''.
+	 * @return string
+	 */
+	public static function tierLabelClasses( string $tier ): string {
+		$tier = (string) preg_replace( '/[^a-z0-9_-]/', '', strtolower( $tier ) );
+
+		return 'ink-tier-label' . ( '' !== $tier ? ' ink-tier-label--' . $tier : '' );
 	}
 
 	/**
@@ -354,7 +370,7 @@ final class SkrywersTab {
 			esc_url( remove_query_arg( array( self::GENRE_VAR, self::PAGED_VAR ) ) ),
 			__( 'Almal', 'ink-core' ),
 			( null === $active_genre ),
-			'ink-ontdek-skrywers__filter-knoppie',
+			'ink-ontdek-skrywers__filter-knoppie ink-chip',
 			'writers-filter-active'
 		);
 
@@ -366,7 +382,7 @@ final class SkrywersTab {
 				$url,
 				Terms::label( 'skrywer_genre_' . $genre ),
 				$genre === $active_genre,
-				'ink-ontdek-skrywers__filter-knoppie',
+				'ink-ontdek-skrywers__filter-knoppie ink-chip',
 				0 === $genre_index++ ? 'writers-filter' : ''
 			);
 		}
@@ -381,7 +397,7 @@ final class SkrywersTab {
 				$url,
 				self::sortLabel( $sort ),
 				$sort === $active_sort,
-				'ink-ontdek-skrywers__sorteer-knoppie',
+				'ink-ontdek-skrywers__sorteer-knoppie ink-chip ink-chip--sort',
 				$sort_ids[ $sort_index ] ?? ''
 			);
 		}

@@ -12,7 +12,8 @@
  *   "Merk alles as gelees" button, inside that section.
  * - `.ink-kennisgewings__item[data-ink-kennisgewing-status]` — each row; the
  *   attribute is `"unread"` or `"gelees"`, and unread rows also carry the
- *   `is-unread` class.
+ *   `is-unread` class, an `.ink-icon-tile` (neutral when read) and, while
+ *   unread, an `.ink-status-dot`.
  * - `[data-ink-kennisgewings-badge]` (OPTIONAL, zero or more, anywhere on the
  *   page — e.g. a future tab-label pill or the Oorsig "Ongelees" stat): its
  *   text content is zeroed out on a successful mark-all-read, since every
@@ -49,6 +50,13 @@
 					function ( item ) {
 						item.classList.remove( 'is-unread' );
 						item.setAttribute( 'data-ink-kennisgewing-status', 'gelees' );
+						// Read state on the shared primitives: neutral icon tile, no unread dot.
+						Array.prototype.forEach.call( item.querySelectorAll( '.ink-icon-tile' ), function ( tile ) {
+							tile.classList.add( 'ink-icon-tile--neutral' );
+						} );
+						Array.prototype.forEach.call( item.querySelectorAll( '.ink-status-dot' ), function ( dot ) {
+							dot.remove();
+						} );
 					}
 				);
 			}

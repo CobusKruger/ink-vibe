@@ -484,9 +484,9 @@ final class Hub {
 		// the H1 and intro paragraph are distinct authored copy ('opleiding_h1'/
 		// 'opleiding_intro').
 		$intro = '<div class="ink-opleiding__intro" data-audit-id="library-intro">'
-			. '<p class="ink-opleiding__eyebrow" data-audit-id="library-eyebrow">' . self::withAuditId( self::icon( self::ICON_LIBRARY ), 'library-eyebrow-icon' )
+			. '<p class="ink-opleiding__eyebrow ink-eyebrow ink-eyebrow--kicker" data-audit-id="library-eyebrow">' . self::withAuditId( self::icon( self::ICON_LIBRARY ), 'library-eyebrow-icon' )
 			. '<span data-audit-id="library-eyebrow-text">' . esc_html( Terms::label( 'opleiding' ) ) . '</span></p>'
-			. '<h1 class="ink-opleiding__heading" data-audit-id="library-h1">' . esc_html( Terms::label( 'opleiding_h1' ) ) . '</h1>'
+			. '<h1 class="ink-opleiding__heading ink-heading-h1-index" data-audit-id="library-h1">' . esc_html( Terms::label( 'opleiding_h1' ) ) . '</h1>'
 			. '<p class="ink-opleiding__intro-teks" data-audit-id="library-lede">' . esc_html( Terms::label( 'opleiding_intro' ) ) . '</p>'
 			. self::searchHtml( $search_term, $active_facet )
 			. '</div>';
@@ -590,14 +590,14 @@ final class Hub {
 		}
 
 		$html = '<div class="ink-opleiding__rak" data-audit-id="library-shelf">'
-			. '<h2 class="ink-opleiding__rak-titel" data-audit-id="library-shelf-h2">' . esc_html__( 'Die redakteur se rak', 'ink-core' ) . '</h2>'
+			. '<h2 class="ink-opleiding__rak-titel ink-heading-h2-sub" data-audit-id="library-shelf-h2">' . esc_html__( 'Die redakteur se rak', 'ink-core' ) . '</h2>'
 			. '<p class="ink-opleiding__rak-onderskrif" data-audit-id="library-shelf-sub">' . esc_html__( 'Drie stukke om mee te begin.', 'ink-core' ) . '</p>'
 			. '<ul class="ink-opleiding__rak-lys" data-audit-id="library-shelf-grid">';
 
 		$first = true;
 
 		foreach ( $featured as $card ) {
-			$html .= self::cardHtml( $card, 'ink-opleiding__rak-item', $first ? 'library-shelf-card' : '' );
+			$html .= self::cardHtml( $card, 'ink-opleiding__rak-item ink-card--shelf', $first ? 'library-shelf-card' : '' );
 			$first = false;
 		}
 
@@ -623,11 +623,11 @@ final class Hub {
 		return '<form class="ink-opleiding__soek" data-audit-id="library-search" role="search" method="get">'
 			. $hidden
 			. '<span class="ink-opleiding__soek-ikoon" data-audit-id="library-search-icon-wrap">' . self::withAuditId( self::icon( self::ICON_SEARCH ), 'library-search-icon' ) . '</span>'
-			. '<input type="search" class="ink-opleiding__soek-veld" data-audit-id="library-search-input" name="' . esc_attr( self::SEARCH_VAR ) . '"'
+			. '<input type="search" class="ink-opleiding__soek-veld ink-search-field ink-search-field--with-button" data-audit-id="library-search-input" name="' . esc_attr( self::SEARCH_VAR ) . '"'
 			. ' value="' . esc_attr( $term ) . '"'
 			. ' placeholder="' . esc_attr__( 'Soek in opleiding…', 'ink-core' ) . '"'
 			. ' aria-label="' . esc_attr__( 'Soek in opleiding…', 'ink-core' ) . '" />'
-			. '<button type="submit" class="ink-opleiding__soek-knoppie" data-audit-id="library-search-btn">' . esc_html__( 'Soek', 'ink-core' ) . '</button>'
+			. '<button type="submit" class="ink-opleiding__soek-knoppie ink-btn ink-btn--primary" data-audit-id="library-search-btn">' . esc_html__( 'Soek', 'ink-core' ) . '</button>'
 			. '</form>';
 	}
 
@@ -654,7 +654,7 @@ final class Hub {
 				(string) remove_query_arg( array( self::VAARDIGHEID_VAR, self::PAGED_VAR ) ),
 				__( 'Alles', 'ink-core' ),
 				( null === $active_facet ),
-				'ink-opleiding__filter-knoppie'
+				'ink-opleiding__filter-knoppie ink-chip'
 			),
 			'library-filter'
 		);
@@ -665,7 +665,7 @@ final class Hub {
 				$url,
 				$facet['name'],
 				$facet['slug'] === $active_facet,
-				'ink-opleiding__filter-knoppie'
+				'ink-opleiding__filter-knoppie ink-chip'
 			);
 		}
 
@@ -685,14 +685,14 @@ final class Hub {
 	 */
 	private static function emptyStateHtml( bool $is_filtered ): string {
 		if ( ! $is_filtered ) {
-			return '<p class="ink-opleiding__leeg" data-audit-id="library-empty">' . esc_html__( 'Nog niks op hierdie rak nie.', 'ink-core' ) . '</p>';
+			return '<p class="ink-opleiding__leeg ink-card--empty" data-audit-id="library-empty">' . esc_html__( 'Nog niks op hierdie rak nie.', 'ink-core' ) . '</p>';
 		}
 
 		$clear_url = (string) remove_query_arg( array( self::VAARDIGHEID_VAR, self::SEARCH_VAR, self::PAGED_VAR ) );
 
-		return '<div class="ink-opleiding__leeg" data-audit-id="library-empty">'
+		return '<div class="ink-opleiding__leeg ink-card--empty" data-audit-id="library-empty">'
 			. '<p class="ink-opleiding__leeg-teks" data-audit-id="library-empty-text">' . esc_html__( 'Probeer \'n ander soekterm of blaai deur alle artikels.', 'ink-core' ) . '</p>'
-			. '<a class="ink-opleiding__leeg-skoon" data-audit-id="library-empty-btn" href="' . esc_url( $clear_url ) . '">' . esc_html__( 'Vee filters uit', 'ink-core' ) . '</a>'
+			. '<a class="ink-opleiding__leeg-skoon ink-btn ink-btn--outline" data-audit-id="library-empty-btn" href="' . esc_url( $clear_url ) . '">' . esc_html__( 'Vee filters uit', 'ink-core' ) . '</a>'
 			. '</div>';
 	}
 
@@ -713,7 +713,7 @@ final class Hub {
 	 * @return string
 	 */
 	private static function cardHtml( array $card, string $extra = '', string $audit = '' ): string {
-		$class = 'ink-opleiding__item' . ( '' !== $extra ? ' ' . $extra : '' );
+		$class = 'ink-opleiding__item ink-card' . ( '' !== $extra ? ' ' . $extra : '' );
 
 		$title     = (string) ( $card['title'] ?? '' );
 		$permalink = (string) ( $card['permalink'] ?? '' );
@@ -728,11 +728,11 @@ final class Hub {
 			$meta = '<div class="ink-opleiding__item-meta"' . self::auditAttr( $audit, '-meta' ) . '>';
 
 			if ( '' !== $category ) {
-				$meta .= '<span class="ink-opleiding__item-pil"' . self::auditAttr( $audit, '-badge' ) . '>' . esc_html( $category ) . '</span>';
+				$meta .= '<span class="ink-opleiding__item-pil ink-pill ink-pill--outline"' . self::auditAttr( $audit, '-badge' ) . '>' . esc_html( $category ) . '</span>';
 			}
 
 			if ( '' !== $read_time ) {
-				$meta .= '<span class="ink-opleiding__item-leestyd"' . self::auditAttr( $audit, '-time' ) . '>' . self::icon( self::ICON_CLOCK )
+				$meta .= '<span class="ink-opleiding__item-leestyd ink-meta"' . self::auditAttr( $audit, '-time' ) . '>' . self::icon( self::ICON_CLOCK )
 					. '<span>' . esc_html( $read_time ) . '</span></span>';
 			}
 
@@ -745,7 +745,7 @@ final class Hub {
 
 		return '<li class="' . esc_attr( $class ) . '"' . self::auditAttr( $audit, '' ) . '>'
 			. $meta
-			. '<a class="ink-opleiding__titel"' . self::auditAttr( $audit, '-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $title ) . '</a>'
+			. '<a class="ink-opleiding__titel ink-heading-h3-card"' . self::auditAttr( $audit, '-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $title ) . '</a>'
 			. $excerpt_html
 			. '<div class="ink-opleiding__item-voet"' . self::auditAttr( $audit, '-footer' ) . '>'
 			. '<span class="ink-opleiding__outeur"' . self::auditAttr( $audit, '-author' ) . '>' . esc_html( $author ) . '</span>'

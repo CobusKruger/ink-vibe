@@ -19,8 +19,8 @@
  */
 
 ?>
-<!-- wp:group {"align":"full","className":"is-style-ink-footer","templateLock":"contentOnly","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"secondary","textColor":"ink-text","layout":{"type":"constrained"}} -->
-<div data-audit-id="footer" class="wp-block-group alignfull is-style-ink-footer has-ink-text-color has-secondary-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"align":"full","className":"is-style-ink-footer","templateLock":"contentOnly","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"textColor":"ink-text","layout":{"type":"constrained"}} -->
+<div data-audit-id="footer" class="wp-block-group alignfull is-style-ink-footer has-ink-text-color has-text-color" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","className":"ink-footer-kolomme","layout":{"type":"default"}} -->
 	<div data-audit-id="footer-grid" class="wp-block-group alignwide ink-footer-kolomme">
 		<!-- Handelsmerk-kolom: veer + woordmerk + blurb + sosiale skakels. -->
@@ -56,8 +56,8 @@
 		<!-- Ontdek-kolom. -->
 		<!-- wp:group {"className":"ink-footer-kolom","layout":{"type":"constrained"}} -->
 		<div data-audit-id="footer-col" class="wp-block-group ink-footer-kolom">
-			<!-- wp:heading {"level":3,"fontSize":"md"} -->
-			<h3 data-audit-id="footer-col-heading" class="wp-block-heading has-md-font-size"><?php esc_html_e( 'Ontdek', 'ink-foundation' ); ?></h3>
+			<!-- wp:heading {"level":3,"className":"ink-heading-h5"} -->
+			<h3 data-audit-id="footer-col-heading" class="wp-block-heading ink-heading-h5"><?php esc_html_e( 'Ontdek', 'ink-foundation' ); ?></h3>
 			<!-- /wp:heading -->
 
 			<!-- wp:list {"className":"ink-footer-lys"} -->
@@ -74,8 +74,8 @@
 		<!-- Gemeenskap-kolom. -->
 		<!-- wp:group {"className":"ink-footer-kolom","layout":{"type":"constrained"}} -->
 		<div class="wp-block-group ink-footer-kolom">
-			<!-- wp:heading {"level":3,"fontSize":"md"} -->
-			<h3 class="wp-block-heading has-md-font-size"><?php esc_html_e( 'Gemeenskap', 'ink-foundation' ); ?></h3>
+			<!-- wp:heading {"level":3,"className":"ink-heading-h5"} -->
+			<h3 class="wp-block-heading ink-heading-h5"><?php esc_html_e( 'Gemeenskap', 'ink-foundation' ); ?></h3>
 			<!-- /wp:heading -->
 
 			<!-- wp:list {"className":"ink-footer-lys"} -->
@@ -92,8 +92,8 @@
 		<!-- Ondersteun ons-kolom. -->
 		<!-- wp:group {"className":"ink-footer-kolom","layout":{"type":"constrained"}} -->
 		<div class="wp-block-group ink-footer-kolom">
-			<!-- wp:heading {"level":3,"fontSize":"md"} -->
-			<h3 class="wp-block-heading has-md-font-size"><?php esc_html_e( 'Ondersteun ons', 'ink-foundation' ); ?></h3>
+			<!-- wp:heading {"level":3,"className":"ink-heading-h5"} -->
+			<h3 class="wp-block-heading ink-heading-h5"><?php esc_html_e( 'Ondersteun ons', 'ink-foundation' ); ?></h3>
 			<!-- /wp:heading -->
 
 			<!-- wp:list {"className":"ink-footer-lys"} -->

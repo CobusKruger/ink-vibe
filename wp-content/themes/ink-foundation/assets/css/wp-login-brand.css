@@ -11,81 +11,130 @@
  * `login_header()` markup, because it carries real WP-native interactive
  * machinery (the password-strength meter, "Generate password" button, weak-
  * password confirmation checkbox — `wp-admin/js/user-profile.js`) that has no
- * cheap equivalent to reproduce in this theme's own visual language. Rather
- * than leave it 100% unbranded, this file re-skins WordPress's OWN markup
- * (colours, fonts, card shape) to match the sitewide design tokens — NOT a
- * pixel-for-pixel rebuild of the other three auth cards. Enqueued only for
- * this one screen via `login_enqueue_scripts` (functions.php).
+ * cheap equivalent to reproduce in this theme's own visual language. Enqueued
+ * only for this one screen via `login_enqueue_scripts` (functions.php).
  *
- * TOKENS ONLY (Gate A) is relaxed here on purpose: `wp-login.php` renders
- * standalone (no `wp_head`, so no `--wp--preset--*` custom properties exist on
- * this page) — literal values are the sitewide tokens' own resolved values,
- * hand-copied and commented, not re-derivable via `var()` on this screen.
+ * Separate render context: `wp-login.php` renders standalone (no `wp_head`, so
+ * neither theme.json's `--wp--preset--*` properties nor `primitives.css` exist
+ * here). The theme tokens this skin needs are therefore mirrored ONCE below as
+ * local custom properties carrying theme.json's (Lovable) palette values, and
+ * the rules apply the /auth recipes from `primitives.css` (Fidelity remediation
+ * Stage 3): card `ink-card--lg`, field `ink-field`, button `ink-btn--primary`.
+ * Keep the mirror in step with theme.json `settings.color.palette`.
  */
 
 body.login {
-	background-color: #f8f6f2; /* --wp--preset--color--surface */
-	font-family: 'Inter', system-ui, sans-serif; /* --wp--preset--font-family--body */
+	/* theme.json token mirror (Lovable palette) */
+	--ink-login-primary: #ec3b13; /* color.primary */
+	--ink-login-primary-light: #f06242; /* color.primary-light */
+	--ink-login-primary-foreground: #fff; /* color.primary-foreground */
+	--ink-login-surface: #faf8f5; /* color.surface */
+	--ink-login-surface-alt: #fdfdfc; /* color.surface-alt */
+	--ink-login-ink-text: #181d25; /* color.ink-text */
+	--ink-login-muted-text: #676f7e; /* color.muted-text */
+	--ink-login-border: #e7e1da; /* color.border */
+	--ink-login-font-body: Inter, system-ui, sans-serif; /* fontFamily.body */
+	--ink-login-font-display: Lora, Georgia, serif; /* fontFamily.display */
+	--ink-login-radius-md: 6px; /* custom.radius.md */
+	--ink-login-radius-lg: 8px; /* custom.radius.lg */
+	--ink-login-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow.xs */
+	--ink-login-shadow-md: 0 4px 20px -4px hsl(220 20% 12% / 0.08); /* shadow.md */
+
+	background-color: var(--ink-login-surface);
+	color: var(--ink-login-ink-text);
+	font-family: var(--ink-login-font-body);
 }
 
+/* Wordmark in place of the WordPress logo (h2-block: Lora 24/32 600). */
 body.login #login h1 a {
 	background-image: none;
 	width: auto;
 	height: auto;
-	font-family: 'Lora', Georgia, serif; /* --wp--preset--font-family--display */
+	font-family: var(--ink-login-font-display);
 	font-size: 24px;
-	font-weight: 700;
-	color: #1a1d21; /* --wp--preset--color--ink-text */
+	font-weight: 600;
+	line-height: 32px;
+	color: var(--ink-login-ink-text);
 	text-indent: 0;
 }
 
+/* Card — `ink-card ink-card--lg` (the /auth card). */
 body.login #loginform,
 body.login #resetpassform {
-	background-color: #fdfcfa; /* --wp--preset--color--surface-alt */
-	border: 1px solid #e8e4dc; /* --wp--preset--color--border */
-	border-radius: 8px; /* --wp--custom--radius--lg */
-	box-shadow: 0 2px 12px -2px hsl(220 20% 12% / 0.06); /* --wp--preset--shadow--sm */
+	background-color: var(--ink-login-surface-alt);
+	border: 1px solid var(--ink-login-border);
+	border-radius: var(--ink-login-radius-lg);
+	box-shadow: var(--ink-login-shadow-xs);
 	padding: 32px;
 }
 
+body.login label {
+	font-family: var(--ink-login-font-body);
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 20px;
+	color: var(--ink-login-ink-text);
+}
+
+/* Field — `ink-field` (40px, 8px 12px, radius 6, 14/20 at this width). */
 body.login input[type="text"],
 body.login input[type="password"] {
-	font-family: 'Inter', system-ui, sans-serif;
-	border-color: #e8e4dc;
-	border-radius: 6px; /* --wp--custom--radius--md */
+	box-sizing: border-box;
+	height: 40px;
+	padding: 8px 12px;
+	border: 1px solid var(--ink-login-border);
+	border-radius: var(--ink-login-radius-md);
+	background-color: var(--ink-login-surface);
+	color: var(--ink-login-ink-text);
+	font-family: var(--ink-login-font-body);
+	font-size: 14px;
+	line-height: 20px;
 }
 
 body.login input[type="text"]:focus,
 body.login input[type="password"]:focus {
-	border-color: #ec3b13; /* --wp--preset--color--primary */
-	box-shadow: 0 0 0 1px #ec3b13;
+	border-color: var(--ink-login-border);
+	outline: none;
+	box-shadow: 0 0 0 2px var(--ink-login-surface), 0 0 0 4px var(--ink-login-primary);
 }
 
+/* Button — `ink-btn ink-btn--primary` (default size: 40px, 8px 16px, Lora 14/20 500). */
 body.login .button-primary {
-	background: #ec3b13; /* --wp--preset--color--primary */
-	border-color: #ec3b13;
-	box-shadow: none;
+	height: 40px;
+	min-height: 40px;
+	padding: 8px 16px;
+	border: 0;
+	border-radius: var(--ink-login-radius-md);
+	background: var(--ink-login-primary);
+	color: var(--ink-login-primary-foreground);
+	box-shadow: var(--ink-login-shadow-md);
 	text-shadow: none;
-	border-radius: 6px;
-	font-family: 'Lora', Georgia, serif;
+	font-family: var(--ink-login-font-display);
+	font-size: 14px;
 	font-weight: 500;
-	height: 44px;
-	line-height: 42px;
-	padding: 0 32px;
+	line-height: 20px;
 }
 
 body.login .button-primary:hover,
 body.login .button-primary:focus {
-	background: #ef6842; /* --wp--preset--color--primary-light */
-	border-color: #ef6842;
+	background: var(--ink-login-primary-light);
+	color: var(--ink-login-primary-foreground);
 }
 
+body.login .button-primary:focus-visible {
+	outline: 2px solid var(--ink-login-primary);
+	outline-offset: 2px;
+}
+
+/* Back links — `ink-nav-link--footer` (14/20 muted, hover foreground). */
 body.login #nav a,
 body.login #backtoblog a {
-	color: #6b7280; /* --wp--preset--color--muted-text */
+	font-size: 14px;
+	line-height: 20px;
+	color: var(--ink-login-muted-text);
 }
 
 body.login #nav a:hover,
 body.login #backtoblog a:hover {
-	color: #1a1d21;
+	color: var(--ink-login-ink-text);
 }

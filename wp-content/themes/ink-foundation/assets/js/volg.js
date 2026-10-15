@@ -82,6 +82,9 @@
 				}
 
 				btn.classList.toggle( 'is-following', nowFollowing );
+				// Shared button primitive (primitives.css): Volg = primary, Volg tans = subtle.
+				btn.classList.toggle( 'ink-btn--subtle', nowFollowing );
+				btn.classList.toggle( 'ink-btn--primary', ! nowFollowing );
 				btn.setAttribute( 'aria-pressed', nowFollowing ? 'true' : 'false' );
 				btn.textContent = nowFollowing ? cfg.followingText : cfg.followText;
 				btn.disabled = false;

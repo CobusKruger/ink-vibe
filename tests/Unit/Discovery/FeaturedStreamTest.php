@@ -118,7 +118,7 @@ test( 'toHtml renders the eyebrow + serif title + focusable "Sien alle skrywes" 
 	// "Sien alle skrywes" link to the Ontdek hub, underline-slide, real href (no #).
 	expect( $html )->toContain( 'Sien alle skrywes' );
 	expect( $html )->toContain( 'href="/ontdek"' );
-	expect( $html )->toContain( 'ink-underline-slide' );
+	expect( $html )->toContain( 'ink-link--slide' );
 	expect( $html )->not->toContain( 'href="#"' );
 
 	// The section is labelled by its title (a11y).
@@ -166,7 +166,7 @@ test( 'toHtml renders the card: pill, read-time, h3 title link, excerpt, avatar 
 
 	// Title is an h3 (correct order under the section h2), linked to the work.
 	// The featured (first) card carries the featured-lead fidelity-audit join key.
-	expect( $html )->toContain( '<h3 class="ink-uitgesoekte-bydraes__werk" data-audit-id="featured-lead-title"><a href="https://ink.test/storie/fluister">Fluister in die tuin</a></h3>' );
+	expect( $html )->toContain( '<h3 class="ink-uitgesoekte-bydraes__werk ink-heading-h2-block" data-audit-id="featured-lead-title"><a href="https://ink.test/storie/fluister">Fluister in die tuin</a></h3>' );
 
 	// Excerpt.
 	expect( $html )->toContain( 'Sy het die briewe' );
@@ -185,17 +185,17 @@ test( 'the category pill carries a per-bydrae-type modifier keyed on the POST TY
 	foreach ( array( 'gedig', 'storie', 'artikel' ) as $type ) {
 		$html = FeaturedStream::toHtml( array( ink_featured_item( array( 'category_slug' => $type ) ) ) );
 
-		expect( $html )->toContain( 'ink-uitgesoekte-bydraes__pil ink-uitgesoekte-bydraes__pil--' . $type );
+		expect( $html )->toContain( 'ink-uitgesoekte-bydraes__pil ink-pill ink-pill--soft ink-uitgesoekte-bydraes__pil--' . $type );
 	}
 
 	// An unknown / absent type degrades to the neutral base pill — never an
 	// unstyled `--skryfwerk` class and never a class built from unvalidated input.
 	$unknown = FeaturedStream::toHtml( array( ink_featured_item( array( 'category_slug' => 'skryfwerk' ) ) ) );
-	expect( $unknown )->toContain( 'class="ink-uitgesoekte-bydraes__pil"' );
+	expect( $unknown )->toContain( 'class="ink-uitgesoekte-bydraes__pil ink-pill ink-pill--soft"' );
 	expect( $unknown )->not->toContain( '__pil--' );
 
 	$absent = FeaturedStream::toHtml( array( ink_featured_item() ) );
-	expect( $absent )->toContain( 'class="ink-uitgesoekte-bydraes__pil"' );
+	expect( $absent )->toContain( 'class="ink-uitgesoekte-bydraes__pil ink-pill ink-pill--soft"' );
 	expect( $absent )->not->toContain( '__pil--' );
 } );
 

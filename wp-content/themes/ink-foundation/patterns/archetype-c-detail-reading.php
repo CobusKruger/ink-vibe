@@ -7,16 +7,16 @@
  * Description: Leesbladsy-skanderaal: sterk titel met metadata, 'n leesbare hoofkolom en verwante stukke. Die werklike leessjablone is Epiek 7.
  */
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-band ink-band--sm","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-band ink-band--sm" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained","contentSize":"768px"}} -->
 	<div class="wp-block-group">
-		<!-- wp:paragraph {"style":{"typography":{"fontStyle":"normal","fontWeight":"600","textTransform":"uppercase","letterSpacing":"0.08em"}},"fontSize":"xs","textColor":"accent"} -->
-		<p class="has-accent-color has-text-color has-xs-font-size" style="font-style:normal;font-weight:600;letter-spacing:0.08em;text-transform:uppercase">Tipe</p>
+		<!-- wp:paragraph {"className":"ink-eyebrow ink-eyebrow--accent"} -->
+		<p class="ink-eyebrow ink-eyebrow--accent">Tipe</p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
-		<h1 class="wp-block-heading has-xxxl-font-size">Titel van die stuk</h1>
+		<!-- wp:heading {"level":1,"className":"ink-heading-h1-reading"} -->
+		<h1 class="wp-block-heading ink-heading-h1-reading">Titel van die stuk</h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
@@ -27,8 +27,8 @@
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-band ink-band--sm","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-band ink-band--sm" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained","contentSize":"768px"}} -->
 	<div class="wp-block-group">
 		<!-- wp:paragraph {"fontSize":"md"} -->
@@ -43,12 +43,12 @@
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"secondary","layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull has-secondary-background-color has-background" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-band ink-band--sm ink-band--stone ink-band--border-y","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-band ink-band--sm ink-band--stone ink-band--border-y" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
-		<h2 class="wp-block-heading has-xxl-font-size">Verwante stukke</h2>
+		<!-- wp:heading {"level":2,"className":"ink-heading-h2-block"} -->
+		<h2 class="wp-block-heading ink-heading-h2-block">Verwante stukke</h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:columns {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s-24"}}}} -->
@@ -57,8 +57,8 @@
 			<div class="wp-block-column">
 				<!-- wp:group {"className":"is-style-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 				<div class="wp-block-group is-style-card">
-					<!-- wp:heading {"level":3,"fontSize":"lg"} -->
-					<h3 class="wp-block-heading has-lg-font-size">Titel van die werk</h3>
+					<!-- wp:heading {"level":3,"className":"ink-heading-h3-card"} -->
+					<h3 class="wp-block-heading ink-heading-h3-card">Titel van die werk</h3>
 					<!-- /wp:heading -->
 
 					<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
@@ -66,7 +66,7 @@
 					<!-- /wp:paragraph -->
 
 					<!-- wp:paragraph {"fontSize":"md"} -->
-					<p class="has-md-font-size"><a href="#">Lees meer</a></p>
+					<p class="has-md-font-size"><a class="ink-link" href="#">Lees meer</a></p>
 					<!-- /wp:paragraph -->
 				</div>
 				<!-- /wp:group -->
@@ -77,8 +77,8 @@
 			<div class="wp-block-column">
 				<!-- wp:group {"className":"is-style-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 				<div class="wp-block-group is-style-card">
-					<!-- wp:heading {"level":3,"fontSize":"lg"} -->
-					<h3 class="wp-block-heading has-lg-font-size">Titel van die werk</h3>
+					<!-- wp:heading {"level":3,"className":"ink-heading-h3-card"} -->
+					<h3 class="wp-block-heading ink-heading-h3-card">Titel van die werk</h3>
 					<!-- /wp:heading -->
 
 					<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
@@ -86,7 +86,7 @@
 					<!-- /wp:paragraph -->
 
 					<!-- wp:paragraph {"fontSize":"md"} -->
-					<p class="has-md-font-size"><a href="#">Lees meer</a></p>
+					<p class="has-md-font-size"><a class="ink-link" href="#">Lees meer</a></p>
 					<!-- /wp:paragraph -->
 				</div>
 				<!-- /wp:group -->

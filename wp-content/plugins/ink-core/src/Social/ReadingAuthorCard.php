@@ -105,7 +105,7 @@ final class ReadingAuthorCard {
 			'',
 			$name,
 			array(
-				'class'      => 'ink-outeur-kaart__foto',
+				'class'      => 'ink-outeur-kaart__foto ink-avatar ink-avatar--96 ink-avatar--ring',
 				'extra_attr' => 'data-audit-id="reading-author-avatar"',
 			)
 		);
@@ -115,7 +115,7 @@ final class ReadingAuthorCard {
 		$html  = '<section class="ink-outeur-kaart" data-audit-id="reading-author-card">';
 		$html .= '<div class="ink-outeur-kaart__foto-omhulsel">' . (string) $avatar . '</div>';
 		$html .= '<div class="ink-outeur-kaart__inhoud" data-audit-id="reading-author-body">';
-		$html .= '<h3 class="ink-outeur-kaart__naam"' . ( null !== $prefix ? ' data-audit-id="' . esc_attr( $prefix ) . '-author-name"' : '' ) . '>' . esc_html( $name ) . '</h3>';
+		$html .= '<h3 class="ink-outeur-kaart__naam ink-heading-h3"' . ( null !== $prefix ? ' data-audit-id="' . esc_attr( $prefix ) . '-author-name"' : '' ) . '>' . esc_html( $name ) . '</h3>';
 
 		if ( '' !== trim( $bio ) ) {
 			$html .= '<p class="ink-outeur-kaart__bio"' . ( null !== $prefix ? ' data-audit-id="' . esc_attr( $prefix ) . '-author-bio"' : '' ) . '>' . esc_html( $bio ) . '</p>';
@@ -123,9 +123,9 @@ final class ReadingAuthorCard {
 
 		$html .= '<div class="ink-outeur-kaart__aksies" data-audit-id="reading-author-actions">';
 		if ( null !== $following ) {
-			$html .= FollowToggle::toHtml( $author_id, $following );
+			$html .= FollowToggle::toHtml( $author_id, $following, 'sm' );
 		}
-		$html .= '<a class="ink-outeur-kaart__sien-alle" data-audit-id="reading-author-all-works" href="' . esc_url( $profile ) . '">'
+		$html .= '<a class="ink-outeur-kaart__sien-alle ink-btn ink-btn--sm ink-btn--subtle" data-audit-id="reading-author-all-works" href="' . esc_url( $profile ) . '">'
 			. esc_html( Terms::label( 'sien_alle_werke' ) ) . '</a>';
 		$html .= '</div>';
 

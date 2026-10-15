@@ -36,6 +36,13 @@ $ink_skryf_icons      = array(
 	'storie'  => '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
 	'artikel' => '<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/>',
 );
+// Per-type icon-tile tone (gedig = terracotta, storie = sage, artikel = ink), the
+// shared `ink-tone-*` modifiers on `ink-icon-tile--circle-lg` (primitives.css).
+$ink_skryf_tones      = array(
+	'gedig'   => 'ink-tone-primary',
+	'storie'  => 'ink-tone-accent',
+	'artikel' => 'ink-tone-ink',
+);
 $ink_skryf_first_slug = isset( $ink_skryf_types[0]['slug'] ) ? (string) $ink_skryf_types[0]['slug'] : 'gedig';
 
 // Post-plaas success state (display-only; the marker comes from our own redirect).
@@ -55,14 +62,14 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	$ink_done_label = function_exists( 'mb_strtolower' ) ? mb_strtolower( $ink_done_label ) : strtolower( $ink_done_label );
 	$ink_done_title = isset( $ink_skryf_success['title'] ) ? (string) $ink_skryf_success['title'] : '';
 	?>
-	<!-- wp:group {"className":"ink-skryf-success","layout":{"type":"constrained"}} -->
-	<div class="wp-block-group ink-skryf-success" data-audit-id="skryf-success">
+	<!-- wp:group {"className":"ink-card ink-card--panel ink-skryf-success","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group ink-card ink-card--panel ink-skryf-success" data-audit-id="skryf-success">
 		<!-- wp:html -->
-		<span class="ink-skryf-success__icon" aria-hidden="true" data-audit-id="skryf-success-icon"><?php echo ink_foundation_icon( '<path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></span>
+		<span class="ink-icon-tile ink-icon-tile--circle-lg ink-skryf-success__icon" aria-hidden="true" data-audit-id="skryf-success-icon"><?php echo ink_foundation_icon( '<path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></span>
 		<!-- /wp:html -->
 
-		<!-- wp:heading {"level":1,"textAlign":"center","className":"ink-skryf-title ink-skryf-success__heading"} -->
-		<h1 class="wp-block-heading has-text-align-center ink-skryf-title ink-skryf-success__heading" data-audit-id="skryf-success-heading"><?php printf( /* translators: %s: bydrae type (gedig/storie/artikel). */ esc_html__( 'Jou %s is gepubliseer', 'ink-foundation' ), esc_html( $ink_done_label ) ); ?></h1>
+		<!-- wp:heading {"level":1,"textAlign":"center","className":"ink-heading-h2-section ink-skryf-success__heading"} -->
+		<h1 class="wp-block-heading has-text-align-center ink-heading-h2-section ink-skryf-success__heading" data-audit-id="skryf-success-heading"><?php printf( /* translators: %s: bydrae type (gedig/storie/artikel). */ esc_html__( 'Jou %s is gepubliseer', 'ink-foundation' ), esc_html( $ink_done_label ) ); ?></h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"align":"center","fontSize":"md","textColor":"muted-text","className":"ink-skryf-success__lead"} -->
@@ -71,12 +78,12 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 
 		<!-- wp:buttons {"className":"ink-skryf-success__cta","layout":{"type":"flex","justifyContent":"center"}} -->
 		<div class="wp-block-buttons ink-skryf-success__cta" data-audit-id="skryf-success-cta">
-			<!-- wp:button {"className":"is-style-ink-primary"} -->
-			<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link wp-element-button" href="/skryf" data-audit-id="skryf-success-write-another"><?php echo esc_html__( 'Skryf nog \'n stuk', 'ink-foundation' ); ?></a></div>
+			<!-- wp:button {"className":"is-style-ink-primary ink-btn-lg"} -->
+			<div class="wp-block-button is-style-ink-primary ink-btn-lg"><a class="wp-block-button__link wp-element-button" href="/skryf" data-audit-id="skryf-success-write-another"><?php echo esc_html__( 'Skryf nog \'n stuk', 'ink-foundation' ); ?></a></div>
 			<!-- /wp:button -->
 
-			<!-- wp:button {"className":"is-style-ink-outline"} -->
-			<div class="wp-block-button is-style-ink-outline"><a class="wp-block-button__link wp-element-button" href="/" data-audit-id="skryf-success-back-home"><?php echo esc_html__( 'Terug na tuis', 'ink-foundation' ); ?></a></div>
+			<!-- wp:button {"className":"is-style-ink-neutral ink-btn-lg"} -->
+			<div class="wp-block-button is-style-ink-neutral ink-btn-lg"><a class="wp-block-button__link wp-element-button" href="/" data-audit-id="skryf-success-back-home"><?php echo esc_html__( 'Terug na tuis', 'ink-foundation' ); ?></a></div>
 			<!-- /wp:button -->
 		</div>
 		<!-- /wp:buttons -->
@@ -84,11 +91,11 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	<!-- /wp:group -->
 
 	<!-- wp:html -->
-	<p class="ink-skryf-success__eyebrow" data-audit-id="skryf-success-eyebrow"><?php echo ink_foundation_icon( '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' ) . esc_html__( 'Lees en reageer', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></p>
+	<p class="ink-eyebrow ink-skryf-success__eyebrow" data-audit-id="skryf-success-eyebrow"><?php echo ink_foundation_icon( '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' ) . esc_html__( 'Lees en reageer', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></p>
 	<!-- /wp:html -->
 
-	<!-- wp:heading {"level":2,"fontSize":"lg"} -->
-	<h2 class="wp-block-heading has-lg-font-size" data-audit-id="skryf-success-h2"><?php echo esc_html__( 'Gee \'n skrywer vandag \'n hupstoot', 'ink-foundation' ); ?></h2>
+	<!-- wp:heading {"level":2,"className":"ink-heading-h2-sub"} -->
+	<h2 class="wp-block-heading ink-heading-h2-sub" data-audit-id="skryf-success-h2"><?php echo esc_html__( 'Gee \'n skrywer vandag \'n hupstoot', 'ink-foundation' ); ?></h2>
 	<!-- /wp:heading -->
 
 	<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
@@ -110,8 +117,8 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	 */
 	?>
 <?php else : ?>
-	<!-- wp:heading {"level":1,"textAlign":"center","className":"ink-skryf-title"} -->
-	<h1 class="wp-block-heading has-text-align-center ink-skryf-title" data-audit-id="skryf-intro-h1"><?php esc_html_e( 'Deel jou woorde', 'ink-foundation' ); ?></h1>
+	<!-- wp:heading {"level":1,"textAlign":"center","className":"ink-heading-h2-section ink-skryf-title"} -->
+	<h1 class="wp-block-heading has-text-align-center ink-heading-h2-section ink-skryf-title" data-audit-id="skryf-intro-h1"><?php esc_html_e( 'Deel jou woorde', 'ink-foundation' ); ?></h1>
 	<!-- /wp:heading -->
 
 	<!-- wp:paragraph {"align":"center","fontSize":"md","textColor":"muted-text"} -->
@@ -124,14 +131,14 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	<!-- /wp:paragraph -->
 	<?php else : ?>
 		<?php if ( 'geen-toegang' === $ink_skryf_notice && function_exists( 'ink_foundation_skryf_denial' ) ) : ?>
-	<!-- wp:paragraph {"className":"ink-skryf-denial"} -->
-	<p class="ink-skryf-denial" data-audit-id="skryf-denial"><?php echo esc_html( ink_foundation_skryf_denial() ); ?> <a href="/lidmaatskap"><?php echo esc_html__( 'Sien aansluitingsopsies', 'ink-foundation' ); ?></a></p>
+	<!-- wp:paragraph {"className":"ink-notice ink-skryf-denial"} -->
+	<p class="ink-notice ink-skryf-denial" data-audit-id="skryf-denial"><?php echo esc_html( ink_foundation_skryf_denial() ); ?> <a href="/lidmaatskap"><?php echo esc_html__( 'Sien aansluitingsopsies', 'ink-foundation' ); ?></a></p>
 	<!-- /wp:paragraph -->
 		<?php endif; ?>
 	<!-- wp:html -->
 	<form class="ink-skryf-form" data-audit-id="skryf-form" method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 		<fieldset class="ink-skryf-types" data-audit-id="skryf-types">
-			<legend data-audit-id="skryf-types-legend"><?php echo esc_html__( 'Kies \'n tipe', 'ink-foundation' ); ?></legend>
+			<legend class="ink-label" data-audit-id="skryf-types-legend"><?php echo esc_html__( 'Kies \'n tipe', 'ink-foundation' ); ?></legend>
 			<?php
 			$ink_first = true;
 			foreach ( $ink_skryf_types as $ink_type ) :
@@ -141,12 +148,12 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 					continue;
 				}
 				?>
-				<label class="ink-skryf-type ink-skryf-type--<?php echo esc_attr( $ink_slug ); ?>"<?php echo $ink_first ? ' data-audit-id="skryf-type-card"' : ''; ?>>
+				<label class="ink-card ink-card--selectable-lg ink-skryf-type ink-skryf-type--<?php echo esc_attr( $ink_slug ); ?>"<?php echo $ink_first ? ' data-audit-id="skryf-type-card"' : ''; ?>>
 					<input type="radio" name="<?php echo esc_attr( $ink_skryf['field_type'] ); ?>" value="<?php echo esc_attr( $ink_slug ); ?>"<?php echo $ink_first ? ' checked data-audit-id="skryf-type-card-radio"' : ''; ?> data-counter-mode="<?php echo esc_attr( isset( $ink_type['counter_mode'] ) ? (string) $ink_type['counter_mode'] : 'words' ); ?>" data-placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_slug ] ?? '' ); ?>" />
 					<?php if ( isset( $ink_skryf_icons[ $ink_slug ] ) ) : ?>
-						<span class="ink-skryf-type__icon ink-skryf-type__icon--<?php echo esc_attr( $ink_slug ); ?>" aria-hidden="true"<?php echo $ink_first ? ' data-audit-id="skryf-type-card-icon"' : ''; ?>><?php echo ink_foundation_icon( $ink_skryf_icons[ $ink_slug ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></span>
+						<span class="ink-icon-tile ink-icon-tile--circle-lg <?php echo esc_attr( $ink_skryf_tones[ $ink_slug ] ?? 'ink-tone-primary' ); ?> ink-skryf-type__icon" aria-hidden="true"<?php echo $ink_first ? ' data-audit-id="skryf-type-card-icon"' : ''; ?>><?php echo ink_foundation_icon( $ink_skryf_icons[ $ink_slug ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></span>
 					<?php endif; ?>
-					<span class="ink-skryf-type__label"<?php echo $ink_first ? ' data-audit-id="skryf-type-card-label"' : ''; ?>><?php echo esc_html( $ink_label ); ?></span>
+					<span class="ink-heading-h3 ink-skryf-type__label"<?php echo $ink_first ? ' data-audit-id="skryf-type-card-label"' : ''; ?>><?php echo esc_html( $ink_label ); ?></span>
 					<?php if ( isset( $ink_skryf_desc[ $ink_slug ] ) ) : ?>
 						<span class="ink-skryf-type__desc"<?php echo $ink_first ? ' data-audit-id="skryf-type-card-desc"' : ''; ?>><?php echo esc_html( $ink_skryf_desc[ $ink_slug ] ); ?></span>
 					<?php endif; ?>
@@ -165,9 +172,9 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 		$ink_skryf_challenges = isset( $ink_skryf['open_challenges'] ) && is_array( $ink_skryf['open_challenges'] ) ? $ink_skryf['open_challenges'] : array();
 		if ( ! empty( $ink_skryf_challenges ) ) :
 			?>
-		<fieldset class="ink-skryf-challenges" data-audit-id="skryf-challenges">
-			<legend data-audit-id="skryf-challenges-title"><?php echo ink_foundation_icon( '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.937A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>' ) . esc_html__( 'Aktiewe uitdagings (opsioneel)', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__() (§0.9). ?></legend>
-			<p class="ink-skryf-challenges__hint" data-audit-id="skryf-challenges-hint"><?php echo esc_html__( 'Merk enige uitdagings waarop hierdie stuk reageer.', 'ink-foundation' ); ?></p>
+		<fieldset class="ink-card ink-card--panel-sm ink-skryf-challenges" data-audit-id="skryf-challenges">
+			<legend class="ink-label" data-audit-id="skryf-challenges-title"><?php echo ink_foundation_icon( '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.937A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>' ) . esc_html__( 'Aktiewe uitdagings (opsioneel)', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__() (§0.9). ?></legend>
+			<p class="ink-hint ink-skryf-challenges__hint" data-audit-id="skryf-challenges-hint"><?php echo esc_html__( 'Merk enige uitdagings waarop hierdie stuk reageer.', 'ink-foundation' ); ?></p>
 			<?php
 			foreach ( $ink_skryf_challenges as $ink_ch_i => $ink_ch ) :
 				$ink_ch_id    = isset( $ink_ch['id'] ) ? (int) $ink_ch['id'] : 0;
@@ -176,8 +183,8 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 					continue;
 				}
 				?>
-				<label class="ink-skryf-challenge"<?php echo 0 === $ink_ch_i ? ' data-audit-id="skryf-checkbox"' : ''; ?>>
-					<input type="checkbox" name="<?php echo esc_attr( $ink_skryf['field_challenges'] ?? 'ink_submission_uitdagings' ); ?>[]" value="<?php echo esc_attr( (string) $ink_ch_id ); ?>"<?php echo 0 === $ink_ch_i ? ' data-audit-id="skryf-checkbox-input"' : ''; ?> />
+				<label class="ink-choice ink-skryf-challenge"<?php echo 0 === $ink_ch_i ? ' data-audit-id="skryf-checkbox"' : ''; ?>>
+					<input type="checkbox" class="ink-checkbox" name="<?php echo esc_attr( $ink_skryf['field_challenges'] ?? 'ink_submission_uitdagings' ); ?>[]" value="<?php echo esc_attr( (string) $ink_ch_id ); ?>"<?php echo 0 === $ink_ch_i ? ' data-audit-id="skryf-checkbox-input"' : ''; ?> />
 					<span<?php echo 0 === $ink_ch_i ? ' data-audit-id="skryf-checkbox-title"' : ''; ?>><?php echo esc_html( $ink_ch_title ); ?></span>
 				</label>
 			<?php endforeach; ?>
@@ -187,24 +194,24 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 		?>
 
 		<p class="ink-skryf-field" data-audit-id="skryf-title-field">
-			<label for="ink-skryf-title" data-audit-id="skryf-title-label"><?php echo esc_html__( 'Titel', 'ink-foundation' ); ?></label>
-			<input type="text" id="ink-skryf-title" name="<?php echo esc_attr( $ink_skryf['field_title'] ); ?>" placeholder="<?php echo esc_attr__( 'Gee jou werk \'n titel...', 'ink-foundation' ); ?>" data-audit-id="skryf-title-input" required />
+			<label class="ink-label" for="ink-skryf-title" data-audit-id="skryf-title-label"><?php echo esc_html__( 'Titel', 'ink-foundation' ); ?></label>
+			<input type="text" class="ink-field" id="ink-skryf-title" name="<?php echo esc_attr( $ink_skryf['field_title'] ); ?>" placeholder="<?php echo esc_attr__( 'Gee jou werk \'n titel...', 'ink-foundation' ); ?>" data-audit-id="skryf-title-input" required />
 		</p>
 
 		<div class="ink-skryf-field ink-skryf-field--body" data-audit-id="skryf-body-field">
-			<label for="ink-skryf-body" data-audit-id="skryf-body-label"><?php echo esc_html__( 'Jou werk', 'ink-foundation' ); ?></label>
-			<span class="ink-skryf-counter" data-audit-id="skryf-body-counter" data-words-label="<?php echo esc_attr__( 'woorde', 'ink-foundation' ); ?>" data-lines-label="<?php echo esc_attr__( 'reëls', 'ink-foundation' ); ?>" aria-live="polite"></span>
-			<textarea id="ink-skryf-body" name="<?php echo esc_attr( $ink_skryf['field_body'] ); ?>" rows="16" placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_skryf_first_slug ] ?? '' ); ?>" data-audit-id="skryf-body-textarea" required></textarea>
+			<label class="ink-label" for="ink-skryf-body" data-audit-id="skryf-body-label"><?php echo esc_html__( 'Jou werk', 'ink-foundation' ); ?></label>
+			<span class="ink-hint ink-skryf-counter" data-audit-id="skryf-body-counter" data-words-label="<?php echo esc_attr__( 'woorde', 'ink-foundation' ); ?>" data-lines-label="<?php echo esc_attr__( 'reëls', 'ink-foundation' ); ?>" aria-live="polite"></span>
+			<textarea class="ink-field ink-field--textarea" id="ink-skryf-body" name="<?php echo esc_attr( $ink_skryf['field_body'] ); ?>" rows="16" placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_skryf_first_slug ] ?? '' ); ?>" data-audit-id="skryf-body-textarea" required></textarea>
 		</div>
 
 		<p class="ink-skryf-field" data-audit-id="skryf-image-field">
-			<label for="ink-skryf-image"><?php echo esc_html__( 'Voorbeeld-prent (opsioneel)', 'ink-foundation' ); ?></label>
-			<input type="file" id="ink-skryf-image" data-audit-id="skryf-image-input" name="<?php echo esc_attr( $ink_skryf['field_image'] ?? 'ink_submission_featured_image' ); ?>" accept="image/*" />
+			<label class="ink-label" for="ink-skryf-image"><?php echo esc_html__( 'Voorbeeld-prent (opsioneel)', 'ink-foundation' ); ?></label>
+			<input type="file" class="ink-field" id="ink-skryf-image" data-audit-id="skryf-image-input" name="<?php echo esc_attr( $ink_skryf['field_image'] ?? 'ink_submission_featured_image' ); ?>" accept="image/*" />
 		</p>
 
 		<p class="ink-skryf-field" data-audit-id="skryf-media-field">
-			<label for="ink-skryf-media"><?php echo esc_html__( 'Klank/video (opsioneel)', 'ink-foundation' ); ?></label>
-			<input type="file" id="ink-skryf-media" data-audit-id="skryf-media-input" name="<?php echo esc_attr( $ink_skryf['field_media'] ?? 'ink_submission_media' ); ?>" accept="audio/*,video/*" />
+			<label class="ink-label" for="ink-skryf-media"><?php echo esc_html__( 'Klank/video (opsioneel)', 'ink-foundation' ); ?></label>
+			<input type="file" class="ink-field" id="ink-skryf-media" data-audit-id="skryf-media-input" name="<?php echo esc_attr( $ink_skryf['field_media'] ?? 'ink_submission_media' ); ?>" accept="audio/*,video/*" />
 		</p>
 
 		<?php
@@ -214,8 +221,8 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 		?>
 
 		<p class="ink-skryf-actions" data-audit-id="skryf-actions">
-			<button type="submit" name="<?php echo esc_attr( $ink_skryf['intent_field'] ?? 'ink_submission_intent' ); ?>" value="<?php echo esc_attr( $ink_skryf['intent_draft'] ?? 'konsep' ); ?>" class="ink-skryf-draft" data-audit-id="skryf-draft-btn"><?php echo esc_html__( 'Stoor konsep', 'ink-foundation' ); ?></button>
-			<button type="submit" name="<?php echo esc_attr( $ink_skryf['intent_field'] ?? 'ink_submission_intent' ); ?>" value="<?php echo esc_attr( $ink_skryf['intent_publish'] ?? 'plaas' ); ?>" class="ink-skryf-submit" data-audit-id="skryf-publish-btn"><?php echo esc_html__( 'Plaas', 'ink-foundation' ); ?></button>
+			<button type="submit" name="<?php echo esc_attr( $ink_skryf['intent_field'] ?? 'ink_submission_intent' ); ?>" value="<?php echo esc_attr( $ink_skryf['intent_draft'] ?? 'konsep' ); ?>" class="ink-btn ink-btn--lg ink-btn--neutral ink-skryf-draft" data-audit-id="skryf-draft-btn"><?php echo esc_html__( 'Stoor konsep', 'ink-foundation' ); ?></button>
+			<button type="submit" name="<?php echo esc_attr( $ink_skryf['intent_field'] ?? 'ink_submission_intent' ); ?>" value="<?php echo esc_attr( $ink_skryf['intent_publish'] ?? 'plaas' ); ?>" class="ink-btn ink-btn--lg ink-btn--primary ink-skryf-submit" data-audit-id="skryf-publish-btn"><?php echo esc_html__( 'Plaas', 'ink-foundation' ); ?></button>
 		</p>
 	</form>
 	<!-- /wp:html -->

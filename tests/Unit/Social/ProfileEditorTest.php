@@ -52,9 +52,9 @@ test( 'render gathers the current user\'s own name/bio/tagline/avatar', function
 	);
 	Functions\when( 'get_user_meta' )->justReturn( 'Skryf om te lewe.' );
 	Functions\when( 'get_avatar' )->alias(
-		function ( int $user_id, int $size ): string {
+		function ( int $user_id, int $size, ...$rest ): string {
 			expect( $user_id )->toBe( 7 );
-			expect( $size )->toBe( 96 );
+			expect( $size )->toBe( 64 ); // Lovable profiel-edit-avatar h-16 (`ink-avatar--64`).
 
 			return '<img src="https://example.test/avatar.jpg" alt="" />';
 		}

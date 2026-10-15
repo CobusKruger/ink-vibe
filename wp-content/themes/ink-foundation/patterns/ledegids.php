@@ -29,8 +29,8 @@ $ink_ledegids_label = function_exists( 'ink_foundation_term' )
 <section class="wp-block-group alignfull" data-audit-id="ledegids-intro" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide" data-audit-id="ledegids-intro-inner">
-		<!-- wp:heading {"level":1,"fontSize":"xxl"} -->
-		<h1 class="wp-block-heading has-xxl-font-size" data-audit-id="ledegids-h1"><?php echo esc_html( $ink_ledegids_label ); ?></h1>
+		<!-- wp:heading {"level":1,"className":"ink-heading-h1-index"} -->
+		<h1 class="wp-block-heading ink-heading-h1-index" data-audit-id="ledegids-h1"><?php echo esc_html( $ink_ledegids_label ); ?></h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->

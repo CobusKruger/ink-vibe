@@ -151,7 +151,7 @@ final class ReadCountSurface {
 	 * @return string
 	 */
 	public static function toHtml( array $rows ): string {
-		$heading = '<h2 class="ink-leesgetalle__titel">' . esc_html__( 'Leesgetalle', 'ink-core' ) . '</h2>';
+		$heading = '<h2 class="ink-leesgetalle__titel ink-heading-h4">' . esc_html__( 'Leesgetalle', 'ink-core' ) . '</h2>';
 
 		if ( array() === $rows ) {
 			return '<section class="ink-leesgetalle">' . $heading
@@ -163,7 +163,7 @@ final class ReadCountSurface {
 		foreach ( $rows as $row ) {
 			$html .= '<li class="ink-leesgetalle__item">'
 				. '<span class="ink-leesgetalle__werk">' . esc_html( (string) $row['title'] ) . '</span>'
-				. '<span class="ink-leesgetalle__telling">' . esc_html( self::countLabel( (int) $row['count'] ) ) . '</span>'
+				. '<span class="ink-leesgetalle__telling ink-meta ink-meta--sm">' . esc_html( self::countLabel( (int) $row['count'] ) ) . '</span>'
 				. '</li>';
 		}
 

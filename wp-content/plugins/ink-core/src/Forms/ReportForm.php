@@ -163,10 +163,10 @@ final class ReportForm {
 		$html = '<form class="ink-rapporteer-vorm" method="post" action="' . esc_url( $action_url ) . '">';
 
 		if ( self::NOTICE_DONE === $notice ) {
-			$html .= '<p class="ink-rapporteer-vorm__notice ink-rapporteer-vorm__notice--ok" role="status">'
+			$html .= '<p class="ink-notice ink-notice--ok" role="status">'
 				. esc_html__( 'Dankie, jou verslag is ontvang en sal nagegaan word.', 'ink-core' ) . '</p>';
 		} elseif ( self::NOTICE_INVALID === $notice ) {
-			$html .= '<p class="ink-rapporteer-vorm__notice ink-rapporteer-vorm__notice--fout" role="alert">'
+			$html .= '<p class="ink-notice ink-notice--fout" role="alert">'
 				. esc_html__( 'Kies asseblief ’n rede vir die verslag.', 'ink-core' ) . '</p>';
 		}
 
@@ -174,23 +174,23 @@ final class ReportForm {
 			. '<input type="hidden" name="action" value="' . esc_attr( self::POST_ACTION ) . '" />'
 			. '<input type="hidden" name="' . esc_attr( self::FIELD_TARGET ) . '" value="' . esc_attr( $target ) . '" />'
 			. '<input type="hidden" name="' . esc_attr( self::FIELD_OBJECT ) . '" value="' . esc_attr( (string) $object_id ) . '" />'
-			. '<p class="ink-rapporteer-vorm__veld"><label for="' . esc_attr( self::FIELD_REASON ) . '">'
+			. '<p class="ink-rapporteer-vorm__veld"><label class="ink-label" for="' . esc_attr( self::FIELD_REASON ) . '">'
 				. esc_html__( 'Rede', 'ink-core' ) . '</label>'
-				. '<select id="' . esc_attr( self::FIELD_REASON ) . '" name="' . esc_attr( self::FIELD_REASON ) . '" required="required">';
+				. '<select class="ink-field" id="' . esc_attr( self::FIELD_REASON ) . '" name="' . esc_attr( self::FIELD_REASON ) . '" required="required">';
 
 		foreach ( ReportReason::cases() as $reason ) {
 			$html .= '<option value="' . esc_attr( $reason->value ) . '">' . esc_html( $reason->label() ) . '</option>';
 		}
 
 		$html .= '</select></p>'
-			. '<p class="ink-rapporteer-vorm__veld"><label for="' . esc_attr( self::FIELD_DETAIL ) . '">'
+			. '<p class="ink-rapporteer-vorm__veld"><label class="ink-label" for="' . esc_attr( self::FIELD_DETAIL ) . '">'
 				. esc_html__( 'Besonderhede (opsioneel)', 'ink-core' ) . '</label>'
-				. '<textarea id="' . esc_attr( self::FIELD_DETAIL ) . '" name="' . esc_attr( self::FIELD_DETAIL ) . '" rows="4"></textarea></p>'
+				. '<textarea class="ink-field ink-field--textarea" id="' . esc_attr( self::FIELD_DETAIL ) . '" name="' . esc_attr( self::FIELD_DETAIL ) . '" rows="4"></textarea></p>'
 			// Honeypot: visually hidden, must stay empty.
 			. '<p class="ink-rapporteer-vorm__hp" aria-hidden="true" style="position:absolute;left:-9999px;">'
 				. '<label for="' . esc_attr( self::FIELD_HONEYPOT ) . '">' . esc_html__( 'Los hierdie veld leeg', 'ink-core' ) . '</label>'
 				. '<input type="text" id="' . esc_attr( self::FIELD_HONEYPOT ) . '" name="' . esc_attr( self::FIELD_HONEYPOT ) . '" tabindex="-1" autocomplete="off" /></p>'
-			. '<p class="ink-rapporteer-vorm__stuur"><button type="submit" class="wp-element-button">'
+			. '<p class="ink-rapporteer-vorm__stuur"><button type="submit" class="ink-btn ink-btn--primary ink-btn--block">'
 				. esc_html__( 'Rapporteer', 'ink-core' ) . '</button></p>';
 
 		return $html . '</form>';

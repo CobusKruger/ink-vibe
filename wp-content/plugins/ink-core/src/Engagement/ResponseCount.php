@@ -88,7 +88,7 @@ final class ResponseCount {
 	 * @return string
 	 */
 	public static function toHtml( int $count ): string {
-		return '<a href="#kommentaar" class="ink-kommentaar-telling" data-audit-id="reading-comments-link" aria-label="' . esc_attr( (string) $count . ' kommentaar' ) . '">'
+		return '<a href="#kommentaar" class="ink-kommentaar-telling ink-icon-label" data-audit-id="reading-comments-link" aria-label="' . esc_attr( (string) $count . ' kommentaar' ) . '">'
 			. '<span class="ink-kommentaar-telling__ikoon" aria-hidden="true">' . self::messageIconSvg() . '</span>'
 			. '<span class="ink-kommentaar-telling__getal" data-audit-id="reading-comments-count">' . esc_html( (string) $count ) . '</span>'
 			. '</a>';

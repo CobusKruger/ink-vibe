@@ -19,8 +19,8 @@
 			<div class="wp-block-media-text__content">
 				<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 				<div class="wp-block-group">
-					<!-- wp:heading {"level":3,"fontSize":"xl"} -->
-					<h3 class="wp-block-heading has-xl-font-size">Skrywer se naam</h3>
+					<!-- wp:heading {"level":3,"className":"ink-heading-h3"} -->
+					<h3 class="wp-block-heading ink-heading-h3">Skrywer se naam</h3>
 					<!-- /wp:heading -->
 
 					<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
@@ -37,8 +37,8 @@
 
 					<!-- wp:buttons {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
 					<div class="wp-block-buttons">
-						<!-- wp:button {"backgroundColor":"primary","textColor":"surface-alt"} -->
-						<div class="wp-block-button"><a class="wp-block-button__link has-surface-alt-color has-primary-background-color has-text-color has-background wp-element-button" href="#">Volg</a></div>
+						<!-- wp:button {"className":"is-style-ink-primary"} -->
+						<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link wp-element-button" href="#">Volg</a></div>
 						<!-- /wp:button -->
 					</div>
 					<!-- /wp:buttons -->

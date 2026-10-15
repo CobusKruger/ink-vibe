@@ -81,16 +81,16 @@
 		<!-- wp:buttons {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
 		<div data-audit-id="header-actions" class="wp-block-buttons">
 <?php if ( function_exists( 'is_user_logged_in' ) && is_user_logged_in() ) : ?>
-			<!-- wp:button {"className":"is-style-ink-primary","fontSize":"sm","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-8","right":"var:preset|spacing|s-12","bottom":"var:preset|spacing|s-8","left":"var:preset|spacing|s-12"}}}} -->
-			<div class="wp-block-button is-style-ink-primary"><a data-audit-id="header-btn-write" class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" href="/skryf"><?php esc_html_e( 'Begin skryf', 'ink-foundation' ); ?></a></div>
+			<!-- wp:button {"className":"is-style-ink-primary ink-btn-sm"} -->
+			<div class="wp-block-button is-style-ink-primary ink-btn-sm"><a data-audit-id="header-btn-write" class="wp-block-button__link wp-element-button" href="/skryf"><?php esc_html_e( 'Begin skryf', 'ink-foundation' ); ?></a></div>
 			<!-- /wp:button -->
 <?php else : ?>
-			<!-- wp:button {"className":"is-style-ink-ghost","fontSize":"sm","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-8","right":"var:preset|spacing|s-12","bottom":"var:preset|spacing|s-8","left":"var:preset|spacing|s-12"}}}} -->
-			<div class="wp-block-button is-style-ink-ghost"><a data-audit-id="header-btn-signin" class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></div>
+			<!-- wp:button {"className":"is-style-ink-ghost ink-btn-sm"} -->
+			<div class="wp-block-button is-style-ink-ghost ink-btn-sm"><a data-audit-id="header-btn-signin" class="wp-block-button__link wp-element-button" href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></div>
 			<!-- /wp:button -->
 
-			<!-- wp:button {"className":"is-style-ink-primary","fontSize":"sm","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-8","right":"var:preset|spacing|s-12","bottom":"var:preset|spacing|s-8","left":"var:preset|spacing|s-12"}}}} -->
-			<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link has-sm-font-size wp-element-button" style="padding-top:var(--wp--preset--spacing--s-8);padding-right:var(--wp--preset--spacing--s-12);padding-bottom:var(--wp--preset--spacing--s-8);padding-left:var(--wp--preset--spacing--s-12)" data-audit-id="header-btn-join" href="/registreer"><?php echo esc_html( ink_foundation_term( 'sluit_aan', 'Sluit aan' ) ); ?></a></div>
+			<!-- wp:button {"className":"is-style-ink-primary ink-btn-sm"} -->
+			<div class="wp-block-button is-style-ink-primary ink-btn-sm"><a class="wp-block-button__link wp-element-button" data-audit-id="header-btn-join" href="/registreer"><?php echo esc_html( ink_foundation_term( 'sluit_aan', 'Sluit aan' ) ); ?></a></div>
 			<!-- /wp:button -->
 <?php endif; ?>
 		</div>

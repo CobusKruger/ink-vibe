@@ -485,7 +485,7 @@ final class Archive {
 		// mirrors Lovable's Library.tsx header section, and Training\Hub::toHtml()'s
 		// established order); the featured shelf, then the genre filter, follow below.
 		$intro = '<div class="ink-biblioteek__intro" data-audit-id="library-intro">'
-			. '<h1 class="ink-biblioteek__heading" data-audit-id="library-h1">' . esc_html( Terms::label( 'biblioteek' ) ) . '</h1>'
+			. '<h1 class="ink-biblioteek__heading ink-heading-h1-index" data-audit-id="library-h1">' . esc_html( Terms::label( 'biblioteek' ) ) . '</h1>'
 			. self::searchHtml( $search_term, $active_genre )
 			. '</div>';
 
@@ -500,12 +500,12 @@ final class Archive {
 
 			if ( $is_filtered ) {
 				$clear_url = (string) remove_query_arg( array( self::GENRE_VAR, self::SEARCH_VAR, self::PAGED_VAR ) );
-				$clear     = '<a class="ink-biblioteek__leeg-skoon" data-audit-id="library-empty-btn" href="' . esc_url( $clear_url ) . '">'
+				$clear     = '<a class="ink-biblioteek__leeg-skoon ink-btn ink-btn--outline" data-audit-id="library-empty-btn" href="' . esc_url( $clear_url ) . '">'
 					. esc_html__( 'Vee filters uit', 'ink-core' ) . '</a>';
 			}
 
 			return '<section class="ink-biblioteek alignwide" data-audit-id="library-archive">' . $intro . $controls
-				. '<div class="ink-biblioteek__leeg" data-audit-id="library-empty"><p class="ink-biblioteek__leeg-teks" data-audit-id="library-empty-title">' . esc_html( $empty ) . '</p>'
+				. '<div class="ink-biblioteek__leeg ink-card--empty" data-audit-id="library-empty"><p class="ink-biblioteek__leeg-teks" data-audit-id="library-empty-title">' . esc_html( $empty ) . '</p>'
 				. $clear . '</div></section>';
 		}
 
@@ -540,13 +540,13 @@ final class Archive {
 		}
 
 		$html = '<div class="ink-biblioteek__uitgelig" data-audit-id="library-shelf">'
-			. '<h2 class="ink-biblioteek__uitgelig-titel" data-audit-id="library-shelf-h2">' . esc_html__( 'Uitgelig', 'ink-core' ) . '</h2>'
+			. '<h2 class="ink-biblioteek__uitgelig-titel ink-heading-h2-sub" data-audit-id="library-shelf-h2">' . esc_html__( 'Uitgelig', 'ink-core' ) . '</h2>'
 			. '<ul class="ink-biblioteek__uitgelig-lys" data-audit-id="library-shelf-grid">';
 
 		$first = true;
 
 		foreach ( $featured as $card ) {
-			$html .= self::cardHtml( $card, 'ink-biblioteek__uitgelig-item', $first ? 'library-shelf-card' : '' );
+			$html .= self::cardHtml( $card, 'ink-biblioteek__uitgelig-item ink-card--shelf', $first ? 'library-shelf-card' : '' );
 			$first = false;
 		}
 
@@ -572,11 +572,11 @@ final class Archive {
 		return '<form class="ink-biblioteek__soek" data-audit-id="library-search" role="search" method="get">'
 			. $hidden
 			. '<span class="ink-biblioteek__soek-ikoon" data-audit-id="library-search-icon-wrap">' . self::withAuditId( self::icon( self::ICON_SEARCH ), 'library-search-icon' ) . '</span>'
-			. '<input type="search" class="ink-biblioteek__soek-veld" data-audit-id="library-search-input" name="' . esc_attr( self::SEARCH_VAR ) . '"'
+			. '<input type="search" class="ink-biblioteek__soek-veld ink-search-field ink-search-field--with-button" data-audit-id="library-search-input" name="' . esc_attr( self::SEARCH_VAR ) . '"'
 			. ' value="' . esc_attr( $term ) . '"'
 			. ' placeholder="' . esc_attr__( 'Soek in die biblioteek…', 'ink-core' ) . '"'
 			. ' aria-label="' . esc_attr__( 'Soek in die biblioteek…', 'ink-core' ) . '" />'
-			. '<button type="submit" class="ink-biblioteek__soek-knoppie" data-audit-id="library-search-btn">' . esc_html__( 'Soek', 'ink-core' ) . '</button>'
+			. '<button type="submit" class="ink-biblioteek__soek-knoppie ink-btn ink-btn--primary" data-audit-id="library-search-btn">' . esc_html__( 'Soek', 'ink-core' ) . '</button>'
 			. '</form>';
 	}
 
@@ -603,7 +603,7 @@ final class Archive {
 				(string) remove_query_arg( array( self::GENRE_VAR, self::PAGED_VAR ) ),
 				__( 'Alles', 'ink-core' ),
 				( null === $active_genre ),
-				'ink-biblioteek__filter-knoppie'
+				'ink-biblioteek__filter-knoppie ink-chip'
 			),
 			'library-filter'
 		);
@@ -614,7 +614,7 @@ final class Archive {
 				$url,
 				$genre['name'],
 				$genre['slug'] === $active_genre,
-				'ink-biblioteek__filter-knoppie'
+				'ink-biblioteek__filter-knoppie ink-chip'
 			);
 		}
 
@@ -644,7 +644,7 @@ final class Archive {
 	 * @return string
 	 */
 	private static function cardHtml( array $card, string $extra = '', string $audit = '' ): string {
-		$class = 'ink-biblioteek__item' . ( '' !== $extra ? ' ' . $extra : '' );
+		$class = 'ink-biblioteek__item ink-card' . ( '' !== $extra ? ' ' . $extra : '' );
 
 		$title     = (string) ( $card['title'] ?? '' );
 		$permalink = (string) ( $card['permalink'] ?? '' );
@@ -664,11 +664,11 @@ final class Archive {
 			$meta = '<div class="ink-biblioteek__item-meta"' . self::auditAttr( $audit, '-meta' ) . '>';
 
 			if ( '' !== $genre ) {
-				$meta .= '<span class="ink-biblioteek__genre"' . self::auditAttr( $audit, '-badge' ) . '>' . esc_html( $genre ) . '</span>';
+				$meta .= '<span class="ink-biblioteek__genre ink-pill ink-pill--outline"' . self::auditAttr( $audit, '-badge' ) . '>' . esc_html( $genre ) . '</span>';
 			}
 
 			if ( '' !== $read_time ) {
-				$meta .= '<span class="ink-biblioteek__item-leestyd"' . self::auditAttr( $audit, '-time' ) . '>' . self::icon( self::ICON_CLOCK )
+				$meta .= '<span class="ink-biblioteek__item-leestyd ink-meta"' . self::auditAttr( $audit, '-time' ) . '>' . self::icon( self::ICON_CLOCK )
 					. '<span>' . esc_html( $read_time ) . '</span></span>';
 			}
 
@@ -683,7 +683,7 @@ final class Archive {
 			. $image_html
 			. '<div class="ink-biblioteek__item-inhoud"' . self::auditAttr( $audit, '-body' ) . '>'
 			. $meta
-			. '<a class="ink-biblioteek__titel"' . self::auditAttr( $audit, '-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $title ) . '</a>'
+			. '<a class="ink-biblioteek__titel ink-heading-h3-card"' . self::auditAttr( $audit, '-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $title ) . '</a>'
 			. $excerpt_html
 			. '<div class="ink-biblioteek__item-voet"' . self::auditAttr( $audit, '-footer' ) . '>'
 			. '<span class="ink-biblioteek__outeur"' . self::auditAttr( $audit, '-author' ) . '>' . esc_html( $author ) . '</span>'

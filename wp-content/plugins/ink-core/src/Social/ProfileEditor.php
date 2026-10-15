@@ -104,7 +104,7 @@ final class ProfileEditor {
 			// Same bio source SkrywerProfiel/FollowingList already read.
 			'bio'     => (string) get_the_author_meta( 'description', $user_id ),
 			'tagline' => class_exists( Tagline::class ) ? Tagline::get( $user_id ) : '',
-			'avatar'  => function_exists( 'get_avatar' ) ? (string) get_avatar( $user_id, 96 ) : '',
+			'avatar'  => function_exists( 'get_avatar' ) ? (string) get_avatar( $user_id, 64, '', '', array( 'class' => 'ink-avatar ink-avatar--64' ) ) : '',
 		);
 
 		return self::toHtml( $profile );
@@ -126,11 +126,11 @@ final class ProfileEditor {
 
 		$html = '<div class="ink-profiel-redigeer is-hidden" id="ink-profiel-redigeer" data-ink-profiel-redigeer-modal data-audit-id="profiel-edit-overlay" aria-hidden="true">'
 			. '<div class="ink-profiel-redigeer__agtergrond" data-ink-profiel-redigeer-sluit data-audit-id="profiel-edit-backdrop"></div>'
-			. '<div class="ink-profiel-redigeer__venster" data-audit-id="profiel-edit-card" role="dialog" aria-modal="true" aria-labelledby="ink-profiel-redigeer-titel">'
+			. '<div class="ink-card ink-profiel-redigeer__venster" data-audit-id="profiel-edit-card" role="dialog" aria-modal="true" aria-labelledby="ink-profiel-redigeer-titel">'
 			// "Wysig profiel" is the already-ratified button copy
 			// (`ui-copy-translations.md` "My Profiel-bladsy" > "Identiteitsstrook")
 			// reused verbatim as the modal's own heading — not new copy.
-			. '<h2 id="ink-profiel-redigeer-titel" class="ink-profiel-redigeer__titel" data-audit-id="profiel-edit-title">' . esc_html__( 'Wysig profiel', 'ink-core' ) . '</h2>';
+			. '<h2 id="ink-profiel-redigeer-titel" class="ink-heading-h3 ink-profiel-redigeer__titel" data-audit-id="profiel-edit-title">' . esc_html__( 'Wysig profiel', 'ink-core' ) . '</h2>';
 
 		if ( '' !== $avatar ) {
 			// Read-only — see the class docblock "AVATAR SCOPE" note. No upload
@@ -142,25 +142,25 @@ final class ProfileEditor {
 
 		$html .= '<form class="ink-profiel-redigeer__vorm" data-ink-profiel-redigeer-vorm data-audit-id="profiel-edit-form">'
 			. '<p class="ink-profiel-redigeer__veld" data-audit-id="profiel-edit-field">'
-				. '<label for="ink-profiel-redigeer-naam" data-audit-id="profiel-edit-label">' . esc_html__( 'Naam', 'ink-core' ) . '</label>'
-				. '<input type="text" id="ink-profiel-redigeer-naam" data-audit-id="profiel-edit-input" name="display_name" value="' . esc_attr( $name ) . '" /></p>'
+				. '<label class="ink-label ink-label--caps" for="ink-profiel-redigeer-naam" data-audit-id="profiel-edit-label">' . esc_html__( 'Naam', 'ink-core' ) . '</label>'
+				. '<input type="text" class="ink-field" id="ink-profiel-redigeer-naam" data-audit-id="profiel-edit-input" name="display_name" value="' . esc_attr( $name ) . '" /></p>'
 			. '<p class="ink-profiel-redigeer__veld">'
 				// Copy-debt: "tagline" is a brand-new field with no ratified
 				// Afrikaans label yet — flagged per the standard
 				// afrikaans-copy-debt-process (see docs/afrikaans-translation-sheet.md
 				// PROFIEL-REDIGEER-LEUSE-LABEL / docs/afrikaans-copy-worklist.md).
-				. '<label for="ink-profiel-redigeer-leuse">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — tagline field label not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</label>'
-				. '<input type="text" id="ink-profiel-redigeer-leuse" name="tagline" maxlength="' . esc_attr( (string) Tagline::MAX_LENGTH ) . '" value="' . esc_attr( $tagline ) . '" /></p>'
+				. '<label class="ink-label ink-label--caps" for="ink-profiel-redigeer-leuse">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — tagline field label not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</label>'
+				. '<input type="text" class="ink-field" id="ink-profiel-redigeer-leuse" name="tagline" maxlength="' . esc_attr( (string) Tagline::MAX_LENGTH ) . '" value="' . esc_attr( $tagline ) . '" /></p>'
 			. '<p class="ink-profiel-redigeer__veld">'
 				// "Oor my" — the already-ratified Oorsig-tab card heading for this
 				// exact bio content, reused verbatim as the field label.
-				. '<label for="ink-profiel-redigeer-bio">' . esc_html__( 'Oor my', 'ink-core' ) . '</label>'
-				. '<textarea id="ink-profiel-redigeer-bio" data-audit-id="profiel-edit-textarea" name="bio" rows="4">' . esc_textarea( $bio ) . '</textarea></p>'
+				. '<label class="ink-label ink-label--caps" for="ink-profiel-redigeer-bio">' . esc_html__( 'Oor my', 'ink-core' ) . '</label>'
+				. '<textarea class="ink-field ink-field--textarea" id="ink-profiel-redigeer-bio" data-audit-id="profiel-edit-textarea" name="bio" rows="4">' . esc_textarea( $bio ) . '</textarea></p>'
 			. '<div class="ink-profiel-redigeer__aksies" data-audit-id="profiel-edit-actions">'
 				// Copy-debt: Save/Cancel have no ratified Afrikaans yet either —
 				// flagged the same way (PROFIEL-REDIGEER-KANSELLEER / -STOOR).
-				. '<button type="button" class="ink-profiel-redigeer__kanselleer" data-ink-profiel-redigeer-sluit data-audit-id="profiel-edit-cancel-btn">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — cancel button label not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</button>'
-				. '<button type="submit" class="ink-profiel-redigeer__stoor" data-audit-id="profiel-edit-save-btn">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — save button label not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</button>'
+				. '<button type="button" class="ink-btn ink-btn--subtle ink-profiel-redigeer__kanselleer" data-ink-profiel-redigeer-sluit data-audit-id="profiel-edit-cancel-btn">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — cancel button label not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</button>'
+				. '<button type="submit" class="ink-btn ink-btn--primary ink-profiel-redigeer__stoor" data-audit-id="profiel-edit-save-btn">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — save button label not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</button>'
 			. '</div>'
 			. '<p class="ink-profiel-redigeer__status" role="status" data-ink-profiel-redigeer-status></p>'
 			. '</form>';

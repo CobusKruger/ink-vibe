@@ -75,8 +75,8 @@ if ( empty( $ink_renewal_plans ) ) {
 <section class="wp-block-group alignfull" data-audit-id="profiel-membership-renew" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide" data-audit-id="profiel-membership-renew-wide">
-		<!-- wp:heading {"level":2,"fontSize":"xxl"} -->
-		<h2 class="wp-block-heading has-xxl-font-size" data-audit-id="profiel-membership-renew-title"><?php echo esc_html__( 'Hernieu lidmaatskap', 'ink-foundation' ); ?></h2>
+		<!-- wp:heading {"level":2,"className":"ink-heading-h3"} -->
+		<h2 class="wp-block-heading ink-heading-h3" data-audit-id="profiel-membership-renew-title"><?php echo esc_html__( 'Hernieu lidmaatskap', 'ink-foundation' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
@@ -105,10 +105,10 @@ if ( empty( $ink_renewal_plans ) ) {
 		?>
 			<!-- wp:column {"lock":{"move":true,"remove":true}} -->
 			<div class="wp-block-column">
-				<!-- wp:group {"className":"is-style-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
-				<div class="wp-block-group is-style-card"<?php echo $ink_plan_audit( 'plan' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute. ?>>
-					<!-- wp:heading {"level":3,"fontSize":"xl"} -->
-					<h3 class="wp-block-heading has-xl-font-size"<?php echo $ink_plan_audit( 'plan-label' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute. ?>><?php echo esc_html( $ink_term_label ); ?></h3>
+				<!-- wp:group {"className":"ink-card--selectable","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
+				<div class="wp-block-group ink-card--selectable"<?php echo $ink_plan_audit( 'plan' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute. ?>>
+					<!-- wp:heading {"level":3,"className":"ink-heading-h4"} -->
+					<h3 class="wp-block-heading ink-heading-h4"<?php echo $ink_plan_audit( 'plan-label' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute. ?>><?php echo esc_html( $ink_term_label ); ?></h3>
 					<!-- /wp:heading -->
 
 					<!-- wp:paragraph {"fontSize":"xxl","style":{"typography":{"fontWeight":"var:custom|font-weight|bold"}}} -->
@@ -131,12 +131,12 @@ if ( empty( $ink_renewal_plans ) ) {
 					<!-- wp:buttons {"lock":{"move":true,"remove":true},"layout":{"type":"flex","justifyContent":"center"}} -->
 					<div class="wp-block-buttons">
 		<?php if ( $ink_is_available && null !== $ink_purchase_url && '' !== (string) $ink_purchase_url ) : ?>
-						<!-- wp:button {"backgroundColor":"primary","textColor":"surface-alt","width":100,"className":"is-style-pill"} -->
-						<div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-pill"><a class="wp-block-button__link has-surface-alt-color has-primary-background-color has-text-color has-background wp-element-button"<?php echo $ink_plan_audit( 'renew-btn' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute. ?> href="<?php echo esc_url( (string) $ink_purchase_url ); ?>"><?php echo esc_html( $ink_renew_label ); ?></a></div>
+						<!-- wp:button {"width":100,"className":"is-style-ink-primary ink-btn-lg"} -->
+						<div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-ink-primary ink-btn-lg"><a class="wp-block-button__link wp-element-button"<?php echo $ink_plan_audit( 'renew-btn' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute. ?> href="<?php echo esc_url( (string) $ink_purchase_url ); ?>"><?php echo esc_html( $ink_renew_label ); ?></a></div>
 						<!-- /wp:button -->
 		<?php else : ?>
-						<!-- wp:button {"backgroundColor":"secondary","textColor":"muted-text","width":100,"className":"is-style-pill"} -->
-						<div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-pill"><a class="wp-block-button__link has-muted-text-color has-secondary-background-color has-text-color has-background wp-element-button"<?php echo $ink_plan_audit( 'renew-btn' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute. ?> aria-disabled="true"><?php echo esc_html__( 'Binnekort beskikbaar', 'ink-foundation' ); ?></a></div>
+						<!-- wp:button {"width":100,"className":"is-style-subtle ink-btn-lg"} -->
+						<div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-subtle ink-btn-lg"><a class="wp-block-button__link wp-element-button"<?php echo $ink_plan_audit( 'renew-btn' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute. ?> aria-disabled="true"><?php echo esc_html__( 'Binnekort beskikbaar', 'ink-foundation' ); ?></a></div>
 						<!-- /wp:button -->
 		<?php endif; ?>
 					</div>

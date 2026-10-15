@@ -11,8 +11,8 @@
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:heading {"level":1,"fontSize":"xxxl"} -->
-		<h1 class="wp-block-heading has-xxxl-font-size">Funksionele opskrif</h1>
+		<!-- wp:heading {"level":1,"className":"ink-heading-h1-index"} -->
+		<h1 class="wp-block-heading ink-heading-h1-index">Funksionele opskrif</h1>
 		<!-- /wp:heading -->
 	</div>
 	<!-- /wp:group -->
@@ -25,8 +25,8 @@
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"align":"wide","className":"is-style-emphasis","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide is-style-emphasis">
-		<!-- wp:heading {"level":2,"fontSize":"xl"} -->
-		<h2 class="wp-block-heading has-xl-font-size">Meer oor hierdie blad</h2>
+		<!-- wp:heading {"level":2,"className":"ink-heading-h3"} -->
+		<h2 class="wp-block-heading ink-heading-h3">Meer oor hierdie blad</h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md"} -->

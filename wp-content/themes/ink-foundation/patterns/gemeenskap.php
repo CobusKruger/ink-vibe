@@ -39,24 +39,24 @@
  * band had backgroundColor/textColor set backwards (light `secondary` bg + dark
  * `ink-text` copy) where Lovable's is a genuinely DARK inverted section (near-black
  * bg, light copy); it read as the wrong section entirely. All fixed below; the
- * section-specific CSS lives in theme.json's global `styles.css` under the
- * `.ink-gemeenskap-*` namespace (this page has no dedicated stylesheet — same
- * "reuse the global css string" choice already made for `ontdek`, not enough
- * bespoke CSS to justify a new enqueued file).
+ * section-specific LAYOUT lives in theme.json's global `styles.css` under the
+ * `.ink-gemeenskap-*` namespace; every primitive (bands, eyebrows, headings,
+ * buttons, the panel cards, icon tiles, step badges, accent blocks) is a class from
+ * `assets/css/primitives.css` (Fidelity remediation Stage 3).
  *
  * @package Ink\Foundation
  */
 ?>
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-hero","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-gemeenskap-hero" data-audit-id="gemeenskap-hero" style="padding-right:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-hero ink-band ink-band--intro ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-gemeenskap-hero ink-band ink-band--intro ink-band--lg" data-audit-id="gemeenskap-hero" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained","contentSize":"48rem"}} -->
 	<div class="wp-block-group" data-audit-id="gemeenskap-hero-inner">
-		<!-- wp:paragraph {"align":"center","style":{"typography":{"fontStyle":"normal","fontWeight":"500","textTransform":"uppercase","letterSpacing":"0.2em"},"spacing":{"margin":{"bottom":"var:preset|spacing|s-24"}}},"fontSize":"xs","textColor":"primary"} -->
-		<p class="has-text-align-center has-primary-color has-text-color has-xs-font-size" data-audit-id="gemeenskap-hero-eyebrow" style="margin-bottom:var(--wp--preset--spacing--s-24);font-style:normal;font-weight:500;letter-spacing:0.2em;text-transform:uppercase">Die INK-gemeenskap</p>
+		<!-- wp:paragraph {"align":"center","className":"ink-eyebrow ink-eyebrow--tracked","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|s-24"}}}} -->
+		<p class="has-text-align-center ink-eyebrow ink-eyebrow--tracked" data-audit-id="gemeenskap-hero-eyebrow" style="margin-bottom:var(--wp--preset--spacing--s-24)">Die INK-gemeenskap</p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:heading {"level":1,"textAlign":"center","fontSize":"xxxxl","style":{"typography":{"fontStyle":"normal","fontWeight":"600","lineHeight":"1"},"spacing":{"margin":{"bottom":"var:preset|spacing|s-24"}}}} -->
-		<h1 class="wp-block-heading has-text-align-center has-xxxxl-font-size" data-audit-id="gemeenskap-hero-h1" style="margin-bottom:var(--wp--preset--spacing--s-24);font-style:normal;font-weight:600;line-height:1">&#8217;n Gemeenskap vir skrywers wat gelees wil word, en lesers wat ontroer wil word.</h1>
+		<!-- wp:heading {"level":1,"textAlign":"center","className":"ink-heading-h1-hero-landing","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|s-24"}}}} -->
+		<h1 class="wp-block-heading has-text-align-center ink-heading-h1-hero-landing" data-audit-id="gemeenskap-hero-h1" style="margin-bottom:var(--wp--preset--spacing--s-24)">&#8217;n Gemeenskap vir skrywers wat gelees wil word, en lesers wat ontroer wil word.</h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"align":"center","style":{"typography":{"lineHeight":"1.5"},"spacing":{"margin":{"bottom":"var:preset|spacing|s-40"}}},"fontSize":"lg","textColor":"muted-text"} -->
@@ -65,12 +65,12 @@
 
 		<!-- wp:buttons {"lock":{"move":true,"remove":true},"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
 		<div class="wp-block-buttons" data-audit-id="gemeenskap-hero-actions">
-			<!-- wp:button {"className":"is-style-ink-primary ink-btn-icon"} -->
-			<div class="wp-block-button is-style-ink-primary ink-btn-icon"><a class="wp-block-button__link wp-element-button" data-audit-id="gemeenskap-hero-btn-primary" href="/registreer"><?php echo ink_foundation_icon( '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>' ) . esc_html__( 'Sluit aan as skrywer', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a></div>
+			<!-- wp:button {"className":"is-style-ink-primary ink-btn-lg"} -->
+			<div class="wp-block-button is-style-ink-primary ink-btn-lg"><a class="wp-block-button__link wp-element-button" data-audit-id="gemeenskap-hero-btn-primary" href="/registreer"><?php echo ink_foundation_icon( '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>' ) . esc_html__( 'Sluit aan as skrywer', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a></div>
 			<!-- /wp:button -->
 
-			<!-- wp:button {"className":"ink-gemeenskap-btn-neutral ink-btn-icon"} -->
-			<div class="wp-block-button ink-gemeenskap-btn-neutral ink-btn-icon"><a class="wp-block-button__link wp-element-button" data-audit-id="gemeenskap-hero-btn-secondary" href="/registreer"><?php echo ink_foundation_icon( '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' ) . esc_html__( 'Sluit aan as leser', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a></div>
+			<!-- wp:button {"className":"is-style-ink-neutral ink-btn-lg"} -->
+			<div class="wp-block-button is-style-ink-neutral ink-btn-lg"><a class="wp-block-button__link wp-element-button" data-audit-id="gemeenskap-hero-btn-secondary" href="/registreer"><?php echo ink_foundation_icon( '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' ) . esc_html__( 'Sluit aan as leser', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a></div>
 			<!-- /wp:button -->
 		</div>
 		<!-- /wp:buttons -->
@@ -79,16 +79,16 @@
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-value","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-gemeenskap-value has-surface-alt-background-color has-background" data-audit-id="gemeenskap-value" style="padding-right:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-value ink-band ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-gemeenskap-value ink-band ink-band--lg" data-audit-id="gemeenskap-value" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:columns {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s-32","top":"var:preset|spacing|s-32"}}}} -->
 	<div class="wp-block-columns alignwide" data-audit-id="gemeenskap-value-grid">
 		<!-- wp:column {"lock":{"move":true,"remove":true}} -->
 		<div class="wp-block-column" data-audit-id="gemeenskap-value-col">
-			<!-- wp:group {"className":"is-style-card ink-gemeenskap-card","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-			<div class="wp-block-group is-style-card ink-gemeenskap-card" data-audit-id="gemeenskap-card-writers">
+			<!-- wp:group {"className":"ink-gemeenskap-card ink-card--panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-group ink-gemeenskap-card ink-card--panel" data-audit-id="gemeenskap-card-writers">
 				<!-- wp:html -->
-				<div class="ink-gemeenskap-card__head" data-audit-id="gemeenskap-card-writers-head"><span class="ink-gemeenskap-card__icon" data-audit-id="gemeenskap-card-writers-icon"><?php echo ink_foundation_icon( '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG. */ ?></span><h2 class="has-xxl-font-size" data-audit-id="gemeenskap-card-writers-h2">Vir skrywers</h2></div>
+				<div class="ink-gemeenskap-card__head" data-audit-id="gemeenskap-card-writers-head"><span class="ink-gemeenskap-card__icon ink-icon-tile ink-icon-tile--circle" data-audit-id="gemeenskap-card-writers-icon"><?php echo ink_foundation_icon( '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG. */ ?></span><h2 class="ink-heading-h2-block" data-audit-id="gemeenskap-card-writers-h2">Vir skrywers</h2></div>
 				<!-- /wp:html -->
 
 				<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
@@ -97,10 +97,10 @@
 
 				<!-- wp:html -->
 				<ul data-audit-id="gemeenskap-card-writers-list">
-					<li data-audit-id="gemeenskap-card-writers-item"><?php echo ink_foundation_icon( '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3 data-audit-id="gemeenskap-card-writers-item-title">Gestruktureerde terugvoer</h3><p data-audit-id="gemeenskap-card-writers-item-text">Lesers reageer met lof, insig en voorstelle — nie net &#8217;n duimpie nie. Terugvoer wat jy werklik kan gebruik.</p></div></li>
-					<li><?php echo ink_foundation_icon( '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3>Regte lesers, nie net ander skrywers nie</h3><p>INK is eerste en voorste vir lesers gebou, sodat jou werk mense bereik wat gekom het om te lees — nie om gelees te word nie.</p></div></li>
-					<li><?php echo ink_foundation_icon( '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3>Maandelikse uitdagings</h3><p>Uitdagings wat jou skryfvermoëns toets, met erkenning vir uitstaande inskrywings en &#8217;n gewaarborgde gehoor.</p></div></li>
-					<li><?php echo ink_foundation_icon( '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.937A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3>&#8217;n Profiel wat saam met jou groei</h3><p>Speld jou beste werk vas, vertoon jou prestasies, en laat lesers jou volgende hoofstuk volg.</p></div></li>
+					<li data-audit-id="gemeenskap-card-writers-item"><?php echo ink_foundation_icon( '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3 class="ink-heading-h5-list-item" data-audit-id="gemeenskap-card-writers-item-title">Gestruktureerde terugvoer</h3><p data-audit-id="gemeenskap-card-writers-item-text">Lesers reageer met lof, insig en voorstelle — nie net &#8217;n duimpie nie. Terugvoer wat jy werklik kan gebruik.</p></div></li>
+					<li><?php echo ink_foundation_icon( '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3 class="ink-heading-h5-list-item">Regte lesers, nie net ander skrywers nie</h3><p>INK is eerste en voorste vir lesers gebou, sodat jou werk mense bereik wat gekom het om te lees — nie om gelees te word nie.</p></div></li>
+					<li><?php echo ink_foundation_icon( '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3 class="ink-heading-h5-list-item">Maandelikse uitdagings</h3><p>Uitdagings wat jou skryfvermoëns toets, met erkenning vir uitstaande inskrywings en &#8217;n gewaarborgde gehoor.</p></div></li>
+					<li><?php echo ink_foundation_icon( '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.937A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3 class="ink-heading-h5-list-item">&#8217;n Profiel wat saam met jou groei</h3><p>Speld jou beste werk vas, vertoon jou prestasies, en laat lesers jou volgende hoofstuk volg.</p></div></li>
 				</ul>
 				<!-- /wp:html -->
 			</div>
@@ -110,10 +110,10 @@
 
 		<!-- wp:column {"lock":{"move":true,"remove":true}} -->
 		<div class="wp-block-column">
-			<!-- wp:group {"className":"is-style-card ink-gemeenskap-card","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-			<div class="wp-block-group is-style-card ink-gemeenskap-card" data-audit-id="gemeenskap-card-readers">
+			<!-- wp:group {"className":"ink-gemeenskap-card ink-card--panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-group ink-gemeenskap-card ink-card--panel" data-audit-id="gemeenskap-card-readers">
 				<!-- wp:html -->
-				<div class="ink-gemeenskap-card__head"><span class="ink-gemeenskap-card__icon"><?php echo ink_foundation_icon( '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?></span><h2 class="has-xxl-font-size">Vir lesers</h2></div>
+				<div class="ink-gemeenskap-card__head"><span class="ink-gemeenskap-card__icon ink-icon-tile ink-icon-tile--circle"><?php echo ink_foundation_icon( '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?></span><h2 class="ink-heading-h2-block">Vir lesers</h2></div>
 				<!-- /wp:html -->
 
 				<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
@@ -122,10 +122,10 @@
 
 				<!-- wp:html -->
 				<ul>
-					<li><?php echo ink_foundation_icon( '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3>Ontdek nuwe stemme</h3><p>Saamgestelde stories en gedigte van opkomende skrywers — kort genoeg vir &#8217;n koffiepouse, diep genoeg om by jou te bly.</p></div></li>
-					<li><?php echo ink_foundation_icon( '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3>Reageer met bedoeling</h3><p>Merk &#8217;n sin uit. Los &#8217;n gestruktureerde nota. Sê vir &#8217;n skrywer wat geraak het, in plaas van om verby te blaai.</p></div></li>
-					<li><?php echo ink_foundation_icon( '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3>Bou jou leeslys</h3><p>Stoor werke om weer te besoek, volg skrywers wat jy liefhet, en laat jou gestoorde werk subtiel wys wat die lees werd is.</p></div></li>
-					<li><?php echo ink_foundation_icon( '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3>Ondersteun &#8217;n nonprofit</h3><p>INK is &#8217;n gemeenskap, nie &#8217;n markplek nie. Jou tyd hier ondersteun direk onafhanklike literêre werk.</p></div></li>
+					<li><?php echo ink_foundation_icon( '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3 class="ink-heading-h5-list-item">Ontdek nuwe stemme</h3><p>Saamgestelde stories en gedigte van opkomende skrywers — kort genoeg vir &#8217;n koffiepouse, diep genoeg om by jou te bly.</p></div></li>
+					<li><?php echo ink_foundation_icon( '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3 class="ink-heading-h5-list-item">Reageer met bedoeling</h3><p>Merk &#8217;n sin uit. Los &#8217;n gestruktureerde nota. Sê vir &#8217;n skrywer wat geraak het, in plaas van om verby te blaai.</p></div></li>
+					<li><?php echo ink_foundation_icon( '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3 class="ink-heading-h5-list-item">Bou jou leeslys</h3><p>Stoor werke om weer te besoek, volg skrywers wat jy liefhet, en laat jou gestoorde werk subtiel wys wat die lees werd is.</p></div></li>
+					<li><?php echo ink_foundation_icon( '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?><div><h3 class="ink-heading-h5-list-item">Ondersteun &#8217;n nonprofit</h3><p>INK is &#8217;n gemeenskap, nie &#8217;n markplek nie. Jou tyd hier ondersteun direk onafhanklike literêre werk.</p></div></li>
 				</ul>
 				<!-- /wp:html -->
 			</div>
@@ -137,14 +137,14 @@
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-hiw","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-gemeenskap-hiw" data-audit-id="gemeenskap-hiw" style="padding-right:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-hiw ink-band ink-band--strip ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-gemeenskap-hiw ink-band ink-band--strip ink-band--lg" data-audit-id="gemeenskap-hiw" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-48"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide" data-audit-id="gemeenskap-hiw-inner">
 		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group" data-audit-id="gemeenskap-hiw-head">
-			<!-- wp:heading {"textAlign":"center","level":2,"fontSize":"xxxl"} -->
-			<h2 class="wp-block-heading has-text-align-center has-xxxl-font-size" data-audit-id="gemeenskap-hiw-h2">Hoe INK werk</h2>
+			<!-- wp:heading {"textAlign":"center","level":2,"className":"ink-heading-h2-section"} -->
+			<h2 class="wp-block-heading has-text-align-center ink-heading-h2-section" data-audit-id="gemeenskap-hiw-h2">Hoe INK werk</h2>
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph {"align":"center","fontSize":"lg","textColor":"muted-text"} -->
@@ -158,11 +158,11 @@
 			<!-- wp:column {"lock":{"move":true,"remove":true}} -->
 			<div class="wp-block-column" data-audit-id="gemeenskap-hiw-col">
 				<!-- wp:html -->
-				<h3 data-audit-id="gemeenskap-hiw-col-h3"><?php echo ink_foundation_icon( '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?>Vir lesers</h3>
+				<h3 class="ink-heading-h3" data-audit-id="gemeenskap-hiw-col-h3"><?php echo ink_foundation_icon( '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?>Vir lesers</h3>
 				<ol class="ink-gemeenskap-steps" data-audit-id="gemeenskap-hiw-steps">
-					<li data-audit-id="gemeenskap-hiw-step-li"><strong data-audit-id="gemeenskap-hiw-step-title">Lees</strong><span data-audit-id="gemeenskap-hiw-step-text">Blaai deur saamgestelde stories en gedigte, of volg skrywers wie se stemme jy vertrou.</span></li>
-					<li><strong>Reageer</strong><span>Merk &#8217;n reël. Los &#8217;n gestruktureerde kritiek. Stoor dit na jou leeslys.</span></li>
-					<li><strong>Verbind</strong><span>Ontdek meer skrywers deur wat ander deurdagte lesers stoor.</span></li>
+					<li data-audit-id="gemeenskap-hiw-step-li"><div class="ink-step-badge" aria-hidden="true" data-audit-id="gemeenskap-hiw-step-badge">1</div><div><strong data-audit-id="gemeenskap-hiw-step-title">Lees</strong><span data-audit-id="gemeenskap-hiw-step-text">Blaai deur saamgestelde stories en gedigte, of volg skrywers wie se stemme jy vertrou.</span></div></li>
+					<li><div class="ink-step-badge" aria-hidden="true">2</div><div><strong>Reageer</strong><span>Merk &#8217;n reël. Los &#8217;n gestruktureerde kritiek. Stoor dit na jou leeslys.</span></div></li>
+					<li><div class="ink-step-badge" aria-hidden="true">3</div><div><strong>Verbind</strong><span>Ontdek meer skrywers deur wat ander deurdagte lesers stoor.</span></div></li>
 				</ol>
 				<!-- /wp:html -->
 			</div>
@@ -171,11 +171,11 @@
 			<!-- wp:column {"lock":{"move":true,"remove":true}} -->
 			<div class="wp-block-column">
 				<!-- wp:html -->
-				<h3><?php echo ink_foundation_icon( '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?>Vir skrywers</h3>
+				<h3 class="ink-heading-h3"><?php echo ink_foundation_icon( '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG. */ ?>Vir skrywers</h3>
 				<ol class="ink-gemeenskap-steps">
-					<li><strong>Skryf</strong><span>Publiseer &#8217;n stuk op sy eie of as &#8217;n inskrywing vir &#8217;n maandelikse uitdaging.</span></li>
-					<li><strong>Ontvang gestruktureerde terugvoer</strong><span>Lof, insig en voorstelle — van lesers wat gekom het om te lees.</span></li>
-					<li><strong>Bou jou gehoor</strong><span>Bou &#8217;n profiel wat lesers volg, en kyk hoe jou leserskring groei.</span></li>
+					<li><div class="ink-step-badge" aria-hidden="true">1</div><div><strong>Skryf</strong><span>Publiseer &#8217;n stuk op sy eie of as &#8217;n inskrywing vir &#8217;n maandelikse uitdaging.</span></div></li>
+					<li><div class="ink-step-badge" aria-hidden="true">2</div><div><strong>Ontvang gestruktureerde terugvoer</strong><span>Lof, insig en voorstelle — van lesers wat gekom het om te lees.</span></div></li>
+					<li><div class="ink-step-badge" aria-hidden="true">3</div><div><strong>Bou jou gehoor</strong><span>Bou &#8217;n profiel wat lesers volg, en kyk hoe jou leserskring groei.</span></div></li>
 				</ol>
 				<!-- /wp:html -->
 			</div>
@@ -187,18 +187,18 @@
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-principles","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-gemeenskap-principles has-surface-alt-background-color has-background" data-audit-id="gemeenskap-principles" style="padding-right:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-principles ink-band ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-gemeenskap-principles ink-band ink-band--lg" data-audit-id="gemeenskap-principles" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-48"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide" data-audit-id="gemeenskap-principles-inner">
 		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group" data-audit-id="gemeenskap-principles-head">
-			<!-- wp:paragraph {"align":"center","style":{"typography":{"fontStyle":"normal","fontWeight":"500","textTransform":"uppercase","letterSpacing":"0.2em"},"spacing":{"margin":{"bottom":"0"}}},"fontSize":"xs","textColor":"primary"} -->
-			<p class="has-text-align-center has-primary-color has-text-color has-xs-font-size" data-audit-id="gemeenskap-principles-eyebrow" style="margin-bottom:0;font-style:normal;font-weight:500;letter-spacing:0.2em;text-transform:uppercase">Hoe ons mekaar behandel</p>
+			<!-- wp:paragraph {"align":"center","className":"ink-eyebrow ink-eyebrow--tracked","style":{"spacing":{"margin":{"bottom":"0"}}}} -->
+			<p class="has-text-align-center ink-eyebrow ink-eyebrow--tracked" data-audit-id="gemeenskap-principles-eyebrow" style="margin-bottom:0">Hoe ons mekaar behandel</p>
 			<!-- /wp:paragraph -->
 
-			<!-- wp:heading {"textAlign":"center","level":2,"fontSize":"xxl"} -->
-			<h2 class="wp-block-heading has-text-align-center has-xxl-font-size" data-audit-id="gemeenskap-principles-h2">Gemeenskapsbeginsels</h2>
+			<!-- wp:heading {"textAlign":"center","level":2,"className":"ink-heading-h2-section"} -->
+			<h2 class="wp-block-heading has-text-align-center ink-heading-h2-section" data-audit-id="gemeenskap-principles-h2">Gemeenskapsbeginsels</h2>
 			<!-- /wp:heading -->
 		</div>
 		<!-- /wp:group -->
@@ -209,10 +209,10 @@
 		<div class="wp-block-columns">
 			<!-- wp:column {"lock":{"move":true,"remove":true}} -->
 			<div class="wp-block-column">
-				<!-- wp:group {"className":"ink-gemeenskap-principle","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-				<div class="wp-block-group ink-gemeenskap-principle" data-audit-id="gemeenskap-principle-card">
-					<!-- wp:heading {"level":3,"fontSize":"xl"} -->
-					<h3 class="wp-block-heading has-xl-font-size" data-audit-id="gemeenskap-principle-title">Gee terugvoer met sorg</h3>
+				<!-- wp:group {"className":"ink-gemeenskap-principle ink-accent-block","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+				<div class="wp-block-group ink-gemeenskap-principle ink-accent-block" data-audit-id="gemeenskap-principle-card">
+					<!-- wp:heading {"level":3,"className":"ink-heading-h3"} -->
+					<h3 class="wp-block-heading ink-heading-h3" data-audit-id="gemeenskap-principle-title">Gee terugvoer met sorg</h3>
 					<!-- /wp:heading -->
 
 					<!-- wp:paragraph {"textColor":"muted-text"} -->
@@ -225,10 +225,10 @@
 
 			<!-- wp:column {"lock":{"move":true,"remove":true}} -->
 			<div class="wp-block-column">
-				<!-- wp:group {"className":"ink-gemeenskap-principle","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-				<div class="wp-block-group ink-gemeenskap-principle">
-					<!-- wp:heading {"level":3,"fontSize":"xl"} -->
-					<h3 class="wp-block-heading has-xl-font-size">Lees grootmoedig</h3>
+				<!-- wp:group {"className":"ink-gemeenskap-principle ink-accent-block","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+				<div class="wp-block-group ink-gemeenskap-principle ink-accent-block">
+					<!-- wp:heading {"level":3,"className":"ink-heading-h3"} -->
+					<h3 class="wp-block-heading ink-heading-h3">Lees grootmoedig</h3>
 					<!-- /wp:heading -->
 
 					<!-- wp:paragraph {"textColor":"muted-text"} -->
@@ -245,10 +245,10 @@
 		<div class="wp-block-columns">
 			<!-- wp:column {"lock":{"move":true,"remove":true}} -->
 			<div class="wp-block-column">
-				<!-- wp:group {"className":"ink-gemeenskap-principle","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-				<div class="wp-block-group ink-gemeenskap-principle">
-					<!-- wp:heading {"level":3,"fontSize":"xl"} -->
-					<h3 class="wp-block-heading has-xl-font-size">Skrywers en lesers, gelyke vennote</h3>
+				<!-- wp:group {"className":"ink-gemeenskap-principle ink-accent-block","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+				<div class="wp-block-group ink-gemeenskap-principle ink-accent-block">
+					<!-- wp:heading {"level":3,"className":"ink-heading-h3"} -->
+					<h3 class="wp-block-heading ink-heading-h3">Skrywers en lesers, gelyke vennote</h3>
 					<!-- /wp:heading -->
 
 					<!-- wp:paragraph {"textColor":"muted-text"} -->
@@ -261,10 +261,10 @@
 
 			<!-- wp:column {"lock":{"move":true,"remove":true}} -->
 			<div class="wp-block-column">
-				<!-- wp:group {"className":"ink-gemeenskap-principle","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-				<div class="wp-block-group ink-gemeenskap-principle">
-					<!-- wp:heading {"level":3,"fontSize":"xl"} -->
-					<h3 class="wp-block-heading has-xl-font-size">Stil bo luidrugtig</h3>
+				<!-- wp:group {"className":"ink-gemeenskap-principle ink-accent-block","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+				<div class="wp-block-group ink-gemeenskap-principle ink-accent-block">
+					<!-- wp:heading {"level":3,"className":"ink-heading-h3"} -->
+					<h3 class="wp-block-heading ink-heading-h3">Stil bo luidrugtig</h3>
 					<!-- /wp:heading -->
 
 					<!-- wp:paragraph {"textColor":"muted-text"} -->
@@ -283,29 +283,27 @@
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-cta","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"ink-text","layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-gemeenskap-cta has-ink-text-background-color has-background" data-audit-id="gemeenskap-cta" style="padding-right:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-cta ink-band ink-band--dark ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-gemeenskap-cta ink-band ink-band--dark ink-band--lg" data-audit-id="gemeenskap-cta" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained","contentSize":"36rem"}} -->
 	<div class="wp-block-group" data-audit-id="gemeenskap-cta-inner">
-		<!-- wp:heading {"textAlign":"center","level":2,"fontSize":"xxxl","textColor":"surface-alt"} -->
-		<h2 class="wp-block-heading has-text-align-center has-surface-alt-color has-text-color has-xxxl-font-size" data-audit-id="gemeenskap-cta-h2">Gereed om by INK aan te sluit?</h2>
+		<!-- wp:heading {"textAlign":"center","level":2,"className":"ink-heading-h2-on-dark"} -->
+		<h2 class="wp-block-heading has-text-align-center ink-heading-h2-on-dark" data-audit-id="gemeenskap-cta-h2">Gereed om by INK aan te sluit?</h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"align":"center","fontSize":"lg"} -->
 		<p class="has-text-align-center has-lg-font-size" data-audit-id="gemeenskap-cta-text">Dit is gratis, dit is niewinsgerig, en dit word stilletjies die beste plek aanlyn om te lees en gelees te word.</p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:buttons {"lock":{"move":true,"remove":true},"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
-		<div class="wp-block-buttons" data-audit-id="gemeenskap-cta-actions">
-			<!-- wp:button {"className":"is-style-ink-primary ink-btn-icon"} -->
-			<div class="wp-block-button is-style-ink-primary ink-btn-icon"><a class="wp-block-button__link wp-element-button" data-audit-id="gemeenskap-cta-btn-primary" href="/registreer"><?php echo esc_html__( 'Skep jou rekening', 'ink-foundation' ) . ink_foundation_icon( '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the label is esc_html__(); ink_foundation_icon() returns trusted, self-escaped inline SVG. ?></a></div>
-			<!-- /wp:button -->
-
-			<!-- wp:button {"className":"ink-gemeenskap-btn-neutral-dark"} -->
-			<div class="wp-block-button ink-gemeenskap-btn-neutral-dark"><a class="wp-block-button__link wp-element-button" data-audit-id="gemeenskap-cta-btn-secondary" href="/lees"><?php esc_html_e( 'Kyk eers rond', 'ink-foundation' ); ?></a></div>
-			<!-- /wp:button -->
+		<!-- The CTA pair on the dark band: `button-primary` + `button-outline on-dark` (primitives). primitives.css binds no on-dark block style, so both are anchors carrying the `ink-btn` classes, laid out by a flex group. -->
+		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"flex","justifyContent":"center","flexWrap":"wrap"}} -->
+		<div class="wp-block-group" data-audit-id="gemeenskap-cta-actions">
+			<!-- wp:html -->
+			<a class="ink-btn ink-btn--lg ink-btn--primary" data-audit-id="gemeenskap-cta-btn-primary" href="/registreer"><?php echo esc_html__( 'Skep jou rekening', 'ink-foundation' ) . ink_foundation_icon( '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the label is esc_html__(); ink_foundation_icon() returns trusted, self-escaped inline SVG. ?></a>
+			<a class="ink-btn ink-btn--lg ink-btn--outline-on-dark" data-audit-id="gemeenskap-cta-btn-secondary" href="/lees"><?php esc_html_e( 'Kyk eers rond', 'ink-foundation' ); ?></a>
+			<!-- /wp:html -->
 		</div>
-		<!-- /wp:buttons -->
+		<!-- /wp:group -->
 	</div>
 	<!-- /wp:group -->
 </section>

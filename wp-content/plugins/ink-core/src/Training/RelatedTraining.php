@@ -230,7 +230,7 @@ final class RelatedTraining {
 		}
 
 		$html = '<aside class="ink-opleiding-verwant">'
-			. '<h2 class="ink-opleiding-verwant__titel">' . esc_html__( 'Verwante leerhulpbronne', 'ink-core' ) . '</h2>'
+			. '<h2 class="ink-opleiding-verwant__titel ink-heading-h3">' . esc_html__( 'Verwante leerhulpbronne', 'ink-core' ) . '</h2>'
 			. '<ul class="ink-opleiding-verwant__lys">';
 
 		foreach ( $links as $link ) {

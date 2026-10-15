@@ -184,7 +184,7 @@ final class FollowingFeed {
 				'author'       => (string) get_the_author_meta( 'display_name', $author_id ),
 				'authorUrl'    => (string) get_author_posts_url( $author_id ),
 				'authorAvatar' => function_exists( 'get_avatar' )
-					? (string) get_avatar( $author_id, self::AVATAR_SIZE, '', '', array( 'class' => 'ink-volg-voer__avatar' ) )
+					? (string) get_avatar( $author_id, self::AVATAR_SIZE, '', '', array( 'class' => 'ink-avatar ink-avatar--40 ink-volg-voer__avatar' ) )
 					: '',
 				'excerpt'      => (string) get_the_excerpt( $post ),
 				'daysAgo'      => WorkCardFacts::daysAgoLabelForPost( $post_id ),
@@ -217,23 +217,23 @@ final class FollowingFeed {
 		// Heading + empty-state copy are human-authored, approved Afrikaans from
 		// ui-copy-translations.md (My Profiel — Volg/Aktiwiteit, lines 751/753/755).
 		// Zero AI Afrikaans.
-		$heading = '<h2 class="ink-volg-voer__heading" data-audit-id="profiel-activity-title">' . esc_html__( 'Aktiwiteit van wie jy volg', 'ink-core' ) . '</h2>';
+		$heading = '<h2 class="ink-heading-h2-block ink-volg-voer__heading" data-audit-id="profiel-activity-title">' . esc_html__( 'Aktiwiteit van wie jy volg', 'ink-core' ) . '</h2>';
 
 		if ( self::STATE_NO_FOLLOWS === $state ) {
 			$msg = __( "Volg 'n skrywer om hul nuwe stukke in jou aktiwiteitsvoer te sien.", 'ink-core' );
 
 			return '<section class="ink-volg-voer">' . $heading
-				. '<p class="ink-volg-voer__leeg" data-audit-id="profiel-activity-empty">' . esc_html( $msg ) . '</p></section>';
+				. '<p class="ink-card ink-card--empty ink-volg-voer__leeg" data-audit-id="profiel-activity-empty">' . esc_html( $msg ) . '</p></section>';
 		}
 
 		if ( array() === $cards ) {
 			$msg = __( 'Nuwe werk van hierdie skrywers verskyn in jou aktiwiteitsvoer.', 'ink-core' );
 
 			return '<section class="ink-volg-voer">' . $heading
-				. '<p class="ink-volg-voer__leeg" data-audit-id="profiel-activity-empty">' . esc_html( $msg ) . '</p></section>';
+				. '<p class="ink-card ink-card--empty ink-volg-voer__leeg" data-audit-id="profiel-activity-empty">' . esc_html( $msg ) . '</p></section>';
 		}
 
-		$html = '<section class="ink-volg-voer">' . $heading . '<ul class="ink-volg-voer__list" data-audit-id="profiel-activity-card">';
+		$html = '<section class="ink-volg-voer">' . $heading . '<ul class="ink-card ink-volg-voer__list" data-audit-id="profiel-activity-card">';
 
 		foreach ( array_values( $cards ) as $i => $card ) {
 			$html .= self::cardHtml( $card, 0 === $i );
@@ -298,7 +298,7 @@ final class FollowingFeed {
 		$html .= '</span>';
 		$html .= '</div>'; // .ink-volg-voer__kop
 
-		$html .= '<a class="ink-volg-voer__title"' . $audit( 'title-link' ) . ' href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>';
+		$html .= '<a class="ink-heading-h4 ink-volg-voer__title"' . $audit( 'title-link' ) . ' href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>';
 
 		if ( '' !== $excerpt ) {
 			$html .= '<p class="ink-volg-voer__uittreksel"' . $audit( 'excerpt' ) . '>' . esc_html( $excerpt ) . '</p>';
@@ -306,10 +306,10 @@ final class FollowingFeed {
 
 		$html .= '<div class="ink-volg-voer__voet"' . $audit( 'footer' ) . '>'
 			. '<span class="ink-volg-voer__tellings">'
-			. '<span class="ink-volg-voer__telling" aria-label="' . esc_attr( $h_label ) . '"><span aria-hidden="true">&#9825;</span> ' . esc_html( number_format_i18n( $hartjies ) ) . '</span>'
-			. '<span class="ink-volg-voer__telling"><span aria-hidden="true">&#128172;</span> ' . esc_html( number_format_i18n( $gemeenskap ) ) . '</span>'
+			. '<span class="ink-meta ink-volg-voer__telling" aria-label="' . esc_attr( $h_label ) . '"><span aria-hidden="true">&#9825;</span> ' . esc_html( number_format_i18n( $hartjies ) ) . '</span>'
+			. '<span class="ink-meta ink-volg-voer__telling"><span aria-hidden="true">&#128172;</span> ' . esc_html( number_format_i18n( $gemeenskap ) ) . '</span>'
 			. '</span>'
-			. '<a class="ink-volg-voer__lees"' . $audit( 'read-btn' ) . ' href="' . esc_url( $card['permalink'] ) . '" tabindex="-1" aria-hidden="true">'
+			. '<a class="ink-btn ink-btn--sm ink-btn--ghost-muted ink-volg-voer__lees"' . $audit( 'read-btn' ) . ' href="' . esc_url( $card['permalink'] ) . '" tabindex="-1" aria-hidden="true">'
 			. esc_html__( 'Lees', 'ink-core' ) . self::icon( self::ICON_ARROW )
 			. '</a>'
 			. '</div>';

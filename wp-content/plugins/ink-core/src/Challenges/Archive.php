@@ -282,6 +282,7 @@ final class Archive {
 	public static function cardHtml( array $card ): string {
 		$is_open   = ! empty( $card['is_open'] );
 		$state     = $is_open ? 'is-oop' : 'is-gesluit';
+		$tone      = $is_open ? 'ink-tone-success' : 'ink-tone-muted';
 		$tema      = isset( $card['tema'] ) ? (string) $card['tema'] : '';
 		$deadline  = isset( $card['deadline'] ) ? (string) $card['deadline'] : '';
 		$countdown = isset( $card['countdown'] ) ? (string) $card['countdown'] : '';
@@ -295,11 +296,11 @@ final class Archive {
 			$meta = '<div class="ink-uitdagings__item-meta"' . $aid( 'challenge-card-head' ) . '>';
 
 			if ( '' !== $tema ) {
-				$meta .= '<span class="ink-uitdagings__tema-pil"' . $aid( 'challenge-card-theme-pill' ) . '>' . esc_html( $tema ) . '</span>';
+				$meta .= '<span class="ink-uitdagings__tema-pil ink-pill ink-pill--soft"' . $aid( 'challenge-card-theme-pill' ) . '>' . esc_html( $tema ) . '</span>';
 			}
 
 			if ( '' !== $countdown ) {
-				$meta .= '<span class="ink-uitdaging__toestand-pil ' . esc_attr( $state ) . '"' . $aid( 'challenge-card-status-pill' ) . '>' . esc_html( $countdown ) . '</span>';
+				$meta .= '<span class="ink-uitdaging__toestand-pil ink-pill ink-pill--tint-xs ' . esc_attr( $tone . ' ' . $state ) . '"' . $aid( 'challenge-card-status-pill' ) . '>' . esc_html( $countdown ) . '</span>';
 			}
 
 			$meta .= '</div>';
@@ -309,20 +310,20 @@ final class Archive {
 
 		if ( '' !== $deadline ) {
 			$voet = '<div class="ink-uitdagings__item-voet"' . $aid( 'challenge-card-meta' ) . '>'
-				. '<span class="ink-uitdaging__sluitingsdatum-ry"' . $aid( 'challenge-card-meta-item' ) . '>'
+				. '<span class="ink-uitdaging__sluitingsdatum-ry ink-meta ink-meta--sm"' . $aid( 'challenge-card-meta-item' ) . '>'
 				. self::icon( self::ICON_CALENDAR )
 				. '<span class="ink-uitdaging__sluitingsdatum-etiket">' . esc_html( Terms::label( 'sluitingsdatum' ) ) . ': </span>'
 				. '<time class="ink-uitdaging__sluitingsdatum">' . esc_html( $deadline ) . '</time>'
 				. '</span>'
-				. '<a class="ink-uitdagings__lees"' . $aid( 'challenge-card-btn' ) . ' href="' . esc_url( $permalink ) . '" tabindex="-1" aria-hidden="true">'
+				. '<a class="ink-uitdagings__lees ink-link"' . $aid( 'challenge-card-btn' ) . ' href="' . esc_url( $permalink ) . '" tabindex="-1" aria-hidden="true">'
 				. esc_html__( 'Lees meer', 'ink-core' ) . self::icon( self::ICON_ARROW )
 				. '</a>'
 				. '</div>';
 		}
 
-		return '<li class="ink-uitdagings__item ' . esc_attr( $state ) . '"' . $aid( 'challenge-card' ) . '>'
+		return '<li class="ink-uitdagings__item ink-card--soft ' . esc_attr( $state ) . '"' . $aid( 'challenge-card' ) . '>'
 			. $meta
-			. '<a class="ink-uitdagings__titel"' . $aid( 'challenge-card-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $card['title'] ) . '</a>'
+			. '<a class="ink-uitdagings__titel ink-heading-h2-sub"' . $aid( 'challenge-card-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $card['title'] ) . '</a>'
 			. $voet
 			. '</li>';
 	}
@@ -354,7 +355,7 @@ final class Archive {
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
 		$intro = '<div class="ink-uitdagings__intro" data-audit-id="uitdagings-intro">'
-			. '<h1 class="ink-uitdagings__heading" data-audit-id="uitdagings-h1">' . esc_html( Terms::label( 'uitdaging_plural' ) ) . '</h1>'
+			. '<h1 class="ink-uitdagings__heading ink-heading-h1-index" data-audit-id="uitdagings-h1">' . esc_html( Terms::label( 'uitdaging_plural' ) ) . '</h1>'
 			. '</div>';
 
 		if ( array() === $cards ) {

@@ -25,8 +25,8 @@ $ink_post_to = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : 
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"className":"is-style-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group is-style-card">
-		<!-- wp:heading {"level":1,"fontSize":"xxl"} -->
-		<h1 class="wp-block-heading has-xxl-font-size"><?php echo esc_html__( 'Welkom by INK', 'ink-foundation' ); ?></h1>
+		<!-- wp:heading {"level":1,"className":"ink-heading-h2-block"} -->
+		<h1 class="wp-block-heading ink-heading-h2-block"><?php echo esc_html__( 'Welkom by INK', 'ink-foundation' ); ?></h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
@@ -35,8 +35,8 @@ $ink_post_to = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : 
 
 		<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group">
-			<!-- wp:heading {"level":2,"fontSize":"lg"} -->
-			<h2 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( 'Voltooi jou profiel', 'ink-foundation' ); ?></h2>
+			<!-- wp:heading {"level":2,"className":"ink-heading-h4"} -->
+			<h2 class="wp-block-heading ink-heading-h4"><?php echo esc_html__( 'Voltooi jou profiel', 'ink-foundation' ); ?></h2>
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
@@ -45,8 +45,8 @@ $ink_post_to = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : 
 
 			<!-- wp:buttons {"layout":{"type":"constrained"}} -->
 			<div class="wp-block-buttons">
-				<!-- wp:button {"className":"is-style-outline"} -->
-				<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/my-profiel"><?php echo esc_html__( 'Wysig profiel', 'ink-foundation' ); ?></a></div>
+				<!-- wp:button {"className":"is-style-ink-outline"} -->
+				<div class="wp-block-button is-style-ink-outline"><a class="wp-block-button__link wp-element-button" href="/my-profiel"><?php echo esc_html__( 'Wysig profiel', 'ink-foundation' ); ?></a></div>
 				<!-- /wp:button -->
 			</div>
 			<!-- /wp:buttons -->
@@ -59,8 +59,8 @@ $ink_post_to = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : 
 
 		<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
 		<div class="wp-block-group">
-			<!-- wp:heading {"level":2,"fontSize":"lg"} -->
-			<h2 class="wp-block-heading has-lg-font-size"><?php echo esc_html__( 'Neem \'n eerste stap', 'ink-foundation' ); ?></h2>
+			<!-- wp:heading {"level":2,"className":"ink-heading-h4"} -->
+			<h2 class="wp-block-heading ink-heading-h4"><?php echo esc_html__( 'Neem \'n eerste stap', 'ink-foundation' ); ?></h2>
 			<!-- /wp:heading -->
 
 			<!--
@@ -95,8 +95,8 @@ $ink_post_to = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : 
 
 				<!-- wp:buttons {"layout":{"type":"constrained"}} -->
 				<div class="wp-block-buttons">
-					<!-- wp:button {"className":"is-style-outline"} -->
-					<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/skrywers"><?php echo esc_html__( 'Ontdek skrywers', 'ink-foundation' ); ?></a></div>
+					<!-- wp:button {"className":"is-style-ink-outline"} -->
+					<div class="wp-block-button is-style-ink-outline"><a class="wp-block-button__link wp-element-button" href="/skrywers"><?php echo esc_html__( 'Ontdek skrywers', 'ink-foundation' ); ?></a></div>
 					<!-- /wp:button -->
 				</div>
 				<!-- /wp:buttons -->
@@ -123,8 +123,8 @@ $ink_post_to = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : 
 			}
 			?>
 			<input type="hidden" name="ink_redirect_to" value="<?php echo esc_url( home_url( '/' ) ); ?>" />
-			<button type="submit" class="wp-element-button is-style-outline" name="ink_onboarding_choice" value="skip"><?php echo esc_html__( 'Slaan oor', 'ink-foundation' ); ?></button>
-			<button type="submit" class="wp-element-button" name="ink_onboarding_choice" value="done"><?php echo esc_html__( 'Klaar', 'ink-foundation' ); ?></button>
+			<button type="submit" class="ink-btn ink-btn--outline" name="ink_onboarding_choice" value="skip"><?php echo esc_html__( 'Slaan oor', 'ink-foundation' ); ?></button>
+			<button type="submit" class="ink-btn ink-btn--primary" name="ink_onboarding_choice" value="done"><?php echo esc_html__( 'Klaar', 'ink-foundation' ); ?></button>
 		</form>
 		<!-- /wp:html -->
 	</div>

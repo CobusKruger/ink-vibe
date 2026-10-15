@@ -340,7 +340,7 @@ final class WorksArchive {
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
-		$heading   = '<h1 class="ink-ontdek-werke__heading" data-audit-id="stories-heading">' . esc_html( Terms::label( 'bydrae_plural' ) ) . '</h1>';
+		$heading   = '<h1 class="ink-ontdek-werke__heading ink-heading-h2-block" data-audit-id="stories-heading">' . esc_html( Terms::label( 'bydrae_plural' ) ) . '</h1>';
 		$controls  = self::controlsHtml(
 			$nav['type'] ?? null,
 			isset( $nav['sort'] ) ? (string) $nav['sort'] : self::SORT_NUUT
@@ -471,21 +471,21 @@ final class WorksArchive {
 		$url     = (string) ( $card['permalink'] ?? '' );
 		$excerpt = (string) ( $card['excerpt'] ?? '' );
 
-		$html = '<li class="' . esc_attr( $base . '__item is-style-card' ) . '"' . self::auditAttr( 'stories-card', $audit ) . '>'
+		$html = '<li class="' . esc_attr( $base . '__item ink-card' ) . '"' . self::auditAttr( 'stories-card', $audit ) . '>'
 			. '<div class="' . esc_attr( $base . '__meta-top' ) . '"' . self::auditAttr( 'stories-card-meta', $audit ) . '>'
 			. self::typePillHtml( $base, (string) ( $card['type'] ?? '' ), $audit );
 
 		$read_time = ReadingTime::label( (int) ( $card['read_minutes'] ?? 0 ) );
 
 		if ( '' !== $read_time ) {
-			$html .= '<span class="' . esc_attr( $base . '__leestyd' ) . '"' . self::auditAttr( 'stories-card-time', $audit ) . '>'
+			$html .= '<span class="' . esc_attr( $base . '__leestyd ink-meta' ) . '"' . self::auditAttr( 'stories-card-time', $audit ) . '>'
 				. self::icon( self::ICON_CLOCK, $audit ? 'stories-card-time-icon' : '' )
 				. '<span>' . esc_html( $read_time ) . '</span>'
 				. '</span>';
 		}
 
 		$html .= '</div>'
-			. '<a class="' . esc_attr( $base . '__title' ) . '"' . self::auditAttr( 'stories-card-title', $audit ) . ' href="' . esc_url( $url ) . '">' . esc_html( $title ) . '</a>';
+			. '<a class="' . esc_attr( $base . '__title ink-heading-h3-card' ) . '"' . self::auditAttr( 'stories-card-title', $audit ) . ' href="' . esc_url( $url ) . '">' . esc_html( $title ) . '</a>';
 
 		if ( '' !== $excerpt ) {
 			$html .= '<p class="' . esc_attr( $base . '__uittreksel' ) . '"' . self::auditAttr( 'stories-card-excerpt', $audit ) . '>' . esc_html( $excerpt ) . '</p>';
@@ -500,8 +500,8 @@ final class WorksArchive {
 	}
 
 	/**
-	 * The card's type pill — the SAME `.ink-lees-tipe` badge + per-type colour
-	 * convention as the reading pages (sage `gedig` / brand-orange `storie` /
+	 * The card's type pill — the shared primitives.css pill with the same
+	 * per-type tone as the reading pages (sage `gedig` / brand-orange `storie` /
 	 * grey `artikel`), not a bespoke Ontdek-only style. Pure.
 	 *
 	 * Direct product-owner instruction (Theme-Fidelity fourth-pass re-audit,
@@ -509,12 +509,9 @@ final class WorksArchive {
 	 * match the reading pages: sage for poems, brand orange for stories and
 	 * gray for articles." Before this fix `.ink-ontdek-werke__type` hardcoded
 	 * `color: primary` (orange) for every type — Storie was already correct by
-	 * accident, Gedig and Artikel were not. Mirrors reading-gedig.php /
-	 * reading-storie.php / reading-artikel.php's exact class+style pattern
-	 * (`has-accent-color` + a 15% inline background tint for Gedig only, the
-	 * other two types at `.ink-lees-tipe`'s shared 10%) so the two surfaces
-	 * cannot drift apart. Any type outside the three readable ones keeps the
-	 * neutral (uncoloured) pill.
+	 * accident, Gedig and Artikel were not. The tone classes (`ink-tone-*`) are
+	 * the same ones the reading-page badges use, so the two surfaces cannot drift
+	 * apart. Any type outside the three readable ones gets the pill's default tone.
 	 *
 	 * @param string $base  The BEM base class.
 	 * @param string $type  The bydrae post type (`gedig`/`storie`/`artikel`), or ''.
@@ -522,25 +519,25 @@ final class WorksArchive {
 	 * @return string
 	 */
 	private static function typePillHtml( string $base, string $type, bool $audit = false ): string {
-		$classes = $base . '__type ink-lees-tipe';
-		$style   = '';
+		// Fidelity Stage 3: the shared `ink-pill ink-pill--tint-sm` (primitives.css)
+		// at the per-type tone — the tint itself is the R6-accepted divergence; the
+		// 2px 10px / 12/16 / 600 box matches Lovable's card pill. NR-3: every tint
+		// is 10% (the old Gedig 15% inline bump is gone).
+		$classes = $base . '__type ink-pill ink-pill--tint-sm';
 
 		switch ( $type ) {
 			case PostTypes::GEDIG:
-				$classes .= ' has-accent-color has-text-color';
-				// The shared `.ink-lees-tipe` rule tints at 10%; the reading pages
-				// bump Gedig specifically to 15% (see reading-gedig.php) — matched here.
-				$style = ' style="background-color:color-mix(in srgb, currentColor 15%, transparent)"';
+				$classes .= ' ink-tone-accent';
 				break;
 			case PostTypes::STORIE:
-				$classes .= ' has-primary-color has-text-color';
+				$classes .= ' ink-tone-primary';
 				break;
 			case PostTypes::ARTIKEL:
-				$classes .= ' has-muted-text-color has-text-color';
+				$classes .= ' ink-tone-muted';
 				break;
 		}
 
-		return '<span class="' . esc_attr( $classes ) . '"' . $style . self::auditAttr( 'stories-card-pill', $audit ) . '>' . esc_html( Terms::label( $type ) ) . '</span>';
+		return '<span class="' . esc_attr( $classes ) . '"' . self::auditAttr( 'stories-card-pill', $audit ) . '>' . esc_html( Terms::label( $type ) ) . '</span>';
 	}
 
 	/**
@@ -558,7 +555,7 @@ final class WorksArchive {
 		$html = '<div class="' . esc_attr( $base . '__author' ) . '"' . self::auditAttr( 'stories-card-author', $audit ) . '>';
 
 		if ( '' !== $avatar ) {
-			$html .= '<img class="' . esc_attr( $base . '__foto' ) . '"' . self::auditAttr( 'stories-card-avatar', $audit ) . ' src="' . esc_url( $avatar ) . '" '
+			$html .= '<img class="' . esc_attr( $base . '__foto ink-avatar ink-avatar--28' ) . '"' . self::auditAttr( 'stories-card-avatar', $audit ) . ' src="' . esc_url( $avatar ) . '" '
 				. 'alt="' . esc_attr( $author ) . '" width="28" height="28" loading="lazy" decoding="async" />';
 		}
 
@@ -599,7 +596,7 @@ final class WorksArchive {
 	 * @return string
 	 */
 	private static function countHtml( string $base, string $icon, int $count, string $label, bool $audit = false ): string {
-		return '<span class="' . esc_attr( $base . '__teller' ) . '"' . self::auditAttr( 'stories-card-stat', $audit ) . ' aria-label="' . esc_attr( $label ) . '">'
+		return '<span class="' . esc_attr( $base . '__teller ink-meta' ) . '"' . self::auditAttr( 'stories-card-stat', $audit ) . ' aria-label="' . esc_attr( $label ) . '">'
 			. self::icon( $icon, $audit ? 'stories-card-stat-icon' : '' )
 			. '<span aria-hidden="true">' . esc_html( (string) $count ) . '</span>'
 			. '</span>';
@@ -657,7 +654,7 @@ final class WorksArchive {
 				(string) remove_query_arg( array( self::TYPE_VAR, self::PAGED_VAR ) ),
 				__( 'Alles', 'ink-core' ),
 				$alles_active,
-				'ink-ontdek-werke__filter-knoppie'
+				'ink-ontdek-werke__filter-knoppie ink-chip'
 			),
 			'stories-filter-active'
 		);
@@ -670,7 +667,7 @@ final class WorksArchive {
 				$url,
 				Terms::label( $type . '_plural' ),
 				$type === $active_type,
-				'ink-ontdek-werke__filter-knoppie'
+				'ink-ontdek-werke__filter-knoppie ink-chip'
 			);
 
 			$html .= 0 === $type_index++ ? self::withAuditId( $pill, 'stories-filter' ) : $pill;
@@ -689,7 +686,7 @@ final class WorksArchive {
 				$url,
 				self::sortLabel( $sort ),
 				$sort === $active_sort,
-				'ink-ontdek-werke__sorteer-knoppie'
+				'ink-ontdek-werke__sorteer-knoppie ink-chip ink-chip--sort'
 			);
 
 			$html .= isset( $sort_ids[ $sort_index ] ) ? self::withAuditId( $pill, $sort_ids[ $sort_index ] ) : $pill;
@@ -723,7 +720,7 @@ final class WorksArchive {
 				(string) remove_query_arg( array( self::YEAR_VAR, self::MONTH_VAR, self::PAGED_VAR ) ),
 				__( 'Alle datums', 'ink-core' ),
 				( null === $active_year ),
-				'ink-ontdek-werke__datum-knoppie'
+				'ink-ontdek-werke__datum-knoppie ink-chip ink-chip--date'
 			),
 			'stories-date-active'
 		);
@@ -737,7 +734,7 @@ final class WorksArchive {
 				$url,
 				(string) $year,
 				$year === $active_year,
-				'ink-ontdek-werke__datum-knoppie'
+				'ink-ontdek-werke__datum-knoppie ink-chip ink-chip--date'
 			);
 
 			$html .= 0 === $year_index++ ? self::withAuditId( $pill, 'stories-date' ) : $pill;

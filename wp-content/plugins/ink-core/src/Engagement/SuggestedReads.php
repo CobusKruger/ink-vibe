@@ -188,7 +188,7 @@ final class SuggestedReads {
 			return '';
 		}
 
-		$html = '<section class="ink-verwante"><h2 class="ink-verwante__heading">' . esc_html__( 'Verwante stukke', 'ink-core' ) . '</h2><ul class="ink-verwante__list">';
+		$html = '<section class="ink-verwante"><h2 class="ink-verwante__heading ink-heading-h2-block">' . esc_html__( 'Verwante stukke', 'ink-core' ) . '</h2><ul class="ink-verwante__list">';
 
 		foreach ( $cards as $card ) {
 			$html .= '<li class="ink-verwante__item">'

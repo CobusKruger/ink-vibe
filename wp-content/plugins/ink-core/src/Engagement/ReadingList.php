@@ -103,7 +103,7 @@ final class ReadingList {
 	 * @return string
 	 */
 	public static function toHtml( array $cards ): string {
-		$html = '<section class="ink-leeslys"><h2 class="ink-leeslys__heading" data-audit-id="profiel-reading-title">' . esc_html( Terms::label( 'leeslys' ) ) . '</h2>';
+		$html = '<section class="ink-leeslys"><h2 class="ink-leeslys__heading ink-heading-h2-block" data-audit-id="profiel-reading-title">' . esc_html( Terms::label( 'leeslys' ) ) . '</h2>';
 
 		if ( array() === $cards ) {
 			// Empty state — matches every sibling My Profiel section
@@ -117,8 +117,8 @@ final class ReadingList {
 			// tracked in docs/afrikaans-translation-sheet.md (ID
 			// LEESLYS-LEEG-BODY) / docs/afrikaans-copy-worklist.md until a
 			// human ratifies it; `composer copy:scan` tracks it as debt.
-			$html .= '<div class="ink-leeslys__leeg" data-audit-id="profiel-reading-empty">'
-				. '<p class="ink-leeslys__leeg-titel" data-audit-id="profiel-reading-empty-title">' . esc_html__( 'Nog niks gestoor nie.', 'ink-core' ) . '</p>'
+			$html .= '<div class="ink-leeslys__leeg ink-card--empty" data-audit-id="profiel-reading-empty">'
+				. '<p class="ink-leeslys__leeg-titel ink-heading-h3" data-audit-id="profiel-reading-empty-title">' . esc_html__( 'Nog niks gestoor nie.', 'ink-core' ) . '</p>'
 				. '<p class="ink-leeslys__leeg-beskrywing" data-audit-id="profiel-reading-empty-body">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — Leeslys empty-state body copy not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</p>'
 				. '</div></section>';
 
@@ -130,9 +130,9 @@ final class ReadingList {
 			// Fidelity join keys on the FIRST card only (maps/my-profiel.csv).
 			$audit = static fn( string $suffix ): string => 0 === $i ? ' data-audit-id="profiel-reading-' . $suffix . '"' : '';
 
-			$html .= '<li class="ink-leeslys__item"' . $audit( 'card' ) . '>'
-				. '<span class="ink-leeslys__type"' . $audit( 'type' ) . '>' . esc_html( Terms::label( $card['type'] ) ) . '</span>'
-				. '<a class="ink-leeslys__title"' . $audit( 'card-title' ) . ' href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>'
+			$html .= '<li class="ink-leeslys__item ink-card"' . $audit( 'card' ) . '>'
+				. '<span class="ink-leeslys__type ink-pill ink-pill--soft"' . $audit( 'type' ) . '>' . esc_html( Terms::label( $card['type'] ) ) . '</span>'
+				. '<a class="ink-leeslys__title ink-heading-h4"' . $audit( 'card-title' ) . ' href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>'
 				. '</li>';
 		}
 		$html .= '</ul></section>';

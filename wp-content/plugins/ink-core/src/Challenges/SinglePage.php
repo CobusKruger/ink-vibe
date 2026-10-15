@@ -298,6 +298,7 @@ final class SinglePage {
 
 		$state_key   = $is_open ? 'uitdaging_oop' : 'uitdaging_gesluit';
 		$state_class = $is_open ? 'is-oop' : 'is-gesluit';
+		$state_tone  = $is_open ? 'ink-tone-success' : 'ink-tone-muted';
 
 		/* translators: %d: the number of writers who have entered this challenge. */
 		$participants_label = sprintf( _n( '%d skrywer het ingeskryf', '%d skrywers het ingeskryf', $entry_count, 'ink-core' ), $entry_count );
@@ -311,7 +312,7 @@ final class SinglePage {
 		// `data-audit-id`s are the fidelity-audit join keys
 		// (docs/fidelity-remediation/maps/uitdaging-enkel.csv).
 		return '<div data-audit-id="uitdaging-meta" class="ink-uitdaging__status ' . esc_attr( $state_class ) . '">'
-			. '<span data-audit-id="uitdaging-meta-deadline" class="ink-uitdaging__sluitingsdatum-ry">'
+			. '<span data-audit-id="uitdaging-meta-deadline" class="ink-uitdaging__sluitingsdatum-ry ink-meta ink-meta--sm">'
 			. self::icon( self::ICON_CALENDAR )
 			. '<span class="ink-uitdaging__sluitingsdatum-etiket">' . esc_html( Terms::label( 'sluitingsdatum' ) ) . ': </span>'
 			. '<time class="ink-uitdaging__sluitingsdatum">' . esc_html( $formatted_deadline ) . '</time>'
@@ -320,11 +321,11 @@ final class SinglePage {
 			// participants meta item, missing entirely until now — Lovable's
 			// meta row carries it (Users icon + "[N] writers entered"); ratified
 			// Afrikaans copy from `docs/ui-copy-translations.md`.
-			. '<span data-audit-id="uitdaging-meta-participants" class="ink-uitdaging__deelnemers-ry">'
+			. '<span data-audit-id="uitdaging-meta-participants" class="ink-uitdaging__deelnemers-ry ink-meta ink-meta--sm">'
 			. self::icon( self::ICON_USERS )
 			. '<span>' . esc_html( $participants_label ) . '</span>'
 			. '</span>'
-			. '<span data-audit-id="uitdaging-meta-status" class="ink-uitdaging__toestand-pil ' . esc_attr( $state_class ) . '">' . esc_html( Terms::label( $state_key ) ) . '</span>'
+			. '<span data-audit-id="uitdaging-meta-status" class="ink-uitdaging__toestand-pil ink-pill ink-pill--tint-xs ' . esc_attr( $state_tone . ' ' . $state_class ) . '">' . esc_html( Terms::label( $state_key ) ) . '</span>'
 			. '</div>';
 	}
 
@@ -344,7 +345,7 @@ final class SinglePage {
 	 * @return string
 	 */
 	public static function entriesHtml( array $entries ): string {
-		$heading = '<h2 data-audit-id="uitdaging-entries-h2" class="ink-uitdaging__inskrywings-titel">' . esc_html( Terms::label( 'inskrywing_plural' ) ) . '</h2>';
+		$heading = '<h2 data-audit-id="uitdaging-entries-h2" class="ink-uitdaging__inskrywings-titel ink-heading-h2-section">' . esc_html( Terms::label( 'inskrywing_plural' ) ) . '</h2>';
 
 		if ( array() === $entries ) {
 			/* translators: %s: the entries (inskrywings) label. */
@@ -358,25 +359,23 @@ final class SinglePage {
 
 		// Fidelity-audit join keys (maps/uitdaging-enkel.csv) go on the FIRST card
 		// only — the repeater convention; '' renders no attribute at all.
-		$first = true;
-		$aid   = static function ( string $id ) use ( &$first ): string {
-			return $first ? ' data-audit-id="' . $id . '"' : '';
-		};
+		foreach ( $entries as $index => $entry ) {
+			$is_first = 0 === $index;
+			$aid      = static fn ( string $id ): string => $is_first ? ' data-audit-id="' . $id . '"' : '';
 
-		foreach ( $entries as $entry ) {
 			$type_label = (string) ( $entry['type_label'] ?? '' );
 			$excerpt    = (string) ( $entry['excerpt'] ?? '' );
 			$author     = (string) ( $entry['author'] ?? '' );
 			$avatar_url = (string) ( $entry['avatar_url'] ?? '' );
 
 			$html .= '<li' . $aid( 'uitdaging-entry-item' ) . ' class="ink-uitdaging__inskrywing">'
-				. '<a' . $aid( 'uitdaging-entry-card' ) . ' class="ink-uitdaging__inskrywing-skakel" href="' . esc_url( $entry['permalink'] ) . '">';
+				. '<a' . $aid( 'uitdaging-entry-card' ) . ' class="ink-uitdaging__inskrywing-skakel ink-card--feature" href="' . esc_url( $entry['permalink'] ) . '">';
 
 			if ( '' !== $type_label ) {
-				$html .= '<span' . $aid( 'uitdaging-entry-type' ) . ' class="ink-uitdaging__inskrywing-tipe">' . esc_html( $type_label ) . '</span>';
+				$html .= '<span' . $aid( 'uitdaging-entry-type' ) . ' class="ink-uitdaging__inskrywing-tipe ink-pill ink-pill--soft">' . esc_html( $type_label ) . '</span>';
 			}
 
-			$html .= '<span' . $aid( 'uitdaging-entry-title' ) . ' class="ink-uitdaging__inskrywing-titel">' . esc_html( $entry['title'] ) . '</span>';
+			$html .= '<span' . $aid( 'uitdaging-entry-title' ) . ' class="ink-uitdaging__inskrywing-titel ink-heading-h3">' . esc_html( $entry['title'] ) . '</span>';
 
 			if ( '' !== $excerpt ) {
 				$html .= '<p' . $aid( 'uitdaging-entry-excerpt' ) . ' class="ink-uitdaging__inskrywing-uittreksel">' . esc_html( $excerpt ) . '</p>';
@@ -388,7 +387,7 @@ final class SinglePage {
 				if ( '' !== $avatar_url ) {
 					// Avatar alt falls back to the author name so it is never empty
 					// (a11y) — mirrors {@see \Ink\Discovery\FeaturedStream::footerHtml()}.
-					$html .= '<img' . $aid( 'uitdaging-entry-avatar' ) . ' class="ink-uitdaging__inskrywing-foto" src="' . esc_url( $avatar_url ) . '" '
+					$html .= '<img' . $aid( 'uitdaging-entry-avatar' ) . ' class="ink-uitdaging__inskrywing-foto ink-avatar ink-avatar--28" src="' . esc_url( $avatar_url ) . '" '
 						. 'alt="' . esc_attr( $author ) . '" width="28" height="28" loading="lazy" decoding="async" />';
 				}
 
@@ -400,7 +399,6 @@ final class SinglePage {
 			}
 
 			$html .= '</a></li>';
-			$first = false;
 		}
 
 		return $html . '</ul></div>';

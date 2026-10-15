@@ -132,11 +132,11 @@ final class PinnedWorksManager {
 	public static function toHtml( array $works ): string {
 		// "werke" -> "skrywes" per the product-owner terminology correction of
 		// 2026-09-05 ("'werke' generally should be 'skrywes' globally").
-		$heading = '<h2 class="ink-vasgespel__titel">' . esc_html__( 'Vasgespelde skrywes', 'ink-core' ) . '</h2>';
+		$heading = '<h2 class="ink-heading-h3 ink-vasgespel__titel">' . esc_html__( 'Vasgespelde skrywes', 'ink-core' ) . '</h2>';
 
 		if ( array() === $works ) {
 			return '<section class="ink-vasgespel">' . $heading
-				. '<p class="ink-vasgespel__leeg">' . esc_html__( 'Jy het nog geen gepubliseerde werk om vas te speld nie.', 'ink-core' ) . '</p></section>';
+				. '<p class="ink-hint ink-vasgespel__leeg">' . esc_html__( 'Jy het nog geen gepubliseerde werk om vas te speld nie.', 'ink-core' ) . '</p></section>';
 		}
 
 		$html = '<section class="ink-vasgespel">' . $heading . '<ul class="ink-vasgespel__lys">';
@@ -167,7 +167,9 @@ final class PinnedWorksManager {
 	 */
 	public static function toggleHtml( int $post_id, bool $pinned ): string {
 		$label   = $pinned ? Terms::label( 'vasgespeld' ) : Terms::label( 'vasgespel' );
-		$classes = 'ink-vasgespel__knoppie' . ( $pinned ? ' is-pinned' : '' );
+		// Shared button primitive (primitives.css): pinned = primary, unpinned = outline;
+		// vasgespel.js swaps the two variant classes alongside `is-pinned`.
+		$classes = 'ink-btn ink-btn--sm ' . ( $pinned ? 'ink-btn--primary' : 'ink-btn--outline' ) . ' ink-vasgespel__knoppie' . ( $pinned ? ' is-pinned' : '' );
 
 		return '<button type="button" class="' . esc_attr( $classes ) . '"'
 			. ' data-ink-post="' . esc_attr( (string) $post_id ) . '"'

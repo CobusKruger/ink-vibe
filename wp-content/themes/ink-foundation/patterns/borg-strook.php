@@ -20,8 +20,8 @@
  */
 
 ?>
-<!-- wp:group {"tagName":"aside","align":"full","className":"ink-borg-band ink-animate-fade-up","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<aside data-audit-id="sponsors" class="wp-block-group alignfull ink-borg-band ink-animate-fade-up" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"aside","align":"full","className":"ink-borg-band ink-band ink-band--stone-soft ink-animate-fade-up","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<aside data-audit-id="sponsors" class="wp-block-group alignfull ink-borg-band ink-band ink-band--stone-soft ink-animate-fade-up" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/borg-strook /-->

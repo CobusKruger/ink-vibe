@@ -113,7 +113,7 @@ final class ReadingListToggle {
 	 * @return string
 	 */
 	public static function toHtml( int $post_id, bool $saved, bool $guest = false ): string {
-		$classes = 'ink-leeslys-knoppie' . ( $saved ? ' is-saved' : '' );
+		$classes = 'ink-leeslys-knoppie ink-icon-btn' . ( $saved ? ' is-saved' : '' );
 		$label   = Terms::label( 'leeslys' );
 
 		return '<button type="button" class="' . esc_attr( $classes ) . '"'

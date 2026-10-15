@@ -90,8 +90,8 @@ test( 'toHtml shows the success notice only for the sent slug', function (): voi
 	$sent = ContactForm::toHtml( '', '', ContactForm::NOTICE_SENT );
 	$none = ContactForm::toHtml( '', '' );
 
-	expect( $sent )->toContain( 'ink-kontak-vorm__notice--ok' );
-	expect( $none )->not->toContain( 'ink-kontak-vorm__notice--ok' );
+	expect( $sent )->toContain( 'ink-notice--ok' );
+	expect( $none )->not->toContain( 'ink-notice--ok' );
 } );
 
 test( 'toHtml shows the send-failure notice (not success) for the send-fail slug', function (): void {
@@ -100,8 +100,8 @@ test( 'toHtml shows the send-failure notice (not success) for the send-fail slug
 	// An honest failure notice — never the "gestuur" success styling (R15 patch:
 	// the handler routes here when send() could not deliver, so the visitor is not
 	// told a lost message was sent).
-	expect( $fail )->toContain( 'ink-kontak-vorm__notice--fout' );
-	expect( $fail )->not->toContain( 'ink-kontak-vorm__notice--ok' );
+	expect( $fail )->toContain( 'ink-notice--fout' );
+	expect( $fail )->not->toContain( 'ink-notice--ok' );
 } );
 
 // --- invalidNotice(): each validation code surfaces its own per-field notice ---
@@ -134,6 +134,6 @@ test( 'toHtml surfaces the specific per-field validation message for each field 
 	expect( ContactForm::toHtml( '', '', ContactForm::NOTICE_INVALID_MESSAGE ) )->toContain( "Vul asseblief 'n boodskap in." );
 
 	// Each is an alert-role error notice, never the success styling.
-	expect( ContactForm::toHtml( '', '', ContactForm::NOTICE_INVALID_NAME ) )->toContain( 'ink-kontak-vorm__notice--fout' );
-	expect( ContactForm::toHtml( '', '', ContactForm::NOTICE_INVALID_NAME ) )->not->toContain( 'ink-kontak-vorm__notice--ok' );
+	expect( ContactForm::toHtml( '', '', ContactForm::NOTICE_INVALID_NAME ) )->toContain( 'ink-notice--fout' );
+	expect( ContactForm::toHtml( '', '', ContactForm::NOTICE_INVALID_NAME ) )->not->toContain( 'ink-notice--ok' );
 } );

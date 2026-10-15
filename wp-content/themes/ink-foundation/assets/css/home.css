@@ -1,36 +1,24 @@
 /**
  * INK Foundation — home (Tuisblad) stylesheet.
  *
- * Epic 19 (theme visual-fidelity rework), Story 19.1 foundations. Enqueued on the
- * FRONT PAGE ONLY via ink_foundation_enqueue_home_assets() (functions.php, §0.8).
- * Holds the shared home-page primitives that need @keyframes / ::before /
- * background-clip — things theme.json elements/blocks and register_block_style()
- * inline_style can't express as cleanly. Presentation only; no business logic.
+ * Enqueued on the FRONT PAGE (and the QA gallery) only via
+ * ink_foundation_enqueue_home_assets() (functions.php).
  *
- * TOKENS ONLY (Gate A): every colour / spacing / radius / type value resolves to a
- * theme.json custom property (--wp--preset--* / --wp--custom--*). No raw hex, no
- * raw px for design values. "White" = the `surface-alt` token, never #fff.
+ * Fidelity remediation Stage 3 (R8): this file holds ONLY the home page's own
+ * layout and decoration — the hero grid + texture, the gradient heading accent,
+ * the fade-up / hover-scale motion helpers, the card corner tints and crown
+ * watermark, the feature/featured grids and per-element rhythm, and the CTA panel.
+ * Every primitive (buttons, cards, pills, badges, headings, eyebrows, meta items,
+ * avatars, icon tiles, tier chips, section bands, links) is a class from
+ * `assets/css/primitives.css`, which the home markup now carries directly; nothing
+ * here may define or restate one.
  *
- * ── color-mix() alpha-tint convention (site-wide, §0.7 / token-note 2) ──────────
- * The palette tokens are OPAQUE hex, so you cannot channel-split them
- * (`hsl(var/a)` does NOT work here). To tint a token, use color-mix() and ALWAYS
- * declare an opaque fallback FIRST for older engines:
- *
- *     background-color: var(--wp--preset--color--secondary);            // fallback
- *     background-color: color-mix(in srgb,
- *         var(--wp--preset--color--primary) 10%, transparent);          // tint
- *
- * (Concrete tint recipes — badge pill, winner-card gradient, corner tints — are
- * applied in the later stories 19.2–19.5; this comment is the shared rule.)
- *
- * ── icon convention (§0.9) ──────────────────────────────────────────────────────
- * Icons are inline <svg> (16px, stroke:currentColor, aria-hidden unless
- * meaning-bearing) — see ink_foundation_icon() in functions.php. `.ink-icon`
- * below normalises their box.
+ * TOKENS ONLY (Gate A): every value resolves to a theme.json custom property.
+ * Tints use color-mix() with an opaque fallback first (§0.7).
  */
 
-/* Inline icon box (see ink_foundation_icon()). Sits in the button/link flex row,
-   inherits the text colour, never shrinks. */
+/* Inline icon box (see ink_foundation_icon()). A primitive that hosts an icon
+   (button, meta item, icon tile, pill) sizes its svg itself. */
 .ink-icon {
 	display: inline-block;
 	width: 1rem;
@@ -61,10 +49,8 @@
 }
 
 /* ── §0.4 Plus-pattern background texture ────────────────────────────────────────
-   Decorative tiled plus/cross layer behind the hero. The data-URI comes from the
-   --wp--custom--ink--pattern--plus token (theme.json settings.custom). The layer
-   is absolutely positioned at opacity .03, below content, and NEVER intercepts
-   clicks; it is aria-hidden in markup (added by the hero pattern in 19.2). */
+   Decorative tiled plus/cross layer behind the hero (opacity .03, never intercepts
+   clicks). The data-URI comes from the --wp--custom--ink--pattern--plus token. */
 .ink-hero-texture {
 	position: relative;
 	overflow: hidden;
@@ -85,9 +71,9 @@
 	z-index: 1;
 }
 
-/* ── §0.6 Animations ─────────────────────────────────────────────────────────────
-   fade-up fires once on mount (CSS-only, no scroll triggers); underline-slide is
-   the nav / "Sien alle werke" hover underline (2px terracotta, 0 → 100%). */
+/* ── §0.6 Motion helpers ─────────────────────────────────────────────────────────
+   fade-up fires once on mount; ink-hover-scale = Lovable `hover:scale-105` on the
+   borg chips. Both are disabled under prefers-reduced-motion (foot of this file). */
 @keyframes ink-fade-up {
 	from {
 		opacity: 0;
@@ -103,30 +89,6 @@
 	animation: ink-fade-up 0.6s ease-out forwards;
 }
 
-.ink-underline-slide {
-	position: relative;
-}
-
-.ink-underline-slide::after {
-	content: "";
-	position: absolute;
-	bottom: -2px;
-	left: 0;
-	width: 0;
-	height: 2px;
-	background-color: var(--wp--preset--color--primary);
-	transition: width 0.3s ease;
-}
-
-.ink-underline-slide:hover::after,
-.ink-underline-slide:focus-visible::after {
-	width: 100%;
-}
-
-/* Shared hover motion helpers (§0.5 / §0.6). ink-hover-scale = the Lovable
-   `hover:scale-105` used by the §7 borg chips; ink-hover-lift = the card lift used
-   where a block can't carry the is-style-ink-card style. BOTH are disabled under
-   prefers-reduced-motion by the base at the foot of this file. */
 .ink-hover-scale {
 	transition: transform 0.15s ease;
 }
@@ -135,108 +97,9 @@
 	transform: scale(1.05);
 }
 
-.ink-hover-lift {
-	transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.ink-hover-lift:hover {
-	transform: translateY(-4px);
-	box-shadow: var(--wp--preset--shadow--lg);
-}
-
-/* ── §0.0 box-sizing for the ink-core block markup ───────────────────────────────
-   FOURTH-PASS FIDELITY FIX (2026-09-05). WordPress core's block stylesheets set
-   `box-sizing:border-box` on their OWN `.wp-block-*` classes only; the ink-core
-   blocks emit their own `.ink-*` element classes, which therefore fall back to
-   the CSS initial `content-box`. Every rule in this file that pairs a `padding`
-   with a `height`/`min-height` was consequently rendering a box TALLER than its
-   declared size — measured live on nuwe-ink.local: the §5 Uitdaging feature card
-   computed `height:370.19px` (its `height:100%` of the grid area) but painted a
-   436.2px box (370.19 + 2×32px padding + border), overflowing its own grid row
-   and eating the feature band's whole 64px bottom padding (product-owner findings
-   #7 "too much whitespace at the bottom of the Oktober-uitdaging box" and #8 "no
-   spacing below" — one root cause, two symptoms); the compact card's "Skryf in"
-   CTA painted 56px against Lovable's 40px `Submit Your Entry` (finding #1). The
-   affected rules are enumerated explicitly rather than reset with a wildcard, so
-   this front-page-only stylesheet can never silently change the box model of a
-   `.ink-*` element the header/footer share with every other page. */
-.ink-huidige-uitdaging,
-.ink-huidige-uitdaging__aksie,
-.ink-wenner-kollig,
-.ink-wenner-kollig__kaart,
-.ink-wenner-kollig__skakel,
-.ink-borg-strook__cta {
-	box-sizing: border-box;
-}
-
-/* ── §0.1 Button sizing utilities (optional per-instance sizing helpers) ─────────
-   Button SIZE is NOT a block style (register_block_style is a single radio axis).
-   Locked patterns bake size per-instance, or use these utilities.
-
-   FOURTH-PASS FIDELITY FIX (2026-09-05, product-owner finding "the button sizes
-   don't match at all"). These previously set `min-height` + a horizontal padding
-   only, leaving WordPress core's own `.wp-block-button__link` VERTICAL padding
-   (`calc(.667em + 2px)` ≈ 12.67px per side) in place — so the real rendered box
-   was 49.3px (primary) / 53.3px (outline), not the 44px the token claimed;
-   `min-height` is a floor, it cannot clamp a box the padding has already pushed
-   past it. Lovable's shadcn size utilities are a FIXED `height` with
-   HORIZONTAL-ONLY padding, vertically centred by the button's own flex box
-   (`button.tsx`: sm = `h-9 px-3`, lg = `h-11 px-8 text-base`, xl = `h-12
-   rounded-lg px-10 text-lg`) — confirmed live against
-   https://preview--quill-muse-heart.lovable.app/ via getComputedStyle: a real
-   `height:44px` with `padding:0px 32px`. Matched here exactly: a fixed `height`,
-   vertical padding explicitly zeroed, and `inline-flex`/`align-items:center`
-   declared on the SIZE class itself (not borrowed from `.ink-btn-icon`, which is
-   only present on icon-bearing instances) so a label stays centred either way.
-   `box-sizing` is already `border-box` from WP core's button stylesheet, so the
-   2px outline border is inside the 44px, exactly like Lovable's `border-2`.
-   xl's horizontal padding also drops 48px → 40px (Lovable's `px-10` = 2.5rem;
-   48px was a mis-mapped token). Radius comes from the ink button block style
-   (md 6px), except xl which steps up to lg (8px). */
-.wp-block-button.ink-btn-sm .wp-block-button__link,
-.wp-block-button.ink-btn-lg .wp-block-button__link,
-.wp-block-button.ink-btn-xl .wp-block-button__link {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	padding-top: 0;
-	padding-bottom: 0;
-	/* Shadcn's own button base carries `whitespace-nowrap` for exactly this
-	   reason: once the height is FIXED rather than a floor, a label that wrapped
-	   to two lines would spill out of the box. The buttons stack instead (the
-	   `wp-block-buttons` row already wraps), which is what Lovable does too. */
-	white-space: nowrap;
-}
-
-.wp-block-button.ink-btn-sm .wp-block-button__link {
-	height: 36px;
-	padding-left: var(--wp--preset--spacing--s-12);
-	padding-right: var(--wp--preset--spacing--s-12);
-	font-size: var(--wp--preset--font-size--sm);
-}
-
-.wp-block-button.ink-btn-lg .wp-block-button__link {
-	height: 44px;
-	padding-left: var(--wp--preset--spacing--s-32);
-	padding-right: var(--wp--preset--spacing--s-32);
-	font-size: var(--wp--preset--font-size--md);
-}
-
-.wp-block-button.ink-btn-xl .wp-block-button__link {
-	height: 48px;
-	padding-left: var(--wp--preset--spacing--s-40);
-	padding-right: var(--wp--preset--spacing--s-40);
-	font-size: var(--wp--preset--font-size--lg);
-	border-radius: var(--wp--custom--radius--lg);
-}
-
-/* ── §2 Hero — two-column split (19.2) ───────────────────────────────────────────
-   The hero is a core/group Grid (columnCount:2 → WP paints the 2-col template on
-   ≥ its own container). Below 1024px it MUST collapse to a single column — WP's
-   grid columnCount does NOT auto-collapse, so force it here (per §2 AC: Grid +
-   home.css @media, NOT core/columns). !important beats WP's generated
-   .wp-container-* grid-template rule regardless of stylesheet order. items-center
-   matches the Lovable `items-center`. */
+/* ── §2 Hero — two-column split ──────────────────────────────────────────────────
+   A core/group Grid (columnCount 2); WP's grid does not auto-collapse, so force a
+   single column below 1024px. !important beats WP's generated .wp-container-* rule. */
 .ink-hero-grid {
 	align-items: center;
 }
@@ -247,72 +110,10 @@
 	}
 }
 
-/* Hero H1 fixed-breakpoint sizing (foundational fidelity fix, follow-up to §2):
-   Lovable's h1 is NOT fluid — it steps at 3 fixed values per Tailwind breakpoint
-   (base text-3xl / md:text-4xl / lg:text-5xl), confirmed via getComputedStyle at
-   actual widths ~500 / 768 / 1024px against
-   https://preview--quill-muse-heart.lovable.app/ (30px / 36px / 48px). Overrides
-   the shared "hero" font-size preset's clamp() for THIS element only — the new
-   "hero-sm" preset supplies the base tier, existing xxxxl/xxxxxl presets supply
-   the two step-ups. cta-band.php's CTA heading and reading-uitdaging.php's
-   post-title still use the original fluid "hero" preset, untouched. !important
-   is required: WP's global-styles generator emits `.has-hero-font-size{...}
-   !important}` for the block-support utility class, so a plain higher-specificity
-   selector here is silently outranked without it. */
-.ink-hero-grid h1.has-hero-font-size {
-	font-size: var(--wp--preset--font-size--hero-sm) !important;
-}
-
-@media (min-width: 768px) {
-	.ink-hero-grid h1.has-hero-font-size {
-		font-size: var(--wp--preset--font-size--xxxxl) !important;
-	}
-}
-
-@media (min-width: 1024px) {
-	.ink-hero-grid h1.has-hero-font-size {
-		font-size: var(--wp--preset--font-size--xxxxxl) !important;
-	}
-}
-
-/* Hero badge pill (§2): primary/10 tint, rounded-full, 14px/500, sentence case.
-   Text darkened toward `text` so the small pill clears the readability floor
-   (a11y — terracotta-on-primary/10 alone is ~3.6:1). color-mix tints follow the
-   opaque-fallback-first convention (§0.7 / token-note 2). Padding is 6px/16px
-   (new s-6 spacing token — Lovable's py-1.5/px-4, not the nearest existing s-8
-   step) and line-height is a fixed 1.25rem/20px (Tailwind's built-in text-sm
-   leading, not a themed unitless ratio — re-verified via getComputedStyle
-   against Lovable, not assumed). */
-.ink-hero-badge {
-	display: inline-block;
-	width: -moz-fit-content;
-	width: fit-content;
-	margin: 0;
-	padding: var(--wp--preset--spacing--s-6) var(--wp--preset--spacing--s-16);
-	border-radius: var(--wp--custom--radius--full);
-	font-size: var(--wp--preset--font-size--sm);
-	line-height: 1.25rem;
-	font-weight: var(--wp--custom--font-weight--medium);
-	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
-	color: var(--wp--preset--color--primary);
-}
-
-/* Icon-bearing buttons (§2 hero CTAs): lay the inline SVG + label on one flex row
-   with an 8px gap. Front-page-only (hero); the header CTA carries no icon. */
-.wp-block-button.ink-btn-icon .wp-block-button__link {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--wp--preset--spacing--s-8);
-}
-
-/* ── §3 Weekly-challenge card (ink/huidige-uitdaging block) ──────────────────────
-   The ink-core `ink/huidige-uitdaging` block emits its own `.ink-huidige-uitdaging*`
-   markup in two variants — COMPACT (hero right column, §3) and KENMERK (feature band,
-   §5). The theme owns only the token styling here (three-layer separation). The COMPACT
-   card replicates the is-style-ink-card recipe (surface-alt / 12px / border / shadow.sm
-   / reduced-motion hover-lift) rather than wrapping the COLLAPSING block in a static
-   is-style-ink-card group (which would show an empty card when no challenge is open). */
+/* ── §3 / §5 Current-challenge card (ink/huidige-uitdaging) ──────────────────────
+   Surface = primitives `card feature-hero` (compact) / `card soft` (feature). Here:
+   the positioning context for the decorative corner tint, the content column and
+   the header row. */
 .ink-huidige-uitdaging {
 	position: relative;
 	overflow: hidden;
@@ -345,52 +146,8 @@
 	gap: var(--wp--preset--spacing--s-8);
 }
 
-/* UPPERCASE 12px/600 type badge (Sparkles).
-   This carried a one-off a11y darkening (`color-mix(primary 72%, ink-text)`,
-   rendering ~#B13317) on top of the plain `primary` declaration. RECONSIDERED and
-   REMOVED on direct product-owner fidelity instruction (2026-09-05): "Uitdaging
-   pill is the wrong colour (compare with Weekly Challenge)". Lovable's own
-   "Weekly Challenge" pill is exactly `rgb(236,59,19)` — the unmodified `primary`
-   token — on the same `primary`/10% ground (confirmed via live getComputedStyle
-   against https://preview--quill-muse-heart.lovable.app/), and this identical
-   primary-on-primary/10 recipe is used UNDARKENED everywhere else on this site
-   (the reading pages' `.ink-lees-tipe` badge, `.ink-hero-badge`'s sibling
-   treatment, `.ink-uitgesoekte-bydraes__boskrif`), so the darkening was an
-   inconsistent one-off rather than a systemic contrast policy. The badge still
-   pairs its colour with an icon + uppercase text, never colour alone. */
-.ink-huidige-uitdaging__kenteken {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--wp--preset--spacing--s-4);
-	padding: var(--wp--preset--spacing--s-4) var(--wp--preset--spacing--s-12);
-	border-radius: var(--wp--custom--radius--full);
-	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
-	color: var(--wp--preset--color--primary);
-	font-size: var(--wp--preset--font-size--xs);
-	font-weight: var(--wp--custom--font-weight--semibold);
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-}
-
-.ink-huidige-uitdaging__meta-datum,
-.ink-huidige-uitdaging__meta-item {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--wp--preset--spacing--s-4);
-	color: var(--wp--preset--color--muted-text);
-}
-
-.ink-huidige-uitdaging__meta-datum {
-	font-size: var(--wp--preset--font-size--xs);
-}
-
 .ink-huidige-uitdaging__titel {
 	margin: 0;
-	font-family: var(--wp--preset--font-family--heading);
-	font-weight: var(--wp--custom--font-weight--semibold);
-	line-height: var(--wp--custom--line-height--tight);
-	color: var(--wp--preset--color--ink-text);
 }
 
 .ink-huidige-uitdaging__uittreksel {
@@ -399,35 +156,9 @@
 	line-height: var(--wp--custom--line-height--relaxed);
 }
 
-/* CTA — the ink-primary recipe (primary fill / surface-alt text / Lora / shadow.md,
-   40px), full-width below 640px (§3). The block emits its own class so it collapses
-   with the block; the recipe mirrors is-style-ink-primary. */
+/* CTA placement: start-aligned; full-width below 640px (§3). */
 .ink-huidige-uitdaging__aksie {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: var(--wp--preset--spacing--s-8);
 	align-self: flex-start;
-	min-height: 40px;
-	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-16);
-	border-radius: var(--wp--custom--radius--md);
-	background-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--surface-alt);
-	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--sm);
-	font-weight: var(--wp--custom--font-weight--medium);
-	text-decoration: none;
-	box-shadow: var(--wp--preset--shadow--md);
-	transition: background-color 0.15s ease;
-}
-
-.ink-huidige-uitdaging__aksie:hover {
-	background-color: var(--wp--preset--color--primary-light);
-}
-
-.ink-huidige-uitdaging__aksie:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary);
-	outline-offset: 2px;
 }
 
 @media (max-width: 639px) {
@@ -437,29 +168,11 @@
 	}
 }
 
-/* COMPACT variant (§3) — is-style-ink-card recipe + a 96px rounded-bl corner tint. */
-.ink-huidige-uitdaging--kompak {
-	background-color: var(--wp--preset--color--surface-alt);
-	border: 1px solid var(--wp--preset--color--border);
-	border-radius: var(--wp--custom--radius--xl);
-	box-shadow: var(--wp--preset--shadow--sm);
-	padding: var(--wp--preset--spacing--s-24);
-	transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.ink-huidige-uitdaging--kompak:hover {
-	transform: translateY(-4px);
-	box-shadow: var(--wp--preset--shadow--lg);
-}
-
+/* Compact (hero) corner: a 96px rounded-bl tint. */
 .ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__hoek {
 	width: var(--wp--preset--spacing--s-96);
 	height: var(--wp--preset--spacing--s-96);
 	border-bottom-left-radius: var(--wp--preset--spacing--s-64);
-}
-
-.ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__titel {
-	font-size: var(--wp--preset--font-size--xxl);
 }
 
 .ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__uittreksel {
@@ -467,50 +180,15 @@
 }
 
 @media (min-width: 768px) {
-	.ink-huidige-uitdaging--kompak {
-		padding: var(--wp--preset--spacing--s-32);
-	}
-
 	.ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__uittreksel {
 		font-size: var(--wp--preset--font-size--md);
 	}
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.ink-huidige-uitdaging--kompak {
-		transition: none;
-	}
-
-	.ink-huidige-uitdaging--kompak:hover {
-		transform: none;
-	}
-
-	.ink-huidige-uitdaging__aksie {
-		transition: none;
-	}
-}
-
 /* ── §5 Feature band: Uitdaging feature card + Winner card ───────────────────────
-   Two-column grid ≥1024px (stack below — WP grid columnCount does not auto-collapse),
-   over a calm secondary/30 band. Both cards are collapsing ink-core blocks. When
-   NEITHER has data (no open challenge AND no live winner — the actual state of a
-   fresh/quiet site), the band's own top/bottom padding (2x s-64 = 128px) still
-   rendered as a bare tinted gap with nothing in it — a jarring empty strip between
-   the hero and the featured-works grid, not a graceful degradation. Collapse the
-   whole band in that specific case via :has(), keyed off each block's own root
-   class rather than :empty (a whitespace-only text node between the two block
-   comments defeats :empty, but not :has()'s absence check). Two chained
-   :not(:has(...)) — NOT a :has() nested inside another :has(), which the spec
-   disallows and Chrome silently treats as an always-false/invalid selector
-   (confirmed live: the nested form parsed but never matched). Either card alone
-   still shows normally — this only hides the fully-empty case. Still
-   presentation-only (no PHP added to the static template) — three-layer
-   separation intact. */
-.ink-feature-band {
-	background-color: var(--wp--preset--color--surface);
-	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 30%, transparent);
-}
-
+   Band surface = primitives `section-band tint-cream`. When NEITHER collapsing
+   block rendered anything, hide the whole band rather than paint an empty tinted
+   strip. Two chained :not(:has()) — a :has() nested in :has() never matches. */
 .ink-feature-band:not(:has(.ink-huidige-uitdaging)):not(:has(.ink-wenner-kollig)) {
 	display: none;
 }
@@ -525,65 +203,21 @@
 	}
 }
 
-/* KENMERK variant (§5 Uitdaging card) — surface-alt, 16px, shadow.md, Trophy tile +
-   eyebrow, 128px rounded-bl-full corner. */
-.ink-huidige-uitdaging--kenmerk {
-	background-color: var(--wp--preset--color--surface-alt);
-	border: 1px solid var(--wp--preset--color--border);
-	border-radius: var(--wp--custom--radius--xxl);
-	box-shadow: var(--wp--preset--shadow--md);
-	padding: var(--wp--preset--spacing--s-32);
-}
-
+/* Feature (kenmerk) corner: a 128px rounded-bl-full tint. */
 .ink-huidige-uitdaging--kenmerk .ink-huidige-uitdaging__hoek {
 	width: calc(var(--wp--preset--spacing--s-64) * 2);
 	height: calc(var(--wp--preset--spacing--s-64) * 2);
 	border-bottom-left-radius: var(--wp--custom--radius--full);
 }
 
-.ink-huidige-uitdaging__ikoon {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	padding: var(--wp--preset--spacing--s-8);
-	border-radius: var(--wp--custom--radius--lg);
-	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
-	color: var(--wp--preset--color--primary);
-}
-
-.ink-huidige-uitdaging__boskrif {
-	color: var(--wp--preset--color--primary);
-	font-size: var(--wp--preset--font-size--sm);
-	font-weight: var(--wp--custom--font-weight--medium);
-}
-
-.ink-huidige-uitdaging--kenmerk .ink-huidige-uitdaging__titel {
-	font-size: var(--wp--preset--font-size--xxxl);
-}
-
 .ink-huidige-uitdaging--kenmerk .ink-huidige-uitdaging__uittreksel {
 	font-size: var(--wp--preset--font-size--md);
 }
 
-.ink-huidige-uitdaging__meta {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--wp--preset--spacing--s-24);
-}
-
-.ink-huidige-uitdaging__meta-item {
-	font-size: var(--wp--preset--font-size--sm);
-}
-
-/* ── §5 Winner card (ink/wenner-kollig block, upgraded DOM) ──────────────────────
-   Gradient gold/10 → gold-muted/20 (135°, bright → muted), 16px, 1px gold-muted/30
-   border, NO shadow, Crown watermark. Rank is always TEXT + Crown icon.
-   No section-level heading any more (fourth-pass fidelity fix, 2026-09-05,
-   product-owner finding: "DESEMBER SE WENNERS" above the card is not supposed to
-   be there — Lovable's ChallengeSection.tsx has no such heading, only each card's
-   own eyebrow) — `.ink-wenner-kollig__titel` and its states are removed along
-   with the markup `FeaturedWinners::toHtml()` no longer emits. */
+/* ── §5 Winner card (ink/wenner-kollig) ──────────────────────────────────────────
+   Surface = primitives `card winner`; eyebrow `eyebrow card gold`; icon tile `gold`;
+   title `heading h2-block`; avatar `gold-ring`; button `button-outline gold`. Here:
+   the card stack, the crown watermark and the author row. */
 .ink-wenner-kollig {
 	display: block;
 	height: 100%;
@@ -596,14 +230,8 @@
 	height: 100%;
 }
 
-/* When there is exactly one card (the common case — the slot sits beside the
-   single Uitdaging feature card and the two must read as a matched pair,
-   product-owner finding "the winner card and the challenge card to its left
-   form a set and must have the same height"), stretch it to fill the wrapper's
-   full height, same as `.ink-huidige-uitdaging--kenmerk` does. With MULTIPLE
-   cards (12A.7's per-category feed) this intentionally does NOT apply — each
-   keeps its natural height; forcing every card to flex:1 would squash a
-   multi-winner feed into equal slices instead of their own content height. */
+/* One card stretches to match the Uitdaging card beside it; several keep their
+   natural heights (12A.7's per-category feed). */
 .ink-wenner-kollig__kaarte > .ink-wenner-kollig__kaart:only-child {
 	flex: 1;
 }
@@ -614,19 +242,6 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--wp--preset--spacing--s-16);
-	padding: var(--wp--preset--spacing--s-32);
-	border-radius: var(--wp--custom--radius--xxl);
-	border: 1px solid var(--wp--preset--color--gold-muted);
-	border: 1px solid color-mix(in srgb, var(--wp--preset--color--gold-muted) 30%, transparent);
-}
-
-.ink-wenner-kollig__kaart--goud-gradient {
-	background-color: var(--wp--preset--color--surface-alt);
-	background-image: linear-gradient(
-		135deg,
-		color-mix(in srgb, var(--wp--preset--color--gold) 10%, transparent),
-		color-mix(in srgb, var(--wp--preset--color--gold-muted) 20%, transparent)
-	);
 }
 
 .ink-wenner-kollig__kaart > *:not(.ink-wenner-kollig__watermerk) {
@@ -649,54 +264,16 @@
 	height: var(--wp--preset--spacing--s-96);
 }
 
-/* Rank eyebrow text ("Desember wenner" etc.) — GOLD, matching Lovable's
-   `text-gold` exactly (confirmed live: `rgb(232,177,48)` on both). This used to
-   render in `ink-text` (near-black) instead, on the reasoning that gold text
-   would fail contrast against a "gold ground" (~1.8:1) — but the card's actual
-   background is the same 10-20%-opacity gold TINT as the rest of this card
-   (near-white, not solid gold), so that assumption never matched what was
-   actually painted; the same primary-on-primary/10% pattern is used undarkened
-   elsewhere on this page (see the Uitdaging pill fix, same pass). Corrected on
-   direct product-owner fidelity instruction (2026-09-05: "the text color for
-   'Desember algehele wenner' is wrong"). No separate background belongs on this
-   text — Lovable's own label is plain coloured text next to the (already
-   correctly gold-tinted) icon tile, not a pill. */
+/* Eyebrow row: icon tile + label. */
 .ink-wenner-kollig__rang {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--wp--preset--spacing--s-8);
 	margin: 0;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--wp--preset--font-size--sm);
-	font-weight: var(--wp--custom--font-weight--semibold);
-	color: var(--wp--preset--color--gold);
-}
-
-/* Crown icon tile: gold/20 bg + gold icon (Lovable: `bg-gold/20` + `text-gold`).
-   `color` previously stayed `primary` — copy-pasted from the analogous trophy
-   tile (`.ink-huidige-uitdaging__ikoon`, which correctly uses primary since
-   its Lovable equivalent is `text-terracotta`) without updating it to `gold`
-   for this card, so the crown rendered orange instead of amber/gold. The icon
-   is `aria-hidden="true"` (decorative; the adjacent text label carries the
-   meaning), so WCAG non-text-contrast requirements don't constrain this. */
-.ink-wenner-kollig__rang-merk {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	padding: var(--wp--preset--spacing--s-8);
-	border-radius: var(--wp--custom--radius--lg);
-	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 20%, transparent);
-	color: var(--wp--preset--color--gold);
 }
 
 .ink-wenner-kollig__werk {
 	margin: 0;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--wp--preset--font-size--xxl);
-	font-weight: var(--wp--custom--font-weight--semibold);
-	line-height: var(--wp--custom--line-height--tight);
-	color: var(--wp--preset--color--ink-text);
 }
 
 .ink-wenner-kollig__werk a {
@@ -725,15 +302,6 @@
 	gap: var(--wp--preset--spacing--s-16);
 }
 
-.ink-wenner-kollig__foto {
-	width: var(--wp--preset--spacing--s-48);
-	height: var(--wp--preset--spacing--s-48);
-	border-radius: var(--wp--custom--radius--full);
-	object-fit: cover;
-	border: 2px solid var(--wp--preset--color--gold-muted);
-	border: 2px solid color-mix(in srgb, var(--wp--preset--color--gold-muted) 30%, transparent);
-}
-
 .ink-wenner-kollig__outeur-besonderhede {
 	display: flex;
 	flex-direction: column;
@@ -749,103 +317,31 @@
 	color: var(--wp--preset--color--muted-text);
 }
 
-/* Read-more — a gold-outline button (Lovable winner CTA). */
 .ink-wenner-kollig__skakel {
-	display: inline-flex;
-	align-items: center;
 	align-self: flex-start;
-	min-height: 40px;
-	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-16);
-	border-radius: var(--wp--custom--radius--md);
-	border: 1px solid var(--wp--preset--color--gold-muted);
-	border: 1px solid color-mix(in srgb, var(--wp--preset--color--gold-muted) 30%, transparent);
-	background-color: transparent;
-	color: var(--wp--preset--color--ink-text);
-	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--sm);
-	font-weight: var(--wp--custom--font-weight--medium);
-	text-decoration: none;
-	transition: background-color 0.15s ease;
 }
 
-.ink-wenner-kollig__skakel:hover {
-	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 10%, transparent);
-}
-
-.ink-wenner-kollig__skakel:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary);
-	outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.ink-wenner-kollig__skakel {
-		transition: none;
-	}
-}
-
-/* ── §6 Featured bydraes — "Die redakteur se keuse" ──────────────────────────────
-   The ink-core `ink/uitgesoekte-bydraes` block emits the WHOLE section (header +
-   asymmetric grid + cards) and its own `.ink-uitgesoekte-bydraes*` markup; the theme
-   styles it here. Read-time + engagement counts are ink-core-owned values — the theme
-   only paints them. The block collapses entirely when the feed is empty, so there is
-   no empty-state rule to write. TOKENS ONLY (Gate A). */
-.ink-uitgesoekte-bydraes {
-	padding: var(--wp--preset--spacing--s-64) var(--wp--preset--spacing--s-24);
-}
-
-.ink-uitgesoekte-bydraes__houer {
-	max-width: var(--wp--style--global--wide-size);
-	margin-inline: auto;
-}
-
-/* Section header (items-end justify-between): eyebrow + serif title on the left, the
-   "Sien alle werke" link on the right (hidden < 768px per §6). */
+/* ── §6 Featured bydraes — "Die redakteur se keuse" (ink/uitgesoekte-bydraes) ────
+   Band = primitives `section-band` + `container`; eyebrow, `h2-section`, the
+   `link slide`, `card feature`, `pill soft`, meta items/rows, `h2-block` /
+   `h3-card` titles and the 32px avatar are all primitives. Here: the header row,
+   the asymmetric grid and Lovable's per-element card rhythm (mb-3 / mb-2 / mt-4,
+   measured live; the card interior is a flex column, so no margin collapses). */
 .ink-uitgesoekte-bydraes__kop {
 	display: flex;
 	align-items: flex-end;
 	justify-content: space-between;
 	gap: var(--wp--preset--spacing--s-24);
-	/* 40px, not 32px: Lovable's `FeaturedWorks.tsx` header row is `mb-10`
-	   (measured live at 40px). Found while fixing the section's outer rhythm
-	   (product-owner finding #11). */
 	margin-bottom: var(--wp--preset--spacing--s-40);
-}
-
-.ink-uitgesoekte-bydraes__boskrif {
-	margin: 0;
-	color: var(--wp--preset--color--primary);
-	font-size: var(--wp--preset--font-size--sm);
-	font-weight: var(--wp--custom--font-weight--medium);
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
 }
 
 .ink-uitgesoekte-bydraes__titel {
 	margin: var(--wp--preset--spacing--s-8) 0 0;
-	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--xxxl);
-	font-weight: var(--wp--custom--font-weight--semibold);
-	line-height: var(--wp--custom--line-height--tight);
-}
-
-@media (min-width: 768px) {
-	.ink-uitgesoekte-bydraes__titel {
-		font-size: var(--wp--preset--font-size--xxxxl);
-	}
 }
 
 .ink-uitgesoekte-bydraes__alles {
 	flex-shrink: 0;
-	color: var(--wp--preset--color--primary);
-	font-size: var(--wp--preset--font-size--md);
-	text-decoration: none;
 	white-space: nowrap;
-}
-
-.ink-uitgesoekte-bydraes__alles:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary);
-	outline-offset: 2px;
 }
 
 @media (max-width: 767px) {
@@ -854,9 +350,7 @@
 	}
 }
 
-/* Asymmetric grid (§6): single column < 768px; 2-col ≥ 768px with the featured
-   (first) card spanning both — via core Grid semantics (per-child column span),
-   NOT core/columns. */
+/* Single column < 768px; 2-col ≥ 768px with the featured (first) card spanning both. */
 .ink-uitgesoekte-bydraes__rooster {
 	display: grid;
 	grid-template-columns: 1fr;
@@ -873,46 +367,6 @@
 	}
 }
 
-/* Card — the is-style-ink-card recipe (surface-alt / 12px / border / shadow.sm) with a
-   reduced-motion-safe hover-lift, replicated on the block's own class (§0.5 / §6). */
-.ink-uitgesoekte-bydraes__kaart {
-	background-color: var(--wp--preset--color--surface-alt);
-	border: 1px solid var(--wp--preset--color--border);
-	border-radius: var(--wp--custom--radius--xl);
-	box-shadow: var(--wp--preset--shadow--sm);
-	padding: var(--wp--preset--spacing--s-24);
-	transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.ink-uitgesoekte-bydraes__kaart:hover {
-	transform: translateY(-4px);
-	box-shadow: var(--wp--preset--shadow--lg);
-}
-
-/* Card interior rhythm. FOURTH-PASS FIDELITY FIX (2026-09-05, product-owner
-   finding #9: "the excerpt cards have inconsistent spacing between the pill, the
-   heading, the body and the author tag"). This was one FLAT 8px flex `gap` for
-   every pair; Lovable's `FeaturedWorks.tsx` uses a DIFFERENT margin after each
-   element, and a different set again for the spanning featured card — read off
-   the source and then confirmed by live getBoundingClientRect deltas on
-   https://preview--quill-muse-heart.lovable.app/:
-
-     pair                | Lovable featured | Lovable standard | was (both)
-     pill row -> title   | 12px  (mb-3)     | 12px  (mb-3)     | 8px
-     title -> excerpt    | 12px  (mb-3)     |  8px  (mb-2)     | 8px
-     excerpt -> footer   | 16px             | 16px             | 8px + 16px pad
-
-   (The excerpt->footer figure is Lovable's COLLAPSED value: its card interior is
-   a plain block box, so the excerpt's `mb-4`/`mb-3` collapses against the footer
-   row's own `mt-4` to a flat 16px — measured, not assumed. Ink's interior is a
-   flex column, where adjacent margins never collapse, so the excerpt carries no
-   bottom margin at all and the 16px is owned solely by `__voet`'s margin-top.)
-
-   The flex `gap` is therefore dropped entirely in favour of explicit per-element
-   margins. `margin-top:auto` also goes: Lovable does NOT bottom-pin the author
-   row (its shorter card in a row leaves the slack BELOW the author row, measured
-   live — 23.7px of it), and pinning made the excerpt-to-author gap vary from card
-   to card, which is exactly the "inconsistent spacing" reported. */
 .ink-uitgesoekte-bydraes__kaart-inhoud {
 	display: flex;
 	flex-direction: column;
@@ -920,77 +374,11 @@
 }
 
 .ink-uitgesoekte-bydraes__meta-top {
-	display: flex;
-	align-items: center;
-	gap: var(--wp--preset--spacing--s-8);
 	margin-bottom: var(--wp--preset--spacing--s-12);
-}
-
-.ink-uitgesoekte-bydraes__pil {
-	display: inline-flex;
-	align-items: center;
-	padding: var(--wp--preset--spacing--s-4) var(--wp--preset--spacing--s-12);
-	border-radius: var(--wp--custom--radius--full);
-	background-color: var(--wp--preset--color--secondary);
-	color: var(--wp--preset--color--ink-text);
-	font-size: var(--wp--preset--font-size--xs);
-	font-weight: var(--wp--custom--font-weight--medium);
-}
-
-/* Per-bydrae-type pill colour — a DISCLOSED, DELIBERATE DIVERGENCE FROM LOVABLE
-   (2026-09-05, direct product-owner request #6: "the badge pills for Gedig,
-   Storie and Artikel should match what they are on the reading pages, namely
-   sage, brand orange and gray"). Lovable's `FeaturedWorks.tsx` renders ONE flat
-   `bg-secondary` badge for every type with no per-type colour at all (confirmed
-   in source AND live: `rgb(240,235,230)` ground, `rgb(24,29,37)` text on all four
-   cards). The divergence is the same call already taken and recorded for the
-   reading-page Artikel pill (see docs/theme-fidelity-rework-plan.md, fourth-pass
-   follow-up #5, same day): type should read at a glance. Tokens + tint
-   percentages are copied from the reading pages' `.ink-lees-tipe` badge exactly
-   — gedig `accent` at 15%, storie `primary` at 10%, artikel `muted-text` at 10%
-   — so the two surfaces cannot drift apart. Colour is never the only cue: the
-   pill always carries the type name as text. The modifier class is emitted by
-   `Ink\Discovery\FeaturedStream::metaTopHtml()` off the POST TYPE (not the pill's
-   visible text, which may be a genre term name); a row with no recognised type
-   simply keeps the neutral base pill above. */
-.ink-uitgesoekte-bydraes__pil--gedig,
-.ink-uitgesoekte-bydraes__pil--storie,
-.ink-uitgesoekte-bydraes__pil--artikel {
-	background-color: color-mix(in srgb, currentColor 10%, transparent);
-}
-
-.ink-uitgesoekte-bydraes__pil--gedig {
-	color: var(--wp--preset--color--accent);
-	background-color: color-mix(in srgb, currentColor 15%, transparent);
-}
-
-.ink-uitgesoekte-bydraes__pil--storie {
-	color: var(--wp--preset--color--primary);
-}
-
-.ink-uitgesoekte-bydraes__pil--artikel {
-	color: var(--wp--preset--color--muted-text);
-}
-
-.ink-uitgesoekte-bydraes__leestyd {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--wp--preset--spacing--s-4);
-	color: var(--wp--preset--color--muted-text);
-	font-size: var(--wp--preset--font-size--xs);
-}
-
-.ink-uitgesoekte-bydraes__leestyd .ink-icon {
-	width: 12px;
-	height: 12px;
 }
 
 .ink-uitgesoekte-bydraes__werk {
 	margin: 0 0 var(--wp--preset--spacing--s-8);
-	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--xl);
-	font-weight: var(--wp--custom--font-weight--semibold);
-	line-height: var(--wp--custom--line-height--tight);
 }
 
 .ink-uitgesoekte-bydraes__werk a {
@@ -1016,11 +404,8 @@
 	overflow: hidden;
 }
 
-/* Featured (first) card: spans two columns, larger title + un-clamped excerpt, and
-   its own (larger) title/excerpt bottom margins — Lovable's `mb-3`/`mb-4` against
-   the standard card's `mb-2`/`mb-3` (see the rhythm table above). */
+/* Featured (first) card: its own title margin + un-clamped, larger excerpt. */
 .ink-uitgesoekte-bydraes__kaart--uitgesoek .ink-uitgesoekte-bydraes__werk {
-	font-size: var(--wp--preset--font-size--xxl);
 	margin-bottom: var(--wp--preset--spacing--s-12);
 }
 
@@ -1045,62 +430,20 @@
 	gap: var(--wp--preset--spacing--s-12);
 }
 
-.ink-uitgesoekte-bydraes__foto {
-	width: 32px;
-	height: 32px;
-	border-radius: var(--wp--custom--radius--full);
-	object-fit: cover;
-}
-
 .ink-uitgesoekte-bydraes__outeur-naam {
 	font-size: var(--wp--preset--font-size--sm);
 	font-weight: var(--wp--custom--font-weight--medium);
 }
 
 .ink-uitgesoekte-bydraes__tellers {
-	display: flex;
 	align-items: center;
-	gap: var(--wp--preset--spacing--s-16);
-	color: var(--wp--preset--color--muted-text);
-	font-size: var(--wp--preset--font-size--sm);
 }
 
-.ink-uitgesoekte-bydraes__teller {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--wp--preset--spacing--s-4);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.ink-uitgesoekte-bydraes__kaart {
-		transition: none;
-	}
-
-	.ink-uitgesoekte-bydraes__kaart:hover {
-		transform: none;
-	}
-}
-
-/* ── §7 Borg (sponsor) strip — ink/borg-strook block, per-tier chips ─────────────
-   The ink-core `ink/borg-strook` block emits the WHOLE section (eyebrow + serif h2 +
-   intro + per-tier chips + "Word 'n borg" CTA) and COLLAPSES when no sponsor is active;
-   the theme styles its `.ink-borg-strook*` markup here (front-page-only — a home
-   section). TOKENS ONLY (Gate A). The tier chips tint their token with color-mix,
-   opaque fallback first (§0.7). */
-.ink-borg-band {
-	background-color: var(--wp--preset--color--surface);
-	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 20%, transparent);
-}
-
-/* The block emits a plain `<section>` inside the pattern's `alignwide` constrained
-   group, so WordPress's constrained-layout rule was capping it at `contentSize`
-   (768px) — half the 1368px Lovable gives `SponsorsSection`'s container. That was
-   invisible while the strip had no active sponsors to render; seeding real
-   sponsors (product-owner finding #12) exposed it immediately: six chips that sit
-   on ONE row in Lovable wrapped onto three. Released to the full wide width here,
-   and the flat 16px column gap replaced by Lovable's real per-element margins
-   (`mt-2`/`mb-4` on the heading, `mb-10` under the intro and under the chip row),
-   all measured live. */
+/* ── §7 Borg (sponsor) strip (ink/borg-strook) ───────────────────────────────────
+   Band = primitives `section-band tint-stone-soft`; eyebrow `accent`, `h2-sub`,
+   `tier-chip` per tier and the `sage-outline` lg button are primitives. Here: the
+   centred column released to the full wide width, and Lovable's per-element
+   margins (mt-2 / mb-4 heading, mb-10 intro and chip row, gap-8 → md:gap-12). */
 .ink-borg-strook {
 	display: flex;
 	flex-direction: column;
@@ -1110,29 +453,8 @@
 	max-width: none;
 }
 
-/* Centred sage eyebrow (UPPERCASE, tracked). */
-.ink-borg-strook__etiket {
-	margin: 0;
-	color: var(--wp--preset--color--accent);
-	font-size: var(--wp--preset--font-size--sm);
-	font-weight: var(--wp--custom--font-weight--medium);
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-}
-
 .ink-borg-strook__titel {
 	margin: var(--wp--preset--spacing--s-8) 0 var(--wp--preset--spacing--s-16);
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--wp--preset--font-size--xxl);
-	font-weight: var(--wp--custom--font-weight--semibold);
-	line-height: var(--wp--custom--line-height--tight);
-	color: var(--wp--preset--color--ink-text);
-}
-
-@media (min-width: 768px) {
-	.ink-borg-strook__titel {
-		font-size: var(--wp--preset--font-size--xxxl);
-	}
 }
 
 .ink-borg-strook__beskrywing {
@@ -1142,8 +464,6 @@
 	line-height: var(--wp--custom--line-height--relaxed);
 }
 
-/* Chip row — wraps (multiple sponsors), centred. Gap is Lovable's `gap-8
-   md:gap-12` (32px stepping to 48px), not a flat 24px. */
 .ink-borg-strook__rooster {
 	list-style: none;
 	margin: 0 0 var(--wp--preset--spacing--s-40);
@@ -1159,65 +479,6 @@
 	.ink-borg-strook__rooster {
 		gap: var(--wp--preset--spacing--s-48);
 	}
-}
-
-/* Per-tier chip: px-6 py-3 rounded-lg, tier-tinted background/border, plus the
-   Lovable `hover:scale-105` micro-interaction (transition-all). */
-.ink-borg-strook__chip {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-24);
-	border-radius: var(--wp--custom--radius--lg);
-	border: 1px solid transparent;
-	font-family: var(--wp--preset--font-family--heading);
-	font-weight: var(--wp--custom--font-weight--medium);
-	transition: transform 0.15s ease;
-}
-
-.ink-borg-strook__chip:hover {
-	transform: scale(1.05);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.ink-borg-strook__chip {
-		transition: none;
-	}
-
-	.ink-borg-strook__chip:hover {
-		transform: none;
-	}
-}
-
-/* goud = goud/10 bg + goud/20 border; a touch larger (text-lg). */
-.ink-borg-strook__chip--goud {
-	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--goud) 10%, transparent);
-	border-color: var(--wp--preset--color--goud);
-	border-color: color-mix(in srgb, var(--wp--preset--color--goud) 20%, transparent);
-	font-size: var(--wp--preset--font-size--lg);
-}
-
-/* silwer = secondary bg + border. */
-.ink-borg-strook__chip--silwer {
-	background-color: var(--wp--preset--color--secondary);
-	border-color: var(--wp--preset--color--border);
-	font-size: var(--wp--preset--font-size--md);
-}
-
-/* brons = muted/50 bg (the neutral default). Lovable's `--muted` token (HSL
-   35 20% 94%, a near-white warm tan — see ink-lovable/src/index.css) is a
-   PALE SURFACE color, not to be confused with `--muted-foreground` (its much
-   darker TEXT-gray counterpart, ~45% lightness). This previously tinted with
-   `muted-text` — the theme's own dark ink-text-adjacent token — producing a
-   visibly heavy grey chip instead of Lovable's near-invisible pale one
-   (confirmed side-by-side: Lovable's bronze chip barely reads as distinct
-   from the section background; the live site's did, strongly). `secondary`
-   at 50% is the closest existing INK token to Lovable's pale `--muted`. */
-.ink-borg-strook__chip--brons {
-	background-color: var(--wp--preset--color--secondary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 50%, transparent);
-	font-size: var(--wp--preset--font-size--md);
 }
 
 /* The sponsor logo/name inside a chip. */
@@ -1238,52 +499,10 @@
 	color: var(--wp--preset--color--ink-text);
 }
 
-/* "Word 'n borg" CTA — the is-style-ink-sage-outline recipe (accent border/text,
-   hover fill). Emitted by the block, so the recipe is replicated on its own class. */
-.ink-borg-strook__cta {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--wp--preset--spacing--s-8);
-	min-height: 44px;
-	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-32);
-	border: 2px solid var(--wp--preset--color--accent);
-	border-radius: var(--wp--custom--radius--md);
-	background-color: transparent;
-	color: var(--wp--preset--color--accent);
-	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--md);
-	font-weight: var(--wp--custom--font-weight--medium);
-	text-decoration: none;
-	transition: all 0.15s ease;
-}
-
-.ink-borg-strook__cta:hover {
-	background-color: var(--wp--preset--color--accent);
-	color: var(--wp--preset--color--surface-alt);
-}
-
-.ink-borg-strook__cta:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary);
-	outline-offset: 2px;
-}
-
-.ink-borg-strook__cta-ikoon {
-	width: 1rem;
-	height: 1rem;
-	flex-shrink: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.ink-borg-strook__cta {
-		transition: none;
-	}
-}
-
-/* ── §8 CTA band — terracotta gradient ──────────────────────────────────────────
-   A rounded gradient band (primary → primary-light, 135°), centred, with two faint
-   decorative circles. surface-alt text throughout; the body is at FULL surface-alt
-   (not /80) so it clears the readability floor over the terracotta ground (a11y).
-   TOKENS ONLY (Gate A); "white" = the surface-alt token. */
+/* ── §8 CTA band — terracotta gradient panel ─────────────────────────────────────
+   A rounded gradient panel (primary → primary-light, 135°), centred, with two faint
+   decorative circles. The heading (`h2-on-dark`) and both buttons (`on-dark` /
+   `outline-on-dark`) are primitives. */
 .ink-cta-band {
 	position: relative;
 	overflow: hidden;
@@ -1334,25 +553,15 @@
 	z-index: 1;
 }
 
-/* Interior rhythm. FOURTH-PASS FIDELITY FIX (2026-09-05, product-owner finding
-   #13: "'Jou woorde verdien lesers' section has wrong spacing throughout"). The
-   group carried ONE uniform 24px blockGap between all three children; Lovable's
-   `CallToAction.tsx` uses `mb-4` (16px) after the heading and `mb-8` (32px)
-   after the paragraph, and its `lg:text-5xl` heading is `line-height:1` (48px on
-   a 48px font) against this theme's 1.2 (57.6px) — all three confirmed live via
-   getComputedStyle/getBoundingClientRect against
-   https://preview--quill-muse-heart.lovable.app/. The button row's own 16px
-   blockGap already matched Lovable's `gap-4` and is left alone. The blockGap
-   reset needs the extra `.ink-cta-band` qualifier because WordPress's generated
-   layout rule wraps its own selector in `:where()` (specificity 0,1,0) and this
-   file may load before it. */
+/* Interior rhythm (Lovable CallToAction.tsx, measured live): mb-4 after the
+   heading, mb-8 after the paragraph; WP's uniform blockGap is reset (the extra
+   `.ink-cta-band` qualifier beats WP's :where()-wrapped layout rule). */
 .ink-cta-band .ink-cta-band__inhoud > * + * {
 	margin-block-start: 0;
 }
 
 .ink-cta-band .ink-cta-band__inhoud > h2 {
 	margin-bottom: var(--wp--preset--spacing--s-16);
-	line-height: 1;
 }
 
 /* Body at FULL surface-alt + max 672px, centred (a11y contrast floor). */
@@ -1362,59 +571,15 @@
 	margin-bottom: var(--wp--preset--spacing--s-32);
 }
 
-/* Two xl buttons (48px, 8px radius, px-10). Primary = surface-alt fill / primary text;
-   secondary = surface-alt outline + surface-alt text. Both carry a focus ring. */
-.ink-cta-band .ink-cta-band__knoppie .wp-block-button__link {
-	display: inline-flex;
-	align-items: center;
+/* Button row: centred, wrapping, gap-4. */
+.ink-cta-band__knoppies {
+	display: flex;
+	flex-wrap: wrap;
 	justify-content: center;
-	gap: var(--wp--preset--spacing--s-8);
-	min-height: 48px;
-	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-40);
-	border-radius: var(--wp--custom--radius--lg);
-	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--lg);
-	transition: all 0.15s ease;
+	gap: var(--wp--preset--spacing--s-16);
 }
 
-.ink-cta-band .ink-cta-band__knoppie--primer .wp-block-button__link {
-	background-color: var(--wp--preset--color--surface-alt);
-	color: var(--wp--preset--color--primary);
-	border: 0;
-}
-
-.ink-cta-band .ink-cta-band__knoppie--primer .wp-block-button__link:hover {
-	background-color: var(--wp--preset--color--surface-alt);
-	opacity: 0.9;
-}
-
-.ink-cta-band .ink-cta-band__knoppie--sekonder .wp-block-button__link {
-	background-color: transparent;
-	color: var(--wp--preset--color--surface-alt);
-	border: 2px solid var(--wp--preset--color--surface-alt);
-}
-
-.ink-cta-band .ink-cta-band__knoppie--sekonder .wp-block-button__link:hover {
-	background-color: var(--wp--preset--color--surface-alt);
-	background-color: color-mix(in srgb, var(--wp--preset--color--surface-alt) 10%, transparent);
-	color: var(--wp--preset--color--surface-alt);
-}
-
-.ink-cta-band .ink-cta-band__knoppie .wp-block-button__link:focus-visible {
-	outline: 2px solid var(--wp--preset--color--surface-alt);
-	outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.ink-cta-band .ink-cta-band__knoppie .wp-block-button__link {
-		transition: none;
-	}
-}
-
-/* ── §0.6 prefers-reduced-motion base (covers ALL motion, not just fade) ─────────
-   Disable fade-up, hover-lift translate, hover scale, and underline-slide for
-   users who ask for reduced motion. (The is-style-ink-card hover-lift carries its
-   own reduced-motion guard in its block-style inline_style so it holds site-wide.) */
+/* ── prefers-reduced-motion base ─────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
 	.ink-animate-fade-up {
 		animation: none;
@@ -1422,17 +587,11 @@
 		transform: none;
 	}
 
-	.ink-underline-slide::after {
-		transition: none;
-	}
-
-	.ink-hover-scale,
-	.ink-hover-lift {
+	.ink-hover-scale {
 		transition: none !important;
 	}
 
-	.ink-hover-scale:hover,
-	.ink-hover-lift:hover {
+	.ink-hover-scale:hover {
 		transform: none !important;
 	}
 }

@@ -282,8 +282,9 @@ final class FeaturedWinners {
 		$is_algehele = ! empty( $winner['is_algehele_wenner'] );
 		$variant     = $is_algehele ? 'algehele' : 'wenner';
 
+		// Primitives: `card winner` (gold gradient surface); the BEM classes carry layout.
 		$classes = 'ink-wenner-kollig__kaart ink-wenner-kollig__kaart--goud-gradient '
-			. 'ink-wenner-kollig__kaart--' . $variant;
+			. 'ink-wenner-kollig__kaart--' . $variant . ' ink-card--winner';
 
 		// Eyebrow: month + placement label, space-joined either way. Month absent →
 		// just the placement label.
@@ -300,10 +301,10 @@ final class FeaturedWinners {
 		$out = '<article class="' . esc_attr( $classes ) . '"' . $aid( 'winner-card' ) . '>'
 			. '<span class="ink-wenner-kollig__watermerk"' . $aid( 'winner-watermark' ) . ' aria-hidden="true">' . self::icon( self::ICON_CROWN ) . '</span>'
 			. '<p class="ink-wenner-kollig__rang"' . $aid( 'winner-eyebrow' ) . '>'
-			. '<span class="ink-wenner-kollig__rang-merk"' . $aid( 'winner-eyebrow-icon' ) . ' aria-hidden="true">' . self::icon( self::ICON_CROWN ) . '</span>'
-			. '<span class="ink-wenner-kollig__rang-teks"' . $aid( 'winner-eyebrow-text' ) . '>' . esc_html( $eyebrow ) . '</span>'
+			. '<span class="ink-wenner-kollig__rang-merk ink-icon-tile ink-icon-tile--gold"' . $aid( 'winner-eyebrow-icon' ) . ' aria-hidden="true">' . self::icon( self::ICON_CROWN ) . '</span>'
+			. '<span class="ink-wenner-kollig__rang-teks ink-eyebrow ink-eyebrow--card ink-eyebrow--gold"' . $aid( 'winner-eyebrow-text' ) . '>' . esc_html( $eyebrow ) . '</span>'
 			. '</p>'
-			. '<h3 class="ink-wenner-kollig__werk"' . $aid( 'winner-title' ) . '>' . $title_html . '</h3>';
+			. '<h3 class="ink-wenner-kollig__werk ink-heading-h2-block"' . $aid( 'winner-title' ) . '>' . $title_html . '</h3>';
 
 		$quote = (string) $winner['quote'];
 
@@ -314,7 +315,7 @@ final class FeaturedWinners {
 		$out .= self::authorHtml( $winner, $audit );
 
 		if ( '' !== $url ) {
-			$out .= '<a class="ink-wenner-kollig__skakel"' . $aid( 'winner-btn' ) . ' href="' . esc_url( $url ) . '">'
+			$out .= '<a class="ink-wenner-kollig__skakel ink-btn ink-btn--gold"' . $aid( 'winner-btn' ) . ' href="' . esc_url( $url ) . '">'
 				. esc_html__( 'Lees die volledige storie', 'ink-core' ) . '</a>';
 		}
 
@@ -345,7 +346,7 @@ final class FeaturedWinners {
 		if ( '' !== $avatar ) {
 			// Avatar alt falls back to the author name so it is never empty (a11y).
 			$alt  = '' !== $winner['avatar_alt'] ? (string) $winner['avatar_alt'] : $author;
-			$out .= '<img class="ink-wenner-kollig__foto"' . $aid( 'winner-avatar' ) . ' src="' . esc_url( $avatar ) . '" alt="' . esc_attr( $alt ) . '" '
+			$out .= '<img class="ink-wenner-kollig__foto ink-avatar ink-avatar--gold-ring"' . $aid( 'winner-avatar' ) . ' src="' . esc_url( $avatar ) . '" alt="' . esc_attr( $alt ) . '" '
 				. 'width="48" height="48" loading="lazy" decoding="async" />';
 		}
 

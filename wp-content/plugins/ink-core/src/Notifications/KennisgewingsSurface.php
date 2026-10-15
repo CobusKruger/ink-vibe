@@ -291,8 +291,8 @@ final class KennisgewingsSurface {
 	 * @return string
 	 */
 	public static function toHtml( array $rows ): string {
-		$heading = '<h2 class="ink-kennisgewings__titel" data-audit-id="profiel-notif-title">' . esc_html__( 'Kennisgewings', 'ink-core' ) . '</h2>';
-		$button  = '<button type="button" class="ink-kennisgewings__merk-alles" data-ink-kennisgewings-merk-alles data-audit-id="profiel-notif-mark-btn">'
+		$heading = '<h2 class="ink-heading-h2-block ink-kennisgewings__titel" data-audit-id="profiel-notif-title">' . esc_html__( 'Kennisgewings', 'ink-core' ) . '</h2>';
+		$button  = '<button type="button" class="ink-btn ink-btn--sm ink-btn--subtle ink-kennisgewings__merk-alles" data-ink-kennisgewings-merk-alles data-audit-id="profiel-notif-mark-btn">'
 			. esc_html__( 'Merk alles as gelees', 'ink-core' ) . '</button>';
 		// Same "kop" (header row: heading + one action) shape BydraesSurface already
 		// uses (`.ink-bydraes__kop`) — reused, not reinvented, so the tab-shell CSS
@@ -306,10 +306,10 @@ final class KennisgewingsSurface {
 			$empty = __( '[NEEDS HUMAN AFRIKAANS] — Kennisgewings empty-state copy not yet authored in ui-copy-translations.md.', 'ink-core' );
 
 			return '<section class="ink-kennisgewings">' . $kop
-				. '<p class="ink-kennisgewings__leeg" data-audit-id="profiel-notif-empty">' . esc_html( $empty ) . '</p></section>';
+				. '<p class="ink-card ink-card--empty ink-kennisgewings__leeg" data-audit-id="profiel-notif-empty">' . esc_html( $empty ) . '</p></section>';
 		}
 
-		$html = '<section class="ink-kennisgewings">' . $kop . '<ul class="ink-kennisgewings__lys" data-audit-id="profiel-notif-card">';
+		$html = '<section class="ink-kennisgewings">' . $kop . '<ul class="ink-card ink-kennisgewings__lys" data-audit-id="profiel-notif-card">';
 
 		foreach ( array_values( $rows ) as $i => $row ) {
 			$status  = ! empty( $row['unread'] ) ? 'unread' : 'gelees';
@@ -318,7 +318,12 @@ final class KennisgewingsSurface {
 			$audit = static fn( string $suffix ): string => 0 === $i ? ' data-audit-id="profiel-notif-' . $suffix . '"' : '';
 
 			$html .= '<li class="' . esc_attr( $classes ) . '"' . $audit( 'item' ) . ' data-ink-kennisgewing-status="' . esc_attr( $status ) . '">'
+				// Icon tile (square-sm: primary/10 unread, neutral read) + unread status dot —
+				// the shared primitives (Profile.tsx NotificationRow); kennisgewings.js flips
+				// both on mark-all-read.
+				. '<span class="ink-icon-tile ink-icon-tile--sm' . ( 'unread' === $status ? '' : ' ink-icon-tile--neutral' ) . ' ink-kennisgewings__ikoon" aria-hidden="true"' . $audit( 'icon' ) . '></span>'
 				. '<p class="ink-kennisgewings__teks"' . $audit( 'text' ) . '>' . esc_html( (string) $row['text'] ) . '</p>'
+				. ( 'unread' === $status ? '<span class="ink-status-dot ink-kennisgewings__kol"' . $audit( 'dot' ) . '></span>' : '' )
 				. '</li>';
 		}
 

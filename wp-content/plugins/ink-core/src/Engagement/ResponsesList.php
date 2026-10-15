@@ -138,7 +138,7 @@ final class ResponsesList {
 	 */
 	public static function toHtml( int $post_id, array $responses, int $count ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- kept for signature stability, see docblock.
 		$html  = '<section id="kommentaar" class="ink-reaksies" data-audit-id="reading-responses-inner" aria-label="' . esc_attr( Terms::label( 'gemeenskapsreaksie_plural' ) ) . '">';
-		$html .= '<h2 class="ink-reaksies__heading" data-audit-id="reading-responses-h2">' . esc_html( Terms::label( 'gemeenskapsreaksie_plural' ) ) . '</h2>';
+		$html .= '<h2 class="ink-reaksies__heading ink-heading-h2-block" data-audit-id="reading-responses-h2">' . esc_html( Terms::label( 'gemeenskapsreaksie_plural' ) ) . '</h2>';
 
 		// Compose FIRST, existing responses SECOND — `ReadStory.tsx`'s literal
 		// JSX order (the compose card, then `critiques.map(...)`); this class used
@@ -152,10 +152,10 @@ final class ResponsesList {
 			// Fidelity-audit join keys: first instance of the repeater only.
 			$aid = static fn ( string $role ): string => 0 === $index ? ' data-audit-id="reading-response-' . $role . '"' : '';
 
-			$html .= '<li class="ink-reaksies__item ink-reaksie--' . esc_attr( $type->value ) . '"' . $aid( 'item' ) . '>';
+			$html .= '<li class="ink-reaksies__item ink-card--feature ink-reaksie--' . esc_attr( $type->value ) . '"' . $aid( 'item' ) . '>';
 
 			if ( function_exists( 'get_avatar' ) ) {
-				$avatar_args = array( 'class' => 'ink-reaksies__avatar' );
+				$avatar_args = array( 'class' => 'ink-reaksies__avatar ink-avatar ink-avatar--40' );
 				if ( 0 === $index ) {
 					$avatar_args['extra_attr'] = 'data-audit-id="reading-response-avatar"';
 				}
@@ -165,14 +165,14 @@ final class ResponsesList {
 			$html .= '<div class="ink-reaksies__body"' . $aid( 'body' ) . '>'
 				. '<div class="ink-reaksies__meta"' . $aid( 'meta' ) . '>'
 				. '<span class="ink-reaksies__who"' . $aid( 'who' ) . '>'
-				. '<span class="ink-reaksies__badge"' . $aid( 'badge' ) . '>' . self::badgeIcon( $type ) . esc_html( Terms::label( $type->value ) ) . '</span>'
+				. '<span class="ink-reaksies__badge ink-pill ink-pill--tint-xs ' . esc_attr( self::typeTone( $type ) ) . '"' . $aid( 'badge' ) . '>' . self::badgeIcon( $type ) . esc_html( Terms::label( $type->value ) ) . '</span>'
 				. '<span class="ink-reaksies__author"' . $aid( 'author' ) . '>' . esc_html( $response['author'] ) . '</span>'
 				. '</span>'
-				. '<span class="ink-reaksies__date"' . $aid( 'date' ) . '>' . esc_html( self::relativeDateLabel( $response['date'] ) ) . '</span>'
+				. '<span class="ink-reaksies__date ink-meta"' . $aid( 'date' ) . '>' . esc_html( self::relativeDateLabel( $response['date'] ) ) . '</span>'
 				. '</div>'
 				. '<p class="ink-reaksies__text"' . $aid( 'text' ) . '>' . esc_html( $response['content'] ) . '</p>'
 				. '<div class="ink-reaksies__footer"' . $aid( 'footer' ) . '>'
-				. '<span class="ink-reaksies__upvote"' . $aid( 'upvote' ) . '>' . esc_html( (string) 0 ) . '</span>'
+				. '<span class="ink-reaksies__upvote ink-icon-label ink-icon-label--sm"' . $aid( 'upvote' ) . '>' . esc_html( (string) 0 ) . '</span>'
 				. '</div>'
 				. '</div>';
 
@@ -183,6 +183,21 @@ final class ResponsesList {
 		$html .= '</section>';
 
 		return $html;
+	}
+
+	/**
+	 * The primitives tone class for a response type's badge: lof = gold, insig =
+	 * sage (the `tint-xs` default), voorstel = brand. Pure.
+	 *
+	 * @param ResponseType $type The response type.
+	 * @return string
+	 */
+	private static function typeTone( ResponseType $type ): string {
+		return match ( $type ) {
+			ResponseType::Lof      => 'ink-tone-gold',
+			ResponseType::Voorstel => 'ink-tone-primary',
+			ResponseType::Insig    => 'ink-tone-accent',
+		};
 	}
 
 	/**
@@ -269,13 +284,13 @@ final class ResponsesList {
 	 * @return string
 	 */
 	private static function formHtml( int $post_id ): string {
-		$html = '<form class="ink-reaksies__form" data-audit-id="reading-response-form" data-ink-post="' . esc_attr( (string) $post_id ) . '">';
+		$html = '<form class="ink-reaksies__form ink-card--feature" data-audit-id="reading-response-form" data-ink-post="' . esc_attr( (string) $post_id ) . '">';
 
 		$html .= '<p class="ink-reaksies__intro" data-audit-id="reading-response-intro">' . esc_html( Terms::label( 'gemeenskapsreaksie_instruksie' ) ) . '</p>';
 
 		$html .= '<fieldset class="ink-reaksies__types" data-audit-id="reading-response-types">';
 		foreach ( ResponseType::cases() as $type_index => $type ) {
-			$html .= '<label class="ink-reaksies__type ink-reaksies__type--' . esc_attr( $type->value ) . '"'
+			$html .= '<label class="ink-reaksies__type ink-chip ink-chip--choice ink-reaksies__type--' . esc_attr( $type->value ) . '"'
 				. ( 0 === $type_index ? ' data-audit-id="reading-response-type"' : '' ) . '>'
 				. '<input type="radio" name="ink_reaksie_type" value="' . esc_attr( $type->value ) . '" class="ink-reaksies__type-input">'
 				. '<span class="ink-reaksies__type-ikoon" aria-hidden="true">' . self::typeIcon( $type ) . '</span> '
@@ -284,12 +299,12 @@ final class ResponsesList {
 		}
 		$html .= '</fieldset>';
 
-		$html .= '<textarea class="ink-reaksies__input" data-audit-id="reading-response-input" name="ink_reaksie_content" rows="3" id="ink-reaksie-teks-'
+		$html .= '<textarea class="ink-reaksies__input ink-field ink-field--textarea" data-audit-id="reading-response-input" name="ink_reaksie_content" rows="3" id="ink-reaksie-teks-'
 			. esc_attr( (string) $post_id ) . '" placeholder="' . esc_attr( Terms::label( 'gemeenskapsreaksie_plekhouer' ) ) . '" aria-label="'
 			. esc_attr( Terms::label( 'gemeenskapsreaksie' ) ) . '"></textarea>';
 
 		$html .= '<div class="ink-reaksies__form-actions" data-audit-id="reading-response-actions">';
-		$html .= '<button type="submit" class="ink-reaksies__submit" data-audit-id="reading-response-submit" disabled>' . self::sendIcon() . esc_html( Terms::label( 'plaas' ) ) . '</button>';
+		$html .= '<button type="submit" class="ink-reaksies__submit ink-btn ink-btn--primary" data-audit-id="reading-response-submit" disabled>' . self::sendIcon() . esc_html( Terms::label( 'plaas' ) ) . '</button>';
 		$html .= '</div>';
 
 		$html .= '</form>';

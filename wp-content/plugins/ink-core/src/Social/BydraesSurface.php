@@ -184,8 +184,8 @@ final class BydraesSurface {
 		// REST/JS mechanism (§5.4).
 		$html = '<section class="ink-bydraes">'
 			. '<div class="ink-bydraes__kop" data-audit-id="profiel-posts-head">'
-			. '<h2 class="ink-bydraes__titel" data-audit-id="profiel-posts-title">' . esc_html__( 'Jou bydraes', 'ink-core' ) . '</h2>'
-			. '<a class="ink-bydraes__nuwe wp-element-button" data-audit-id="profiel-posts-new-btn" href="' . esc_url( home_url( '/skryf/' ) ) . '">' . esc_html__( 'Nuwe bydrae', 'ink-core' ) . '</a>'
+			. '<h2 class="ink-heading-h2-block ink-bydraes__titel" data-audit-id="profiel-posts-title">' . esc_html__( 'Jou bydraes', 'ink-core' ) . '</h2>'
+			. '<a class="ink-btn ink-btn--primary ink-bydraes__nuwe" data-audit-id="profiel-posts-new-btn" href="' . esc_url( home_url( '/skryf/' ) ) . '">' . esc_html__( 'Nuwe bydrae', 'ink-core' ) . '</a>'
 			. '</div>';
 
 		if ( array() === $rows ) {
@@ -195,7 +195,7 @@ final class BydraesSurface {
 			// docs/afrikaans-copy-worklist.md).
 			$empty = __( '[NEEDS HUMAN AFRIKAANS] — Bydraes-tab empty-state copy not yet authored in ui-copy-translations.md.', 'ink-core' );
 
-			return $html . '<p class="ink-bydraes__leeg" data-audit-id="profiel-posts-empty">' . esc_html( $empty ) . '</p></section>';
+			return $html . '<p class="ink-card ink-card--empty ink-bydraes__leeg" data-audit-id="profiel-posts-empty">' . esc_html( $empty ) . '</p></section>';
 		}
 
 		$html .= '<ul class="ink-bydraes__lys" data-audit-id="profiel-posts-list">';
@@ -210,29 +210,29 @@ final class BydraesSurface {
 				$pin = (string) preg_replace( '/^<button\b/', '<button data-audit-id="profiel-posts-pin"', $pin, 1 );
 			}
 
-			$html .= '<li class="ink-bydraes__item is-style-card"' . $audit( 'card' ) . '>'
+			$html .= '<li class="ink-card ink-bydraes__item"' . $audit( 'card' ) . '>'
 				. '<div class="ink-bydraes__meta"' . $audit( 'card-meta' ) . '>'
-				. '<span class="ink-bydraes__tipe"' . $audit( 'type' ) . '>' . esc_html( (string) $row['type_label'] ) . '</span>'
+				. '<span class="ink-pill ink-pill--outline ink-bydraes__tipe"' . $audit( 'type' ) . '>' . esc_html( (string) $row['type_label'] ) . '</span>'
 				// Always "Gepubliseer" — never "Konsep" (§7 decision 3, no draft
 				// concept exists in the submission flow to render one).
-				. '<span class="ink-bydraes__status"' . $audit( 'status' ) . '>' . esc_html__( 'Gepubliseer', 'ink-core' ) . '</span>';
+				. '<span class="ink-pill ink-pill--outline ink-tone-accent ink-bydraes__status"' . $audit( 'status' ) . '>' . esc_html__( 'Gepubliseer', 'ink-core' ) . '</span>';
 
 			if ( '' !== (string) $row['date'] ) {
-				$html .= '<span class="ink-bydraes__datum"' . $audit( 'date' ) . '>' . esc_html( (string) $row['date'] ) . '</span>';
+				$html .= '<span class="ink-meta ink-bydraes__datum"' . $audit( 'date' ) . '>' . esc_html( (string) $row['date'] ) . '</span>';
 			}
 
 			$html .= '</div>'
-				. '<a class="ink-bydraes__werk-titel"' . $audit( 'card-title' ) . ' href="' . esc_url( (string) $row['view_url'] ) . '">' . esc_html( (string) $row['title'] ) . '</a>'
+				. '<a class="ink-heading-h4 ink-bydraes__werk-titel"' . $audit( 'card-title' ) . ' href="' . esc_url( (string) $row['view_url'] ) . '">' . esc_html( (string) $row['title'] ) . '</a>'
 				. '<div class="ink-bydraes__voet"' . $audit( 'actions' ) . '>'
-				. '<span class="ink-bydraes__lesers"' . $audit( 'readers' ) . '>' . esc_html( (string) $row['read_label'] ) . '</span>'
+				. '<span class="ink-meta ink-bydraes__lesers"' . $audit( 'readers' ) . '>' . esc_html( (string) $row['read_label'] ) . '</span>'
 				// The EXACT vasgespel.js-wired toggle markup — see the class docblock.
 				. $pin
-				. '<a class="ink-bydraes__sien"' . $audit( 'view-btn' ) . ' href="' . esc_url( (string) $row['view_url'] ) . '">' . esc_html__( 'Sien', 'ink-core' ) . '</a>';
+				. '<a class="ink-btn ink-btn--sm ink-btn--primary ink-bydraes__sien"' . $audit( 'view-btn' ) . ' href="' . esc_url( (string) $row['view_url'] ) . '">' . esc_html__( 'Sien', 'ink-core' ) . '</a>';
 
 			if ( '' !== $edit_url ) {
 				// Graceful degrade: get_edit_post_link() returns '' when the current
 				// user lacks edit capability on the post — never a broken/empty href.
-				$html .= '<a class="ink-bydraes__wysig"' . $audit( 'edit-btn' ) . ' href="' . esc_url( $edit_url ) . '">' . esc_html__( 'Wysig', 'ink-core' ) . '</a>';
+				$html .= '<a class="ink-btn ink-btn--sm ink-btn--subtle ink-bydraes__wysig"' . $audit( 'edit-btn' ) . ' href="' . esc_url( $edit_url ) . '">' . esc_html__( 'Wysig', 'ink-core' ) . '</a>';
 			}
 
 			$html .= '</div>'

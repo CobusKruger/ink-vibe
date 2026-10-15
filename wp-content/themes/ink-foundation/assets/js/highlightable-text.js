@@ -259,20 +259,20 @@
 	function buildPanelChrome() {
 		toggle = document.createElement( 'button' );
 		toggle.type = 'button';
-		toggle.className = 'ink-highlights-toggle';
+		toggle.className = 'ink-highlights-toggle ink-icon-btn ink-icon-btn--highlight-tab';
 		toggle.innerHTML = HIGHLIGHTER_SVG;
 		toggle.setAttribute( 'aria-label', labelPanelTitle );
 		toggle.setAttribute( 'data-audit-id', 'storie-highlights-toggle' );
 
 		panel = document.createElement( 'div' );
-		panel.className = 'ink-highlights-panel';
+		panel.className = 'ink-highlights-panel ink-sheet';
 		panel.setAttribute( 'data-audit-id', 'storie-highlights-panel' );
 		panel.innerHTML =
 			'<div class="ink-highlights-panel__header">' +
 				'<div class="ink-highlights-panel__title">' + HIGHLIGHTER_SVG + '<span>' + labelPanelTitle + '</span>' +
-					'<span class="ink-highlights-panel__count">0</span>' +
+					'<span class="ink-highlights-panel__count ink-pill ink-pill--highlight">0</span>' +
 				'</div>' +
-				'<button type="button" class="ink-highlights-panel__close" aria-label="' + labelPanelTitle + '">' + CLOSE_SVG + '</button>' +
+				'<button type="button" class="ink-highlights-panel__close ink-icon-btn ink-icon-btn--panel-close" aria-label="' + labelPanelTitle + '">' + CLOSE_SVG + '</button>' +
 			'</div>' +
 			'<div class="ink-highlights-panel__body"></div>';
 
