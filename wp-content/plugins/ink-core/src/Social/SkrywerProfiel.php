@@ -491,7 +491,9 @@ final class SkrywerProfiel {
 		// Stats strip — Lesergradering (rating) / Werke / Volgelinge / Hartjies.
 		$rating_count = isset( $aggregate['count'] ) ? (int) $aggregate['count'] : 0;
 		if ( $rating_count > 0 || array() !== $works['items'] || $hartjies > 0 ) {
-			$html .= '<div class="ink-skrywerprofiel__statistieke" data-audit-id="skrywer-stats">';
+			// A full-bleed cream band (primitives `ink-band--cream` + border-y; SB-3),
+			// Writer.tsx:255 — the theme's layout rule breaks it out of the column.
+			$html .= '<div class="ink-band ink-band--cream ink-band--border-y ink-skrywerprofiel__statistieke" data-audit-id="skrywer-stats">';
 
 			if ( $rating_count > 0 ) {
 				$average = isset( $aggregate['average'] ) ? (float) $aggregate['average'] : 0.0;
@@ -573,7 +575,8 @@ final class SkrywerProfiel {
 		// Pinned / selected works — reading-list cards (Story 9.5, ratified "Uitgesoekte
 		// werk" copy). Heading only when there is at least one pin; nothing when empty.
 		if ( array() !== $pinned ) {
-			$html .= '<div class="ink-skrywerprofiel__vasgespel" data-audit-id="skrywer-werk" data-ink-slot="vasgespelde-werke">'
+			// A full-bleed cream band, py-12 md:py-16 + border-t (Writer.tsx:317; SB-3).
+			$html .= '<div class="ink-band ink-band--step ink-band--cream ink-band--border-t ink-skrywerprofiel__vasgespel" data-audit-id="skrywer-werk" data-ink-slot="vasgespelde-werke">'
 				. '<p class="ink-eyebrow ink-eyebrow--kicker ink-skrywerprofiel__vasgespel-kicker" data-audit-id="skrywer-werk-kicker">' . esc_html__( 'Uitgesoekte werk', 'ink-core' ) . '</p>'
 				/* translators: %s: the writer's first name. */
 				. '<h2 class="ink-heading-h2-section ink-skrywerprofiel__vasgespel-titel" data-audit-id="skrywer-werk-title">' . esc_html( sprintf( __( "'n Saamgestelde leeslys, in %s se eie volgorde.", 'ink-core' ), $first_name ) ) . '</h2>'

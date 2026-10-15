@@ -47,8 +47,8 @@
  * @package Ink\Foundation
  */
 ?>
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-hero ink-band ink-band--intro ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-gemeenskap-hero ink-band ink-band--intro ink-band--lg" data-audit-id="gemeenskap-hero" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-hero ink-band ink-band--intro ink-band--landing","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-gemeenskap-hero ink-band ink-band--intro ink-band--landing" data-audit-id="gemeenskap-hero" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained","contentSize":"48rem"}} -->
 	<div class="wp-block-group" data-audit-id="gemeenskap-hero-inner">
 		<!-- wp:paragraph {"align":"center","className":"ink-eyebrow ink-eyebrow--tracked","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|s-24"}}}} -->
@@ -295,15 +295,18 @@
 		<p class="has-text-align-center has-lg-font-size" data-audit-id="gemeenskap-cta-text">Dit is gratis, dit is niewinsgerig, en dit word stilletjies die beste plek aanlyn om te lees en gelees te word.</p>
 		<!-- /wp:paragraph -->
 
-		<!-- The CTA pair on the dark band: `button-primary` + `button-outline on-dark` (primitives). primitives.css binds no on-dark block style, so both are anchors carrying the `ink-btn` classes, laid out by a flex group. -->
-		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"flex","justifyContent":"center","flexWrap":"wrap"}} -->
-		<div class="wp-block-group" data-audit-id="gemeenskap-cta-actions">
-			<!-- wp:html -->
-			<a class="ink-btn ink-btn--lg ink-btn--primary" data-audit-id="gemeenskap-cta-btn-primary" href="/registreer"><?php echo esc_html__( 'Skep jou rekening', 'ink-foundation' ) . ink_foundation_icon( '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the label is esc_html__(); ink_foundation_icon() returns trusted, self-escaped inline SVG. ?></a>
-			<a class="ink-btn ink-btn--lg ink-btn--outline-on-dark" data-audit-id="gemeenskap-cta-btn-secondary" href="/lees"><?php esc_html_e( 'Kyk eers rond', 'ink-foundation' ); ?></a>
-			<!-- /wp:html -->
+		<!-- The CTA pair on the dark band: core/button blocks with the primitives `button-primary` (`is-style-ink-primary`) and `button-outline on-dark` (`is-style-ink-outline-on-dark`) block styles, lg size wrapper. -->
+		<!-- wp:buttons {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"flex","justifyContent":"center","flexWrap":"wrap"}} -->
+		<div class="wp-block-buttons" data-audit-id="gemeenskap-cta-actions">
+			<!-- wp:button {"className":"is-style-ink-primary ink-btn-lg"} -->
+			<div class="wp-block-button is-style-ink-primary ink-btn-lg"><a class="wp-block-button__link wp-element-button" data-audit-id="gemeenskap-cta-btn-primary" href="/registreer"><?php echo esc_html__( 'Skep jou rekening', 'ink-foundation' ) . ink_foundation_icon( '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the label is esc_html__(); ink_foundation_icon() returns trusted, self-escaped inline SVG. ?></a></div>
+			<!-- /wp:button -->
+
+			<!-- wp:button {"className":"is-style-ink-outline-on-dark ink-btn-lg"} -->
+			<div class="wp-block-button is-style-ink-outline-on-dark ink-btn-lg"><a class="wp-block-button__link wp-element-button" data-audit-id="gemeenskap-cta-btn-secondary" href="/lees"><?php esc_html_e( 'Kyk eers rond', 'ink-foundation' ); ?></a></div>
+			<!-- /wp:button -->
 		</div>
-		<!-- /wp:group -->
+		<!-- /wp:buttons -->
 	</div>
 	<!-- /wp:group -->
 </section>

@@ -7,8 +7,9 @@
  * ink-card--selectable-lg`, icon tile `ink-icon-tile--circle-lg` + `ink-tone-*`,
  * challenges card `ink-card--panel-sm`, choice row `ink-choice`, checkbox
  * `ink-checkbox`, label/field/hint `ink-label` / `ink-field` / `ink-hint`,
- * buttons `ink-btn ink-btn--lg ink-btn--neutral|--primary`, notice `ink-notice`,
- * success card `ink-card--panel`, eyebrow `ink-eyebrow`.
+ * buttons `ink-btn ink-btn--lg ink-btn--neutral|--primary`, notice `ink-notice
+ * ink-notice--waarskuwing`, success card `ink-card--panel-lg` + icon
+ * `ink-icon-tile--circle-xl`, eyebrow `ink-eyebrow`.
  * Lovable reference: `ink-lovable/src/pages/Write.tsx`. Enqueued on Skryf only.
  */
 
@@ -177,15 +178,6 @@
 	color: var(--wp--preset--color--ink-text);
 }
 
-/* PENDING PRIMITIVE: `ink-choice` has no checked state in primitives.css yet;
-   Lovable (Write.tsx:353) uses `border-terracotta bg-terracotta/5`. Requested
-   for primitives.css in the Stage 3b Set C report — delete this rule when it
-   lands there. */
-.ink-skryf-challenge:has(input:checked) {
-	border-color: var(--wp--preset--color--primary);
-	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 5%, transparent);
-}
-
 /* ── §4 File pickers (INK-only, Stories 6.4/6.5) — the /auth field with the
    native file-selector-button skinned, not left as OS chrome. ── */
 .ink-skryf-form input[type="file"] {
@@ -221,12 +213,6 @@
 	}
 }
 
-/* ── §6 Denial notice (entitlement gate, Story 6.8) — `ink-notice` in the
-   warning tone (no `ink-notice--*` warning modifier exists). ── */
-.ink-skryf-denial {
-	--ink-tone: var(--wp--preset--color--warning);
-}
-
 /* ── §7 Success screen (post-plaas) ───────────────────────────────────────── */
 .ink-skryf-success {
 	max-width: 640px;
@@ -234,25 +220,9 @@
 	text-align: center;
 }
 
-/* PENDING PRIMITIVE: Lovable's success card is `rounded-2xl` (16px) on the
-   panel recipe (Write.tsx:157) — no such card variant exists yet; requested in
-   the Stage 3b Set C report. */
-.ink-skryf-success.ink-card--panel {
-	border-radius: var(--wp--custom--radius--xxl);
-}
-
-/* PENDING PRIMITIVE: a 64px circle tile with a 32px glyph (Write.tsx:158,
-   `w-16 h-16` / `h-8 w-8`) — no such icon-tile size exists yet; requested in
-   the Stage 3b Set C report. */
-.ink-skryf-success__icon.ink-icon-tile--circle-lg {
-	width: 64px;
-	height: 64px;
+/* The success icon (`ink-icon-tile--circle-xl`): centred, mb-4. */
+.ink-skryf-success__icon {
 	margin: 0 auto var(--wp--preset--spacing--s-16);
-}
-
-.ink-skryf-success__icon .ink-icon {
-	width: 32px;
-	height: 32px;
 }
 
 .ink-skryf-success__heading {

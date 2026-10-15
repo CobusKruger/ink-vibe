@@ -65,8 +65,8 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 	? get_post_type_archive_link( 'uitdaging' )
 	: '';
 ?>
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-uitdaging__hero ink-band ink-band--border-b","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="uitdaging-hero" class="wp-block-group alignfull ink-uitdaging__hero ink-band ink-band--border-b" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-uitdaging__hero ink-band ink-band--hero ink-band--border-b","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section data-audit-id="uitdaging-hero" class="wp-block-group alignfull ink-uitdaging__hero ink-band ink-band--hero ink-band--border-b" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained","contentSize":"768px"}} -->
 	<div data-audit-id="uitdaging-hero-content" class="wp-block-group">
 		<!-- wp:paragraph {"className":"ink-uitdaging__terug","lock":{"move":true,"remove":true},"fontSize":"sm"} -->

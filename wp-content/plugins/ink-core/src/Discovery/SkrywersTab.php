@@ -310,7 +310,7 @@ final class SkrywersTab {
 			. '<div class="ink-ontdek-skrywers__kop"' . $aid( 'writers-card-head' ) . '>';
 
 		if ( '' !== $avatar ) {
-			$html .= '<img class="ink-ontdek-skrywers__foto ink-avatar"' . $aid( 'writers-card-avatar' ) . ' src="' . esc_url( $avatar ) . '" '
+			$html .= '<img class="ink-ontdek-skrywers__foto ink-avatar ink-avatar--64 ink-avatar--bordered"' . $aid( 'writers-card-avatar' ) . ' src="' . esc_url( $avatar ) . '" '
 				. 'alt="' . esc_attr( $card['name'] ) . '" width="56" height="56" loading="lazy" decoding="async" />';
 		}
 
@@ -452,15 +452,15 @@ final class SkrywersTab {
 			return '';
 		}
 
-		$html = '<nav class="ink-ontdek-skrywers__blaai">';
+		$html = '<nav class="ink-ontdek-skrywers__blaai ink-pager">';
 
 		if ( $paged > 1 ) {
-			$html .= '<a class="ink-ontdek-skrywers__vorige" href="' . esc_url( add_query_arg( self::PAGED_VAR, $paged - 1 ) ) . '">'
+			$html .= '<a class="ink-ontdek-skrywers__vorige ink-pager__link" href="' . esc_url( add_query_arg( self::PAGED_VAR, $paged - 1 ) ) . '">'
 				. esc_html__( 'Vorige', 'ink-core' ) . '</a>';
 		}
 
 		if ( $paged < $max ) {
-			$html .= '<a class="ink-ontdek-skrywers__volgende" href="' . esc_url( add_query_arg( self::PAGED_VAR, $paged + 1 ) ) . '">'
+			$html .= '<a class="ink-ontdek-skrywers__volgende ink-pager__link" href="' . esc_url( add_query_arg( self::PAGED_VAR, $paged + 1 ) ) . '">'
 				. esc_html__( 'Volgende', 'ink-core' ) . '</a>';
 		}
 

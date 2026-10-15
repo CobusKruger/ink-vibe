@@ -1514,16 +1514,6 @@ function ink_foundation_register_block_styles(): void {
 		)
 	);
 
-	// Pill: kept registered only so existing markup keeps a valid style. BTN-2 (no
-	// pill buttons): primitives.css gives `is-style-pill` the standard primary recipe.
-	register_block_style(
-		'core/button',
-		array(
-			'name'  => 'pill',
-			'label' => __( 'Pil', 'ink-foundation' ),
-		)
-	);
-
 	// INK button variants (Epic 19, §0.1 / §9; Stage 3). All button recipes —
 	// the shared base (inline-flex, gap 8, weight 500, radius 6, serif per
 	// BTN-FONT), the four sizes, the colour layer, :hover, the :focus-visible ring
@@ -1531,12 +1521,18 @@ function ink_foundation_register_block_styles(): void {
 	// `.wp-block-button.is-style-<name> > .wp-block-button__link`. Size stays a
 	// wrapper class (`ink-btn-sm|lg|xl`), because a block style is a single radio
 	// axis and size x variant can't combine.
+	// BTN-2 (no pill buttons): the legacy `pill` style is no longer registered.
+	// The two on-dark variants are for the brand-gradient CTA band and the dark
+	// community CTA band (primitives `button-primary on-dark` / `button-outline
+	// on-dark`, LEG-1).
 	$button_styles = array(
-		'ink-primary'      => __( 'INK primêr', 'ink-foundation' ),
-		'ink-outline'      => __( 'INK omlyn', 'ink-foundation' ),
-		'ink-ghost'        => __( 'INK skim', 'ink-foundation' ),
-		'ink-sage'         => __( 'INK salie', 'ink-foundation' ),
-		'ink-sage-outline' => __( 'INK salie omlyn', 'ink-foundation' ),
+		'ink-primary'         => __( 'INK primêr', 'ink-foundation' ),
+		'ink-outline'         => __( 'INK omlyn', 'ink-foundation' ),
+		'ink-ghost'           => __( 'INK skim', 'ink-foundation' ),
+		'ink-sage'            => __( 'INK salie', 'ink-foundation' ),
+		'ink-sage-outline'    => __( 'INK salie omlyn', 'ink-foundation' ),
+		'ink-on-dark'         => __( 'INK op donker', 'ink-foundation' ),
+		'ink-outline-on-dark' => __( 'INK omlyn op donker', 'ink-foundation' ),
 	);
 
 	foreach ( $button_styles as $name => $label ) {

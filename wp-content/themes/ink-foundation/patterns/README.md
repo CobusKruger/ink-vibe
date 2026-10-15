@@ -18,7 +18,7 @@ These are the designed building blocks the archetypes compose. They self-registe
 | `ink-foundation/cta-band` | Oproep tot aksie | Tinted call-to-action band |
 | `ink-foundation/profile-summary` | Profiel-opsomming | Profile card (avatar + bio + follow) |
 
-Block styles (registered in `functions.php`, Story 1.5): `is-style-card` (group), `is-style-emphasis` (group), `is-style-pill` (button).
+Block styles (registered in `functions.php`; their CSS is the shared `assets/css/primitives.css` recipe, Fidelity Stage 3): `is-style-card` / `is-style-ink-card` / `is-style-emphasis` (group), `is-style-card` (details), and the button variants `is-style-ink-primary`, `-ink-outline`, `-ink-ghost`, `-ink-sage`, `-ink-sage-outline`, `-ink-on-dark`, `-ink-outline-on-dark`. There is no pill button style (BTN-2).
 
 ---
 
@@ -42,7 +42,7 @@ The A–D taxonomy (purpose, structure, when-to-use) is taken verbatim from `doc
 - **Pattern:** `ink-foundation/archetype-b-archive-discovery` — *Bladsy-argetipe B — Argief en ontdekking*
 - **Purpose:** Archive and discovery.
 - **Section structure:** Context intro · Filter or taxonomy controls · Card listing with pagination.
-- **Composes:** `wp:pattern` ref to `ink-foundation/archive-intro` (context intro) + a token-only locked **filter strip** (`is-style-pill` / `is-style-outline` placeholder buttons) + a locked `is-style-card` **listing** `columns` (mirrors the `featured-grid` card shape).
+- **Composes:** `wp:pattern` ref to `ink-foundation/archive-intro` (context intro) + a token-only locked **filter strip** (`is-style-ink-primary` / `is-style-ink-outline` placeholder buttons) + a locked `is-style-card` **listing** `columns` (mirrors the `featured-grid` card shape).
 - **When to use:** Lees/Ontdek, Opleiding, Biblioteek, Uitdagings lists.
 - **Scope note:** The live query-loop, faceted filters, and pagination are owned by **Epics 8 (Ontdek), 10 (Biblioteek), 11 (Opleiding), 12 (Uitdagings)** — this scaffold ships the *layout*, not the dynamic query.
 

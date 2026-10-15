@@ -42,6 +42,14 @@
 	font-weight: 600;
 }
 
+/* default link (moved here from theme.json `elements.link`, Stage 3c): brand
+   colour, no underline at rest. Zero specificity, so every link primitive and
+   page rule wins over it. */
+:where(a:not(.wp-element-button)) {
+	color: var(--wp--preset--color--primary);
+	text-decoration: none;
+}
+
 /* ==========================================================================
    1. Heading roles (component_kind heading)
    ========================================================================== */
@@ -128,7 +136,7 @@
 .ink-heading-h2-on-dark {
 	font-size: var(--wp--preset--font-size--hero-sm);
 	line-height: 2.25rem;
-	color: var(--wp--preset--color--primary-foreground, #fff);
+	color: var(--wp--preset--color--primary-foreground);
 }
 
 .ink-band--dark .ink-heading-h2-on-dark,
@@ -254,6 +262,25 @@
 	padding-bottom: 0;
 }
 
+/* hero: py-12 md:py-20 (48 → 80) — home hero (HeroSpotlight.tsx:46), uitdaging
+   hero (Challenge.tsx:136). */
+.ink-band--hero {
+	padding-top: var(--wp--preset--spacing--s-48);
+	padding-bottom: var(--wp--preset--spacing--s-48);
+}
+
+/* poem: py-16 md:py-20 (64 → 80) — the gedig reading body (ReadStory.tsx:193). */
+.ink-band--poem {
+	padding-top: var(--wp--preset--spacing--s-64);
+	padding-bottom: var(--wp--preset--spacing--s-64);
+}
+
+/* landing: py-20 md:py-28 (80 → 112) — the community hero (Community.tsx:89). */
+.ink-band--landing {
+	padding-top: var(--wp--preset--spacing--s-80);
+	padding-bottom: var(--wp--preset--spacing--s-80);
+}
+
 /* SB-3: every cream band is bg-secondary/30 (tint-cream = tint-stone). */
 .ink-band--cream,
 .ink-band--stone,
@@ -313,6 +340,17 @@
 	.ink-band--step {
 		padding-top: var(--wp--preset--spacing--s-64);
 		padding-bottom: var(--wp--preset--spacing--s-64);
+	}
+
+	.ink-band--hero,
+	.ink-band--poem {
+		padding-top: var(--wp--preset--spacing--s-80);
+		padding-bottom: var(--wp--preset--spacing--s-80);
+	}
+
+	.ink-band--landing {
+		padding-top: 7rem;
+		padding-bottom: 7rem;
 	}
 }
 
@@ -485,6 +523,17 @@
 	padding: 20px;
 }
 
+/* panel-lg: the panel recipe at radius 16 (`rounded-2xl`, the skryf success card,
+   Write.tsx:157); p-8 → md:p-10 like panel. */
+.ink-card--panel-lg {
+	box-sizing: border-box;
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--xxl);
+	box-shadow: none;
+	padding: var(--wp--preset--spacing--s-32);
+}
+
 /* selectable: 2px border tile; selected = primary border + primary/5 */
 .ink-card--selectable,
 .ink-card--selectable-lg {
@@ -502,6 +551,12 @@
 	background-color: var(--wp--preset--color--surface-alt);
 	border-radius: var(--wp--custom--radius--xl);
 	padding: var(--wp--preset--spacing--s-24);
+}
+
+/* hover: primary/40 border (Profile.tsx:645 `hover:border-terracotta/40`); the
+   selected state below follows it, so a selected tile keeps its full border. */
+.ink-card--selectable:hover {
+	border-color: color-mix(in srgb, var(--wp--preset--color--primary) 40%, transparent);
 }
 
 .ink-card--selectable.is-selected,
@@ -564,7 +619,8 @@
 		padding: 28px;
 	}
 
-	.ink-card--panel {
+	.ink-card--panel,
+	.ink-card--panel-lg {
 		padding: var(--wp--preset--spacing--s-40);
 	}
 }
@@ -729,7 +785,7 @@
 .ink-pill--count {
 	padding: 2px 10px;
 	background-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--primary-foreground, #fff);
+	color: var(--wp--preset--color--primary-foreground);
 	font-weight: 600;
 }
 
@@ -745,6 +801,15 @@
 .ink-pill.ink-tone-accent { --ink-tone: var(--wp--preset--color--accent); }
 .ink-pill.ink-tone-gold { --ink-tone: var(--wp--preset--color--gold); }
 .ink-pill.ink-tone-muted { --ink-tone: var(--wp--preset--color--muted-text); }
+.ink-pill.ink-tone-success { --ink-tone: var(--wp--preset--color--success); }
+.ink-pill.ink-tone-danger { --ink-tone: var(--wp--preset--color--danger); }
+
+/* soft + tone: the per-bydrae-type category pill (home featured; a disclosed
+   product-owner colouring over Lovable's neutral pill) — tone/10 fill, tone text. */
+.ink-pill--soft:is(.ink-tone-primary, .ink-tone-accent, .ink-tone-muted, .ink-tone-gold, .ink-tone-success, .ink-tone-danger) {
+	background-color: color-mix(in srgb, var(--ink-tone) 10%, transparent);
+	color: var(--ink-tone);
+}
 
 /* ==========================================================================
    7. Toolbar (the floating engagement bar, filed as pill floating-bar)
@@ -861,6 +926,11 @@
 .ink-avatar--48 { width: 48px; height: 48px; }
 .ink-avatar--64 { width: 64px; height: 64px; }
 .ink-avatar--96 { width: 96px; height: 96px; }
+
+/* bordered: a 1px border-colour outline (Browse.tsx:721 `border border-border`) */
+.ink-avatar--bordered {
+	border: 1px solid var(--wp--preset--color--border);
+}
 
 /* ring (reading author): 4px background ring */
 .ink-avatar--ring {
@@ -1008,6 +1078,28 @@
 	border-radius: var(--wp--custom--radius--full);
 }
 
+/* circle-xl: 64px circle, 32px glyph (the skryf success icon, Write.tsx:158).
+   Combine with `ink-icon-tile--circle-lg` (shape/tone) or use alone. */
+.ink-icon-tile--circle-xl {
+	--ink-tone: var(--wp--preset--color--primary);
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 64px;
+	height: 64px;
+	padding: 0;
+	border-radius: var(--wp--custom--radius--full);
+	background-color: color-mix(in srgb, var(--ink-tone) 10%, transparent);
+	color: var(--ink-tone);
+}
+
+.ink-icon-tile--circle-xl svg {
+	width: 32px;
+	height: 32px;
+}
+
 /* the gold tile is gold/20; the neutral tile is muted */
 .ink-icon-tile--gold {
 	--ink-tone: var(--wp--preset--color--gold);
@@ -1023,13 +1115,15 @@
 .ink-icon-tile--sm.ink-tone-accent,
 .ink-icon-tile--lg.ink-tone-accent,
 .ink-icon-tile--circle.ink-tone-accent,
-.ink-icon-tile--circle-lg.ink-tone-accent { --ink-tone: var(--wp--preset--color--accent); }
+.ink-icon-tile--circle-lg.ink-tone-accent,
+.ink-icon-tile--circle-xl.ink-tone-accent { --ink-tone: var(--wp--preset--color--accent); }
 
 .ink-icon-tile.ink-tone-ink,
 .ink-icon-tile--sm.ink-tone-ink,
 .ink-icon-tile--lg.ink-tone-ink,
 .ink-icon-tile--circle.ink-tone-ink,
-.ink-icon-tile--circle-lg.ink-tone-ink { --ink-tone: var(--wp--preset--color--ink-text); }
+.ink-icon-tile--circle-lg.ink-tone-ink,
+.ink-icon-tile--circle-xl.ink-tone-ink { --ink-tone: var(--wp--preset--color--ink-text); }
 
 /* ==========================================================================
    11. Tier chip (sponsor tiers) and tier label (NR-1)
@@ -1042,9 +1136,10 @@
 	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-24);
 	border: 0;
 	border-radius: var(--wp--custom--radius--lg);
-	font-family: var(--wp--preset--font-family--body);
+	/* the sponsor name: `font-serif font-medium` (SponsorsSection.tsx:46) */
+	font-family: var(--wp--preset--font-family--display);
 	font-size: var(--wp--preset--font-size--md);
-	font-weight: 400;
+	font-weight: 500;
 	line-height: 1.5rem;
 }
 
@@ -1083,7 +1178,7 @@
 	border: 1px solid color-mix(in srgb, var(--ink-tier) 20%, transparent);
 	border-radius: var(--wp--custom--radius--full);
 	background-color: color-mix(in srgb, var(--ink-tier) 10%, transparent);
-	color: var(--wp--preset--color--brons-text, #88603e);
+	color: var(--wp--preset--color--brons-text);
 	font-family: var(--wp--preset--font-family--body);
 	font-size: var(--wp--preset--font-size--xs);
 	font-weight: 400;
@@ -1095,17 +1190,20 @@
 
 .ink-tier-label--brons {
 	--ink-tier: var(--wp--preset--color--brons);
-	color: var(--wp--preset--color--brons-text, #88603e);
+	color: var(--wp--preset--color--brons-text);
 }
 
 .ink-tier-label--silwer {
 	--ink-tier: var(--wp--preset--color--silwer);
-	color: var(--wp--preset--color--silwer-text, #606b76);
+	color: var(--wp--preset--color--silwer-text);
 }
 
-.ink-tier-label--goud {
+/* meester = an elevated Goud member (it competes in the Goud pool), so it takes
+   the goud chip; the label text still reads "Meester". */
+.ink-tier-label--goud,
+.ink-tier-label--meester {
 	--ink-tier: var(--wp--preset--color--goud);
-	color: var(--wp--preset--color--goud-text, #7a6838);
+	color: var(--wp--preset--color--goud-text);
 }
 
 /* ==========================================================================
@@ -1182,6 +1280,7 @@
 .ink-notice--ok { --ink-tone: var(--wp--preset--color--success); }
 .ink-notice--fout { --ink-tone: var(--wp--preset--color--danger); }
 .ink-notice--info { --ink-tone: var(--wp--preset--color--accent); }
+.ink-notice--waarskuwing { --ink-tone: var(--wp--preset--color--warning); }
 
 /* ==========================================================================
    13. Buttons — shared base (button-base), sizes, variants
@@ -1191,7 +1290,7 @@
    ========================================================================== */
 
 .ink-btn,
-.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-pill) > .wp-block-button__link {
+.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-ink-on-dark, .is-style-ink-outline-on-dark) > .wp-block-button__link {
 	box-sizing: border-box;
 	display: inline-flex;
 	align-items: center;
@@ -1214,7 +1313,7 @@
 }
 
 .ink-btn svg,
-.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-pill) > .wp-block-button__link svg {
+.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-ink-on-dark, .is-style-ink-outline-on-dark) > .wp-block-button__link svg {
 	flex-shrink: 0;
 	width: 16px;
 	height: 16px;
@@ -1222,15 +1321,15 @@
 }
 
 .ink-btn:focus-visible,
-.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-pill) > .wp-block-button__link:focus-visible {
+.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-ink-on-dark, .is-style-ink-outline-on-dark) > .wp-block-button__link:focus-visible {
 	outline: 2px solid var(--wp--preset--color--primary);
 	outline-offset: 2px;
 }
 
 .ink-btn:disabled,
 .ink-btn[aria-disabled="true"],
-.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-pill) > .wp-block-button__link:disabled,
-.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-pill) > .wp-block-button__link[aria-disabled="true"] {
+.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-ink-on-dark, .is-style-ink-outline-on-dark) > .wp-block-button__link:disabled,
+.wp-block-button:is(.is-style-ink-primary, .is-style-ink-outline, .is-style-ink-neutral, .is-style-ink-ghost, .is-style-subtle, .is-style-ink-sage, .is-style-ink-sage-outline, .is-style-ink-on-dark, .is-style-ink-outline-on-dark) > .wp-block-button__link[aria-disabled="true"] {
 	opacity: 0.5;
 	pointer-events: none;
 }
@@ -1274,7 +1373,7 @@
 .ink-btn--primary,
 .wp-block-button.is-style-ink-primary > .wp-block-button__link {
 	background-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--primary-foreground, #fff);
+	color: var(--wp--preset--color--primary-foreground);
 	border: 0;
 	box-shadow: var(--wp--preset--shadow--md);
 }
@@ -1282,19 +1381,21 @@
 .ink-btn--primary:hover,
 .wp-block-button.is-style-ink-primary > .wp-block-button__link:hover {
 	background-color: var(--wp--preset--color--primary-light);
-	color: var(--wp--preset--color--primary-foreground, #fff);
+	color: var(--wp--preset--color--primary-foreground);
 }
 
 /* primary on-dark (CTA band): white fill, terracotta text, no shadow; hover white/90 */
-.ink-btn--on-dark {
-	background-color: var(--wp--preset--color--primary-foreground, #fff);
+.ink-btn--on-dark,
+.wp-block-button.is-style-ink-on-dark > .wp-block-button__link {
+	background-color: var(--wp--preset--color--primary-foreground);
 	color: var(--wp--preset--color--primary);
 	border: 0;
 	box-shadow: none;
 }
 
-.ink-btn--on-dark:hover {
-	background-color: color-mix(in srgb, var(--wp--preset--color--primary-foreground, #fff) 90%, transparent);
+.ink-btn--on-dark:hover,
+.wp-block-button.is-style-ink-on-dark > .wp-block-button__link:hover {
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary-foreground) 90%, transparent);
 	color: var(--wp--preset--color--primary);
 }
 
@@ -1310,7 +1411,7 @@
 .ink-btn--outline:hover,
 .wp-block-button.is-style-ink-outline > .wp-block-button__link:hover {
 	background-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--primary-foreground, #fff);
+	color: var(--wp--preset--color--primary-foreground);
 }
 
 /* neutral outline (shadcn `outline`): 1px border, background fill; BTN-3 sage hover */
@@ -1342,21 +1443,24 @@
 
 /* outline on-dark (LEG-1, "Explore stories"): transparent, 2px white, white text;
    hover inverts to white fill + terracotta text */
-.ink-btn--outline-on-dark {
+.ink-btn--outline-on-dark,
+.wp-block-button.is-style-ink-outline-on-dark > .wp-block-button__link {
 	background-color: transparent;
-	color: var(--wp--preset--color--primary-foreground, #fff);
-	border: 2px solid var(--wp--preset--color--primary-foreground, #fff);
+	color: var(--wp--preset--color--primary-foreground);
+	border: 2px solid var(--wp--preset--color--primary-foreground);
 	box-shadow: none;
 }
 
-.ink-btn--outline-on-dark:hover {
-	background-color: var(--wp--preset--color--primary-foreground, #fff);
+.ink-btn--outline-on-dark:hover,
+.wp-block-button.is-style-ink-outline-on-dark > .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--primary-foreground);
 	color: var(--wp--preset--color--primary);
 }
 
 .ink-btn--outline-on-dark:focus-visible,
-.ink-btn--on-dark:focus-visible {
-	outline-color: var(--wp--preset--color--primary-foreground, #fff);
+.ink-btn--on-dark:focus-visible,
+.wp-block-button:is(.is-style-ink-on-dark, .is-style-ink-outline-on-dark) > .wp-block-button__link:focus-visible {
+	outline-color: var(--wp--preset--color--primary-foreground);
 }
 
 /* ghost: transparent, foreground; hover sage fill. Lovable ghost is always sm. */
@@ -1425,17 +1529,6 @@
 	color: var(--wp--preset--color--surface-alt);
 }
 
-/* BTN-2: no pill buttons — the legacy `is-style-pill` takes the primary recipe */
-.wp-block-button.is-style-pill > .wp-block-button__link {
-	background-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--primary-foreground, #fff);
-	box-shadow: var(--wp--preset--shadow--md);
-}
-
-.wp-block-button.is-style-pill > .wp-block-button__link:hover {
-	background-color: var(--wp--preset--color--primary-light);
-}
-
 /* bare text button (the "Reply" action): not a ghost button; keeps Inter */
 .ink-text-button {
 	display: inline-block;
@@ -1494,15 +1587,21 @@
 	color: var(--wp--preset--color--accent);
 }
 
-/* menu toggle: p-2, 40px box, foreground */
-.ink-icon-btn--menu {
+/* menu toggle: p-2, 40px box, foreground. Bound to the header's core navigation
+   open / close toggles (Header.tsx:105 — display stays core's breakpoint logic). */
+.ink-icon-btn--menu,
+.wp-block-group.is-style-ink-header :is(.wp-block-navigation__responsive-container-open, .wp-block-navigation__responsive-container-close) {
+	box-sizing: border-box;
+	align-items: center;
+	justify-content: center;
 	width: 40px;
 	height: 40px;
 	padding: var(--wp--preset--spacing--s-8);
 	color: var(--wp--preset--color--ink-text);
 }
 
-.ink-icon-btn--menu svg {
+.ink-icon-btn--menu svg,
+.wp-block-group.is-style-ink-header :is(.wp-block-navigation__responsive-container-open, .wp-block-navigation__responsive-container-close) svg {
 	width: 24px;
 	height: 24px;
 }
@@ -1524,12 +1623,12 @@
 
 .ink-icon-btn--round-primary {
 	background-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--primary-foreground, #fff);
+	color: var(--wp--preset--color--primary-foreground);
 }
 
 .ink-icon-btn--round-primary:hover {
 	background-color: var(--wp--preset--color--primary-light);
-	color: var(--wp--preset--color--primary-foreground, #fff);
+	color: var(--wp--preset--color--primary-foreground);
 }
 
 /* highlight tab: 40px, 12px 8px, radius 8, gap 4, highlight fill, shadow-soft */
@@ -1648,7 +1747,7 @@
 .ink-chip[aria-current="page"] {
 	background-color: var(--wp--preset--color--primary);
 	border-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--primary-foreground, #fff);
+	color: var(--wp--preset--color--primary-foreground);
 }
 
 .ink-chip:focus-visible {
@@ -1915,7 +2014,44 @@
 	text-decoration: none;
 }
 
+/* pager (prev / next archive links — Kernel\ArchiveRender::pagination(), the
+   Ontdek skrywers tab): INK-only, no Lovable reference; the most-used variant
+   (biblioteek / opleiding / uitdagings) — a bordered pill link. The row is
+   `ink-pager`; its top margin stays with the page. */
+.ink-pager {
+	display: flex;
+	justify-content: center;
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+.ink-pager__link {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	padding: var(--wp--preset--spacing--s-8) var(--wp--preset--spacing--s-24);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--full);
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: 400;
+	line-height: 1.25rem;
+	text-decoration: none;
+	transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.ink-pager__link:hover {
+	border-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-pager__link:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
+	.ink-pager__link,
 	.ink-underline-slide::after,
 	.ink-link--slide::after,
 	.ink-nav-link::after,
@@ -2091,6 +2227,13 @@ textarea.ink-field,
 
 .ink-choice:hover {
 	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 50%, transparent);
+}
+
+/* checked: primary border + primary/5 fill (Write.tsx:353) */
+.ink-choice.is-selected,
+.ink-choice:has(input:checked) {
+	border-color: var(--wp--preset--color--primary);
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 5%, transparent);
 }
 
 @media (min-width: 768px) {

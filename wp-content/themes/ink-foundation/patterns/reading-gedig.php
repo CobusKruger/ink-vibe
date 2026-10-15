@@ -112,8 +112,8 @@ $ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex"><sv
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-band","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="reading-body" class="wp-block-group alignfull ink-band" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-band ink-band--poem","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section data-audit-id="reading-body" class="wp-block-group alignfull ink-band ink-band--poem" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"576px"}} -->
 	<div data-audit-id="gedig-body-col" class="wp-block-group">
 		<!-- wp:ink/gedig-body /-->

@@ -6,15 +6,14 @@
  * eyebrows `ink-eyebrow(--muted)`, headings `ink-heading-*`, cards `ink-card` /
  * `ink-card--empty` / `ink-card--selectable` / `is-style-card`, buttons `ink-btn
  * ink-btn--*` (+ the `is-style-ink-primary` / `is-style-subtle` block bindings),
- * tabs `ink-tab`, pills `ink-pill--outline`, meta `ink-meta`, stat label
+ * tabs `ink-segmented`, pills `ink-pill--outline`, meta `ink-meta`, stat label
  * `ink-stat-label`, icon tile `ink-icon-tile--sm`, status dot `ink-status-dot`,
  * fields `ink-label--caps` / `ink-field`. Markup: `patterns/my-profiel.php`,
  * `patterns/lidmaatskap-hernu.php` and the ink-core Social / Notifications
  * renderers. Lovable reference: `ink-lovable/src/pages/Profile.tsx`.
  *
- * Tab shape: the underline `ink-tab` is kept for now — a disclosed divergence
- * from Lovable's segmented `TabsList` (finding F7, owner call pending); the
- * segmented primitive (`ink-segmented`) is a one-class swap when ruled.
+ * Tab shape: Lovable's segmented `TabsList` (`ink-segmented` >
+ * `ink-segmented__tab`, finding F7 — "Lovable wins").
  */
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -60,10 +59,16 @@
  * Tab shell
  * ───────────────────────────────────────────────────────────────────────── */
 
-.ink-profiel-tabs {
-	gap: var(--wp--preset--spacing--s-4);
+/* `ink-segmented` with Lovable's per-instance overrides (Profile.tsx:220,
+   `bg-cream/60 mb-8 flex flex-wrap h-auto`; cream = background = surface). */
+.ink-profiel-tabs.ink-segmented {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	gap: 0;
+	height: auto;
 	margin-bottom: var(--wp--preset--spacing--s-32);
-	border-bottom: 1px solid var(--wp--preset--color--border);
+	background-color: color-mix( in srgb, var(--wp--preset--color--surface) 60%, transparent );
 }
 
 /* Panels are shown/hidden via the native [hidden] attribute (profiel-tabs.js). */
@@ -239,10 +244,8 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
- * Leeslys — consumer is `ink-core` Engagement/ReadingList.php (Set B). These
- * surface rules stay ONLY until that renderer carries `ink-card` (item) /
- * `ink-card ink-card--empty` (leeg) / `ink-heading-*` (titles) — then delete
- * everything in this block except the list grid.
+ * Leeslys (`ink-core` Engagement/ReadingList.php — `ink-card` items,
+ * `ink-card--empty` leeg, `ink-heading-*` titles, `ink-pill--soft` type).
  * ───────────────────────────────────────────────────────────────────────── */
 
 .ink-leeslys__list {
@@ -255,36 +258,15 @@
 	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--wp--preset--spacing--s-12);
-	padding: var(--wp--preset--spacing--s-16) var(--wp--preset--spacing--s-24);
-	background-color: var(--wp--preset--color--surface-alt);
-	border: 1px solid var(--wp--preset--color--border);
-	border-radius: var(--wp--custom--radius--lg);
 }
 
 .ink-leeslys__title:hover {
 	color: var(--wp--preset--color--primary);
 }
 
-.ink-leeslys__leeg {
-	padding: var(--wp--preset--spacing--s-64) 0;
-	text-align: center;
-	border: 1px dashed var(--wp--preset--color--border);
-	border-radius: var(--wp--custom--radius--lg);
-}
-
-.ink-leeslys__heading {
-	margin: 0;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: 1.5rem;
-	line-height: 2rem;
-	color: var(--wp--preset--color--ink-text);
-}
-
+.ink-leeslys__heading,
 .ink-leeslys__leeg-titel {
 	margin: 0;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--wp--preset--font-size--xl);
-	color: var(--wp--preset--color--ink-text);
 }
 
 .ink-leeslys__leeg-beskrywing {
@@ -459,13 +441,6 @@
 .ink-lidmaatskap-status__ry dd {
 	margin: 0;
 	color: var(--wp--preset--color--ink-text);
-}
-
-/* PENDING PRIMITIVE: Lovable's plan tile hover `hover:border-terracotta/40`
-   (Profile.tsx:645) is not in `ink-card--selectable` yet; requested in the
-   Stage 3b Set C report — delete this rule when it lands in primitives.css. */
-#lidmaatskap .ink-card--selectable:hover {
-	border-color: color-mix( in srgb, var(--wp--preset--color--primary) 40%, transparent );
 }
 
 /* The price paragraph keeps its `xxl` preset (24px pin while that token is

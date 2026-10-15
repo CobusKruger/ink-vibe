@@ -204,15 +204,15 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 	<div class="wp-block-group alignwide" data-audit-id="profiel-tabs-wide">
 
 		<?php // Tab shell (My Profiel rebuild §5.2): 7 ratified tabs, mirroring ontdek-tabs.js's progressive-enhancement mechanics (data-ink-profiel-tab/-panel, [hidden], #hash). ?>
-		<!-- wp:group {"tagName":"nav","className":"ink-profiel-tabs","lock":{"move":true,"remove":true},"layout":{"type":"flex","flexWrap":"wrap"}} -->
-		<nav class="wp-block-group ink-profiel-tabs" data-audit-id="profiel-tablist" aria-label="<?php esc_attr_e( 'My profiel-oortjies', 'ink-foundation' ); ?>">
-			<button type="button" class="ink-tab ink-profiel-tabs__knoppie is-active" data-ink-profiel-tab="oorsig" data-audit-id="profiel-tab-overview" aria-selected="true"><?php echo esc_html__( 'Oorsig', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="bydraes" data-audit-id="profiel-tab-posts" aria-selected="false"><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="leeslys" data-audit-id="profiel-tab-reading" aria-selected="false"><?php echo esc_html__( 'Leeslys', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="wie-ek-volg" data-audit-id="profiel-tab-following" aria-selected="false"><?php echo esc_html__( 'Wie ek volg', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="aktiwiteit" data-audit-id="profiel-tab-activity" aria-selected="false"><?php echo esc_html__( 'Aktiwiteit', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="kennisgewings" data-audit-id="profiel-tab-notifications" aria-selected="false"><?php echo esc_html__( 'Kennisgewings', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="lidmaatskap" data-audit-id="profiel-tab-membership" aria-selected="false"><?php echo esc_html__( 'Lidmaatskap', 'ink-foundation' ); ?></button>
+		<!-- wp:group {"tagName":"nav","className":"ink-segmented ink-profiel-tabs","lock":{"move":true,"remove":true},"layout":{"type":"flex","flexWrap":"wrap"}} -->
+		<nav class="wp-block-group ink-segmented ink-profiel-tabs" data-audit-id="profiel-tablist" aria-label="<?php esc_attr_e( 'My profiel-oortjies', 'ink-foundation' ); ?>">
+			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie is-active" data-ink-profiel-tab="oorsig" data-audit-id="profiel-tab-overview" aria-selected="true"><?php echo esc_html__( 'Oorsig', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="bydraes" data-audit-id="profiel-tab-posts" aria-selected="false"><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="leeslys" data-audit-id="profiel-tab-reading" aria-selected="false"><?php echo esc_html__( 'Leeslys', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="wie-ek-volg" data-audit-id="profiel-tab-following" aria-selected="false"><?php echo esc_html__( 'Wie ek volg', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="aktiwiteit" data-audit-id="profiel-tab-activity" aria-selected="false"><?php echo esc_html__( 'Aktiwiteit', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="kennisgewings" data-audit-id="profiel-tab-notifications" aria-selected="false"><?php echo esc_html__( 'Kennisgewings', 'ink-foundation' ); ?></button>
+			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="lidmaatskap" data-audit-id="profiel-tab-membership" aria-selected="false"><?php echo esc_html__( 'Lidmaatskap', 'ink-foundation' ); ?></button>
 		</nav>
 		<!-- /wp:group -->
 

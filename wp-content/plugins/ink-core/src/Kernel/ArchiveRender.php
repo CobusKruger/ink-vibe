@@ -54,8 +54,9 @@ final class ArchiveRender {
 	/**
 	 * Prev/next archive-browse links — only when more than one page. Pure.
 	 *
-	 * Builds `<nav class="{prefix}__blaai">` with `{prefix}__vorige`/`{prefix}__volgende`
-	 * links that set `{paged_var}` while preserving the rest of the query string.
+	 * Builds `<nav class="{prefix}__blaai ink-pager">` with `{prefix}__vorige`/`{prefix}__volgende`
+	 * links (the primitives.css `ink-pager__link`) that set `{paged_var}` while
+	 * preserving the rest of the query string.
 	 *
 	 * @param int    $paged      The current page (clamped to >= 1).
 	 * @param int    $max_pages  The total number of pages.
@@ -74,16 +75,16 @@ final class ArchiveRender {
 		// (a hand-typed `?…_bladsy=999` would otherwise render a nonsensical link).
 		$paged = min( $paged, $max_pages );
 
-		$html = '<nav class="' . esc_attr( $css_prefix . '__blaai' ) . '">';
+		$html = '<nav class="' . esc_attr( $css_prefix . '__blaai ink-pager' ) . '">';
 
 		if ( $paged > 1 ) {
-			$html .= '<a class="' . esc_attr( $css_prefix . '__vorige' ) . '" href="'
+			$html .= '<a class="' . esc_attr( $css_prefix . '__vorige ink-pager__link' ) . '" href="'
 				. esc_url( (string) add_query_arg( $paged_var, $paged - 1 ) ) . '">'
 				. esc_html__( 'Vorige', 'ink-core' ) . '</a>';
 		}
 
 		if ( $paged < $max_pages ) {
-			$html .= '<a class="' . esc_attr( $css_prefix . '__volgende' ) . '" href="'
+			$html .= '<a class="' . esc_attr( $css_prefix . '__volgende ink-pager__link' ) . '" href="'
 				. esc_url( (string) add_query_arg( $paged_var, $paged + 1 ) ) . '">'
 				. esc_html__( 'Volgende', 'ink-core' ) . '</a>';
 		}

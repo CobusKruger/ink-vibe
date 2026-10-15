@@ -62,10 +62,10 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	$ink_done_label = function_exists( 'mb_strtolower' ) ? mb_strtolower( $ink_done_label ) : strtolower( $ink_done_label );
 	$ink_done_title = isset( $ink_skryf_success['title'] ) ? (string) $ink_skryf_success['title'] : '';
 	?>
-	<!-- wp:group {"className":"ink-card ink-card--panel ink-skryf-success","layout":{"type":"constrained"}} -->
-	<div class="wp-block-group ink-card ink-card--panel ink-skryf-success" data-audit-id="skryf-success">
+	<!-- wp:group {"className":"ink-card ink-card--panel-lg ink-skryf-success","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group ink-card ink-card--panel-lg ink-skryf-success" data-audit-id="skryf-success">
 		<!-- wp:html -->
-		<span class="ink-icon-tile ink-icon-tile--circle-lg ink-skryf-success__icon" aria-hidden="true" data-audit-id="skryf-success-icon"><?php echo ink_foundation_icon( '<path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></span>
+		<span class="ink-icon-tile ink-icon-tile--circle-xl ink-skryf-success__icon" aria-hidden="true" data-audit-id="skryf-success-icon"><?php echo ink_foundation_icon( '<path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></span>
 		<!-- /wp:html -->
 
 		<!-- wp:heading {"level":1,"textAlign":"center","className":"ink-heading-h2-section ink-skryf-success__heading"} -->
@@ -131,8 +131,8 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	<!-- /wp:paragraph -->
 	<?php else : ?>
 		<?php if ( 'geen-toegang' === $ink_skryf_notice && function_exists( 'ink_foundation_skryf_denial' ) ) : ?>
-	<!-- wp:paragraph {"className":"ink-notice ink-skryf-denial"} -->
-	<p class="ink-notice ink-skryf-denial" data-audit-id="skryf-denial"><?php echo esc_html( ink_foundation_skryf_denial() ); ?> <a href="/lidmaatskap"><?php echo esc_html__( 'Sien aansluitingsopsies', 'ink-foundation' ); ?></a></p>
+	<!-- wp:paragraph {"className":"ink-notice ink-notice--waarskuwing ink-skryf-denial"} -->
+	<p class="ink-notice ink-notice--waarskuwing ink-skryf-denial" data-audit-id="skryf-denial"><?php echo esc_html( ink_foundation_skryf_denial() ); ?> <a href="/lidmaatskap"><?php echo esc_html__( 'Sien aansluitingsopsies', 'ink-foundation' ); ?></a></p>
 	<!-- /wp:paragraph -->
 		<?php endif; ?>
 	<!-- wp:html -->

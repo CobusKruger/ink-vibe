@@ -85,6 +85,9 @@ test( 'pagination on a middle page links both prev and next, prefixed and on the
 	expect( $html )->toContain( 'ink-opleiding__blaai' );
 	expect( $html )->toContain( 'ink-opleiding__vorige' );
 	expect( $html )->toContain( 'ink-opleiding__volgende' );
+	// The shared pager primitive (primitives.css) on the row and on both links.
+	expect( $html )->toContain( 'class="ink-opleiding__blaai ink-pager"' );
+	expect( substr_count( $html, 'ink-pager__link' ) )->toBe( 2 );
 	expect( $html )->toContain( 'Vorige' );
 	expect( $html )->toContain( 'Volgende' );
 	// Prev/next move along the supplied paged var.

@@ -17,15 +17,7 @@
  * Tints use color-mix() with an opaque fallback first (§0.7).
  */
 
-/* Inline icon box (see ink_foundation_icon()). A primitive that hosts an icon
-   (button, meta item, icon tile, pill) sizes its svg itself. */
-.ink-icon {
-	display: inline-block;
-	width: 1rem;
-	height: 1rem;
-	flex-shrink: 0;
-	vertical-align: middle;
-}
+/* (The inline icon box `.ink-icon` is defined once, site-wide, in theme.json.) */
 
 /* ── §0.3 Two-tone gradient heading accent ──────────────────────────────────────
    Clip a 135° primary → primary-light gradient to the accent phrase's text.

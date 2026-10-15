@@ -38,13 +38,18 @@
 			<p data-audit-id="cta-text" class="has-text-align-center ink-cta-band__teks has-surface-alt-color has-text-color has-lg-font-size"><?php esc_html_e( "Of jy nou 'n ervare skrywer is of pas begin, ons gemeenskap is hier om te lees, betrokke te raak en jou te help groei.", 'ink-foundation' ); ?></p>
 			<!-- /wp:paragraph -->
 
-			<!-- The two CTA buttons are the primitives `button-primary on-dark` and `button-outline on-dark` (LEG-1) recipes. A core/button block can only carry classes on its wrapper and primitives.css binds no on-dark block style, so they are plain anchors carrying the `ink-btn` classes directly. -->
-			<!-- wp:html -->
-			<div data-audit-id="cta-actions" class="ink-cta-band__knoppies">
-				<a data-audit-id="cta-btn-primary" class="ink-btn ink-btn--xl ink-btn--on-dark" href="/skryf"><?php echo ink_foundation_icon( '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>' ) . esc_html__( 'Begin vandag skryf', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a>
-				<a data-audit-id="cta-btn-secondary" class="ink-btn ink-btn--cta ink-btn--outline-on-dark" href="/lees"><?php echo ink_foundation_icon( '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' ) . esc_html__( 'Ontdek stories', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a>
+			<!-- The two CTA buttons are core/button blocks carrying the primitives `button-primary on-dark` (`is-style-ink-on-dark`) and `button-outline on-dark` (LEG-1, `is-style-ink-outline-on-dark`) block styles, bound in primitives.css; size = the `ink-btn-xl` / `ink-btn-cta` wrapper class. -->
+			<!-- wp:buttons {"className":"ink-cta-band__knoppies","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"flex","justifyContent":"center","flexWrap":"wrap"}} -->
+			<div class="wp-block-buttons ink-cta-band__knoppies" data-audit-id="cta-actions">
+				<!-- wp:button {"className":"is-style-ink-on-dark ink-btn-xl"} -->
+				<div class="wp-block-button is-style-ink-on-dark ink-btn-xl"><a class="wp-block-button__link wp-element-button" data-audit-id="cta-btn-primary" href="/skryf"><?php echo ink_foundation_icon( '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>' ) . esc_html__( 'Begin vandag skryf', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a></div>
+				<!-- /wp:button -->
+
+				<!-- wp:button {"className":"is-style-ink-outline-on-dark ink-btn-cta"} -->
+				<div class="wp-block-button is-style-ink-outline-on-dark ink-btn-cta"><a class="wp-block-button__link wp-element-button" data-audit-id="cta-btn-secondary" href="/lees"><?php echo ink_foundation_icon( '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' ) . esc_html__( 'Ontdek stories', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a></div>
+				<!-- /wp:button -->
 			</div>
-			<!-- /wp:html -->
+			<!-- /wp:buttons -->
 		</div>
 		<!-- /wp:group -->
 	</div>
