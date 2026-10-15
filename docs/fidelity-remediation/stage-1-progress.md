@@ -160,3 +160,22 @@ Collected from the per-row notes above. None of these were decided by the audit.
      and reconciles the block styles. Then up to three agents in parallel migrate
      consumers and delete the bespoke definitions. A final verification pass re-runs
      Phase 4 on a sample of pages. Deploy to local before every INK capture.
+
+- **2026-10-15 — Stage 3 done.** Vocabulary proposals adopted. Commits: f3ca82e (3a:
+  `primitives.css`, Lovable palette, NR-2 script), 9736a12 (3b: three disjoint sets migrated,
+  bespoke definitions deleted), 6da59b4 (3c: missing primitives, leftovers, F7 segmented
+  tabs, `pill` style unregistered). Phase 4 re-run on 13 pages across the agents: primitive
+  values match the recipes; remaining deltas are layout (Stage 4). Unit tests and stan clean.
+  Class map: `tmp/stage3/class-map.md` (gitignored).
+
+  **Carried into Stage 4:**
+  | Item | Where | Note |
+  |---|---|---|
+  | Community CTA secondary button | `/gemeenskap` CTA, Lovable `/community` | Lovable: 1px border, cream text; INK uses 2px. Match Lovable, keep serif. |
+  | R8 leftovers (no recipe) | theme.json `.ink-verwante__item/__type`, `.ink-vasgespel__item`, `.ink-skrywerprofiel__oordeel`, `.ink-biblioteek-uitdaging`, `.ink-opleiding-verwant__item`, `.ink-highlight-tooltip__btn`, `.ink-storie-highlight-bar__react`, empty-state headings, `.ink-wenner-banier`; skryf.css `::file-selector-button`; functions.php `is-style-emphasis` | Map to a primitive or rule as page-specific. |
+  | Mobile menu toggle position | header, 390px | 40×40 now; sits at x=123 vs Lovable x=334. |
+  | QA gallery `is-style-pill` | page id 67884 (DB copy) | Stale button, now unstyled. |
+  | Unratified Afrikaans editor labels | "INK op donker", "INK omlyn op donker" | Add to the copy-debt sheet. |
+  | Unreachable states (CSS only) | skryf success card, denial notice, checked challenge row | Verify by hand. |
+  | Lovable builds in `tmp/lovable-dist/*` | all but `stage2` | Predate the legibility fix (71c0847); rebuild before Stage 4 diffs. |
+  | Stage 1 live bugs | above | Still open. |
