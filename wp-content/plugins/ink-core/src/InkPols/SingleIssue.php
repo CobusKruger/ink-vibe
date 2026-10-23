@@ -82,11 +82,11 @@ final class SingleIssue {
 			: '';
 
 		$date = '' !== $issue->displayDate()
-			? '<p class="ink-inkpols-besonderhede__datum" data-audit-id="inkpols-single-date">' . esc_html( $issue->displayDate() ) . '</p>'
+			? '<p class="ink-inkpols-besonderhede__datum ink-meta ink-meta--sm" data-audit-id="inkpols-single-date">' . esc_html( $issue->displayDate() ) . '</p>'
 			: '';
 
 		$volume = '' !== $issue->volume
-			? '<p class="ink-inkpols-besonderhede__volume" data-audit-id="inkpols-single-volume">' . esc_html( $issue->volume ) . '</p>'
+			? '<p class="ink-inkpols-besonderhede__volume ink-meta ink-meta--sm" data-audit-id="inkpols-single-volume">' . esc_html( $issue->volume ) . '</p>'
 			: '';
 
 		$teaser = '' !== $issue->teaser

@@ -190,11 +190,11 @@ final class Archive {
 			/* translators: %s: the Uitgawes (issues) plural label. */
 			$empty = sprintf( __( 'Geen %s gevind nie.', 'ink-core' ), Terms::label( 'inkpols_uitgawe_plural' ) );
 
-			return '<section class="ink-inkpols" data-audit-id="inkpols-archive">' . $heading
-				. '<p class="ink-inkpols__leeg" data-audit-id="inkpols-empty">' . esc_html( $empty ) . '</p></section>';
+			return '<section class="ink-inkpols alignwide" data-audit-id="inkpols-archive">' . $heading
+				. '<p class="ink-inkpols__leeg ink-card--empty" data-audit-id="inkpols-empty">' . esc_html( $empty ) . '</p></section>';
 		}
 
-		$html = '<section class="ink-inkpols" data-audit-id="inkpols-archive">' . $heading;
+		$html = '<section class="ink-inkpols alignwide" data-audit-id="inkpols-archive">' . $heading;
 
 		// Fidelity-audit join keys (docs/fidelity-remediation/maps/inkpols.csv) go on
 		// the FIRST year group and its FIRST card only, so the ids stay unique.
@@ -254,8 +254,7 @@ final class Archive {
 		return '<li class="ink-inkpols__item ink-card"' . $aid( 'inkpols-card' ) . '>'
 			. $cover
 			. '<a class="ink-inkpols__titel ink-heading-h3-card"' . $aid( 'inkpols-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $issue->title ) . '</a>'
-			. $date
-			. $volume
+			. ( '' !== $date . $volume ? '<div class="ink-inkpols__meta ink-meta-row ink-meta-row--tight">' . $date . $volume . '</div>' : '' )
 			. $teaser
 			. '</li>';
 	}

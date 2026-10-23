@@ -1,10 +1,14 @@
 <!-- wp:template-part {"slug":"header","theme":"ink-foundation","tagName":"header","area":"header","lock":{"move":true,"remove":true}} /-->
 
-<!-- wp:group {"tagName":"main","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<main class="wp-block-group alignfull" data-audit-id="skrywer-main" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"main","align":"full","lock":{"move":true,"remove":true},"layout":{"type":"default"}} -->
+<main class="wp-block-group alignfull" data-audit-id="skrywer-main">
 	<!-- wp:ink/skrywerprofiel /-->
 
-	<!-- wp:ink/leseroordeel-vorm /-->
+	<!-- wp:group {"className":"ink-container ink-skrywerprofiel-oordeel","lock":{"move":true,"remove":true},"layout":{"type":"default"}} -->
+	<div class="wp-block-group ink-container ink-skrywerprofiel-oordeel">
+		<!-- wp:ink/leseroordeel-vorm /-->
+	</div>
+	<!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 

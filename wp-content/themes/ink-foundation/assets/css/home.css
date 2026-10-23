@@ -99,7 +99,17 @@
 @media (max-width: 1023px) {
 	.ink-hero-grid {
 		grid-template-columns: 1fr !important;
+		/* Lovable `gap-8 lg:gap-12`: 32px until the two columns open at 1024. */
+		gap: var(--wp--preset--spacing--s-32) !important;
 	}
+}
+
+/* Stage 4: Lovable hero-content rhythm is badge mb-6 / h1 mb-4 / p mb-6. The group's
+   uniform 24px blockGap is right except h1 → paragraph (16px). The paragraph is
+   `leading-relaxed` (16/26). */
+.ink-hero-grid .ink-heading-h1-hero + p {
+	margin-block-start: var(--wp--preset--spacing--s-16);
+	line-height: 1.625;
 }
 
 /* ── §3 / §5 Current-challenge card (ink/huidige-uitdaging) ──────────────────────
@@ -123,12 +133,14 @@
 	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 5%, transparent);
 }
 
+/* Stage 4: Lovable spaces the card body with per-element margins, not a uniform gap:
+   head mb-4 (16) / title mb-3 (12) / description mb-6 (24) / meta row mb-6 (24). */
 .ink-huidige-uitdaging__inhoud {
 	position: relative;
 	z-index: 1;
 	display: flex;
 	flex-direction: column;
-	gap: var(--wp--preset--spacing--s-16);
+	gap: 0;
 }
 
 .ink-huidige-uitdaging__kop {
@@ -136,25 +148,31 @@
 	align-items: center;
 	flex-wrap: wrap;
 	gap: var(--wp--preset--spacing--s-8);
+	margin: 0 0 var(--wp--preset--spacing--s-16);
 }
 
 .ink-huidige-uitdaging__titel {
-	margin: 0;
+	margin: 0 0 var(--wp--preset--spacing--s-12);
 }
 
 .ink-huidige-uitdaging__uittreksel {
-	margin: 0;
+	margin: 0 0 var(--wp--preset--spacing--s-24);
 	color: var(--wp--preset--color--muted-text);
-	line-height: var(--wp--custom--line-height--relaxed);
+	line-height: 1.625;
 }
 
-/* CTA placement: start-aligned; full-width below 640px (§3). */
+.ink-huidige-uitdaging__meta {
+	margin: 0 0 var(--wp--preset--spacing--s-24);
+}
+
+/* CTA placement: start-aligned; the compact (hero) card's CTA is full-width below
+   640px (Lovable `w-full sm:w-auto`); the feature card's is not. */
 .ink-huidige-uitdaging__aksie {
 	align-self: flex-start;
 }
 
 @media (max-width: 639px) {
-	.ink-huidige-uitdaging__aksie {
+	.ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__aksie {
 		align-self: stretch;
 		width: 100%;
 	}
@@ -171,9 +189,12 @@
 	font-size: var(--wp--preset--font-size--sm);
 }
 
+/* Lovable `text-sm md:text-base leading-relaxed`: md:text-base also resets the
+   line-height to 24px, so it is 14/22.75 below 768 and 16/24 from 768. */
 @media (min-width: 768px) {
 	.ink-huidige-uitdaging--kompak .ink-huidige-uitdaging__uittreksel {
 		font-size: var(--wp--preset--font-size--md);
+		line-height: 1.5rem;
 	}
 }
 
@@ -228,12 +249,20 @@
 	flex: 1;
 }
 
+/* Stage 4: Lovable spaces the card with per-element margins — eyebrow mb-4 (16),
+   title → quote 16 (Lovable's title mb-2 + "by …" byline + mb-4; the byline is not
+   rendered here, row 00 F7), quote mb-6 (24), button mt-6 (24). */
 .ink-wenner-kollig__kaart {
 	position: relative;
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
 	gap: var(--wp--preset--spacing--s-16);
+}
+
+.ink-wenner-kollig__aanhaling + .ink-wenner-kollig__outeur,
+.ink-wenner-kollig__kaart > .ink-wenner-kollig__skakel {
+	margin-top: var(--wp--preset--spacing--s-8);
 }
 
 .ink-wenner-kollig__kaart > *:not(.ink-wenner-kollig__watermerk) {
@@ -285,7 +314,7 @@
 	font-family: var(--wp--preset--font-family--heading);
 	font-style: italic;
 	color: var(--wp--preset--color--muted-text);
-	line-height: var(--wp--custom--line-height--relaxed);
+	line-height: 1.625;
 }
 
 .ink-wenner-kollig__outeur {
@@ -306,6 +335,7 @@
 
 .ink-wenner-kollig__wenne {
 	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
 	color: var(--wp--preset--color--muted-text);
 }
 
@@ -388,7 +418,7 @@
 	margin: 0;
 	color: var(--wp--preset--color--muted-text);
 	font-size: var(--wp--preset--font-size--sm);
-	line-height: var(--wp--custom--line-height--relaxed);
+	line-height: 1.625;
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	line-clamp: 2;
@@ -424,6 +454,7 @@
 
 .ink-uitgesoekte-bydraes__outeur-naam {
 	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
 	font-weight: var(--wp--custom--font-weight--medium);
 }
 
@@ -453,7 +484,7 @@
 	margin: 0 0 var(--wp--preset--spacing--s-40);
 	max-width: 36rem;
 	color: var(--wp--preset--color--muted-text);
-	line-height: var(--wp--custom--line-height--relaxed);
+	line-height: 1.5rem;
 }
 
 .ink-borg-strook__rooster {
@@ -500,12 +531,22 @@
 	overflow: hidden;
 	padding: var(--wp--preset--spacing--s-40);
 	border-radius: var(--wp--custom--radius--xxxl);
+	/* Lovable `bg-gradient-to-br` is corner-to-corner, not a fixed 135°. */
 	background-image: linear-gradient(
-		135deg,
+		to bottom right,
 		var(--wp--preset--color--primary),
 		var(--wp--preset--color--primary-light)
 	);
 	text-align: center;
+}
+
+/* Stage 4: Lovable's content column is the panel's full inner width (only the body
+   text is capped, at 42rem); the constrained layout capped it at the 768px content
+   size, so a long heading wrapped early. */
+.ink-cta-band > .ink-cta-band__inhoud,
+.ink-cta-band .ink-cta-band__inhoud > h2,
+.ink-cta-band .ink-cta-band__inhoud > .ink-cta-band__knoppies {
+	max-width: none;
 }
 
 @media (min-width: 768px) {
@@ -561,6 +602,7 @@
 	max-width: 42rem;
 	margin-inline: auto;
 	margin-bottom: var(--wp--preset--spacing--s-32);
+	line-height: 1.75rem; /* Lovable `text-lg` = 18/28. */
 }
 
 /* Button row: centred, wrapping, gap-4. */
@@ -569,6 +611,18 @@
 	flex-wrap: wrap;
 	justify-content: center;
 	gap: var(--wp--preset--spacing--s-16);
+}
+
+/* Lovable `flex-col sm:flex-row`: below 640px the two buttons stack full-width. */
+@media (max-width: 639px) {
+	.ink-cta-band .ink-cta-band__knoppies {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.ink-cta-band__knoppies .wp-block-button__link {
+		width: 100%;
+	}
 }
 
 /* ── prefers-reduced-motion base ─────────────────────────────────────────────── */

@@ -240,7 +240,9 @@ final class SkrywersTab {
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
-		$heading  = '<h2 class="ink-ontdek-skrywers__heading ink-heading-h2-block" data-audit-id="writers-heading">' . esc_html( Terms::label( 'skrywer_plural' ) ) . '</h2>';
+		// Fidelity Stage 4 (rows 03/18, spine S10): Lovable's writers panel has no
+		// visible heading (Browse.tsx:514-516); the name stays for assistive tech.
+		$heading  = '<h2 class="ink-ontdek-skrywers__heading ink-heading-h2-block screen-reader-text" data-audit-id="writers-heading">' . esc_html( Terms::label( 'skrywer_plural' ) ) . '</h2>';
 		$controls = self::controlsHtml(
 			$nav['genre'] ?? null,
 			isset( $nav['sort'] ) ? (string) $nav['sort'] : self::SORT_NUWE
@@ -314,10 +316,12 @@ final class SkrywersTab {
 				. 'alt="' . esc_attr( $card['name'] ) . '" width="56" height="56" loading="lazy" decoding="async" />';
 		}
 
+		// Fidelity Stage 4 (row 03, spine S21): the name is Lovable's `font-serif
+		// text-lg` (18/28, regular — Browse.tsx:724) and the genre badges sit inside
+		// the head text column under the name (Browse.tsx:723-738), not below the head.
 		$html .= '<div class="ink-ontdek-skrywers__kop-teks"' . $aid( 'writers-card-head-text' ) . '>'
-			. '<a class="ink-ontdek-skrywers__naam ink-heading-h3-card"' . $aid( 'writers-card-name' ) . ' href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
-			. '<span class="' . esc_attr( 'ink-ontdek-skrywers__gradering ' . self::tierLabelClasses( (string) ( $card['tier'] ?? '' ) ) ) . '"' . $aid( 'writers-card-grade' ) . '>' . esc_html( $card['gradering'] ) . '</span>'
-			. '</div></div>';
+			. '<a class="ink-ontdek-skrywers__naam ink-heading-h4 ink-heading-h4-regular"' . $aid( 'writers-card-name' ) . ' href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
+			. '<span class="' . esc_attr( 'ink-ontdek-skrywers__gradering ' . self::tierLabelClasses( (string) ( $card['tier'] ?? '' ) ) ) . '"' . $aid( 'writers-card-grade' ) . '>' . esc_html( $card['gradering'] ) . '</span>';
 
 		if ( array() !== $genres ) {
 			$html .= '<div class="ink-ontdek-skrywers__genres"' . $aid( 'writers-card-genres' ) . '>';
@@ -331,6 +335,8 @@ final class SkrywersTab {
 
 			$html .= '</div>';
 		}
+
+		$html .= '</div></div>';
 
 		if ( '' !== $card['bio'] ) {
 			$html .= '<p class="ink-ontdek-skrywers__bio"' . $aid( 'writers-card-bio' ) . '>' . esc_html( $card['bio'] ) . '</p>';

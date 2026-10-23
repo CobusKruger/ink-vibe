@@ -476,6 +476,7 @@ function ink_foundation_audit_id_navigation_link( string $block_content, array $
 		'/ontdek'     => 'header-nav-browse',
 		'/opleiding'  => 'header-nav-library',
 		'/uitdagings' => 'header-nav-challenges',
+		'/uitdaging/' => 'header-nav-challenges', // The archive's real URL (S-U1); keep both until the header link moves.
 		'/gemeenskap' => 'header-nav-community',
 		'/my-profiel' => 'header-nav-profile',
 	);
@@ -597,12 +598,12 @@ function ink_foundation_prose_link_markup( array $matches ): string {
  * exist to `var()` against here).
  */
 function ink_foundation_enqueue_wp_login_brand(): void {
-	$action = isset( $_GET['action'] ) && is_scalar( $_GET['action'] ) ? sanitize_key( wp_unslash( (string) $_GET['action'] ) ) : 'login';
-
-	if ( ! in_array( $action, array( 'resetpass', 'rp' ), true ) ) {
-		return;
-	}
-
+	// Fidelity remediation Stage 4 (row 11): every core `wp-login.php` screen a
+	// visitor can reach by GET — `lostpassword`, the plain login screen,
+	// `checkemail=confirm`, `rp`/`resetpass` — is skinned, not just the reset
+	// screen. The old `rp`/`resetpass`-only gate left `?action=lostpassword`
+	// rendering stock admin chrome. `login_enqueue_scripts` fires only on
+	// `wp-login.php`, so no further scope check is needed.
 	$theme = wp_get_theme();
 
 	wp_enqueue_style(
@@ -630,7 +631,7 @@ function ink_foundation_login_headertext(): string {
 add_filter( 'login_headertext', 'ink_foundation_login_headertext' );
 
 /**
- * Enqueue the line-resonance client on a single gedig or storie (Story 7.3,
+ * Enqueue the line-resonance client on a single gedig, storie or artikel (Story 7.3,
  * FR-26; extended 2026-09-06 to also drive the floating single-heart toggle).
  *
  * The reading-surface resonance widget attaches to the `[data-ink-line]` anchors
@@ -656,7 +657,11 @@ add_filter( 'login_headertext', 'ink_foundation_login_headertext' );
  * index in it), not a second read.
  */
 function ink_foundation_enqueue_line_reactions(): void {
-	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'gedig', 'storie' ) ) ) {
+	// Fidelity Stage 4 (rows 07/22 live bug): artikel renders the same `enkel`
+	// floating heart (`reading-artikel.php`) and `ReactionTotals::firstAnchorFor()`
+	// resolves its paragraph anchor, but this client was scoped to gedig/storie
+	// only — the button was clickable and did nothing. Same scope as the heart.
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'gedig', 'storie', 'artikel' ) ) ) {
 		return;
 	}
 
@@ -1052,6 +1057,15 @@ function ink_foundation_enqueue_skrywer_deel(): void {
 		(string) $theme->get( 'Version' ),
 		true
 	);
+
+	// The profile's page-scoped layout (fidelity Stage 4, row 06 — moved out of
+	// theme.json `styles.css`); loads after the primitives it composes.
+	wp_enqueue_style(
+		'ink-foundation-skrywer',
+		get_theme_file_uri( 'assets/css/skrywer.css' ),
+		array( 'ink-foundation-primitives' ),
+		(string) $theme->get( 'Version' )
+	);
 }
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_skrywer_deel' );
 
@@ -1293,7 +1307,7 @@ function ink_foundation_homepage_demo_winner( mixed $data ): mixed {
 				'id'         => 1,
 				'rank'       => 2,
 				'title'      => __( 'Die laaste lig van winter', 'ink-foundation' ),
-				'url'        => '/uitdagings/',
+				'url'        => '/uitdaging/',
 				'month'      => __( 'Desember', 'ink-foundation' ),
 				'author'     => 'Sarie Mostert',
 				'quote'      => __( 'Die kers het geflikker teen die ryp-geverfde venster, elke dansende skaduwee ’n herinnering aan somers lank verby …', 'ink-foundation' ),
@@ -1631,6 +1645,16 @@ function ink_foundation_register_block_styles(): void {
 				. '.wp-block-group.is-style-ink-header .ink-header-row{'
 				. 'min-height:64px;'
 				. '}'
+				// Stage 4 (fidelity): Lovable's `<main>` starts flush under the sticky
+				// header; WP's root blockGap put 24px between them on every page.
+				. '.wp-site-blocks > header.wp-block-template-part + *{margin-block-start:0;}'
+				// Wordmark: Lovable `text-xl` is 20/28 (the body 1.5 gave 30).
+				. '.wp-block-group.is-style-ink-header .wp-block-site-title{line-height:1.75rem;}'
+				// Below WP's 600px hamburger breakpoint the nav block is just the menu
+				// toggle; Lovable puts it at the row's right edge, so it goes last.
+				. '@media (max-width:599px){'
+				. '.wp-block-group.is-style-ink-header .ink-header-row > .wp-block-navigation{order:3;}'
+				. '}'
 				// Logo hover (Lovable: `transition-transform group-hover:rotate-12`
 				// on the feather icon, triggered by hovering the whole logo Link).
 				// The feather icon here is a sibling of — not wrapped by — the
@@ -1698,6 +1722,12 @@ function ink_foundation_register_block_styles(): void {
 				. '@media (min-width:768px){'
 				. '.wp-block-group.is-style-ink-footer .ink-footer-kolomme{grid-template-columns:repeat(4, 1fr);}'
 				. '}'
+				// Stage 4 (fidelity): the grid's default-layout blockGap pushed columns
+				// 2–4 down 24px; Lovable's columns are top-aligned.
+				. '.wp-block-group.is-style-ink-footer .ink-footer-kolomme > *{margin-block-start:0;}'
+				// Wordmark: Lovable `text-lg` is 18/28; 14px text is 14/20 (`text-sm`).
+				. '.wp-block-group.is-style-ink-footer .wp-block-site-title{line-height:1.75rem;}'
+				. '.wp-block-group.is-style-ink-footer .has-sm-font-size{line-height:1.25rem;}'
 				. '.wp-block-group.is-style-ink-footer .ink-footer-handelsmerk{'
 				. 'display:flex;'
 				. 'flex-direction:column;'
@@ -1709,7 +1739,7 @@ function ink_foundation_register_block_styles(): void {
 				. '}'
 				. '.wp-block-group.is-style-ink-footer .ink-footer-blurb{'
 				. 'margin:0;'
-				. 'line-height:var(--wp--custom--line-height--relaxed);'
+				. 'line-height:1.625;' // Lovable `leading-relaxed`.
 				. '}'
 				. '.wp-block-group.is-style-ink-footer .ink-footer-kolom h3{'
 				. 'margin:0 0 var(--wp--preset--spacing--s-16);'
@@ -1721,6 +1751,10 @@ function ink_foundation_register_block_styles(): void {
 				. 'display:flex;'
 				. 'flex-direction:column;'
 				. 'gap:var(--wp--preset--spacing--s-8);'
+				// Lovable `text-sm text-muted-foreground` on the list (14/20 rows).
+				. 'font-size:var(--wp--preset--font-size--sm);'
+				. 'line-height:1.25rem;'
+				. 'color:var(--wp--preset--color--muted-text);'
 				. '}'
 				// The column links are the primitives `nav-link footer` recipe
 				// (primitives.css binds it to `.is-style-ink-footer .ink-footer-lys a`).
@@ -1729,6 +1763,10 @@ function ink_foundation_register_block_styles(): void {
 				. 'padding-top:var(--wp--preset--spacing--s-24);'
 				. 'border-top:1px solid var(--wp--preset--color--border);'
 				. 'gap:var(--wp--preset--spacing--s-16);'
+				. '}'
+				// Lovable `flex-col items-center md:flex-row`: stacked and centred < 768px.
+				. '@media (max-width:767px){'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-onderbalk{flex-direction:column;align-items:center;}'
 				. '}'
 				. '.wp-block-group.is-style-ink-footer .ink-footer-hart{'
 				. 'display:inline-flex;'

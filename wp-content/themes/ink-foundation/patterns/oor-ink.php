@@ -104,7 +104,7 @@
 		<!-- wp:list -->
 		<ul data-audit-id="oor-ink-meer-list">
 			<li data-audit-id="oor-ink-meer-item"><a class="ink-link" data-audit-id="oor-ink-meer-link" href="/gemeenskap">Die INK-gemeenskap</a></li>
-			<li><a class="ink-link" href="/uitdagings">Maandelikse uitdagings</a></li>
+			<li><a class="ink-link" href="/uitdaging/">Maandelikse uitdagings</a></li>
 			<li><a class="ink-link" href="/kontak">Word &#8217;n borg</a></li>
 		</ul>
 		<!-- /wp:list -->

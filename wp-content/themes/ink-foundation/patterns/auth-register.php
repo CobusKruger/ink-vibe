@@ -30,16 +30,16 @@
  * per direct product-owner instruction.
  */
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"480px"}} -->
-<section data-audit-id="auth" class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-auth","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained","contentSize":"448px"}} -->
+<section data-audit-id="auth" class="wp-block-group alignfull ink-auth" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"className":"ink-card ink-card--lg ink-auth-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div data-audit-id="auth-card" class="wp-block-group ink-card ink-card--lg ink-auth-card">
 		<!-- wp:heading {"level":1,"className":"ink-heading-h2-block"} -->
 		<h1 data-audit-id="auth-heading" class="wp-block-heading ink-heading-h2-block">Skep jou rekening</h1>
 		<!-- /wp:heading -->
 
-		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p data-audit-id="auth-intro" class="has-muted-text-color has-text-color has-md-font-size">Registreer met jou e-pos om as gratis lid te lees, te reageer en skrywers te volg.</p>
+		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
+		<p data-audit-id="auth-intro" class="has-muted-text-color has-text-color has-sm-font-size">Registreer met jou e-pos om as gratis lid te lees, te reageer en skrywers te volg.</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:html -->
@@ -107,8 +107,8 @@
 <?php endif; ?>
 
 <?php if ( 'voltooi' !== $ink_registreer_status ) : ?>
-		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-		<p data-audit-id="auth-switch" class="has-muted-text-color has-text-color has-sm-font-size">Reeds &#8217;n rekening? <a data-audit-id="auth-switch-link" href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></p>
+		<!-- wp:paragraph {"className":"ink-auth-switch","fontSize":"sm","textColor":"muted-text"} -->
+		<p data-audit-id="auth-switch" class="ink-auth-switch has-muted-text-color has-text-color has-sm-font-size">Reeds &#8217;n rekening? <a data-audit-id="auth-switch-link" href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></p>
 		<!-- /wp:paragraph -->
 <?php endif; ?>
 	</div>

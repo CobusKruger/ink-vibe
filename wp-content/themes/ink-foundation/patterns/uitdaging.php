@@ -10,7 +10,9 @@
  * `ink/uitdaging-argief` block (ink-core/Challenges) — all business logic stays in
  * ink-core (three-layer separation). The section heading reads from the ink-core
  * terminology registry via the `ink_foundation_term()` bridge (single-source, never a
- * bare literal).
+ * bare literal). The block emits its own full-bleed bands (intro band + list band,
+ * the index-page shell shared with Opleiding/Biblioteek), so this shell adds no
+ * padding or width of its own (fidelity Stage 4, row 14).
  *
  * @package Ink\Foundation
  */
@@ -19,12 +21,8 @@ $ink_uitdagings_label = function_exists( 'ink_foundation_term' )
 	? ink_foundation_term( 'uitdaging_plural', 'Uitdagings' )
 	: 'Uitdagings';
 ?>
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-band","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="uitdagings" class="wp-block-group alignfull ink-band" aria-label="<?php echo esc_attr( $ink_uitdagings_label ); ?>" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide">
-		<!-- wp:ink/uitdaging-argief /-->
-	</div>
-	<!-- /wp:group -->
+<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
+<section data-audit-id="uitdagings" class="wp-block-group alignfull" aria-label="<?php echo esc_attr( $ink_uitdagings_label ); ?>">
+	<!-- wp:ink/uitdaging-argief /-->
 </section>
 <!-- /wp:group -->

@@ -11,11 +11,54 @@
  * Enqueued on the three auth pages only.
  */
 
+/* ── Page frame — Lovable `min-h-screen flex items-center justify-center px-4
+ * py-12` around a `max-w-md` (448px) column. Padding + contentSize live on the
+ * section block itself (s-48/s-16, 448px); this centres the card vertically in
+ * a viewport-tall band. The card keeps the full column width (`w-full`). ── */
+.ink-auth {
+	box-sizing: border-box;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.ink-auth > .ink-auth-card {
+	box-sizing: border-box;
+	width: 100%;
+}
+
+/* ── Card head — Lovable `ForgotPassword.tsx`: h1 `mb-2`, intro `text-sm`
+ * (14/20) `mb-6`. The card's 24px block gap supplies the intro → form gap;
+ * this tightens heading → intro to 8px. ── */
+.ink-auth-card > .ink-heading-h2-block + [data-audit-id="auth-intro"] {
+	margin-block-start: var(--wp--preset--spacing--s-8);
+}
+
+.ink-auth-card > [data-audit-id="auth-intro"],
+.ink-auth-card > .ink-auth-switch {
+	line-height: 1.25rem;
+}
+
+/* Switch line — Lovable `text-center text-sm`, 16px under the form
+ * (`space-y-4`). */
+.ink-auth-card > .ink-auth-form + .ink-auth-switch {
+	margin-block-start: var(--wp--preset--spacing--s-16);
+	text-align: center;
+}
+
 /* ── Form rhythm — Lovable `space-y-4` between fields, `space-y-2` inside. ── */
 .ink-auth-field,
 .ink-auth-remember,
 .ink-auth-submit {
-	margin: 0 0 var(--wp--preset--spacing--s-16);
+	margin: 0;
+}
+
+/* `space-y-4`: the gap sits BETWEEN rows (margin-top on each later row), so
+ * the last row adds no trailing space to the card. */
+.ink-auth-form > * + * {
+	margin-top: var(--wp--preset--spacing--s-16);
 }
 
 .ink-auth-field > .ink-label {

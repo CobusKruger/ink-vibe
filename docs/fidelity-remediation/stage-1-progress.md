@@ -179,3 +179,10 @@ Collected from the per-row notes above. None of these were decided by the audit.
   | Unreachable states (CSS only) | skryf success card, denial notice, checked challenge row | Verify by hand. |
   | Lovable builds in `tmp/lovable-dist/*` | all but `stage2` | Predate the legibility fix (71c0847); rebuild before Stage 4 diffs. |
   | Stage 1 live bugs | above | Still open. |
+
+- **2026-10-23 — Stage 4 done (all 22 rows).** Per-page results in `findings/<row>-<page>-stage4.md`;
+  everything needing the owner is in `stage-4-owner-questions.md`. Live bugs fixed: `/uitdagings`
+  links, literal backslashes (skryf, lidmaatskap, onboarding), My Profiel modal overlay, artikel heart
+  script scope, member-directory width, wp-login brand-sheet scope + `/register/` link, empty 404
+  (placeholder copy), InkPols CSS. Still open, owner/data: R50 pricing (WooCommerce data), QA users
+  public, copy debt. Unit 1435 pass, stan clean, copy:scan baseline +2 (404 placeholders).

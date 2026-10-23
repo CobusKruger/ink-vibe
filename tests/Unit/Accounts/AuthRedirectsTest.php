@@ -65,6 +65,22 @@ test( 'loginFailed redirects to meld-aan with the failed notice and preserves th
 	expect( $sut->halted )->toBeTrue();
 } );
 
+// --- registrationUrl() ---
+
+test( 'registrationUrl replaces any earlier registration URL (BuddyPress /register/) with /registreer/', function (): void {
+	$sut = ink_auth_redirects_testable();
+
+	expect( $sut->registrationUrl( 'https://ink.test/register/' ) )->toBe( 'https://ink.test/registreer/' );
+} );
+
+test( 'register hooks registrationUrl onto register_url after BuddyPress (priority 20)', function (): void {
+	// A named instance: Brain Monkey cannot stringify an anonymous-class callback.
+	$sut = new AuthRedirects();
+	$sut->register();
+
+	expect( has_filter( 'register_url', array( $sut, 'registrationUrl' ) ) )->toBe( 20 );
+} );
+
 // --- lostPasswordFailed() ---
 
 test( 'lostPasswordFailed redirects to wagwoord-herstel with the failed notice when there are real errors', function (): void {

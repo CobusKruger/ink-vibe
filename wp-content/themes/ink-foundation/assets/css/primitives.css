@@ -156,10 +156,10 @@
 	line-height: 1.75rem;
 }
 
-/* h3-card (HR-2): 20/27.5, weight 400 */
+/* h3-card (HR-2): 20/28, weight 400 */
 .ink-heading-h3-card {
 	font-size: var(--wp--preset--font-size--xl);
-	line-height: 1.71875rem;
+	line-height: 1.75rem;
 	font-weight: 400;
 }
 
@@ -167,6 +167,12 @@
 .ink-heading-h4 {
 	font-size: var(--wp--preset--font-size--lg);
 	line-height: 1.75rem;
+}
+
+/* weight-400 modifier for any heading role (Lovable: writer name, /profile name and card titles) */
+.ink-heading-h4-regular,
+[class*="ink-heading-"].ink-heading--regular {
+	font-weight: 400;
 }
 
 /* h5: 16/24; h5-list-item: same, weight 500 */
@@ -387,16 +393,25 @@
 	color: var(--wp--preset--color--muted-text);
 }
 
-/* kicker-serif: italic Lora, sentence case; the row is a flex gap-8 holding a 16px icon */
+/* kicker-serif: italic Lora, sentence case; the row is a flex 16/24 gap-8 holding a 16px
+   icon, the text span is 14/20 tracking-wide (Lovable puts the type on the span) */
 .ink-eyebrow--kicker {
-	display: inline-flex;
+	display: flex;
 	align-items: center;
 	gap: var(--wp--preset--spacing--s-8);
 	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--md);
 	font-style: italic;
 	font-weight: 400;
-	letter-spacing: 0.025em;
+	line-height: 1.5rem;
+	letter-spacing: 0;
 	text-transform: none;
+}
+
+.ink-eyebrow--kicker > span {
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+	letter-spacing: 0.025em;
 }
 
 .ink-eyebrow--kicker svg {
@@ -580,6 +595,11 @@
 	box-shadow: none;
 	padding: var(--wp--preset--spacing--s-64) 0;
 	text-align: center;
+}
+
+/* empty state, large: py-20 (Lovable /library) */
+.ink-card--empty.ink-card--empty-lg {
+	padding: var(--wp--preset--spacing--s-80) 0;
 }
 
 /* winner: gold gradient, radius 16, p-8 */
@@ -1356,7 +1376,7 @@
 .wp-block-button:is(.ink-btn-xl, .ink-btn-cta) > .wp-block-button__link {
 	height: 48px;
 	padding: 0 var(--wp--preset--spacing--s-40);
-	border-radius: var(--wp--custom--radius--lg);
+	border-radius: var(--wp--custom--radius--md);
 	font-family: var(--wp--preset--font-family--display);
 	font-size: var(--wp--preset--font-size--lg);
 	line-height: 1.75rem;
@@ -1455,6 +1475,20 @@
 .wp-block-button.is-style-ink-outline-on-dark > .wp-block-button__link:hover {
 	background-color: var(--wp--preset--color--primary-foreground);
 	color: var(--wp--preset--color--primary);
+}
+
+/* inside the ink band (Lovable Community.tsx:351): 1px surface/30 border, surface text;
+   hover fills surface with ink text */
+.ink-band--dark .ink-btn--outline-on-dark,
+.ink-band--dark .wp-block-button.is-style-ink-outline-on-dark > .wp-block-button__link {
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--surface) 30%, transparent);
+	color: var(--wp--preset--color--surface);
+}
+
+.ink-band--dark .ink-btn--outline-on-dark:hover,
+.ink-band--dark .wp-block-button.is-style-ink-outline-on-dark > .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--ink-text);
 }
 
 .ink-btn--outline-on-dark:focus-visible,

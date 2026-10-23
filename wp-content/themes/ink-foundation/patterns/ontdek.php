@@ -49,18 +49,18 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 ?>
 <!-- wp:pattern {"slug":"ink-foundation/archive-intro"} /-->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="search-band" class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
-	<div class="wp-block-group alignwide">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-ontdek-soekband ink-band ink-band\u002d\u002dcream ink-band\u002d\u002dborder-b ink-band\u002d\u002dflush","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section data-audit-id="search-band" class="wp-block-group alignfull ink-ontdek-soekband ink-band ink-band--cream ink-band--border-b ink-band--flush" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
+	<!-- wp:group {"align":"wide","className":"ink-ontdek-soekband__inner","lock":{"move":true,"remove":true}} -->
+	<div class="wp-block-group alignwide ink-ontdek-soekband__inner">
 		<!-- wp:ink/ontdek-soek /-->
 	</div>
 	<!-- /wp:group -->
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="surfaces" class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-ontdek-vlakband","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section data-audit-id="surfaces" class="wp-block-group alignfull ink-ontdek-vlakband" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/ontdek-vlakke /-->
@@ -69,8 +69,8 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-ontdek-tabbalk","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-<section data-audit-id="tabs" class="wp-block-group alignfull ink-ontdek-tabbalk">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-ontdek-tabbalk","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section data-audit-id="tabs" class="wp-block-group alignfull ink-ontdek-tabbalk" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div data-audit-id="tabs-container" class="wp-block-group alignwide">
 		<nav data-audit-id="tabs-list" class="ink-ontdek-tabs" aria-label="<?php esc_attr_e( 'Ontdek-oortjies', 'ink-foundation' ); ?>">
@@ -88,8 +88,8 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="stories" class="wp-block-group alignfull" id="bydraes" data-ink-ontdek-panel="bydraes" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-ontdek-paneel","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section data-audit-id="stories" class="wp-block-group alignfull ink-ontdek-paneel" id="bydraes" data-ink-ontdek-panel="bydraes" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/ontdek-werke /-->
@@ -98,8 +98,8 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="writers" class="wp-block-group alignfull" id="skrywers" data-ink-ontdek-panel="skrywers" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-ontdek-paneel","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section data-audit-id="writers" class="wp-block-group alignfull ink-ontdek-paneel" id="skrywers" data-ink-ontdek-panel="skrywers" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/ontdek-skrywers /-->

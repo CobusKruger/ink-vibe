@@ -20,8 +20,8 @@ $ink_skryf_in    = function_exists( 'ink_foundation_is_member_logged_in' ) && in
 // Per-type supporting descriptions + body placeholders (theme presentation copy).
 $ink_skryf_desc       = array(
 	'gedig'   => __( 'Druk emosies uit deur vers, ritme en beelding.', 'ink-foundation' ),
-	'storie'  => __( 'Skep \&#8217;n vertelling met karakters, intrige en betekenis.', 'ink-foundation' ),
-	'artikel' => __( 'Deel \&#8217;n essay, besinning of joernalistieke stuk.', 'ink-foundation' ),
+	'storie'  => __( 'Skep &#8217;n vertelling met karakters, intrige en betekenis.', 'ink-foundation' ),
+	'artikel' => __( 'Deel &#8217;n essay, besinning of joernalistieke stuk.', 'ink-foundation' ),
 );
 $ink_skryf_ph         = array(
 	'gedig'   => __( "Begin jou gedig hier...\n\nWenk: Gebruik reëlbreuke om jou verse te struktureer.", 'ink-foundation' ),
@@ -54,8 +54,8 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	? ink_foundation_skryf_success( $ink_skryf_done_id )
 	: array();
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"896px"}} -->
-<section class="wp-block-group alignfull" data-audit-id="skryf-container" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-skryf-shell","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained","contentSize":"864px"}} -->
+<section class="wp-block-group alignfull ink-skryf-shell" data-audit-id="skryf-container" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 <?php if ( ! empty( $ink_skryf_success ) ) : ?>
 	<?php
 	$ink_done_label = isset( $ink_skryf_success['type_label'] ) ? (string) $ink_skryf_success['type_label'] : '';
@@ -94,12 +94,12 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	<p class="ink-eyebrow ink-skryf-success__eyebrow" data-audit-id="skryf-success-eyebrow"><?php echo ink_foundation_icon( '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' ) . esc_html__( 'Lees en reageer', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG (§0.9). ?></p>
 	<!-- /wp:html -->
 
-	<!-- wp:heading {"level":2,"className":"ink-heading-h2-sub"} -->
-	<h2 class="wp-block-heading ink-heading-h2-sub" data-audit-id="skryf-success-h2"><?php echo esc_html__( 'Gee \'n skrywer vandag \'n hupstoot', 'ink-foundation' ); ?></h2>
+	<!-- wp:heading {"level":2,"className":"ink-heading-h2-sub ink-skryf-success__h2"} -->
+	<h2 class="wp-block-heading ink-heading-h2-sub ink-skryf-success__h2" data-audit-id="skryf-success-h2"><?php echo esc_html__( 'Gee \'n skrywer vandag \'n hupstoot', 'ink-foundation' ); ?></h2>
 	<!-- /wp:heading -->
 
-	<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-	<p class="has-muted-text-color has-text-color has-md-font-size" data-audit-id="skryf-success-text"><?php echo esc_html__( '\'n Deurdagte opmerking kan iemand se week verander. Begin met een van hierdie.', 'ink-foundation' ); ?></p>
+	<!-- wp:paragraph {"className":"ink-skryf-success__text","fontSize":"sm","textColor":"muted-text"} -->
+	<p class="has-muted-text-color has-text-color has-sm-font-size ink-skryf-success__text" data-audit-id="skryf-success-text"><?php echo esc_html__( '\'n Deurdagte opmerking kan iemand se week verander. Begin met een van hierdie.', 'ink-foundation' ); ?></p>
 	<!-- /wp:paragraph -->
 
 	<?php
@@ -121,8 +121,8 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 	<h1 class="wp-block-heading has-text-align-center ink-heading-h2-section ink-skryf-title" data-audit-id="skryf-intro-h1"><?php esc_html_e( 'Deel jou woorde', 'ink-foundation' ); ?></h1>
 	<!-- /wp:heading -->
 
-	<!-- wp:paragraph {"align":"center","fontSize":"md","textColor":"muted-text"} -->
-	<p class="has-text-align-center has-muted-text-color has-text-color has-md-font-size" data-audit-id="skryf-intro-lede"><?php esc_html_e( 'Elke storie begin met \'n enkele woord. Begin joune hier.', 'ink-foundation' ); ?></p>
+	<!-- wp:paragraph {"align":"center","className":"ink-skryf-lede","fontSize":"md","textColor":"muted-text"} -->
+	<p class="has-text-align-center has-muted-text-color has-text-color has-md-font-size ink-skryf-lede" data-audit-id="skryf-intro-lede"><?php esc_html_e( 'Elke storie begin met \'n enkele woord. Begin joune hier.', 'ink-foundation' ); ?></p>
 	<!-- /wp:paragraph -->
 
 	<?php if ( ! $ink_skryf_in ) : ?>

@@ -62,6 +62,24 @@ class AuthRedirects {
 		// handler (default priority 10) so ITS screen never gets a chance to
 		// render for a POST — see the class docblock.
 		add_action( 'login_form_register', array( $this, 'registerSubmission' ), 1 );
+		// Priority 20: after BuddyPress's own `register_url` filter (default 10),
+		// which points at its `/register/` signup page — a page INK never
+		// publishes ("Page not found"). See {@see registrationUrl()}.
+		add_filter( 'register_url', array( $this, 'registrationUrl' ), 20 );
+	}
+
+	/**
+	 * `wp_registration_url()` — used by core's own `wp-login.php` screens for
+	 * their "Registreer" link — resolves to INK's own `/registreer/` page
+	 * (Fidelity remediation Stage 4, row 11 live bug: it pointed at
+	 * BuddyPress's unpublished `/register/`).
+	 *
+	 * @param string $url The registration URL as filtered so far (ignored).
+	 */
+	public function registrationUrl( string $url ): string {
+		unset( $url );
+
+		return home_url( self::REGISTER_URL_PATH );
 	}
 
 	/**

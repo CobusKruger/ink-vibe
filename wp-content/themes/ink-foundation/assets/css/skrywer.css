@@ -1,0 +1,598 @@
+/**
+ * skrywer.css — public skrywer profile (`author.html`, `ink/skrywerprofiel`)
+ * page-specific LAYOUT. Loaded on `is_author()` only.
+ *
+ * Every primitive on this page lives in `primitives.css` (R8): `ink-container`,
+ * `ink-band--*`, `ink-heading-*`, `ink-pill--outline`, `ink-meta`, `ink-eyebrow`,
+ * `ink-stat-label`, `ink-card`, `ink-icon-tile--sm`, `ink-btn`, `ink-link`,
+ * `ink-avatar--hero`. Lovable reference: `ink-lovable/src/pages/Writer.tsx`.
+ * Markup: `ink-core/src/Social/SkrywerProfiel.php`.
+ *
+ * Fidelity Stage 4 (row 06, F1): moved here from `theme.json` `styles.css` and
+ * rebuilt around Writer.tsx's sibling sections (full-bleed bands + 1400px
+ * containers) instead of one 768px column.
+ */
+
+/* ── 1 · Cover + identity (Writer.tsx:183-252) ─────────────────────────── */
+
+.ink-skrywerprofiel__kop-seksie {
+	position: relative;
+}
+
+/* `h-48 md:h-64 w-full bg-cover bg-center` */
+.ink-skrywerprofiel__omslag {
+	position: relative;
+	width: 100%;
+	height: 12rem;
+	overflow: hidden;
+}
+
+.ink-skrywerprofiel__omslag-beeld {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+}
+
+/* `bg-gradient-to-b from-foreground/30 via-foreground/10 to-background` */
+.ink-skrywerprofiel__omslag-skakering {
+	position: absolute;
+	inset: 0;
+	background-image: linear-gradient(
+		to bottom,
+		color-mix(in srgb, var(--wp--preset--color--ink-text) 30%, transparent),
+		color-mix(in srgb, var(--wp--preset--color--ink-text) 10%, transparent),
+		var(--wp--preset--color--surface)
+	);
+}
+
+/* `-mt-20 md:-mt-24 relative flex flex-col md:flex-row md:items-end gap-6 md:gap-8 pb-8` */
+.ink-skrywerprofiel__kop {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-24);
+	padding-bottom: var(--wp--preset--spacing--s-32);
+}
+
+.ink-skrywerprofiel.has-omslag .ink-skrywerprofiel__kop {
+	margin-top: -5rem;
+}
+
+/* No cover (INK-only state): the identity row starts below the header. */
+.ink-skrywerprofiel:not(.has-omslag) .ink-skrywerprofiel__kop {
+	padding-top: var(--wp--preset--spacing--s-48);
+}
+
+.ink-skrywerprofiel__foto {
+	flex-shrink: 0;
+}
+
+.ink-skrywerprofiel__foto .ink-avatar {
+	display: block;
+	border-radius: 9999px;
+	object-fit: cover;
+}
+
+/* `flex-1 min-w-0` (a block column, margin-spaced children) */
+.ink-skrywerprofiel__identiteit {
+	flex: 1;
+	min-width: 0;
+}
+
+/* `flex flex-wrap items-center gap-2 mb-2` */
+.ink-skrywerprofiel__genres {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	margin-bottom: var(--wp--preset--spacing--s-8);
+}
+
+.ink-skrywerprofiel__naam {
+	margin: 0;
+}
+
+/* `mt-2 font-serif italic text-lg md:text-xl text-muted-foreground` */
+.ink-skrywerprofiel__leuse {
+	margin: var(--wp--preset--spacing--s-8) 0 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-style: italic;
+	font-size: var(--wp--preset--font-size--lg);
+	line-height: 1.75rem;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* Gradering badge (INK-only, F5). */
+.ink-skrywerprofiel__gradering {
+	margin: var(--wp--preset--spacing--s-8) 0 0;
+}
+
+/* `mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground` */
+.ink-skrywerprofiel__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8) 1.25rem;
+	margin-top: var(--wp--preset--spacing--s-12);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* Meta icons are `h-3.5 w-3.5`. */
+.ink-skrywerprofiel__meta .ink-meta svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* `flex gap-3 md:flex-col md:items-end` */
+.ink-skrywerprofiel__aksies {
+	display: flex;
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+/* ── 2 · Stats strip (Writer.tsx:255-288) ───────────────────────────────── */
+
+/* `container py-6 grid grid-cols-2 md:grid-cols-4 gap-6 items-center` */
+.ink-skrywerprofiel__statistieke-rooster {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-24);
+	padding-top: var(--wp--preset--spacing--s-24);
+	padding-bottom: var(--wp--preset--spacing--s-24);
+}
+
+.ink-skrywerprofiel__stat,
+.ink-skrywerprofiel__stat-etiket {
+	display: block;
+}
+
+/* `font-serif text-2xl text-foreground mt-1` */
+.ink-skrywerprofiel__stat-waarde {
+	display: block;
+	margin-top: var(--wp--preset--spacing--s-4);
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: 1.5rem;
+	line-height: 2rem;
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* Rating cell: value + stars row `mt-1 flex items-center gap-2`. */
+.ink-skrywerprofiel__stat-ry {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	margin-top: var(--wp--preset--spacing--s-4);
+}
+
+.ink-skrywerprofiel__stat-ry .ink-skrywerprofiel__stat-waarde {
+	margin-top: 0;
+}
+
+.ink-skrywerprofiel__stat-sterre {
+	display: flex;
+	align-items: center;
+}
+
+/* Lucide stars `h-4 w-4`: full fill-terracotta; half fill-terracotta/50;
+   empty text-muted-foreground/40. */
+.ink-skrywerprofiel__ster {
+	display: inline-flex;
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-skrywerprofiel__ster svg {
+	width: 16px;
+	height: 16px;
+}
+
+.ink-skrywerprofiel__ster.is-vol svg {
+	fill: var(--wp--preset--color--primary);
+}
+
+.ink-skrywerprofiel__ster.is-half svg {
+	fill: color-mix(in srgb, var(--wp--preset--color--primary) 50%, transparent);
+}
+
+.ink-skrywerprofiel__ster.is-leeg {
+	color: color-mix(in srgb, var(--wp--preset--color--muted-text) 40%, transparent);
+}
+
+/* INK-only works breakdown line (F8). */
+.ink-skrywerprofiel__stat-detail {
+	margin-top: var(--wp--preset--spacing--s-4);
+	font-size: var(--wp--preset--font-size--xs);
+	line-height: 1rem;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* ── 3 · About + accomplishments (Writer.tsx:291-314) ───────────────────── */
+
+/* `container py-12 md:py-16 grid lg:grid-cols-3 gap-10` */
+.ink-skrywerprofiel__oor-prestasies {
+	display: grid;
+	gap: 2.5rem;
+	padding-top: var(--wp--preset--spacing--s-48);
+	padding-bottom: var(--wp--preset--spacing--s-48);
+}
+
+/* `font-serif text-2xl md:text-3xl text-foreground mb-4` */
+.ink-skrywerprofiel__oor-titel {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+}
+
+/* `text-muted-foreground leading-relaxed text-lg font-serif` */
+.ink-skrywerprofiel__bio {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--lg);
+	line-height: 1.625;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* `text-xs uppercase tracking-wider text-muted-foreground mb-4`; an `h3`, so
+   Lovable's base heading rule makes it Lora. */
+.ink-skrywerprofiel__prestasies-titel {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+	font-family: var(--wp--preset--font-family--heading);
+}
+
+/* `space-y-3` */
+.ink-skrywerprofiel__prestasies-lys {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+/* Card padding sits on `CardContent` (p-4 flex items-start gap-3). */
+.ink-skrywerprofiel__prestasie.ink-card {
+	padding: 0;
+}
+
+.ink-skrywerprofiel__prestasie-inhoud {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--wp--preset--spacing--s-12);
+	padding: var(--wp--preset--spacing--s-16);
+}
+
+.ink-skrywerprofiel__prestasie-teks {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.ink-skrywerprofiel__prestasie-etiket {
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+	font-weight: 500;
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-skrywerprofiel__prestasie-detail {
+	font-size: var(--wp--preset--font-size--xs);
+	line-height: 1rem;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* ── 4 · Curated works (Writer.tsx:317-344, 417-466) ────────────────────── */
+
+/* `container py-12 md:py-16` */
+.ink-skrywerprofiel__vasgespel-houer {
+	padding-top: var(--wp--preset--spacing--s-48);
+	padding-bottom: var(--wp--preset--spacing--s-48);
+}
+
+/* `flex items-end justify-between mb-8` */
+.ink-skrywerprofiel__vasgespel-kop {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	margin-bottom: var(--wp--preset--spacing--s-32);
+}
+
+/* `flex items-center gap-2 text-terracotta font-serif italic mb-2`; the span is
+   `text-sm tracking-wide`. */
+.ink-skrywerprofiel__vasgespel-kicker {
+	display: flex;
+	margin: 0 0 var(--wp--preset--spacing--s-8);
+	font-size: var(--wp--preset--font-size--md);
+	line-height: 1.5rem;
+	letter-spacing: normal;
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-skrywerprofiel__vasgespel-kicker-teks {
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+	letter-spacing: 0.025em;
+}
+
+.ink-skrywerprofiel__vasgespel-titel {
+	margin: 0;
+}
+
+/* `hidden md:inline-flex items-center gap-1 text-sm text-terracotta hover:underline` */
+.ink-skrywerprofiel__sien-alle {
+	display: none;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-4);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+	white-space: nowrap;
+}
+
+.ink-skrywerprofiel__sien-alle svg {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+}
+
+/* `grid md:grid-cols-2 gap-6` */
+.ink-skrywerprofiel__vasgespel-lys {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--wp--preset--spacing--s-24);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* `Card card-hover`: the padding sits on `CardContent` (p-6 flex flex-col h-full). */
+.ink-skrywerprofiel__vasgespel-item.ink-card {
+	padding: 0;
+	transition: all 0.3s ease;
+}
+
+.ink-skrywerprofiel__vasgespel-item.ink-card:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+.ink-skrywerprofiel__vasgespel-skakel {
+	display: block;
+	height: 100%;
+	color: inherit;
+	text-decoration: none;
+}
+
+.ink-skrywerprofiel__vasgespel-inhoud {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	box-sizing: border-box;
+	padding: var(--wp--preset--spacing--s-24);
+}
+
+/* `flex items-center gap-2 mb-3` */
+.ink-skrywerprofiel__vasgespel-meta {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	margin-bottom: var(--wp--preset--spacing--s-12);
+}
+
+/* Badge icon `h-3 w-3 mr-1`. */
+.ink-skrywerprofiel__vasgespel-tipe svg {
+	width: 12px;
+	height: 12px;
+}
+
+/* `font-serif text-xl text-foreground leading-snug hover:text-terracotta` */
+.ink-skrywerprofiel__vasgespel-titel-skakel {
+	margin: 0;
+	line-height: 1.375;
+	transition: color 0.15s ease;
+}
+
+.ink-skrywerprofiel__vasgespel-titel-skakel:hover {
+	color: var(--wp--preset--color--primary);
+}
+
+/* `text-muted-foreground mt-3 leading-relaxed text-sm line-clamp-3 flex-1` */
+.ink-skrywerprofiel__vasgespel-uittreksel {
+	flex: 1;
+	margin: var(--wp--preset--spacing--s-12) 0 0;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.625;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* `mt-5 pt-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground` */
+.ink-skrywerprofiel__vasgespel-voet {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 1.25rem;
+	padding-top: var(--wp--preset--spacing--s-16);
+	border-top: 1px solid var(--wp--preset--color--border);
+	font-size: var(--wp--preset--font-size--xs);
+	line-height: 1rem;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* `flex items-center gap-3`; each count `inline-flex items-center gap-1`, icons `h-3.5 w-3.5` */
+.ink-skrywerprofiel__vasgespel-tellings {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+.ink-skrywerprofiel__vasgespel-telling {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-4);
+}
+
+.ink-skrywerprofiel__vasgespel-telling svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* ── INK-only: Lesergradering section (F19) + rating form (F20) ─────────── */
+
+.ink-skrywerprofiel__lesergradering {
+	padding-top: var(--wp--preset--spacing--s-48);
+	padding-bottom: var(--wp--preset--spacing--s-16);
+	border-top: 1px solid var(--wp--preset--color--border);
+}
+
+.ink-skrywerprofiel__lesergradering-titel {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+}
+
+.ink-skrywerprofiel__lesergradering-gem {
+	font-weight: var(--wp--custom--font-weight--semibold);
+}
+
+.ink-skrywerprofiel__lesergradering-leeg {
+	margin: 0;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-skrywerprofiel__oordele {
+	list-style: none;
+	margin: var(--wp--preset--spacing--s-16) 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+.ink-skrywerprofiel__oordeel {
+	padding: var(--wp--preset--spacing--s-16);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: var(--wp--preset--color--secondary);
+}
+
+.ink-skrywerprofiel__oordeel-ster {
+	font-weight: var(--wp--custom--font-weight--semibold);
+	color: var(--wp--preset--color--accent);
+}
+
+.ink-skrywerprofiel__oordeel-teks {
+	margin: var(--wp--preset--spacing--s-4) 0 0;
+}
+
+/* The rating form's wrapper renders empty for guests and the writer. */
+.ink-skrywerprofiel-oordeel {
+	padding-bottom: var(--wp--preset--spacing--s-48);
+}
+
+.ink-skrywerprofiel-oordeel:not(:has(*)) {
+	display: none;
+}
+
+/* ── 5 · CTA (Writer.tsx:347-370) ───────────────────────────────────────── */
+
+/* `container py-16 md:py-20` */
+.ink-skrywerprofiel__cta {
+	padding-top: var(--wp--preset--spacing--s-64);
+	padding-bottom: var(--wp--preset--spacing--s-64);
+}
+
+/* `max-w-3xl mx-auto text-center` */
+.ink-skrywerprofiel__cta-binne {
+	max-width: 48rem;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.ink-skrywerprofiel__cta-titel {
+	margin: 0;
+}
+
+/* `mt-4 text-muted-foreground text-lg leading-relaxed` */
+.ink-skrywerprofiel__cta-teks {
+	margin: var(--wp--preset--spacing--s-16) 0 0;
+	font-size: var(--wp--preset--font-size--lg);
+	line-height: 1.625;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* `mt-8 flex flex-wrap items-center justify-center gap-3` */
+.ink-skrywerprofiel__cta-aksies {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: var(--wp--preset--spacing--s-12);
+	margin-top: var(--wp--preset--spacing--s-32);
+}
+
+/* ── md (768px) ─────────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+	.ink-skrywerprofiel__omslag {
+		height: 16rem;
+	}
+
+	.ink-skrywerprofiel__kop {
+		flex-direction: row;
+		align-items: flex-end;
+		gap: var(--wp--preset--spacing--s-32);
+	}
+
+	.ink-skrywerprofiel.has-omslag .ink-skrywerprofiel__kop {
+		margin-top: -6rem;
+	}
+
+	.ink-skrywerprofiel__leuse {
+		font-size: var(--wp--preset--font-size--xl);
+		line-height: 1.75rem;
+	}
+
+	.ink-skrywerprofiel__aksies {
+		flex-direction: column;
+		align-items: flex-end;
+	}
+
+	.ink-skrywerprofiel__statistieke-rooster {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+
+	/* `md:border-r md:border-border md:pr-6` */
+	.ink-skrywerprofiel__stat--gradering {
+		padding-right: var(--wp--preset--spacing--s-24);
+		border-right: 1px solid var(--wp--preset--color--border);
+	}
+
+	.ink-skrywerprofiel__oor-prestasies,
+	.ink-skrywerprofiel__vasgespel-houer {
+		padding-top: var(--wp--preset--spacing--s-64);
+		padding-bottom: var(--wp--preset--spacing--s-64);
+	}
+
+	.ink-skrywerprofiel__sien-alle {
+		display: inline-flex;
+	}
+
+	.ink-skrywerprofiel__vasgespel-lys {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.ink-skrywerprofiel__cta {
+		padding-top: var(--wp--preset--spacing--s-80);
+		padding-bottom: var(--wp--preset--spacing--s-80);
+	}
+}
+
+/* ── lg (1024px) ────────────────────────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+	.ink-skrywerprofiel__oor-prestasies {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.ink-skrywerprofiel__oor {
+		grid-column: span 2 / span 2;
+	}
+}

@@ -33,7 +33,7 @@ $ink_pages = array(
 	'/ontdek',
 	'/biblioteek',
 	'/opleiding',
-	'/uitdagings',
+	'/uitdaging/',
 	'/inkpols',
 	'/borge',
 	'/oor-ink',

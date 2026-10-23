@@ -484,12 +484,22 @@ final class Archive {
 		// The heading + search sit together in an intro band (Library-layout parity —
 		// mirrors Lovable's Library.tsx header section, and Training\Hub::toHtml()'s
 		// established order); the featured shelf, then the genre filter, follow below.
-		$intro = '<div class="ink-biblioteek__intro" data-audit-id="library-intro">'
+		//
+		// Layout (fidelity Stage 4, row 08a): Library.tsx is a run of full-bleed
+		// sibling bands — a tinted intro band with its own container, then the shelf
+		// and the browse area as `container py-12 md:py-16` sections. The archive root
+		// is therefore `alignfull` and emits those bands itself; the pattern shell adds
+		// no padding or width of its own.
+		$intro = '<section class="ink-biblioteek__intro ink-band ink-band--intro ink-band--flush" data-audit-id="library-intro">'
+			. '<div class="ink-biblioteek__intro-houer ink-container" data-audit-id="library-intro-container">'
+			. '<div class="ink-biblioteek__intro-binne" data-audit-id="library-intro-inner">'
 			. '<h1 class="ink-biblioteek__heading ink-heading-h1-index" data-audit-id="library-h1">' . esc_html( Terms::label( 'biblioteek' ) ) . '</h1>'
 			. self::searchHtml( $search_term, $active_genre )
-			. '</div>';
+			. '</div></div></section>';
 
-		$controls = self::featuredHtml( $featured ) . self::filterHtml( $genres, $active_genre );
+		$controls = self::featuredHtml( $featured )
+			. '<section class="ink-biblioteek__verken ink-container ink-band ink-band--step" data-audit-id="library-browse">'
+			. self::filterHtml( $genres, $active_genre );
 
 		if ( array() === $cards ) {
 			/* translators: %s: the Biblioteek label. */
@@ -504,12 +514,12 @@ final class Archive {
 					. esc_html__( 'Vee filters uit', 'ink-core' ) . '</a>';
 			}
 
-			return '<section class="ink-biblioteek alignwide" data-audit-id="library-archive">' . $intro . $controls
-				. '<div class="ink-biblioteek__leeg ink-card--empty" data-audit-id="library-empty"><p class="ink-biblioteek__leeg-teks" data-audit-id="library-empty-title">' . esc_html( $empty ) . '</p>'
-				. $clear . '</div></section>';
+			return '<div class="ink-biblioteek alignfull" data-audit-id="library-archive">' . $intro . $controls
+				. '<div class="ink-biblioteek__leeg ink-card--empty ink-card--empty-lg" data-audit-id="library-empty"><p class="ink-biblioteek__leeg-teks" data-audit-id="library-empty-title">' . esc_html( $empty ) . '</p>'
+				. $clear . '</div></section></div>';
 		}
 
-		$html = '<section class="ink-biblioteek alignwide" data-audit-id="library-archive">' . $intro . $controls . '<ul class="ink-biblioteek__list" data-audit-id="library-grid">';
+		$html = '<div class="ink-biblioteek alignfull" data-audit-id="library-archive">' . $intro . $controls . '<ul class="ink-biblioteek__list" data-audit-id="library-grid">';
 
 		$first = true;
 
@@ -521,7 +531,7 @@ final class Archive {
 		$paged     = isset( $nav['paged'] ) ? (int) $nav['paged'] : 1;
 		$max_pages = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;
 
-		$html .= '</ul>' . self::withAuditId( ArchiveRender::pagination( $paged, $max_pages, 'ink-biblioteek', self::PAGED_VAR ), 'library-pagination' ) . '</section>';
+		$html .= '</ul>' . self::withAuditId( ArchiveRender::pagination( $paged, $max_pages, 'ink-biblioteek', self::PAGED_VAR ), 'library-pagination' ) . '</section></div>';
 
 		return $html;
 	}
@@ -539,8 +549,10 @@ final class Archive {
 			return '';
 		}
 
-		$html = '<div class="ink-biblioteek__uitgelig" data-audit-id="library-shelf">'
+		$html = '<section class="ink-biblioteek__uitgelig ink-container ink-band ink-band--step" data-audit-id="library-shelf">'
+			. '<div class="ink-biblioteek__uitgelig-kop" data-audit-id="library-shelf-head"><div>'
 			. '<h2 class="ink-biblioteek__uitgelig-titel ink-heading-h2-sub" data-audit-id="library-shelf-h2">' . esc_html__( 'Uitgelig', 'ink-core' ) . '</h2>'
+			. '</div></div>'
 			. '<ul class="ink-biblioteek__uitgelig-lys" data-audit-id="library-shelf-grid">';
 
 		$first = true;
@@ -550,7 +562,7 @@ final class Archive {
 			$first = false;
 		}
 
-		return $html . '</ul></div>';
+		return $html . '</ul></section>';
 	}
 
 	/**

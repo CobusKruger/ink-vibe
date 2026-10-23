@@ -18,7 +18,8 @@
 ?>
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-band ink-band--stone-soft","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
 <section data-audit-id="sponsors" class="wp-block-group alignfull ink-band ink-band--stone-soft" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+	<!-- Flow layout, not constrained: Lovable's sponsor column spans the full container (S-2). -->
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"default"}} -->
 	<div class="wp-block-group alignwide">
 		<!-- wp:ink/borg-erkenning /-->
 	</div>

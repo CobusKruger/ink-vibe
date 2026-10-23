@@ -20,9 +20,36 @@
  * Identity band + strip
  * ───────────────────────────────────────────────────────────────────────── */
 
-.ink-profiel-identiteit__persoon,
+/* `container mx-auto px-4 py-10 md:py-14` (the band itself is flush). */
+.ink-profiel-identiteit-houer {
+	padding-top: var(--wp--preset--spacing--s-40);
+	padding-bottom: var(--wp--preset--spacing--s-40);
+}
+
+/* `flex flex-col md:flex-row md:items-center gap-6`: avatar | text | actions. */
+.ink-profiel-identiteit {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-24);
+}
+
+.ink-profiel-identiteit > * {
+	margin-block: 0;
+}
+
+.ink-profiel-identiteit__avatar {
+	position: relative;
+	flex-shrink: 0;
+}
+
+/* `flex-1 min-w-0` */
 .ink-profiel-identiteit__inhoud {
+	flex: 1;
 	min-width: 0;
+}
+
+.ink-profiel-identiteit__inhoud > * {
+	margin-block-start: 0;
 }
 
 .ink-profiel-identiteit__etiket {
@@ -55,6 +82,12 @@
 	gap: var(--wp--preset--spacing--s-12);
 }
 
+/* The two link buttons sit in a nested `wp-block-buttons` (F5); flatten its gap. */
+.ink-profiel-identiteit__aksies .wp-block-buttons {
+	gap: var(--wp--preset--spacing--s-12);
+	margin: 0;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
  * Tab shell
  * ───────────────────────────────────────────────────────────────────────── */
@@ -64,16 +97,65 @@
 .ink-profiel-tabs.ink-segmented {
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: flex-start;
+	justify-content: center;
 	gap: 0;
 	height: auto;
 	margin-bottom: var(--wp--preset--spacing--s-32);
 	background-color: color-mix( in srgb, var(--wp--preset--color--surface) 60%, transparent );
 }
 
-/* Panels are shown/hidden via the native [hidden] attribute (profiel-tabs.js). */
-.ink-profiel-panel + .ink-profiel-panel {
+/* `section.container py-10`, flush under the identity band (no flow block-gap). */
+main > .ink-profiel-oortjies {
+	margin-top: 0;
+}
+
+.ink-profiel-oortjies {
+	padding-top: var(--wp--preset--spacing--s-40);
+	padding-bottom: var(--wp--preset--spacing--s-40);
+}
+
+/* Tab icons `h-4 w-4 mr-1.5` (F8). */
+.ink-profiel-tabs__knoppie svg {
+	flex-shrink: 0;
+	width: 16px;
+	height: 16px;
+	margin-right: var(--wp--preset--spacing--s-6);
+}
+
+/* Panels are shown/hidden via the native [hidden] attribute (profiel-tabs.js).
+   Radix `TabsContent` carries `mt-2`; it collapses into the tablist's mb-8. */
+.ink-profiel-oortjies__binne > .ink-profiel-panel {
+	margin-top: var(--wp--preset--spacing--s-8);
+	margin-bottom: 0;
+}
+
+.ink-profiel-oortjies__binne > .ink-profiel-tabs {
+	margin-top: 0;
+}
+
+/* Oorsig: `space-y-8`; grid `lg:grid-cols-3 gap-8`, About `lg:col-span-2`. */
+#oorsig > * + * {
 	margin-top: var(--wp--preset--spacing--s-32);
+}
+
+#oorsig > .wp-block-columns {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--wp--preset--spacing--s-32);
+	margin-bottom: 0;
+}
+
+#oorsig > .wp-block-columns > .wp-block-column {
+	flex-basis: auto !important;
+	margin: 0;
+}
+
+/* Lovable `CardContent p-6`; heading row `mb-3`, glance heading `mb-4`. */
+.ink-profiel-oormy > *,
+.ink-profiel-oogopslag > *,
+.ink-profiel-onlangs > *,
+.ink-lidmaatskap-status > * {
+	margin-block-start: 0;
 }
 
 /* Shared panel header row (heading + one trailing action). */
@@ -103,30 +185,36 @@
  * Oorsig
  * ───────────────────────────────────────────────────────────────────────── */
 
+/* About "Edit" icon `h-3.5 w-3.5`. */
+.ink-profiel-oormy__wysig svg {
+	width: 14px;
+	height: 14px;
+}
+
 .ink-profiel-oormy__kop {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: var(--wp--preset--spacing--s-16);
+	margin-bottom: var(--wp--preset--spacing--s-12);
 }
 
 .ink-profiel-oormy__titel,
-.ink-profiel-oogopslag h3,
-.ink-profiel-onlangs h3,
+.ink-profiel-oogopslag h2,
+.ink-profiel-onlangs h2,
 .ink-lidmaatskap-status h3 {
 	margin: 0;
 }
 
-.ink-profiel-oogopslag h3,
-.ink-profiel-onlangs h3 {
+.ink-profiel-oogopslag h2,
+.ink-profiel-onlangs h2 {
 	margin-bottom: var(--wp--preset--spacing--s-16);
 }
 
 /* Bio: `text-muted-foreground font-serif leading-relaxed`. */
 .ink-profiel-oormy__bio {
-	margin: var(--wp--preset--spacing--s-16) 0 0;
+	margin: 0;
 	font-family: var(--wp--preset--font-family--heading);
-	line-height: var(--wp--custom--line-height--relaxed);
+	line-height: 1.625;
 	color: var(--wp--preset--color--muted-text);
 }
 
@@ -141,7 +229,6 @@
 .ink-profiel-oogopslag__stat {
 	display: flex;
 	flex-direction: column;
-	gap: var(--wp--preset--spacing--s-4);
 }
 
 .ink-profiel-oogopslag__stat dt {
@@ -162,8 +249,8 @@
 	display: flex;
 	align-items: center;
 	gap: var(--wp--preset--spacing--s-8);
-	padding-top: var(--wp--preset--spacing--s-16);
-	margin-top: var(--wp--preset--spacing--s-16) !important;
+	padding-top: 1.25rem;
+	margin-top: 1.25rem !important;
 	border-top: 1px solid var(--wp--preset--color--border);
 }
 
@@ -413,6 +500,18 @@
  * Lidmaatskap tab — status card + the embedded `lidmaatskap-hernu` plans.
  * ───────────────────────────────────────────────────────────────────────── */
 
+/* Members: `grid lg:grid-cols-3 gap-8` (status 1, renew 2). */
+#lidmaatskap > .wp-block-columns {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--wp--preset--spacing--s-32);
+}
+
+#lidmaatskap > .wp-block-columns > .wp-block-column {
+	flex-basis: auto !important;
+	margin: 0;
+}
+
 .ink-lidmaatskap-status__etiket {
 	margin: 0 0 var(--wp--preset--spacing--s-4);
 }
@@ -443,6 +542,52 @@
 	color: var(--wp--preset--color--ink-text);
 }
 
+/* Renew: Lovable puts it in a `Card` > `CardContent p-6` (F31); the shared
+   pattern renders a padded full-bleed section, re-dressed here as the card. */
+#lidmaatskap [data-audit-id="profiel-membership-renew"] {
+	box-sizing: border-box;
+	padding: var(--wp--preset--spacing--s-24) !important;
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--lg);
+	box-shadow: var(--wp--preset--shadow--xs);
+}
+
+#lidmaatskap [data-audit-id="profiel-membership-renew-wide"],
+#lidmaatskap [data-audit-id="profiel-membership-renew-wide"] > * {
+	max-width: none;
+	margin-block-start: 0;
+}
+
+/* `font-serif text-xl mb-1` + `text-sm text-muted-foreground mb-5` */
+#lidmaatskap [data-audit-id="profiel-membership-renew-title"] {
+	margin: 0 0 var(--wp--preset--spacing--s-4);
+}
+
+#lidmaatskap [data-audit-id="profiel-membership-renew-desc"] {
+	margin: 0 0 1.25rem;
+	font-size: var(--wp--preset--font-size--sm) !important;
+	line-height: 1.25rem;
+}
+
+/* `grid sm:grid-cols-3 gap-3` */
+#lidmaatskap [data-audit-id="profiel-membership-plans"] {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--wp--preset--spacing--s-12);
+	margin: 0;
+}
+
+#lidmaatskap [data-audit-id="profiel-membership-plans"] > .wp-block-column {
+	margin: 0;
+}
+
+@media (min-width: 640px) {
+	#lidmaatskap [data-audit-id="profiel-membership-plans"] {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
 /* The price paragraph keeps its `xxl` preset (24px pin while that token is
    fluid); the ancestor that pins it on the standalone page does not exist in
    this embed. */
@@ -453,6 +598,14 @@
 /* ─────────────────────────────────────────────────────────────────────────
  * Edit-profile modal (`ink/profiel-redigeer`, ProfileEditor)
  * ───────────────────────────────────────────────────────────────────────── */
+
+/* F34 (live bug): the overlay is a child of <main>; a layout parent's child rules
+   (max-width/auto margins/block-gap) must never clamp the fixed box — it covers
+   the whole viewport. Doubled class beats WP's layout selectors. */
+.ink-profiel-redigeer.ink-profiel-redigeer {
+	max-width: none;
+	margin: 0 !important;
+}
 
 .ink-profiel-redigeer {
 	position: fixed;
@@ -494,11 +647,19 @@
 	margin-bottom: var(--wp--preset--spacing--s-16);
 }
 
+/* Lovable `div` > inline `label` + `Input className="mt-1"` (F36). */
 .ink-profiel-redigeer__veld {
-	display: flex;
-	flex-direction: column;
-	gap: var(--wp--preset--spacing--s-4);
+	display: block;
 	margin: 0 0 var(--wp--preset--spacing--s-16);
+}
+
+.ink-profiel-redigeer__veld .ink-label {
+	display: inline;
+}
+
+.ink-profiel-redigeer__veld .ink-field {
+	display: block;
+	margin-top: var(--wp--preset--spacing--s-4);
 }
 
 .ink-profiel-redigeer__aksies {
@@ -522,5 +683,29 @@
 @media ( max-width: 782px ) {
 	.ink-profiel-oogopslag__lys {
 		gap: var(--wp--preset--spacing--s-4);
+	}
+}
+
+@media ( min-width: 768px ) {
+	.ink-profiel-identiteit-houer {
+		padding-top: 3.5rem;
+		padding-bottom: 3.5rem;
+	}
+
+	.ink-profiel-identiteit {
+		flex-direction: row;
+		align-items: center;
+	}
+}
+
+@media ( min-width: 1024px ) {
+	#oorsig > .wp-block-columns,
+	#lidmaatskap > .wp-block-columns {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	#oorsig > .wp-block-columns > .wp-block-column:first-child,
+	#lidmaatskap > .wp-block-columns > .wp-block-column:last-child {
+		grid-column: span 2 / span 2;
 	}
 }

@@ -103,7 +103,7 @@
     },
     {
       "row": "14", "page": "uitdagings", "treatment": "B",
-      "ink": "https://nuwe-ink.local/uitdagings/",
+      "ink": "https://nuwe-ink.local/uitdaging/",
       "lovable": null,
       "note": "Challenge card references ChallengeSection.tsx; the rest has no source."
     },

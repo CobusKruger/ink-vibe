@@ -33,16 +33,16 @@
  * \Ink\Accounts\AuthRedirects}) are UNCHANGED — this is a display-label fix only.
  */
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained","contentSize":"480px"}} -->
-<section data-audit-id="auth" class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-auth","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained","contentSize":"448px"}} -->
+<section data-audit-id="auth" class="wp-block-group alignfull ink-auth" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"className":"ink-card ink-card--lg ink-auth-card","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div data-audit-id="auth-card" class="wp-block-group ink-card ink-card--lg ink-auth-card">
 		<!-- wp:heading {"level":1,"className":"ink-heading-h2-block"} -->
 		<h1 data-audit-id="auth-heading" class="wp-block-heading ink-heading-h2-block"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></h1>
 		<!-- /wp:heading -->
 
-		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p data-audit-id="auth-intro" class="has-muted-text-color has-text-color has-md-font-size"><?php echo esc_html__( 'Teken in by jou rekening met jou e-pos en wagwoord.', 'ink-foundation' ); ?></p>
+		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
+		<p data-audit-id="auth-intro" class="has-muted-text-color has-text-color has-sm-font-size"><?php echo esc_html__( 'Teken in by jou rekening met jou e-pos en wagwoord.', 'ink-foundation' ); ?></p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:html -->
@@ -114,8 +114,8 @@
 		<!-- /wp:paragraph -->
 <?php endif; ?>
 
-		<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-		<p data-audit-id="auth-switch" class="has-muted-text-color has-text-color has-sm-font-size">Nog nie &#8217;n lid nie? <a data-audit-id="auth-switch-link" href="/registreer">Registreer</a></p>
+		<!-- wp:paragraph {"className":"ink-auth-switch","fontSize":"sm","textColor":"muted-text"} -->
+		<p data-audit-id="auth-switch" class="ink-auth-switch has-muted-text-color has-text-color has-sm-font-size">Nog nie &#8217;n lid nie? <a data-audit-id="auth-switch-link" href="/registreer">Registreer</a></p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->

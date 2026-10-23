@@ -16,9 +16,10 @@
  * No live Lovable route exists for this page (MISSING_IN_CURRENT_LOVABLE_REPO,
  * page-map.csv) — fidelity target is internal design-system consistency with
  * the 14 already-verified pages, same approach as page 13/lidmaatskap. Eyebrow
- * and h1 use the shared primitives (`ink-eyebrow--tracked`, `ink-heading-h1-index`,
- * Fidelity remediation Stage 3); the form's controls use the /auth recipe — see
- * assets/css/kontak.css.
+ * and h1 use the shared primitives (`ink-eyebrow`, `ink-heading-h1-index`,
+ * Fidelity remediation Stage 3); the eyebrow is left-aligned, so it is the base
+ * eyebrow, not the centred `--tracked` one (stage-2-rulings.md EB-1, Stage 4).
+ * The form's controls use the /auth recipe — see assets/css/kontak.css.
  *
  * @package Ink\Foundation
  */
@@ -27,8 +28,8 @@
 <section class="wp-block-group alignfull ink-kontak-hero" data-audit-id="kontak-hero" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group" data-audit-id="kontak-hero-inner">
-		<!-- wp:paragraph {"className":"ink-eyebrow ink-eyebrow--tracked"} -->
-		<p class="ink-eyebrow ink-eyebrow--tracked" data-audit-id="kontak-eyebrow">Kontak</p>
+		<!-- wp:paragraph {"className":"ink-eyebrow"} -->
+		<p class="ink-eyebrow" data-audit-id="kontak-eyebrow">Kontak</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:heading {"level":1,"className":"ink-heading-h1-index"} -->

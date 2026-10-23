@@ -37,7 +37,9 @@ test( 'navItems is the ordered new IA at canonical routes (incl. the Epic-15 org
 	// Canonical routes, including the Epic-15 org pages.
 	expect( $urls )->toContain( '/oor-ink' );
 	expect( $urls )->toContain( '/kontak' );
-	expect( $urls )->toContain( '/uitdagings' );
+	// The uitdaging CPT archive lives at /uitdaging/; /uitdagings 301s to an unrelated post (fidelity S-U1).
+	expect( $urls )->toContain( '/uitdaging/' );
+	expect( $urls )->not->toContain( '/uitdagings' );
 } );
 
 test( 'toNavigationMarkup wraps one navigation-link per item in a navigation block', function (): void {

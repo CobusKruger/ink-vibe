@@ -152,7 +152,7 @@ final class Viewer {
 		}
 
 		return '<div class="ink-inkpols-leser ink-inkpols-leser--terugval" data-audit-id="inkpols-single-viewer">'
-			. '<a class="ink-inkpols-leser__skakel" data-audit-id="inkpols-single-pdf-link" href="' . esc_url( $pdf_url ) . '">'
+			. '<a class="ink-inkpols-leser__skakel ink-btn ink-btn--primary ink-btn--lg" data-audit-id="inkpols-single-pdf-link" href="' . esc_url( $pdf_url ) . '">'
 			. esc_html( Terms::label( 'inkpols_lees_uitgawe' ) )
 			. '</a></div>';
 	}

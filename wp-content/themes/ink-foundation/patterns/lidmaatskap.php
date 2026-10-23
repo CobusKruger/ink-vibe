@@ -35,9 +35,9 @@ $ink_plan_noun = function_exists( 'ink_foundation_term' )
 // Per-term, member-facing plan descriptions (human-authored Afrikaans —
 // docs/ui-copy-translations.md "Aansluitingsopsies"; no savings framing).
 $ink_plan_descriptions = array(
-	1  => __( 'Volle toegang vir \&#8217;n maand.', 'ink-foundation' ),
+	1  => __( 'Volle toegang vir &#8217;n maand.', 'ink-foundation' ),
 	6  => __( 'Volle toegang vir ses maande.', 'ink-foundation' ),
-	12 => __( 'Volle toegang vir \&#8217;n jaar.', 'ink-foundation' ),
+	12 => __( 'Volle toegang vir &#8217;n jaar.', 'ink-foundation' ),
 );
 
 // Fail-safe: when ink-core is inactive the bridge returns an empty list. Render the
@@ -66,24 +66,24 @@ if ( empty( $ink_plans ) ) {
 	}
 }
 ?>
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-hero","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-24","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-lidmaatskap-hero" data-audit-id="lidmaatskap-hero" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-24);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide" data-audit-id="lidmaatskap-hero-inner">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-hero ink-band ink-band--intro ink-band--flush","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-lidmaatskap-hero ink-band ink-band--intro ink-band--flush" data-audit-id="lidmaatskap-hero" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
+	<!-- wp:group {"align":"wide","className":"ink-lidmaatskap-hero__inner","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
+	<div class="wp-block-group alignwide ink-lidmaatskap-hero__inner" data-audit-id="lidmaatskap-hero-inner">
 		<!-- wp:heading {"level":1,"className":"ink-heading-h1-index"} -->
 		<h1 class="wp-block-heading ink-heading-h1-index" data-audit-id="lidmaatskap-h1"><?php echo esc_html( $ink_plan_noun ); ?></h1>
 		<!-- /wp:heading -->
 
-		<!-- wp:paragraph {"fontSize":"lg","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-lg-font-size" data-audit-id="lidmaatskap-lede"><?php echo esc_html__( 'Vir hoe lank wil jy vandag aansluit?', 'ink-foundation' ); ?></p>
+		<!-- wp:paragraph {"className":"ink-lidmaatskap-hero__tekst","fontSize":"lg","textColor":"muted-text"} -->
+		<p class="ink-lidmaatskap-hero__tekst has-muted-text-color has-text-color has-lg-font-size" data-audit-id="lidmaatskap-lede"><?php echo esc_html__( 'Vir hoe lank wil jy vandag aansluit?', 'ink-foundation' ); ?></p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-plans","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-lidmaatskap-plans" data-audit-id="lidmaatskap-plans" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-plans ink-band ink-band--sm","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-lidmaatskap-plans ink-band ink-band--sm" data-audit-id="lidmaatskap-plans" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:columns {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|s-24","left":"var:preset|spacing|s-24"}}}} -->
 	<div class="wp-block-columns alignwide" data-audit-id="lidmaatskap-plans-grid">
 <?php
@@ -154,12 +154,12 @@ foreach ( $ink_plans as $ink_plan ) :
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-benefits","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-lidmaatskap-benefits" data-audit-id="lidmaatskap-benefits" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide" data-audit-id="lidmaatskap-benefits-inner">
-		<!-- wp:heading {"level":2,"className":"ink-heading-h2-block"} -->
-		<h2 class="wp-block-heading ink-heading-h2-block" data-audit-id="lidmaatskap-benefits-h2"><?php echo esc_html__( 'Wat jou lidmaatskap insluit', 'ink-foundation' ); ?></h2>
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-benefits ink-band ink-band--sm","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-lidmaatskap-benefits ink-band ink-band--sm" data-audit-id="lidmaatskap-benefits" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
+	<!-- wp:group {"align":"wide","className":"ink-lidmaatskap-kolom","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}}} -->
+	<div class="wp-block-group alignwide ink-lidmaatskap-kolom" data-audit-id="lidmaatskap-benefits-inner">
+		<!-- wp:heading {"level":2,"className":"ink-heading-h2-section"} -->
+		<h2 class="wp-block-heading ink-heading-h2-section" data-audit-id="lidmaatskap-benefits-h2"><?php echo esc_html__( 'Wat jou lidmaatskap insluit', 'ink-foundation' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:list {"className":"is-style-default","style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
@@ -182,12 +182,12 @@ foreach ( $ink_plans as $ink_plan ) :
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-faq","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-24","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull ink-lidmaatskap-faq" data-audit-id="lidmaatskap-faq" style="padding-top:var(--wp--preset--spacing--s-24);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide" data-audit-id="lidmaatskap-faq-inner">
-		<!-- wp:heading {"level":2,"className":"ink-heading-h2-block"} -->
-		<h2 class="wp-block-heading ink-heading-h2-block" data-audit-id="lidmaatskap-faq-h2"><?php echo esc_html__( 'Vrae oor lidmaatskap', 'ink-foundation' ); ?></h2>
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-faq ink-band ink-band--sm","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-lidmaatskap-faq ink-band ink-band--sm" data-audit-id="lidmaatskap-faq" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
+	<!-- wp:group {"align":"wide","className":"ink-lidmaatskap-kolom","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}}} -->
+	<div class="wp-block-group alignwide ink-lidmaatskap-kolom" data-audit-id="lidmaatskap-faq-inner">
+		<!-- wp:heading {"level":2,"className":"ink-heading-h2-section"} -->
+		<h2 class="wp-block-heading ink-heading-h2-section" data-audit-id="lidmaatskap-faq-h2"><?php echo esc_html__( 'Vrae oor lidmaatskap', 'ink-foundation' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:details {"lock":{"move":true,"remove":true},"className":"is-style-card","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}}} -->
@@ -218,8 +218,8 @@ foreach ( $ink_plans as $ink_plan ) :
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-cta","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"backgroundColor":"secondary","textColor":"ink-text","layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull has-ink-text-color has-secondary-background-color has-text-color has-background ink-lidmaatskap-cta" data-audit-id="lidmaatskap-cta" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-lidmaatskap-cta ink-band ink-band--cream","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"textColor":"ink-text","layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull has-ink-text-color has-text-color ink-lidmaatskap-cta ink-band ink-band--cream" data-audit-id="lidmaatskap-cta" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained"}} -->
 	<div class="wp-block-group" data-audit-id="lidmaatskap-cta-inner">
 		<!-- wp:heading {"textAlign":"center","level":2,"className":"ink-heading-h2-section"} -->

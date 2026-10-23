@@ -19,12 +19,12 @@
  */
 
 ?>
-<!-- wp:group {"align":"full","className":"is-style-ink-footer","templateLock":"contentOnly","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"textColor":"ink-text","layout":{"type":"constrained"}} -->
-<div data-audit-id="footer" class="wp-block-group alignfull is-style-ink-footer has-ink-text-color has-text-color" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
+<!-- wp:group {"align":"full","className":"is-style-ink-footer","templateLock":"contentOnly","style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"textColor":"ink-text","layout":{"type":"constrained"}} -->
+<div data-audit-id="footer" class="wp-block-group alignfull is-style-ink-footer has-ink-text-color has-text-color" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"align":"wide","className":"ink-footer-kolomme","layout":{"type":"default"}} -->
 	<div data-audit-id="footer-grid" class="wp-block-group alignwide ink-footer-kolomme">
 		<!-- Handelsmerk-kolom: veer + woordmerk + blurb + sosiale skakels. -->
-		<!-- wp:group {"className":"ink-footer-handelsmerk","layout":{"type":"constrained"}} -->
+		<!-- wp:group {"className":"ink-footer-handelsmerk","layout":{"type":"default"}} -->
 		<div data-audit-id="footer-brand" class="wp-block-group ink-footer-handelsmerk">
 			<!-- wp:group {"className":"ink-footer-handelsmerk__ry","style":{"spacing":{"blockGap":"var:preset|spacing|s-8"}},"layout":{"type":"flex","verticalAlignment":"center"}} -->
 			<div data-audit-id="footer-logo" class="wp-block-group ink-footer-handelsmerk__ry">
@@ -65,7 +65,7 @@
 				<li data-audit-id="footer-col-item"><a data-audit-id="footer-col-link" href="/lees"><?php esc_html_e( 'Jongste bydraes', 'ink-foundation' ); ?></a></li>
 				<li><a href="/lees?tipe=gedig"><?php esc_html_e( 'Gedigversameling', 'ink-foundation' ); ?></a></li>
 				<li><a href="/skrywers"><?php esc_html_e( 'Uitgesoekte skrywers', 'ink-foundation' ); ?></a></li>
-				<li><a href="/uitdagings"><?php esc_html_e( 'Maandelikse uitdagings', 'ink-foundation' ); ?></a></li>
+				<li><a href="/uitdaging/"><?php esc_html_e( 'Maandelikse uitdagings', 'ink-foundation' ); ?></a></li>
 			</ul>
 			<!-- /wp:list -->
 		</div>

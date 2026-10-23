@@ -1,8 +1,7 @@
 /**
- * reading.css — lees-gedig and lees-storie (the two reading pages whose
- * Lovable source shares `ReadStory.tsx`'s floating action bar) — NOT
- * reading-artikel. Enqueued on `is_singular(array('gedig','storie'))`
- * (functions.php, `ink_foundation_enqueue_reading_engagement_assets()`).
+ * reading.css — lees-gedig, lees-storie and lees-artikel (all three share
+ * Lovable `ReadStory.tsx`). Enqueued on `is_singular(array('gedig','storie',
+ * 'artikel'))` (functions.php, `ink_foundation_enqueue_reading_engagement_assets()`).
  *
  * Fidelity remediation Stage 3 (R8): the bar's look is the primitives `toolbar`
  * (translucent card fill, backdrop blur, pill radius, border, shadow) and its
@@ -24,6 +23,21 @@
 	z-index: 40;
 }
 
+/* Fidelity Stage 4 (rows 07/22): the bar's box is Lovable's inner pill —
+ * `max-w-md mx-auto` inside a `container px-4` (ReadStory.tsx:213-214). The
+ * toolbar primitive's 28rem max-width ties on specificity with <main>'s
+ * constrained-layout content-size rule and loses on order, so it is restated
+ * here (and the 16px container gutter applied) one class higher. */
+.ink-reading-main > .ink-reaksie-bar {
+	width: calc(100% - 2 * var(--wp--preset--spacing--s-16));
+	max-width: 28rem;
+}
+
+/* Block-level icons: each control is the 20px icon (Lovable), not a 26px line box. */
+.ink-reaksie-bar svg {
+	display: block;
+}
+
 .ink-reaksie-tellers__telling,
 .ink-kommentaar-telling__getal {
 	font-weight: var(--wp--custom--font-weight--medium);
@@ -39,4 +53,51 @@
 
 .ink-lees-storie__prose > * + * {
 	margin-block-start: 1.5em !important;
+}
+
+/* Byline (ReadStory.tsx:155-170): `gap-4` between the items, but the avatar and
+ * name share one `gap-2` link — INK renders them as two flex items, so pull the
+ * name back 8px. */
+.ink-lees-byline > .wp-block-avatar {
+	margin-inline-end: calc(-1 * var(--wp--preset--spacing--s-8));
+}
+
+/* Poem lines below md: `text-lg leading-relaxed` (PoetryReader.tsx:53); md+ is
+ * `text-xl` 20/28, which the ink-gedig container already gives. */
+@media (max-width: 767.98px) {
+	.ink-gedig__line {
+		font-size: var(--wp--preset--font-size--lg);
+		line-height: 1.625;
+	}
+}
+
+/* Responses (ReadStory.tsx:274-364). */
+.ink-reaksies__heading {
+	margin: 0 0 var(--wp--preset--spacing--s-32);
+}
+
+.ink-reaksies__intro {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-reaksies__types {
+	margin: 0;
+}
+
+.ink-reaksies__form .ink-reaksies__input {
+	min-height: 100px;
+}
+
+.ink-reaksies__text {
+	margin: 0;
+	line-height: 1.625;
+	color: var(--wp--preset--color--muted-text);
+}
+
+/* Meta order: author, then the type badge (ReadStory.tsx:329-344). */
+.ink-reaksies__who .ink-reaksies__badge {
+	order: 1;
 }

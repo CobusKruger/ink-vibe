@@ -67,8 +67,8 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 ?>
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-uitdaging__hero ink-band ink-band--hero ink-band--border-b","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
 <section data-audit-id="uitdaging-hero" class="wp-block-group alignfull ink-uitdaging__hero ink-band ink-band--hero ink-band--border-b" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained","contentSize":"768px"}} -->
-	<div data-audit-id="uitdaging-hero-content" class="wp-block-group">
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"0"}},"layout":{"type":"constrained","contentSize":"768px","justifyContent":"left"}} -->
+	<div data-audit-id="uitdaging-hero-content" class="wp-block-group alignwide">
 		<!-- wp:paragraph {"className":"ink-uitdaging__terug","lock":{"move":true,"remove":true},"fontSize":"sm"} -->
 		<p data-audit-id="uitdaging-back" class="ink-uitdaging__terug has-sm-font-size"><a class="ink-nav-link--footer" href="/"><?php esc_html_e( '← Terug na tuis', 'ink-foundation' ); ?></a></p>
 		<!-- /wp:paragraph -->
@@ -105,8 +105,8 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-band","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
 <section data-audit-id="uitdaging-prompt" class="wp-block-group alignfull ink-band" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"className":"ink-uitdaging__opdrag","lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"672px"}} -->
-	<div data-audit-id="uitdaging-prompt-main" class="wp-block-group ink-uitdaging__opdrag">
+	<!-- wp:group {"align":"wide","className":"ink-uitdaging__opdrag","lock":{"move":true,"remove":true},"layout":{"type":"default"}} -->
+	<div data-audit-id="uitdaging-prompt-main" class="wp-block-group alignwide ink-uitdaging__opdrag">
 		<!-- wp:post-content {"lock":{"move":true,"remove":true}} /-->
 	</div>
 	<!-- /wp:group -->
@@ -115,8 +115,8 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-band","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
 <section data-audit-id="uitdaging-entries" class="wp-block-group alignfull ink-band" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"1120px"}} -->
-	<div data-audit-id="uitdaging-entries-container" class="wp-block-group">
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"default"}} -->
+	<div data-audit-id="uitdaging-entries-container" class="wp-block-group alignwide">
 		<!-- wp:ink/uitdaging-besonderhede {"variant":"inskrywings"} /-->
 	</div>
 	<!-- /wp:group -->
@@ -125,7 +125,7 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-uitdaging-cta ink-band ink-band--gradient","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
 <section data-audit-id="uitdaging-cta" class="wp-block-group alignfull ink-uitdaging-cta ink-band ink-band--gradient" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained","contentSize":"576px","justifyContent":"center"}} -->
+	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained","contentSize":"640px","justifyContent":"center"}} -->
 	<div data-audit-id="uitdaging-cta-content" class="wp-block-group">
 		<!-- wp:html -->
 		<span data-audit-id="uitdaging-cta-icon" class="ink-uitdaging-cta__ikoon" aria-hidden="true"><?php echo ink_foundation_icon( '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.937A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG. ?></span>
@@ -141,7 +141,7 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 		<!-- /wp:html -->
 		<?php endif; ?>
 
-		<!-- wp:buttons {"lock":{"move":true,"remove":true},"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}}} -->
+		<!-- wp:buttons {"lock":{"move":true,"remove":true},"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
 		<div data-audit-id="uitdaging-cta-actions" class="wp-block-buttons">
 			<!-- wp:button {"className":"is-style-ink-primary ink-btn-lg"} -->
 			<div class="wp-block-button is-style-ink-primary ink-btn-lg"><a data-audit-id="uitdaging-cta-btn-primary" class="wp-block-button__link wp-element-button" href="/skryf"><?php echo ink_foundation_icon( '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>' ) . esc_html__( 'Begin skryf', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a></div>

@@ -59,8 +59,8 @@
 		<h1 class="wp-block-heading has-text-align-center ink-heading-h1-hero-landing" data-audit-id="gemeenskap-hero-h1" style="margin-bottom:var(--wp--preset--spacing--s-24)">&#8217;n Gemeenskap vir skrywers wat gelees wil word, en lesers wat ontroer wil word.</h1>
 		<!-- /wp:heading -->
 
-		<!-- wp:paragraph {"align":"center","style":{"typography":{"lineHeight":"1.5"},"spacing":{"margin":{"bottom":"var:preset|spacing|s-40"}}},"fontSize":"lg","textColor":"muted-text"} -->
-		<p class="has-text-align-center has-muted-text-color has-text-color has-lg-font-size" data-audit-id="gemeenskap-hero-intro" style="margin-bottom:var(--wp--preset--spacing--s-40);line-height:1.5">INK is &#8217;n niewinsgerigte literêre tuiste gebou rondom &#8217;n eenvoudige idee: dat deurdagte skryfwerk lesers verdien, en dat albei &#8217;n beter plek verdien om mekaar te vind.</p>
+		<!-- wp:paragraph {"align":"center","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|s-40"}}},"fontSize":"lg","textColor":"muted-text"} -->
+		<p class="has-text-align-center has-muted-text-color has-text-color has-lg-font-size" data-audit-id="gemeenskap-hero-intro" style="margin-bottom:var(--wp--preset--spacing--s-40)">INK is &#8217;n niewinsgerigte literêre tuiste gebou rondom &#8217;n eenvoudige idee: dat deurdagte skryfwerk lesers verdien, en dat albei &#8217;n beter plek verdien om mekaar te vind.</p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:buttons {"lock":{"move":true,"remove":true},"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
@@ -79,10 +79,10 @@
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-value ink-band ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-value ink-band ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained","contentSize":"72rem"}} -->
 <section class="wp-block-group alignfull ink-gemeenskap-value ink-band ink-band--lg" data-audit-id="gemeenskap-value" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:columns {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s-32","top":"var:preset|spacing|s-32"}}}} -->
-	<div class="wp-block-columns alignwide" data-audit-id="gemeenskap-value-grid">
+	<!-- wp:columns {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s-32","top":"var:preset|spacing|s-32"}}}} -->
+	<div class="wp-block-columns" data-audit-id="gemeenskap-value-grid">
 		<!-- wp:column {"lock":{"move":true,"remove":true}} -->
 		<div class="wp-block-column" data-audit-id="gemeenskap-value-col">
 			<!-- wp:group {"className":"ink-gemeenskap-card ink-card--panel","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
@@ -137,11 +137,11 @@
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-hiw ink-band ink-band--strip ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-hiw ink-band ink-band--strip ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained","contentSize":"64rem"}} -->
 <section class="wp-block-group alignfull ink-gemeenskap-hiw ink-band ink-band--strip ink-band--lg" data-audit-id="gemeenskap-hiw" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-48"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide" data-audit-id="gemeenskap-hiw-inner">
-		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
+	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-48"}},"layout":{"type":"default"}} -->
+	<div class="wp-block-group" data-audit-id="gemeenskap-hiw-inner">
+		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group" data-audit-id="gemeenskap-hiw-head">
 			<!-- wp:heading {"textAlign":"center","level":2,"className":"ink-heading-h2-section"} -->
 			<h2 class="wp-block-heading has-text-align-center ink-heading-h2-section" data-audit-id="gemeenskap-hiw-h2">Hoe INK werk</h2>
@@ -153,7 +153,7 @@
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:columns {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s-40","top":"var:preset|spacing|s-32"}}}} -->
+		<!-- wp:columns {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s-40","top":"var:preset|spacing|s-40"}}}} -->
 		<div class="wp-block-columns" data-audit-id="gemeenskap-hiw-grid">
 			<!-- wp:column {"lock":{"move":true,"remove":true}} -->
 			<div class="wp-block-column" data-audit-id="gemeenskap-hiw-col">
@@ -187,11 +187,11 @@
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-principles ink-band ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-principles ink-band ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained","contentSize":"64rem"}} -->
 <section class="wp-block-group alignfull ink-gemeenskap-principles ink-band ink-band--lg" data-audit-id="gemeenskap-principles" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-48"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide" data-audit-id="gemeenskap-principles-inner">
-		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
+	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-48"}},"layout":{"type":"default"}} -->
+	<div class="wp-block-group" data-audit-id="gemeenskap-principles-inner">
+		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group" data-audit-id="gemeenskap-principles-head">
 			<!-- wp:paragraph {"align":"center","className":"ink-eyebrow ink-eyebrow--tracked","style":{"spacing":{"margin":{"bottom":"0"}}}} -->
 			<p class="has-text-align-center ink-eyebrow ink-eyebrow--tracked" data-audit-id="gemeenskap-principles-eyebrow" style="margin-bottom:0">Hoe ons mekaar behandel</p>
@@ -203,8 +203,8 @@
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
-		<div class="wp-block-group" data-audit-id="gemeenskap-principles-grid">
+		<!-- wp:group {"className":"ink-gemeenskap-principles__grid","lock":{"move":true,"remove":true},"layout":{"type":"default"}} -->
+		<div class="wp-block-group ink-gemeenskap-principles__grid" data-audit-id="gemeenskap-principles-grid">
 		<!-- wp:columns {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s-24","top":"var:preset|spacing|s-24"}}}} -->
 		<div class="wp-block-columns">
 			<!-- wp:column {"lock":{"move":true,"remove":true}} -->
@@ -285,14 +285,15 @@
 
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-gemeenskap-cta ink-band ink-band--dark ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull ink-gemeenskap-cta ink-band ink-band--dark ink-band--lg" data-audit-id="gemeenskap-cta" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained","contentSize":"36rem"}} -->
-	<div class="wp-block-group" data-audit-id="gemeenskap-cta-inner">
-		<!-- wp:heading {"textAlign":"center","level":2,"className":"ink-heading-h2-on-dark"} -->
-		<h2 class="wp-block-heading has-text-align-center ink-heading-h2-on-dark" data-audit-id="gemeenskap-cta-h2">Gereed om by INK aan te sluit?</h2>
+	<!-- Lovable narrows only the paragraph (`max-w-xl`); the h2 and the button row span the container (spine S-15). -->
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
+	<div class="wp-block-group alignwide" data-audit-id="gemeenskap-cta-inner">
+		<!-- wp:heading {"textAlign":"center","level":2,"className":"ink-heading-h2-on-dark","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|s-16"}}}} -->
+		<h2 class="wp-block-heading has-text-align-center ink-heading-h2-on-dark" data-audit-id="gemeenskap-cta-h2" style="margin-bottom:var(--wp--preset--spacing--s-16)">Gereed om by INK aan te sluit?</h2>
 		<!-- /wp:heading -->
 
-		<!-- wp:paragraph {"align":"center","fontSize":"lg"} -->
-		<p class="has-text-align-center has-lg-font-size" data-audit-id="gemeenskap-cta-text">Dit is gratis, dit is niewinsgerig, en dit word stilletjies die beste plek aanlyn om te lees en gelees te word.</p>
+		<!-- wp:paragraph {"align":"center","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|s-40"}}},"fontSize":"lg"} -->
+		<p class="has-text-align-center has-lg-font-size" data-audit-id="gemeenskap-cta-text" style="margin-bottom:var(--wp--preset--spacing--s-40)">Dit is gratis, dit is niewinsgerig, en dit word stilletjies die beste plek aanlyn om te lees en gelees te word.</p>
 		<!-- /wp:paragraph -->
 
 		<!-- The CTA pair on the dark band: core/button blocks with the primitives `button-primary` (`is-style-ink-primary`) and `button-outline on-dark` (`is-style-ink-outline-on-dark`) block styles, lg size wrapper. -->

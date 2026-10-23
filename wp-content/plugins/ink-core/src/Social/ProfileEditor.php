@@ -155,7 +155,7 @@ final class ProfileEditor {
 				// "Oor my" — the already-ratified Oorsig-tab card heading for this
 				// exact bio content, reused verbatim as the field label.
 				. '<label class="ink-label ink-label--caps" for="ink-profiel-redigeer-bio">' . esc_html__( 'Oor my', 'ink-core' ) . '</label>'
-				. '<textarea class="ink-field ink-field--textarea" id="ink-profiel-redigeer-bio" data-audit-id="profiel-edit-textarea" name="bio" rows="4">' . esc_textarea( $bio ) . '</textarea></p>'
+				. '<textarea class="ink-field ink-field--textarea" id="ink-profiel-redigeer-bio" data-audit-id="profiel-edit-textarea" name="bio" rows="5">' . esc_textarea( $bio ) . '</textarea></p>'
 			. '<div class="ink-profiel-redigeer__aksies" data-audit-id="profiel-edit-actions">'
 				// Copy-debt: Save/Cancel have no ratified Afrikaans yet either —
 				// flagged the same way (PROFIEL-REDIGEER-KANSELLEER / -STOOR).

@@ -251,13 +251,15 @@ test( 'an unfiltered empty library shows the empty-state line without a clear-fi
 	expect( $html )->not->toContain( 'Vee filters uit' );
 } );
 
-test( 'toHtml renders the alignwide class on the section — the wrapping pattern alone is not enough (Post-Epic-19 width fix)', function (): void {
+test( 'toHtml renders the alignfull class on the root — the bands are full-bleed and carry their own container (fidelity Stage 4)', function (): void {
 	ink_biblioteek_render_stubs();
 
 	$cards = array( array( 'title' => 'Iets', 'permalink' => '/biblioteek/iets', 'author' => 'Lid Een' ) );
 
 	$html = Archive::toHtml( $cards, array(), array(), array( 'paged' => 1, 'max_pages' => 1, 'genre' => null, 'search' => '' ) );
-	expect( $html )->toContain( 'class="ink-biblioteek alignwide"' );
+	expect( $html )->toContain( 'class="ink-biblioteek alignfull"' );
+	expect( $html )->toContain( 'ink-band--intro' );
+	expect( $html )->toContain( 'ink-container' );
 } );
 
 test( 'a card renders its excerpt, read-time and cover image, omitting each when absent', function (): void {

@@ -317,3 +317,19 @@ published a new gedig · 3d ago" — the {type}/timing either side are already
 ratified/established sources, only this phrase is new)*
 AF:
 AF:
+
+---
+
+## 13. 404 page (new template, fidelity remediation Stage 4 row 12)
+
+The 404 page now has Lovable's NotFound structure: a "404" heading (no copy
+needed), a one-line message and a link home. Lovable's English is placeholder
+only — author the Afrikaans fresh.
+
+404-BOODSKAP
+EN: Oops! Page not found *(muted one-line message under the "404" heading)*
+AF:
+
+404-TUIS-SKAKEL
+EN: Return to Home *(underlined link to the home page under the message)*
+AF:

@@ -203,6 +203,19 @@ test( 'controlsHtml marks the active type and sort and preserves the other dimen
 	expect( $filtered )->toContain( 'Mees geliefd' );
 } );
 
+test( 'controlsHtml leads each type pill (not Alles) with its type icon, inside the link', function (): void {
+	ink_archive_render_stubs();
+
+	$html = WorksArchive::controlsHtml( null, WorksArchive::SORT_NUUT );
+
+	// Three type pills carry an inline icon; the Alles pill and the sort pills do not.
+	expect( substr_count( $html, '<svg' ) )->toBe( 3 );
+	expect( $html )->toMatch( '/<a [^>]*ink-ontdek-werke__filter-knoppie[^>]*><svg [^>]*data-audit-id="stories-filter-icon"/' );
+	expect( $html )->toContain( 'M16 8 2 22' );        // Feather (gedig)
+	expect( $html )->toContain( 'M12 7v14' );          // BookOpen (storie)
+	expect( $html )->toContain( 'M19 17V5a2 2 0 0 0-2-2H4' ); // ScrollText (artikel)
+} );
+
 test( 'dateBrowseHtml renders Alle datums + a pill per year and marks the active year', function (): void {
 	ink_archive_render_stubs();
 

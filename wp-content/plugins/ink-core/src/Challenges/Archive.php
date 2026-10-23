@@ -346,31 +346,40 @@ final class Archive {
 	/**
 	 * Build the archive HTML. Pure — Terms + escaping only.
 	 *
-	 * The intro/heading wrapper + `alignwide` class mirror `Hub::toHtml()`'s shell
-	 * (Post-Epic-19 fidelity pass, workstream 7's card-grid parity).
+	 * The intro band + list band mirror `Hub::toHtml()`'s shell (Post-Epic-19
+	 * fidelity pass, workstream 7's card-grid parity; fidelity Stage 4 row 14).
 	 *
 	 * @param list<string>                    $cards The pre-rendered card markup.
 	 * @param array{paged:int, max_pages:int} $nav The render context.
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
-		$intro = '<div class="ink-uitdagings__intro" data-audit-id="uitdagings-intro">'
+		// Fidelity Stage 4 (row 14, Treatment C OFF-RECIPE): the index-page shell the
+		// Lovable index pages use (`Library.tsx` intro) — a full-bleed tinted intro band
+		// with its own container, then the list in a `container py-12 md:py-16` band.
+		// Same shell as `Ink\Training\Hub` / `Ink\Library\Archive`; the root is
+		// `alignfull` and the pattern adds no padding of its own.
+		$intro = '<section class="ink-uitdagings__intro ink-band ink-band--intro ink-band--flush" data-audit-id="uitdagings-intro">'
+			. '<div class="ink-uitdagings__intro-houer ink-container">'
+			. '<div class="ink-uitdagings__intro-binne">'
 			. '<h1 class="ink-uitdagings__heading ink-heading-h1-index" data-audit-id="uitdagings-h1">' . esc_html( Terms::label( 'uitdaging_plural' ) ) . '</h1>'
-			. '</div>';
+			. '</div></div></section>';
+
+		$band = '<section class="ink-uitdagings__lys-band ink-container ink-band ink-band--step">';
 
 		if ( array() === $cards ) {
 			/* translators: %s: the challenges (uitdagings) label. */
 			$empty = sprintf( __( 'Geen %s gevind nie.', 'ink-core' ), Terms::label( 'uitdaging_plural' ) );
 
-			return '<section class="ink-uitdagings alignwide">' . $intro
-				. '<p class="ink-uitdagings__leeg">' . esc_html( $empty ) . '</p></section>';
+			return '<div class="ink-uitdagings alignfull">' . $intro . $band
+				. '<p class="ink-uitdagings__leeg">' . esc_html( $empty ) . '</p></section></div>';
 		}
 
-		$html = '<section class="ink-uitdagings alignwide">' . $intro . '<ul class="ink-uitdagings__list" data-audit-id="uitdagings-list">' . implode( '', $cards ) . '</ul>';
+		$html = '<div class="ink-uitdagings alignfull">' . $intro . $band . '<ul class="ink-uitdagings__list" data-audit-id="uitdagings-list">' . implode( '', $cards ) . '</ul>';
 
 		$paged     = isset( $nav['paged'] ) ? (int) $nav['paged'] : 1;
 		$max_pages = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;
 
-		return $html . ArchiveRender::pagination( $paged, $max_pages, 'ink-uitdagings', self::PAGED_VAR ) . '</section>';
+		return $html . ArchiveRender::pagination( $paged, $max_pages, 'ink-uitdagings', self::PAGED_VAR ) . '</section></div>';
 	}
 }

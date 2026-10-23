@@ -118,7 +118,7 @@ class NavigationRebuilder {
 			),
 			array(
 				'label' => 'Uitdagings',
-				'url'   => '/uitdagings',
+				'url'   => '/uitdaging/',
 			),
 			array(
 				'label' => 'InkPols',

@@ -18,6 +18,13 @@
  * through the `ink-foundation` text domain. Structural wrappers are locked
  * (move/remove) per Storie 1.6.
  *
+ * Fidelity Stage 4 (row 18, Treatment C — OFF-RECIPE): the intro is the
+ * index-page intro recipe (`ink-band--intro`, py 56 → 80 on the inner
+ * container, left-aligned max-w-3xl copy, 18px relaxed lede — Lovable
+ * `Browse.tsx:389-402`); the directory section is the Ontdek content-panel
+ * recipe (`ink-ontdek-paneel`). Both inner wide groups carry no `layout`, so
+ * their children are not clamped to the 768px content size (see ontdek.php).
+ *
  * @package Ink\Foundation
  */
 
@@ -25,25 +32,25 @@ $ink_ledegids_label = function_exists( 'ink_foundation_term' )
 	? ink_foundation_term( 'ledegids', 'Ledegids' )
 	: 'Ledegids';
 ?>
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-16","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" data-audit-id="ledegids-intro" style="padding-top:var(--wp--preset--spacing--s-48);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide" data-audit-id="ledegids-intro-inner">
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-ledegids-intro ink-band ink-band\u002d\u002dintro ink-band\u002d\u002dflush","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-ledegids-intro ink-band ink-band--intro ink-band--flush" data-audit-id="ledegids-intro" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
+	<!-- wp:group {"align":"wide","className":"ink-ledegids-intro__inner","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
+	<div class="wp-block-group alignwide ink-ledegids-intro__inner" data-audit-id="ledegids-intro-inner">
 		<!-- wp:heading {"level":1,"className":"ink-heading-h1-index"} -->
 		<h1 class="wp-block-heading ink-heading-h1-index" data-audit-id="ledegids-h1"><?php echo esc_html( $ink_ledegids_label ); ?></h1>
 		<!-- /wp:heading -->
 
-		<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-		<p class="has-muted-text-color has-text-color has-md-font-size" data-audit-id="ledegids-lede"><?php echo esc_html__( 'Ontdek die skrywers van die gemeenskap.', 'ink-foundation' ); ?></p>
+		<!-- wp:paragraph {"className":"ink-ledegids-intro__tekst","fontSize":"lg","textColor":"muted-text"} -->
+		<p class="ink-ledegids-intro__tekst has-muted-text-color has-text-color has-lg-font-size" data-audit-id="ledegids-lede"><?php echo esc_html__( 'Ontdek die skrywers van die gemeenskap.', 'ink-foundation' ); ?></p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
 </section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-16","bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
-<section class="wp-block-group alignfull" data-audit-id="ledegids-directory" style="padding-top:var(--wp--preset--spacing--s-16);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-24)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
+<!-- wp:group {"tagName":"section","align":"full","className":"ink-ontdek-paneel","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
+<section class="wp-block-group alignfull ink-ontdek-paneel" data-audit-id="ledegids-directory" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
+	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide" data-audit-id="ledegids-directory-inner">
 		<!-- wp:ink/ontdek-skrywers /-->
 	</div>

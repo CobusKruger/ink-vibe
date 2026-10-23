@@ -73,7 +73,7 @@
 			<!-- wp:navigation-link {"label":"Tuis","url":"/"} /-->
 			<!-- wp:navigation-link {"label":"Ontdek","url":"/ontdek"} /-->
 			<!-- wp:navigation-link {"label":"Opleiding","url":"/opleiding"} /-->
-			<!-- wp:navigation-link {"label":"Uitdagings","url":"/uitdagings"} /-->
+			<!-- wp:navigation-link {"label":"Uitdagings","url":"/uitdaging/"} /-->
 			<!-- wp:navigation-link {"label":"Gemeenskap","url":"/gemeenskap"} /-->
 			<!-- wp:navigation-link {"label":"My profiel","url":"/my-profiel"} /-->
 		<!-- /wp:navigation -->

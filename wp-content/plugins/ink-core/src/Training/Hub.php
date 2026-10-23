@@ -483,21 +483,31 @@ final class Hub {
 		// docs/ui-copy-translations.md mapping: "The Learning Library" -> "Opleiding");
 		// the H1 and intro paragraph are distinct authored copy ('opleiding_h1'/
 		// 'opleiding_intro').
-		$intro = '<div class="ink-opleiding__intro" data-audit-id="library-intro">'
+		//
+		// Layout (fidelity Stage 4, row 08b): Library.tsx is a run of full-bleed
+		// sibling bands — a tinted intro band with its own container, then the shelf
+		// and the browse area as `container py-12 md:py-16` sections. The hub root is
+		// therefore `alignfull` and emits those bands itself; the pattern shell adds
+		// no padding or width of its own.
+		$intro = '<section class="ink-opleiding__intro ink-band ink-band--intro ink-band--flush" data-audit-id="library-intro">'
+			. '<div class="ink-opleiding__intro-houer ink-container" data-audit-id="library-intro-container">'
+			. '<div class="ink-opleiding__intro-binne" data-audit-id="library-intro-inner">'
 			. '<p class="ink-opleiding__eyebrow ink-eyebrow ink-eyebrow--kicker" data-audit-id="library-eyebrow">' . self::withAuditId( self::icon( self::ICON_LIBRARY ), 'library-eyebrow-icon' )
 			. '<span data-audit-id="library-eyebrow-text">' . esc_html( Terms::label( 'opleiding' ) ) . '</span></p>'
 			. '<h1 class="ink-opleiding__heading ink-heading-h1-index" data-audit-id="library-h1">' . esc_html( Terms::label( 'opleiding_h1' ) ) . '</h1>'
 			. '<p class="ink-opleiding__intro-teks" data-audit-id="library-lede">' . esc_html( Terms::label( 'opleiding_intro' ) ) . '</p>'
 			. self::searchHtml( $search_term, $active_facet )
-			. '</div>';
+			. '</div></div></section>';
 
-		$controls = self::featuredHtml( $featured ) . self::filterHtml( $facets, $active_facet );
+		$shelf  = self::featuredHtml( $featured );
+		$browse = '<section class="ink-opleiding__verken ink-container ink-band ink-band--step" data-audit-id="library-browse">'
+			. self::filterHtml( $facets, $active_facet );
 
 		if ( array() === $cards ) {
 			$is_filtered = ( null !== $active_facet ) || ( '' !== $search_term );
 
-			return '<section class="ink-opleiding alignwide" data-audit-id="library-archive">' . $intro . $controls
-				. self::emptyStateHtml( $is_filtered ) . '</section>';
+			return '<div class="ink-opleiding alignfull" data-audit-id="library-archive">' . $intro . $shelf . $browse
+				. self::emptyStateHtml( $is_filtered ) . '</section></div>';
 		}
 
 		$total        = isset( $nav['total'] ) ? (int) $nav['total'] : count( $cards );
@@ -505,7 +515,7 @@ final class Hub {
 		$result_count = '<p class="ink-opleiding__telling" data-audit-id="library-count">'
 			. esc_html( self::resultCountLabel( $total, $facet_name, $search_term ) ) . '</p>';
 
-		$html = '<section class="ink-opleiding alignwide" data-audit-id="library-archive">' . $intro . $controls
+		$html = '<div class="ink-opleiding alignfull" data-audit-id="library-archive">' . $intro . $shelf . $browse
 			. $result_count . '<ul class="ink-opleiding__list" data-audit-id="library-grid">';
 
 		$first = true;
@@ -518,7 +528,7 @@ final class Hub {
 		$paged     = isset( $nav['paged'] ) ? (int) $nav['paged'] : 1;
 		$max_pages = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;
 
-		$html .= '</ul>' . self::withAuditId( ArchiveRender::pagination( $paged, $max_pages, self::CSS, self::PAGED_VAR ), 'library-pagination' ) . '</section>';
+		$html .= '</ul>' . self::withAuditId( ArchiveRender::pagination( $paged, $max_pages, self::CSS, self::PAGED_VAR ), 'library-pagination' ) . '</section></div>';
 
 		return $html;
 	}
@@ -589,9 +599,11 @@ final class Hub {
 			return '';
 		}
 
-		$html = '<div class="ink-opleiding__rak" data-audit-id="library-shelf">'
+		$html = '<section class="ink-opleiding__rak ink-container ink-band ink-band--step" data-audit-id="library-shelf">'
+			. '<div class="ink-opleiding__rak-kop" data-audit-id="library-shelf-head"><div>'
 			. '<h2 class="ink-opleiding__rak-titel ink-heading-h2-sub" data-audit-id="library-shelf-h2">' . esc_html__( 'Die redakteur se rak', 'ink-core' ) . '</h2>'
 			. '<p class="ink-opleiding__rak-onderskrif" data-audit-id="library-shelf-sub">' . esc_html__( 'Drie stukke om mee te begin.', 'ink-core' ) . '</p>'
+			. '</div></div>'
 			. '<ul class="ink-opleiding__rak-lys" data-audit-id="library-shelf-grid">';
 
 		$first = true;
@@ -601,7 +613,7 @@ final class Hub {
 			$first = false;
 		}
 
-		return $html . '</ul></div>';
+		return $html . '</ul></section>';
 	}
 
 	/**
@@ -743,7 +755,10 @@ final class Hub {
 			? '<p class="ink-opleiding__item-uittreksel"' . self::auditAttr( $audit, '-excerpt' ) . '>' . esc_html( $excerpt ) . '</p>'
 			: '';
 
+		// The body wrapper mirrors Lovable's `<Card>` › `<CardContent className="p-6">`
+		// (and Library\Archive's `__item-inhoud`), so the card itself carries no padding.
 		return '<li class="' . esc_attr( $class ) . '"' . self::auditAttr( $audit, '' ) . '>'
+			. '<div class="ink-opleiding__item-inhoud"' . self::auditAttr( $audit, '-body' ) . '>'
 			. $meta
 			. '<a class="ink-opleiding__titel ink-heading-h3-card"' . self::auditAttr( $audit, '-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $title ) . '</a>'
 			. $excerpt_html
@@ -751,7 +766,7 @@ final class Hub {
 			. '<span class="ink-opleiding__outeur"' . self::auditAttr( $audit, '-author' ) . '>' . esc_html( $author ) . '</span>'
 			. '<a class="ink-opleiding__lees"' . self::auditAttr( $audit, '-read' ) . ' href="' . esc_url( $permalink ) . '" tabindex="-1" aria-hidden="true">'
 			. esc_html__( 'Lees', 'ink-core' ) . self::icon( self::ICON_ARROW ) . '</a>'
-			. '</div></li>';
+			. '</div></div></li>';
 	}
 
 	/**

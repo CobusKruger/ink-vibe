@@ -101,12 +101,15 @@ final class ContributionCta {
 	 * @return string
 	 */
 	public static function toHtml( string $url ): string {
-		return '<aside class="ink-opleiding-bydra ink-band ink-band--strip" data-audit-id="library-cta">'
+		// Full-bleed cream band with a top rule and its own container (Library.tsx
+		// closing CTA: `border-t bg-cream/40` › `container py-16 text-center`).
+		return '<aside class="ink-opleiding-bydra alignfull ink-band ink-band--cream ink-band--border-t ink-band--flush" data-audit-id="library-cta">'
+			. '<div class="ink-opleiding-bydra__houer ink-container" data-audit-id="library-cta-container">'
 			. '<h2 class="ink-opleiding-bydra__titel ink-heading-h2-section" data-audit-id="library-cta-h2">' . esc_html__( 'Het jy iets om te deel?', 'ink-core' ) . '</h2>'
 			. '<p class="ink-opleiding-bydra__teks" data-audit-id="library-cta-text">'
 			. esc_html__( 'Die opleidingsafdeling word deur ons gemeenskap geskryf. As jy \'n skryfkunsessay of \'n gids wil bydra, sal ons dit graag wil lees.', 'ink-core' )
 			. '</p>'
 			. '<a class="ink-opleiding-bydra__knoppie ink-btn ink-btn--primary ink-btn--cta" data-audit-id="library-cta-btn" href="' . esc_url( $url ) . '">' . esc_html__( 'Plaas \'n stuk', 'ink-core' ) . '</a>'
-			. '</aside>';
+			. '</div></aside>';
 	}
 }
