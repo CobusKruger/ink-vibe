@@ -26,10 +26,16 @@ It runs, in order: sanitise, users, tiers, verify-subscriptions, library-trainin
 
 1. `wp ink report-result-posts --file=tmp/result-posts.csv`: about 12 a year, all by Anze or Inkmoderator. Review the list; the confirmed list is what gradering relies on.
 2. Spot-check counts: posts still in `skryfwerk` should be small (staging copy: about 150, mostly result posts and posts filed only under a challenge category).
-3. `wp ink audit-production`, `wp ink audit-translations`, `wp ink verify-redirects` (crawl), `wp ink verify-media`.
+3. `wp ink audit-production`, `wp ink audit-translations`, `wp ink verify-redirects` (audits the stored redirect map for chains, loops and empty targets; `--fix` flattens it; it does NOT make HTTP requests), `wp ink verify-media`. The live crawl of old URLs is a separate manual step: see `docs/redirect-integrity-runbook.md`. The section redirects (`/kategorie/lede-bydraes/…`, `/biblioteek/projek-wenners/…`) are served at request time from `StaticRedirects`, not from the stored map, so include a few of them in that crawl.
 4. Open a few of each: a Gedigte shelf poem, a collection (Flipvis), a Woordeboeke item, an Opleiding module, an old challenge and its entries, `/ontdek/`.
 5. Old URLs: `/kategorie/lede-bydraes/...` and `/biblioteek/projek-wenners/...` redirect to Ontdek; the dropped `plagiaat-letterdiefstal` duplicate redirects to the Opleiding copy.
 6. Challenge flow: pick an old challenge, generate the judge emails, confirm they arrive only in the sink inbox.
+
+## Known duplicate and slug checks (done 2026-10-24 on the staging copy)
+
+- One real duplicate: skryfwerk 35127 = opleiding 21602 (`plagiaat-letterdiefstal`); handled by `StaticRedirects::DUPLICATES`.
+- Library items that share a title with a member poem or story (`Die Sprokie`, `'n Perd van 'n ander kleur`) are different works in different post types, so their URLs do not clash. They are not duplicates.
+- After flattening the legacy hierarchy, no two migrated items share a slug within the same post type. The only slug overlap with a Page is `afrikaanse-taalgids` (Opleiding module vs the Afrikaanse Taalgids Page); they live under different URL prefixes. Re-run `tmp`-style check on the fresh copy, since prod will have changed.
 
 ## Cutover
 
