@@ -150,16 +150,17 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 
 **Volume:** high. The archive contains years of content at 50–300 posts per month. Total estimated at several thousand posts.
 
-**Current state:** all content is standard WordPress posts, mostly in categories like `biblioteek` and `opleiding`, or uncategorised.
+**Current state:** member writing is standard WordPress posts filed under the `lede-bydraes` category tree (children: `gedigte`, `musiek-liriek`, `algemeen-verhale` and its sub-categories, `artikels`, `algemeengorrel` (Meningstukke), `rubrieke`, `prosa-lede-bydraes`; `prosa` and `verhale-kortverhale` are top-level). Writers tag their own work, so tags are right far more often than not but never perfect. Library and training content is NOT in core posts (see below).
 
-**Target state:** three custom post types — `gedig`, `storie`, `artikel` — plus library and training CPTs.
+**Target state:** three custom post types — `gedig`, `storie`, `artikel` — with `skryfwerk` kept as the deliberate fallback for anything that cannot be categorised.
 
-**Approach:**
+**Approach (implemented in `PostReclassifier`):**
 
-1. Audit current categories and tags to understand how well they distinguish content types.
-2. If categories are reliable, write a migration script that reassigns posts to the appropriate CPT based on category.
-3. If categories are unreliable, run a bulk-edit admin pass to classify manually, then script the CPT reassignment.
-4. After CPT reassignment, flush rewrite rules and verify single post URLs.
+1. A post's own categories and all their ancestors are matched against a committed slug map. `gedigte` and `musiek-liriek` give `gedig` (`musiek-liriek` also gets a backend `genre` term; on the front end and for gradering it is a poem). The `algemeen-verhale` subtree and `verhale-kortverhale` give `storie`. `artikels`, `algemeengorrel`, `rubrieke`, `prosa` and `prosa-lede-bydraes` give `artikel`.
+2. When several types match, the most specific wins: `gedig` > `storie` > `artikel`.
+3. No match means `skryfwerk`. Measured on the staging copy this left 158 posts, down from 3,358 under the old 10-slug map, and nearly all are challenge result posts or posts filed only under a challenge category.
+4. Drafts follow the same rules and stay drafts. Do not chase perfection (for example, story-like Meningstukke): the residue is reviewed, not hand-classified at volume.
+5. After CPT reassignment, flush rewrite rules and verify single post URLs.
 
 **URL impact:** if the new CPTs use different permalink bases (e.g. `/gedig/` instead of the current URL structure), every moved post needs a redirect. See the Redirects section below.
 
@@ -186,13 +187,11 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 
 **Volume:** medium. Multiple pages of archive content, organised under project winner sub-paths.
 
-**Current state:** standard WordPress posts under the `biblioteek` URL path. Sub-paths include `projek-wenners`, `wen-verhale`, `wen-gedigte`, and `prosa`.
+**Current state:** the content lives in the legacy hierarchical custom post type `bibliotekon` (553 posts on the staging copy), NOT in core posts. Only the `/biblioteek/` index page is a Page. Top-level roots are the Gedigte shelf (91 classic poets), several collections (Vrystaatstories, Oom Pine se jagstories, Liegstories, Vergete Helde, Flipvis se verhale, Christo Visser se vriend Jan, Gert Rossouw se briewe aan Celeste, FAK with Kinderliedjies nested, Jakkals en Wolf, and two Kinderrympies roots) and `projek-wenners` (247 hand-maintained winners pages).
 
-**Target state:** a library CPT (e.g. `biblioteek_item`) with taxonomy for content type, challenge round, tier, and date.
+**Target state:** `biblioteek_item`, with each shelf or collection a `genre` term. The two Kinderrympies roots merge into one "Kinderrympies" collection. The dictionaries that prod keeps under Opleiding move here as a "Woordeboeke" shelf.
 
-**Approach:** scriptable based on URL patterns and categories once the taxonomy is defined. The URL structure already partially encodes the metadata needed (winner type, format).
-
-**Special consideration:** winner posts should link back to the challenge that produced them. If historical challenges are modelled structurally, this relationship can be set during migration. If not, the link can be expressed as taxonomy rather than a post relationship.
+**Approach:** `LibraryTrainingMigrator` reads the legacy CPTs and decides each item from its root slug via the committed table `LegacyContentMap` (human decisions live in the repo, not the database). The pre-migration URL is rebuilt from the slug chain, because the legacy CPTs are not registered on the new site. Unknown roots are reported, never guessed. `projek-wenners` is NOT migrated: it is replaced by the dynamic winners tab in Ontdek, with 301s from the old URLs. Gradering comes from challenge result posts and win counts, not from these pages.
 
 ---
 
@@ -200,11 +199,11 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 
 **Volume:** medium. At least 20 pages of archive, with articles going back to 2020.
 
-**Current state:** standard WordPress posts under the `opleiding` URL path. Organised into sub-paths like `skryfkuns`, `taalgidse`, `woordeboeke`, `digkuns`.
+**Current state:** the legacy hierarchical custom post type `opleiding` (194 posts on the staging copy), NOT core posts. The "Stof en tegniek – Gert Strydom" course alone is 150 modules. Several roots (`opleiding`, `gedigte`, `digkuns`, `skryfkuns`, `taalgidse`, `woordeboeke`, `algemene-wenke`) are empty section placeholders.
 
-**Target state:** a training CPT (e.g. `opleiding_artikel`) with taxonomy for skill area, format, and intended audience.
+**Target state:** `opleiding_artikel` with a `vaardigheid` term (Digkuns, Skryfkuns, Taalgidse, Algemene wenke). Placeholders are not migrated; their children are. The dictionaries move to the Biblioteek (above). The old "stergradering" announcement is dropped. `plagiaat-letterdiefstal` exists twice (a duplicate also sits in `skryfwerk`); the Opleiding copy is kept and the duplicate is dropped with a redirect.
 
-**Approach:** scriptable based on the existing URL sub-paths, which map reasonably well to skill area taxonomy. Each sub-path becomes a taxonomy term.
+**Approach:** the same committed `LegacyContentMap` table drives this, with the same slug-chain 301 sources.
 
 ---
 
@@ -230,7 +229,9 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 
 **Target state:** a challenge CPT that stores the challenge brief, deadline, theme, and then related winner records per tier.
 
-**Approach:** decide on historical scope first (see Pre-migration decisions). For new challenges after launch, use the new CPT from day one. For historical data, either import recent years manually or leave historical challenges as flat archive posts under a legacy category.
+**Approach:** on prod a writer enters a challenge by ticking its category (for example "Oktober 2026 – Getal 10 projek"). Every descendant of the `projekte` and `kompetisie` categories is a challenge round (`ink-slypskool`, a workshop, is excluded). `migrate-challenges` creates an Uitdaging per round and remembers its source category; `SourceCategorySync` then keeps the link permanent, so ticking that category on a post appends the round term and the entry joins the challenge with no manual step (`wp ink sync-challenge-entries` pulls in everything already filed). Entries are found through the round term across all content types. Cloned term counts are stale, so the pipeline recounts them.
+
+Gradering authority is the challenge result posts ("<Maand> <jaar> – <naam> projek – Kommentaar en uitslae"), together with Gedigte-only win counts. Title markers such as "(Goud)" are only a cross-check report, because writers forget them, add them on the sly, or put them on non-poems.
 
 ---
 
@@ -341,6 +342,8 @@ For posts migrating to typed CPTs, generate redirects automatically as part of t
 ---
 
 ## Suggested migration order
+
+**Cutover is a re-clone, not a merge.** The database is disposable and every human decision is a committed file, so the final run is: take a fresh prod copy, run `wp ink migrate-all --tiers=docs/data-cleanup/winners/tier-import.csv`, verify, flip DNS. `migrate-all` runs steps 3–13 below in order, checks the tier CSV first, stores each step's outcome so a failed run resumes where it stopped (`--from=<step>` restarts, `--reset` clears), stops at the first failure, and flags any step that printed nothing or only zeros. The gap between the final clone and the DNS flip is covered by a short prod freeze (preferred, if the timed rehearsal shows the run is fast).
 
 Run in this sequence to minimise risk and dependency failures.
 
