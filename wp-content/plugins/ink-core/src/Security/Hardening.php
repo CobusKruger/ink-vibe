@@ -60,6 +60,9 @@ class Hardening {
 	public function register(): void {
 		if ( (bool) apply_filters( 'ink_security_block_user_deletion', true ) ) {
 			add_filter( 'map_meta_cap', array( $this, 'filterUserDeletionCaps' ), 10, 2 );
+			// BuddyPress lets a member delete THEIR OWN account without any capability
+			// check, so the cap filter alone does not cover the front-end path.
+			add_filter( 'bp_disable_account_deletion', '__return_true' );
 		}
 
 		if ( (bool) apply_filters( 'ink_security_disable_xmlrpc', true ) ) {
