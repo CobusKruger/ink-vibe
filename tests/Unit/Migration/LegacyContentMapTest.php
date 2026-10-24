@@ -61,7 +61,7 @@ test( 'dictionaries move from Opleiding to the Biblioteek Woordeboeke shelf, whe
 	}
 } );
 
-test( 'the stergradering announcement is skipped; containers are not migrated but their children are', function (): void {
+test( 'the stergradering announcement is skipped; a container row is flagged and its children keep their destination', function (): void {
 	expect( LegacyContentMap::decide( 'opleiding', array( 'inligtingstuk-stergradering-projekte-en-slypskool' ) )['action'] )->toBe( LegacyContentMap::SKIP );
 	expect( LegacyContentMap::decide( 'opleiding', array( 'gedigte' ) )['action'] )->toBe( LegacyContentMap::CONTAINER );
 
@@ -99,12 +99,14 @@ test( 'run migrates legacy-CPT rows via the mapping, recording the rebuilt URL a
 		}
 		protected function legacyCptContent(): array {
 			return array(
-				(object) array( 'id' => 10, 'legacy_type' => 'bibliotekon', 'slugs' => array( 'flipvis-se-verhale' ) ),
-				(object) array( 'id' => 11, 'legacy_type' => 'bibliotekon', 'slugs' => array( 'flipvis-se-verhale', 'deel-1' ) ),
-				(object) array( 'id' => 12, 'legacy_type' => 'bibliotekon', 'slugs' => array( 'projek-wenners', 'prosa', 'x' ) ),
-				(object) array( 'id' => 13, 'legacy_type' => 'opleiding', 'slugs' => array( 'gedigte' ) ),
-				(object) array( 'id' => 14, 'legacy_type' => 'opleiding', 'slugs' => array( 'gedigte', 'dignet-woordeboek' ) ),
-				(object) array( 'id' => 15, 'legacy_type' => 'opleiding', 'slugs' => array( 'onbekend' ) ),
+				(object) array( 'id' => 10, 'parent' => 0, 'legacy_type' => 'bibliotekon', 'slugs' => array( 'flipvis-se-verhale' ) ),
+				(object) array( 'id' => 11, 'parent' => 10, 'legacy_type' => 'bibliotekon', 'slugs' => array( 'flipvis-se-verhale', 'deel-1' ) ),
+				(object) array( 'id' => 12, 'parent' => 0, 'legacy_type' => 'bibliotekon', 'slugs' => array( 'projek-wenners', 'prosa', 'x' ) ),
+				(object) array( 'id' => 13, 'parent' => 0, 'legacy_type' => 'opleiding', 'slugs' => array( 'gedigte' ) ),
+				(object) array( 'id' => 14, 'parent' => 13, 'legacy_type' => 'opleiding', 'slugs' => array( 'gedigte', 'dignet-woordeboek' ) ),
+				(object) array( 'id' => 15, 'parent' => 0, 'legacy_type' => 'opleiding', 'slugs' => array( 'onbekend' ) ),
+				(object) array( 'id' => 16, 'parent' => 13, 'legacy_type' => 'opleiding', 'slugs' => array( 'gedigte', 'digvorme' ) ),
+				(object) array( 'id' => 17, 'parent' => 0, 'legacy_type' => 'opleiding', 'slugs' => array( 'digkuns' ) ),
 			);
 		}
 		protected function recordSourceUrlFor( int $post_id, string $url ): void {
@@ -127,12 +129,14 @@ test( 'run migrates legacy-CPT rows via the mapping, recording the rebuilt URL a
 	$summary = $migration->run();
 
 	expect( $summary['biblioteek'] )->toBe( 3 );      // 10, 11 + dictionary 14
-	expect( $summary['opleiding'] )->toBe( 0 );
+	expect( $summary['opleiding'] )->toBe( 2 );       // 16 + its kept container 13
 	expect( $summary['legacy_skipped'] )->toBe( 2 ); // winners 12 + unknown root 15
-	expect( $summary['containers'] )->toBe( 1 );     // 13
+	expect( $summary['containers'] )->toBe( 1 );     // empty placeholder 17 is dropped
 	expect( $summary['unmapped_roots'] )->toBe( array( 'onbekend' ) );
 	expect( $migration->urls[11] )->toBe( '/biblioteek/flipvis-se-verhale/deel-1/' );
 	expect( $migration->urls[14] )->toBe( '/opleiding/gedigte/dignet-woordeboek/' );
-	expect( $migration->detached )->toBe( array( 10, 11, 14 ) );
-	expect( $migration->named[2] )->toBe( array( 14, Taxonomies::GENRE, 'Woordeboeke' ) );
+	// Nested URLs are kept (11 under 10, 16 under 13); the dictionary moved to the library is detached.
+	expect( $migration->detached )->toBe( array( 14 ) );
+	expect( $migration->named )->toContain( array( 14, Taxonomies::GENRE, 'Woordeboeke' ) );
+	expect( $migration->named )->toContain( array( 13, Taxonomies::VAARDIGHEID, 'Digkuns' ) );
 } );

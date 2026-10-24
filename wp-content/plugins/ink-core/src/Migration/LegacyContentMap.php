@@ -25,7 +25,9 @@ defined( 'ABSPATH' ) || exit;
  *                  term (`genre` for the shelf or collection, `vaardigheid` for training);
  *  - `skip`      → deliberately not migrated (winners pages are replaced by the dynamic
  *                  Ontdek tab; old announcements are dropped);
- *  - `container` → an empty menu/section placeholder; its children are migrated, it is not.
+ *  - `container` → a section placeholder. Its children keep their nested URL, so the
+ *                  placeholder is migrated as their parent when it keeps any children, and
+ *                  dropped when it is empty. Its decision carries the destination it would get.
  *
  * Some opleiding items live under another root but belong elsewhere (the dictionaries
  * under the old "gedigte" container): {@see ITEM_OVERRIDES} is keyed by the item's own slug.
@@ -287,13 +289,13 @@ final class LegacyContentMap {
 			return self::result( self::SKIP, null, null, null, $root );
 		}
 
-		// A container's own row is not migrated, but its children inherit its term.
-		if ( self::CONTAINER === $rule['action'] ) {
-			if ( count( $slugs ) === 1 ) {
-				return self::result( self::CONTAINER, null, null, null, $root );
-			}
+		// A container's own row is only migrated when it keeps children (the caller decides:
+		// the children's URLs run through it). It carries the destination its children get.
+		$is_container_row = false;
 
-			$rule = array(
+		if ( self::CONTAINER === $rule['action'] ) {
+			$is_container_row = 1 === count( $slugs );
+			$rule             = array(
 				'action' => self::MIGRATE,
 				'term'   => $rule['term'] ?? null,
 			);
@@ -307,7 +309,7 @@ final class LegacyContentMap {
 		$cpt        = $to_library ? PostTypes::BIBLIOTEEK_ITEM : PostTypes::OPLEIDING_ARTIKEL;
 		$taxonomy   = $to_library ? Taxonomies::GENRE : Taxonomies::VAARDIGHEID;
 
-		return self::result( self::MIGRATE, $cpt, $taxonomy, $rule['term'] ?? null, $root );
+		return self::result( $is_container_row ? self::CONTAINER : self::MIGRATE, $cpt, $taxonomy, $rule['term'] ?? null, $root );
 	}
 
 	/**

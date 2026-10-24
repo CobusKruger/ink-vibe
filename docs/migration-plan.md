@@ -191,7 +191,7 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 
 **Target state:** `biblioteek_item`, with each shelf or collection a `genre` term. The two Kinderrympies roots merge into one "Kinderrympies" collection. The dictionaries that prod keeps under Opleiding move here as a "Woordeboeke" shelf.
 
-**Approach:** `LibraryTrainingMigrator` reads the legacy CPTs and decides each item from its root slug via the committed table `LegacyContentMap` (human decisions live in the repo, not the database). The pre-migration URL is rebuilt from the slug chain, because the legacy CPTs are not registered on the new site. Unknown roots are reported, never guessed. `projek-wenners` is NOT migrated: it is replaced by the dynamic winners tab in Ontdek, with 301s from the old URLs. Gradering comes from challenge result posts and win counts, not from these pages.
+**Approach:** `LibraryTrainingMigrator` reads the legacy CPTs and decides each item from its root slug via the committed table `LegacyContentMap` (human decisions live in the repo, not the database). The pre-migration URL is rebuilt from the slug chain, because the legacy CPTs are not registered on the new site. Both CPTs are hierarchical, so items keep their nested URLs (`/biblioteek/<collection>/<item>/`, `/opleiding/<section>/<item>/`) and need no redirect. Only items that deliberately move get a 301 (the dictionaries, the dropped duplicate). Unknown roots are reported, never guessed. `projek-wenners` is NOT migrated: it is replaced by the dynamic winners tab in Ontdek, with 301s from the old URLs. Gradering comes from challenge result posts and win counts, not from these pages.
 
 ---
 
@@ -201,7 +201,7 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 
 **Current state:** the legacy hierarchical custom post type `opleiding` (194 posts on the staging copy), NOT core posts. The "Stof en tegniek – Gert Strydom" course alone is 150 modules. Several roots (`opleiding`, `gedigte`, `digkuns`, `skryfkuns`, `taalgidse`, `woordeboeke`, `algemene-wenke`) are empty section placeholders.
 
-**Target state:** `opleiding_artikel` with a `vaardigheid` term (Digkuns, Skryfkuns, Taalgidse, Algemene wenke). Placeholders are not migrated; their children are. The dictionaries move to the Biblioteek (above). The old "stergradering" announcement is dropped. `plagiaat-letterdiefstal` exists twice (a duplicate also sits in `skryfwerk`); the Opleiding copy is kept and the duplicate is dropped with a redirect.
+**Target state:** `opleiding_artikel` with a `vaardigheid` term (Digkuns, Skryfkuns, Taalgidse, Algemene wenke). A placeholder is migrated as the parent page of its children only when some of them stay under it (the old `gedigte` section); empty placeholders are dropped. The dictionaries move to the Biblioteek (above). The old "stergradering" announcement is dropped. `plagiaat-letterdiefstal` exists twice (a duplicate also sits in `skryfwerk`); the Opleiding copy is kept and the duplicate is dropped with a redirect.
 
 **Approach:** the same committed `LegacyContentMap` table drives this, with the same slug-chain 301 sources.
 

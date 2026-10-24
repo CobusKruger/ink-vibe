@@ -209,6 +209,9 @@ class LibraryTrainingMigrator {
 			}
 		}
 
+		$rows      = array();
+		$decisions = array();
+
 		foreach ( $this->legacyCptContent() as $item ) {
 			$post_id = (int) ( $item->id ?? 0 );
 			$type    = (string) ( $item->legacy_type ?? '' );
@@ -219,21 +222,59 @@ class LibraryTrainingMigrator {
 			}
 
 			$roots_seen[ $type ][] = (string) $slugs[0];
-			$decision              = LegacyContentMap::decide( $type, $slugs );
+			$decisions[ $post_id ] = LegacyContentMap::decide( $type, $slugs );
+			$rows[ $post_id ]      = array(
+				'type'   => $type,
+				'slugs'  => $slugs,
+				'parent' => (int) ( $item->parent ?? 0 ),
+			);
+		}
+
+		// A container is kept only if some child that stays under it is migrated.
+		$kept_containers = array();
+
+		foreach ( $rows as $post_id => $row ) {
+			$parent = $row['parent'];
+
+			if ( $parent > 0 && isset( $decisions[ $parent ] ) && LegacyContentMap::CONTAINER === $decisions[ $parent ]['action']
+				&& LegacyContentMap::MIGRATE === $decisions[ $post_id ]['action']
+				&& $decisions[ $parent ]['cpt'] === $decisions[ $post_id ]['cpt'] ) {
+				$kept_containers[ $parent ] = true;
+			}
+		}
+
+		foreach ( $rows as $post_id => $row ) {
+			$decision = $decisions[ $post_id ];
 
 			if ( LegacyContentMap::CONTAINER === $decision['action'] ) {
-				++$containers;
-				continue;
-			}
-
-			if ( LegacyContentMap::MIGRATE !== $decision['action'] || null === $decision['cpt'] ) {
+				if ( ! isset( $kept_containers[ $post_id ] ) ) {
+					++$containers;
+					continue;
+				}
+			} elseif ( LegacyContentMap::MIGRATE !== $decision['action'] ) {
 				++$legacy_skipped;
 				continue;
 			}
 
-			$this->recordSourceUrlFor( $post_id, LegacyContentMap::legacyPath( $type, $slugs ) );
+			if ( null === $decision['cpt'] ) {
+				++$legacy_skipped;
+				continue;
+			}
+
+			$this->recordSourceUrlFor( $post_id, LegacyContentMap::legacyPath( $row['type'], $row['slugs'] ) );
 			$this->setPostType( $post_id, $decision['cpt'] );
-			$this->clearParent( $post_id );
+
+			// Keep the nested URL when the parent is migrated to the same type; otherwise
+			// (moved dictionaries, skipped or dropped parents) detach so the URL stays valid.
+			$parent          = $row['parent'];
+			$parent_decision = $decisions[ $parent ] ?? null;
+			$parent_kept     = null !== $parent_decision
+				&& $parent_decision['cpt'] === $decision['cpt']
+				&& ( LegacyContentMap::MIGRATE === $parent_decision['action'] || isset( $kept_containers[ $parent ] ) );
+
+			if ( $parent > 0 && ! $parent_kept ) {
+				$this->clearParent( $post_id );
+			}
 
 			if ( PostTypes::BIBLIOTEEK_ITEM === $decision['cpt'] ) {
 				++$biblioteek;
@@ -329,7 +370,7 @@ class LibraryTrainingMigrator {
 	/**
 	 * The legacy `bibliotekon` / `opleiding` CPT content to migrate. Overridable seam.
 	 *
-	 * Rows `{id, legacy_type, slugs}` where `slugs` is the chain of post slugs from the
+	 * Rows `{id, legacy_type, slugs, parent}` where `slugs` is the chain of post slugs from the
 	 * tree root down to the item (via `post_parent`).
 	 *
 	 * @return array<int, object>
@@ -370,6 +411,7 @@ class LibraryTrainingMigrator {
 				'id'          => $id,
 				'legacy_type' => (string) $post->post_type,
 				'slugs'       => $chain,
+				'parent'      => (int) $post->post_parent,
 			);
 		}
 
@@ -377,7 +419,7 @@ class LibraryTrainingMigrator {
 	}
 
 	/**
-	 * Detach a migrated item from its legacy parent (hierarchy now lives in terms).
+	 * Detach a migrated item from a parent that is not migrated alongside it.
 	 * Overridable seam.
 	 *
 	 * @param int $post_id The post id.
