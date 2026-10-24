@@ -199,15 +199,15 @@ class Migration {
 	 * Selection is by TREE, not by name: every descendant of the configured parent
 	 * categories ({@see self::LEGACY_PARENT_SLUGS}: `projekte` for the monthly projects,
 	 * `kompetisie` for the older competitions) is a challenge round; the parents
-	 * themselves and any slug on the `ink_challenge_legacy_exclude` filter (workshops
-	 * such as `ink-slypskool`) are not. A blanket "every category" default would turn
+	 * themselves and any slug on the `ink_challenge_legacy_exclude` filter (empty by
+	 * default; `ink-slypskool` IS a challenge) are not. A blanket "every category" default would turn
 	 * ordinary blog categories into published uitdagings (R12 review), so a site
 	 * without those parents gets an empty list and a no-op run.
 	 *
 	 * @return array<int, object>
 	 */
 	protected function legacyCategories(): array {
-		$exclude = (array) apply_filters( 'ink_challenge_legacy_exclude', array( 'ink-slypskool' ) );
+		$exclude = (array) apply_filters( 'ink_challenge_legacy_exclude', array() );
 		$rows    = array();
 
 		foreach ( self::LEGACY_PARENT_SLUGS as $parent_slug ) {

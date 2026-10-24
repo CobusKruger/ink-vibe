@@ -151,11 +151,12 @@ class PostReclassifier {
 
 				\WP_CLI::success(
 					sprintf(
-						'Plasings herklassifiseer: %d na tipe-CPT, %d na skryfwerk, %d hernoem, %d oorgeslaan%s.',
+						'Plasings herklassifiseer: %d na tipe-CPT, %d na skryfwerk, %d hernoem, %d oorgeslaan, %d duplikate verwyder%s.',
 						(int) $summary['reassigned'],
 						(int) $summary['to_skryfwerk'],
 						(int) $summary['renamed'],
 						(int) $summary['skipped'],
+						(int) $summary['dropped'],
 						! empty( $summary['already_done'] ) ? ' (oorgeslaan — reeds gedoen)' : ''
 					)
 				);
@@ -271,7 +272,7 @@ class PostReclassifier {
 	 * Run the once-off reclassification. Idempotent unless `$force`.
 	 *
 	 * @param bool $force Re-run even when already completed.
-	 * @return array{already_done:bool, reassigned:int, to_skryfwerk:int, renamed:int, skipped:int, collisions:list<string>}
+	 * @return array{already_done:bool, reassigned:int, to_skryfwerk:int, renamed:int, skipped:int, dropped:int, collisions:list<string>}
 	 */
 	public function run( bool $force = false ): array {
 		if ( $this->hasRun() && ! $force ) {
@@ -281,6 +282,7 @@ class PostReclassifier {
 				'to_skryfwerk' => 0,
 				'renamed'      => 0,
 				'skipped'      => 0,
+				'dropped'      => 0,
 				'collisions'   => array(),
 			);
 		}
@@ -289,6 +291,7 @@ class PostReclassifier {
 		$to_skryfwerk = 0;
 		$renamed      = 0;
 		$skipped      = 0;
+		$dropped      = 0;
 
 		foreach ( $this->legacyPosts() as $post ) {
 			$post_id = (int) ( $post->id ?? 0 );
@@ -300,6 +303,15 @@ class PostReclassifier {
 
 			if ( self::isSkippedType( $type ) ) {
 				++$skipped;
+				continue;
+			}
+
+			// A committed duplicate (published twice on prod): keep the original, trash this
+			// copy. Its old URL is recorded first so RedirectGenerator can 301 to the original.
+			if ( StaticRedirects::isDroppedDuplicate( $post_id ) ) {
+				$this->recordSourceUrl( $post_id );
+				$this->trashPost( $post_id );
+				++$dropped;
 				continue;
 			}
 
@@ -358,6 +370,7 @@ class PostReclassifier {
 			'to_skryfwerk' => $to_skryfwerk,
 			'renamed'      => $renamed,
 			'skipped'      => $skipped,
+			'dropped'      => $dropped,
 			'collisions'   => $collisions,
 		);
 	}
@@ -474,6 +487,15 @@ class PostReclassifier {
 		if ( is_string( $url ) && '' !== $url ) {
 			update_post_meta( $post_id, self::SOURCE_URL_META, $url );
 		}
+	}
+
+	/**
+	 * Trash a dropped duplicate. Overridable seam.
+	 *
+	 * @param int $post_id The post id.
+	 */
+	protected function trashPost( int $post_id ): void {
+		wp_trash_post( $post_id );
 	}
 
 	/**
