@@ -42,9 +42,26 @@ class Hardening {
 	);
 
 	/**
+	 * The capabilities that delete a user account (stock WP reassigns or deletes the
+	 * user's posts on delete — see PRD OQ-17, the account-lifecycle spec).
+	 *
+	 * @var list<string>
+	 */
+	private const USER_DELETION_CAPS = array(
+		'delete_user',
+		'delete_users',
+		'remove_user',
+		'remove_users',
+	);
+
+	/**
 	 * Wire each hardening behind its opt-out filter.
 	 */
 	public function register(): void {
+		if ( (bool) apply_filters( 'ink_security_block_user_deletion', true ) ) {
+			add_filter( 'map_meta_cap', array( $this, 'filterUserDeletionCaps' ), 10, 2 );
+		}
+
 		if ( (bool) apply_filters( 'ink_security_disable_xmlrpc', true ) ) {
 			add_filter( 'xmlrpc_enabled', '__return_false' );
 		}
@@ -124,6 +141,33 @@ class Hardening {
 		}
 
 		return $endpoints;
+	}
+
+	/**
+	 * Whether a capability deletes a user account. Pure.
+	 *
+	 * @param string $cap The capability being checked.
+	 */
+	public function isUserDeletionCap( string $cap ): bool {
+		return in_array( $cap, self::USER_DELETION_CAPS, true );
+	}
+
+	/**
+	 * Deny every user-deletion capability for everyone (interim, until OQ-17 defines
+	 * a sentinel author and POPIA deletion behaviour). Blocks the wp-admin delete
+	 * link/bulk action and any `current_user_can()`-gated front-end path; WP-CLI
+	 * (`wp user delete`) bypasses capabilities by design and is unaffected.
+	 *
+	 * @param array<int, string> $caps The primitive caps required.
+	 * @param string             $cap  The meta capability being mapped.
+	 * @return array<int, string>
+	 */
+	public function filterUserDeletionCaps( array $caps, string $cap ): array {
+		if ( $this->isUserDeletionCap( $cap ) ) {
+			return array( 'do_not_allow' );
+		}
+
+		return $caps;
 	}
 
 	/**

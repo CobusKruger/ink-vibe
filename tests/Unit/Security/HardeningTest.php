@@ -94,6 +94,47 @@ test( 'filterRestUserRoutes keeps the user routes for a logged-in editor', funct
 	expect( $out )->toHaveKey( '/wp/v2/users' );
 } );
 
+// --- user-deletion block (interim, PRD OQ-17) ---
+
+test( 'filterUserDeletionCaps denies every user-deletion capability', function (): void {
+	$h = new Hardening();
+
+	foreach ( array( 'delete_user', 'delete_users', 'remove_user', 'remove_users' ) as $cap ) {
+		expect( $h->filterUserDeletionCaps( array( $cap ), $cap ) )->toBe( array( 'do_not_allow' ) );
+	}
+} );
+
+test( 'filterUserDeletionCaps leaves unrelated capabilities untouched', function (): void {
+	$h = new Hardening();
+
+	expect( $h->filterUserDeletionCaps( array( 'edit_posts' ), 'edit_posts' ) )->toBe( array( 'edit_posts' ) );
+	expect( $h->filterUserDeletionCaps( array( 'edit_users' ), 'edit_users' ) )->toBe( array( 'edit_users' ) );
+} );
+
+test( 'register wires the user-deletion block unless opted out', function (): void {
+	$wired = static function ( bool $enabled ): array {
+		$added = array();
+		Functions\when( 'apply_filters' )->alias(
+			static fn ( string $hook, $value ) => 'ink_security_block_user_deletion' === $hook ? $enabled : $value
+		);
+		Functions\when( 'remove_action' )->justReturn( true );
+		Functions\when( 'add_action' )->justReturn( true );
+		Functions\when( 'add_filter' )->alias(
+			static function ( string $hook, $cb ) use ( &$added ): bool {
+				$added[] = $hook;
+				return true;
+			}
+		);
+
+		( new Hardening() )->register();
+
+		return $added;
+	};
+
+	expect( $wired( true ) )->toContain( 'map_meta_cap' );
+	expect( $wired( false ) )->not->toContain( 'map_meta_cap' );
+} );
+
 // --- version disclosure ---
 
 test( 'emptyGenerator returns an empty string regardless of input', function (): void {

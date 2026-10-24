@@ -942,6 +942,7 @@
 /* size scale (rendered box, border-box) */
 .ink-avatar--28 { width: 28px; height: 28px; }
 .ink-avatar--32 { width: 32px; height: 32px; }
+.ink-avatar--36 { width: 36px; height: 36px; }
 .ink-avatar--40 { width: 40px; height: 40px; }
 .ink-avatar--48 { width: 48px; height: 48px; }
 .ink-avatar--64 { width: 64px; height: 64px; }
@@ -2288,4 +2289,81 @@ textarea.ink-field,
 		font-size: var(--wp--preset--font-size--sm);
 		line-height: 1.25rem;
 	}
+}
+
+/* ==========================================================================
+   Signed-in user menu (header): avatar trigger + dropdown panel
+   (Header.tsx DropdownMenu — w-56 panel, end-aligned, 36px initials avatar)
+   ========================================================================== */
+
+.ink-user-menu {
+	position: relative;
+	display: inline-flex;
+}
+
+.ink-user-menu__trigger {
+	display: inline-flex;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	border-radius: var(--wp--custom--radius--full);
+	cursor: pointer;
+}
+
+.ink-user-menu__trigger:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+.ink-user-menu .ink-avatar--initials {
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: 500;
+}
+
+.ink-user-menu__panel {
+	position: absolute;
+	top: calc(100% + 8px);
+	right: 0;
+	z-index: 60;
+	box-sizing: border-box;
+	width: 224px;
+	padding: var(--wp--preset--spacing--s-4);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--md);
+	background-color: var(--wp--preset--color--surface);
+	box-shadow: var(--wp--preset--shadow--md);
+}
+
+.ink-user-menu__panel[hidden] {
+	display: none;
+}
+
+.ink-user-menu__email {
+	padding: 6px var(--wp--preset--spacing--s-8);
+	overflow: hidden;
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--xs);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ink-user-menu__separator {
+	height: 1px;
+	margin: var(--wp--preset--spacing--s-4) -4px;
+	background-color: var(--wp--preset--color--border);
+}
+
+.ink-user-menu__item {
+	display: block;
+	padding: 6px var(--wp--preset--spacing--s-8);
+	border-radius: var(--wp--custom--radius--sm);
+	color: var(--wp--preset--color--ink-text);
+	font-size: var(--wp--preset--font-size--sm);
+	text-decoration: none;
+}
+
+.ink-user-menu__item:hover,
+.ink-user-menu__item:focus-visible {
+	background-color: var(--wp--preset--color--muted);
+	outline: none;
 }

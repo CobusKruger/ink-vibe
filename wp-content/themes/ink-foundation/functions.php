@@ -132,6 +132,33 @@ function ink_foundation_enqueue_required_validity(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_required_validity' );
 
 /**
+ * Enqueue the header user-menu toggle for signed-in visitors.
+ *
+ * The header renders on every page, so the script is site-wide — but only a
+ * signed-in visitor gets the avatar menu markup (`header-main` pattern), so it is
+ * not loaded for anonymous traffic. Presentation only (show/hide + aria state).
+ */
+function ink_foundation_enqueue_user_menu(): void {
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-user-menu',
+		get_theme_file_uri( 'assets/js/user-menu.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_user_menu' );
+
+/**
  * Enqueue the Skryf live-counter enhancement + stylesheet on the Skryf page only
  * (Story 6.2; stylesheet added in the Theme Visual-Fidelity Phase 2 pass, page 8).
  *

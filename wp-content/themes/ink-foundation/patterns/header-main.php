@@ -78,13 +78,50 @@
 			<!-- wp:navigation-link {"label":"My profiel","url":"/my-profiel"} /-->
 		<!-- /wp:navigation -->
 
+<?php if ( function_exists( 'is_user_logged_in' ) && is_user_logged_in() ) : ?>
+	<?php
+	// Signed-in user menu (Lovable Header.tsx: Avatar + DropdownMenu). View-state only:
+	// initials from the display name (first letters of the first two words), the
+	// account email as the menu's muted heading, and the logout URL — all WordPress
+	// core reads, no business logic.
+	$ink_menu_user  = wp_get_current_user();
+	$ink_menu_words = preg_split( '/\s+/u', trim( (string) $ink_menu_user->display_name ), -1, PREG_SPLIT_NO_EMPTY );
+	$ink_menu_init  = '';
+	foreach ( array_slice( (array) $ink_menu_words, 0, 2 ) as $ink_menu_word ) {
+		$ink_menu_init .= mb_strtoupper( mb_substr( $ink_menu_word, 0, 1 ) );
+	}
+	if ( '' === $ink_menu_init ) {
+		$ink_menu_init = mb_strtoupper( mb_substr( (string) $ink_menu_user->user_login, 0, 2 ) );
+	}
+	?>
+			<!-- wp:group {"className":"ink-header-actions","style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}},"layout":{"type":"flex","verticalAlignment":"center","flexWrap":"nowrap"}} -->
+			<div data-audit-id="header-actions" class="wp-block-group ink-header-actions">
+				<!-- wp:buttons -->
+				<div class="wp-block-buttons">
+					<!-- wp:button {"className":"is-style-ink-primary ink-btn-sm"} -->
+					<div class="wp-block-button is-style-ink-primary ink-btn-sm"><a data-audit-id="header-btn-write" class="wp-block-button__link wp-element-button" href="/skryf"><?php esc_html_e( 'Begin skryf', 'ink-foundation' ); ?></a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+
+				<!-- wp:html -->
+				<div class="ink-user-menu" data-ink-user-menu data-audit-id="header-user-menu">
+					<button type="button" class="ink-user-menu__trigger" aria-haspopup="true" aria-expanded="false" aria-controls="ink-user-menu-panel" aria-label="<?php echo esc_attr__( 'Gebruikerskeuselys', 'ink-foundation' ); ?>" data-ink-user-menu-trigger data-audit-id="header-user-menu-trigger"><span class="ink-avatar ink-avatar--36 ink-avatar--initials" aria-hidden="true"><?php echo esc_html( $ink_menu_init ); ?></span></button>
+					<div class="ink-user-menu__panel" id="ink-user-menu-panel" role="menu" hidden data-ink-user-menu-panel>
+						<div class="ink-user-menu__email"><?php echo esc_html( $ink_menu_user->user_email ); ?></div>
+						<div class="ink-user-menu__separator" role="separator"></div>
+						<a class="ink-user-menu__item" role="menuitem" href="/my-profiel"><?php esc_html_e( 'My profiel', 'ink-foundation' ); ?></a>
+						<a class="ink-user-menu__item" role="menuitem" href="/opleiding"><?php esc_html_e( 'Opleiding', 'ink-foundation' ); ?></a>
+						<div class="ink-user-menu__separator" role="separator"></div>
+						<a class="ink-user-menu__item" role="menuitem" href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>"><?php esc_html_e( 'Meld af', 'ink-foundation' ); ?></a>
+					</div>
+				</div>
+				<!-- /wp:html -->
+			</div>
+			<!-- /wp:group -->
+<?php else : ?>
 		<!-- wp:buttons {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
 		<div data-audit-id="header-actions" class="wp-block-buttons">
-<?php if ( function_exists( 'is_user_logged_in' ) && is_user_logged_in() ) : ?>
-			<!-- wp:button {"className":"is-style-ink-primary ink-btn-sm"} -->
-			<div class="wp-block-button is-style-ink-primary ink-btn-sm"><a data-audit-id="header-btn-write" class="wp-block-button__link wp-element-button" href="/skryf"><?php esc_html_e( 'Begin skryf', 'ink-foundation' ); ?></a></div>
-			<!-- /wp:button -->
-<?php else : ?>
 			<!-- wp:button {"className":"is-style-ink-ghost ink-btn-sm"} -->
 			<div class="wp-block-button is-style-ink-ghost ink-btn-sm"><a data-audit-id="header-btn-signin" class="wp-block-button__link wp-element-button" href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></div>
 			<!-- /wp:button -->
@@ -92,9 +129,9 @@
 			<!-- wp:button {"className":"is-style-ink-primary ink-btn-sm"} -->
 			<div class="wp-block-button is-style-ink-primary ink-btn-sm"><a class="wp-block-button__link wp-element-button" data-audit-id="header-btn-join" href="/registreer"><?php echo esc_html( ink_foundation_term( 'sluit_aan', 'Sluit aan' ) ); ?></a></div>
 			<!-- /wp:button -->
-<?php endif; ?>
 		</div>
 		<!-- /wp:buttons -->
+<?php endif; ?>
 	</div>
 	<!-- /wp:group -->
 </div>
