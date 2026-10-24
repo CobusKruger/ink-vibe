@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Challenges;
 
+use Ink\Content\ChallengeRound;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
 
@@ -34,10 +35,26 @@ defined( 'ABSPATH' ) || exit;
 class SourceCategorySync {
 
 	/**
+	 * The WP-CLI command name (`wp ink sync-challenge-entries`).
+	 *
+	 * @var string
+	 */
+	public const CLI_COMMAND = 'ink sync-challenge-entries';
+
+	/**
 	 * Wire the sync to category assignment.
 	 */
 	public function register(): void {
 		add_action( 'set_object_terms', array( $this, 'onSetObjectTerms' ), 10, 4 );
+
+		if ( defined( 'WP_CLI' ) && constant( 'WP_CLI' ) && class_exists( '\WP_CLI' ) ) {
+			\WP_CLI::add_command(
+				self::CLI_COMMAND,
+				function (): void {
+					\WP_CLI::success( sprintf( 'Deelnames gesinkroniseer: %d skakel(s) na uitdagingsrondtes.', $this->sync() ) );
+				}
+			);
+		}
 	}
 
 	/**

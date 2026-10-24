@@ -165,6 +165,9 @@ class LibraryTrainingMigrator {
 				'biblioteek'     => 0,
 				'opleiding'      => 0,
 				'terms_assigned' => 0,
+				'legacy_skipped' => 0,
+				'containers'     => 0,
+				'unmapped_roots' => array(),
 			);
 		}
 
