@@ -39,5 +39,6 @@ final class Module implements ModuleContract {
 		( new Hardening() )->register();
 		( new TwoFactorAudit() )->register();
 		( new ProductionHygiene() )->register();
+		( new MailSink() )->register();
 	}
 }
