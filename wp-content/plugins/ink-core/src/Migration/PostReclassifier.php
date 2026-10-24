@@ -17,11 +17,12 @@ defined( 'ABSPATH' ) || exit;
  * Reclassifies legacy flat `post` content into the typed INK CPTs — a once-off,
  * idempotent DB update (FL 16.5).
  *
- * The content-type category is the source of truth: a post with exactly ONE
- * recognised content-type category maps to that CPT (`gedig`/`storie`/`artikel`,
- * honouring the legacy `verhaal`→`storie` rename); a post with ZERO recognised
- * OR CONFLICTING (2+) content-type categories falls through to the `skryfwerk`
- * catch-all automatically — never hand-classified at volume. Legacy `inkpols`
+ * The content-type category is the source of truth. A post's own categories AND
+ * their ancestors are matched against {@see CATEGORY_CPT_MAP}; when several
+ * content types match, the most specific wins (gedig > storie > artikel, see
+ * {@see TYPE_PRIORITY}). A post with NO recognised category falls through to the
+ * `skryfwerk` catch-all — the deliberate fallback for what cannot be categorised,
+ * never hand-classified at volume. Legacy `inkpols`
  * posts are renamed to `inkpols_uitgawe`; `monthly_challenge` posts are SKIPPED
  * (left for {@see \Ink\Challenges\Migration} to build uitdaging records from round
  * categories — real data folded in, else dropped — NOT a 1:1 conversion here).
@@ -80,16 +81,51 @@ class PostReclassifier {
 	 * @var array<string, string>
 	 */
 	public const CATEGORY_CPT_MAP = array(
-		'gedig'       => PostTypes::GEDIG,
-		'gedigte'     => PostTypes::GEDIG,
-		'poesie'      => PostTypes::GEDIG,
-		'verhaal'     => PostTypes::STORIE,
-		'verhale'     => PostTypes::STORIE,
-		'storie'      => PostTypes::STORIE,
-		'stories'     => PostTypes::STORIE,
-		'kortverhaal' => PostTypes::STORIE,
-		'artikel'     => PostTypes::ARTIKEL,
-		'artikels'    => PostTypes::ARTIKEL,
+		// Poems (musiek-liriek is a poem on the front end; see GENRE_CATEGORIES).
+		'gedig'                   => PostTypes::GEDIG,
+		'gedigte'                 => PostTypes::GEDIG,
+		'poesie'                  => PostTypes::GEDIG,
+		'musiek-liriek'           => PostTypes::GEDIG,
+		// Stories. `algemeen` is the child of algemeen-verhale whose NAME is "Verhale".
+		'verhaal'                 => PostTypes::STORIE,
+		'verhale'                 => PostTypes::STORIE,
+		'storie'                  => PostTypes::STORIE,
+		'stories'                 => PostTypes::STORIE,
+		'kortverhaal'             => PostTypes::STORIE,
+		'kortverhale'             => PostTypes::STORIE,
+		'verhale-kortverhale'     => PostTypes::STORIE,
+		'algemeen-verhale'        => PostTypes::STORIE,
+		'algemeen'                => PostTypes::STORIE,
+		'verhale-liefde'          => PostTypes::STORIE,
+		'verhale-jeugkinders'     => PostTypes::STORIE,
+		'verhale-liegstories'     => PostTypes::STORIE,
+		'verhale-geskiedenis'     => PostTypes::STORIE,
+		'verhale-reis'            => PostTypes::STORIE,
+		'verhale-wetenskapfiksie' => PostTypes::STORIE,
+		// Articles: everything that is neither a poem nor a story.
+		'artikel'                 => PostTypes::ARTIKEL,
+		'artikels'                => PostTypes::ARTIKEL,
+		'algemeengorrel'          => PostTypes::ARTIKEL,
+		'rubrieke'                => PostTypes::ARTIKEL,
+		'prosa'                   => PostTypes::ARTIKEL,
+		'prosa-lede-bydraes'      => PostTypes::ARTIKEL,
+	);
+
+	/**
+	 * Conflict resolution when a post matches several content types: first wins.
+	 *
+	 * @var list<string>
+	 */
+	public const TYPE_PRIORITY = array( PostTypes::GEDIG, PostTypes::STORIE, PostTypes::ARTIKEL );
+
+	/**
+	 * Legacy categories that also mark a backend `genre` term (category slug → genre
+	 * term name). Front end and gradering still treat these posts as poems.
+	 *
+	 * @var array<string, string>
+	 */
+	public const GENRE_CATEGORIES = array(
+		'musiek-liriek' => 'Musiek & Liriek',
 	);
 
 	/**
@@ -130,11 +166,11 @@ class PostReclassifier {
 	/**
 	 * The CPT for a post's category slugs. Pure.
 	 *
-	 * Exactly one recognised content-type category → that CPT; zero recognised OR
-	 * conflicting (2+ distinct) → `skryfwerk`. Challenge-round / topic categories
-	 * are simply unrecognised here and never force a type.
+	 * Any recognised content-type category (own or ancestor) decides the type; with
+	 * several, the most specific wins ({@see TYPE_PRIORITY}). None recognised →
+	 * `skryfwerk`. Challenge-round / topic categories are unrecognised and never force a type.
 	 *
-	 * @param array<int, string> $slugs The post's category slugs.
+	 * @param array<int, string> $slugs The post's category slugs (including ancestors).
 	 * @return string A CPT slug (`gedig`/`storie`/`artikel`/`skryfwerk`).
 	 */
 	public static function cptForCategorySlugs( array $slugs ): string {
@@ -148,9 +184,33 @@ class PostReclassifier {
 			}
 		}
 
-		$distinct = array_keys( $matched );
+		foreach ( self::TYPE_PRIORITY as $type ) {
+			if ( isset( $matched[ $type ] ) ) {
+				return $type;
+			}
+		}
 
-		return ( 1 === count( $distinct ) ) ? (string) $distinct[0] : PostTypes::SKRYFWERK;
+		return PostTypes::SKRYFWERK;
+	}
+
+	/**
+	 * The backend genre term names implied by a post's category slugs. Pure.
+	 *
+	 * @param array<int, string> $slugs The post's category slugs.
+	 * @return list<string>
+	 */
+	public static function genresForCategorySlugs( array $slugs ): array {
+		$genres = array();
+
+		foreach ( $slugs as $slug ) {
+			$key = strtolower( trim( (string) $slug ) );
+
+			if ( isset( self::GENRE_CATEGORIES[ $key ] ) ) {
+				$genres[ self::GENRE_CATEGORIES[ $key ] ] = true;
+			}
+		}
+
+		return array_keys( $genres );
 	}
 
 	/**
@@ -260,7 +320,8 @@ class PostReclassifier {
 				$target    = $rename;
 				$is_rename = true;
 			} elseif ( 'post' === $type ) {
-				$target    = self::cptForCategorySlugs( $this->categorySlugsFor( $post ) );
+				$cat_slugs = $this->categorySlugsFor( $post );
+				$target    = self::cptForCategorySlugs( $cat_slugs );
 				$is_rename = false;
 			} else {
 				// Not a flat post and not a known rename — leave it untouched.
@@ -270,6 +331,12 @@ class PostReclassifier {
 			// Record the pre-migration permalink BEFORE the type change (16.7 301 source).
 			$this->recordSourceUrl( $post_id );
 			$this->setPostType( $post_id, $target );
+
+			if ( ! $is_rename ) {
+				foreach ( self::genresForCategorySlugs( $cat_slugs ) as $genre ) {
+					$this->assignGenre( $post_id, $genre );
+				}
+			}
 
 			if ( $is_rename ) {
 				++$renamed;
@@ -343,6 +410,14 @@ class PostReclassifier {
 				foreach ( $terms as $term ) {
 					if ( $term instanceof \WP_Term ) {
 						$slugs[] = (string) $term->slug;
+
+						foreach ( get_ancestors( (int) $term->term_id, 'category', 'taxonomy' ) as $ancestor_id ) {
+							$ancestor = get_term( (int) $ancestor_id, 'category' );
+
+							if ( $ancestor instanceof \WP_Term ) {
+								$slugs[] = (string) $ancestor->slug;
+							}
+						}
 					}
 				}
 			}
@@ -368,6 +443,17 @@ class PostReclassifier {
 		$slugs = $post->category_slugs ?? array();
 
 		return is_array( $slugs ) ? array_values( array_map( 'strval', $slugs ) ) : array();
+	}
+
+	/**
+	 * Attach a backend genre term to a post, creating the term when missing.
+	 * Overridable seam.
+	 *
+	 * @param int    $post_id The post id.
+	 * @param string $genre   The genre term name.
+	 */
+	protected function assignGenre( int $post_id, string $genre ): void {
+		wp_set_object_terms( $post_id, $genre, 'genre', true );
 	}
 
 	/**
