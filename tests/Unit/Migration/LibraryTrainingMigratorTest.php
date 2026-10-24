@@ -100,6 +100,9 @@ test( 'run maps each item to its CPT, assigns sub-path terms, records source URL
 				(object) array( 'id' => 3, 'url' => '/biblioteek/los-werk/' ), // no middle term
 			);
 		}
+		protected function legacyCptContent(): array {
+			return array();
+		}
 		protected function recordSourceUrl( int $post_id ): void {
 			$this->recorded[] = $post_id;
 		}
