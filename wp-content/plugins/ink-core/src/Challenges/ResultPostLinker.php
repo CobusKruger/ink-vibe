@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Challenges;
 
 use Ink\Content\PostTypes;
+use Ink\Content\ResultPostAuthors;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -132,7 +133,7 @@ class ResultPostLinker {
 		$out = array();
 
 		foreach ( is_array( $posts ) ? $posts : array() as $post ) {
-			if ( ResultPostFinder::isResultTitle( (string) $post->post_title ) && user_can( (int) $post->post_author, 'edit_others_posts' ) ) {
+			if ( ResultPostFinder::isResultTitle( (string) $post->post_title ) && ResultPostAuthors::isModerator( (int) $post->post_author ) ) {
 				$out[] = (object) array(
 					'id'    => (int) $post->ID,
 					'title' => (string) $post->post_title,

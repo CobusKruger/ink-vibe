@@ -77,10 +77,19 @@ test( 'pending skips succeeded steps on resume, and --from restarts at a step', 
 	expect( MigrateAll::pending( array() )[0] )->toBe( 'sanitise' );
 } );
 
-test( 'preflight stops when the tier CSV is missing', function (): void {
-	expect( MigrateAll::preflight( '', false ) )->not->toBe( array() );
+test( 'preflight needs no tier CSV, but stops when a given one is missing', function (): void {
+	expect( MigrateAll::preflight( '', false ) )->toBe( array() );
 	expect( MigrateAll::preflight( 'x.csv', false ) )->not->toBe( array() );
 	expect( MigrateAll::preflight( 'x.csv', true ) )->toBe( array() );
+} );
+
+test( 'gradering is derived from the result posts unless a CSV path is given', function (): void {
+	$by_id = static function ( string $tiers ): array {
+		return array_column( array_map( static fn ( array $s ): array => array( 'id' => $s[0], 'cmd' => $s[1] ), MigrateAll::steps( $tiers ) ), 'cmd', 'id' );
+	};
+
+	expect( $by_id( '' )['tiers'] )->toBe( 'ink derive-tiers' );
+	expect( $by_id( 'x.csv' )['tiers'] )->toBe( 'ink migrate-tiers {tiers}' );
 } );
 
 test( 'a clean run executes every step in order and records them', function (): void {
@@ -90,6 +99,10 @@ test( 'a clean run executes every step in order and records them', function (): 
 	expect( $report['failed'] )->toBeFalse();
 	expect( count( $o->ran ) )->toBe( count( MigrateAll::steps() ) );
 	expect( $o->ran[2] )->toBe( "ink migrate-tiers 'tier.csv'" );
+
+	$derived = orchestrator( array() );
+	$derived->run( '' );
+	expect( $derived->ran[2] )->toBe( 'ink derive-tiers' );
 	expect( $o->saved['verify-media']['status'] )->toBe( 'ok' );
 } );
 

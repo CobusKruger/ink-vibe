@@ -171,6 +171,21 @@ final class Api {
 	}
 
 	/**
+	 * Set a writer's baseline standing (grade AND the win count at that grade) during the
+	 * once-off migration, derived from their historical wins. Like
+	 * {@see self::importBaselineGrade()} this is a baseline SET, not a promotion: no
+	 * audit row, no event. The count is written absolutely (not accumulated).
+	 *
+	 * @param int  $user_id The writer.
+	 * @param Tier $tier    The baseline grade.
+	 * @param int  $count   The wins already accumulated at that grade.
+	 */
+	public static function importBaselineStanding( int $user_id, Tier $tier, int $count ): void {
+		update_user_meta( $user_id, Tier::META_KEY, $tier->value );
+		update_user_meta( $user_id, Tier::WIN_COUNT_META_KEY, max( 0, $count ) );
+	}
+
+	/**
 	 * The writer's current accumulated top-3 win count toward the next Gradering.
 	 *
 	 * Reads `ink_tier_win_count` (Story 5.7), defaulting to 0 for an unset/junk

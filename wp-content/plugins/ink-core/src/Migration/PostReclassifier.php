@@ -11,6 +11,7 @@ namespace Ink\Migration;
 
 use Ink\Content\ChallengeResultTitle;
 use Ink\Content\PostTypes;
+use Ink\Content\ResultPostAuthors;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -454,7 +455,7 @@ class PostReclassifier {
 				'category_slugs' => $slugs,
 				'url'            => (string) get_permalink( $id ),
 				'title'          => (string) get_the_title( $id ),
-				'staff'          => user_can( (int) get_post_field( 'post_author', $id ), 'edit_others_posts' ),
+				'staff'          => ResultPostAuthors::isModerator( (int) get_post_field( 'post_author', $id ) ),
 			);
 		}
 
