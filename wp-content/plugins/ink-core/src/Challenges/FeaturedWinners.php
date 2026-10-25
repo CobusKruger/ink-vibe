@@ -135,20 +135,18 @@ final class FeaturedWinners {
 			}
 		);
 
-		// Collapse to one entry per rank — a defensive guard so a dirty payload (two
-		// rank-1s) can never surface two "algehele wenners" in the slot; the lowest-id
-		// placement wins. Mirrors the canonical one-per-rank invariant in
-		// {@see Placements::arrange()}; authoritative dedup remains 12A.3's ingestion.
+		// Entries sharing a rank are a tie and all stay (both writers placed); only the
+		// same entry listed twice is dropped. Mirrors {@see Placements::arrange()}.
 		$seen   = array();
 		$unique = array();
 
 		foreach ( $rows as $row ) {
-			if ( isset( $seen[ $row['rank'] ] ) ) {
+			if ( isset( $seen[ $row['id'] ] ) ) {
 				continue;
 			}
 
-			$seen[ $row['rank'] ] = true;
-			$unique[]             = $row;
+			$seen[ $row['id'] ] = true;
+			$unique[]           = $row;
 		}
 
 		return $unique;

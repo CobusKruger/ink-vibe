@@ -146,8 +146,9 @@ final class Placements {
 	 * Entries with a non-placement rank (0 / out of 1–3) are excluded. The pool is keyed
 	 * on (Gradering × category) ({@see Pools::poolKey()}) so the one-per-rank collapse
 	 * scopes WITHIN a category: a Goud-Gedig rank-1 and a Goud-Storie rank-1 are two
-	 * legitimate algehele wenners and BOTH survive (the D1 read-collapse fix). Two rank-1s
-	 * in the SAME (Gradering × category) still collapse to one — the defensive guard. A
+	 * legitimate algehele wenners and BOTH survive (the D1 read-collapse fix). Two entries
+	 * sharing a rank in the SAME (Gradering × category) are a tie: both writers placed,
+	 * both are kept (only the same entry listed twice collapses). A
 	 * category-less row degrades to a Gradering-only key (the prior 12.6 contract). A
 	 * Meester placement folds into the Goud pool ({@see Tier::competitionTier()}) — an
 	 * elevated Goud member shares the Goud podium. Within a pool the placements are
@@ -183,12 +184,8 @@ final class Placements {
 
 		foreach ( $by_pool as $pool => $rows ) {
 			// Deterministic order: by rank, then by entry id (so ties never depend on
-			// incidental query order). Then collapse to one entry per rank per pool —
-			// a defensive guard so dirty ingestion (two rank-1s in ONE (Gradering ×
-			// category) pool) can never surface two "algehele wenners" downstream; the
-			// lowest-id placement wins the slot (R12 review — the canonical one-per-rank
-			// invariant lives here, scoped per category since D1; the authoritative dedup
-			// is the 12A.3 ingestion's responsibility).
+			// incidental query order). Entries sharing a rank are a tie and ALL stay (both
+			// writers placed); only the same entry appearing twice is dropped.
 			usort(
 				$rows,
 				static function ( array $a, array $b ): int {
@@ -202,12 +199,12 @@ final class Placements {
 			$unique = array();
 
 			foreach ( $rows as $row ) {
-				if ( isset( $seen[ $row['rank'] ] ) ) {
+				if ( isset( $seen[ $row['id'] ] ) ) {
 					continue;
 				}
 
-				$seen[ $row['rank'] ] = true;
-				$unique[]             = $row;
+				$seen[ $row['id'] ] = true;
+				$unique[]           = $row;
 			}
 
 			$by_pool[ $pool ] = $unique;

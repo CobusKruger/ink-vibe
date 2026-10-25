@@ -85,20 +85,20 @@ test( 'arrange groups placed entries per pool, sorted by rank, ignoring the unpl
 	expect( $all_ids )->not->toContain( 13 );
 } );
 
-test( 'arrange collapses a duplicated rank to one entry (lowest id wins) — no two algehele wenners (R12)', function (): void {
+test( 'arrange keeps both entries of a tie (deterministic order) but drops the same entry listed twice', function (): void {
 	$placed = array(
 		array( 'id' => 30, 'gradering' => 'silwer', 'rank' => 1 ),
-		array( 'id' => 20, 'gradering' => 'silwer', 'rank' => 1 ), // duplicate rank 1 — dirty data
+		array( 'id' => 20, 'gradering' => 'silwer', 'rank' => 1 ), // a tie for first
+		array( 'id' => 20, 'gradering' => 'silwer', 'rank' => 1 ), // the same entry twice: dirty
 		array( 'id' => 40, 'gradering' => 'silwer', 'rank' => 2 ),
 	);
 
 	$silwer = Placements::arrange( $placed )['silwer'];
 
-	// Only ONE rank-1 survives, and it is the lowest id (deterministic).
-	$first_places = array_filter( $silwer, static fn ( array $r ): bool => 1 === $r['rank'] );
-	expect( $first_places )->toHaveCount( 1 );
-	expect( array_column( $silwer, 'id' ) )->toBe( array( 20, 40 ) );
-	expect( array_column( $silwer, 'rank' ) )->toBe( array( 1, 2 ) );
+	// Both tied entries are algehele wenners, ordered by id; the repeated entry collapses.
+	expect( array_column( $silwer, 'id' ) )->toBe( array( 20, 30, 40 ) );
+	expect( array_column( $silwer, 'rank' ) )->toBe( array( 1, 1, 2 ) );
+	expect( array_column( $silwer, 'is_algehele_wenner' ) )->toBe( array( true, true, false ) );
 } );
 
 test( 'arrange keeps BOTH category rank-1s of one Gradering — the D1 read-collapse regression', function (): void {
@@ -150,18 +150,14 @@ test( 'arrange folds a Meester placement into the (Goud × category) pool — It
 	expect( $by_pool['goud|gedig'][0]['is_algehele_wenner'] )->toBeTrue(); // the Meester rank-1
 } );
 
-test( 'arrange STILL collapses two rank-1s in the SAME (Gradering × category) — the guard is preserved', function (): void {
-	// Two rank-1s in the SAME category of the same Gradering is dirty data — the defensive
-	// one-per-rank guard must still collapse it (lowest id wins), even category-scoped.
+test( 'arrange keeps a tie inside one (Gradering x category) pool, ordered by id', function (): void {
 	$placed = array(
 		array( 'id' => 30, 'gradering' => 'goud', 'category' => 'gedig', 'rank' => 1 ),
-		array( 'id' => 20, 'gradering' => 'goud', 'category' => 'gedig', 'rank' => 1 ), // duplicate within same pool
+		array( 'id' => 20, 'gradering' => 'goud', 'category' => 'gedig', 'rank' => 1 ), // tie within the same pool
 		array( 'id' => 40, 'gradering' => 'goud', 'category' => 'gedig', 'rank' => 2 ),
 	);
 
 	$pool = Placements::arrange( $placed )['goud|gedig'];
 
-	$first_places = array_filter( $pool, static fn ( array $r ): bool => 1 === $r['rank'] );
-	expect( $first_places )->toHaveCount( 1 );
-	expect( array_column( $pool, 'id' ) )->toBe( array( 20, 40 ) ); // lowest-id rank-1 wins
+	expect( array_column( $pool, 'id' ) )->toBe( array( 20, 30, 40 ) );
 } );

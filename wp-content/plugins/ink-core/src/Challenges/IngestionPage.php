@@ -275,6 +275,7 @@ class IngestionPage {
 		$this->reportLine( __( 'Gepaste wenners', 'ink-core' ), (array) ( $report['matched_winners'] ?? array() ) );
 		$this->reportLine( __( 'Onbekende wenner-IDs (pas niks)', 'ink-core' ), (array) ( $report['unknown_winners'] ?? array() ) );
 		$this->reportLine( __( 'Duplikate', 'ink-core' ), (array) ( $report['duplicates'] ?? array() ) );
+		$this->reportLine( __( 'Gelyke plekke (albei skrywers is geplaas)', 'ink-core' ), (array) ( $report['ties'] ?? array() ) );
 		$this->reportLine( __( 'Inskrywings sonder kommentaar', 'ink-core' ), (array) ( $report['entries_without_commentary'] ?? array() ) );
 
 		if ( $blocks ) {

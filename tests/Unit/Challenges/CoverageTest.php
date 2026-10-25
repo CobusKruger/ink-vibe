@@ -68,8 +68,9 @@ test( 'blocksCommit is true on an unknown winner EntryID', function (): void {
 	expect( Coverage::blocksCommit( $report ) )->toBeTrue();
 } );
 
-test( 'blocksCommit is true on a duplicate rank in a pool (no two algehele wenners) — flag #1', function (): void {
-	// Two rank-1s in the brons×gedig pool: the authoritative rank-uniqueness invariant.
+test( 'two different entries sharing a rank are a tie: reported, not blocked', function (): void {
+	// Two writers both placed first in the brons x gedig pool. That is a tie (both win), so
+	// the commit is NOT blocked; the shared slot is listed for the editor's confirm.
 	$winners = array(
 		array( 'grade' => 'brons', 'type' => 'gedig', 'rank' => 1, 'entry_id' => 'Gedig 1' ),
 		array( 'grade' => 'brons', 'type' => 'gedig', 'rank' => 1, 'entry_id' => 'Gedig 2' ),
@@ -77,7 +78,20 @@ test( 'blocksCommit is true on a duplicate rank in a pool (no two algehele wenne
 
 	$report = Coverage::report( $winners, array(), array( 'Gedig 1', 'Gedig 2' ) );
 
-	expect( $report['duplicates'] )->toContain( 'brons|gedig|1' );
+	expect( $report['ties'] )->toBe( array( 'brons|gedig|1' ) );
+	expect( $report['duplicates'] )->toBe( array() );
+	expect( Coverage::blocksCommit( $report ) )->toBeFalse();
+} );
+
+test( 'blocksCommit is true when one entry is placed twice or at two ranks', function (): void {
+	$winners = array(
+		array( 'grade' => 'brons', 'type' => 'gedig', 'rank' => 1, 'entry_id' => 'Gedig 1' ),
+		array( 'grade' => 'brons', 'type' => 'gedig', 'rank' => 2, 'entry_id' => 'Gedig 1' ),
+	);
+
+	$report = Coverage::report( $winners, array(), array( 'Gedig 1' ) );
+
+	expect( $report['duplicates'] )->toBe( array( 'Gedig 1' ) );
 	expect( Coverage::blocksCommit( $report ) )->toBeTrue();
 } );
 
