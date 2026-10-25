@@ -43,11 +43,11 @@
 			<!-- wp:buttons {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
 			<div data-audit-id="hero-actions" class="wp-block-buttons">
 				<!-- wp:button {"className":"is-style-ink-primary ink-btn-lg"} -->
-				<div class="wp-block-button is-style-ink-primary ink-btn-lg"><a data-audit-id="hero-btn-primary" class="wp-block-button__link wp-element-button" href="/lees"><?php echo ink_foundation_icon( '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted theme-authored inline SVG icon (§0.9). ?><?php esc_html_e( 'Begin lees', 'ink-foundation' ); ?></a></div>
+				<div class="wp-block-button is-style-ink-primary ink-btn-lg"><a data-audit-id="hero-btn-primary" class="wp-block-button__link wp-element-button" href="/ontdek/"><?php echo ink_foundation_icon( '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted theme-authored inline SVG icon (§0.9). ?><?php esc_html_e( 'Begin lees', 'ink-foundation' ); ?></a></div>
 				<!-- /wp:button -->
 
 				<!-- wp:button {"className":"is-style-ink-outline ink-btn-lg"} -->
-				<div class="wp-block-button is-style-ink-outline ink-btn-lg"><a data-audit-id="hero-btn-outline" class="wp-block-button__link wp-element-button" href="/skryf"><?php esc_html_e( 'Deel jou werk', 'ink-foundation' ); ?><?php echo ink_foundation_icon( '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted theme-authored inline SVG icon (§0.9). ?></a></div>
+				<div class="wp-block-button is-style-ink-outline ink-btn-lg"><a data-audit-id="hero-btn-outline" class="wp-block-button__link wp-element-button" href="<?php echo esc_url( function_exists( 'ink_foundation_is_member_logged_in' ) && ink_foundation_is_member_logged_in() ? home_url( '/skryf/' ) : add_query_arg( 'redirect_to', rawurlencode( home_url( '/skryf/' ) ), home_url( '/teken-in/' ) ) ); ?>"><?php esc_html_e( 'Deel jou werk', 'ink-foundation' ); ?><?php echo ink_foundation_icon( '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted theme-authored inline SVG icon (§0.9). ?></a></div>
 				<!-- /wp:button -->
 			</div>
 			<!-- /wp:buttons -->

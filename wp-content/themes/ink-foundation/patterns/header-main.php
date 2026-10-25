@@ -70,11 +70,14 @@
 
 		<!-- wp:navigation {"textColor":"muted-text","overlayTextColor":"text","overlayBackgroundColor":"surface","style":{"spacing":{"blockGap":"var:preset|spacing|s-32"}},"layout":{"type":"flex","orientation":"horizontal"}} -->
 			<!-- wp:navigation-link {"label":"Tuis","url":"/"} /-->
-			<!-- wp:navigation-link {"label":"Ontdek","url":"/ontdek"} /-->
-			<!-- wp:navigation-link {"label":"Opleiding","url":"/opleiding"} /-->
+			<!-- wp:navigation-link {"label":"Ontdek","url":"/ontdek/"} /-->
+			<!-- wp:navigation-link {"label":"Biblioteek","url":"/biblioteek/"} /-->
+			<!-- wp:navigation-link {"label":"Opleiding","url":"/opleiding/"} /-->
 			<!-- wp:navigation-link {"label":"Uitdagings","url":"/uitdaging/"} /-->
-			<!-- wp:navigation-link {"label":"Gemeenskap","url":"/gemeenskap"} /-->
-			<!-- wp:navigation-link {"label":"My profiel","url":"/my-profiel"} /-->
+			<!-- wp:navigation-link {"label":"Gemeenskap","url":"/gemeenskap/"} /-->
+			<?php if ( is_user_logged_in() ) : ?>
+			<!-- wp:navigation-link {"label":"My profiel","url":"/my-profiel/"} /-->
+			<?php endif; ?>
 		<!-- /wp:navigation -->
 
 <?php if ( function_exists( 'is_user_logged_in' ) && is_user_logged_in() ) : ?>
