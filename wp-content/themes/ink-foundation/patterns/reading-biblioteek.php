@@ -27,8 +27,8 @@
  */
 
 $ink_type_label = function_exists( 'ink_foundation_term' )
-	? ink_foundation_term( 'biblioteek_item', 'Biblioteekitem' )
-	: 'Biblioteekitem';
+	? ink_foundation_term( 'biblioteek_item', 'Biblioteek' )
+	: 'Biblioteek';
 ?>
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-64","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-24","right":"var:preset|spacing|s-24"}}},"layout":{"type":"constrained"}} -->
 <section class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--s-64);padding-right:var(--wp--preset--spacing--s-24);padding-bottom:var(--wp--preset--spacing--s-48);padding-left:var(--wp--preset--spacing--s-24)">
