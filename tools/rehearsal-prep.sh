@@ -11,19 +11,18 @@
 #                           [--apply]
 #
 # Without --apply it is a DRY RUN: it checks the inputs and the Local site and
-# prints what it would do. With --apply it will DESTROY the current nuwe-ink
-# database (after backing it up to ./tmp/).
+# prints what it would do. With --apply it DESTROYS the current nuwe-ink
+# database (an old test copy, replaced on purpose; nothing is kept).
 #
 # What it does, in order:
 #   1. safety checks (the target really is the Local nuwe-ink site)
-#   2. backs up the current database to ./tmp/
-#   3. drops and recreates the database, then imports the prod dump
-#   4. replaces the prod URL with https://nuwe-ink.local using `wp search-replace`
+#   2. drops and recreates the database, then imports the prod dump
+#   3. replaces the prod URL with https://nuwe-ink.local using `wp search-replace`
 #      (serialization-safe; editing the SQL text would corrupt serialized data).
 #      Only URLs are replaced, never the bare domain, so addresses such as
 #      moderator@ink.org.za in the data are left alone.
-#   5. copies the uploads in, deploys ink-core + ink-foundation (deploy-to-local.sh)
-#   6. activates them, sets INK_MAIL_SINK, flushes rewrites and caches
+#   4. copies the uploads in, deploys ink-core + ink-foundation (deploy-to-local.sh)
+#   5. activates them, sets INK_MAIL_SINK, flushes rewrites and caches
 #
 # Mail: Local runs Mailpit for this site. With INK_MAIL_SINK set, ink-core
 # rewrites every outgoing message to that address instead of the real one, and
@@ -90,7 +89,6 @@ for candidate in "$LOCAL_HOME"/lightning-services/mysql-"${MYSQL_VER}"*/bin/darw
 	[[ -x "$candidate" ]] && { MYSQL_BIN="$candidate"; break; }
 done
 [[ -n "$MYSQL_BIN" ]] || die "Local's mysql client for version ${MYSQL_VER} not found."
-MYSQLDUMP_BIN="$(dirname "$MYSQL_BIN")/mysqldump"
 
 export MYSQL_PWD="$DB_PASS"
 mysql_cmd() { "$MYSQL_BIN" --socket="$SOCKET" -u"$DB_USER" "$@"; }
@@ -112,7 +110,6 @@ echo "  uploads:     $UPLOADS"
 echo "  old URL:     ${OLD_URL:-(read from the imported database)}"
 echo "  new URL:     $TARGET_URL"
 echo "  mail sink:   $MAIL_SINK"
-echo "  backup to:   $TMP_DIR/backup-before-rehearsal-<timestamp>.sql"
 
 if [[ "$APPLY" != true ]]; then
 	say "DRY RUN: nothing was changed. Re-run with --apply to do it."
@@ -120,12 +117,7 @@ if [[ "$APPLY" != true ]]; then
 fi
 
 mkdir -p "$TMP_DIR"
-STAMP="$(date +%Y%m%d-%H%M%S)"
-
-say "1/6 Backing up the current database"
-"$MYSQLDUMP_BIN" --socket="$SOCKET" -u"$DB_USER" "$DB_NAME" > "$TMP_DIR/backup-before-rehearsal-${STAMP}.sql" || echo "-- backup skipped (empty or unreadable database) --"
-
-say "2/6 Resetting the database and importing the prod dump"
+say "1/5 Resetting the database and importing the prod dump"
 mysql_cmd -e "DROP DATABASE IF EXISTS \`${DB_NAME}\`; CREATE DATABASE \`${DB_NAME}\` CHARACTER SET utf8mb4;"
 if [[ "$SQL" == *.gz ]]; then
 	gunzip -c "$SQL" | mysql_cmd "$DB_NAME"
@@ -137,7 +129,7 @@ TABLE_PREFIX="$(WP config get table_prefix)"
 mysql_cmd -N -e "SELECT COUNT(*) FROM \`${DB_NAME}\`.\`${TABLE_PREFIX}options\`" >/dev/null \
 	|| die "Imported database has no '${TABLE_PREFIX}options' table. Does prod use another table prefix? Change \$table_prefix in wp-config.php."
 
-say "3/6 Pointing the site at $TARGET_URL"
+say "2/5 Pointing the site at $TARGET_URL"
 if [[ -z "$OLD_URL" ]]; then
 	OLD_URL="$(mysql_cmd -N -e "SELECT option_value FROM \`${DB_NAME}\`.\`${TABLE_PREFIX}options\` WHERE option_name='home'" | tr -d '\r')"
 fi
@@ -147,7 +139,7 @@ for from in "https://${OLD_HOST}" "http://${OLD_HOST}" "https://www.${OLD_HOST#w
 	WP search-replace "$from" "$TARGET_URL" --all-tables --skip-columns=guid --quiet || true
 done
 
-say "4/6 Copying the uploads"
+say "3/5 Copying the uploads"
 mkdir -p "$DEST_ROOT/wp-content/uploads"
 if [[ -d "$UPLOADS" ]]; then
 	rsync -a --exclude=.DS_Store "${UPLOADS%/}/" "$DEST_ROOT/wp-content/uploads/"
@@ -164,10 +156,10 @@ else
 	rsync -a --exclude=.DS_Store "${EXTRACT%/}/" "$DEST_ROOT/wp-content/uploads/"
 fi
 
-say "5/6 Deploying this repo's code to the site"
+say "4/5 Deploying this repo's code to the site"
 "$REPO_ROOT/tools/deploy-to-local.sh" --apply
 
-say "6/6 Activating, mail sink, rewrite rules"
+say "5/5 Activating, mail sink, rewrite rules"
 WP plugin activate ink-core
 WP theme activate ink-foundation
 WP config set WP_ENVIRONMENT_TYPE local --type=constant --quiet

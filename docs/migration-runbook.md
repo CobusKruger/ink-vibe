@@ -16,7 +16,7 @@ Only the export itself. `tools/rehearsal-prep.sh` does everything else.
    tools/rehearsal-prep.sh --sql ~/Downloads/prod.sql.gz --uploads ~/Downloads/uploads.zip --apply
    ```
 
-   The Local site must be running. With `--apply` it backs up the current nuwe-ink database to `tmp/`, replaces it with the prod dump, rewrites the prod URLs to `https://nuwe-ink.local` (with `wp search-replace`, which is safe for serialized data; it never touches the bare domain, so addresses like `moderator@ink.org.za` stay as they are), copies the uploads, deploys `ink-core` and `ink-foundation` from this repo with `tools/deploy-to-local.sh`, activates them, sets `WP_ENVIRONMENT_TYPE` and `INK_MAIL_SINK`, and flushes rewrites and caches. It prints the resulting URL, environment, plugin and theme status and a post count.
+   The Local site must be running. With `--apply` it replaces the current nuwe-ink database (an old test copy; nothing is kept) with the prod dump, rewrites the prod URLs to `https://nuwe-ink.local` (with `wp search-replace`, which is safe for serialized data; it never touches the bare domain, so addresses like `moderator@ink.org.za` stay as they are), copies the uploads, deploys `ink-core` and `ink-foundation` from this repo with `tools/deploy-to-local.sh`, activates them, sets `WP_ENVIRONMENT_TYPE` and `INK_MAIL_SINK`, and flushes rewrites and caches. It prints the resulting URL, environment, plugin and theme status and a post count.
 3. **Hand over to the agent** with the prompt below.
 
 Later, and not before the rehearsal: decide freeze versus incremental (depends on the timed run) and the cutover date; review the Afrikaans strings added in this work for the copy-debt log (the tie line on the Ingestion page is already yours; the `wp ink` CLI messages are unreviewed).
@@ -24,7 +24,7 @@ Later, and not before the rehearsal: decide freeze versus incremental (depends o
 Notes:
 
 - **Mail.** Local runs Mailpit for this site. `INK_MAIL_SINK` defaults to `sink@nuwe-ink.local`: ink-core rewrites every outgoing message to it, and Mailpit (open it from the Local app) shows what the judge-email flow produced. With no sink set ink-core sends nothing at all. Whether Local routes `wp_mail` to Mailpit on this site is unconfirmed until the first judge email is generated.
-- **Winners data.** `docs/data-cleanup/winners/` is gitignored (member emails), so it exists only in your working copy. The migration reads `tier-import.csv` from there, so run the agent on this machine, in this working copy.
+- **Winners data.** `docs/data-cleanup/winners/` is gitignored (member emails), so it exists only in your working copy; run the agent on this machine, in this working copy. The migration itself reads exactly one file from it, `tier-import.csv` (each writer's starting gradering, which prod does not store anywhere). The other files (`writer-accounts.csv`, `writer-aliases.csv`, the winner list) are used only to check and refresh that file; see the hand-over prompt, step 5.
 - **Database socket.** The prep script finds the site's MySQL socket and client from Local's own `sites.json`. The agent can do the same, or reuse the `Database` tab's values in Local.
 - **WP-CLI from an agent session** against the Local database needs the sandbox off.
 
@@ -45,7 +45,7 @@ Rules:
 
 Do this:
 1. Pre-flight, read-only. Confirm WP_ENVIRONMENT_TYPE is not production and INK_MAIL_SINK is set (tools/rehearsal-prep.sh normally did this). Run docs/migration-tools/check-slug-collisions.php. Record counts of legacy `bibliotekon` / `opleiding` posts and the category tree. Confirm the categories `projekte` and `kompetisie` exist. Stop and report if anything is missing.
-2. Back up the database into ./tmp/ with Local's own `mysqldump` and socket (tools/rehearsal-prep.sh shows how to find them; plain `wp db export` may not find a client).
+2. Snapshot the freshly imported database into ./tmp/, so the migration can be re-run from the same starting point (step 6). Use Local's own `mysqldump` (it sits beside the `mysql` client that tools/rehearsal-prep.sh locates, and needs the socket); plain `wp db export` may not find a client.
 3. Run `wp ink migrate-all --tiers=/Users/cobus/Development/ink-vibe/docs/data-cleanup/winners/tier-import.csv`. Time it. It stops at the first failure and resumes on re-run. Report every step's verdict; investigate anything flagged `silent` or `all-zero` before moving on.
 4. Run docs/migration-tools/post-counts.php and compare with the expectations in "Verify" below. Run `wp ink report-result-posts --file=tmp/result-posts.csv` and docs/migration-tools/validate-parser.php and validate-gradering.php.
 5. Refresh the baseline gradering: use LegacyResultsParser (see validate-gradering.php) on the result posts newer than the July extraction (June to September 2026), resolve writers via writer-accounts.csv, writer-aliases.csv and the DB users, and produce a diff against tier-import.csv. Do not overwrite tier-import.csv: put the proposed file and the diff in tmp/ for the owner to approve. Unresolved writers are listed, not guessed.
