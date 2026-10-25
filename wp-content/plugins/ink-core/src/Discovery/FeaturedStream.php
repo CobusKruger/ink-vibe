@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Discovery;
 
+use Ink\Kernel\ArchiveRender;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
 use Ink\Engagement\Api as EngagementApi;
@@ -197,6 +198,7 @@ final class FeaturedStream {
 				'read_minutes'   => ReadingTime::minutesFromText( wp_strip_all_tags( (string) $post->post_content ) ),
 				'excerpt'        => self::excerptFor( $post ),
 				'author'         => (string) get_the_author_meta( 'display_name', $author_id ),
+				'author_url'     => (string) get_author_posts_url( $author_id ),
 				'avatar_url'     => (string) get_avatar_url( $author_id, array( 'size' => 64 ) ),
 				'hart_count'     => EngagementApi::hartjieCountForPost( $post_id ),
 				'response_count' => EngagementApi::responseCountForPost( $post_id ),
@@ -451,7 +453,7 @@ final class FeaturedStream {
 		}
 
 		if ( '' !== $author ) {
-			$author_html .= '<span class="' . esc_attr( $base . '__outeur-naam' ) . '"' . self::auditId( $aid, 'author-name' ) . '>' . esc_html( $author ) . '</span>';
+			$author_html .= ArchiveRender::authorLabel( $base . '__outeur-naam', $author, (string) ( $item['author_url'] ?? '' ), self::auditId( $aid, 'author-name' ) );
 		}
 
 		$author_html .= '</div>';

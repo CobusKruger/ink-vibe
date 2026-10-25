@@ -63,6 +63,7 @@ test( 'toHtml renders the Verwante stukke heading and a card per suggestion', fu
 	Functions\when( '__' )->returnArg( 1 );
 	Functions\when( 'esc_html__' )->returnArg( 1 );
 	Functions\when( 'esc_html' )->returnArg( 1 );
+	Functions\when( 'esc_attr' )->returnArg( 1 );
 	Functions\when( 'esc_url' )->returnArg( 1 );
 
 	$cards = array(

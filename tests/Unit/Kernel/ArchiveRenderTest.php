@@ -125,3 +125,14 @@ test( 'pagination clamps an out-of-range page down to the last page (no link bey
 	expect( $html )->toContain( 'opleiding_bladsy=2' );
 	expect( $html )->not->toContain( 'ink-opleiding__volgende' );
 } );
+
+test( 'authorLabel links a known author to their public profile and falls back to plain text', function (): void {
+	Functions\when( 'esc_attr' )->returnArg( 1 );
+	Functions\when( 'esc_html' )->returnArg( 1 );
+	Functions\when( 'esc_url' )->returnArg( 1 );
+
+	expect( ArchiveRender::authorLabel( 'x__naam', 'Cobus', 'https://ink.test/lede/cobus/', ' data-a="1"' ) )
+		->toBe( '<a class="x__naam ink-link" data-a="1" href="https://ink.test/lede/cobus/">Cobus</a>' )
+		->and( ArchiveRender::authorLabel( 'x__naam', 'Cobus', '' ) )
+		->toBe( '<span class="x__naam">Cobus</span>' );
+} );
