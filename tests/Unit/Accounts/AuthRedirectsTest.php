@@ -54,10 +54,10 @@ function ink_auth_redirects_testable(): AuthRedirects {
 
 // --- loginFailed() ---
 
-test( 'loginFailed redirects to meld-aan with the failed notice and preserves the username', function (): void {
+test( 'loginFailed redirects to teken-in with the failed notice and preserves the username', function (): void {
 	Functions\expect( 'wp_safe_redirect' )
 		->once()
-		->with( 'https://ink.test/meld-aan/?meld_aan=fout&log=toets%40ink.test' );
+		->with( 'https://ink.test/teken-in/?meld_aan=fout&log=toets%40ink.test' );
 
 	$sut = ink_auth_redirects_testable();
 	$sut->loginFailed( 'toets@ink.test' );

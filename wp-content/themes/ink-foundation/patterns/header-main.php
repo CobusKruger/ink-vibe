@@ -16,8 +16,7 @@
  * product-owner finding): every visitor used to see "Begin skryf" regardless of
  * auth state — Lovable's `Header.tsx` shows "Start Writing" only when `user` is
  * set, and "Sign in" (ghost) + "Join Inkwell" (primary) otherwise. Logged-out now
- * renders `is-style-ink-ghost` "Teken in" (linking to the existing `/meld-aan`
- * page — the URL is unchanged, only the label) + `is-style-ink-primary` "Sluit
+ * renders `is-style-ink-ghost` "Teken in" (linking to `/teken-in`) + `is-style-ink-primary` "Sluit
  * aan" (`/registreer`); logged-in keeps "Begin skryf" exactly as before. Both new
  * labels are sourced from the {@see \Ink\I18n\Terms} registry via
  * `ink_foundation_term()` (`teken_in`/`sluit_aan`) — single-source, since "Teken
@@ -123,7 +122,7 @@
 		<!-- wp:buttons {"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
 		<div data-audit-id="header-actions" class="wp-block-buttons">
 			<!-- wp:button {"className":"is-style-ink-ghost ink-btn-sm"} -->
-			<div class="wp-block-button is-style-ink-ghost ink-btn-sm"><a data-audit-id="header-btn-signin" class="wp-block-button__link wp-element-button" href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></div>
+			<div class="wp-block-button is-style-ink-ghost ink-btn-sm"><a data-audit-id="header-btn-signin" class="wp-block-button__link wp-element-button" href="/teken-in"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></div>
 			<!-- /wp:button -->
 
 			<!-- wp:button {"className":"is-style-ink-primary ink-btn-sm"} -->

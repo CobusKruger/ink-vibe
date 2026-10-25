@@ -251,12 +251,12 @@ function ink_foundation_enqueue_kontak_assets(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_kontak_assets' );
 
 /**
- * Enqueue the Auth (meld-aan / registreer / wagwoord-herstel) stylesheet on
+ * Enqueue the Auth (teken-in / registreer / wagwoord-herstel) stylesheet on
  * those three pages only (Theme-Fidelity re-audit, page 16 — the last page).
  *
  * `auth.css` carries the three forms' shared presentation (field/label/hint/
  * remember-me/submit-button styling, the auth card's own padding/hover
- * overrides). Before this file `meld-aan` rendered the core `wp:loginout`
+ * overrides). Before this file `teken-in` rendered the core `wp:loginout`
  * block's raw, unstyled `wp_login_form()` markup, and `registreer` /
  * `wagwoord-herstel` already carried `.ink-auth-*` classes with ZERO matching
  * CSS anywhere — the same "zero CSS" gap already found and fixed on kontak/
@@ -265,7 +265,7 @@ add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_kontak_assets' );
  * session).
  */
 function ink_foundation_enqueue_auth_assets(): void {
-	if ( ! function_exists( 'is_page' ) || ! is_page( array( 'meld-aan', 'registreer', 'wagwoord-herstel' ) ) ) {
+	if ( ! function_exists( 'is_page' ) || ! is_page( array( 'teken-in', 'registreer', 'wagwoord-herstel' ) ) ) {
 		return;
 	}
 

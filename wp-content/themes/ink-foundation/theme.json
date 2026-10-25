@@ -245,7 +245,7 @@
   },
   "customTemplates": [
     {
-      "name": "page-meld-aan",
+      "name": "page-teken-in",
       "title": "Teken in",
       "postTypes": [ "page" ]
     },

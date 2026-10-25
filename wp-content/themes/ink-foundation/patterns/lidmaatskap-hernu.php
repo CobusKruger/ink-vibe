@@ -150,7 +150,7 @@ if ( empty( $ink_renewal_plans ) ) {
 		<!-- /wp:columns -->
 <?php else : ?>
 		<!-- wp:paragraph {"fontSize":"md"} -->
-		<p class="has-md-font-size"><a href="<?php echo esc_url( home_url( '/meld-aan' ) ); ?>"><?php echo esc_html__( 'Teken in om jou lidmaatskap te hernieu.', 'ink-foundation' ); ?></a></p>
+		<p class="has-md-font-size"><a href="<?php echo esc_url( home_url( '/teken-in' ) ); ?>"><?php echo esc_html__( 'Teken in om jou lidmaatskap te hernieu.', 'ink-foundation' ); ?></a></p>
 		<!-- /wp:paragraph -->
 <?php endif; ?>
 	</div>

@@ -32,7 +32,7 @@ const page = await ctx.newPage();
 await page.goto(args.url, { waitUntil: 'networkidle', timeout: 60_000 });
 
 if (args.side === 'ink') {
-  // The themed login form (`/meld-aan`). `wp-login.php` is intercepted and
+  // The themed login form (`/teken-in`). `wp-login.php` is intercepted and
   // redirected here by ink-core's Accounts\AuthRedirects, so target this form.
   // It renders wp_login_form(): fields keep the core ids, but the submit is a
   // <button name="wp-submit">, not core's <input id="wp-submit">.

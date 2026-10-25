@@ -107,6 +107,11 @@ final class Plugin {
 		// the loaders above; must run on `init` (Block Bindings registration time).
 		add_action( 'init', \Ink\I18n\Bindings::register( ... ) );
 
+		// The Pages the theme's page templates need (skryf, ontdek, teken-in ...),
+		// created idempotently and protected from deletion. Cross-cutting: the
+		// theme links to these slugs, so they cannot belong to a feature module.
+		SystemPages::register();
+
 		// Reserved seam: dispatch each registered module's bootstrap on `init`.
 		// No modules are registered at 1.7, so this is a no-op until later epics.
 		add_action( 'init', $this->registerModules( ... ) );

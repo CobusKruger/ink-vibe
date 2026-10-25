@@ -127,7 +127,7 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 
 	<?php if ( ! $ink_skryf_in ) : ?>
 	<!-- wp:paragraph {"fontSize":"md"} -->
-	<p class="has-md-font-size" data-audit-id="skryf-signin-notice"><?php echo esc_html__( 'Teken in om werk te plaas.', 'ink-foundation' ); ?> <a href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></p>
+	<p class="has-md-font-size" data-audit-id="skryf-signin-notice"><?php echo esc_html__( 'Teken in om werk te plaas.', 'ink-foundation' ); ?> <a href="/teken-in"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></p>
 	<!-- /wp:paragraph -->
 	<?php else : ?>
 		<?php if ( 'geen-toegang' === $ink_skryf_notice && function_exists( 'ink_foundation_skryf_denial' ) ) : ?>

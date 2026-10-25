@@ -49,7 +49,7 @@
 		if ( 'voltooi' === $ink_registreer_status ) :
 			?>
 			<p data-audit-id="auth-notice" class="ink-notice ink-notice--ok" role="status"><?php echo esc_html__( 'Registrasie voltooi. Ons het jou intekenbesonderhede per e-pos gestuur.', 'ink-foundation' ); ?></p>
-			<a data-audit-id="auth-secondary-btn" class="ink-btn ink-btn--neutral ink-btn--block" href="<?php echo esc_url( home_url( '/meld-aan' ) ); ?>"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a>
+			<a data-audit-id="auth-secondary-btn" class="ink-btn ink-btn--neutral ink-btn--block" href="<?php echo esc_url( home_url( '/teken-in' ) ); ?>"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a>
 		<?php else : ?>
 			<?php // Renders WordPress's OWN registration handler in-theme (Afrikaans, single-column) — auth is used, not rebuilt. ?>
 			<?php if ( 'fout' === $ink_registreer_status ) : ?>
@@ -108,7 +108,7 @@
 
 <?php if ( 'voltooi' !== $ink_registreer_status ) : ?>
 		<!-- wp:paragraph {"className":"ink-auth-switch","fontSize":"sm","textColor":"muted-text"} -->
-		<p data-audit-id="auth-switch" class="ink-auth-switch has-muted-text-color has-text-color has-sm-font-size">Reeds &#8217;n rekening? <a data-audit-id="auth-switch-link" href="/meld-aan"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></p>
+		<p data-audit-id="auth-switch" class="ink-auth-switch has-muted-text-color has-text-color has-sm-font-size">Reeds &#8217;n rekening? <a data-audit-id="auth-switch-link" href="/teken-in"><?php echo esc_html( ink_foundation_term( 'teken_in', 'Teken in' ) ); ?></a></p>
 		<!-- /wp:paragraph -->
 <?php endif; ?>
 	</div>

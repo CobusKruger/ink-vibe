@@ -67,10 +67,13 @@ test( 'verdict flags silent and all-zero steps but accepts real work and already
 	expect( MigrateAll::verdict( 'posts', 'Success: 0 herklassifiseer (oorgeslaan — reeds gedoen).' ) )->toBe( MigrateAll::VERDICT_OK );
 	// Verification steps may legitimately print nothing / zeros.
 	expect( MigrateAll::verdict( 'verify-media', '' ) )->toBe( MigrateAll::VERDICT_OK );
+	// Counters that print no digits, or only existing pages, are not failures.
+	expect( MigrateAll::verdict( 'recount', 'Success: Updated uitdagingsrondte term count.' ) )->toBe( MigrateAll::VERDICT_OK );
+	expect( MigrateAll::verdict( 'pages', 'Success: Stelselbladsye: 0 geskep, 11 reeds daar, 0 herstel.' ) )->toBe( MigrateAll::VERDICT_OK );
 } );
 
 test( 'pending skips succeeded steps on resume, and --from restarts at a step', function (): void {
-	$state = array( 'sanitise' => array( 'status' => 'ok' ), 'users' => array( 'status' => 'ok' ), 'tiers' => array( 'status' => 'failed' ) );
+	$state = array( 'sanitise' => array( 'status' => 'ok' ), 'pages' => array( 'status' => 'ok' ), 'users' => array( 'status' => 'ok' ), 'tiers' => array( 'status' => 'failed' ) );
 
 	expect( MigrateAll::pending( $state )[0] )->toBe( 'tiers' );
 	expect( MigrateAll::pending( $state, 'users' )[0] )->toBe( 'users' );
@@ -98,11 +101,11 @@ test( 'a clean run executes every step in order and records them', function (): 
 
 	expect( $report['failed'] )->toBeFalse();
 	expect( count( $o->ran ) )->toBe( count( MigrateAll::steps() ) );
-	expect( $o->ran[2] )->toBe( "ink migrate-tiers 'tier.csv'" );
+	expect( $o->ran[3] )->toBe( "ink migrate-tiers 'tier.csv'" );
 
 	$derived = orchestrator( array() );
 	$derived->run( '' );
-	expect( $derived->ran[2] )->toBe( 'ink derive-tiers' );
+	expect( $derived->ran[3] )->toBe( 'ink derive-tiers' );
 	expect( $o->saved['verify-media']['status'] )->toBe( 'ok' );
 } );
 

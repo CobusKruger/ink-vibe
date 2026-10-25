@@ -69,8 +69,8 @@
       "note": "Second INK page sharing the one Lovable reference."
     },
     {
-      "row": "09a", "page": "meld-aan", "treatment": "A",
-      "ink": "https://nuwe-ink.local/meld-aan/",
+      "row": "09a", "page": "teken-in", "treatment": "A",
+      "ink": "https://nuwe-ink.local/teken-in/",
       "lovable": "http://localhost:4173/auth"
     },
     {
