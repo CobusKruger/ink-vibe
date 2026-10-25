@@ -40,6 +40,7 @@ final class Module implements ModuleContract {
 		( new Comments() )->register();
 		( new GedigBody() )->register();
 		( new ReactionController() )->register();
+		( new HighlightController() )->register();
 		( new ResponseController() )->register();
 		( new ResponsesList() )->register();
 		( new ResponseCount() )->register();

@@ -776,6 +776,13 @@ function ink_foundation_enqueue_highlightable_text(): void {
 			'panelTitleLabel'   => __( 'Jou uitgeligte gedeeltes', 'ink-foundation' ),
 			'emptyLabel'        => __( 'Kies enige teks in die stuk om onvergeetlike gedeeltes uit te lig.', 'ink-foundation' ),
 			'removeLabel'       => __( 'Verwyder hooglig', 'ink-foundation' ),
+			'restUrl'           => esc_url_raw( rest_url( 'ink/v1/hooglig' ) ),
+			'nonce'             => wp_create_nonce( 'wp_rest' ),
+			'postId'            => (int) get_the_ID(),
+			// The member's saved highlights on this piece, re-applied on load.
+			'saved'             => class_exists( '\\Ink\\Engagement\\HighlightStore' )
+				? \Ink\Engagement\HighlightStore::forUserPost( get_current_user_id(), (int) get_the_ID() )
+				: array(),
 		)
 	);
 }
