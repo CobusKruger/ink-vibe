@@ -25,9 +25,9 @@ defined( 'ABSPATH' ) || exit;
  *                  term (`genre` for the shelf or collection, `vaardigheid` for training);
  *  - `skip`      → deliberately not migrated (winners pages are replaced by the dynamic
  *                  Ontdek tab; old announcements are dropped);
- *  - `container` → a section placeholder. Its children keep their nested URL, so the
- *                  placeholder is migrated as their parent when it keeps any children, and
- *                  dropped when it is empty. Its decision carries the destination it would get.
+ *  - `container` → an empty section placeholder that only gave a menu item a page. Dropped;
+ *                  the skill/shelf term is the new tab and its children are detached
+ *                  (their URL loses the placeholder segment and is redirected).
  *
  * Some opleiding items live under another root but belong elsewhere (the dictionaries
  * under the old "gedigte" container): {@see ITEM_OVERRIDES} is keyed by the item's own slug.
@@ -289,8 +289,8 @@ final class LegacyContentMap {
 			return self::result( self::SKIP, null, null, null, $root );
 		}
 
-		// A container's own row is only migrated when it keeps children (the caller decides:
-		// the children's URLs run through it). It carries the destination its children get.
+		// A container's own row is never migrated (it is an empty menu placeholder); its
+		// children inherit the term it carries.
 		$is_container_row = false;
 
 		if ( self::CONTAINER === $rule['action'] ) {

@@ -129,14 +129,14 @@ test( 'run migrates legacy-CPT rows via the mapping, recording the rebuilt URL a
 	$summary = $migration->run();
 
 	expect( $summary['biblioteek'] )->toBe( 3 );      // 10, 11 + dictionary 14
-	expect( $summary['opleiding'] )->toBe( 2 );       // 16 + its kept container 13
+	expect( $summary['opleiding'] )->toBe( 1 );       // 16 only: placeholder 13 is dropped
 	expect( $summary['legacy_skipped'] )->toBe( 2 ); // winners 12 + unknown root 15
-	expect( $summary['containers'] )->toBe( 1 );     // empty placeholder 17 is dropped
+	expect( $summary['containers'] )->toBe( 2 );     // empty placeholders 13 and 17 are dropped
 	expect( $summary['unmapped_roots'] )->toBe( array( 'onbekend' ) );
 	expect( $migration->urls[11] )->toBe( '/biblioteek/flipvis-se-verhale/deel-1/' );
 	expect( $migration->urls[14] )->toBe( '/opleiding/gedigte/dignet-woordeboek/' );
-	// Nested URLs are kept (11 under 10, 16 under 13); the dictionary moved to the library is detached.
-	expect( $migration->detached )->toBe( array( 14 ) );
+	// 11 keeps its real parent 10; items under a dropped placeholder (14, 16) are detached.
+	expect( $migration->detached )->toBe( array( 14, 16 ) );
 	expect( $migration->named )->toContain( array( 14, Taxonomies::GENRE, 'Woordeboeke' ) );
-	expect( $migration->named )->toContain( array( 13, Taxonomies::VAARDIGHEID, 'Digkuns' ) );
+	expect( $migration->named )->toContain( array( 16, Taxonomies::VAARDIGHEID, 'Digkuns' ) );
 } );

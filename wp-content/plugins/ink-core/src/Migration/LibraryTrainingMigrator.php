@@ -230,28 +230,17 @@ class LibraryTrainingMigrator {
 			);
 		}
 
-		// A container is kept only if some child that stays under it is migrated.
-		$kept_containers = array();
-
-		foreach ( $rows as $post_id => $row ) {
-			$parent = $row['parent'];
-
-			if ( $parent > 0 && isset( $decisions[ $parent ] ) && LegacyContentMap::CONTAINER === $decisions[ $parent ]['action']
-				&& LegacyContentMap::MIGRATE === $decisions[ $post_id ]['action']
-				&& $decisions[ $parent ]['cpt'] === $decisions[ $post_id ]['cpt'] ) {
-				$kept_containers[ $parent ] = true;
-			}
-		}
-
 		foreach ( $rows as $post_id => $row ) {
 			$decision = $decisions[ $post_id ];
 
+			// Empty section placeholders only existed to give a menu item a page; the skill
+			// term is the new tab. They are dropped and their children detached.
 			if ( LegacyContentMap::CONTAINER === $decision['action'] ) {
-				if ( ! isset( $kept_containers[ $post_id ] ) ) {
-					++$containers;
-					continue;
-				}
-			} elseif ( LegacyContentMap::MIGRATE !== $decision['action'] ) {
+				++$containers;
+				continue;
+			}
+
+			if ( LegacyContentMap::MIGRATE !== $decision['action'] ) {
 				++$legacy_skipped;
 				continue;
 			}
@@ -264,13 +253,13 @@ class LibraryTrainingMigrator {
 			$this->recordSourceUrlFor( $post_id, LegacyContentMap::legacyPath( $row['type'], $row['slugs'] ) );
 			$this->setPostType( $post_id, $decision['cpt'] );
 
-			// Keep the nested URL when the parent is migrated to the same type; otherwise
-			// (moved dictionaries, skipped or dropped parents) detach so the URL stays valid.
+			// Keep the nested URL when the parent is a real migrated page of the same type;
+			// otherwise (moved dictionaries, dropped placeholders, skipped parents) detach.
 			$parent          = $row['parent'];
 			$parent_decision = $decisions[ $parent ] ?? null;
 			$parent_kept     = null !== $parent_decision
 				&& $parent_decision['cpt'] === $decision['cpt']
-				&& ( LegacyContentMap::MIGRATE === $parent_decision['action'] || isset( $kept_containers[ $parent ] ) );
+				&& LegacyContentMap::MIGRATE === $parent_decision['action'];
 
 			if ( $parent > 0 && ! $parent_kept ) {
 				$this->clearParent( $post_id );
