@@ -54,6 +54,7 @@ final class Module implements ModuleContract {
 		( new DbSanitiser() )->register();
 		( new UserReclassifier() )->register();
 		( new TierImport() )->register();
+		( new TierDeriver() )->register();
 		( new SubscriptionVerifier() )->register();
 		( new PostReclassifier() )->register();
 		( new LibraryTrainingMigrator() )->register();

@@ -92,6 +92,42 @@ final class PromotionEngine {
 	}
 
 	/**
+	 * Where a writer stands after a TOTAL number of top-3 wins in their whole history.
+	 *
+	 * Walks the same {@see self::THRESHOLDS} as {@see self::award()}: the counter resets on
+	 * each promotion, so the totals are cumulative (with 5 to leave Brons and 15 more to
+	 * leave Silwer, Goud starts at 20 total). `count` is the wins accumulated at the
+	 * resulting grade (0 for a terminal grade). The migration uses this to give every
+	 * writer the same standing the live engine would have reached. Pure.
+	 *
+	 * @param int $total Lifetime top-3 wins.
+	 * @return array{tier: Tier, count: int}
+	 */
+	public static function standingForTotalWins( int $total ): array {
+		$remaining = max( 0, $total );
+		$tier      = Tier::default();
+
+		while ( isset( self::THRESHOLDS[ $tier->value ] ) ) {
+			$rule = self::THRESHOLDS[ $tier->value ];
+
+			if ( $remaining < $rule['wins'] ) {
+				return array(
+					'tier'  => $tier,
+					'count' => $remaining,
+				);
+			}
+
+			$remaining -= $rule['wins'];
+			$tier       = $rule['next'];
+		}
+
+		return array(
+			'tier'  => $tier,
+			'count' => 0,
+		);
+	}
+
+	/**
 	 * The progress toward the next Gradering for a grade + current win count
 	 * (Story 5.9) — reads the SAME single-source threshold map as {@see self::award()}.
 	 *

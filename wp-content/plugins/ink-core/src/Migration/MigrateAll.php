@@ -59,15 +59,17 @@ class MigrateAll {
 	private const MAY_BE_ZERO = array( 'verify-subscriptions', 'verify-redirects', 'verify-media', 'clean-shortcodes' );
 
 	/**
-	 * The pipeline, in order. `{tiers}` is replaced by the tier CSV path.
+	 * The pipeline, in order. Gradering is derived from the result posts by default; give a
+	 * tier CSV path to import that file instead.
 	 *
+	 * @param string $tiers Optional tier CSV path.
 	 * @return list<array{0:string,1:string}> Pairs of [step id, WP-CLI command].
 	 */
-	public static function steps(): array {
+	public static function steps( string $tiers = '' ): array {
 		return array(
 			array( 'sanitise', 'ink migrate-sanitise' ),
 			array( 'users', 'ink migrate-users' ),
-			array( 'tiers', 'ink migrate-tiers {tiers}' ),
+			array( 'tiers', '' === $tiers ? 'ink derive-tiers' : 'ink migrate-tiers {tiers}' ),
 			array( 'verify-subscriptions', 'ink verify-subscriptions' ),
 			array( 'library-training', 'ink migrate-library-training' ),
 			array( 'posts', 'ink migrate-posts' ),
@@ -147,20 +149,19 @@ class MigrateAll {
 	/**
 	 * Pre-flight problems that must stop the run before anything mutates. Pure.
 	 *
-	 * @param string $tiers_path   The tier CSV path argument.
+	 * The tier CSV is optional (gradering is derived from the result posts); when a path
+	 * IS given it must exist.
+	 *
+	 * @param string $tiers_path   The optional tier CSV path argument.
 	 * @param bool   $tiers_exists Whether that file exists.
 	 * @return list<string>
 	 */
 	public static function preflight( string $tiers_path, bool $tiers_exists ): array {
-		$problems = array();
-
-		if ( '' === $tiers_path ) {
-			$problems[] = 'Geen --tiers=<pad> verskaf nie (docs/data-cleanup/winners/tier-import.csv).';
-		} elseif ( ! $tiers_exists ) {
-			$problems[] = sprintf( 'Tier-CSV nie gevind nie: %s', $tiers_path );
+		if ( '' !== $tiers_path && ! $tiers_exists ) {
+			return array( sprintf( 'Tier-CSV nie gevind nie: %s', $tiers_path ) );
 		}
 
-		return $problems;
+		return array();
 	}
 
 	/**
@@ -227,7 +228,7 @@ class MigrateAll {
 		$flagged  = 0;
 		$commands = array();
 
-		foreach ( self::steps() as $step ) {
+		foreach ( self::steps( $tiers ) as $step ) {
 			$commands[ $step[0] ] = str_replace( '{tiers}', escapeshellarg( $tiers ), $step[1] );
 		}
 
