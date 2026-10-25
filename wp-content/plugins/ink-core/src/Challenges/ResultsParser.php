@@ -79,6 +79,8 @@ final class ResultsParser {
 
 		$section    = '';
 		$pool_grade = '';
+		$last_rank  = 0;     // The rank a following unnumbered entry line shares (a tie).
+		$mention    = false; // Inside an honourable-mention list: not winners.
 		$winners    = array();
 		$commentary = array();
 		$current    = null; // The open commentary block.
@@ -103,7 +105,7 @@ final class ResultsParser {
 			}
 
 			if ( 'wenners' === $section ) {
-				self::parseWinnerLine( $line, $pool_grade, $winners );
+				self::parseWinnerLine( $line, $pool_grade, $last_rank, $mention, $winners );
 				continue;
 			}
 
@@ -121,37 +123,71 @@ final class ResultsParser {
 	}
 
 	/**
-	 * Parse one WENNERS-section line (pool header or rank line). Mutates the running
-	 * grade context + the winners list.
+	 * Parse one WENNERS-section line (pool header, rank line or a tie continuation). Mutates
+	 * the running context + the winners list.
+	 *
+	 * Every EntryID on a rank line takes that rank ("1ste: Gedig 3 & Gedig 5" is a tie), and an
+	 * unnumbered line of EntryIDs right after a rank line shares its rank. Both are emitted
+	 * as-is so the {@see Coverage} gate blocks the commit loudly on the shared slot; silently
+	 * dropping the second entry would lose a winner. An honourable-mention heading ("Eervolle
+	 * vermelding") suppresses the unnumbered entries that follow it.
 	 *
 	 * @param string                                                            $line       The trimmed line.
 	 * @param string                                                            $pool_grade The running Gradering context (by ref).
+	 * @param int                                                               $last_rank  The last rank seen in this pool (by ref).
+	 * @param bool                                                              $mention    Whether an honourable-mention list is open (by ref).
 	 * @param list<array{grade:string, type:string, rank:int, entry_id:string}> $winners   The winners accumulator (by ref).
 	 */
-	private static function parseWinnerLine( string $line, string &$pool_grade, array &$winners ): void {
+	private static function parseWinnerLine( string $line, string &$pool_grade, int &$last_rank, bool &$mention, array &$winners ): void {
 		$has_grade = 1 === preg_match( self::GRADE_RE, $line, $gm );
-		$has_entry = 1 === preg_match( self::ENTRY_ID_RE, $line, $em );
+		$entries   = preg_match_all( self::ENTRY_ID_RE, $line, $ems, PREG_SET_ORDER ) ? $ems : array();
+		$has_entry = array() !== $entries;
 		$rank      = self::rankIn( $line );
+
+		if ( 1 === preg_match( '/vermelding|bogemiddelde/i', $line ) ) {
+			$mention   = true;
+			$last_rank = 0;
+			return;
+		}
 
 		// A pool header sets the grade context (a line naming a grade but no winner).
 		if ( $has_grade && ( 0 === $rank || ! $has_entry ) ) {
 			$pool_grade = strtolower( $gm[1] );
+			$last_rank  = 0;
+			$mention    = false;
 			return;
 		}
 
+		// A tie continuation: entries with no rank of their own share the previous rank.
+		if ( 0 === $rank && $has_entry && $last_rank > 0 && ! $mention ) {
+			$rank = $last_rank;
+		}
+
 		// A rank line: needs a rank AND an EntryID (a "Geen" line is intentionally dropped).
-		if ( $rank > 0 && $has_entry ) {
+		if ( $rank > 0 && $has_entry && ! $mention ) {
 			// A grade on the same line overrides the running context.
 			if ( $has_grade ) {
 				$pool_grade = strtolower( $gm[1] );
 			}
 
-			$winners[] = array(
-				'grade'    => $pool_grade,
-				'type'     => strtolower( $em[1] ),
-				'rank'     => $rank,
-				'entry_id' => self::normaliseEntryId( $em[1], (int) $em[2] ),
-			);
+			$last_rank = $rank;
+
+			foreach ( $entries as $em ) {
+				$winners[] = array(
+					'grade'    => $pool_grade,
+					'type'     => strtolower( $em[1] ),
+					'rank'     => $rank,
+					'entry_id' => self::normaliseEntryId( $em[1], (int) $em[2] ),
+				);
+			}
+
+			return;
+		}
+
+		// A rank line with no entry ("3de: Geen") still closes the previous tie.
+		if ( $rank > 0 ) {
+			$last_rank = 0;
+			$mention   = false;
 		}
 	}
 
@@ -205,12 +241,17 @@ final class ResultsParser {
 	 * @return int
 	 */
 	private static function rankIn( string $line ): int {
-		// Accept "1:" / "1." / "1)" (punctuation) OR an ordinal form "1ste" / "2de" /
-		// "3de" even WITHOUT trailing punctuation (R12A review — "1ste Gedig 3" was
-		// silently dropped). A bare "1 Gedig" (no ordinal, no punctuation) is still NOT a
-		// rank line, so a prose line like "3 gedigte is ingedien" never false-matches.
-		if ( 1 === preg_match( '/^\s*([123])(?:(?:ste|de|e)\s*[:.\)]?|\s*[:.\)])/i', $line, $m ) ) {
+		// Accept "1:" / "1." / "1)" / "(1)" (punctuation) OR an ordinal form "1ste" / "2de" /
+		// "3 de plek" even WITHOUT trailing punctuation (R12A review: "1ste Gedig 3" was silently
+		// dropped), OR "Wenner" / "W" for first place. A bare "1 Gedig" (no ordinal, no
+		// punctuation) is still NOT a rank line, so a prose line like "3 gedigte is ingedien"
+		// never false-matches.
+		if ( 1 === preg_match( '/^\s*\(?([123])(?:\s*(?:ste|de|e)\s*(?:plek)?\s*[:.\)]?|\s*[:.\)])/i', $line, $m ) ) {
 			return (int) $m[1];
+		}
+
+		if ( 1 === preg_match( '/^\s*(?:wenner|w)\b\s*[:.\-–]/i', $line ) ) {
+			return 1;
 		}
 
 		return 0;
