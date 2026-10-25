@@ -3,10 +3,12 @@
 # rehearsal-prep.sh — put a fresh copy of the prod site onto the Local site
 # nuwe-ink.local, ready for `wp ink migrate-all`. Everything up to the prod
 # export itself is automated; the export (a database dump and the uploads
-# folder) is the only thing you have to bring.
+# folder) is the only thing you have to bring; leave --uploads out to keep the
+# uploads already on the Local site (media added to prod since then will be
+# missing: `wp ink verify-media` shows it).
 #
 # Usage:
-#   tools/rehearsal-prep.sh --sql <prod.sql|prod.sql.gz> --uploads <dir|.zip|.tar.gz>
+#   tools/rehearsal-prep.sh --sql <prod.sql|prod.sql.gz> [--uploads <dir|.zip|.tar.gz>]
 #                           [--mail-sink sink@nuwe-ink.local] [--old-url https://ink.org.za]
 #                           [--apply]
 #
@@ -58,7 +60,7 @@ die() { echo "ERROR: $*" >&2; exit 1; }
 say() { echo "== $* =="; }
 
 [[ -n "$SQL" && -f "$SQL" ]] || die "--sql <file> is required and must exist."
-[[ -n "$UPLOADS" && -e "$UPLOADS" ]] || die "--uploads <dir|.zip|.tar.gz> is required and must exist."
+[[ -z "$UPLOADS" || -e "$UPLOADS" ]] || die "--uploads path does not exist: $UPLOADS"
 [[ -d "$DEST_ROOT" ]] || die "Local site not found at: $DEST_ROOT"
 
 export PATH="/usr/local/bin:$PATH"
@@ -106,7 +108,7 @@ say "Plan"
 echo "  site:        $DEST_ROOT"
 echo "  database:    $DB_NAME via $SOCKET"
 echo "  prod dump:   $SQL"
-echo "  uploads:     $UPLOADS"
+echo "  uploads:     ${UPLOADS:-(none given: keeping the uploads already on the site)}"
 echo "  old URL:     ${OLD_URL:-(read from the imported database)}"
 echo "  new URL:     $TARGET_URL"
 echo "  mail sink:   $MAIL_SINK"
@@ -141,7 +143,9 @@ done
 
 say "3/5 Copying the uploads"
 mkdir -p "$DEST_ROOT/wp-content/uploads"
-if [[ -d "$UPLOADS" ]]; then
+if [[ -z "$UPLOADS" ]]; then
+	echo "  skipped: keeping the existing uploads"
+elif [[ -d "$UPLOADS" ]]; then
 	rsync -a --exclude=.DS_Store "${UPLOADS%/}/" "$DEST_ROOT/wp-content/uploads/"
 else
 	EXTRACT="$(mktemp -d "$TMP_DIR/uploads-XXXXXX")"

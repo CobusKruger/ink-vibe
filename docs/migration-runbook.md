@@ -8,12 +8,12 @@ Rebuild the new site from a fresh copy of production. The database is disposable
 
 Only the export itself. `tools/rehearsal-prep.sh` does everything else.
 
-1. **Bring the prod export:** a full database dump (`.sql` or `.sql.gz`) and the `wp-content/uploads` folder (a folder, `.zip` or `.tar.gz`). Take both at the same moment; a database newer than its uploads gives broken images.
+1. **Bring the prod export:** a full database dump (`.sql` or `.sql.gz`), and optionally the `wp-content/uploads` folder (a folder, `.zip` or `.tar.gz`). The Local site already holds about 18 GB of uploads from an earlier copy, so you can leave `--uploads` out; media added to prod since then is missing and `wp ink verify-media` will list it. If you do bring uploads, only differences are copied, and nothing is deleted. Take the dump and the uploads at the same moment.
 2. **Dry run, read what it says, then apply:**
 
    ```
-   tools/rehearsal-prep.sh --sql ~/Downloads/prod.sql.gz --uploads ~/Downloads/uploads.zip
-   tools/rehearsal-prep.sh --sql ~/Downloads/prod.sql.gz --uploads ~/Downloads/uploads.zip --apply
+   tools/rehearsal-prep.sh --sql ~/Downloads/prod.sql.gz [--uploads ~/Downloads/uploads.zip]
+   tools/rehearsal-prep.sh --sql ~/Downloads/prod.sql.gz [--uploads ~/Downloads/uploads.zip] --apply
    ```
 
    The Local site must be running. With `--apply` it replaces the current nuwe-ink database (an old test copy; nothing is kept) with the prod dump, rewrites the prod URLs to `https://nuwe-ink.local` (with `wp search-replace`, which is safe for serialized data; it never touches the bare domain, so addresses like `moderator@ink.org.za` stay as they are), copies the uploads, deploys `ink-core` and `ink-foundation` from this repo with `tools/deploy-to-local.sh`, activates them, sets `WP_ENVIRONMENT_TYPE` and `INK_MAIL_SINK`, and flushes rewrites and caches. It prints the resulting URL, environment, plugin and theme status and a post count.
@@ -25,6 +25,7 @@ Notes:
 
 - **Mail.** Local runs Mailpit for this site. `INK_MAIL_SINK` defaults to `sink@nuwe-ink.local`: ink-core rewrites every outgoing message to it, and Mailpit (open it from the Local app) shows what the judge-email flow produced. With no sink set ink-core sends nothing at all. Whether Local routes `wp_mail` to Mailpit on this site is unconfirmed until the first judge email is generated.
 - **Gradering needs no file.** `wp ink derive-tiers` (a `migrate-all` step) reads the moderators' result posts, counts each writer's Gedigte wins and sets the grade and the wins already counted at that grade, using the live promotion thresholds. The inputs it needs are committed in `ink-core/migration-data/` (by-line to account, spelling variants, which accounts publish result posts). It lists every by-line it could not resolve; add a row to `writer-accounts.csv` or `writer-aliases.csv` for those. The old hand-built `tier-import.csv` is optional now: pass `--tiers=<csv>` to `migrate-all` to import it instead, or keep it only to diff against (`docs/migration-tools/validate-gradering.php`). `docs/data-cleanup/` is gitignored (member emails) and exists only in your working copy.
+- **Existing code in `wp-content`.** Do not delete it. The plugins and mu-plugins already there are what the prod database expects; `ink-core` and `ink-foundation` are mirrored from this repo by the script. After the import, `wp plugin list` shows which prod plugins are active and which are missing from the Local site (WordPress quietly deactivates missing ones).
 - **Database socket.** The prep script finds the site's MySQL socket and client from Local's own `sites.json`. The agent can do the same, or reuse the `Database` tab's values in Local.
 - **WP-CLI from an agent session** against the Local database needs the sandbox off.
 
