@@ -81,6 +81,7 @@ final class LegacyResultsParser {
 		$counter  = 0;
 		$explicit = 0; // The last explicit position in this block (ties inherit it).
 		$seen     = array(); // Headings that already produced rows.
+		$mentions = false;   // Inside an honourable-mention list.
 		$current  = '';
 		$all      = self::lines( $html );
 
@@ -101,8 +102,11 @@ final class LegacyResultsParser {
 				break;
 			}
 
-			// An honourable mention is not a winner.
-			if ( 1 === preg_match( '/^\W*eervolle\s+vermelding/iu', $raw ) ) {
+			// An honourable mention is not a winner, and neither are the entries listed under that
+			// heading ("Eervolle vermeldings in goud, silwer en brons", "... bogemiddelde persentasie")
+			// up to the next heading.
+			if ( 1 === preg_match( '/^\W*eervolle\s+vermelding|bogemiddelde\s+persentasie/iu', $raw ) ) {
+				$mentions = true;
 				continue;
 			}
 
@@ -118,7 +122,8 @@ final class LegacyResultsParser {
 						break 2;
 					}
 
-					$current = $key;
+					$current  = $key;
+					$mentions = false;
 
 					if ( '' !== $header['category'] ) {
 						$category = $header['category'];
@@ -142,6 +147,10 @@ final class LegacyResultsParser {
 
 				if ( '' === $category ) {
 					continue; // Preamble text before any block.
+				}
+
+				if ( $mentions ) {
+					continue;
 				}
 
 				if ( self::isNoWinner( $line ) ) {
@@ -443,6 +452,7 @@ final class LegacyResultsParser {
 		for ( $i = 0; $i < 4; $i++ ) {
 			$before = $rest;
 			$rest   = preg_replace( '/^(?:\(\s*\w{1,2}\s*\)|\))\s*/u', '', $rest ) ?? $rest;
+			$rest   = preg_replace( '/^\(\s*\d+\s*%\s*\)\s*[:;.\-–]?\s*/u', '', $rest ) ?? $rest;
 			$rest   = preg_replace( '/^(?:n[o0]|nr)\.?\s*\d+\s*[:;.\-–]?\s*/iu', '', $rest ) ?? $rest;
 			$rest   = preg_replace( '/^\d{1,3}\s*[–-]\s*(?=\S)/u', '', $rest ) ?? $rest;
 			$rest   = preg_replace( '/^\d{1,3}\s+(?=\p{L})/u', '', $rest ) ?? $rest;
@@ -601,7 +611,7 @@ final class LegacyResultsParser {
 	 * @return array{writer:string,title:string,position:?int}|null
 	 */
 	private static function build( string $writer, string $title, ?int $position ): ?array {
-		$writer = trim( $writer, " \t–-:;," );
+		$writer = trim( $writer, " \t–-:;,+*" );
 		$title  = trim( $title, " \t" );
 		$title  = trim( preg_replace( '/^[–-]\s*/u', '', $title ) ?? $title );
 

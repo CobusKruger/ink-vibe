@@ -143,3 +143,15 @@ test( 'honourable mentions are not winners, and a repeated heading ends the winn
 
 	expect( parsed( $html ) )->toBe( array( 'Gedigte/Brons/1 Iemand - Titel' ) );
 } );
+
+test( 'entries listed under an honourable-mention heading are not winners, up to the next heading', function (): void {
+	$html = "GEDIGTE\nGoud\n1: no 16; Carma Shaw met Haikoe\nBrons\n1: No. 18; Madzi met Winterskets\nDie volgende gedigte het almal 'n bogemiddelde persentasie gekry:\nEervolle vermeldings in goud, silwer en brons afdelings\nNo.5; Callie Vermeulen met Tsubaki\nVERHALE:\n1: No. 3 (69%); Wilma met Sun en Moon";
+
+	expect( parsed( $html ) )->toBe(
+		array(
+			'Gedigte/Goud/1 Carma Shaw - Haikoe',
+			'Gedigte/Brons/1 Madzi - Winterskets',
+			'Verhale//1 Wilma - Sun en Moon',
+		)
+	);
+} );
