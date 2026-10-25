@@ -52,6 +52,17 @@ defined( 'ABSPATH' ) || exit;
 final class SkrywerProfiel {
 
 	/**
+	 * How many recent works the profile shows when nothing is pinned.
+	 */
+	private const FALLBACK_WORKS = 6;
+
+	/**
+	 * The BuddyPress extended-profile field holding the prod members' bio.
+	 */
+	private const BIO_FIELD = 'Biografie';
+
+
+	/**
 	 * The block name (single source for the renderer + the theme embed).
 	 *
 	 * @var string
@@ -106,7 +117,7 @@ final class SkrywerProfiel {
 			// The short tagline the writer edits on My Profiel (Tagline, `ink_skrywer_leuse`);
 			// Writer.tsx:219 shows it under the name (fidelity row 06, F2).
 			'tagline'         => Tagline::get( $author_id ),
-			'bio'             => (string) get_the_author_meta( 'description', $author_id ),
+			'bio'             => self::bioFor( $author_id ),
 			'avatar'          => function_exists( 'get_avatar' ) ? (string) get_avatar( $author_id, 160, '', '', array( 'class' => 'ink-avatar ink-avatar--hero' ) ) : '',
 			'cover'           => class_exists( CoverImage::class ) ? CoverImage::urlFor( $author_id, 'large' ) : '',
 			'badge'           => self::graderingBadge( $author_id ),
@@ -300,6 +311,51 @@ final class SkrywerProfiel {
 	}
 
 	/**
+	 * The works the profile showcases: the writer's pinned works, or, when they have
+	 * pinned none, their six most recent published works. Side-effecting (queries).
+	 *
+	 * @param int $author_id The skrywer.
+	 * @return list<int>
+	 */
+	private static function showcaseIds( int $author_id ): array {
+		$pinned = PinnedWorks::forUser( $author_id );
+
+		if ( array() !== $pinned ) {
+			return $pinned;
+		}
+
+		return array_slice( self::publishedWorkIds( $author_id ), 0, self::FALLBACK_WORKS );
+	}
+
+	/**
+	 * The writer's bio: the profile `description`, else the BuddyPress "Biografie"
+	 * field the prod members filled in. Read at render time so a member who joins
+	 * after cutover is covered too. Side-effecting (reads user and profile data).
+	 *
+	 * @param int $author_id The skrywer.
+	 */
+	private static function bioFor( int $author_id ): string {
+		$bio = trim( (string) get_the_author_meta( 'description', $author_id ) );
+
+		if ( '' === $bio && function_exists( 'xprofile_get_field_data' ) ) {
+			$bio = self::cleanBio( (string) xprofile_get_field_data( self::BIO_FIELD, $author_id ) );
+		}
+
+		return $bio;
+	}
+
+	/**
+	 * A profile-field bio as plain text. Pure.
+	 *
+	 * @param string $raw The stored field value (may carry markup and entities).
+	 */
+	public static function cleanBio( string $raw ): string {
+		$plain = html_entity_decode( strip_tags( $raw ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- pure helper, runs without WordPress loaded.
+
+		return trim( (string) preg_replace( '/[ \t]+/', ' ', $plain ) );
+	}
+
+	/**
 	 * The queried author's pinned works, resolved to reading-list cards (Story 9.5).
 	 *
 	 * Reads {@see PinnedWorks::forUser()} (in pin = display order) and resolves
@@ -315,7 +371,7 @@ final class SkrywerProfiel {
 	private static function pinnedCards( int $author_id ): array {
 		$cards = array();
 
-		foreach ( PinnedWorks::forUser( $author_id ) as $post_id ) {
+		foreach ( self::showcaseIds( $author_id ) as $post_id ) {
 			if ( 'publish' !== get_post_status( $post_id ) ) {
 				continue;
 			}

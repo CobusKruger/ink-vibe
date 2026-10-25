@@ -54,6 +54,7 @@ class Module implements ModuleContract {
 		// Story 9.2: the asymmetric follow graph — REST write path + toggle block.
 		// The store + counts are stateless statics reached through the Api facade;
 		// the table DDL is registered with the Kernel Schema in the bootstrap.
+		( new PublicProfileRoutes() )->register();
 		( new FollowController() )->register();
 		( new FollowToggle() )->register();
 
