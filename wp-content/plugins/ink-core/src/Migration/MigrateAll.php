@@ -73,6 +73,7 @@ class MigrateAll {
 			array( 'posts', 'ink migrate-posts' ),
 			array( 'challenges', 'ink migrate-challenges' ),
 			array( 'challenge-entries', 'ink sync-challenge-entries' ),
+			array( 'result-posts', 'ink link-result-posts' ),
 			array( 'inkpols', 'ink migrate-inkpols' ),
 			array( 'clean-shortcodes', 'ink clean-shortcodes' ),
 			array( 'rebuild-navigation', 'ink rebuild-navigation' ),

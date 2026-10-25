@@ -31,3 +31,10 @@ test( 'the plagiaat duplicate is a dropped duplicate, the original is not', func
 	expect( StaticRedirects::isDroppedDuplicate( 35127 ) )->toBeTrue();
 	expect( StaticRedirects::isDroppedDuplicate( 21602 ) )->toBeFalse();
 } );
+
+test( 'dropped Opleiding placeholders redirect to the Opleiding page, but their children do not match', function (): void {
+	foreach ( array( '/opleiding/digkuns/', '/opleiding/gedigte', 'https://ink.org.za/opleiding/taalgidse/' ) as $path ) {
+		expect( StaticRedirects::prefixTarget( $path ) )->toBe( '/opleiding/' );
+	}
+	expect( StaticRedirects::prefixTarget( '/opleiding/gedigte/digvorme/' ) )->toBeNull();
+} );

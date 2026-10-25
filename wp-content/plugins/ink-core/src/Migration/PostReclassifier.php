@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Migration;
 
+use Ink\Content\ChallengeResultTitle;
 use Ink\Content\PostTypes;
 
 defined( 'ABSPATH' ) || exit;
@@ -151,12 +152,13 @@ class PostReclassifier {
 
 				\WP_CLI::success(
 					sprintf(
-						'Plasings herklassifiseer: %d na tipe-CPT, %d na skryfwerk, %d hernoem, %d oorgeslaan, %d duplikate verwyder%s.',
+						'Plasings herklassifiseer: %d na tipe-CPT, %d na skryfwerk, %d hernoem, %d oorgeslaan, %d duplikate verwyder, %d uitslagplasings behou%s.',
 						(int) $summary['reassigned'],
 						(int) $summary['to_skryfwerk'],
 						(int) $summary['renamed'],
 						(int) $summary['skipped'],
 						(int) $summary['dropped'],
+						(int) $summary['results'],
 						! empty( $summary['already_done'] ) ? ' (oorgeslaan — reeds gedoen)' : ''
 					)
 				);
@@ -272,7 +274,7 @@ class PostReclassifier {
 	 * Run the once-off reclassification. Idempotent unless `$force`.
 	 *
 	 * @param bool $force Re-run even when already completed.
-	 * @return array{already_done:bool, reassigned:int, to_skryfwerk:int, renamed:int, skipped:int, dropped:int, collisions:list<string>}
+	 * @return array{already_done:bool, reassigned:int, to_skryfwerk:int, renamed:int, skipped:int, dropped:int, results:int, collisions:list<string>}
 	 */
 	public function run( bool $force = false ): array {
 		if ( $this->hasRun() && ! $force ) {
@@ -283,6 +285,7 @@ class PostReclassifier {
 				'renamed'      => 0,
 				'skipped'      => 0,
 				'dropped'      => 0,
+				'results'      => 0,
 				'collisions'   => array(),
 			);
 		}
@@ -292,6 +295,7 @@ class PostReclassifier {
 		$renamed      = 0;
 		$skipped      = 0;
 		$dropped      = 0;
+		$results      = 0;
 
 		foreach ( $this->legacyPosts() as $post ) {
 			$post_id = (int) ( $post->id ?? 0 );
@@ -303,6 +307,14 @@ class PostReclassifier {
 
 			if ( self::isSkippedType( $type ) ) {
 				++$skipped;
+				continue;
+			}
+
+			// A moderator's challenge result post ("... Kommentaar en uitslae") is an editorial
+			// announcement, not submitted writing: it stays a core `post` (the winners-post
+			// representation, linked to its challenge by ink link-result-posts), never skryfwerk.
+			if ( 'post' === $type && ! empty( $post->staff ) && ChallengeResultTitle::isResultTitle( (string) ( $post->title ?? '' ) ) ) {
+				++$results;
 				continue;
 			}
 
@@ -371,6 +383,7 @@ class PostReclassifier {
 			'renamed'      => $renamed,
 			'skipped'      => $skipped,
 			'dropped'      => $dropped,
+			'results'      => $results,
 			'collisions'   => $collisions,
 		);
 	}
@@ -440,6 +453,8 @@ class PostReclassifier {
 				'post_type'      => (string) get_post_type( $id ),
 				'category_slugs' => $slugs,
 				'url'            => (string) get_permalink( $id ),
+				'title'          => (string) get_the_title( $id ),
+				'staff'          => user_can( (int) get_post_field( 'post_author', $id ), 'edit_others_posts' ),
 			);
 		}
 

@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ink\Challenges;
 
+use Ink\Content\ChallengeResultTitle;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -41,27 +43,36 @@ class ResultPostFinder {
 	 * @param string $title The post title.
 	 */
 	public static function isResultTitle( string $title ): bool {
-		$plain = html_entity_decode( $title, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
-
-		$has_result    = 1 === preg_match( '/\b(uitsla[eg]|wenners?)\b/iu', $plain );
-		$has_challenge = 1 === preg_match( '/(projek|kompetisie|kom+entaa?[rl]e?)/iu', $plain );
-
-		return $has_result && $has_challenge;
+		return ChallengeResultTitle::isResultTitle( $title );
 	}
 
 	/**
-	 * The grade named in a title marker — "(Brons)", "(SILWER)", "(Goud)" — or null. Pure.
+	 * The (month, year) a title refers to, or null. Pure.
 	 *
-	 * Used only for the cross-check report ("title says Goud, no result post confirms").
+	 * @param string $title A challenge name or result-post title.
+	 * @return array{0:int,1:int}|null
+	 */
+	public static function monthYear( string $title ): ?array {
+		return ChallengeResultTitle::monthYear( $title );
+	}
+
+	/**
+	 * The single uitdaging for a (month, year), or null. Pure.
+	 *
+	 * @param array{0:int,1:int}|null $month_year The (month, year).
+	 * @param array<int, string>      $uitdagings uitdaging id → title.
+	 */
+	public static function matchUitdaging( ?array $month_year, array $uitdagings ): ?int {
+		return ChallengeResultTitle::matchUitdaging( $month_year, $uitdagings );
+	}
+
+	/**
+	 * The grade named in a title marker, or null. Pure.
 	 *
 	 * @param string $title The post title.
 	 */
 	public static function titleMarker( string $title ): ?string {
-		if ( 1 === preg_match( '/\(\s*(brons|silwer|goud)\s*\)/iu', $title, $m ) ) {
-			return strtolower( $m[1] );
-		}
-
-		return null;
+		return ChallengeResultTitle::titleMarker( $title );
 	}
 
 	/**

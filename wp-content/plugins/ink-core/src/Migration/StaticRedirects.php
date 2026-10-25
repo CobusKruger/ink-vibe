@@ -36,6 +36,23 @@ final class StaticRedirects {
 	);
 
 	/**
+	 * Dropped Opleiding section placeholders (empty pages that only gave a menu item a
+	 * page) → the main Opleiding page. Exact paths only, so their moved children, which
+	 * share the `/opleiding/gedigte/` prefix, are still redirected via the stored map.
+	 *
+	 * @var array<string, string>
+	 */
+	public const EXACT = array(
+		'/opleiding/digkuns'        => '/opleiding/',
+		'/opleiding/skryfkuns'      => '/opleiding/',
+		'/opleiding/taalgidse'      => '/opleiding/',
+		'/opleiding/woordeboeke'    => '/opleiding/',
+		'/opleiding/algemene-wenke' => '/opleiding/',
+		'/opleiding/gedigte'        => '/opleiding/',
+		'/opleiding/opleiding'      => '/opleiding/',
+	);
+
+	/**
 	 * Dropped duplicate post id → the post that is kept.
 	 *
 	 * @var array<int, int>
@@ -45,12 +62,16 @@ final class StaticRedirects {
 	);
 
 	/**
-	 * The new path for an old request path under a moved section, or null. Pure.
+	 * The new path for an old request path: a dropped placeholder (exact) or a moved section (prefix), or null. Pure.
 	 *
 	 * @param string $request_path The incoming path or URL.
 	 */
 	public static function prefixTarget( string $request_path ): ?string {
 		$key = RedirectGenerator::normalisePath( $request_path );
+
+		if ( isset( self::EXACT[ $key ] ) ) {
+			return self::EXACT[ $key ];
+		}
 
 		foreach ( self::PREFIXES as $prefix => $target ) {
 			if ( str_starts_with( $key . '/', $prefix ) ) {

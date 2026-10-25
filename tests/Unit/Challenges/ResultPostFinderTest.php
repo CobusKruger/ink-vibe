@@ -41,3 +41,25 @@ test( 'titleMarker reads the hand-typed grade and ignores anything else', functi
 	expect( ResultPostFinder::titleMarker( 'skrywersblok (brons)' ) )->toBe( 'brons' );
 	expect( ResultPostFinder::titleMarker( 'Goud en silwer' ) )->toBeNull();
 } );
+
+test( 'monthYear reads the first month and year, or null when there is no year', function (): void {
+	expect( ResultPostFinder::monthYear( 'Oktober 2026 - Getal 10 projek' ) )->toBe( array( 10, 2026 ) );
+	expect( ResultPostFinder::monthYear( 'November & Desember 2025 - OOP projek - Kommentaar en uitslae' ) )->toBe( array( 11, 2025 ) );
+	expect( ResultPostFinder::monthYear( 'APRIL 2022 - EN TOE... PROJEK - Kommentaar en uitslae' ) )->toBe( array( 4, 2022 ) );
+	expect( ResultPostFinder::monthYear( 'APRIL PROJEK: Kommentare en uitslae' ) )->toBeNull();
+	expect( ResultPostFinder::monthYear( 'Wenners van die Amakeia projek' ) )->toBeNull();
+} );
+
+test( 'matchUitdaging links only when exactly one uitdaging has that month and year', function (): void {
+	$uit = array(
+		1 => 'Maart 2023 - OOP projek',
+		2 => 'April 2023 - Klug projek',
+		3 => 'Mei 2023 - OOP projek',
+		4 => 'Mei 2023 - Tweede projek',
+	);
+
+	expect( ResultPostFinder::matchUitdaging( array( 5, 2023 ), $uit ) )->toBeNull(); // ambiguous
+	expect( ResultPostFinder::matchUitdaging( array( 4, 2023 ), $uit ) )->toBe( 2 );
+	expect( ResultPostFinder::matchUitdaging( array( 6, 2023 ), $uit ) )->toBeNull(); // none
+	expect( ResultPostFinder::matchUitdaging( null, $uit ) )->toBeNull();
+} );

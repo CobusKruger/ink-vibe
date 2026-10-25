@@ -41,6 +41,7 @@ final class Module implements ModuleContract {
 		( new Migration() )->register();
 		( new SourceCategorySync() )->register();
 		( new ResultPostFinder() )->register();
+		( new ResultPostLinker() )->register();
 		( new FeaturedWinners() )->register();
 		( new CurrentChallenge() )->register();
 		( new CollationPage() )->register();

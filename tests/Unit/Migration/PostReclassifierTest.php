@@ -212,3 +212,50 @@ test( 'run leaves /biblioteek/ and /opleiding/ flat posts to Story 16.6 (R16 —
 	// Their SOURCE_URL_META is NOT overwritten with a post-rename permalink here.
 	expect( $migration->recorded )->toBe( array( 1 ) );
 } );
+
+test( 'run keeps staff result posts as core posts, trashes the committed duplicate, and still classifies member writing', function (): void {
+	$migration = new class() extends PostReclassifier {
+		/** @var list<array{0:int,1:string}> */
+		public array $set = array();
+		/** @var list<int> */
+		public array $trashed = array();
+
+		public function hasRun(): bool {
+			return false;
+		}
+		protected function legacyPosts(): array {
+			return array(
+				// Staff-authored result post: stays a `post`.
+				(object) array( 'id' => 1, 'post_type' => 'post', 'category_slugs' => array( 'projekte' ), 'title' => 'Maart 2023 - OOP projek: Kommentaar en uitslae', 'staff' => true ),
+				// Same wording from a member: ordinary writing, falls back to skryfwerk.
+				(object) array( 'id' => 2, 'post_type' => 'post', 'category_slugs' => array( 'projekte' ), 'title' => 'Maart 2023 - OOP projek: Kommentaar en uitslae', 'staff' => false ),
+				// The committed duplicate (35127).
+				(object) array( 'id' => 35127, 'post_type' => 'post', 'category_slugs' => array(), 'title' => 'PLAGIAAT', 'staff' => false ),
+				(object) array( 'id' => 3, 'post_type' => 'post', 'category_slugs' => array( 'gedigte' ), 'title' => 'Môre', 'staff' => false ),
+			);
+		}
+		protected function categorySlugsFor( object $post ): array {
+			return (array) ( $post->category_slugs ?? array() );
+		}
+		protected function recordSourceUrl( int $post_id ): void {}
+		protected function setPostType( int $post_id, string $type ): void {
+			$this->set[] = array( $post_id, $type );
+		}
+		protected function trashPost( int $post_id ): void {
+			$this->trashed[] = $post_id;
+		}
+		protected function assignGenre( int $post_id, string $genre ): void {}
+		protected function existingPageSlugs(): array {
+			return array();
+		}
+		protected function flushRewrites(): void {}
+		protected function markDone(): void {}
+	};
+
+	$summary = $migration->run();
+
+	expect( $summary['results'] )->toBe( 1 );
+	expect( $summary['dropped'] )->toBe( 1 );
+	expect( $migration->trashed )->toBe( array( 35127 ) );
+	expect( $migration->set )->toBe( array( array( 2, PostTypes::SKRYFWERK ), array( 3, PostTypes::GEDIG ) ) );
+} );
