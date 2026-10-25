@@ -98,7 +98,7 @@ final class ReadingAuthorCard {
 	 */
 	public static function toHtml( int $author_id, ?bool $following ): string {
 		$name    = (string) get_the_author_meta( 'display_name', $author_id );
-		$bio     = (string) get_the_author_meta( 'description', $author_id );
+		$bio     = ProfileBio::for( $author_id );
 		$avatar  = get_avatar(
 			$author_id,
 			96,

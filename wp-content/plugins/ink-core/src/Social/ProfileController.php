@@ -137,12 +137,13 @@ final class ProfileController {
 
 		if ( $has_bio ) {
 			// `sanitize_textarea_field` mirrors the codebase's existing convention
-			// for free-text longer than a single line (RatingController's
-			// `resensie`, ContactForm/ReportForm's message fields) — never
+			// for free-text longer than a single line (ContactForm/ReportForm's
+			// message fields) — never
 			// `wp_kses_post`, which no free-text save in this codebase uses.
 			$bio = sanitize_textarea_field( wp_unslash( (string) $request->get_param( 'bio' ) ) );
 
 			update_user_meta( $user_id, 'description', $bio );
+			ProfileBio::markEdited( $user_id );
 
 			$updated['bio'] = $bio;
 		}

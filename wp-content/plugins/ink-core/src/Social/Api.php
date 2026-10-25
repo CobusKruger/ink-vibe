@@ -94,4 +94,13 @@ final class Api {
 	public static function pinnedWorksFor( int $user_id ): array {
 		return PinnedWorks::forUser( $user_id );
 	}
+
+	/**
+	 * A writer's bio (profile description, else the prod BuddyPress "Biografie" field).
+	 *
+	 * @param int $user_id The writer.
+	 */
+	public static function bioFor( int $user_id ): string {
+		return ProfileBio::for( $user_id );
+	}
 }

@@ -87,7 +87,7 @@ $ink_icons = array(
 // Oorsig tab data (My Profiel rebuild §5.3). Product-owner decision 2026-09-06
 // (§7 item 5): Gradering lives in the identity strip above, Leesgetalle moved
 // to the Bydraes tab — Oorsig hosts neither directly any more.
-$ink_bio        = trim( (string) get_the_author_meta( 'description', $ink_user_id ) );
+$ink_bio        = class_exists( '\Ink\Social\Api' ) ? \Ink\Social\Api::bioFor( $ink_user_id ) : trim( (string) get_the_author_meta( 'description', $ink_user_id ) );
 $ink_bydraes    = class_exists( '\Ink\Social\BydraesSurface' ) ? \Ink\Social\BydraesSurface::rows( $ink_user_id ) : array();
 $ink_volg_getal = class_exists( '\Ink\Social\Api' ) ? \Ink\Social\Api::followingCount( $ink_user_id ) : 0;
 $ink_ongelees   = class_exists( '\Ink\Notifications\KennisgewingsSurface' ) ? \Ink\Notifications\KennisgewingsSurface::unreadCount( $ink_user_id ) : 0;

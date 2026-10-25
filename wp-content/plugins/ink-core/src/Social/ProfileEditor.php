@@ -102,7 +102,7 @@ final class ProfileEditor {
 		$profile = array(
 			'name'    => (string) get_the_author_meta( 'display_name', $user_id ),
 			// Same bio source SkrywerProfiel/FollowingList already read.
-			'bio'     => (string) get_the_author_meta( 'description', $user_id ),
+			'bio'     => ProfileBio::for( $user_id ),
 			'tagline' => class_exists( Tagline::class ) ? Tagline::get( $user_id ) : '',
 			'avatar'  => function_exists( 'get_avatar' ) ? (string) get_avatar( $user_id, 64, '', '', array( 'class' => 'ink-avatar ink-avatar--64' ) ) : '',
 		);
