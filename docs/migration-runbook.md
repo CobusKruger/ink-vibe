@@ -67,7 +67,7 @@ Known risks to look for: the Pages `biblioteek`, `opleiding` and `inkpols` share
 | Collections and skills | same script | Gedigte shelf 91; Vrystaatstories 68; Oom Pine 65; Liegstories 29; Kinderrympies one collection; Woordeboeke 7; Digkuns about 168 |
 | Challenges | same script | one Uitdaging per category under `projekte` / `kompetisie`; entries counted per round; the current rounds (mei to oktober 2026) have entries |
 | Result posts | `wp ink report-result-posts`; same script | about 12 a year, all by Anze or Inkmoderator, kept as core posts, linked to their Uitdaging where the month and year match |
-| Parser quality on this copy | `validate-parser.php`, `validate-gradering.php` | about 97% exact on the 120 known posts; derived tiers match the old `tier-import.csv` except single-win writers from old layouts (who default to brons) and the 15-versus-20 threshold question |
+| Parser quality on this copy | `validate-parser.php`, `validate-gradering.php` | about 97% exact on the 120 known posts; derived tiers match the old `tier-import.csv` (106 of 110 on the staging copy); the other 4 are single-win writers from old layouts, who default to brons anyway |
 | Slug clashes after migration | `check-slug-collisions.php` (run before and after) | only `afrikaanse-taalgids` (different URL prefixes) |
 | Redirect map health | `wp ink verify-redirects` (map audit only) | no chains, loops or empty targets |
 | Media | `wp ink verify-media` | no missing files for migrated content |
