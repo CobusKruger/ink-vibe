@@ -115,7 +115,7 @@
 						<a class="ink-user-menu__item" role="menuitem" href="/my-profiel"><?php esc_html_e( 'My profiel', 'ink-foundation' ); ?></a>
 						<a class="ink-user-menu__item" role="menuitem" href="/opleiding"><?php esc_html_e( 'Opleiding', 'ink-foundation' ); ?></a>
 						<div class="ink-user-menu__separator" role="separator"></div>
-						<a class="ink-user-menu__item" role="menuitem" href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>"><?php esc_html_e( 'Meld af', 'ink-foundation' ); ?></a>
+						<a class="ink-user-menu__item" role="menuitem" href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>"><?php esc_html_e( 'Teken uit', 'ink-foundation' ); ?></a>
 					</div>
 				</div>
 				<!-- /wp:html -->

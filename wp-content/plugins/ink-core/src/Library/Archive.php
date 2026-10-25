@@ -189,6 +189,16 @@ final class Archive {
 			'ignore_sticky_posts' => true,
 		);
 
+		// Gedigte (and a whole-library search) read alphabetically; every other
+		// shelf is oldest first, because several are serialised.
+		if ( null !== $genre && '' !== $genre && self::DEFAULT_GENRE !== $genre ) {
+			$args['orderby'] = array(
+				'date' => 'ASC',
+				'ID'   => 'ASC',
+			);
+			unset( $args['order'] );
+		}
+
 		if ( null !== $genre && '' !== $genre ) {
 			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- a single bounded genre-slug facet on a curated CPT; the AD-7 server-rendered archive filter, no search plugin.
 			$args['tax_query'] = array(

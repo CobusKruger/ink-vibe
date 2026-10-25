@@ -312,3 +312,14 @@ test( 'defaultGenre opens on Gedigte when present, else the first category, else
 	expect( Archive::defaultGenre( array( array( 'slug' => 'liegstories', 'name' => 'L' ) ) ) )->toBe( 'liegstories' );
 	expect( Archive::defaultGenre( array() ) )->toBeNull();
 } );
+
+test( 'queryArgs reads Gedigte and a whole-library search alphabetically, every other shelf oldest first', function (): void {
+	$gedigte = Archive::queryArgs( 1, 12, 'gedigte' );
+	expect( $gedigte['orderby'] )->toBe( 'title' )->and( $gedigte['order'] )->toBe( 'ASC' );
+
+	$search = Archive::queryArgs( 1, 12, null, 'brug' );
+	expect( $search['orderby'] )->toBe( 'title' );
+
+	$serial = Archive::queryArgs( 1, 12, 'liegstories' );
+	expect( $serial['orderby'] )->toBe( array( 'date' => 'ASC', 'ID' => 'ASC' ) )->and( $serial )->not->toHaveKey( 'order' );
+} );
