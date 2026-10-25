@@ -128,8 +128,6 @@ final class SkrywerProfiel {
 			'works'           => self::worksBreakdown( $author_id ),
 			'hartjies'        => self::hartjieTotal( $author_id ),
 			'pinned'          => self::pinnedCards( $author_id ),
-			'aggregate'       => Api::ratingAggregateFor( $author_id ),
-			'reviews'         => Api::approvedReviewsFor( $author_id ),
 			'accomplishments' => self::accomplishments( $author_id ),
 			'shareUrl'        => (string) get_author_posts_url( $author_id ),
 		);
@@ -455,7 +453,7 @@ final class SkrywerProfiel {
 	 * wins-needed subtext — those are private My Profiel surfaces (the FR-40
 	 * separation).
 	 *
-	 * @param array{name:string, tagline?:string, bio:string, avatar:string, badge:string, volgeling:string, volg:string, cover?:string, joined?:string, genres?:list<string>, works?:array{total:int, items:list<array{label:string,count:int}>}, hartjies?:int, pinned?:list<array<string,mixed>>, aggregate?:array{count?:int, average?:float}, reviews?:list<array{user_id:int, score:int, resensie:string}>, accomplishments?:list<array{label:string,detail:string}>, shareUrl?:string} $profile The public profile data.
+	 * @param array{name:string, tagline?:string, bio:string, avatar:string, badge:string, volgeling:string, volg:string, cover?:string, joined?:string, genres?:list<string>, works?:array{total:int, items:list<array{label:string,count:int}>}, hartjies?:int, pinned?:list<array<string,mixed>>, accomplishments?:list<array{label:string,detail:string}>, shareUrl?:string} $profile The public profile data.
 	 * @return string
 	 */
 	public static function toHtml( array $profile ): string {
@@ -475,8 +473,6 @@ final class SkrywerProfiel {
 		);
 		$hartjies        = isset( $profile['hartjies'] ) ? (int) $profile['hartjies'] : 0;
 		$pinned          = isset( $profile['pinned'] ) && is_array( $profile['pinned'] ) ? $profile['pinned'] : array();
-		$aggregate       = isset( $profile['aggregate'] ) && is_array( $profile['aggregate'] ) ? $profile['aggregate'] : array();
-		$reviews         = isset( $profile['reviews'] ) && is_array( $profile['reviews'] ) ? $profile['reviews'] : array();
 		$accomplishments = isset( $profile['accomplishments'] ) && is_array( $profile['accomplishments'] ) ? $profile['accomplishments'] : array();
 		$share_url       = isset( $profile['shareUrl'] ) ? (string) $profile['shareUrl'] : '';
 		$first_name      = self::firstName( $name );
@@ -566,24 +562,12 @@ final class SkrywerProfiel {
 		$html .= '</div>'; // .ink-container
 		$html .= '</section>';
 
-		// 2 · Stats strip — Lesergradering (rating) / Werke / Hartjies (Writer.tsx:255).
-		$rating_count = isset( $aggregate['count'] ) ? (int) $aggregate['count'] : 0;
-		if ( $rating_count > 0 || array() !== $works['items'] || $hartjies > 0 ) {
+		// 2 · Stats strip — Werke / Hartjies (Writer.tsx:255; the reader rating is not used).
+		if ( array() !== $works['items'] || $hartjies > 0 ) {
 			// A full-bleed cream band (primitives `ink-band--cream` + border-y; SB-3);
 			// the container carries the py-6 grid.
 			$html .= '<section class="ink-band ink-band--flush ink-band--cream ink-band--border-y ink-skrywerprofiel__statistieke" data-audit-id="skrywer-stats">'
 				. '<div class="ink-container ink-skrywerprofiel__statistieke-rooster" data-audit-id="skrywer-stats-grid">';
-
-			if ( $rating_count > 0 ) {
-				$average = isset( $aggregate['average'] ) ? (float) $aggregate['average'] : 0.0;
-				$html   .= '<div class="ink-skrywerprofiel__stat ink-skrywerprofiel__stat--gradering" data-audit-id="skrywer-stat-rating">'
-					. '<span class="ink-stat-label ink-skrywerprofiel__stat-etiket" data-audit-id="skrywer-stat-rating-label">' . esc_html__( 'Lesergradering', 'ink-core' ) . '</span>'
-					. '<span class="ink-skrywerprofiel__stat-ry">'
-					. '<span class="ink-skrywerprofiel__stat-waarde" data-audit-id="skrywer-rating-value">' . esc_html( number_format_i18n( $average, 1 ) ) . '</span>'
-					. '<span class="ink-skrywerprofiel__stat-sterre" data-audit-id="skrywer-rating-stars" aria-hidden="true">' . self::starsHtml( $average ) . '</span>'
-					. '</span>'
-					. '</div>';
-			}
 
 			if ( array() !== $works['items'] ) {
 				$breakdown = implode(
@@ -721,11 +705,6 @@ final class SkrywerProfiel {
 			$html .= '</ul></div></section>';
 		}
 
-		// Lesergradering — reader ratings & reviews (Story 9.6). APPROVED only
-		// (public); empty/held until the moderation path (18.4) approves any.
-		// INK-only (F19): it sits in its own container section.
-		$html .= self::ratingsHtml( $aggregate, $reviews );
-
 		// 5 · Closing follow CTA (ratified "Don't miss …" copy) — `section.container`
 		// > `max-w-3xl` centred inner (Writer.tsx:347).
 		$html .= '<section class="ink-container ink-skrywerprofiel__cta" data-audit-id="skrywer-cta">'
@@ -767,7 +746,6 @@ final class SkrywerProfiel {
 	private const ICON_MESSAGE       = '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>';
 	private const ICON_ARROW         = '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>';
 	private const ICON_TROPHY        = '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>';
-	private const ICON_STAR          = '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>';
 
 	/**
 	 * Render a small inline Lucide-style icon. Pure, self-escaping (trusted,
@@ -801,86 +779,5 @@ final class SkrywerProfiel {
 			default:
 				return '';
 		}
-	}
-
-	/**
-	 * A decorative filled/half/empty star row for a 0-5 average. Pure,
-	 * aria-hidden by the caller (the visible numeric average + review count
-	 * carry the a11y text).
-	 *
-	 * Mirrors the Lovable `Writer.tsx` reference's exact rounding rule
-	 * (`ratingStars` memo: `full = Math.floor(rating)`,
-	 * `half = rating - full >= 0.5`, `empty = 5 - full - (half ? 1 : 0)`) —
-	 * this WAS a flat floor()-then-empty computation with no half-star case at
-	 * all, a real rendering-logic gap, not just a missing style.
-	 *
-	 * @param float $average A 0-5 rating average.
-	 * @return string
-	 */
-	private static function starsHtml( float $average ): string {
-		$full  = (int) floor( $average );
-		$half  = ( $average - $full ) >= 0.5;
-		$empty = max( 0, 5 - $full - ( $half ? 1 : 0 ) );
-
-		// Lucide `Star` svgs (Writer.tsx:266-277, F18): full = filled terracotta,
-		// half = terracotta/50 fill, empty = muted outline (colours in skrywer.css).
-		$star = self::icon( self::ICON_STAR );
-		$out  = str_repeat( '<span class="ink-skrywerprofiel__ster is-vol">' . $star . '</span>', min( $full, 5 ) );
-
-		if ( $half ) {
-			$out .= '<span class="ink-skrywerprofiel__ster is-half">' . $star . '</span>';
-		}
-
-		$out .= str_repeat( '<span class="ink-skrywerprofiel__ster is-leeg">' . $star . '</span>', $empty );
-
-		return $out;
-	}
-
-	/**
-	 * The Lesergradering (reader-rating) section. Pure — escaping only.
-	 *
-	 * Renders the approved aggregate + approved reviews; an empty "nog geen
-	 * oordele" state when none are approved. Public = approved only — a held
-	 * review is never shown here.
-	 *
-	 * @param array{count?:int, average?:float}                    $aggregate The approved aggregate.
-	 * @param list<array{user_id:int, score:int, resensie:string}> $reviews   The approved reviews.
-	 * @return string
-	 */
-	private static function ratingsHtml( array $aggregate, array $reviews ): string {
-		$count = isset( $aggregate['count'] ) ? (int) $aggregate['count'] : 0;
-
-		$html = '<section class="ink-container ink-skrywerprofiel__lesergradering" data-audit-id="skrywer-lesergradering">'
-			. '<h2 class="ink-heading-h2-block ink-skrywerprofiel__lesergradering-titel" data-audit-id="skrywer-lesergradering-title">' . esc_html__( 'Lesergradering', 'ink-core' ) . '</h2>';
-
-		if ( $count <= 0 ) {
-			$html .= '<p class="ink-skrywerprofiel__lesergradering-leeg" data-audit-id="skrywer-lesergradering-empty">' . esc_html__( 'Nog geen oordele nie.', 'ink-core' ) . '</p></section>';
-
-			return $html;
-		}
-
-		$average = isset( $aggregate['average'] ) ? (float) $aggregate['average'] : 0.0;
-
-		$html .= '<p class="ink-skrywerprofiel__lesergradering-gem">'
-			. esc_html( number_format_i18n( $average, 1 ) ) . ' &middot; '
-			. esc_html( Api::leseroordeelLabel( $count ) )
-			. '</p>';
-
-		if ( array() !== $reviews ) {
-			$html .= '<ul class="ink-skrywerprofiel__oordele">';
-
-			foreach ( $reviews as $review ) {
-				$html .= '<li class="ink-skrywerprofiel__oordeel">'
-					. '<span class="ink-skrywerprofiel__oordeel-ster">' . esc_html( (string) (int) $review['score'] ) . '</span>'
-					. '<p class="ink-skrywerprofiel__oordeel-teks">' . esc_html( (string) $review['resensie'] ) . '</p>'
-					. '</li>';
-			}
-
-			$html .= '</ul>';
-		}
-
-		$html .= '</section>';
-
-		return $html;
 	}
 }

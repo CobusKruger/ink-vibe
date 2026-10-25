@@ -80,13 +80,6 @@ class Module implements ModuleContract {
 		// replacing the tab's previous two separately-rendered blocks.
 		( new BydraesSurface() )->register();
 
-		// Story 9.6: reader ratings & reviews — REST write path + form block
-		// (the public Lesergradering display lives on the Skrywerprofiel block;
-		// the ink_ratings table is registered with the Kernel Schema in the
-		// bootstrap). Reviews are held for moderation (18.4).
-		( new RatingController() )->register();
-		( new RatingForm() )->register();
-
 		// Epic 19 lees-gedig fidelity pass: the reading-page author card (reuses
 		// FollowToggle's own markup for its Follow toggle — no new follow logic).
 		( new ReadingAuthorCard() )->register();

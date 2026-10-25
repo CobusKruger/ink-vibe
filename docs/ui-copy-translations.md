@@ -677,7 +677,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 
 | Engels | Afrikaans | Notas |
 |---|---|---|
-| Reader rating | Lesergradering | Etiket |
+| Reader rating | Lesergradering | Etiket. *Verwyder (2026-10-25): die lesergradering word nie gebruik nie en is van die publieke profiel af.* |
 | [N] reader reviews | [N] leseroordele | |
 | Works | [N] stories · [N] gedigte · [N] artikels | Breek af per inhoudssoort op skrywerprofiel; gebruik "werke" slegs as oorhoofse optelsom |
 | Followers | volgelinge | Telwoord langs die volgeling-telling; nie "Volgers" nie |
