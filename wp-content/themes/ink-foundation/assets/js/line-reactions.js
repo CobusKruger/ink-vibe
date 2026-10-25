@@ -202,8 +202,12 @@
 	}
 
 	function init() {
-		var lines = document.querySelectorAll( '.ink-gedig__line[data-ink-line]' );
-		Array.prototype.forEach.call( lines, buildHeart );
+		// Per-line hearts are a signed-in feature: a guest's click would be a 401
+		// that rolls straight back, so a guest gets no heart to click.
+		if ( ! cfg.isGuest ) {
+			var lines = document.querySelectorAll( '.ink-gedig__line[data-ink-line]' );
+			Array.prototype.forEach.call( lines, buildHeart );
+		}
 		initFloating();
 	}
 

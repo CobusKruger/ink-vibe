@@ -84,9 +84,11 @@ $ink_storie_highlighter_svg = '<span aria-hidden="true" style="display:inline-fl
 		</div>
 		<!-- /wp:group -->
 
+<?php if ( is_user_logged_in() ) : ?>
 		<!-- wp:paragraph {"className":"ink-storie-hint ink-pill ink-pill--hint","textAlign":"center"} -->
 		<p data-audit-id="storie-hint" class="ink-storie-hint ink-pill ink-pill--hint has-text-align-center"><?php echo $ink_storie_highlighter_svg; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, hand-authored inline SVG, no user input */ ?><?php echo esc_html__( 'Kies enige teks om jou gunsteling passasies uit te lig', 'ink-foundation' ); ?></p>
 		<!-- /wp:paragraph -->
+<?php endif; ?>
 	</div>
 	<!-- /wp:group -->
 </section>

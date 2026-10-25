@@ -715,6 +715,7 @@ function ink_foundation_enqueue_line_reactions(): void {
 				? array_values( \Ink\Engagement\ReactionStore::indexesWithReactions( (int) $post_id ) )
 				: array(),
 			'loginUrl'     => esc_url_raw( home_url( \Ink\Accounts\AuthRedirects::LOGIN_URL_PATH ) ),
+			'isGuest'      => ! is_user_logged_in(),
 		)
 	);
 }
@@ -748,6 +749,11 @@ add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_line_reactions' );
  */
 function ink_foundation_enqueue_highlightable_text(): void {
 	if ( ! function_exists( 'is_singular' ) || ! is_singular( array( 'storie', 'artikel' ) ) ) {
+		return;
+	}
+
+	// Highlighting is a signed-in feature; a guest gets no tool and no hint.
+	if ( ! is_user_logged_in() ) {
 		return;
 	}
 

@@ -104,9 +104,11 @@ $ink_gedig_heart_svg = '<span aria-hidden="true" style="display:inline-flex"><sv
 		</div>
 		<!-- /wp:group -->
 
+<?php if ( is_user_logged_in() ) : ?>
 		<!-- wp:paragraph {"className":"ink-gedig-hint ink-pill ink-pill--hint ink-tone-accent"} -->
 		<p data-audit-id="gedig-hint" class="ink-gedig-hint ink-pill ink-pill--hint ink-tone-accent"><?php echo $ink_gedig_heart_svg; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, hand-authored inline SVG, no user input */ ?><?php echo esc_html__( 'Merk hierdie reël', 'ink-foundation' ); ?></p>
 		<!-- /wp:paragraph -->
+<?php endif; ?>
 	</div>
 	<!-- /wp:group -->
 </section>
