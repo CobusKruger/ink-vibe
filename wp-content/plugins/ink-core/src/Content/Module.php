@@ -48,6 +48,7 @@ final class Module implements ModuleContract {
 		( new PostTypes() )->register();
 		( new Taxonomies() )->register();
 		( new UserMeta() )->register();
+		( new ExternalLinks() )->register();
 		( new FieldSets() )->register();
 		( new TermImages() )->register();
 	}
