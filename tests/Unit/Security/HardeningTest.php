@@ -132,7 +132,9 @@ test( 'register wires the user-deletion block unless opted out', function (): vo
 	};
 
 	expect( $wired( true ) )->toContain( 'map_meta_cap' );
+	expect( $wired( true ) )->toContain( 'bp_disable_account_deletion' ); // BuddyPress self-delete path
 	expect( $wired( false ) )->not->toContain( 'map_meta_cap' );
+	expect( $wired( false ) )->not->toContain( 'bp_disable_account_deletion' );
 } );
 
 // --- version disclosure ---

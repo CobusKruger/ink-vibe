@@ -38,7 +38,7 @@ final class Coverage {
 	 * @return array{
 	 *   matched_winners:list<string>, unknown_winners:list<string>,
 	 *   matched_commentary:list<string>, unknown_commentary:list<string>,
-	 *   entries_without_commentary:list<string>, duplicates:list<string>,
+	 *   entries_without_commentary:list<string>, duplicates:list<string>, ties:list<string>,
 	 *   all_winners_identified:bool, all_commentary_resolved:bool
 	 * }
 	 */
@@ -90,6 +90,7 @@ final class Coverage {
 			'unknown_commentary'         => array_keys( $unknown_commentary ),
 			'entries_without_commentary' => $without_commentary,
 			'duplicates'                 => $duplicates,
+			'ties'                       => self::ties( $winners ),
 			'all_winners_identified'     => array() === $unknown_winners,
 			'all_commentary_resolved'    => array() === $without_commentary && array() === $unknown_commentary,
 		);
@@ -99,8 +100,10 @@ final class Coverage {
 	 * Whether the report hard-blocks the commit. Pure.
 	 *
 	 * True on any unknown winner EntryID (a placement that matches no real entry) or any
-	 * duplicate (a pool slot claimed twice / an entry placed at two ranks) — these would
-	 * corrupt the placement + promotion writes. Missing commentary does NOT hard-block
+	 * duplicate (an entry placed twice / at two ranks) — these would corrupt the placement +
+	 * promotion writes. Two DIFFERENT entries sharing a rank is a legitimate tie (both
+	 * writers placed, both win) and does NOT block; it is listed under `ties` for the
+	 * editor's confirm. Missing commentary does NOT hard-block
 	 * (it is surfaced for the editor's explicit confirm).
 	 *
 	 * @param array{unknown_winners:list<string>, duplicates:list<string>} $report The report.
@@ -112,31 +115,21 @@ final class Coverage {
 	}
 
 	/**
-	 * The duplicate descriptors: a pool slot (grade|type|rank) claimed by more than one
-	 * entry, or an EntryID placed at more than one rank. Pure.
+	 * The duplicate descriptors: an EntryID listed more than once (placed twice or at two
+	 * ranks). Two different entries sharing a pool slot are a tie, not a duplicate. Pure.
 	 *
 	 * @param list<array{grade:string, type:string, rank:int, entry_id:string}> $winners Parsed winners.
 	 * @return list<string> Human-readable duplicate descriptors.
 	 */
 	private static function duplicates( array $winners ): array {
-		$slot_counts  = array();
 		$entry_counts = array();
 
 		foreach ( $winners as $winner ) {
-			$slot = ( $winner['grade'] ?? '' ) . '|' . ( $winner['type'] ?? '' ) . '|' . ( $winner['rank'] ?? 0 );
-			$id   = (string) ( $winner['entry_id'] ?? '' );
-
-			$slot_counts[ $slot ] = ( $slot_counts[ $slot ] ?? 0 ) + 1;
-			$entry_counts[ $id ]  = ( $entry_counts[ $id ] ?? 0 ) + 1;
+			$id                  = (string) ( $winner['entry_id'] ?? '' );
+			$entry_counts[ $id ] = ( $entry_counts[ $id ] ?? 0 ) + 1;
 		}
 
 		$duplicates = array();
-
-		foreach ( $slot_counts as $slot => $count ) {
-			if ( $count > 1 ) {
-				$duplicates[] = $slot;
-			}
-		}
 
 		foreach ( $entry_counts as $id => $count ) {
 			if ( $count > 1 ) {
@@ -145,5 +138,31 @@ final class Coverage {
 		}
 
 		return $duplicates;
+	}
+
+	/**
+	 * The pool slots (grade|type|rank) shared by more than one DIFFERENT entry: ties. Pure.
+	 *
+	 * @param list<array{grade:string, type:string, rank:int, entry_id:string}> $winners Parsed winners.
+	 * @return list<string> Descriptors "grade|type|rank".
+	 */
+	private static function ties( array $winners ): array {
+		$by_slot = array();
+
+		foreach ( $winners as $winner ) {
+			$slot = ( $winner['grade'] ?? '' ) . '|' . ( $winner['type'] ?? '' ) . '|' . ( $winner['rank'] ?? 0 );
+
+			$by_slot[ $slot ][ (string) ( $winner['entry_id'] ?? '' ) ] = true;
+		}
+
+		$ties = array();
+
+		foreach ( $by_slot as $slot => $ids ) {
+			if ( count( $ids ) > 1 ) {
+				$ties[] = (string) $slot;
+			}
+		}
+
+		return $ties;
 	}
 }

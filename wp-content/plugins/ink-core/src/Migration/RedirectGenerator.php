@@ -170,6 +170,14 @@ class RedirectGenerator {
 			);
 		}
 
+		// Committed duplicate decisions: the dropped post's old URL → the kept post.
+		foreach ( StaticRedirects::DUPLICATES as $dropped => $kept ) {
+			$records[] = array(
+				'old' => $this->recordedSourceUrl( (int) $dropped ),
+				'new' => $this->currentPermalink( (int) $kept ),
+			);
+		}
+
 		$map = self::buildRedirectMap( $records );
 
 		$this->storeMap( $map );
@@ -192,14 +200,13 @@ class RedirectGenerator {
 			return;
 		}
 
-		$map = $this->loadMap();
-
-		if ( array() === $map ) {
-			return;
-		}
-
 		$request = $this->requestPath();
-		$target  = self::redirectTargetFor( $request, $map );
+		$target  = self::redirectTargetFor( $request, $this->loadMap() );
+
+		if ( null === $target ) {
+			$section = StaticRedirects::prefixTarget( $request );
+			$target  = null === $section ? null : home_url( $section );
+		}
 
 		if ( null === $target ) {
 			return;
@@ -267,6 +274,17 @@ class RedirectGenerator {
 		}
 
 		return $sources;
+	}
+
+	/**
+	 * A post's recorded pre-migration URL, or ''. Overridable seam.
+	 *
+	 * @param int $post_id The post id.
+	 */
+	protected function recordedSourceUrl( int $post_id ): string {
+		$old = get_post_meta( $post_id, PostReclassifier::SOURCE_URL_META, true );
+
+		return is_string( $old ) ? $old : '';
 	}
 
 	/**

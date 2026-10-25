@@ -170,22 +170,24 @@ final class PostTypes {
 				'rewrite'  => self::SKRYFWERK,
 			),
 			self::BIBLIOTEEK_ITEM   => array(
-				'singular' => 'biblioteek_item',
-				'plural'   => 'biblioteek_item_plural',
-				'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt' ),
-				'public'   => true,
-				'archive'  => 'biblioteek', // Documented URL prefix /biblioteek/.
-				'icon'     => 'dashicons-book-alt',
-				'rewrite'  => 'biblioteek',
+				'singular'     => 'biblioteek_item',
+				'plural'       => 'biblioteek_item_plural',
+				'supports'     => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'page-attributes' ),
+				'public'       => true,
+				'archive'      => 'biblioteek', // Documented URL prefix /biblioteek/.
+				'hierarchical' => true, // Prod URLs are nested (/biblioteek/<collection>/<item>/).
+				'icon'         => 'dashicons-book-alt',
+				'rewrite'      => 'biblioteek',
 			),
 			self::OPLEIDING_ARTIKEL => array(
-				'singular' => 'opleiding_artikel',
-				'plural'   => 'opleiding_artikel_plural',
-				'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt' ),
-				'public'   => true,
-				'archive'  => 'opleiding', // Documented URL prefix /opleiding/.
-				'icon'     => 'dashicons-welcome-learn-more',
-				'rewrite'  => 'opleiding',
+				'singular'     => 'opleiding_artikel',
+				'plural'       => 'opleiding_artikel_plural',
+				'supports'     => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'page-attributes' ),
+				'public'       => true,
+				'archive'      => 'opleiding', // Documented URL prefix /opleiding/.
+				'hierarchical' => true, // Prod URLs are nested (/opleiding/<section>/<item>/).
+				'icon'         => 'dashicons-welcome-learn-more',
+				'rewrite'      => 'opleiding',
 			),
 			self::UITDAGING         => array(
 				'singular' => 'uitdaging',
@@ -229,6 +231,7 @@ final class PostTypes {
 			'public'          => (bool) $def['public'],
 			'show_in_rest'    => true, // Block editor + REST (AD-6).
 			'has_archive'     => $def['archive'],
+			'hierarchical'    => (bool) ( $def['hierarchical'] ?? false ),
 			'supports'        => $def['supports'],
 			'menu_icon'       => $def['icon'],
 			'rewrite'         => array( 'slug' => (string) $def['rewrite'] ),

@@ -97,3 +97,46 @@ test( 'empty / section-less text yields empty winners and commentary', function 
 	expect( $parsed['winners'] )->toBe( array() );
 	expect( $parsed['commentary'] )->toBe( array() );
 } );
+
+/**
+ * Compact "grade type rank entry" strings for a parse's winners.
+ *
+ * @return list<string>
+ */
+function winnersOf( string $text ): array {
+	return array_map(
+		static fn ( array $w ): string => "{$w['grade']} {$w['type']} #{$w['rank']} {$w['entry_id']}",
+		ResultsParser::parse( $text )['winners']
+	);
+}
+
+test( 'a tie on one line keeps BOTH entries at the shared rank, so the gate blocks loudly instead of losing one', function (): void {
+	expect( winnersOf( "WENNERS\nBrons Gedigte\n1ste: Gedig 3 & Gedig 5\n2de: Gedig 1" ) )->toBe(
+		array( 'brons gedig #1 Gedig 3', 'brons gedig #1 Gedig 5', 'brons gedig #2 Gedig 1' )
+	);
+} );
+
+test( 'an unnumbered entry line right after a rank line shares that rank', function (): void {
+	expect( winnersOf( "WENNERS\nBrons Gedigte\n1ste: Gedig 3\nGedig 5\n2de: Gedig 1" ) )->toBe(
+		array( 'brons gedig #1 Gedig 3', 'brons gedig #1 Gedig 5', 'brons gedig #2 Gedig 1' )
+	);
+} );
+
+test( 'honourable mentions are not winners and do not inherit a rank', function (): void {
+	expect( winnersOf( "WENNERS\nBrons Gedigte\n1ste: Gedig 3\nEervolle vermelding: Gedig 9\nGedig 10\nSilwer Gedigte\n1: Gedig 4" ) )->toBe(
+		array( 'brons gedig #1 Gedig 3', 'silwer gedig #1 Gedig 4' )
+	);
+} );
+
+test( 'Wenner, spaced ordinals and bracketed ranks all count as ranks', function (): void {
+	expect( winnersOf( "WENNERS\nBrons Gedigte\nWenner: Gedig 3\n2de plek: Gedig 1\n3 DE PLEK : Gedig 2" ) )->toBe(
+		array( 'brons gedig #1 Gedig 3', 'brons gedig #2 Gedig 1', 'brons gedig #3 Gedig 2' )
+	);
+	expect( winnersOf( "WENNERS\nBrons Gedigte\n(1) Gedig 3\n(2) Gedig 1" ) )->toBe(
+		array( 'brons gedig #1 Gedig 3', 'brons gedig #2 Gedig 1' )
+	);
+} );
+
+test( 'a Geen line closes a tie so the next entry line is not swallowed into it', function (): void {
+	expect( winnersOf( "WENNERS\nBrons Gedigte\n1ste: Gedig 3\n2de: Geen\nGedig 7" ) )->toBe( array( 'brons gedig #1 Gedig 3' ) );
+} );

@@ -52,7 +52,7 @@ test( 'order puts the algehele wenner (rank 1) first, ahead of ordinary wenners'
 	expect( $ordered[1]['is_algehele_wenner'] )->toBeFalse();
 } );
 
-test( 'order resolves a same-rank tie deterministically to the lowest id (one per rank)', function (): void {
+test( 'order keeps a same-rank tie, ordered deterministically by id', function (): void {
 	$ordered = FeaturedWinners::order(
 		array(
 			array( 'id' => 55, 'rank' => 2, 'title' => 'B' ),
@@ -60,8 +60,8 @@ test( 'order resolves a same-rank tie deterministically to the lowest id (one pe
 		)
 	);
 
-	// One-per-rank: the lowest-id placement wins the rank slot deterministically.
-	expect( array_column( $ordered, 'id' ) )->toBe( array( 11 ) );
+	// Both tied writers stay, lowest id first.
+	expect( array_column( $ordered, 'id' ) )->toBe( array( 11, 55 ) );
 } );
 
 test( 'order drops rows with no id or a non-placement rank', function (): void {
@@ -213,21 +213,19 @@ test( 'toHtml OMITS the optional card sub-parts gracefully when the seam supplie
 	expect( $html )->not->toContain( 'ink-wenner-kollig__foto' );
 } );
 
-test( 'order collapses duplicate ranks so there is never a second algehele wenner', function (): void {
+test( 'order keeps tied first places, and drops only the same entry listed twice', function (): void {
 	$ordered = FeaturedWinners::order(
 		array(
 			array( 'id' => 11, 'rank' => 1, 'title' => 'Eerste-een' ),
 			array( 'id' => 12, 'rank' => 1, 'title' => 'Eerste-twee' ),
+			array( 'id' => 12, 'rank' => 1, 'title' => 'Eerste-twee (weer)' ),
 			array( 'id' => 20, 'rank' => 2, 'title' => 'Tweede' ),
 		)
 	);
 
-	// Only one rank-1 survives (the lowest id), so the slot can never show two
-	// algehele wenners even if 12A ingestion feeds a dirty payload.
 	$rank_ones = array_filter( $ordered, static fn ( array $r ): bool => 1 === $r['rank'] );
-	expect( $rank_ones )->toHaveCount( 1 );
-	expect( $ordered[0]['id'] )->toBe( 11 );
-	expect( $ordered )->toHaveCount( 2 );
+	expect( $rank_ones )->toHaveCount( 2 ); // a tie for first: both are algehele wenners
+	expect( array_column( $ordered, 'id' ) )->toBe( array( 11, 12, 20 ) );
 } );
 
 // --- orderFeed(): the FEED keeps every winner, algehele wenner(s) first (Story 12A.7) ---
@@ -245,7 +243,7 @@ test( 'orderFeed puts the algehele wenner first, ahead of ordinary wenners', fun
 	expect( $feed[0]['is_algehele_wenner'] )->toBeTrue();
 } );
 
-test( 'orderFeed PRESERVES multiple algehele wenners (one per category pool) — unlike order()', function (): void {
+test( 'orderFeed PRESERVES multiple algehele wenners (one per category pool, or a tie)', function (): void {
 	// Two rank-1s = the algehele wenner of two different (Gradering × category) pools.
 	$winners = array(
 		array( 'id' => 12, 'rank' => 1, 'title' => 'Gedig-wenner' ),
@@ -253,10 +251,7 @@ test( 'orderFeed PRESERVES multiple algehele wenners (one per category pool) —
 		array( 'id' => 20, 'rank' => 2, 'title' => 'Tweede' ),
 	);
 
-	// Non-vacuous: order() WOULD collapse the two rank-1s to one...
-	expect( FeaturedWinners::order( $winners ) )->toHaveCount( 2 );
-
-	// ...but the FEED keeps both algehele wenners, ordered (lowest id first), then the wenner.
+	// Both keep every placement; the FEED orders algehele wenners (lowest id first), then the wenner.
 	$feed = FeaturedWinners::orderFeed( $winners );
 	expect( $feed )->toHaveCount( 3 );
 	expect( array_column( $feed, 'id' ) )->toBe( array( 11, 12, 20 ) );

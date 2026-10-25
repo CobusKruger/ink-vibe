@@ -156,7 +156,7 @@ class LibraryTrainingMigrator {
 	 * Run the once-off migration. Idempotent unless `$force`.
 	 *
 	 * @param bool $force Re-run even when already completed.
-	 * @return array{skipped:bool, biblioteek:int, opleiding:int, terms_assigned:int}
+	 * @return array{skipped:bool, biblioteek:int, opleiding:int, terms_assigned:int, legacy_skipped:int, containers:int, unmapped_roots:list<string>}
 	 */
 	public function run( bool $force = false ): array {
 		if ( $this->hasRun() && ! $force ) {
@@ -165,12 +165,18 @@ class LibraryTrainingMigrator {
 				'biblioteek'     => 0,
 				'opleiding'      => 0,
 				'terms_assigned' => 0,
+				'legacy_skipped' => 0,
+				'containers'     => 0,
+				'unmapped_roots' => array(),
 			);
 		}
 
 		$biblioteek     = 0;
 		$opleiding      = 0;
 		$terms_assigned = 0;
+		$legacy_skipped = 0;
+		$containers     = 0;
+		$roots_seen     = array();
 
 		foreach ( $this->legacyContent() as $item ) {
 			$post_id = (int) ( $item->id ?? 0 );
@@ -203,6 +209,79 @@ class LibraryTrainingMigrator {
 			}
 		}
 
+		$rows      = array();
+		$decisions = array();
+
+		foreach ( $this->legacyCptContent() as $item ) {
+			$post_id = (int) ( $item->id ?? 0 );
+			$type    = (string) ( $item->legacy_type ?? '' );
+			$slugs   = is_array( $item->slugs ?? null ) ? array_values( $item->slugs ) : array();
+
+			if ( $post_id <= 0 || array() === $slugs ) {
+				continue;
+			}
+
+			$roots_seen[ $type ][] = (string) $slugs[0];
+			$decisions[ $post_id ] = LegacyContentMap::decide( $type, $slugs );
+			$rows[ $post_id ]      = array(
+				'type'   => $type,
+				'slugs'  => $slugs,
+				'parent' => (int) ( $item->parent ?? 0 ),
+			);
+		}
+
+		foreach ( $rows as $post_id => $row ) {
+			$decision = $decisions[ $post_id ];
+
+			// Empty section placeholders only existed to give a menu item a page; the skill
+			// term is the new tab. They are dropped and their children detached.
+			if ( LegacyContentMap::CONTAINER === $decision['action'] ) {
+				++$containers;
+				continue;
+			}
+
+			if ( LegacyContentMap::MIGRATE !== $decision['action'] ) {
+				++$legacy_skipped;
+				continue;
+			}
+
+			if ( null === $decision['cpt'] ) {
+				++$legacy_skipped;
+				continue;
+			}
+
+			$this->recordSourceUrlFor( $post_id, LegacyContentMap::legacyPath( $row['type'], $row['slugs'] ) );
+			$this->setPostType( $post_id, $decision['cpt'] );
+
+			// Keep the nested URL when the parent is a real migrated page of the same type;
+			// otherwise (moved dictionaries, dropped placeholders, skipped parents) detach.
+			$parent          = $row['parent'];
+			$parent_decision = $decisions[ $parent ] ?? null;
+			$parent_kept     = null !== $parent_decision
+				&& $parent_decision['cpt'] === $decision['cpt']
+				&& LegacyContentMap::MIGRATE === $parent_decision['action'];
+
+			if ( $parent > 0 && ! $parent_kept ) {
+				$this->clearParent( $post_id );
+			}
+
+			if ( PostTypes::BIBLIOTEEK_ITEM === $decision['cpt'] ) {
+				++$biblioteek;
+			} else {
+				++$opleiding;
+			}
+
+			if ( null !== $decision['taxonomy'] && null !== $decision['term'] ) {
+				$terms_assigned += $this->assignNamedTerm( $post_id, $decision['taxonomy'], $decision['term'] );
+			}
+		}
+
+		$unmapped = array();
+
+		foreach ( $roots_seen as $type => $roots ) {
+			$unmapped = array_merge( $unmapped, LegacyContentMap::unmappedRoots( (string) $type, $roots ) );
+		}
+
 		$this->flushRewrites();
 		$this->markDone();
 
@@ -211,6 +290,9 @@ class LibraryTrainingMigrator {
 			'biblioteek'     => $biblioteek,
 			'opleiding'      => $opleiding,
 			'terms_assigned' => $terms_assigned,
+			'legacy_skipped' => $legacy_skipped,
+			'containers'     => $containers,
+			'unmapped_roots' => array_values( array_unique( $unmapped ) ),
 		);
 	}
 
@@ -275,20 +357,98 @@ class LibraryTrainingMigrator {
 	}
 
 	/**
+	 * The legacy `bibliotekon` / `opleiding` CPT content to migrate. Overridable seam.
+	 *
+	 * Rows `{id, legacy_type, slugs, parent}` where `slugs` is the chain of post slugs from the
+	 * tree root down to the item (via `post_parent`).
+	 *
+	 * @return array<int, object>
+	 */
+	protected function legacyCptContent(): array {
+		$posts = get_posts(
+			array(
+				'post_type'        => array( LegacyContentMap::LEGACY_LIBRARY, LegacyContentMap::LEGACY_TRAINING ),
+				'post_status'      => 'any',
+				'numberposts'      => -1,
+				'suppress_filters' => false,
+			)
+		);
+
+		if ( ! is_array( $posts ) ) {
+			return array();
+		}
+
+		$by_id = array();
+
+		foreach ( $posts as $post ) {
+			$by_id[ (int) $post->ID ] = $post;
+		}
+
+		$items = array();
+
+		foreach ( $by_id as $id => $post ) {
+			$chain  = array();
+			$cursor = $post;
+			$guard  = 0;
+
+			while ( null !== $cursor && $guard++ < 20 ) {
+				array_unshift( $chain, (string) $cursor->post_name );
+				$cursor = $by_id[ (int) $cursor->post_parent ] ?? null;
+			}
+
+			$items[] = (object) array(
+				'id'          => $id,
+				'legacy_type' => (string) $post->post_type,
+				'slugs'       => $chain,
+				'parent'      => (int) $post->post_parent,
+			);
+		}
+
+		return $items;
+	}
+
+	/**
+	 * Detach a migrated item from a parent that is not migrated alongside it.
+	 * Overridable seam.
+	 *
+	 * @param int $post_id The post id.
+	 */
+	protected function clearParent( int $post_id ): void {
+		wp_update_post(
+			array(
+				'ID'          => $post_id,
+				'post_parent' => 0,
+			)
+		);
+	}
+
+	/**
 	 * Record a post's pre-migration permalink (the 301 source). Overridable seam.
 	 *
 	 * @param int $post_id The post id.
 	 */
 	protected function recordSourceUrl( int $post_id ): void {
+		$url = get_permalink( $post_id );
+
+		if ( is_string( $url ) && '' !== $url ) {
+			$this->recordSourceUrlFor( $post_id, $url );
+		}
+	}
+
+	/**
+	 * Record an explicit pre-migration URL (the 301 source), write-once. Overridable seam.
+	 *
+	 * @param int    $post_id The post id.
+	 * @param string $url     The legacy permalink.
+	 */
+	protected function recordSourceUrlFor( int $post_id, string $url ): void {
 		// Write-once (R16 review): never clobber an already-recorded source permalink
 		// (a `--force` re-run, or PostReclassifier having recorded it first).
 		if ( '' !== (string) get_post_meta( $post_id, PostReclassifier::SOURCE_URL_META, true ) ) {
 			return;
 		}
 
-		$url = get_permalink( $post_id );
-
-		if ( is_string( $url ) && '' !== $url ) {
+		if ( '' !== $url ) {
 			update_post_meta( $post_id, PostReclassifier::SOURCE_URL_META, $url );
 		}
 	}
@@ -342,6 +502,36 @@ class LibraryTrainingMigrator {
 		wp_set_object_terms( $post_id, $term_ids, $taxonomy, true );
 
 		return count( $term_ids );
+	}
+
+	/**
+	 * Get-or-create a term by display name (slug derived) and append it to the post.
+	 * Overridable seam.
+	 *
+	 * @param int    $post_id  The post id.
+	 * @param string $taxonomy The taxonomy.
+	 * @param string $name     The term display name.
+	 * @return int 1 when a term was assigned, else 0.
+	 */
+	protected function assignNamedTerm( int $post_id, string $taxonomy, string $name ): int {
+		$slug     = sanitize_title( $name );
+		$existing = term_exists( $slug, $taxonomy );
+
+		if ( is_array( $existing ) && isset( $existing['term_id'] ) ) {
+			$term_id = (int) $existing['term_id'];
+		} else {
+			$created = wp_insert_term( $name, $taxonomy, array( 'slug' => $slug ) );
+
+			if ( is_wp_error( $created ) || ! isset( $created['term_id'] ) ) {
+				return 0;
+			}
+
+			$term_id = (int) $created['term_id'];
+		}
+
+		wp_set_object_terms( $post_id, array( $term_id ), $taxonomy, true );
+
+		return 1;
 	}
 
 	/**

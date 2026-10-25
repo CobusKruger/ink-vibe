@@ -105,6 +105,9 @@ test( 'build stores the changed-URL map and reports the count', function (): voi
 				(object) array( 'id' => 2, 'old' => 'https://ink.test/biblioteek/wen/' ), // unchanged
 			);
 		}
+		protected function recordedSourceUrl( int $post_id ): string {
+			return '';
+		}
 		protected function currentPermalink( int $post_id ): string {
 			return 1 === $post_id
 				? 'https://ink.test/gedig/my-gedig/'

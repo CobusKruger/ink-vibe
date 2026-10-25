@@ -176,7 +176,7 @@ test( 'commit dedupes a duplicated post_id so an entry places + is awarded once 
 	expect( $ing->awarded )->toBe( array( 100 => 1 ) );   // one win, not two
 } );
 
-test( 'analyse keys rank-uniqueness on the STORED gradering, not the pasted header (flag #1, R12A)', function (): void {
+test( 'analyse keys tie detection on the STORED gradering, not the pasted header (flag #1, R12A)', function (): void {
 	$page = new class() extends IngestionPage {
 		protected function entriesFor( int $uitdaging_id ): array {
 			// BOTH entries are really in the Brons pool (stored gradering = brons).
@@ -188,12 +188,13 @@ test( 'analyse keys rank-uniqueness on the STORED gradering, not the pasted head
 	};
 
 	// The paste mis-states the second winner's pool ("Silwer Gedigte") — a typo'd header.
-	// Both are rank-1 Gedigte in the SAME real (Brons) pool, so it MUST be flagged.
+	// Both are rank-1 Gedigte in the SAME real (Brons) pool: one tie, not two pools.
 	$text = "WENNERS\nBrons Gedigte\n1ste: Gedig 1\nSilwer Gedigte\n1ste: Gedig 2";
 
 	$analysis = $page->analyse( 7, $text );
 
-	// Authoritative grade (brons for both) collapses them to one slot → duplicate caught.
-	expect( $analysis['report']['duplicates'] )->toContain( 'brons|gedig|1' );
-	expect( \Ink\Challenges\Coverage::blocksCommit( $analysis['report'] ) )->toBeTrue();
+	// Authoritative grade (brons for both) puts them in ONE slot: reported as a tie (both win),
+	// not blocked. Keyed on the pasted header they would have looked like two separate pools.
+	expect( $analysis['report']['ties'] )->toBe( array( 'brons|gedig|1' ) );
+	expect( \Ink\Challenges\Coverage::blocksCommit( $analysis['report'] ) )->toBeFalse();
 } );

@@ -1,5 +1,15 @@
 # Result of migration
 
+**First rehearsal log (2026-10, nuwe-ink). Kept as evidence; superseded by [migration-runbook.md](migration-runbook.md).** What it showed, and what was done about it:
+
+| Symptom in the log | Cause | Fix |
+| --- | --- | --- |
+| `migrate-library-training`: 0 items | Biblioteek/Opleiding content is in the legacy CPTs `bibliotekon` and `opleiding`, not core posts | `LegacyContentMap` + legacy-CPT pass |
+| `migrate-posts`: 3,358 to `skryfwerk` | Only 10 category slugs were recognised; 3,357 of them had none | Full category-tree map with ancestors and a conflict rule; residue about 150 |
+| `migrate-challenges`: 0 created | The legacy category list was empty by default | Descendants of `projekte` and `kompetisie` |
+| Slug warnings for `biblioteek`, `opleiding`, `inkpols` | Index Pages share the archive slugs of the new CPTs | Still to verify on the next rehearsal (the pages must keep working alongside the archives) |
+| Many steps printed zeros, `verify-media` printed nothing | No step-level verdict | `wp ink migrate-all` flags silent and all-zero steps |
+
 ```
 cobus@MacBook-Pro public % wp ink migrate-sanitise
 Success: Databasis gesuiwer: 0 tydelike inskrywings, 0 voltooide take, 0 wees-logboekinskrywings verwyder (oorgeslaan — reeds gedoen).

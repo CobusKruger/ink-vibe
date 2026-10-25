@@ -38,13 +38,29 @@ test( 'cptForCategorySlugs maps a single recognised content-type category (incl.
 	expect( PostReclassifier::cptForCategorySlugs( array( 'gedig', 'oktober-2025-projek' ) ) )->toBe( PostTypes::GEDIG );
 } );
 
-test( 'cptForCategorySlugs falls through to skryfwerk for BOTH no-match AND conflicting categories (non-vacuous)', function (): void {
-	// Zero recognised content-type categories → skryfwerk.
+test( 'cptForCategorySlugs maps the real prod category tree (poems, story subtree, articles)', function (): void {
+	foreach ( array( 'gedigte', 'musiek-liriek' ) as $slug ) {
+		expect( PostReclassifier::cptForCategorySlugs( array( $slug ) ) )->toBe( PostTypes::GEDIG );
+	}
+	foreach ( array( 'algemeen-verhale', 'algemeen', 'verhale-liefde', 'verhale-wetenskapfiksie', 'verhale-kortverhale' ) as $slug ) {
+		expect( PostReclassifier::cptForCategorySlugs( array( $slug ) ) )->toBe( PostTypes::STORIE );
+	}
+	foreach ( array( 'artikels', 'algemeengorrel', 'rubrieke', 'prosa', 'prosa-lede-bydraes' ) as $slug ) {
+		expect( PostReclassifier::cptForCategorySlugs( array( $slug ) ) )->toBe( PostTypes::ARTIKEL );
+	}
+} );
+
+test( 'cptForCategorySlugs: no match falls back to skryfwerk, conflicts resolve gedig > storie > artikel', function (): void {
 	expect( PostReclassifier::cptForCategorySlugs( array() ) )->toBe( PostTypes::SKRYFWERK );
-	expect( PostReclassifier::cptForCategorySlugs( array( 'nuus', 'redaksioneel' ) ) )->toBe( PostTypes::SKRYFWERK );
-	// CONFLICTING content-type categories (2+ distinct) → skryfwerk, never a guess.
-	expect( PostReclassifier::cptForCategorySlugs( array( 'gedig', 'artikel' ) ) )->toBe( PostTypes::SKRYFWERK );
-	expect( PostReclassifier::cptForCategorySlugs( array( 'verhaal', 'gedig' ) ) )->toBe( PostTypes::SKRYFWERK );
+	expect( PostReclassifier::cptForCategorySlugs( array( 'nuus', 'lede-bydraes' ) ) )->toBe( PostTypes::SKRYFWERK );
+	expect( PostReclassifier::cptForCategorySlugs( array( 'gedig', 'artikel' ) ) )->toBe( PostTypes::GEDIG );
+	expect( PostReclassifier::cptForCategorySlugs( array( 'verhaal', 'gedig' ) ) )->toBe( PostTypes::GEDIG );
+	expect( PostReclassifier::cptForCategorySlugs( array( 'algemeengorrel', 'verhale-reis' ) ) )->toBe( PostTypes::STORIE );
+} );
+
+test( 'genresForCategorySlugs yields the backend genre for musiek-liriek only', function (): void {
+	expect( PostReclassifier::genresForCategorySlugs( array( 'musiek-liriek', 'gedigte' ) ) )->toBe( array( 'Musiek & Liriek' ) );
+	expect( PostReclassifier::genresForCategorySlugs( array( 'gedigte' ) ) )->toBe( array() );
 } );
 
 test( 'renamedPostType renames inkpols, and leaves others alone', function (): void {
@@ -108,7 +124,7 @@ test( 'run maps posts, renames inkpols, skips monthly_challenge, records source 
 			return array(
 				(object) array( 'id' => 1, 'post_type' => 'post', 'category_slugs' => array( 'gedig' ) ),         // → gedig
 				(object) array( 'id' => 2, 'post_type' => 'post', 'category_slugs' => array( 'nuus' ) ),          // → skryfwerk
-				(object) array( 'id' => 3, 'post_type' => 'post', 'category_slugs' => array( 'gedig', 'artikel' ) ), // conflict → skryfwerk
+				(object) array( 'id' => 3, 'post_type' => 'post', 'category_slugs' => array( 'nuus', 'lede-bydraes' ) ), // unrecognised → skryfwerk
 				(object) array( 'id' => 4, 'post_type' => 'inkpols', 'category_slugs' => array() ),               // rename
 				(object) array( 'id' => 5, 'post_type' => 'monthly_challenge', 'category_slugs' => array() ),     // skipped
 			);
@@ -195,4 +211,51 @@ test( 'run leaves /biblioteek/ and /opleiding/ flat posts to Story 16.6 (R16 —
 	expect( $migration->set )->toBe( array( 1 ) );
 	// Their SOURCE_URL_META is NOT overwritten with a post-rename permalink here.
 	expect( $migration->recorded )->toBe( array( 1 ) );
+} );
+
+test( 'run keeps staff result posts as core posts, trashes the committed duplicate, and still classifies member writing', function (): void {
+	$migration = new class() extends PostReclassifier {
+		/** @var list<array{0:int,1:string}> */
+		public array $set = array();
+		/** @var list<int> */
+		public array $trashed = array();
+
+		public function hasRun(): bool {
+			return false;
+		}
+		protected function legacyPosts(): array {
+			return array(
+				// Staff-authored result post: stays a `post`.
+				(object) array( 'id' => 1, 'post_type' => 'post', 'category_slugs' => array( 'projekte' ), 'title' => 'Maart 2023 - OOP projek: Kommentaar en uitslae', 'staff' => true ),
+				// Same wording from a member: ordinary writing, falls back to skryfwerk.
+				(object) array( 'id' => 2, 'post_type' => 'post', 'category_slugs' => array( 'projekte' ), 'title' => 'Maart 2023 - OOP projek: Kommentaar en uitslae', 'staff' => false ),
+				// The committed duplicate (35127).
+				(object) array( 'id' => 35127, 'post_type' => 'post', 'category_slugs' => array(), 'title' => 'PLAGIAAT', 'staff' => false ),
+				(object) array( 'id' => 3, 'post_type' => 'post', 'category_slugs' => array( 'gedigte' ), 'title' => 'Môre', 'staff' => false ),
+			);
+		}
+		protected function categorySlugsFor( object $post ): array {
+			return (array) ( $post->category_slugs ?? array() );
+		}
+		protected function recordSourceUrl( int $post_id ): void {}
+		protected function setPostType( int $post_id, string $type ): void {
+			$this->set[] = array( $post_id, $type );
+		}
+		protected function trashPost( int $post_id ): void {
+			$this->trashed[] = $post_id;
+		}
+		protected function assignGenre( int $post_id, string $genre ): void {}
+		protected function existingPageSlugs(): array {
+			return array();
+		}
+		protected function flushRewrites(): void {}
+		protected function markDone(): void {}
+	};
+
+	$summary = $migration->run();
+
+	expect( $summary['results'] )->toBe( 1 );
+	expect( $summary['dropped'] )->toBe( 1 );
+	expect( $migration->trashed )->toBe( array( 35127 ) );
+	expect( $migration->set )->toBe( array( array( 2, PostTypes::SKRYFWERK ), array( 3, PostTypes::GEDIG ) ) );
 } );

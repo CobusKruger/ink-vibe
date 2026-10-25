@@ -65,6 +65,13 @@ class Migration {
 	public const SOURCE_CATEGORY_META = 'ink_uitdaging_source_category';
 
 	/**
+	 * The legacy parent categories whose descendants are challenge rounds.
+	 *
+	 * @var list<string>
+	 */
+	public const LEGACY_PARENT_SLUGS = array( 'projekte', 'kompetisie' );
+
+	/**
 	 * Register the once-off WP-CLI trigger — ONLY under WP-CLI (never a web request).
 	 */
 	public function register(): void {
@@ -189,17 +196,47 @@ class Migration {
 	/**
 	 * The legacy challenge categories to migrate. Overridable seam.
 	 *
-	 * SAFE DEFAULT (R12 review): returns an EMPTY list. The legacy-challenge selection
-	 * is site-specific (a configured parent category / a naming convention), and a
-	 * blanket "migrate every `category`" default would convert ordinary blog
-	 * categories (Nuus, Uncategorized, …) into published uitdagings and mis-tag their
-	 * posts as challenge entries. A site MUST override this with the actual challenge
-	 * categories before the once-off run; an un-overridden run is a deliberate no-op.
+	 * Selection is by TREE, not by name: every descendant of the configured parent
+	 * categories ({@see self::LEGACY_PARENT_SLUGS}: `projekte` for the monthly projects,
+	 * `kompetisie` for the older competitions) is a challenge round; the parents
+	 * themselves and any slug on the `ink_challenge_legacy_exclude` filter (empty by
+	 * default; `ink-slypskool` IS a challenge) are not. A blanket "every category" default would turn
+	 * ordinary blog categories into published uitdagings (R12 review), so a site
+	 * without those parents gets an empty list and a no-op run.
 	 *
 	 * @return array<int, object>
 	 */
 	protected function legacyCategories(): array {
-		return array();
+		$exclude = (array) apply_filters( 'ink_challenge_legacy_exclude', array() );
+		$rows    = array();
+
+		foreach ( self::LEGACY_PARENT_SLUGS as $parent_slug ) {
+			$parent = get_term_by( 'slug', $parent_slug, 'category' );
+
+			if ( ! ( $parent instanceof \WP_Term ) ) {
+				continue;
+			}
+
+			$children = get_terms(
+				array(
+					'taxonomy'   => 'category',
+					'child_of'   => (int) $parent->term_id,
+					'hide_empty' => false,
+				)
+			);
+
+			foreach ( is_array( $children ) ? $children : array() as $child ) {
+				if ( $child instanceof \WP_Term && ! in_array( $child->slug, $exclude, true ) ) {
+					$rows[ (int) $child->term_id ] = (object) array(
+						'term_id'     => (int) $child->term_id,
+						'name'        => (string) $child->name,
+						'description' => (string) $child->description,
+					);
+				}
+			}
+		}
+
+		return array_values( $rows );
 	}
 
 	/**

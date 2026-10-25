@@ -64,5 +64,6 @@ final class Module implements ModuleContract {
 		( new MediaVerifier() )->register();
 		( new OptionsCarryForward() )->register();
 		( new ShortcodeCleanup() )->register();
+		( new MigrateAll() )->register();
 	}
 }
