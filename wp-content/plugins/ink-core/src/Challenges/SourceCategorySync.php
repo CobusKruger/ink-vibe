@@ -192,7 +192,7 @@ class SourceCategorySync {
 	}
 
 	/**
-	 * Post ids filed under a category, any type/status. Overridable seam.
+	 * Entry post ids filed under a category ({@see Migration::ENTRY_TYPES}), any status. Overridable seam.
 	 *
 	 * @param int $category_id The category.
 	 * @return list<int>
@@ -200,7 +200,7 @@ class SourceCategorySync {
 	protected function postsInCategory( int $category_id ): array {
 		$ids = get_posts(
 			array(
-				'post_type'        => 'any',
+				'post_type'        => Migration::ENTRY_TYPES,
 				'post_status'      => 'any',
 				'numberposts'      => -1,
 				'fields'           => 'ids',

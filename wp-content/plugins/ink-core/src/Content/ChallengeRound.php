@@ -31,6 +31,14 @@ defined( 'ABSPATH' ) || exit;
 final class ChallengeRound {
 
 	/**
+	 * The legacy parent categories whose descendants are challenge rounds.
+	 *
+	 * @var list<string>
+	 */
+	public const LEGACY_PARENT_SLUGS = array( 'projekte', 'kompetisie' );
+
+
+	/**
 	 * The round-term slug prefix; the uitdaging id follows.
 	 *
 	 * @var string

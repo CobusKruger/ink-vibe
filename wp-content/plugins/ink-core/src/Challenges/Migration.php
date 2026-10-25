@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ink\Challenges;
 
+use Ink\Content\ChallengeAnnouncement;
+use Ink\Content\ChallengeResultTitle;
 use Ink\Content\ChallengeRound;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
@@ -69,7 +71,15 @@ class Migration {
 	 *
 	 * @var list<string>
 	 */
-	public const LEGACY_PARENT_SLUGS = array( 'projekte', 'kompetisie' );
+	public const LEGACY_PARENT_SLUGS = ChallengeRound::LEGACY_PARENT_SLUGS;
+
+	/**
+	 * The post types that can be an entry of a round. A result post or an
+	 * announcement is a core `post` and is never an entry.
+	 *
+	 * @var list<string>
+	 */
+	public const ENTRY_TYPES = array( PostTypes::GEDIG, PostTypes::STORIE, PostTypes::ARTIKEL, PostTypes::SKRYFWERK );
 
 	/**
 	 * Register the once-off WP-CLI trigger — ONLY under WP-CLI (never a web request).
@@ -168,6 +178,12 @@ class Migration {
 
 			$post_ids = $this->postsInCategory( (int) ( $category->term_id ?? 0 ) );
 			$linked  += $this->linkPostsToRound( $post_ids, $term_id );
+
+			$date = $this->roundDate( (int) ( $category->term_id ?? 0 ), Scalar::asString( $category->name ?? '' ), $post_ids );
+
+			if ( null !== $date ) {
+				$this->setPostDate( $uitdaging_id, $date );
+			}
 		}
 
 		$this->markDone();
@@ -353,7 +369,7 @@ class Migration {
 
 		$ids = get_posts(
 			array(
-				'post_type'        => 'any',
+				'post_type'        => self::ENTRY_TYPES,
 				'post_status'      => 'any',
 				'numberposts'      => -1,
 				'fields'           => 'ids',
@@ -370,6 +386,109 @@ class Migration {
 		);
 
 		return is_array( $ids ) ? array_map( 'intval', $ids ) : array();
+	}
+
+	/**
+	 * The date a round should carry: when it was announced, else the first day of the
+	 * month its name gives ("... 1 Desember 2017 tot ..."), else when its first entry
+	 * was written. Entries are the last resort because members file older work under a
+	 * round's category. Pure given the two lookups.
+	 *
+	 * @param int       $category_id The legacy category id.
+	 * @param string    $name        The round's name.
+	 * @param list<int> $entry_ids   The round's entries.
+	 * @return string|null A `Y-m-d H:i:s` local date, or null when nothing dates it.
+	 */
+	protected function roundDate( int $category_id, string $name, array $entry_ids ): ?string {
+		$announced = $this->announcementDate( $category_id );
+
+		if ( null !== $announced ) {
+			return $announced;
+		}
+
+		$month_year = ChallengeResultTitle::monthYear( $name );
+
+		if ( null !== $month_year ) {
+			return sprintf( '%04d-%02d-01 00:00:00', $month_year[1], $month_year[0] );
+		}
+
+		return $this->earliestEntryDate( $entry_ids );
+	}
+
+	/**
+	 * The date of the post that announced the round, or null. Overridable seam.
+	 *
+	 * @param int $category_id The legacy category id.
+	 */
+	protected function announcementDate( int $category_id ): ?string {
+		if ( $category_id <= 0 ) {
+			return null;
+		}
+
+		$ids = get_posts(
+			array(
+				'post_type'        => 'post',
+				'post_status'      => 'any',
+				'numberposts'      => 1,
+				'orderby'          => 'date',
+				'order'            => 'ASC',
+				'fields'           => 'ids',
+				'suppress_filters' => false,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- a once-off CLI migration lookup keyed on the announcement marker.
+				'meta_query'       => array(
+					array(
+						'key'   => ChallengeAnnouncement::META,
+						'value' => 1,
+					),
+				),
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- a once-off CLI migration over a single legacy category.
+				'tax_query'        => array(
+					array(
+						'taxonomy' => 'category',
+						'field'    => 'term_id',
+						'terms'    => $category_id,
+					),
+				),
+			)
+		);
+
+		return ( is_array( $ids ) && isset( $ids[0] ) ) ? (string) get_post_field( 'post_date', (int) $ids[0] ) : null;
+	}
+
+	/**
+	 * The earliest date among a round's entries, or null. Overridable seam.
+	 *
+	 * @param list<int> $entry_ids The entries.
+	 */
+	protected function earliestEntryDate( array $entry_ids ): ?string {
+		$earliest = null;
+
+		foreach ( $entry_ids as $id ) {
+			$date = (string) get_post_field( 'post_date', (int) $id );
+
+			if ( '' !== $date && ( null === $earliest || $date < $earliest ) ) {
+				$earliest = $date;
+			}
+		}
+
+		return $earliest;
+	}
+
+	/**
+	 * Back-date a post (local and GMT). Overridable seam.
+	 *
+	 * @param int    $post_id The post.
+	 * @param string $date    A `Y-m-d H:i:s` local date.
+	 */
+	protected function setPostDate( int $post_id, string $date ): void {
+		wp_update_post(
+			array(
+				'ID'            => $post_id,
+				'post_date'     => $date,
+				'post_date_gmt' => get_gmt_from_date( $date ),
+				'edit_date'     => true,
+			)
+		);
 	}
 
 	/**

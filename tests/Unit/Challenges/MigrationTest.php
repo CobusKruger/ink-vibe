@@ -98,6 +98,12 @@ test( 'run creates a round per legacy category, links the pieces, and marks done
 			$this->links[] = array( $post_ids, $term_id );
 			return count( $post_ids );
 		}
+		protected function announcementDate( int $category_id ): ?string {
+			return null;
+		}
+		protected function earliestEntryDate( array $entry_ids ): ?string {
+			return null;
+		}
 		protected function markDone(): void {
 			$this->marked = true;
 		}
@@ -160,6 +166,10 @@ test( 'ensureUitdaging reuses an existing migrated uitdaging (R12: --force recon
 		protected function linkPostsToRound( array $post_ids, int $term_id ): int {
 			return 0;
 		}
+		protected function announcementDate( int $category_id ): ?string {
+			return null;
+		}
+		protected function setPostDate( int $post_id, string $date ): void {}
 		protected function markDone(): void {}
 	};
 
@@ -168,4 +178,54 @@ test( 'ensureUitdaging reuses an existing migrated uitdaging (R12: --force recon
 	expect( $summary['skipped'] )->toBeFalse();
 	expect( $summary['created'] )->toBe( 1 );
 	expect( $migration->createdCount )->toBe( 0 ); // reused 555, did NOT insert a duplicate
+} );
+
+test( 'a round takes the date it was announced, else the month in its name, else its first entry, else keeps the import date', function (): void {
+	$migration = new class() extends Migration {
+		/** @var array<int, string> */
+		public array $dated = array();
+
+		public function hasRun(): bool {
+			return false;
+		}
+		protected function legacyCategories(): array {
+			return array(
+				(object) array( 'term_id' => 1, 'name' => 'Announced', 'description' => '' ),
+				(object) array( 'term_id' => 2, 'name' => 'Entries only', 'description' => '' ),
+				(object) array( 'term_id' => 3, 'name' => 'Empty', 'description' => '' ),
+				(object) array( 'term_id' => 4, 'name' => '4de Skryfkompetisie (1 Desember 2017 tot 31 Maart 2018)', 'description' => '' ),
+			);
+		}
+		protected function ensureUitdaging( object $category ): int {
+			return 100 + (int) $category->term_id;
+		}
+		protected function ensureRoundTerm( int $uitdaging_id ): int {
+			return $uitdaging_id;
+		}
+		protected function postsInCategory( int $category_id ): array {
+			return 3 === $category_id ? array() : array( 10 * $category_id );
+		}
+		protected function linkPostsToRound( array $post_ids, int $term_id ): int {
+			return count( $post_ids );
+		}
+		protected function announcementDate( int $category_id ): ?string {
+			return 1 === $category_id ? '2016-03-16 11:41:23' : null;
+		}
+		protected function earliestEntryDate( array $entry_ids ): ?string {
+			return array() === $entry_ids ? null : '2016-05-02 15:51:35';
+		}
+		protected function setPostDate( int $post_id, string $date ): void {
+			$this->dated[ $post_id ] = $date;
+		}
+		protected function markDone(): void {}
+	};
+
+	$migration->run();
+
+	expect( $migration->dated )->toBe( array( 101 => '2016-03-16 11:41:23', 102 => '2016-05-02 15:51:35', 104 => '2017-12-01 00:00:00' ) );
+} );
+
+test( 'only writing counts as an entry: result posts and announcements are core posts', function (): void {
+	expect( Migration::ENTRY_TYPES )->toBe( array( 'gedig', 'storie', 'artikel', 'skryfwerk' ) )
+		->and( Migration::ENTRY_TYPES )->not->toContain( 'post' );
 } );
