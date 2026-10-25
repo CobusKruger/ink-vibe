@@ -22,7 +22,5 @@ $ink_opleiding_label = function_exists( 'ink_foundation_term' )
 <!-- wp:group {"tagName":"section","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
 <section class="wp-block-group alignfull" data-audit-id="library-shell" aria-label="<?php echo esc_attr( $ink_opleiding_label ); ?>">
 	<!-- wp:ink/opleiding-argief /-->
-
-	<!-- wp:ink/opleiding-bydra /-->
 </section>
 <!-- /wp:group -->

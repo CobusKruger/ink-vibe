@@ -201,11 +201,7 @@ Hierdie dokument bevat konsepvertalings van alle UI-koppe, -aksies en -beskrywen
 
 ### Sluitende oproep tot aksie
 
-| Engels | Afrikaans | Notas |
-|---|---|---|
-| Have something to share? | Het jy iets om te deel? | H2 |
-| The library is written by our community. If you have a craft essay or a guide you would like to contribute, we would love to read it. | Die opleidingsafdeling word deur ons gemeenskap geskryf. As jy 'n skryfkunsessay of 'n gids wil bydra, sal ons dit graag wil lees. | Beskrywende teks |
-| Submit a piece | Plaas 'n stuk | Knoppie |
+*Verwyder na die eerste repetisie (2026-10-25): die Opleiding-bladsy het geen bydra-oproep meer nie. Die rye "Have something to share?", die beskrywende teks en "Submit a piece" is nie meer in gebruik nie.*
 
 ---
 
