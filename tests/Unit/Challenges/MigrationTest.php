@@ -194,6 +194,7 @@ test( 'a round takes the date it was announced, else the month in its name, else
 				(object) array( 'term_id' => 2, 'name' => 'Entries only', 'description' => '' ),
 				(object) array( 'term_id' => 3, 'name' => 'Empty', 'description' => '' ),
 				(object) array( 'term_id' => 4, 'name' => '4de Skryfkompetisie (1 Desember 2017 tot 31 Maart 2018)', 'description' => '' ),
+				(object) array( 'term_id' => 5, 'name' => 'INK Dig- en skryfkompetisie 2026', 'description' => '' ),
 			);
 		}
 		protected function ensureUitdaging( object $category ): int {
@@ -222,7 +223,7 @@ test( 'a round takes the date it was announced, else the month in its name, else
 
 	$migration->run();
 
-	expect( $migration->dated )->toBe( array( 101 => '2016-03-16 11:41:23', 102 => '2016-05-02 15:51:35', 104 => '2017-12-01 00:00:00' ) );
+	expect( $migration->dated )->toBe( array( 101 => '2016-03-16 11:41:23', 102 => '2016-05-02 15:51:35', 104 => '2017-12-01 00:00:00', 105 => '2026-01-01 00:00:00' ) );
 } );
 
 test( 'only writing counts as an entry: result posts and announcements are core posts', function (): void {

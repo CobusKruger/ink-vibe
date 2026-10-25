@@ -412,6 +412,12 @@ class Migration {
 			return sprintf( '%04d-%02d-01 00:00:00', $month_year[1], $month_year[0] );
 		}
 
+		$year = ChallengeResultTitle::year( $name );
+
+		if ( null !== $year ) {
+			return sprintf( '%04d-01-01 00:00:00', $year );
+		}
+
 		return $this->earliestEntryDate( $entry_ids );
 	}
 

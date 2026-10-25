@@ -57,3 +57,15 @@ test( 'no candidates, no announcement', function (): void {
 test( 'normalise ignores case, entities, tags and punctuation', function (): void {
 	expect( ChallengeAnnouncement::normalise( 'Oktober 2026 &#8211; <b>Getal</b> 10 projek!' ) )->toBe( 'oktober 2026 getal 10 projek' );
 } );
+
+test( 'monthLabel gives the Afrikaans month and year of a date, whatever language WordPress runs in', function (): void {
+	expect( \Ink\Content\ChallengeResultTitle::monthLabel( '2026-10-01 15:17:32' ) )->toBe( 'Oktober 2026' )
+		->and( \Ink\Content\ChallengeResultTitle::monthLabel( '2017-03-03' ) )->toBe( 'Maart 2017' )
+		->and( \Ink\Content\ChallengeResultTitle::monthLabel( 'nie-\'n-datum' ) )->toBe( '' )
+		->and( \Ink\Content\ChallengeResultTitle::monthLabel( '2026-13-01 00:00:00' ) )->toBe( '' );
+} );
+
+test( 'year reads the first 20xx year in a round name', function (): void {
+	expect( \Ink\Content\ChallengeResultTitle::year( 'INK Dig- en skryfkompetisie 2026' ) )->toBe( 2026 )
+		->and( \Ink\Content\ChallengeResultTitle::year( 'Groot skryf kompetisie' ) )->toBeNull();
+} );
