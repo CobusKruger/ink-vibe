@@ -41,7 +41,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class AuthRedirects {
 
-	public const LOGIN_URL_PATH    = '/meld-aan/';
+	public const LOGIN_URL_PATH    = '/teken-in/';
 	public const REGISTER_URL_PATH = '/registreer/';
 	public const LOST_URL_PATH     = '/wagwoord-herstel/';
 
@@ -84,7 +84,7 @@ class AuthRedirects {
 
 	/**
 	 * A failed login attempt (`wp_login_failed`) — redirect back to
-	 * `/meld-aan/` with a notice, preserving the attempted username so the
+	 * `/teken-in/` with a notice, preserving the attempted username so the
 	 * visitor does not have to retype it (WordPress core's own raw screen does
 	 * the same).
 	 *

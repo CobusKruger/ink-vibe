@@ -96,7 +96,7 @@ final class FollowingList {
 				'name'   => (string) get_the_author_meta( 'display_name', $followee_id ),
 				// Same bio source as the public Skrywerprofiel card (SkrywerProfiel::render()),
 				// for consistency between the two writer-card renderings.
-				'bio'    => (string) get_the_author_meta( 'description', $followee_id ),
+				'bio'    => ProfileBio::for( $followee_id ),
 				'avatar' => function_exists( 'get_avatar' ) ? (string) get_avatar( $followee_id, 48, '', '', array( 'class' => 'ink-avatar ink-avatar--48' ) ) : '',
 			);
 		}

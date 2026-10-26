@@ -29,8 +29,8 @@
  * `ink_foundation_term()` rather than inlined, since the same label now also
  * appears in the header, auth-register.php, auth-forgot-password.php, skryf.php
  * and lidmaatskap-hernu.php — single-source, so it cannot drift apart again. The
- * `/meld-aan` URL and the `meld_aan` notice query-arg ({@see
- * \Ink\Accounts\AuthRedirects}) are UNCHANGED — this is a display-label fix only.
+ * login lives at `/teken-in`; the `meld_aan` notice query-arg ({@see
+ * \Ink\Accounts\AuthRedirects}) keeps its name.
  */
 ?>
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-auth","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"var:preset|spacing|s-48","bottom":"var:preset|spacing|s-48","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained","contentSize":"448px"}} -->

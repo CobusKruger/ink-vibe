@@ -49,15 +49,15 @@ function ink_biblioteek_render_stubs(): void {
 
 // --- queryArgs ---
 
-test( 'queryArgs lists published biblioteek_items newest-first, paged and per-page', function (): void {
+test( 'queryArgs lists published biblioteek_items alphabetically by title, paged and per-page', function (): void {
 	$args = Archive::queryArgs( 2, 12 );
 
 	expect( $args['post_type'] )->toBe( PostTypes::BIBLIOTEEK_ITEM );
 	expect( $args['post_status'] )->toBe( 'publish' );
 	expect( $args['posts_per_page'] )->toBe( 12 );
 	expect( $args['paged'] )->toBe( 2 );
-	expect( $args['orderby'] )->toBe( 'date' );
-	expect( $args['order'] )->toBe( 'DESC' );
+	expect( $args['orderby'] )->toBe( 'title' );
+	expect( $args['order'] )->toBe( 'ASC' );
 	expect( $args['ignore_sticky_posts'] )->toBeTrue();
 	expect( $args )->not->toHaveKey( 'tax_query' );
 	expect( $args )->not->toHaveKey( 's' );
@@ -128,9 +128,9 @@ test( 'toHtml renders the heading, controls and a card per item, escaping every 
 	expect( $html )->toContain( 'Die handboek' );
 	// Per-card genre badge (AC: title -> permalink, genre badge, author).
 	expect( $html )->toContain( 'ink-biblioteek__genre' );
-	// Genre filter pills + Alles.
+	// Genre filter pills; there is no "Alles" pill.
 	expect( $html )->toContain( 'ink-biblioteek__filter' );
-	expect( $html )->toContain( 'Alles' );
+	expect( $html )->not->toContain( 'Alles' );
 	expect( $html )->toContain( 'Poësie' );
 	expect( $html )->toContain( 'Prosa' );
 	// Search form.
@@ -288,4 +288,38 @@ test( 'a card renders its excerpt, read-time and cover image, omitting each when
 	expect( $bare )->not->toContain( 'ink-biblioteek__item-uittreksel' );
 	expect( $bare )->not->toContain( 'ink-biblioteek__item-leestyd' );
 	expect( $bare )->not->toContain( 'ink-biblioteek__item-beeld' );
+} );
+
+test( 'orderGenres puts Gedigte first, sorts the rest alphabetically and decodes entities', function (): void {
+	$out = Archive::orderGenres(
+		array(
+			array( 'slug' => 'woordeboeke', 'name' => 'Woordeboeke' ),
+			array( 'slug' => 'liegstories', 'name' => 'Liegstories' ),
+			array( 'slug' => 'gedigte', 'name' => 'Gedigte' ),
+			array( 'slug' => 'jakkals', 'name' => 'Jakkals en Wolf &amp; ander kinderstories' ),
+			array( 'slug' => 'oom-pine', 'name' => 'Oom Pine se jagstories' ),
+		)
+	);
+
+	expect( array_column( $out, 'slug' ) )->toBe( array( 'gedigte', 'jakkals', 'liegstories', 'oom-pine', 'woordeboeke' ) );
+	expect( $out[1]['name'] )->toBe( 'Jakkals en Wolf & ander kinderstories' );
+} );
+
+test( 'defaultGenre opens on Gedigte when present, else the first category, else none', function (): void {
+	$with = array( array( 'slug' => 'liegstories', 'name' => 'L' ), array( 'slug' => 'gedigte', 'name' => 'G' ) );
+
+	expect( Archive::defaultGenre( $with ) )->toBe( 'gedigte' );
+	expect( Archive::defaultGenre( array( array( 'slug' => 'liegstories', 'name' => 'L' ) ) ) )->toBe( 'liegstories' );
+	expect( Archive::defaultGenre( array() ) )->toBeNull();
+} );
+
+test( 'queryArgs reads Gedigte and a whole-library search alphabetically, every other shelf oldest first', function (): void {
+	$gedigte = Archive::queryArgs( 1, 12, 'gedigte' );
+	expect( $gedigte['orderby'] )->toBe( 'title' )->and( $gedigte['order'] )->toBe( 'ASC' );
+
+	$search = Archive::queryArgs( 1, 12, null, 'brug' );
+	expect( $search['orderby'] )->toBe( 'title' );
+
+	$serial = Archive::queryArgs( 1, 12, 'liegstories' );
+	expect( $serial['orderby'] )->toBe( array( 'date' => 'ASC', 'ID' => 'ASC' ) )->and( $serial )->not->toHaveKey( 'order' );
 } );

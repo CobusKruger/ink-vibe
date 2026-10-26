@@ -118,7 +118,7 @@ test( 'handleUpdate updates only bio when it is the only field submitted', funct
 
 	$response = ( new ProfileController() )->handleUpdate( new \WP_REST_Request( array( 'bio' => 'Oor my as skrywer.' ) ) );
 
-	expect( $meta_calls )->toBe( array( array( 7, 'description', 'Oor my as skrywer.' ) ) );
+	expect( $meta_calls )->toBe( array( array( 7, 'description', 'Oor my as skrywer.' ), array( 7, 'ink_bio_edited', '1' ) ) );
 	expect( $response->get_data() )->toBe( array( 'bio' => 'Oor my as skrywer.' ) );
 } );
 
@@ -157,6 +157,7 @@ test( 'handleUpdate updates all three fields when all are submitted, always agai
 		array(
 			array( 99, 'ink_skrywer_leuse', 'Leuse' ),
 			array( 99, 'description', 'Bio' ),
+			array( 99, 'ink_bio_edited', '1' ),
 		)
 	);
 	expect( $response->get_data() )->toBe(

@@ -97,7 +97,7 @@ Die reël is eenvoudig: **kies een term per konsep en hou by daardie term.**
 | Konsep | UI-term (Afrikaans) | Kode-ID / sleutel | Notas |
 |---|---|---|---|
 | Die seksie wat uitgesoekte werk bevat | **Biblioteek** | `biblioteek` | Moenie "library" gebruik nie. |
-| 'n Item in die biblioteek | **biblioteekitem** | post_type: `biblioteek_item` | |
+| 'n Item in die biblioteek | **Biblioteek** | post_type: `biblioteek_item` | Die etiket op 'n item en die argieftitel is "Biblioteek" (eienaar, 2026-10-25), nie "biblioteekitem" nie. |
 | Werk wat 'n uitdaging gewen het | **wenwerk** | — | Kan sê "wenwerk uit Oktober 2025". |
 | Wenner van 'n uitdaging | **wenner** | `winner` | |
 | Skakel van bydrae na biblioteekseksie | **bygevoeg tot die Biblioteek** | — | |

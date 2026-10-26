@@ -25,6 +25,8 @@ beforeEach( function (): void {
 	Functions\when( 'esc_attr' )->returnArg( 1 );
 	Functions\when( 'esc_url' )->returnArg( 1 );
 	Functions\when( 'esc_html__' )->returnArg( 1 );
+	Functions\when( '_n' )->alias( static fn ( string $one, string $many, int $n ): string => 1 === $n ? $one : $many );
+	Functions\when( 'number_format_i18n' )->alias( static fn ( $n ): string => (string) $n );
 	// ArchiveRender::pagination uses these; stub to inert passthroughs.
 	Functions\when( 'add_query_arg' )->justReturn( '#' );
 	Functions\when( 'remove_query_arg' )->justReturn( '#' );
@@ -187,7 +189,7 @@ test( 'toHtml renders the heading and a card per challenge', function (): void {
 	$html = Archive::toHtml( $cards, array( 'paged' => 1, 'max_pages' => 1 ) );
 
 	expect( $html )->toContain( 'ink-uitdagings' );
-	expect( substr_count( $html, 'ink-uitdagings__item' ) )->toBe( 2 );
+	expect( substr_count( $html, '<li class="ink-uitdagings__item ' ) )->toBe( 2 );
 } );
 
 test( 'toHtml renders a graceful empty state with no challenges', function (): void {
@@ -196,4 +198,30 @@ test( 'toHtml renders a graceful empty state with no challenges', function (): v
 	expect( $html )->toContain( 'ink-uitdagings' );
 	expect( $html )->toContain( 'Geen' );
 	expect( $html )->not->toContain( 'ink-uitdagings__item' );
+} );
+
+test( 'cardHtml gives the round\'s month top left, where other cards show their type, and the entry count top right', function (): void {
+	$html = Archive::cardHtml(
+		array(
+			'title'     => 'Oktober 2026 - Getal 10 projek',
+			'permalink' => '#okt',
+			'month'     => 'Oktober 2026',
+			'excerpt'   => 'Beste INKers, hierdie maand ...',
+			'entries'   => 14,
+		)
+	);
+
+	expect( $html )->toContain( 'ink-uitdagings__maand ink-pill' )
+		->and( $html )->toContain( 'Oktober 2026' )
+		->and( $html )->toContain( '14 inskrywings' )
+		->and( $html )->toContain( 'ink-uitdagings__item-uittreksel' )
+		->and( $html )->toContain( 'Beste INKers' )
+		->and( strpos( $html, 'Oktober 2026</span>' ) )->toBeLessThan( strpos( $html, '14 inskrywings' ) );
+} );
+
+test( 'cardHtml says "1 inskrywing" in the singular and hides a zero count', function (): void {
+	$one  = Archive::cardHtml( array( 'title' => 'X', 'permalink' => '#', 'entries' => 1 ) );
+	$none = Archive::cardHtml( array( 'title' => 'X', 'permalink' => '#', 'entries' => 0 ) );
+
+	expect( $one )->toContain( '1 inskrywing<' )->and( $none )->not->toContain( 'inskrywing' );
 } );

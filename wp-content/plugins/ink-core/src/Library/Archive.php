@@ -93,6 +93,11 @@ final class Archive {
 	public const GENRE_VAR = 'biblioteek_genre';
 
 	/**
+	 * The category the page opens on.
+	 */
+	public const DEFAULT_GENRE = 'gedigte';
+
+	/**
 	 * Keyword-search query var.
 	 *
 	 * @var string
@@ -179,10 +184,20 @@ final class Archive {
 			'post_status'         => 'publish',
 			'posts_per_page'      => $per_page,
 			'paged'               => max( 1, $paged ),
-			'orderby'             => 'date',
-			'order'               => 'DESC',
+			'orderby'             => 'title',
+			'order'               => 'ASC',
 			'ignore_sticky_posts' => true,
 		);
+
+		// Gedigte (and a whole-library search) read alphabetically; every other
+		// shelf is oldest first, because several are serialised.
+		if ( null !== $genre && '' !== $genre && self::DEFAULT_GENRE !== $genre ) {
+			$args['orderby'] = array(
+				'date' => 'ASC',
+				'ID'   => 'ASC',
+			);
+			unset( $args['order'] );
+		}
 
 		if ( null !== $genre && '' !== $genre ) {
 			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- a single bounded genre-slug facet on a curated CPT; the AD-7 server-rendered archive filter, no search plugin.
@@ -232,7 +247,11 @@ final class Archive {
 		$genre  = ArchiveRender::requestKey( self::GENRE_VAR );
 		$search = ArchiveRender::requestText( self::SEARCH_VAR );
 
-		$active_genre = '' !== $genre ? $genre : null;
+		$genres = self::genreTerms();
+
+		// With no explicit category the page opens on the default shelf (Gedigte);
+		// a keyword search with no category searches the whole library instead.
+		$active_genre = '' !== $genre ? $genre : ( '' === $search ? self::defaultGenre( $genres ) : null );
 
 		$query = self::runQuery( self::queryArgs( $paged, self::PER_PAGE, $active_genre, $search ) );
 
@@ -246,23 +265,13 @@ final class Archive {
 			$cards[] = self::card( $post );
 		}
 
-		// Featured strip only on the unfiltered first page (no genre/search/paging).
+		// No featured strip: the page always opens on a category, alphabetically.
 		$featured = array();
-
-		if ( 1 === max( 1, $paged ) && null === $active_genre && '' === $search ) {
-			$featured_query = self::runQuery( self::featuredArgs( self::FEATURED ) );
-
-			foreach ( $featured_query->posts as $post ) {
-				if ( $post instanceof \WP_Post ) {
-					$featured[] = self::card( $post );
-				}
-			}
-		}
 
 		return self::toHtml(
 			$cards,
 			$featured,
-			self::genreTerms(),
+			$genres,
 			array(
 				'paged'     => max( 1, $paged ),
 				'max_pages' => (int) $query->max_num_pages,
@@ -454,10 +463,11 @@ final class Archive {
 			return array();
 		}
 
+		$used = self::termIdsWithItems();
 		$rows = array();
 
 		foreach ( $terms as $term ) {
-			if ( $term instanceof \WP_Term ) {
+			if ( $term instanceof \WP_Term && in_array( (int) $term->term_id, $used, true ) ) {
 				$rows[] = array(
 					'slug' => $term->slug,
 					'name' => $term->name,
@@ -465,7 +475,81 @@ final class Archive {
 			}
 		}
 
-		return $rows;
+		return self::orderGenres( $rows );
+	}
+
+	/**
+	 * Ids of the genre terms that hold at least one published library item.
+	 *
+	 * `hide_empty` counts a term across every post type that shares the taxonomy,
+	 * so a term used only by poems (Musiek & Liriek) would show a pill that opens
+	 * an empty list. Side-effecting (queries the database).
+	 *
+	 * @return list<int>
+	 */
+	private static function termIdsWithItems(): array {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- one bounded aggregate over the term tables for the filter row.
+		$ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT DISTINCT tt.term_id FROM {$wpdb->term_relationships} r
+				INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = r.term_taxonomy_id
+				INNER JOIN {$wpdb->posts} p ON p.ID = r.object_id
+				WHERE tt.taxonomy = %s AND p.post_type = %s AND p.post_status = 'publish'",
+				Taxonomies::GENRE,
+				PostTypes::BIBLIOTEEK_ITEM
+			)
+		);
+
+		return array_map( 'intval', (array) $ids );
+	}
+
+	/**
+	 * The shelf the page opens on: Gedigte, else the first category. Pure.
+	 *
+	 * @param list<array{slug:string, name:string}> $genres The ordered genre rows.
+	 * @return string|null Term slug, or null with no categories.
+	 */
+	public static function defaultGenre( array $genres ): ?string {
+		foreach ( $genres as $genre ) {
+			if ( self::DEFAULT_GENRE === $genre['slug'] ) {
+				return self::DEFAULT_GENRE;
+			}
+		}
+
+		return $genres[0]['slug'] ?? null;
+	}
+
+	/**
+	 * Order the category pills: Gedigte first, the rest alphabetical, names decoded. Pure.
+	 *
+	 * Some names are stored HTML-escaped (`Musiek &amp; Liriek`); they are decoded
+	 * here because the pill escapes its label once, at output.
+	 *
+	 * @param list<array{slug:string, name:string}> $genres The genre rows.
+	 * @return list<array{slug:string, name:string}>
+	 */
+	public static function orderGenres( array $genres ): array {
+		foreach ( $genres as $i => $genre ) {
+			$genres[ $i ]['name'] = html_entity_decode( $genre['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		}
+
+		usort(
+			$genres,
+			static function ( array $a, array $b ): int {
+				$a_first = self::DEFAULT_GENRE === $a['slug'];
+				$b_first = self::DEFAULT_GENRE === $b['slug'];
+
+				if ( $a_first !== $b_first ) {
+					return $a_first ? -1 : 1;
+				}
+
+				return strcmp( mb_strtolower( $a['name'], 'UTF-8' ), mb_strtolower( $b['name'], 'UTF-8' ) );
+			}
+		);
+
+		return $genres;
 	}
 
 	/**
@@ -593,14 +677,15 @@ final class Archive {
 	}
 
 	/**
-	 * The genre category filter — "Alles" + a pill per genre term in use. Pure.
+	 * The genre category filter — a pill per genre term in use (no "Alles": the page
+	 * always shows one category). Pure.
 	 *
 	 * Each link sets/clears the `genre` query var (resetting the page); the active
 	 * genre is marked. Renders nothing without terms (so an empty library shows no
 	 * filter row).
 	 *
 	 * @param list<array{slug:string, name:string}> $genres       The genre terms.
-	 * @param string|null                           $active_genre The active term slug, or null for "Alles".
+	 * @param string|null                           $active_genre The active term slug, or null for a whole-library search.
 	 * @return string
 	 */
 	public static function filterHtml( array $genres, ?string $active_genre ): string {
@@ -609,16 +694,6 @@ final class Archive {
 		}
 
 		$html = '<div class="ink-biblioteek__filter" data-audit-id="library-filters">';
-
-		$html .= self::withAuditId(
-			ArchiveRender::pill(
-				(string) remove_query_arg( array( self::GENRE_VAR, self::PAGED_VAR ) ),
-				__( 'Alles', 'ink-core' ),
-				( null === $active_genre ),
-				'ink-biblioteek__filter-knoppie ink-chip'
-			),
-			'library-filter'
-		);
 
 		foreach ( $genres as $genre ) {
 			$url   = (string) add_query_arg( self::GENRE_VAR, $genre['slug'], remove_query_arg( self::PAGED_VAR ) );

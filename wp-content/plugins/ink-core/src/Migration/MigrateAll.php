@@ -56,7 +56,7 @@ class MigrateAll {
 	 *
 	 * @var list<string>
 	 */
-	private const MAY_BE_ZERO = array( 'verify-subscriptions', 'verify-redirects', 'verify-media', 'clean-shortcodes' );
+	private const MAY_BE_ZERO = array( 'pages', 'verify-subscriptions', 'verify-redirects', 'verify-media', 'clean-shortcodes', 'recount' );
 
 	/**
 	 * The pipeline, in order. Gradering is derived from the result posts by default; give a
@@ -68,6 +68,7 @@ class MigrateAll {
 	public static function steps( string $tiers = '' ): array {
 		return array(
 			array( 'sanitise', 'ink migrate-sanitise' ),
+			array( 'pages', 'ink ensure-pages' ),
 			array( 'users', 'ink migrate-users' ),
 			array( 'tiers', '' === $tiers ? 'ink derive-tiers' : 'ink migrate-tiers {tiers}' ),
 			array( 'verify-subscriptions', 'ink verify-subscriptions' ),

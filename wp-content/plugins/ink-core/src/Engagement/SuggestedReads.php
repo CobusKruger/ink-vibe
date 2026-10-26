@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Engagement;
 
+use Ink\Kernel\ArchiveRender;
 use Ink\Content\PostTypes;
 use Ink\I18n\Terms;
 
@@ -151,6 +152,7 @@ final class SuggestedReads {
 				'permalink' => (string) get_permalink( $post ),
 				'type'      => $post->post_type,
 				'author'    => (string) get_the_author_meta( 'display_name', (int) $post->post_author ),
+				'author_url' => (string) get_author_posts_url( (int) $post->post_author ),
 			);
 		}
 
@@ -194,7 +196,7 @@ final class SuggestedReads {
 			$html .= '<li class="ink-verwante__item">'
 				. '<span class="ink-verwante__type">' . esc_html( Terms::label( $card['type'] ) ) . '</span>'
 				. '<a class="ink-verwante__title" href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>'
-				. '<span class="ink-verwante__author">' . esc_html( $card['author'] ) . '</span>'
+				. ArchiveRender::authorLabel( 'ink-verwante__author', $card['author'], (string) ( $card['author_url'] ?? '' ) )
 				. '</li>';
 		}
 

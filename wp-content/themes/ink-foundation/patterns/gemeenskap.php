@@ -304,7 +304,7 @@
 			<!-- /wp:button -->
 
 			<!-- wp:button {"className":"is-style-ink-outline-on-dark ink-btn-lg"} -->
-			<div class="wp-block-button is-style-ink-outline-on-dark ink-btn-lg"><a class="wp-block-button__link wp-element-button" data-audit-id="gemeenskap-cta-btn-secondary" href="/lees"><?php esc_html_e( 'Kyk eers rond', 'ink-foundation' ); ?></a></div>
+			<div class="wp-block-button is-style-ink-outline-on-dark ink-btn-lg"><a class="wp-block-button__link wp-element-button" data-audit-id="gemeenskap-cta-btn-secondary" href="/ontdek/"><?php esc_html_e( 'Kyk eers rond', 'ink-foundation' ); ?></a></div>
 			<!-- /wp:button -->
 		</div>
 		<!-- /wp:buttons -->

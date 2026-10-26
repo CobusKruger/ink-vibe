@@ -251,12 +251,12 @@ function ink_foundation_enqueue_kontak_assets(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_kontak_assets' );
 
 /**
- * Enqueue the Auth (meld-aan / registreer / wagwoord-herstel) stylesheet on
+ * Enqueue the Auth (teken-in / registreer / wagwoord-herstel) stylesheet on
  * those three pages only (Theme-Fidelity re-audit, page 16 — the last page).
  *
  * `auth.css` carries the three forms' shared presentation (field/label/hint/
  * remember-me/submit-button styling, the auth card's own padding/hover
- * overrides). Before this file `meld-aan` rendered the core `wp:loginout`
+ * overrides). Before this file `teken-in` rendered the core `wp:loginout`
  * block's raw, unstyled `wp_login_form()` markup, and `registreer` /
  * `wagwoord-herstel` already carried `.ink-auth-*` classes with ZERO matching
  * CSS anywhere — the same "zero CSS" gap already found and fixed on kontak/
@@ -265,7 +265,7 @@ add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_kontak_assets' );
  * session).
  */
 function ink_foundation_enqueue_auth_assets(): void {
-	if ( ! function_exists( 'is_page' ) || ! is_page( array( 'meld-aan', 'registreer', 'wagwoord-herstel' ) ) ) {
+	if ( ! function_exists( 'is_page' ) || ! is_page( array( 'teken-in', 'registreer', 'wagwoord-herstel' ) ) ) {
 		return;
 	}
 
@@ -715,6 +715,7 @@ function ink_foundation_enqueue_line_reactions(): void {
 				? array_values( \Ink\Engagement\ReactionStore::indexesWithReactions( (int) $post_id ) )
 				: array(),
 			'loginUrl'     => esc_url_raw( home_url( \Ink\Accounts\AuthRedirects::LOGIN_URL_PATH ) ),
+			'isGuest'      => ! is_user_logged_in(),
 		)
 	);
 }
@@ -751,6 +752,11 @@ function ink_foundation_enqueue_highlightable_text(): void {
 		return;
 	}
 
+	// Highlighting is a signed-in feature; a guest gets no tool and no hint.
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
+
 	$theme = wp_get_theme();
 
 	wp_enqueue_script(
@@ -770,6 +776,13 @@ function ink_foundation_enqueue_highlightable_text(): void {
 			'panelTitleLabel'   => __( 'Jou uitgeligte gedeeltes', 'ink-foundation' ),
 			'emptyLabel'        => __( 'Kies enige teks in die stuk om onvergeetlike gedeeltes uit te lig.', 'ink-foundation' ),
 			'removeLabel'       => __( 'Verwyder hooglig', 'ink-foundation' ),
+			'restUrl'           => esc_url_raw( rest_url( 'ink/v1/hooglig' ) ),
+			'nonce'             => wp_create_nonce( 'wp_rest' ),
+			'postId'            => (int) get_the_ID(),
+			// The member's saved highlights on this piece, re-applied on load.
+			'saved'             => class_exists( '\\Ink\\Engagement\\HighlightStore' )
+				? \Ink\Engagement\HighlightStore::forUserPost( get_current_user_id(), (int) get_the_ID() )
+				: array(),
 		)
 	);
 }

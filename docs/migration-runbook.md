@@ -2,7 +2,7 @@
 
 Rebuild the new site from a fresh copy of production. The database is disposable and every human decision is a committed file, so a rehearsal and the real cutover are the same procedure.
 
-**Status (2026-10-25):** the pipeline is built, merged to `main` and unit-tested. It has never run on a real database. The first rehearsal needs a fresh prod copy, which only you can supply.
+**Status (2026-10-25):** the first rehearsal has run on a real prod copy (about 90 s, repeatable from a restored snapshot). Its findings are fixed on branch `fix/rehearsal-findings`: the theme's Pages are now created by code, announcements are no longer entries, Uitdagings are dated, the public profile is `/lede/<name>`, and highlights are saved. Not yet fixed: InkPols (prod keeps its issues as 8 Pages with an embedded PDF; the migration step is a no-op), the 140 missing upload files, the footer links, and BuddyPress's member routes are redirected, not removed.
 
 ## What remains for you
 
@@ -66,7 +66,9 @@ Known risks to look for: the Pages `biblioteek`, `opleiding` and `inkpols` share
 | Post counts by type, drafts, leftovers | `docs/migration-tools/post-counts.php` | thousands of `gedig`; `storie` and `artikel` in the thousands; `skryfwerk` roughly 150 or fewer; drafts stay drafts |
 | Legacy content moved | same script | `biblioteek_item` about 312, `opleiding_artikel` about 179; `bibliotekon` / `opleiding` left only for the skipped winners pages and dropped placeholders |
 | Collections and skills | same script | Gedigte shelf 91; Vrystaatstories 68; Oom Pine 65; Liegstories 29; Kinderrympies one collection; Woordeboeke 7; Digkuns about 168 |
-| Challenges | same script | one Uitdaging per category under `projekte` / `kompetisie`; entries counted per round; the current rounds (mei to oktober 2026) have entries |
+| Challenges | same script | one Uitdaging per category under `projekte` / `kompetisie` (140); entries counted per round (6,707 on the first rehearsal copy: result posts and announcements are not entries); each Uitdaging dated from its announcement, so the October 2026 round lists first |
+| Announcements | `migrate-posts` summary | one per round (133 of 140 on the first rehearsal copy), kept as core posts marked `ink_challenge_announcement` |
+| Theme Pages | `wp ink ensure-pages`, `curl` each of `/teken-in/ /skryf/ /ontdek/ /gemeenskap/ /my-profiel/` | 200, not a redirect to a poem |
 | Result posts | `wp ink report-result-posts`; same script | about 12 a year, all by Anze or Inkmoderator, kept as core posts, linked to their Uitdaging where the month and year match |
 | Parser quality on this copy | `validate-parser.php`, `validate-gradering.php` | about 97% exact on the 120 known posts; derived tiers match the old `tier-import.csv` (106 of 110 on the staging copy); the other 4 are single-win writers from old layouts, who default to brons anyway |
 | Slug clashes after migration | `check-slug-collisions.php` (run before and after) | only `afrikaanse-taalgids` (different URL prefixes) |
@@ -93,7 +95,7 @@ The agent cannot judge how pages look or read, whether Afrikaans copy is right, 
 wp ink migrate-all
 ```
 
-It runs, in order: sanitise, users, tiers (derived from the result posts), verify-subscriptions, library-training, posts, challenges, challenge-entries, result-posts, inkpols, clean-shortcodes, rebuild-navigation, follows, options, term recount, generate-redirects, verify-redirects --fix, verify-media.
+It runs, in order: sanitise, pages (creates the Pages the theme's page templates need: `Ink\Kernel\SystemPages`, also `wp ink ensure-pages`), users, tiers (derived from the result posts), verify-subscriptions, library-training, posts, challenges, challenge-entries, result-posts, inkpols, clean-shortcodes, rebuild-navigation, follows, options, term recount, generate-redirects, verify-redirects --fix, verify-media.
 
 - It stops at the first failing step. Fix the cause and run the same command: steps that succeeded are skipped.
 - `--from=<step>` re-runs from that step on. `--reset` forgets all stored outcomes.

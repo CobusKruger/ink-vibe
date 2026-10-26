@@ -9,7 +9,7 @@
  * screen it was written for is the password-RESET screen (`action=resetpass`/
  * `rp` — the link a visitor actually clicks from the reset e-mail). Every other auth screen
  * (login/register/lost-password) is fully replaced by this theme's own
- * `page-meld-aan.html` / `page-registreer.html` / `page-wagwoord-herstel.html`
+ * `page-teken-in.html` / `page-registreer.html` / `page-wagwoord-herstel.html`
  * templates — this is the one screen deliberately LEFT as WordPress core's own
  * `login_header()` markup, because it carries real WP-native interactive
  * machinery (the password-strength meter, "Generate password" button, weak-

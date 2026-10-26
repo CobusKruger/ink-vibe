@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace Ink\Migration;
 
+use Ink\Content\ChallengeAnnouncement;
 use Ink\Content\ChallengeResultTitle;
+use Ink\Content\ChallengeRound;
 use Ink\Content\PostTypes;
 use Ink\Content\ResultPostAuthors;
 
@@ -153,13 +155,14 @@ class PostReclassifier {
 
 				\WP_CLI::success(
 					sprintf(
-						'Plasings herklassifiseer: %d na tipe-CPT, %d na skryfwerk, %d hernoem, %d oorgeslaan, %d duplikate verwyder, %d uitslagplasings behou%s.',
+						'Plasings herklassifiseer: %d na tipe-CPT, %d na skryfwerk, %d hernoem, %d oorgeslaan, %d duplikate verwyder, %d uitslagplasings behou, %d aankondigings behou%s.',
 						(int) $summary['reassigned'],
 						(int) $summary['to_skryfwerk'],
 						(int) $summary['renamed'],
 						(int) $summary['skipped'],
 						(int) $summary['dropped'],
 						(int) $summary['results'],
+						(int) $summary['announcements'],
 						! empty( $summary['already_done'] ) ? ' (oorgeslaan — reeds gedoen)' : ''
 					)
 				);
@@ -275,28 +278,30 @@ class PostReclassifier {
 	 * Run the once-off reclassification. Idempotent unless `$force`.
 	 *
 	 * @param bool $force Re-run even when already completed.
-	 * @return array{already_done:bool, reassigned:int, to_skryfwerk:int, renamed:int, skipped:int, dropped:int, results:int, collisions:list<string>}
+	 * @return array{already_done:bool, reassigned:int, to_skryfwerk:int, renamed:int, skipped:int, dropped:int, results:int, announcements:int, collisions:list<string>}
 	 */
 	public function run( bool $force = false ): array {
 		if ( $this->hasRun() && ! $force ) {
 			return array(
-				'already_done' => true,
-				'reassigned'   => 0,
-				'to_skryfwerk' => 0,
-				'renamed'      => 0,
-				'skipped'      => 0,
-				'dropped'      => 0,
-				'results'      => 0,
-				'collisions'   => array(),
+				'already_done'  => true,
+				'reassigned'    => 0,
+				'to_skryfwerk'  => 0,
+				'renamed'       => 0,
+				'skipped'       => 0,
+				'dropped'       => 0,
+				'results'       => 0,
+				'announcements' => 0,
+				'collisions'    => array(),
 			);
 		}
 
-		$reassigned   = 0;
-		$to_skryfwerk = 0;
-		$renamed      = 0;
-		$skipped      = 0;
-		$dropped      = 0;
-		$results      = 0;
+		$reassigned    = 0;
+		$to_skryfwerk  = 0;
+		$renamed       = 0;
+		$skipped       = 0;
+		$dropped       = 0;
+		$results       = 0;
+		$announcements = 0;
 
 		foreach ( $this->legacyPosts() as $post ) {
 			$post_id = (int) ( $post->id ?? 0 );
@@ -316,6 +321,15 @@ class PostReclassifier {
 			// representation, linked to its challenge by ink link-result-posts), never skryfwerk.
 			if ( 'post' === $type && ! empty( $post->staff ) && ChallengeResultTitle::isResultTitle( (string) ( $post->title ?? '' ) ) ) {
 				++$results;
+				continue;
+			}
+
+			// The post that announced a challenge round is editorial too: it stays a core
+			// `post`, marked so the round does not count it as an entry (its text is the
+			// category description already; its date dates the Uitdaging).
+			if ( 'post' === $type && ! empty( $post->announcement ) ) {
+				$this->markAnnouncement( $post_id );
+				++$announcements;
 				continue;
 			}
 
@@ -378,14 +392,15 @@ class PostReclassifier {
 		$this->markDone();
 
 		return array(
-			'already_done' => false,
-			'reassigned'   => $reassigned,
-			'to_skryfwerk' => $to_skryfwerk,
-			'renamed'      => $renamed,
-			'skipped'      => $skipped,
-			'dropped'      => $dropped,
-			'results'      => $results,
-			'collisions'   => $collisions,
+			'already_done'  => false,
+			'reassigned'    => $reassigned,
+			'to_skryfwerk'  => $to_skryfwerk,
+			'renamed'       => $renamed,
+			'skipped'       => $skipped,
+			'dropped'       => $dropped,
+			'results'       => $results,
+			'announcements' => $announcements,
+			'collisions'    => $collisions,
 		);
 	}
 
@@ -426,40 +441,81 @@ class PostReclassifier {
 			return array();
 		}
 
-		$posts = array();
+		$posts       = array();
+		$candidates  = array();
+		$round_names = array();
 
 		foreach ( $ids as $id ) {
 			$id    = (int) $id;
 			$terms = get_the_terms( $id, 'category' );
 			$slugs = array();
+			$mine  = array();
 
 			if ( is_array( $terms ) ) {
 				foreach ( $terms as $term ) {
 					if ( $term instanceof \WP_Term ) {
-						$slugs[] = (string) $term->slug;
+						$slugs[]  = (string) $term->slug;
+						$ancestry = array();
 
 						foreach ( get_ancestors( (int) $term->term_id, 'category', 'taxonomy' ) as $ancestor_id ) {
 							$ancestor = get_term( (int) $ancestor_id, 'category' );
 
 							if ( $ancestor instanceof \WP_Term ) {
-								$slugs[] = (string) $ancestor->slug;
+								$slugs[]    = (string) $ancestor->slug;
+								$ancestry[] = (string) $ancestor->slug;
 							}
+						}
+
+						if ( array() !== array_intersect( $ancestry, ChallengeRound::LEGACY_PARENT_SLUGS ) ) {
+							$mine[ (int) $term->term_id ] = (string) $term->name;
 						}
 					}
 				}
 			}
 
-			$posts[] = (object) array(
+			$row = (object) array(
 				'id'             => $id,
 				'post_type'      => (string) get_post_type( $id ),
 				'category_slugs' => $slugs,
 				'url'            => (string) get_permalink( $id ),
 				'title'          => (string) get_the_title( $id ),
 				'staff'          => ResultPostAuthors::isModerator( (int) get_post_field( 'post_author', $id ) ),
+				'announcement'   => false,
 			);
+
+			$posts[ $id ] = $row;
+
+			// A moderator's prose, non-result post under a round category may be its announcement.
+			if ( $row->staff && 'post' === $row->post_type && ! ChallengeResultTitle::isResultTitle( $row->title ) && PostTypes::GEDIG !== self::cptForCategorySlugs( $slugs ) ) {
+				foreach ( $mine as $term_id => $name ) {
+					$round_names[ $term_id ]  = $name;
+					$candidates[ $term_id ][] = array(
+						'id'    => $id,
+						'date'  => (string) get_post_field( 'post_date', $id ),
+						'title' => $row->title,
+					);
+				}
+			}
 		}
 
-		return $posts;
+		foreach ( $candidates as $term_id => $list ) {
+			$winner = ChallengeAnnouncement::pick( $list, $round_names[ $term_id ] );
+
+			if ( null !== $winner ) {
+				$posts[ $winner ]->announcement = true;
+			}
+		}
+
+		return array_values( $posts );
+	}
+
+	/**
+	 * Mark a kept post as the announcement of a challenge round. Overridable seam.
+	 *
+	 * @param int $post_id The post.
+	 */
+	protected function markAnnouncement( int $post_id ): void {
+		update_post_meta( $post_id, ChallengeAnnouncement::META, 1 );
 	}
 
 	/**

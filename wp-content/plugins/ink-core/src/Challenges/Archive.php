@@ -9,8 +9,11 @@ declare(strict_types=1);
 
 namespace Ink\Challenges;
 
+use Ink\Content\ChallengeResultTitle;
+use Ink\Content\ChallengeRound;
 use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
+use Ink\Content\Taxonomies;
 use Ink\I18n\Terms;
 use Ink\Kernel\ArchiveRender;
 use Ink\Kernel\QaFixture;
@@ -212,6 +215,17 @@ final class Archive {
 	}
 
 	/**
+	 * How many entries a round has (its round term's count). Side-effecting (reads the term).
+	 *
+	 * @param int $uitdaging_id The Uitdaging.
+	 */
+	private static function entryCount( int $uitdaging_id ): int {
+		$term = get_term_by( 'slug', ChallengeRound::slugFor( $uitdaging_id ), Taxonomies::UITDAGINGSRONDTE );
+
+		return $term instanceof \WP_Term ? (int) $term->count : 0;
+	}
+
+	/**
 	 * Block render callback. Reads the page input, queries, builds cards, renders.
 	 *
 	 * @return string
@@ -236,6 +250,9 @@ final class Archive {
 				array(
 					'title'     => get_the_title( $post ),
 					'permalink' => (string) get_permalink( $post ),
+					'month'     => ChallengeResultTitle::monthLabel( (string) $post->post_date ),
+					'excerpt'   => wp_trim_words( trim( wp_strip_all_tags( (string) $post->post_content ) ), 28 ),
+					'entries'   => self::entryCount( (int) $post->ID ),
 					'tema'      => Scalar::asString( get_post_meta( (int) $post->ID, FieldSets::UITDAGING_THEME, true ) ),
 					'deadline'  => null !== $deadline ? Deadline::format( $deadline ) : '',
 					'countdown' => self::countdownLabel( $deadline, $now ),
@@ -276,13 +293,16 @@ final class Archive {
 	 * are emitted only when `audit` is true — the FIRST card of the list (repeaters:
 	 * first instance only).
 	 *
-	 * @param array{title:string, permalink:string, tema?:string, deadline?:string, countdown?:string, is_open?:bool, audit?:bool} $card The challenge.
+	 * @param array{title:string, permalink:string, month?:string, excerpt?:string, entries?:int, tema?:string, deadline?:string, countdown?:string, is_open?:bool, audit?:bool} $card The challenge.
 	 * @return string
 	 */
 	public static function cardHtml( array $card ): string {
 		$is_open   = ! empty( $card['is_open'] );
 		$state     = $is_open ? 'is-oop' : 'is-gesluit';
 		$tone      = $is_open ? 'ink-tone-success' : 'ink-tone-muted';
+		$month     = isset( $card['month'] ) ? (string) $card['month'] : '';
+		$excerpt   = isset( $card['excerpt'] ) ? (string) $card['excerpt'] : '';
+		$entries   = isset( $card['entries'] ) ? (int) $card['entries'] : 0;
 		$tema      = isset( $card['tema'] ) ? (string) $card['tema'] : '';
 		$deadline  = isset( $card['deadline'] ) ? (string) $card['deadline'] : '';
 		$countdown = isset( $card['countdown'] ) ? (string) $card['countdown'] : '';
@@ -290,26 +310,38 @@ final class Archive {
 		$audit     = ! empty( $card['audit'] );
 		$aid       = static fn ( string $id ): string => $audit ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
 
-		$meta = '';
+		// Same card language as Biblioteek, Opleiding and Ontdek: a pill top left, a small
+		// meta item top right, the title, a clamped excerpt, a ruled footer. The pill is
+		// the round's month ("Oktober 2026"), where those cards show the type or shelf.
+		$left = '';
 
-		if ( '' !== $tema || '' !== $countdown ) {
-			$meta = '<div class="ink-uitdagings__item-meta"' . $aid( 'challenge-card-head' ) . '>';
-
-			if ( '' !== $tema ) {
-				$meta .= '<span class="ink-uitdagings__tema-pil ink-pill ink-pill--soft"' . $aid( 'challenge-card-theme-pill' ) . '>' . esc_html( $tema ) . '</span>';
-			}
-
-			if ( '' !== $countdown ) {
-				$meta .= '<span class="ink-uitdaging__toestand-pil ink-pill ink-pill--tint-xs ' . esc_attr( $tone . ' ' . $state ) . '"' . $aid( 'challenge-card-status-pill' ) . '>' . esc_html( $countdown ) . '</span>';
-			}
-
-			$meta .= '</div>';
+		if ( '' !== $month ) {
+			$left .= '<span class="ink-uitdagings__maand ink-pill ink-pill--outline"' . $aid( 'challenge-card-month' ) . '>' . esc_html( $month ) . '</span>';
 		}
 
-		$voet = '';
+		if ( '' !== $tema ) {
+			$left .= '<span class="ink-uitdagings__tema-pil ink-pill ink-pill--soft"' . $aid( 'challenge-card-theme-pill' ) . '>' . esc_html( $tema ) . '</span>';
+		}
 
-		if ( '' !== $deadline ) {
-			$voet = '<div class="ink-uitdagings__item-voet"' . $aid( 'challenge-card-meta' ) . '>'
+		$right = '';
+
+		if ( '' !== $countdown ) {
+			$right = '<span class="ink-uitdaging__toestand-pil ink-pill ink-pill--tint-xs ' . esc_attr( $tone . ' ' . $state ) . '"' . $aid( 'challenge-card-status-pill' ) . '>' . esc_html( $countdown ) . '</span>';
+		} elseif ( $entries > 0 ) {
+			/* translators: %s: the number of entries in a challenge round. */
+			$right = '<span class="ink-uitdagings__inskrywings ink-meta"' . $aid( 'challenge-card-entries' ) . '>' . esc_html( sprintf( _n( '%s inskrywing', '%s inskrywings', $entries, 'ink-core' ), number_format_i18n( $entries ) ) ) . '</span>';
+		}
+
+		$meta = '' !== $left || '' !== $right
+			? '<div class="ink-uitdagings__item-meta"' . $aid( 'challenge-card-head' ) . '><div class="ink-uitdagings__item-pille">' . $left . '</div>' . $right . '</div>'
+			: '';
+
+		$excerpt_html = '' !== $excerpt
+			? '<p class="ink-uitdagings__item-uittreksel"' . $aid( 'challenge-card-excerpt' ) . '>' . esc_html( $excerpt ) . '</p>'
+			: '';
+
+		$voet = '' !== $deadline
+			? '<div class="ink-uitdagings__item-voet"' . $aid( 'challenge-card-meta' ) . '>'
 				. '<span class="ink-uitdaging__sluitingsdatum-ry ink-meta ink-meta--sm"' . $aid( 'challenge-card-meta-item' ) . '>'
 				. self::icon( self::ICON_CALENDAR )
 				. '<span class="ink-uitdaging__sluitingsdatum-etiket">' . esc_html( Terms::label( 'sluitingsdatum' ) ) . ': </span>'
@@ -318,14 +350,16 @@ final class Archive {
 				. '<a class="ink-uitdagings__lees ink-link"' . $aid( 'challenge-card-btn' ) . ' href="' . esc_url( $permalink ) . '" tabindex="-1" aria-hidden="true">'
 				. esc_html__( 'Lees meer', 'ink-core' ) . self::icon( self::ICON_ARROW )
 				. '</a>'
-				. '</div>';
-		}
+				. '</div>'
+			: '';
 
-		return '<li class="ink-uitdagings__item ink-card--soft ' . esc_attr( $state ) . '"' . $aid( 'challenge-card' ) . '>'
+		return '<li class="ink-uitdagings__item ink-card ' . esc_attr( $state ) . '"' . $aid( 'challenge-card' ) . '>'
+			. '<div class="ink-uitdagings__item-inhoud">'
 			. $meta
-			. '<a class="ink-uitdagings__titel ink-heading-h2-sub"' . $aid( 'challenge-card-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $card['title'] ) . '</a>'
+			. '<a class="ink-uitdagings__titel ink-heading-h3-card"' . $aid( 'challenge-card-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $card['title'] ) . '</a>'
+			. $excerpt_html
 			. $voet
-			. '</li>';
+			. '</div></li>';
 	}
 
 	/**

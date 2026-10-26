@@ -259,3 +259,44 @@ test( 'run keeps staff result posts as core posts, trashes the committed duplica
 	expect( $migration->trashed )->toBe( array( 35127 ) );
 	expect( $migration->set )->toBe( array( array( 2, PostTypes::SKRYFWERK ), array( 3, PostTypes::GEDIG ) ) );
 } );
+
+test( 'run keeps the post that announced a round as a marked core post, so it is not filed as writing', function (): void {
+	$migration = new class() extends PostReclassifier {
+		/** @var list<array{0:int,1:string}> */
+		public array $set = array();
+		/** @var list<int> */
+		public array $announced = array();
+
+		public function hasRun(): bool {
+			return false;
+		}
+		protected function legacyPosts(): array {
+			return array(
+				(object) array( 'id' => 68456, 'post_type' => 'post', 'category_slugs' => array( 'prosa', 'oktober-2026-getal-10-projek', 'projekte' ), 'title' => 'Oktober 2026 - Getal 10 projek', 'staff' => true, 'announcement' => true ),
+				(object) array( 'id' => 68500, 'post_type' => 'post', 'category_slugs' => array( 'gedigte', 'oktober-2026-getal-10-projek', 'projekte' ), 'title' => 'Tien', 'staff' => false, 'announcement' => false ),
+			);
+		}
+		protected function categorySlugsFor( object $post ): array {
+			return (array) ( $post->category_slugs ?? array() );
+		}
+		protected function markAnnouncement( int $post_id ): void {
+			$this->announced[] = $post_id;
+		}
+		protected function recordSourceUrl( int $post_id ): void {}
+		protected function setPostType( int $post_id, string $type ): void {
+			$this->set[] = array( $post_id, $type );
+		}
+		protected function assignGenre( int $post_id, string $genre ): void {}
+		protected function existingPageSlugs(): array {
+			return array();
+		}
+		protected function flushRewrites(): void {}
+		protected function markDone(): void {}
+	};
+
+	$summary = $migration->run();
+
+	expect( $summary['announcements'] )->toBe( 1 );
+	expect( $migration->announced )->toBe( array( 68456 ) );
+	expect( $migration->set )->toBe( array( array( 68500, PostTypes::GEDIG ) ) );
+} );

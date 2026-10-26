@@ -47,7 +47,7 @@
 			// nothing. `redirect_to` reuses the login form's own existing hidden
 			// field (patterns/auth-login.php already reads `$_GET['redirect_to']`
 			// into it) so a successful sign-in lands the visitor back on the
-			// work they were reading, not a fresh /meld-aan/.
+			// work they were reading, not a fresh /teken-in/.
 			if ( cfg.loginUrl ) {
 				window.location.href = cfg.loginUrl + '?redirect_to=' + encodeURIComponent( window.location.href );
 			}

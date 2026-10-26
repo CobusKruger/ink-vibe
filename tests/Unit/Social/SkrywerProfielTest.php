@@ -97,46 +97,6 @@ test( 'toHtml renders no pinned-works heading when there are no pins', function 
 	expect( $html )->not->toContain( 'ink-skrywerprofiel__vasgespel-titel' );
 } );
 
-test( 'toHtml renders the Lesergradering aggregate + approved reviews when present', function (): void {
-	$html = SkrywerProfiel::toHtml(
-		array(
-			'name'      => 'Anja Brand',
-			'bio'       => '',
-			'avatar'    => '',
-			'badge'     => '',
-			'volgeling' => '0 volgelinge',
-			'volg'      => '',
-			'aggregate' => array( 'count' => 2, 'average' => 4.5 ),
-			'reviews'   => array(
-				array( 'user_id' => 7, 'score' => 5, 'resensie' => 'Pragtig geskryf.' ),
-			),
-		)
-	);
-
-	expect( $html )->toContain( 'ink-skrywerprofiel__lesergradering' );
-	expect( $html )->toContain( '4.5' );
-	expect( $html )->toContain( 'leseroordele' ); // plural count label
-	expect( $html )->toContain( 'Pragtig geskryf.' );
-} );
-
-test( 'toHtml renders the empty Lesergradering state when nothing is approved (held pre-18.4)', function (): void {
-	$html = SkrywerProfiel::toHtml(
-		array(
-			'name'      => 'Anja Brand',
-			'bio'       => '',
-			'avatar'    => '',
-			'badge'     => '',
-			'volgeling' => '0 volgelinge',
-			'volg'      => '',
-			'aggregate' => array( 'count' => 0, 'average' => 0.0 ),
-			'reviews'   => array(),
-		)
-	);
-
-	expect( $html )->toContain( 'ink-skrywerprofiel__lesergradering-leeg' );
-	expect( $html )->not->toContain( 'ink-skrywerprofiel__oordele' );
-} );
-
 test( 'toHtml renders the cover image only when set, with the has-omslag modifier', function (): void {
 	$withCover = SkrywerProfiel::toHtml(
 		array(
@@ -189,7 +149,6 @@ test( 'toHtml renders genre pills, joined date and the stats strip from real dat
 				),
 			),
 			'hartjies'  => 120,
-			'aggregate' => array( 'count' => 4, 'average' => 4.5 ),
 		)
 	);
 
@@ -333,60 +292,6 @@ test( 'toHtml renders the "Oor [naam]" heading above the bio when a bio is prese
 	expect( $html )->toContain( 'Oor Anja' );
 } );
 
-test( 'toHtml renders a 4-full/1-half/0-empty star row for a 4.8 average (matches the Writer.tsx reference rounding rule)', function (): void {
-	$html = SkrywerProfiel::toHtml(
-		array(
-			'name'      => 'Anja Brand',
-			'bio'       => '',
-			'avatar'    => '',
-			'badge'     => '',
-			'volgeling' => '0 volgelinge',
-			'volg'      => '',
-			'aggregate' => array( 'count' => 312, 'average' => 4.8 ),
-		)
-	);
-
-	expect( substr_count( $html, 'ink-skrywerprofiel__ster is-vol' ) )->toBe( 4 );
-	expect( $html )->toContain( 'ink-skrywerprofiel__ster is-half' );
-	expect( $html )->not->toContain( 'ink-skrywerprofiel__ster is-leeg' );
-} );
-
-test( 'toHtml renders a 4-full/0-half/1-empty star row for a 4.4 average (below the >= 0.5 half threshold)', function (): void {
-	$html = SkrywerProfiel::toHtml(
-		array(
-			'name'      => 'Anja Brand',
-			'bio'       => '',
-			'avatar'    => '',
-			'badge'     => '',
-			'volgeling' => '0 volgelinge',
-			'volg'      => '',
-			'aggregate' => array( 'count' => 10, 'average' => 4.4 ),
-		)
-	);
-
-	expect( substr_count( $html, 'ink-skrywerprofiel__ster is-vol' ) )->toBe( 4 );
-	expect( $html )->not->toContain( 'ink-skrywerprofiel__ster is-half' );
-	expect( substr_count( $html, 'ink-skrywerprofiel__ster is-leeg' ) )->toBe( 1 );
-} );
-
-test( 'toHtml renders a 3-full/1-half/1-empty star row for a 3.5 average (exact half boundary)', function (): void {
-	$html = SkrywerProfiel::toHtml(
-		array(
-			'name'      => 'Anja Brand',
-			'bio'       => '',
-			'avatar'    => '',
-			'badge'     => '',
-			'volgeling' => '0 volgelinge',
-			'volg'      => '',
-			'aggregate' => array( 'count' => 10, 'average' => 3.5 ),
-		)
-	);
-
-	expect( substr_count( $html, 'ink-skrywerprofiel__ster is-vol' ) )->toBe( 3 );
-	expect( $html )->toContain( 'ink-skrywerprofiel__ster is-half' );
-	expect( substr_count( $html, 'ink-skrywerprofiel__ster is-leeg' ) )->toBe( 1 );
-} );
-
 test( 'the PUBLIC card renders NO private surfaces (no read counts, no wins-needed)', function (): void {
 	$html = SkrywerProfiel::toHtml(
 		array(
@@ -406,4 +311,25 @@ test( 'the PUBLIC card renders NO private surfaces (no read counts, no wins-need
 	expect( $html )->not->toContain( 'wins-needed' );
 	expect( $html )->not->toContain( 'leesgetalle' );
 	expect( $html )->not->toContain( 'read-count' );
+} );
+
+test( 'the public profile shows no reader rating: no stars, no Lesergradering section', function (): void {
+	$html = SkrywerProfiel::toHtml(
+		array(
+			'name'      => 'Anja Brand',
+			'bio'       => 'Bio.',
+			'avatar'    => '',
+			'badge'     => '',
+			'volgeling' => '0 volgelinge',
+			'volg'      => '',
+			'works'     => array(
+				'total' => 1,
+				'items' => array( array( 'label' => 'Gedig', 'count' => 1 ) ),
+			),
+		)
+	);
+
+	expect( $html )->not->toContain( 'Lesergradering' )
+		->and( $html )->not->toContain( 'ink-skrywerprofiel__ster' )
+		->and( $html )->not->toContain( 'leseroordeel' );
 } );

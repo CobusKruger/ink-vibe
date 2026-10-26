@@ -36,6 +36,32 @@ final class ChallengeResultTitle {
 	}
 
 	/**
+	 * The first 20xx year in a title, or null. Pure.
+	 *
+	 * @param string $title A challenge name.
+	 */
+	public static function year( string $title ): ?int {
+		return 1 === preg_match( '/\b(20\d\d)\b/', html_entity_decode( $title, ENT_QUOTES | ENT_HTML5, 'UTF-8' ), $m ) ? (int) $m[1] : null;
+	}
+
+	/**
+	 * The Afrikaans "Oktober 2026" label for a MySQL date. Pure. Empty for a malformed date.
+	 *
+	 * Own table (not the site locale), so the label is Afrikaans whatever language WordPress runs in.
+	 *
+	 * @param string $mysql_date A `Y-m-d H:i:s` (or `Y-m-d`) date.
+	 */
+	public static function monthLabel( string $mysql_date ): string {
+		$names = array( 1 => 'Januarie', 'Februarie', 'Maart', 'April', 'Mei', 'Junie', 'Julie', 'Augustus', 'September', 'Oktober', 'November', 'Desember' );
+
+		if ( 1 !== preg_match( '/^(\d{4})-(\d{2})-/', $mysql_date, $m ) || ! isset( $names[ (int) $m[2] ] ) ) {
+			return '';
+		}
+
+		return $names[ (int) $m[2] ] . ' ' . $m[1];
+	}
+
+	/**
 	 * The (month, year) a challenge title or result-post title refers to, or null. Pure.
 	 *
 	 * The first Afrikaans month name and the first 20xx year in the text, so

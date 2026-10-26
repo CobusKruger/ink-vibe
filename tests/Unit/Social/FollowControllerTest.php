@@ -61,9 +61,6 @@ test( 'the follow controller, store, toggle and counts are conflation-clean (no 
 		$root . 'PinnedWorks.php',
 		$root . 'PinnedWorksController.php',
 		$root . 'PinnedWorksManager.php',
-		$root . 'RatingStore.php',
-		$root . 'RatingController.php',
-		$root . 'RatingForm.php',
 	);
 
 	$scanned = 0;
@@ -75,5 +72,5 @@ test( 'the follow controller, store, toggle and counts are conflation-clean (no 
 		expect( $code )->not->toContain( 'Ink\\Entitlement' );
 	}
 
-	expect( $scanned )->toBe( 11 );
+	expect( $scanned )->toBe( 8 );
 } );

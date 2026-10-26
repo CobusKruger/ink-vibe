@@ -309,6 +309,7 @@ final class WorksArchive {
 				'permalink'      => (string) get_permalink( $post ),
 				'type'           => $post->post_type,
 				'author'         => (string) get_the_author_meta( 'display_name', (int) $post->post_author ),
+				'author_url'     => (string) get_author_posts_url( (int) $post->post_author ),
 				'avatar_url'     => (string) get_avatar_url( (int) $post->post_author, array( 'size' => 64 ) ),
 				'excerpt'        => self::excerptFor( $post ),
 				'read_minutes'   => ReadingTime::minutesFromText( wp_strip_all_tags( (string) $post->post_content ) ),
@@ -566,7 +567,7 @@ final class WorksArchive {
 		}
 
 		if ( '' !== $author ) {
-			$html .= '<span class="' . esc_attr( $base . '__author-naam' ) . '"' . self::auditAttr( 'stories-card-author-name', $audit ) . '>' . esc_html( $author ) . '</span>';
+			$html .= ArchiveRender::authorLabel( $base . '__author-naam', $author, (string) ( $card['author_url'] ?? '' ), self::auditAttr( 'stories-card-author-name', $audit ) );
 		}
 
 		return $html . '</div>';

@@ -30,6 +30,24 @@ defined( 'ABSPATH' ) || exit;
 final class ArchiveRender {
 
 	/**
+	 * A card's author name: a link to the author's public profile when a URL is
+	 * known, else plain text. Pure — escaping only.
+	 *
+	 * @param string $class The element's CSS class(es).
+	 * @param string $name  The author's display name.
+	 * @param string $url   The public profile URL, or '' for none.
+	 * @param string $attrs Extra, pre-escaped attributes (for example an audit id).
+	 * @return string
+	 */
+	public static function authorLabel( string $class, string $name, string $url, string $attrs = '' ): string {
+		if ( '' === $url ) {
+			return '<span class="' . esc_attr( $class ) . '"' . $attrs . '>' . esc_html( $name ) . '</span>';
+		}
+
+		return '<a class="' . esc_attr( $class . ' ink-link' ) . '"' . $attrs . ' href="' . esc_url( $url ) . '">' . esc_html( $name ) . '</a>';
+	}
+
+	/**
 	 * One control link, marked active when selected. Pure — escaping only.
 	 *
 	 * The href is escaped HERE via {@see esc_url()} (the single escape point — a

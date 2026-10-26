@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
  * (`ReadingListStore::has()`, `ink/v1/leeslys`) stays gated on a real member —
  * {@see render()} never calls the store with a guest/`0` id, and the markup
  * carries a `data-ink-guest` flag so the client (`leeslys.js`) redirects to
- * `/meld-aan/` instead of posting for a guest click.
+ * `/teken-in/` instead of posting for a guest click.
  *
  * @package Ink\Core
  */

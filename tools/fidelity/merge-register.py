@@ -23,7 +23,7 @@ HEADER = ["page", "side", "viewport", "component_kind", "selector", "defined_in"
 
 # Inventory order (agent-brief.md §2.1). Rows 19-21 are skipped by owner ruling.
 PAGES = ["tuisblad", "gemeenskap", "my-profiel", "ontdek", "skryf", "uitdaging-enkel",
-         "skrywer", "lees-storie", "biblioteek", "opleiding", "meld-aan", "registreer",
+         "skrywer", "lees-storie", "biblioteek", "opleiding", "teken-in", "registreer",
          "wagwoord-herstel", "wagwoord-terugstel", "vier-nul-vier", "oor-ink",
          "uitdagings", "kontak", "lidmaatskap", "inkpols", "ledegids", "lees-gedig"]
 

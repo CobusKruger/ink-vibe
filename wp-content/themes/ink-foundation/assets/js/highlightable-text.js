@@ -15,12 +15,13 @@
  * NOT leak onto gedig (gated to storie/artikel only, see the enqueue function
  * in functions.php).
  *
- * No backend persistence, no login gate — matches Lovable exactly:
- * `ReadStory.tsx` holds `highlights` in plain `useState`, never sent to a
- * server anywhere in the component, and neither `HighlightableText.tsx` nor
- * `HighlightsPanel.tsx` reference auth/login state at all. So this client is
- * pure DOM manipulation + in-memory state, lost on reload, visible to guests —
- * there is nothing to POST and nothing to gate.
+ * Saved for signed-in members (owner decision after the first migration
+ * rehearsal: Lovable kept highlights in React state only, which made them
+ * pointless): the script is only enqueued for a signed-in member, each new
+ * highlight is saved to `ink/v1/hooglig` (paragraph index + character range +
+ * the quoted text), and the member's saved highlights arrive in `cfg.saved` and
+ * are re-applied on load. A saved range is skipped when the paragraph text no
+ * longer matches its quote (the piece was edited). Guests get no highlight tool.
  *
  * Granularity: exact character range (via `Range.extractContents()` +
  * `insertNode()`, which — unlike `Range.surroundContents()` — tolerates a
@@ -42,8 +43,12 @@
 	var labelPanelTitle = cfg.panelTitleLabel || 'Jou uitgeligte gedeeltes';
 	var labelEmpty = cfg.emptyLabel || 'Kies enige teks in die stuk om onvergeetlike gedeeltes uit te lig.';
 	var labelRemove = cfg.removeLabel || 'Verwyder hooglig';
+	var restUrl = cfg.restUrl || '';
+	var restNonce = cfg.nonce || '';
+	var postId = cfg.postId || 0;
+	var QUOTE_MAX = 500;
 
-	var highlights = []; // { id, mark } — mark is the live <mark> element.
+	var highlights = []; // { id, mark, serverId } — mark is the live <mark> element.
 	var tooltip = null;
 	var panel = null;
 	var toggle = null;
@@ -73,6 +78,87 @@
 			el = el.parentElement;
 		}
 		return null;
+	}
+
+	function paragraphs() {
+		return Array.prototype.slice.call( container.querySelectorAll( 'p' ) );
+	}
+
+	/**
+	 * Where a selection sits: the paragraph's index and the character offsets of the
+	 * selection inside that paragraph's text (marks never change the text, so the
+	 * offsets stay valid after highlighting).
+	 */
+	function locate( range, para ) {
+		var pre = document.createRange();
+		pre.selectNodeContents( para );
+		pre.setEnd( range.startContainer, range.startOffset );
+		var start = pre.toString().length;
+		return {
+			para: paragraphs().indexOf( para ),
+			start: start,
+			end: start + range.toString().length
+		};
+	}
+
+	/**
+	 * A DOM range over [start, end) of a paragraph's text, or null when it does not fit.
+	 */
+	function rangeFor( para, start, end ) {
+		var walker = document.createTreeWalker( para, NodeFilter.SHOW_TEXT, null );
+		var pos = 0;
+		var range = document.createRange();
+		var started = false;
+		var node;
+		while ( ( node = walker.nextNode() ) ) {
+			var len = node.nodeValue.length;
+			if ( ! started && start < pos + len ) {
+				range.setStart( node, start - pos );
+				started = true;
+			}
+			if ( started && end <= pos + len ) {
+				range.setEnd( node, end - pos );
+				return range;
+			}
+			pos += len;
+		}
+		return null;
+	}
+
+	function request( method, url, body ) {
+		return window.fetch( url, {
+			method: method,
+			credentials: 'same-origin',
+			headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': restNonce },
+			body: body ? JSON.stringify( body ) : undefined
+		} ).then( function ( res ) {
+			if ( ! res.ok ) {
+				throw new Error( 'hooglig ' + res.status );
+			}
+			return res.json();
+		} );
+	}
+
+	/**
+	 * Re-apply the member's saved highlights. A highlight whose paragraph text no
+	 * longer matches its quote (the piece was edited) is skipped, never mis-placed.
+	 */
+	function restoreSaved() {
+		var paras = paragraphs();
+		( cfg.saved || [] ).forEach( function ( item ) {
+			var para = paras[ item.para ];
+			if ( ! para ) {
+				return;
+			}
+			var now = para.textContent.substring( item.start, item.end ).trim().slice( 0, QUOTE_MAX );
+			if ( now !== String( item.quote ).trim() ) {
+				return;
+			}
+			var range = rangeFor( para, item.start, item.end );
+			if ( range ) {
+				addHighlight( wrapRange( range ), item.id );
+			}
+		} );
 	}
 
 	/**
@@ -163,6 +249,10 @@
 		}
 
 		var mark = highlights[ index ].mark;
+		var serverId = highlights[ index ].serverId;
+		if ( serverId && restUrl ) {
+			request( 'DELETE', restUrl + '/' + serverId ).catch( function () {} );
+		}
 		if ( mark && mark.parentNode ) {
 			// Unwrap: replace the <mark> with its own text, preserving position.
 			var parent = mark.parentNode;
@@ -178,14 +268,16 @@
 		renderPanelList();
 	}
 
-	function addHighlight( mark ) {
+	function addHighlight( mark, serverId ) {
 		var id = 'ink-highlight-' + Date.now() + '-' + highlights.length;
 		mark.addEventListener( 'click', function () {
 			removeHighlight( id );
 		} );
-		highlights.push( { id: id, mark: mark } );
+		var entry = { id: id, mark: mark, serverId: serverId || 0 };
+		highlights.push( entry );
 		updateToggleCount();
 		renderPanelList();
+		return entry;
 	}
 
 	function showTooltip( range ) {
@@ -208,10 +300,29 @@
 			// Re-read the CURRENT selection's range at click time — the selection
 			// object itself may have changed by now, but the Range instance we
 			// captured on mouseup is still the one we want to act on.
+			var para = closestParagraph( range.startContainer );
+			var where = para ? locate( range, para ) : null;
+			var quote = range.toString().trim().slice( 0, QUOTE_MAX );
 			var mark = wrapRange( range );
 			window.getSelection().removeAllRanges();
 			removeTooltip();
-			addHighlight( mark );
+			var entry = addHighlight( mark );
+
+			if ( ! where || ! restUrl ) {
+				return;
+			}
+			request( 'POST', restUrl, { post_id: postId, para: where.para, start: where.start, end: where.end, quote: quote } )
+				.then( function ( data ) {
+					entry.serverId = data.id;
+					// Removed while the save was in flight: take the saved row back too.
+					if ( -1 === highlights.indexOf( entry ) ) {
+						request( 'DELETE', restUrl + '/' + data.id ).catch( function () {} );
+					}
+				} )
+				.catch( function () {
+					// Not saved: take the highlight back rather than pretend it will survive a reload.
+					removeHighlight( entry.id );
+				} );
 		} );
 
 		var arrow = document.createElement( 'div' );
@@ -306,6 +417,7 @@
 
 	function init() {
 		buildPanelChrome();
+		restoreSaved();
 		container.addEventListener( 'mouseup', handleMouseUp );
 		document.addEventListener( 'mousedown', handleClickOutside );
 	}

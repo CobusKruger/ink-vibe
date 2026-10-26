@@ -78,8 +78,8 @@ final class Terms {
 			// it "should always be 'teken in'", so every one of those call sites was
 			// switched to read this key rather than its own bare literal (single-source,
 			// same fix shape as the "werke" -> "skrywes" correction earlier this pass).
-			// The URL slug (/meld-aan) is unchanged — this registry governs DISPLAY
-			// LABELS only (AC-4); renaming the route is a separate, unrequested concern.
+			// The route is /teken-in (renamed from /meld-aan in the first rehearsal
+			// fixes); this registry governs DISPLAY LABELS only (AC-4).
 			'teken_in'                      => __( 'Teken in', 'ink-core' ),
 			'sluit_aan'                     => __( 'Sluit aan', 'ink-core' ),
 
@@ -154,8 +154,8 @@ final class Terms {
 			'artikel_plural'                => __( 'Artikels', 'ink-core' ),
 			'skryfwerk'                     => __( 'Skryfwerk', 'ink-core' ),
 			'skryfwerk_plural'              => __( 'Skrywes', 'ink-core' ),
-			'biblioteek_item'               => __( 'Biblioteekitem', 'ink-core' ),
-			'biblioteek_item_plural'        => __( 'Biblioteekitems', 'ink-core' ),
+			'biblioteek_item'               => __( 'Biblioteek', 'ink-core' ),
+			'biblioteek_item_plural'        => __( 'Biblioteek', 'ink-core' ),
 			'opleiding_artikel'             => __( 'Hulpbronartikel', 'ink-core' ),
 			'opleiding_artikel_plural'      => __( 'Hulpbronartikels', 'ink-core' ),
 			'uitdaging'                     => __( 'Uitdaging', 'ink-core' ),

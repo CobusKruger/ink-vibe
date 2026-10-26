@@ -160,47 +160,6 @@
 	color: var(--wp--preset--color--ink-text);
 }
 
-/* Rating cell: value + stars row `mt-1 flex items-center gap-2`. */
-.ink-skrywerprofiel__stat-ry {
-	display: flex;
-	align-items: center;
-	gap: var(--wp--preset--spacing--s-8);
-	margin-top: var(--wp--preset--spacing--s-4);
-}
-
-.ink-skrywerprofiel__stat-ry .ink-skrywerprofiel__stat-waarde {
-	margin-top: 0;
-}
-
-.ink-skrywerprofiel__stat-sterre {
-	display: flex;
-	align-items: center;
-}
-
-/* Lucide stars `h-4 w-4`: full fill-terracotta; half fill-terracotta/50;
-   empty text-muted-foreground/40. */
-.ink-skrywerprofiel__ster {
-	display: inline-flex;
-	color: var(--wp--preset--color--primary);
-}
-
-.ink-skrywerprofiel__ster svg {
-	width: 16px;
-	height: 16px;
-}
-
-.ink-skrywerprofiel__ster.is-vol svg {
-	fill: var(--wp--preset--color--primary);
-}
-
-.ink-skrywerprofiel__ster.is-half svg {
-	fill: color-mix(in srgb, var(--wp--preset--color--primary) 50%, transparent);
-}
-
-.ink-skrywerprofiel__ster.is-leeg {
-	color: color-mix(in srgb, var(--wp--preset--color--muted-text) 40%, transparent);
-}
-
 /* INK-only works breakdown line (F8). */
 .ink-skrywerprofiel__stat-detail {
 	margin-top: var(--wp--preset--spacing--s-4);
@@ -439,25 +398,6 @@
 
 /* ── INK-only: Lesergradering section (F19) + rating form (F20) ─────────── */
 
-.ink-skrywerprofiel__lesergradering {
-	padding-top: var(--wp--preset--spacing--s-48);
-	padding-bottom: var(--wp--preset--spacing--s-16);
-	border-top: 1px solid var(--wp--preset--color--border);
-}
-
-.ink-skrywerprofiel__lesergradering-titel {
-	margin: 0 0 var(--wp--preset--spacing--s-16);
-}
-
-.ink-skrywerprofiel__lesergradering-gem {
-	font-weight: var(--wp--custom--font-weight--semibold);
-}
-
-.ink-skrywerprofiel__lesergradering-leeg {
-	margin: 0;
-	color: var(--wp--preset--color--muted-text);
-}
-
 .ink-skrywerprofiel__oordele {
 	list-style: none;
 	margin: var(--wp--preset--spacing--s-16) 0 0;
@@ -465,30 +405,6 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--wp--preset--spacing--s-16);
-}
-
-.ink-skrywerprofiel__oordeel {
-	padding: var(--wp--preset--spacing--s-16);
-	border-radius: var(--wp--custom--radius--md);
-	background-color: var(--wp--preset--color--secondary);
-}
-
-.ink-skrywerprofiel__oordeel-ster {
-	font-weight: var(--wp--custom--font-weight--semibold);
-	color: var(--wp--preset--color--accent);
-}
-
-.ink-skrywerprofiel__oordeel-teks {
-	margin: var(--wp--preset--spacing--s-4) 0 0;
-}
-
-/* The rating form's wrapper renders empty for guests and the writer. */
-.ink-skrywerprofiel-oordeel {
-	padding-bottom: var(--wp--preset--spacing--s-48);
-}
-
-.ink-skrywerprofiel-oordeel:not(:has(*)) {
-	display: none;
 }
 
 /* ── 5 · CTA (Writer.tsx:347-370) ───────────────────────────────────────── */
@@ -560,12 +476,8 @@
 	}
 
 	/* `md:border-r md:border-border md:pr-6` */
-	.ink-skrywerprofiel__stat--gradering {
-		padding-right: var(--wp--preset--spacing--s-24);
-		border-right: 1px solid var(--wp--preset--color--border);
-	}
 
-	.ink-skrywerprofiel__oor-prestasies,
+.ink-skrywerprofiel__oor-prestasies,
 	.ink-skrywerprofiel__vasgespel-houer {
 		padding-top: var(--wp--preset--spacing--s-64);
 		padding-bottom: var(--wp--preset--spacing--s-64);
