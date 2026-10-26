@@ -29,5 +29,7 @@ wp-content/plugins/ink-core/vendor/
 # Fidelity-audit join tables + primitive register are committed deliverables
 # (docs/fidelity-remediation/README.md §7) and hold no personal data.
 !docs/fidelity-remediation/maps/*.csv
+# InkPols uitgawe metadata for the migration (owner-maintained, no personal data).
+!wp-content/plugins/ink-core/migration-data/inkpols-uitgawes.csv
 *.xlsx
 docs/data-cleanup/**

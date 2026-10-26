@@ -9,7 +9,7 @@
  * `add_editor_style()` so the registered block styles still preview there.
  *
  * R8: after Stage 3, any primitive definition outside this file is a defect.
- * Class vocabulary: `tmp/stage3/class-map.md` (component_kind | variant | class).
+ * Class vocabulary: `docs/fidelity-remediation/class-map.md` (component_kind | variant | class).
  *
  * Breakpoints match the theme: mobile-first, `md` = 768px, `lg` = 1024px. The
  * recipe viewports 390 / 768 / 1440 map to base / md / lg.

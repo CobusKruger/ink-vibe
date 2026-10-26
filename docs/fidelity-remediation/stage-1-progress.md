@@ -166,7 +166,7 @@ Collected from the per-row notes above. None of these were decided by the audit.
   bespoke definitions deleted), 6da59b4 (3c: missing primitives, leftovers, F7 segmented
   tabs, `pill` style unregistered). Phase 4 re-run on 13 pages across the agents: primitive
   values match the recipes; remaining deltas are layout (Stage 4). Unit tests and stan clean.
-  Class map: `tmp/stage3/class-map.md` (gitignored).
+  Class map: `docs/fidelity-remediation/class-map.md` (moved from `tmp/stage3/` on 2026-10-26).
 
   **Carried into Stage 4:**
   | Item | Where | Note |
