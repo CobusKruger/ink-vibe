@@ -99,6 +99,26 @@ It covers two sessions:
 
 Everything else in `tmp/` is regenerable output: captures, diffs, logs, Lovable builds.
 
+### 5.1 New-machine setup before any fidelity capture
+
+The tooling assumes this machine's layout. Match it, or edit the paths.
+
+1. **Same paths.**
+   - macOS user `cobus`, and a Local site named `nuwe-ink` at `/Users/cobus/Local Sites/nuwe-ink/app/public`. This path is hardcoded in `tools/deploy-to-local.sh:23`, `tools/rehearsal-prep.sh:37`, `tools/fidelity/set-capture-password.php:18` and the sandbox allowlist in `.claude/settings.json:12`.
+   - `ink-lovable` cloned at `/Users/cobus/Development/ink-lovable`.
+2. **Node `v24.12.0` via nvm**, at exactly that version: `tools/fidelity/run.sh:24` hardcodes it. Install the Playwright browsers into `tmp/ms-playwright` (`harness-worklist.md`).
+3. **Rebuild nuwe-ink.**
+   - Use a fresh prod copy (DB + `wp-content/uploads`).
+   - Run `tools/rehearsal-prep.sh`, which finds Local's MySQL socket by itself.
+   - Copy in the three migration CSVs from §5 **before** `wp ink migrate-all`. Without them the tier derivation is wrong, and the uitslae podium (WP1) shows wrong Graderings.
+4. **Recreate the `fidelity-capture` user** after every refresh, because the refresh wipes it:
+   - run `tools/fidelity/create-capture-user.sql` (table prefix `wpjj_`) and `set-capture-password.php`;
+   - then `run.sh login`.
+5. **Run `tools/deploy-to-local.sh --apply`** before the first capture. Chromium, the preview server, `composer stan` and `git merge` all need the sandbox off.
+6. **Lovable preview:** build it and run `vite preview` (not dev) after step B has added the audit-ids.
+
+Optional: the OFF-TOKEN scripts (§5) are needed only for Treatment C pages. The new pages are Treatment A (diff against Lovable), so step G does not need them.
+
 `ink-lovable` is level with `origin/main`, so a clone brings it across. Push it after step B adds the audit-ids.
 
 ## 6. Next steps
