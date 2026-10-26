@@ -85,7 +85,7 @@ It covers two sessions:
 
 | Item | Why it matters | Action |
 |---|---|---|
-| `migration-data/writer-accounts.csv`, `writer-aliases.csv`, `result-post-authors.csv` | `migrate-all` reads them (tier derivation, result posts). They are gitignored and **were never committed**, even though the runbook says "every human decision is a committed file". | **Copy by hand** (they hold names and usernames), or decide to commit them |
+| `migration-data/writer-accounts.csv`, `writer-aliases.csv`, `result-post-authors.csv` | Read by the migration, **not** the one-off estimate files in `docs/data-cleanup/`. The first two map old or misspelled by-lines to accounts in `TierDeriver` (`:232`, `:267`). The third names the moderators whose posts are result posts (`ResultPostAuthors.php:70`). If they are missing nothing fails, but wins under old or variant names count for nobody, and Inkmoderator's rounds may be missed. They are gitignored by the blanket `*.csv` rule, although `migration-data/README.md` calls them safe to commit. | Copy by hand, or add `.gitignore` exceptions and commit them |
 | `tmp/post-roadmap-followup-worklist.md` | The **active** launch-prep worklist with owner decisions (e.g. the Meester-label item behind D11) | Copy, or move into `docs/` |
 | `tmp/migration-rework-worklist.md` | Decisions log of the migration rework. Mostly done, and largely captured in `docs/migration-runbook.md` | Copy (reference only) |
 | `tmp/rows-c/off-token.py` (plus `tmp/fidelity-password/off-token.py`, `tmp/r1314/offtoken.py`) | The **generator** cited by the committed Treatment C findings (12, 15–18) for the OFF-TOKEN check. Without it those findings cannot be re-run. | Copy, or move into `tools/fidelity/` and update the "Rerun" lines in those findings |
@@ -110,7 +110,7 @@ The tooling assumes this machine's layout. Match it, or edit the paths.
 3. **Rebuild nuwe-ink.**
    - Use a fresh prod copy (DB + `wp-content/uploads`).
    - Run `tools/rehearsal-prep.sh`, which finds Local's MySQL socket by itself.
-   - Copy in the three migration CSVs from §5 **before** `wp ink migrate-all`. Without them the tier derivation is wrong, and the uitslae podium (WP1) shows wrong Graderings.
+   - Copy in the three migration CSVs from §5 **before** `wp ink migrate-all`, unless they are committed by then. Without them, writers whose wins were printed under another name lose those wins.
 4. **Recreate the `fidelity-capture` user** after every refresh, because the refresh wipes it:
    - run `tools/fidelity/create-capture-user.sql` (table prefix `wpjj_`) and `set-capture-password.php`;
    - then `run.sh login`.
