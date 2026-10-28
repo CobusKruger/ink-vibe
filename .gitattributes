@@ -1,0 +1,11 @@
+# LF everywhere, on every OS. Git for Windows defaults to core.autocrlf=true, which
+# checks text out as CRLF: bash scripts then fail on `\r` and phpcs reports every
+# PHP file (Generic.Files.LineEndings).
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Email files are CRLF by RFC; keep them byte-for-byte.
+*.eml -text
