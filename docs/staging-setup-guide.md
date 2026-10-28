@@ -38,7 +38,7 @@ Do **not** start until you physically have all of these. Chasing a missing artif
 - [ ] **Premium plugin installer** (you cannot get this from wp.org):
   - [ ] **WooCommerce Memberships** — from woocommerce.com account
 - [ ] **Real3D Flipbook** — the InkPols PDF viewer, carried over from the existing site (copy the plugin folder from your previous staging/production install; INK uses the edition already in place — *not* a separate CodeCanyon premium purchase).
-- [ ] **The writer-tier CSV** — one row per writer with an **email** column and a **tier** column (`brons`/`silwer`/`goud`/`meester`). Column headers are auto-detected by fragment (`mail`/`e-pos`/`epos` for email; `tier`/`grad` for tier). Optional promotion history. Save it somewhere WP-CLI can read (e.g. `wp-content/uploads/private/tiers.csv`).
+- [ ] **No writer-tier CSV needed.** Gradering is derived from the old result posts by `wp ink derive-tiers`, using the committed files in `ink-core/migration-data/` (see [migration-runbook.md](./migration-runbook.md)).
 - [ ] **Decisions confirmed before you run anything** (each blocks a migration step):
   - [ ] **Post classification** — is the content-type category (`Gedig`/`Verhaal`/`Artikel`) reliable enough to auto-classify posts, or do some need manual bulk-editing first? (Unrecognised/conflicting → `skryfwerk` catch-all.)
   - [ ] **Challenge history scope** — migrate all historical challenges, or start the `uitdaging` CPT clean from launch and leave history as a flat archive? (Recommended: clean from launch.)
@@ -140,7 +140,7 @@ A production `.sql` dump contains **all user accounts, password hashes, email ad
 
 - Keep it on your own machine or private storage only — never a public folder, shared link, or the site's own `uploads/` directory.
 - Delete any copies you left on the production server (Method C step 5).
-- When you later place the writer-tier CSV or this dump inside the staging `uploads/`, put it under a **private** subfolder (the guide uses `wp-content/uploads/private/`) that isn't linked from the site.
+- When you later place this dump inside the staging `uploads/`, put it under a **private** subfolder (the guide uses `wp-content/uploads/private/`) that isn't linked from the site.
 
 **Result of Phase 0.5:** you now have `production.sql` (or `.sql.gz`) and an `uploads/` folder saved locally. Return to the Phase 0 checklist, tick those two boxes, then continue to Phase 1.
 
@@ -291,64 +291,21 @@ wp theme delete ink-v2   # legacy theme; keep a default theme installed as fallb
 
 ---
 
-## Phase 5 — Run the migration toolkit (in order)
+## Phase 5 — Run the migration
 
-These transform the cloned data to the new model. **Rules that apply to all of them:**
-
-- **CLI-only.** They no-op on a web request. Run from the site root with WP-CLI.
-- **No `--dry-run`.** The only flags are `--force` (re-run a completed once-off command) and `--fix` (only on `verify-redirects`). Take a DB snapshot before you start so you can roll back.
-- **Idempotent.** Each mutating command writes a completion flag; a second run reports "(oorgeslaan — reeds gedoen)" and does nothing unless you pass `--force`. Verification commands are read-only and always re-runnable.
-- **Output is in Afrikaans.**
-
-Run them **in this exact order** (dependencies are noted):
+One command transforms the cloned data to the new model. `ink-core` must be active (Phase 3) first. Take a DB snapshot before you start so you can roll back.
 
 ```bash
-# --- 1. Sanitise the cloned DB (strip transients + finished Action Scheduler rows) ---
-wp ink migrate-sanitise
-
-# --- 2. Accounts, then tiers (tier import joins on email → needs accounts first) ---
-wp ink migrate-users
-wp ink migrate-tiers wp-content/uploads/private/tiers.csv    # positional path REQUIRED
-
-# --- 3. Verify subscriptions (read-only report; no import) ---
-wp ink verify-subscriptions
-
-# --- 4. Content re-typing. Library/training BEFORE general posts. ---
-#     Each records the pre-migration permalink in ink_migration_source_url,
-#     which the redirect generator reads later — so all of these must run
-#     BEFORE generate-redirects.
-wp ink migrate-library-training      # /biblioteek/ → biblioteek_item, /opleiding/ → opleiding_artikel
-wp ink migrate-posts                 # flat posts → gedig/storie/artikel (else skryfwerk); skips monthly_challenge
-wp ink migrate-challenges            # builds the uitdaging records migrate-posts skipped
-wp ink migrate-inkpols               # legacy inkpols → inkpols_uitgawe; re-links existing PDFs
-
-# --- 5. Content cleanup: strip legacy WPBakery [vc_*] tags, keep inner content ---
-wp ink clean-shortcodes
-
-# --- 6. Fresh navigation (new IA — NOT a copy of the old menu; old deep links survive via redirects) ---
-wp ink rebuild-navigation
-
-# --- 7. Community graph + selective options ---
-wp ink migrate-follows               # confirmed friendship → two directed follows; trims BP activity >2yr
-wp ink migrate-options               # allowlist only: siteurl/home/blogname/blogdescription/WPLANG; forces WPLANG=af
-
-# --- 8. Redirects — MUST come after ALL post-type changes above ---
-wp ink generate-redirects            # builds 301 map from source-url vs current permalink (only where path changed)
-wp ink verify-redirects --fix        # flatten 301→301 chains/loops; --fix re-stores the cleaned map
-
-# --- 9. Media verification (read-only report of attachments + missing files) ---
-wp ink verify-media
+wp ink migrate-all
 ```
 
-**Critical ordering dependencies** (why the sequence is not negotiable):
+It runs every migration step in the required order (sanitise, pages, users, gradering, subscriptions, content re-typing, challenges, result posts, InkPols, cleanup, navigation, follows, options, redirects, media checks), stops at the first failure, and flags any step that printed nothing or only zeros. Each step's outcome is stored, so a re-run resumes where it stopped; `--from=<step>` restarts from a step and `--reset` clears the stored state. The commands are CLI-only and their output is in Afrikaans.
 
-1. `ink-core` **active** (Phase 3) → otherwise none of these commands exist.
-2. `migrate-users` **before** `migrate-tiers` — the tier import joins on email and never creates accounts.
-3. `migrate-library-training` + `migrate-posts` + `migrate-inkpols` **before** `generate-redirects` — redirects are computed from the source URLs those commands record.
-4. `migrate-posts` deliberately **skips** `monthly_challenge` posts; `migrate-challenges` builds them — so challenges run **after** posts.
-5. `generate-redirects` **before** `verify-redirects`.
+Gradering is derived from the old result posts (`wp ink derive-tiers`); no tier file is needed. To import a hand-built tier CSV instead, pass `--tiers=<csv>`.
 
-**To re-run a completed command** (e.g. after fixing the tier CSV): append `--force`, e.g. `wp ink migrate-tiers .../tiers.csv --force`. The reconciling commands (`migrate-challenges`, `migrate-inkpols`) use source markers so `--force` never creates duplicates.
+The step list, the committed input files, and how to check the result are in [migration-runbook.md](./migration-runbook.md).
+
+**To re-run one completed command**, append `--force`, e.g. `wp ink derive-tiers --force`. The reconciling commands (`migrate-challenges`, `migrate-inkpols`) use source markers so `--force` never creates duplicates.
 
 **Take a fresh DB snapshot** after this phase completes cleanly, before you start configuring plugins.
 
@@ -449,22 +406,8 @@ wp ink   # sanity: subcommands listed
 
 # PHASE 4 — prune legacy (see Phase 4a for full list), install keep-set via wp-admin/wp plugin install
 
-# PHASE 5 — migration toolkit (ORDER MATTERS)
-wp ink migrate-sanitise
-wp ink migrate-users
-wp ink migrate-tiers wp-content/uploads/private/tiers.csv
-wp ink verify-subscriptions
-wp ink migrate-library-training
-wp ink migrate-posts
-wp ink migrate-challenges
-wp ink migrate-inkpols
-wp ink clean-shortcodes
-wp ink rebuild-navigation
-wp ink migrate-follows
-wp ink migrate-options
-wp ink generate-redirects
-wp ink verify-redirects --fix
-wp ink verify-media
+# PHASE 5 — migration (all steps, in order; resumable)
+wp ink migrate-all
 
 # PHASE 8 — audits
 wp ink audit-2fa
@@ -476,28 +419,34 @@ Re-run any completed once-off command with `--force`.
 
 ## Appendix B — Migration command reference
 
-| # | Command | Purpose | Flags | Idempotency flag |
-|---|---------|---------|-------|------------------|
-| 1 | `migrate-sanitise` | Strip transients + finished Action Scheduler rows | `--force` | `ink_migration_sanitise_done` |
-| 2 | `migrate-users` | Collapse non-staff onto `subscriber`; optional legacy-meta clean | `--force` | `ink_migration_users_done` |
-| 3 | `migrate-tiers <path>` | Import writer-tier CSV → `ink_writer_tier` (join on email) | `--force` | `ink_migration_tiers_done` |
-| 4 | `verify-subscriptions` | Read-only WooCommerce Memberships report | — | (read-only) |
-| 5 | `migrate-library-training` | `/biblioteek/`→`biblioteek_item`, `/opleiding/`→`opleiding_artikel` | `--force` | `ink_migration_library_done` |
-| 6 | `migrate-posts` | Flat posts → typed CPTs (else `skryfwerk`); skips `monthly_challenge` | `--force` | `ink_migration_posts_done` |
-| 7 | `migrate-challenges` | Legacy challenge categories → `uitdaging` + round terms | `--force` | `ink_challenge_migration_done` |
-| 8 | `migrate-inkpols` | Legacy InkPols → `inkpols_uitgawe`; re-link existing PDFs | `--force` | `ink_inkpols_migration_done` |
-| 9 | `clean-shortcodes` | Strip legacy WPBakery `[vc_*]`, keep inner content | `--force` | `ink_migration_shortcodes_done` |
-| 10 | `rebuild-navigation` | Build canonical "Hoofnavigasie" (new IA) | `--force` | `ink_migration_navigation_done` |
-| 11 | `migrate-follows` | Confirmed friendships → two directed follows; trim BP activity >2yr | `--force` | `ink_migration_follows_done` |
-| 12 | `migrate-options` | Carry allowlisted options; force `WPLANG=af` | `--force` | `ink_migration_options_done` |
-| 13 | `generate-redirects` | Build 301 map from recorded source URLs vs current permalinks | `--force` | `ink_migration_redirects_done` |
-| 14 | `verify-redirects` | Audit/flatten 301 chains + loops | `--fix` | (read-only unless `--fix`) |
-| 15 | `verify-media` | Read-only attachment report + missing-file list | — | (read-only) |
+The steps `wp ink migrate-all` runs, in order. Each can also be run on its own; once-off commands take `--force` to re-run.
+
+| # | Command | Purpose |
+|---|---------|---------|
+| 1 | `ink migrate-sanitise` | Strip transients + finished Action Scheduler rows |
+| 2 | `ink ensure-pages` | Create the system Pages the theme's templates and links need |
+| 3 | `ink migrate-users` | Collapse non-staff onto `subscriber`; optional legacy-meta clean |
+| 4 | `ink derive-tiers` | Derive each writer's gradering from the old result posts (Gedigte wins); with `--tiers=<csv>`, `ink migrate-tiers <csv>` imports a hand-built file instead |
+| 5 | `ink verify-subscriptions` | Read-only WooCommerce Memberships report |
+| 6 | `ink migrate-library-training` | `/biblioteek/`→`biblioteek_item`, `/opleiding/`→`opleiding_artikel` |
+| 7 | `ink migrate-posts` | Flat posts → typed CPTs (else `skryfwerk`); keeps moderator result posts as posts |
+| 8 | `ink migrate-challenges` | Legacy challenge categories → `uitdaging` + round terms |
+| 9 | `ink sync-challenge-entries` | Attach posts filed under a challenge's source category to its round |
+| 10 | `ink link-result-posts` | Link each result post to its uitdaging (by month and year) |
+| 11 | `ink migrate-inkpols` | Legacy InkPols → `inkpols_uitgawe`; re-link existing PDFs |
+| 12 | `ink clean-shortcodes` | Strip legacy WPBakery `[vc_*]`, keep inner content |
+| 13 | `ink rebuild-navigation` | Build canonical "Hoofnavigasie" (new IA) |
+| 14 | `ink migrate-follows` | Confirmed friendships → two directed follows; trim BP activity >2yr |
+| 15 | `ink migrate-options` | Carry allowlisted options; force `WPLANG=af` |
+| 16 | `term recount …` | Recount category, genre, vaardigheid and uitdagingsrondte terms |
+| 17 | `ink generate-redirects` | Build 301 map from recorded source URLs vs current permalinks |
+| 18 | `ink verify-redirects --fix` | Audit/flatten 301 chains + loops |
+| 19 | `ink verify-media` | Read-only attachment report + missing-file list |
 
 ## Appendix C — Common gotchas
 
 - **A `wp ink …` command "does nothing" / says already done** — it's idempotent; it ran before. Add `--force` to re-run.
-- **`migrate-tiers` errors "Verskaf die pad na die gradering-CSV"** — the CSV path is a **required positional argument**, not a flag.
+- **`derive-tiers` warns "Onopgelos: …"** — a by-line on an old result post matched no account, so its wins were not counted. Add a row to `ink-core/migration-data/writer-accounts.csv` or `writer-aliases.csv`, then `wp ink derive-tiers --force`.
 - **Redirects are empty or wrong** — you ran `generate-redirects` before finishing the content re-typing (`migrate-posts`/`migrate-library-training`/`migrate-inkpols`). Re-run those, then `generate-redirects --force`.
 - **`wp ink` prints nothing** — `ink-core` isn't active, or you're not running WP-CLI (these commands never run on a web request).
 - **Old WPBakery `[vc_row]` junk in content** — run `wp ink clean-shortcodes`.
