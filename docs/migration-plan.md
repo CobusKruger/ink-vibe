@@ -343,14 +343,14 @@ For posts migrating to typed CPTs, generate redirects automatically as part of t
 
 ## Suggested migration order
 
-**Cutover is a re-clone, not a merge.** The database is disposable and every human decision is a committed file, so the final run is: take a fresh prod copy, run `wp ink migrate-all --tiers=docs/data-cleanup/winners/tier-import.csv`, verify, flip DNS. `migrate-all` runs steps 3–13 below in order, checks the tier CSV first, stores each step's outcome so a failed run resumes where it stopped (`--from=<step>` restarts, `--reset` clears), stops at the first failure, and flags any step that printed nothing or only zeros. The gap between the final clone and the DNS flip is covered by a short prod freeze (preferred, if the timed rehearsal shows the run is fast).
+**Cutover is a re-clone, not a merge.** The database is disposable and every human decision is a committed file, so the final run is: take a fresh prod copy, run `wp ink migrate-all`, verify, flip DNS. Gradering is derived from the old result posts (`wp ink derive-tiers`), so no tier file is needed; `--tiers=<csv>` imports a hand-built file instead. `migrate-all` runs steps 3–13 below in order, stores each step's outcome so a failed run resumes where it stopped (`--from=<step>` restarts, `--reset` clears), stops at the first failure, and flags any step that printed nothing or only zeros. The gap between the final clone and the DNS flip is covered by a short prod freeze (preferred, if the timed rehearsal shows the run is fast).
 
 Run in this sequence to minimise risk and dependency failures.
 
 1. **Clone and sanitise the database.** Start with a clean copy of production data, stripped of transients and log data.
 2. **Define new content types, taxonomies, and data models** in `ink-core`. Do not migrate content until the target structure is stable.
 3. **Import users.** Baseline user accounts should exist before any other import.
-4. **Import tier data** from the spreadsheet. Requires user accounts.
+4. **Derive gradering** from the old result posts (Gedigte wins per writer). Requires user accounts.
 5. **Verify subscription data** in WooCommerce Memberships. The data migrates with the database clone; confirm active memberships, plan IDs, and access rules are intact.
 6. **Classify existing posts.** Run the category/tag audit. Decide on automated vs manual classification. Produce a classification map.
 7. **Migrate library and training content** to new CPTs. These have relatively clean URL sub-paths already and are lower-risk to script.
