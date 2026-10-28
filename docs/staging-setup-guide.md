@@ -38,7 +38,7 @@ Do **not** start until you physically have all of these. Chasing a missing artif
 - [ ] **Premium plugin installer** (you cannot get this from wp.org):
   - [ ] **WooCommerce Memberships** — from woocommerce.com account
 - [ ] **Real3D Flipbook** — the InkPols PDF viewer, carried over from the existing site (copy the plugin folder from your previous staging/production install; INK uses the edition already in place — *not* a separate CodeCanyon premium purchase).
-- [ ] **No writer-tier CSV needed.** Gradering is derived from the old result posts by `wp ink derive-tiers`, using the committed files in `ink-core/migration-data/` (see [migration-runbook.md](./migration-runbook.md)).
+- [ ] **No writer-tier CSV needed.** Gradering is derived from the old result posts by `wp ink derive-tiers`, using the migration-data CSVs (see [migration-runbook.md](./migration-runbook.md)). Three of them are kept outside the repo: point `INK_MIGRATION_DATA_DIR` in `wp-config.php` at their folder.
 - [ ] **Decisions confirmed before you run anything** (each blocks a migration step):
   - [ ] **Post classification** — is the content-type category (`Gedig`/`Verhaal`/`Artikel`) reliable enough to auto-classify posts, or do some need manual bulk-editing first? (Unrecognised/conflicting → `skryfwerk` catch-all.)
   - [ ] **Challenge history scope** — migrate all historical challenges, or start the `uitdaging` CPT clean from launch and leave history as a flat archive? (Recommended: clean from launch.)
@@ -303,7 +303,7 @@ It runs every migration step in the required order (sanitise, pages, users, grad
 
 Gradering is derived from the old result posts (`wp ink derive-tiers`); no tier file is needed. To import a hand-built tier CSV instead, pass `--tiers=<csv>`.
 
-The step list, the committed input files, and how to check the result are in [migration-runbook.md](./migration-runbook.md).
+The step list, the input files, and how to check the result are in [migration-runbook.md](./migration-runbook.md).
 
 **To re-run one completed command**, append `--force`, e.g. `wp ink derive-tiers --force`. The reconciling commands (`migrate-challenges`, `migrate-inkpols`) use source markers so `--force` never creates duplicates.
 
@@ -446,7 +446,7 @@ The steps `wp ink migrate-all` runs, in order. Each can also be run on its own; 
 ## Appendix C — Common gotchas
 
 - **A `wp ink …` command "does nothing" / says already done** — it's idempotent; it ran before. Add `--force` to re-run.
-- **`derive-tiers` warns "Onopgelos: …"** — a by-line on an old result post matched no account, so its wins were not counted. Add a row to `ink-core/migration-data/writer-accounts.csv` or `writer-aliases.csv`, then `wp ink derive-tiers --force`.
+- **`derive-tiers` warns "Onopgelos: …"** — a by-line on an old result post matched no account, so its wins were not counted. Add a row to `writer-accounts.csv` or `writer-aliases.csv` in the `INK_MIGRATION_DATA_DIR` folder, then `wp ink derive-tiers --force`.
 - **Redirects are empty or wrong** — you ran `generate-redirects` before finishing the content re-typing (`migrate-posts`/`migrate-library-training`/`migrate-inkpols`). Re-run those, then `generate-redirects --force`.
 - **`wp ink` prints nothing** — `ink-core` isn't active, or you're not running WP-CLI (these commands never run on a web request).
 - **Old WPBakery `[vc_row]` junk in content** — run `wp ink clean-shortcodes`.

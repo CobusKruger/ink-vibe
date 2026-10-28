@@ -11,6 +11,7 @@ namespace Ink\Migration;
 
 use Ink\Content\ChallengeResultTitle;
 use Ink\Content\ResultPostAuthors;
+use Ink\Kernel\MigrationData;
 use Ink\Kernel\Tier;
 use Ink\Tiers\Api;
 use Ink\Tiers\PromotionEngine;
@@ -277,13 +278,13 @@ class TierDeriver {
 	}
 
 	/**
-	 * Rows of a committed CSV in the plugin's migration-data folder (header-keyed). Overridable seam.
+	 * Rows of a migration-data CSV (header-keyed), located by MigrationData. Overridable seam.
 	 *
 	 * @param string $file The file name.
 	 * @return list<array<string, string>>
 	 */
 	protected function readCsv( string $file ): array {
-		$path = dirname( __DIR__, 2 ) . '/migration-data/' . $file;
+		$path = MigrationData::path( $file );
 
 		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- once-off CLI reader of a committed data file.
 		if ( ! is_readable( $path ) ) {

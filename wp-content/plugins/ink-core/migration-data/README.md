@@ -1,10 +1,15 @@
 # Migration data
 
-Inputs for the once-off migration. Names and WordPress usernames only (no email addresses), so they are safe to commit.
+Inputs for the once-off migration. `Ink\Kernel\MigrationData` locates each file: if the `INK_MIGRATION_DATA_DIR` constant (in `wp-config.php`) names a folder that holds the file, that copy is read; otherwise this folder.
 
-- `writer-accounts.csv`: `name,user_login`. A by-line as printed on the old result posts (pen names, maiden names, spelling variants) and the account it belongs to. Hand-verified in the July 2026 cleanup. Used by `wp ink derive-tiers`.
+**Kept outside the repo** (the owner's choice), in `../migration-data/` beside the repo (`C:\dev\ink\migration-data` on Windows). Set `INK_MIGRATION_DATA_DIR` to that folder. Don't copy them in here on the site: the deploy mirrors this plugin with `--delete` and removes them.
+
+- `writer-accounts.csv`: `name,user_login`. A by-line as printed on the old result posts (pen names, maiden names, spelling variants) and the account it belongs to. Hand-verified in the July 2026 cleanup. Used by `wp ink derive-tiers`. Some logins are email addresses.
 - `writer-aliases.csv`: `variant,canonical`. Misspellings and variants of one by-line, mapped to its canonical form (the canonical form is then looked up in `writer-accounts.csv` or among the site's users).
-
-Add a row here when `derive-tiers` reports an unresolved writer that you identify.
-- `inkpols-uitgawes.csv`: one row per InkPols uitgawe, owner-maintained. `slug` and `naam` (the months, e.g. `Julie/Augustus 2026`, shown as the eyebrow), `titel` and `beskrywing` (filled in by hand), `datum` (the first month of the issue, used as the publish date, so the newest row is the current issue), `pdf` and `voorblad` (paths under `wp-content/uploads/`, matching the prod attachments; the cover is also the social image), `ou_url` (the old prod Page, redirected to the new URL), and one title + writer each for the featured Gedig, Storie and Artikel. On prod, the February issue's PDF was uploaded twice; the file listed is the one its page used.
 - `result-post-authors.csv`: `login`. The moderator accounts that publish the challenge result posts ("... Kommentaar en uitslae"). Their posts are kept as winners announcements instead of being filed as submitted writing, and are read for gradering. Users who can `edit_others_posts` also count, but `Inkmoderator` is only a subscriber after the user-reclassification step, so the list is what matters.
+
+Add a row to `writer-accounts.csv` or `writer-aliases.csv` when `derive-tiers` reports an unresolved writer that you identify.
+
+**Committed here:**
+
+- `inkpols-uitgawes.csv`: one row per InkPols uitgawe, owner-maintained. `slug` and `naam` (the months, e.g. `Julie/Augustus 2026`, shown as the eyebrow), `titel` and `beskrywing` (filled in by hand), `datum` (the first month of the issue, used as the publish date, so the newest row is the current issue), `pdf` and `voorblad` (paths under `wp-content/uploads/`, matching the prod attachments; the cover is also the social image), `ou_url` (the old prod Page, redirected to the new URL), and one title + writer each for the featured Gedig, Storie and Artikel. On prod, the February issue's PDF was uploaded twice; the file listed is the one its page used.

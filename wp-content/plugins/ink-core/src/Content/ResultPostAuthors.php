@@ -9,13 +9,15 @@ declare(strict_types=1);
 
 namespace Ink\Content;
 
+use Ink\Kernel\MigrationData;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Whether an account is a moderator who publishes challenge result posts.
  *
  * Either the account can edit others' posts, or its login is on the committed list in
- * `migration-data/result-post-authors.csv`. The list matters because the moderator account
+ * `result-post-authors.csv` (located by MigrationData). The list matters because the moderator account
  * `Inkmoderator` is only a subscriber once the user-reclassification step has run, so a
  * capability test alone would file its result posts as submitted writing and lose their wins.
  * Lives in Content so Migration and Challenges can share it without depending on each other.
@@ -67,7 +69,7 @@ final class ResultPostAuthors {
 		}
 
 		$cache = array();
-		$path  = dirname( __DIR__, 2 ) . '/migration-data/result-post-authors.csv';
+		$path  = MigrationData::path( 'result-post-authors.csv' );
 
 		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- once-off CLI reader of a committed data file.
 		$handle = is_readable( $path ) ? fopen( $path, 'rb' ) : false;
