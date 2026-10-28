@@ -6,19 +6,18 @@
  * fallback. This site is on db_version 61833 (WP 6.8+), where that fallback is
  * gone — so the password has to be written through wp_set_password().
  *
- * Bootstrapping WP needs a working DB connection, and wp-config hardcodes
- * DB_HOST as 'localhost'. PHP's mysqli then looks for its default socket, so run
- * this with that ini set to Local's socket:
+ * Run it through WP-CLI, which loads WordPress with the right database
+ * connection for this machine (tools/lib/local-site.mjs):
  *
- *   php -d mysqli.default_socket="$SOCK" tools/fidelity/set-capture-password.php
+ *   node tools/local.mjs wp eval-file tools/fidelity/set-capture-password.php
  *
  * Local dev site only.
  */
 
-$wp_root = '/Users/cobus/Local Sites/nuwe-ink/app/public';
-
-define( 'WP_USE_THEMES', false );
-require_once $wp_root . '/wp-load.php';
+if ( ! defined( 'ABSPATH' ) ) {
+	fwrite( STDERR, "run via: node tools/local.mjs wp eval-file tools/fidelity/set-capture-password.php\n" );
+	exit( 1 );
+}
 
 $login = 'fidelity-capture';
 $pass  = 'fidelity-capture-2026';

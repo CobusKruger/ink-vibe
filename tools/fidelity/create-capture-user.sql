@@ -18,7 +18,8 @@
 -- This seeds the row only. The PASSWORD must then be set through WordPress's own
 -- hasher — this site is WP 6.8+ (db_version 61833), which no longer accepts the
 -- legacy MD5 fallback:
---     php -d mysqli.default_socket="$SOCK" tools/fidelity/set-capture-password.php
+--     node tools/local.mjs mysql < tools/fidelity/create-capture-user.sql
+--     node tools/local.mjs wp eval-file tools/fidelity/set-capture-password.php
 --
 -- Idempotent: safe to re-run.
 

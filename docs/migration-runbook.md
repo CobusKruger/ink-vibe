@@ -6,17 +6,18 @@ Rebuild the new site from a fresh copy of production. The database is disposable
 
 ## What remains for you
 
-Only the export itself. `tools/rehearsal-prep.sh` does everything else.
+Only the export itself. `tools/rehearsal-prep.mjs` does everything else, on macOS or Windows (Node 20+, PHP and WP-CLI on PATH; it finds the site, its database port or socket and Local's `mysql` client from Local's own `sites.json`, see `tools/lib/local-site.mjs`).
 
-1. **Bring the prod export:** a full database dump (`.sql` or `.sql.gz`), and optionally the `wp-content/uploads` folder (a folder, `.zip` or `.tar.gz`). The Local site already holds about 18 GB of uploads from an earlier copy, so you can leave `--uploads` out; media added to prod since then is missing and `wp ink verify-media` will list it. If you do bring uploads, only differences are copied, and nothing is deleted. Take the dump and the uploads at the same moment.
+0. **First time on a machine:** create the site in Local, named `nuwe-ink` (domain `nuwe-ink.local`), and start it. A new site has no uploads, so bring them.
+1. **Bring the prod export:** a full database dump (`.sql` or `.sql.gz`), and optionally the `wp-content/uploads` folder (a folder, `.zip` or `.tar.gz`). If the Local site already holds the uploads from an earlier copy you can leave `--uploads` out; media added to prod since then is missing and `wp ink verify-media` will list it. If you do bring uploads, only differences are copied, and nothing is deleted. Take the dump and the uploads at the same moment.
 2. **Dry run, read what it says, then apply:**
 
    ```
-   tools/rehearsal-prep.sh --sql ~/Downloads/prod.sql.gz [--uploads ~/Downloads/uploads.zip]
-   tools/rehearsal-prep.sh --sql ~/Downloads/prod.sql.gz [--uploads ~/Downloads/uploads.zip] --apply
+   node tools/rehearsal-prep.mjs --sql ~/Downloads/prod.sql.gz [--uploads ~/Downloads/uploads.zip]
+   node tools/rehearsal-prep.mjs --sql ~/Downloads/prod.sql.gz [--uploads ~/Downloads/uploads.zip] --apply
    ```
 
-   The Local site must be running. With `--apply` it replaces the current nuwe-ink database (an old test copy; nothing is kept) with the prod dump, rewrites the prod URLs to `https://nuwe-ink.local` (with `wp search-replace`, which is safe for serialized data; it never touches the bare domain, so addresses like `moderator@ink.org.za` stay as they are), copies the uploads, deploys `ink-core` and `ink-foundation` from this repo with `tools/deploy-to-local.sh`, activates them, sets `WP_ENVIRONMENT_TYPE` and `INK_MAIL_SINK`, and flushes rewrites and caches. It prints the resulting URL, environment, plugin and theme status and a post count.
+   The Local site must be running. It also sets `INK_MIGRATION_DATA_DIR` to `../migration-data/` when that folder exists (`--migration-data <dir>` to override). With `--apply` it replaces the current nuwe-ink database (an old test copy; nothing is kept) with the prod dump, rewrites the prod URLs to `https://nuwe-ink.local` (with `wp search-replace`, which is safe for serialized data; it never touches the bare domain, so addresses like `moderator@ink.org.za` stay as they are), copies the uploads, deploys `ink-core` and `ink-foundation` from this repo with `tools/deploy-to-local.mjs`, activates them, sets `WP_ENVIRONMENT_TYPE` and `INK_MAIL_SINK`, and flushes rewrites and caches. It prints the resulting URL, environment, plugin and theme status and a post count.
 3. **Hand over to the agent** with the prompt below.
 
 Later, and not before the rehearsal: decide freeze versus incremental (depends on the timed run) and the cutover date; review the Afrikaans strings added in this work for the copy-debt log (the tie line on the Ingestion page is already yours; the `wp ink` CLI messages are unreviewed).
@@ -24,9 +25,15 @@ Later, and not before the rehearsal: decide freeze versus incremental (depends o
 Notes:
 
 - **Mail.** Local runs Mailpit for this site. `INK_MAIL_SINK` defaults to `sink@nuwe-ink.local`: ink-core rewrites every outgoing message to it, and Mailpit (open it from the Local app) shows what the judge-email flow produced. With no sink set ink-core sends nothing at all. Whether Local routes `wp_mail` to Mailpit on this site is unconfirmed until the first judge email is generated.
-- **Gradering needs no file.** `wp ink derive-tiers` (a `migrate-all` step) reads the moderators' result posts, counts each writer's Gedigte wins and sets the grade and the wins already counted at that grade, using the live promotion thresholds. The inputs it needs are committed in `ink-core/migration-data/` (by-line to account, spelling variants, which accounts publish result posts). It lists every by-line it could not resolve; add a row to `writer-accounts.csv` or `writer-aliases.csv` for those. The old hand-built `tier-import.csv` is optional now: pass `--tiers=<csv>` to `migrate-all` to import it instead, or keep it only to diff against (`docs/migration-tools/validate-gradering.php`). `docs/data-cleanup/` is gitignored (member emails) and exists only in your working copy.
+- **Gradering needs no file.** `wp ink derive-tiers` (a `migrate-all` step) reads the moderators' result posts, counts each writer's Gedigte wins and sets the grade and the wins already counted at that grade, using the live promotion thresholds. The inputs it needs (by-line to account, spelling variants, which accounts publish result posts: `writer-accounts.csv`, `writer-aliases.csv`, `result-post-authors.csv`) are **not in the repo**. They live beside it, in `../migration-data/` (on Windows `C:\dev\ink\migration-data`). `rehearsal-prep.mjs` points WordPress at that folder; by hand, it is this line in the site's `wp-config.php`, before `wp ink migrate-all`:
+
+  ```php
+  define( 'INK_MIGRATION_DATA_DIR', 'C:/dev/ink/migration-data' );
+  ```
+
+  A file found there wins; any other file (e.g. the committed `inkpols-uitgawes.csv`) is read from `ink-core/migration-data/`. Do not copy the CSVs into the site's plugin folder: every deploy mirrors the plugin with `--delete` and removes them. If the constant is missing, nothing fails, but wins under old or variant names count for nobody and the moderators' result posts may be filed as submitted writing. It lists every by-line it could not resolve; add a row to `writer-accounts.csv` or `writer-aliases.csv` for those. The old hand-built `tier-import.csv` is optional now: pass `--tiers=<csv>` to `migrate-all` to import it instead, or keep it only to diff against (`docs/migration-tools/validate-gradering.php`). `docs/data-cleanup/` is gitignored (member emails) and exists only in your working copy.
 - **Existing code in `wp-content`.** Do not delete it. The plugins and mu-plugins already there are what the prod database expects; `ink-core` and `ink-foundation` are mirrored from this repo by the script. After the import, `wp plugin list` shows which prod plugins are active and which are missing from the Local site (WordPress quietly deactivates missing ones).
-- **Database socket.** The prep script finds the site's MySQL socket and client from Local's own `sites.json`. The agent can do the same, or reuse the `Database` tab's values in Local.
+- **WP-CLI and MySQL against the site.** Use `node tools/local.mjs wp <args>`, `node tools/local.mjs mysql` and `node tools/local.mjs mysqldump`. They connect the way the prep script does (TCP port on Windows, socket on macOS). Plain `wp` fails: wp-config.php says `DB_HOST = 'localhost'`, and the system PHP's default port/socket is not Local's.
 - **WP-CLI from an agent session** against the Local database needs the sandbox off.
 
 ## Hand-over prompt for the implementing agent
@@ -34,22 +41,22 @@ Notes:
 Paste this to a fresh agent session in this repo after step A is done.
 
 ````text
-You are running the first rehearsal of the INK migration on the Local site nuwe-ink (https://nuwe-ink.local/, files at /Users/cobus/Local Sites/nuwe-ink/app/public). A fresh copy of the prod database and uploads has just been imported and the code from `main` is deployed. Production must never be touched.
+You are running the first rehearsal of the INK migration on the Local site nuwe-ink (https://nuwe-ink.local/; `node tools/local.mjs info` shows where its files are). A fresh copy of the prod database and uploads has just been imported and the code from `main` is deployed. Production must never be touched.
 
 Read first, in this order: docs/migration-runbook.md, docs/migration-plan.md, docs/migration-result.md (the first, failed rehearsal and what each symptom was), docs/migration-tools/README.md, CLAUDE.md. The decisions are in code, not in your head: PostReclassifier, LegacyContentMap, StaticRedirects, Challenges\Migration, SourceCategorySync, ResultPostLinker, LegacyResultsParser, MigrateAll.
 
 Rules:
 - All scratch files go in ./tmp/. Commit messages go in tmp/commit-msg.txt and are used with `git commit -F`. No Co-Authored-By or Claude-Session trailers.
-- Work on a new branch off main. WP-CLI against the Local database needs the sandbox off; use the site's own PHP/MySQL socket (find it in Local; the old one was /Users/cobus/Library/Application Support/Local/run/UQ1ASIydU/mysql/mysqld.sock and has probably changed).
+- Work on a new branch off main. WP-CLI against the Local database needs the sandbox off (macOS). Run every WP-CLI command as `node tools/local.mjs wp …` and MySQL as `node tools/local.mjs mysql …`; they find the site's database connection on macOS and Windows.
 - docs/ and _bmad-output/ are written with the Edit/Write tools, not the shell. docs/data-cleanup/ is gitignored (member emails): never commit it.
 - Do not "fix forward" silently. Report each step's output verbatim and what you concluded; change code only after the user agrees, except for clear bugs in the migration code that tests can pin.
 
 Do this:
-1. Pre-flight, read-only. Confirm WP_ENVIRONMENT_TYPE is not production and INK_MAIL_SINK is set (tools/rehearsal-prep.sh normally did this). Run docs/migration-tools/check-slug-collisions.php. Record counts of legacy `bibliotekon` / `opleiding` posts and the category tree. Confirm the categories `projekte` and `kompetisie` exist. Stop and report if anything is missing.
-2. Snapshot the freshly imported database into ./tmp/, so the migration can be re-run from the same starting point (step 6). Use Local's own `mysqldump` (it sits beside the `mysql` client that tools/rehearsal-prep.sh locates, and needs the socket); plain `wp db export` may not find a client.
+1. Pre-flight, read-only. Confirm WP_ENVIRONMENT_TYPE is not production and INK_MAIL_SINK is set (tools/rehearsal-prep.mjs normally did this). Run docs/migration-tools/check-slug-collisions.php. Record counts of legacy `bibliotekon` / `opleiding` posts and the category tree. Confirm the categories `projekte` and `kompetisie` exist. Stop and report if anything is missing.
+2. Snapshot the freshly imported database into ./tmp/, so the migration can be re-run from the same starting point (step 6). Use `node tools/local.mjs mysqldump > tmp/<file>.sql` (Local's own mysqldump, correctly connected); plain `wp db export` may not find a client.
 3. Run `wp ink migrate-all`. Time it. It stops at the first failure and resumes on re-run. Report every step's verdict; investigate anything flagged `silent` or `all-zero` before moving on. The `tiers` step derives gradering from the result posts: read its output, in particular the unresolved by-lines and the fuzzy matches.
 4. Run docs/migration-tools/post-counts.php and compare with the expectations in "Verify" below. Run `wp ink report-result-posts --file=tmp/result-posts.csv` and docs/migration-tools/validate-parser.php and validate-gradering.php.
-5. Check the derived gradering. Run docs/migration-tools/validate-gradering.php and report: writers graded per tier, unresolved by-lines (with the number of wins each would add), fuzzy matches, and the diff against the old tier-import.csv if it is on this machine. Do not edit the committed mapping files without the owner's say-so; propose rows for the unresolved by-lines instead.
+5. Check the derived gradering. Run docs/migration-tools/validate-gradering.php and report: writers graded per tier, unresolved by-lines (with the number of wins each would add), fuzzy matches, and the diff against the old tier-import.csv if it is on this machine. Do not edit the mapping files (in INK_MIGRATION_DATA_DIR, outside the repo) without the owner's say-so; propose rows for the unresolved by-lines instead.
 6. Restore the step-2 backup the same way, run the migration a second time to prove it is repeatable, and time it.
 7. Report: timings, every flagged step, every number that differs from expectation, and a recommendation on freeze versus incremental.
 
@@ -130,5 +137,5 @@ Production is never modified by any step: the pipeline works on a copy. Rolling 
 | Challenge entries follow their source category | `ink-core/src/Challenges/SourceCategorySync.php` |
 | Result posts linked to their challenge | `ink-core/src/Challenges/ResultPostLinker.php` |
 | Reading winners out of old result posts | `ink-core/src/Migration/LegacyResultsParser.php` |
-| Which by-lines are which accounts; spelling variants; who publishes result posts | `ink-core/migration-data/*.csv` |
+| Which by-lines are which accounts; spelling variants; who publishes result posts | `../migration-data/*.csv` (outside the repo; `INK_MIGRATION_DATA_DIR`) |
 | Gradering thresholds (cumulative: 5 wins leave brons, 15 more leave silwer = 20 total) | `ink-core/src/Tiers/PromotionEngine.php` |

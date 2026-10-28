@@ -9,7 +9,7 @@
   "sandbox": {
     "filesystem": {
       "allowWrite": [
-        "/Users/cobus/Local Sites/nuwe-ink/app/public/wp-content"
+        "~/Local Sites/nuwe-ink/app/public/wp-content"
       ]
     }
   },

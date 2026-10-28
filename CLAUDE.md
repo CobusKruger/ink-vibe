@@ -27,9 +27,11 @@ Project instructions for Claude Code. These apply to all sessions in this repo.
 
 ## Dev site (nuwe-ink) and deployment
 
-- **dev / nuwe-ink** = Local (Flywheel) site `https://nuwe-ink.local`. It does **not** read this repo; changes are visible only after deploying (`tools/deploy-to-local.sh`, dry run first, then `--apply`), then cache purge.
-- **Refresh from prod:** `docs/migration-runbook.md` + `tools/rehearsal-prep.sh`, then `wp ink migrate-all`. Prod is never touched.
-- New-machine checklist: `docs/lovable-delta-2026-10/HANDOVER.md` §5. Tooling hardcodes macOS paths (`/Users/cobus/Local Sites/...`), bash, rsync and Node 24 via nvm — these need adapting on Windows.
+- **dev / nuwe-ink** = Local (Flywheel) site `https://nuwe-ink.local`. It does **not** read this repo; changes are visible only after deploying (`node tools/deploy-to-local.mjs`, dry run first, then `--apply`), then cache purge.
+- **Refresh from prod:** `docs/migration-runbook.md` + `node tools/rehearsal-prep.mjs`, then `node tools/local.mjs wp ink migrate-all`. Prod is never touched.
+- **Tooling is cross-platform (macOS + Windows).** The site is found via Local's `sites.json` (`tools/lib/local-site.mjs`); never hardcode machine paths. Run WP-CLI/MySQL against the site via `node tools/local.mjs wp|mysql|mysqldump …` (plain `wp` can't connect). Windows setup: `tools/setup-windows.ps1`.
+- The writer/moderator migration CSVs live **outside** the repo in `../migration-data/` (owner's choice); the site reads them via `INK_MIGRATION_DATA_DIR` in `wp-config.php`. Don't move them into the repo.
+- New-machine checklist: `docs/lovable-delta-2026-10/HANDOVER.md` §5.1.
 - Table prefix is `wpjj_`. Capture as `fidelity-capture` (recreated after every refresh), never `admin`.
 
 ## Transient & temp files

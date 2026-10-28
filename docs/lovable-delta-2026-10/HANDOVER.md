@@ -85,14 +85,14 @@ It covers two sessions:
 
 | Item | Why it matters | Action |
 |---|---|---|
-| `migration-data/writer-accounts.csv`, `writer-aliases.csv`, `result-post-authors.csv` | Read by the migration, **not** the one-off estimate files in `docs/data-cleanup/`. The first two map old or misspelled by-lines to accounts in `TierDeriver` (`:232`, `:267`). The third names the moderators whose posts are result posts (`ResultPostAuthors.php:70`). If they are missing nothing fails, but wins under old or variant names count for nobody, and Inkmoderator's rounds may be missed. They are gitignored by the blanket `*.csv` rule, although `migration-data/README.md` calls them safe to commit. | Copy by hand, or add `.gitignore` exceptions and commit them |
+| `migration-data/writer-accounts.csv`, `writer-aliases.csv`, `result-post-authors.csv` | Read by the migration, **not** the one-off estimate files in `docs/data-cleanup/`. The first two map old or misspelled by-lines to accounts in `TierDeriver` (`:232`, `:267`). The third names the moderators whose posts are result posts (`ResultPostAuthors.php:70`). If they are missing nothing fails, but wins under old or variant names count for nobody, and Inkmoderator's rounds may be missed. They are gitignored by the blanket `*.csv` rule. | **Done (2026-10-28):** copied to `C:\dev\ink\migration-data`, kept outside the repo by owner choice, and read via `INK_MIGRATION_DATA_DIR` (`docs/migration-runbook.md`) |
 | `tmp/post-roadmap-followup-worklist.md` | The **active** launch-prep worklist with owner decisions (e.g. the Meester-label item behind D11) | Copy, or move into `docs/` |
 | `tmp/migration-rework-worklist.md` | Decisions log of the migration rework. Mostly done, and largely captured in `docs/migration-runbook.md` | Copy (reference only) |
 | `tmp/rows-c/off-token.py` (plus `tmp/fidelity-password/off-token.py`, `tmp/r1314/offtoken.py`) | The **generator** cited by the committed Treatment C findings (12, 15–18) for the OFF-TOKEN check. Without it those findings cannot be re-run. | Copy, or move into `tools/fidelity/` and update the "Rerun" lines in those findings |
 | `tmp/nuwe-ink-prepared.sql.gz` (2026-10-25 prepared prod dump) | Source for the InkPols analysis and for rehearsals | Copy, or take a fresh prod copy |
 | `docs/data-cleanup/` | Winners/gradering canonical files (hold emails, so deliberately gitignored). Gradering is now derived by `wp ink derive-tiers`, so they are optional. | Copy if you want the history |
 | `_bmad/custom/config.user.toml` | Your local BMAD user config | Copy |
-| `tmp/wpcli.sh` | Helper that points wp-cli at Local's MySQL socket; the socket path is machine-specific | Recreate on the new machine (`docs/fidelity-remediation/README.md` §9) |
+| `tmp/wpcli.sh` | Helper that points wp-cli at Local's MySQL socket | **Replaced (2026-10-28)** by `node tools/local.mjs wp …`, which works on macOS and Windows |
 | The Local `nuwe-ink` site, its DB and its `wp-content/uploads` | The capture target | Rebuild: new Local site, fresh prod copy (DB + uploads), `wp ink migrate-all` |
 | Capture tooling: nvm Node 24, Playwright browsers in `tmp/ms-playwright`, `tmp/fidelity-auth/` | The harness needs them | Reinstall (`docs/fidelity-remediation/harness-worklist.md`); `run.sh login` recreates the auth session |
 | Claude memory (`~/.claude/projects/...`) | Session notes | Everything relevant to this work is in this folder |
@@ -101,20 +101,18 @@ Everything else in `tmp/` is regenerable output: captures, diffs, logs, Lovable 
 
 ### 5.1 New-machine setup before any fidelity capture
 
-The tooling assumes this machine's layout. Match it, or edit the paths.
+**Updated 2026-10-28:** the tooling no longer hardcodes a machine layout. It finds the Local site through Local's own `sites.json` on macOS and Windows (`tools/lib/local-site.mjs`; optional per-machine overrides in the gitignored `tools/local.config.json`).
 
-1. **Same paths.**
-   - macOS user `cobus`, and a Local site named `nuwe-ink` at `/Users/cobus/Local Sites/nuwe-ink/app/public`. This path is hardcoded in `tools/deploy-to-local.sh:23`, `tools/rehearsal-prep.sh:37`, `tools/fidelity/set-capture-password.php:18` and the sandbox allowlist in `.claude/settings.json:12`.
-   - `ink-lovable` cloned at `/Users/cobus/Development/ink-lovable`.
-2. **Node `v24.12.0` via nvm**, at exactly that version: `tools/fidelity/run.sh:24` hardcodes it. Install the Playwright browsers into `tmp/ms-playwright` (`harness-worklist.md`).
+1. **Install the tools.** Windows: `tools/setup-windows.ps1` (Local, PHP, Composer, WP-CLI, Node, Python, Playwright browsers in `tmp/ms-playwright`). macOS: the same set via Homebrew/nvm. Node 20+ is enough; `run.sh` finds it.
+2. **Layout:** the repos sit side by side: `ink-vibe/`, `verse-haven/` (the Lovable design, formerly `ink-lovable`) and `migration-data/` (the CSVs from §5).
 3. **Rebuild nuwe-ink.**
+   - Create the Local site `nuwe-ink` and start it.
    - Use a fresh prod copy (DB + `wp-content/uploads`).
-   - Run `tools/rehearsal-prep.sh`, which finds Local's MySQL socket by itself.
-   - Copy in the three migration CSVs from §5 **before** `wp ink migrate-all`, unless they are committed by then. Without them, writers whose wins were printed under another name lose those wins.
+   - Run `node tools/rehearsal-prep.mjs` (`docs/migration-runbook.md`). It also sets `INK_MIGRATION_DATA_DIR` to `../migration-data/`, so the three CSVs are read **before** `wp ink migrate-all`. Without them, writers whose wins were printed under another name lose those wins.
 4. **Recreate the `fidelity-capture` user** after every refresh, because the refresh wipes it:
-   - run `tools/fidelity/create-capture-user.sql` (table prefix `wpjj_`) and `set-capture-password.php`;
+   - `node tools/local.mjs mysql < tools/fidelity/create-capture-user.sql` (table prefix `wpjj_`) and `node tools/local.mjs wp eval-file tools/fidelity/set-capture-password.php`;
    - then `run.sh login`.
-5. **Run `tools/deploy-to-local.sh --apply`** before the first capture. Chromium, the preview server, `composer stan` and `git merge` all need the sandbox off.
+5. **Run `node tools/deploy-to-local.mjs --apply`** before the first capture. On macOS, Chromium, the preview server, `composer stan` and `git merge` all need the sandbox off.
 6. **Lovable preview:** build it and run `vite preview` (not dev) after step B has added the audit-ids.
 
 Optional: the OFF-TOKEN scripts (§5) are needed only for Treatment C pages. The new pages are Treatment A (diff against Lovable), so step G does not need them.
@@ -145,7 +143,7 @@ Optional: the OFF-TOKEN scripts (§5) are needed only for Treatment C pages. The
   - Unknown copy gets a copy-debt marker.
   - Owner-supplied copy (e.g. `inkpols.md` §2) is final.
 - **Before any INK capture:**
-  - run `tools/deploy-to-local.sh --apply` and confirm with a cache-busted curl;
+  - run `node tools/deploy-to-local.mjs --apply` and confirm with a cache-busted curl;
   - Chromium and the preview server need the sandbox off;
   - so do `composer stan` and `git merge`.
 - **Repo conventions:**

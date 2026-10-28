@@ -63,9 +63,8 @@ compared side by side — see §5 for URLs.
   orchestrator's own live edits) and fights the sandbox's write-deny on `docs/`. Use
   `git worktree add`, or `git diff -- <path> > tmp/patch.diff`.
 - After any `wp-content/themes/ink-foundation` or `wp-content/plugins/ink-core` change, run
-  `tools/deploy-to-local.sh --apply` — the Local site does not read this repo live. Its dry-run mode uses
-  macOS's `openrsync`, which does **not** print a per-file diff list — don't use dry-run output as proof
-  nothing changed; diff the actual directories (`diff -rq`) if you need to confirm sync state.
+  `node tools/deploy-to-local.mjs --apply` — the Local site does not read this repo live. Its dry run
+  lists every file it would copy or delete.
   New `patterns/*.php` files need a throwaway Local-only mu-plugin calling
   `wp_get_theme()->delete_pattern_cache()` (pattern-cache doesn't invalidate on a plain file sync).
 - Repo conventions: branch `feat/epic-19-theme-fidelity`; scratch files in repo-local `./tmp/` only;
@@ -105,7 +104,7 @@ compared side by side — see §5 for URLs.
 - Repo: `/Users/cobus/Development/ink-vibe`, branch `feat/epic-19-theme-fidelity`.
 - Tracking doc (orchestrator's direct-edit file, full page-by-page detail): `docs/theme-fidelity-rework-plan.md`.
 - Page inventory: `docs/design-handoff/page-map.csv`.
-- Live site: `https://nuwe-ink.local/` — filesystem root `/Users/cobus/Local Sites/nuwe-ink/app/public`,
-  not read live from this repo, sync via `tools/deploy-to-local.sh --apply`.
+- Live site: `https://nuwe-ink.local/` — filesystem root from `node tools/local.mjs info`,
+  not read live from this repo, sync via `node tools/deploy-to-local.mjs --apply`.
 - Lovable reference: `https://preview--quill-muse-heart.lovable.app/`.
 - QA fixture gallery: `https://nuwe-ink.local/qa-bloks/`.

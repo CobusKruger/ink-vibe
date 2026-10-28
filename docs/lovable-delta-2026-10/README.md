@@ -88,7 +88,7 @@ ResultsBanner have 0. This must be fixed before anything can be measured (§3, s
 | **D · Build spec per page** | One file per work package: `specs/<NN>-<slug>.md` + `maps/<slug>.csv` (status `planned`). Contents: section spine (Lovable section ↔ INK template/pattern/block *to be created*, with file paths); element table (audit-id → recipe from `_recipes.csv` or `RECIPE-GAP`; data source = meta key / derived / new field / seed file; copy key); URL + slug-clash check against a refreshed DB; load scope of any page sheet = the pages that use it. | spec + map per WP | Owner ratifies **all recipe gaps in one batch** before any build starts |
 | **E · Data, routes, registration** | ink-core first, with unit tests: new fields, migration/seed steps, rewrite endpoint (version-gated flush), SystemPages entries, enriched payloads. | ink-core commits | `composer test`, `composer stan`, deptrac clean |
 | **F · Build** | Template + pattern + blocks that consume primitive classes only. Add recipe gaps to `primitives.css` (ratified versions only). Page sheet = layout, enqueued with a gate that covers every consumer. | theme commits | No primitive defined outside `primitives.css`; `copy:scan` grows only by registered markers |
-| **G · Accept** | `tools/deploy-to-local.sh --apply` → curl check → `determinism-check.sh` → capture both sides → `run.sh diff` → `run.sh verify`. Append to `_primitive-observations.csv`. | `findings/<NN>-<slug>-drift.md` (generated) | Zero `MISSING`/`STRUCTURE`; every `DRIFT` closed or recorded as `DIVERGENCE (accepted)` with an in-code disclosure; `load_scope ⊇ used_in` |
+| **G · Accept** | `node tools/deploy-to-local.mjs --apply` → curl check → `determinism-check.sh` → capture both sides → `run.sh diff` → `run.sh verify`. Append to `_primitive-observations.csv`. | `findings/<NN>-<slug>-drift.md` (generated) | Zero `MISSING`/`STRUCTURE`; every `DRIFT` closed or recorded as `DIVERGENCE (accepted)` with an in-code disclosure; `load_scope ⊇ used_in` |
 | **H · Prove refresh** | Restore the prod snapshot, run `wp ink migrate-all`, curl every new URL (200, not a redirect), re-run G's captures on the refreshed DB. | runbook Verify table rows | Same diff result as G |
 
 Steps D–H run **per work package**. A and B–C run once, up front.
@@ -194,5 +194,5 @@ rehearsal.
 | Pages in the DB lost on refresh | Rehearsal 2026-10-25 (`SystemPages.php:15-25`) | Principle 3 + the extended guard test + step H |
 | Wrong slug / link to unrelated content | `/uitdagings/` 301 to a post; `/lees` taken by a poem | Slug-clash check in step D against a refreshed DB |
 | English or AI-Afrikaans copy shipped | 404 / My Profiel markers went public | Copy-debt markers; `copy:scan` ratchet |
-| Stale local deploy captured | Row 00's first capture discarded | `deploy-to-local.sh --apply` + curl before every capture |
+| Stale local deploy captured | Row 00's first capture discarded | `deploy-to-local.mjs --apply` + curl before every capture |
 | Capability without a consumer | R12B HIGH; `ModeratorFeedback`/`WinnerBanner` today | WP2 wires them, with production-path tests |

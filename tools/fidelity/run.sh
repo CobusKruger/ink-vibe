@@ -5,8 +5,9 @@
 # produces a different confusing failure, so they live here rather than in
 # anyone's shell history. See docs/fidelity-remediation/README.md §9.
 #
-#   1. Node 20+ — Playwright 1.63 hard-refuses on the machine default (18.17.1).
-#      v24.12.0 is already installed under nvm; this does NOT change your default.
+#   1. Node 20+ — Playwright 1.63 hard-refuses anything older. The `node` on PATH
+#      is used if it is new enough; otherwise the newest nvm-installed Node 20+
+#      (macOS nvm or nvm-windows). This does NOT change your default.
 #   2. PLAYWRIGHT_BROWSERS_PATH — the sandbox denies ~/Library/Caches/ms-playwright,
 #      so browsers live in the repo-local gitignored tmp/.
 #   3. NODE_PATH — the tools resolve `playwright` from the repo's node_modules.
@@ -21,11 +22,28 @@
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-NODE_BIN="$HOME/.nvm/versions/node/v24.12.0/bin"
+node_major() { "$1" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0; }
 
-if [[ ! -x "$NODE_BIN/node" ]]; then
-  echo "error: expected Node 20+ at $NODE_BIN" >&2
-  echo "       adjust NODE_BIN in this script, or install one: nvm install 24" >&2
+NODE_BIN=""
+if command -v node >/dev/null 2>&1 && (( $(node_major node) >= 20 )); then
+  NODE_BIN="$(dirname "$(command -v node)")"
+else
+  # Pick the highest major; no `sort -V` (not in every macOS sort).
+  best=0
+  shopt -s nullglob
+  for dir in "$HOME"/.nvm/versions/node/v*/bin "${NVM_HOME:-/nonexistent}"/v*; do
+    for exe in "$dir/node" "$dir/node.exe"; do
+      [[ -x "$exe" ]] || continue
+      major="$(node_major "$exe")"
+      if (( major >= 20 && major > best )); then best="$major"; NODE_BIN="$dir"; fi
+    done
+  done
+  shopt -u nullglob
+fi
+
+if [[ -z "$NODE_BIN" ]]; then
+  echo "error: Node 20+ not found on PATH or under nvm" >&2
+  echo "       install one: nvm install 24" >&2
   exit 1
 fi
 

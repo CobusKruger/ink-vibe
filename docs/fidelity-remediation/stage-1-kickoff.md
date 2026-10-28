@@ -37,7 +37,7 @@ is mid-pipeline and must be resumed.
   ```
 - Confirm `https://nuwe-ink.local/` responds.
 - **Deploy this branch to the Local site** — it runs its own copy of the theme and plugin
-  and lags the branch silently. Run `tools/deploy-to-local.sh` (dry run); if it lists any
+  and lags the branch silently. Run `node tools/deploy-to-local.mjs` (dry run); if it lists any
   file, run it with `--apply` (sandbox off) and confirm with a cache-busted `curl`. Repeat
   this before every INK capture, and after any commit that touches the theme or
   `ink-core` (Phase 3 audit-id edits included). `README.md` Phase 4, precondition 0.

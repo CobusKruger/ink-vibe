@@ -196,11 +196,11 @@ tools/fidelity/run.sh verify --capture <page>@<vp>-scope-<name>.ndjson --sample 
 0. **The INK site is running this branch's code.** `nuwe-ink.local` does not read the
    theme or plugin from this repo; it runs its own copy, which lags the branch silently
    (row 00's first INK capture was taken against pre-Phase-3 code and had to be
-   discarded). Before any INK capture, run `tools/deploy-to-local.sh` (dry run). If it
-   lists any file, run `tools/deploy-to-local.sh --apply` (sandbox off), then confirm
-   with a cache-busted `curl` that the page serves the expected `data-audit-id`s. The
-   script's wp-cli cache purge always fails on this install (§9) — if the curl still shows
-   old markup, purge LiteSpeed by hand in wp-admin.
+   discarded). Before any INK capture, run `node tools/deploy-to-local.mjs` (dry run). If it
+   lists any file, run `node tools/deploy-to-local.mjs --apply` (sandbox off on macOS), then
+   confirm with a cache-busted `curl` that the page serves the expected `data-audit-id`s.
+   The script purges caches through WP-CLI (best-effort) — if the curl still shows old
+   markup, purge LiteSpeed by hand in wp-admin.
 1. `determinism-check.sh` passes for the page. A capture that is not reproducible makes
    every finding derived from it noise.
 2. `run.sh verify` passes on the capture. `README.md` §8.4 forbids shipping a Phase 4
@@ -778,16 +778,17 @@ Full contract in `harness-worklist.md`. The parts that bite:
   rendezvous port. A preview server also cannot bind a socket there (`listen EPERM`).
   Neither is fixable with an allowlist entry; both need the sandbox off. The commands are
   pre-approved in `.claude/settings.local.json`.
-- **Node 20+ is required.** Playwright 1.63 refuses the machine default (18.17.1).
-  `run.sh` points at the nvm-installed v24.12.0 and does not change your default.
+- **Node 20+ is required.** Playwright 1.63 refuses anything older. `run.sh` uses the
+  `node` on PATH if it is new enough, else the newest nvm-installed 20+, and does not
+  change your default. On Windows, run the `.sh` tools from Git Bash.
 - **Browsers live in `tmp/ms-playwright`** — the sandbox denies the usual
   `~/Library/Caches` location.
 - **The WordPress table prefix is `wpjj_`, not `wp_`.** A stale unused `wp_users` table
   also exists; writing to it looks like it worked and WordPress never sees the row.
-- **`wp-cli` cannot connect** to the Local site — `wp-config.php` hardcodes
-  `DB_HOST = 'localhost'` and `--require` loads too late to override it. Use Local's own
-  PHP with `-d mysqli.default_socket=<sock>`, as `tools/fidelity/set-capture-password.php`
-  does, or its `mysql` client over the socket.
+- **Plain `wp` cannot connect** to the Local site — `wp-config.php` hardcodes
+  `DB_HOST = 'localhost'` and `--require` loads too late to override it. Use
+  `node tools/local.mjs wp …` and `node tools/local.mjs mysql …`, which pass Local's port
+  (Windows) or socket (macOS) through (`tools/lib/local-site.mjs`).
 - **`wp-login.php` is intercepted** by `ink-core`'s `Accounts\AuthRedirects` and sent to
   `/meld-aan`. Log in there; the submit control is `<button name="wp-submit">`, not core's
   `<input id="wp-submit">`.

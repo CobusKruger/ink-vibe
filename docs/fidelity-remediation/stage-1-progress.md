@@ -43,7 +43,7 @@ with the gap recorded. The per-page registers are merged into
   capture mid-run. Each subagent builds to `tmp/lovable-dist/<page>/` and previews it on
   its own port (`4180 + row number`). The `:4173` server is left for row 00 only.
 - **Deploy before capture** (`README.md` Phase 4, precondition 0). Subagents run
-  `tools/deploy-to-local.sh --apply` after their Phase 3 edits and confirm with a
+  `node tools/deploy-to-local.mjs --apply` after their Phase 3 edits and confirm with a
   cache-busted `curl`. Other agents' in-progress edits deploy too; each page's
   determinism gate guards its own capture.
 - **Subagents do not commit.** The lead commits per page (both repos) after reviewing the

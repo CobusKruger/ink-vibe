@@ -17,6 +17,8 @@ wp-content/plugins/ink-core/vendor/
 
 # Local environment secrets (per-env, never committed — AD-8).
 /.env
+# Per-machine overrides for tools/lib/local-site.mjs.
+/tools/local.config.json
 
 # OS / editor noise.
 .DS_Store
