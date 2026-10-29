@@ -66,6 +66,12 @@ brew install node                    # Node 20 for wp-env
 If you already have a newer PHP (e.g. via `brew install php`), that works too —
 see the PHP version note above.
 
+### Windows
+
+From an elevated PowerShell in the repo: `powershell -ExecutionPolicy Bypass -File tools\setup-windows.ps1`.
+It installs PHP 8.3, Composer, WP-CLI, Node (nvm-windows), Python and Local via winget, then runs
+`npm ci`, `composer install` and the Playwright browser install. Run the `.sh` tools from Git Bash.
+
 ### Linux (Debian/Ubuntu)
 
 ```bash

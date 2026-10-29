@@ -8,7 +8,7 @@
 
 $plugin = dirname( __DIR__, 2 ) . '/wp-content/plugins/ink-core/src/';
 
-foreach ( array( 'Kernel/Tier.php', 'Kernel/Scalar.php', 'Tiers/Api.php', 'Tiers/PromotionEngine.php', 'Content/ChallengeResultTitle.php', 'Content/ResultPostAuthors.php', 'Migration/LegacyResultsParser.php', 'Migration/WriterResolver.php', 'Migration/TierDeriver.php' ) as $file ) {
+foreach ( array( 'Kernel/Tier.php', 'Kernel/Scalar.php', 'Kernel/MigrationData.php', 'Tiers/Api.php', 'Tiers/PromotionEngine.php', 'Content/ChallengeResultTitle.php', 'Content/ResultPostAuthors.php', 'Migration/LegacyResultsParser.php', 'Migration/WriterResolver.php', 'Migration/TierDeriver.php' ) as $file ) {
 	require_once $plugin . $file;
 }
 
@@ -26,7 +26,11 @@ foreach ( array_slice( $report['unresolved'], 0, 30, true ) as $writer => $count
 	echo "  $writer = $count\n";
 }
 
+// docs/data-cleanup/ (gitignored) or ../data-cleanup/ beside the repo.
 $csv_path = dirname( __DIR__ ) . '/data-cleanup/winners/tier-import.csv';
+if ( ! is_readable( $csv_path ) ) {
+	$csv_path = dirname( __DIR__, 3 ) . '/data-cleanup/winners/tier-import.csv';
+}
 
 if ( ! is_readable( $csv_path ) ) {
 	echo "\n(no tier-import.csv on this machine: nothing to compare with)\n";

@@ -33,8 +33,10 @@ Follow the phases **in order**. Ordering matters — several steps depend on ear
 
 Do **not** start until you physically have all of these. Chasing a missing artifact mid-migration is where mistakes happen.
 
-- [ ] **A production database dump** (`.sql`) — a *fresh* export from production is strongly preferred over cloning the current staging site, because the existing `ink-staging` Local site is a snapshot of the *old* site (old plugins, old theme `ink-v2`) and may be stale. **Don't have one yet? That's what Phase 0.5 below is for** — it walks you through three ways to produce this file, no prior WordPress experience assumed.
+- [ ] **A production database dump** (`.sql`) — a *fresh* export from production. **Don't have one yet? That's what Phase 0.5 below is for** — it walks you through three ways to produce this file, no prior WordPress experience assumed.
 - [ ] **The production `wp-content/uploads/` directory** — all media (audio, PDFs, images). Migrates as-is; the database references it. **Phase 0.5 also covers how to download this folder.**
+- [ ] **A `wp-content/plugins/` folder** — a new Local site has no plugins, and WordPress silently deactivates any the database lists but cannot find. Prod's folder, or the trimmed set from an earlier rehearsal site (Phase 4b).
+- [ ] Keep these three outside the repo, e.g. in `../live-import/` beside it. Never commit them.
 - [ ] **Premium plugin installer** (you cannot get this from wp.org):
   - [ ] **WooCommerce Memberships** — from woocommerce.com account
 - [ ] **Real3D Flipbook** — the InkPols PDF viewer, carried over from the existing site (copy the plugin folder from your previous staging/production install; INK uses the edition already in place — *not* a separate CodeCanyon premium purchase).
@@ -148,48 +150,33 @@ A production `.sql` dump contains **all user accounts, password hashes, email ad
 
 ## Phase 1 — Provision the WordPress environment
 
-The project targets **Local by Flywheel** for staging (the `/Users/cobus/Local Sites/ink-staging` site). WP core, wp-admin, and wp-includes are **not** in the repo — Local provides them. (The repo's `.wp-env.json` is for the automated test harness only; it is not the staging runtime.)
+The project targets **Local by Flywheel** for the dev site **nuwe-ink** (`https://nuwe-ink.local`), on macOS or Windows. WP core, wp-admin, and wp-includes are **not** in the repo — Local provides them. (The repo's `.wp-env.json` is for the automated test harness only; it is not the dev runtime.) The repo's tools find the site through Local's own registry; `node tools/local.mjs info` shows what they found.
 
-1. **Create a fresh Local site** (recommended over reusing the stale one) so you start from clean core.
-   - Site name: e.g. `ink-staging`
-   - **PHP 8.3** (required by `ink-core`, `ink-foundation`, and the whole toolchain)
+1. **Create a fresh Local site** so you start from clean core.
+   - Site name: **`nuwe-ink`** (domain `nuwe-ink.local`). The tools look for this name; another name needs `"site"` in `tools/local.config.json`.
+   - **PHP 8.3** (required by `ink-core`, `ink-foundation`, and the whole toolchain). Local may default to an older PHP: change it on the site's Overview tab.
+   - **HTTPS on:** in Local, SSL → Trust. The capture tooling uses `https://nuwe-ink.local`.
    - **WordPress version:** use **7.0** — the version this new site is built for. You do **not** need to match production's (older) version. WordPress only breaks when you import a *newer* database into an *older* WordPress; the reverse — an older production database into a newer WP 7 — is the normal, supported path: WordPress automatically upgrades the old database schema forward on import (see Phase 2, step 2b). Uploads are plain files and are version-independent. (Aside: the repo declares WP 7.0 in headers/wp-env while the static-analysis stubs pin 6.7 — that discrepancy only affects code analysis, never the running site.)
-   - Web server: LiteSpeed if you can (it makes the LiteSpeed Cache layer representative of production); otherwise nginx/Apache is fine for staging.
-2. Note the site's local URL (e.g. `https://ink-staging.local`) and its DB credentials (Local shows these; they're wired into the generated `wp-config.php`). You'll need the URL for the search-replace in Phase 2.
-3. Confirm WP-CLI works against the site: from the site's `app/public/`, `wp core version` should print the version.
+   - Web server: Local offers nginx or Apache; either is fine (LiteSpeed Cache then runs without its server layer).
+2. Start the site in Local.
+3. Confirm WP-CLI works against the site, from the repo: `node tools/local.mjs wp core version` should print the version.
 
-> **New to WP-CLI? Where do you type these `wp …` commands?** WP-CLI is a command-line tool that ships **inside Local** — you don't install it separately. In the Local app, **right-click your site in the left sidebar → "Open site shell"** (some versions call it "Open WP-CLI"). That opens a terminal that is *already* pointed at this site's WordPress install, so `wp core version`, and later every `wp ink …` command in Phase 5, just work. Every command in this guide that starts with `wp` is meant to be typed into that shell. (If you prefer, `cd` into the site's `app/public/` folder in any terminal where `wp` is installed and run them there.)
-
-> **Reusing the existing Local site instead?** You can, but you must first remove the legacy theme (`ink-v2`) and every retired plugin (see Phase 4's remove-list) — otherwise old code (WPBakery, Youzify, Yoast, Loginizer) will fight the new model. A fresh site avoids that cleanup entirely. If you reuse it, treat Phase 2 as "re-import a fresh prod DB over the top".
+> **Where do you type the `wp …` commands in this guide?** From the repo root, as `node tools/local.mjs wp …` (e.g. `node tools/local.mjs wp ink migrate-all`). Plain `wp` cannot reach Local's database (wp-config.php says `DB_HOST = 'localhost'`; the helper passes Local's port or socket). Local's own "Open site shell" also works. Tool install: `tools/setup-windows.ps1` on Windows; see [testing-and-quality-harness.md](./testing-and-quality-harness.md) for macOS.
 
 ---
 
 ## Phase 2 — Load the production database and files
 
-Goal: staging is a faithful copy of live, adjusted only for its new URL. This phase consumes the two artifacts you produced in Phase 0.5 (the `.sql` file and the `uploads/` folder).
+Goal: the dev site is a faithful copy of live, adjusted only for its new URL. **Phases 2 and 3 are one script**, `tools/rehearsal-prep.mjs`; the full procedure, flags and notes are in [migration-runbook.md](./migration-runbook.md). In short, with the Phase 0 inputs in `../live-import/`:
 
-> **Where is the staging site's folder?** In the Local app, **right-click your site → "Reveal in Finder" (or "Show folder")**. Inside you'll find `app/public/` — that folder *is* the staging WordPress install. Its `wp-content/uploads/` is where the media goes, and it's the folder the \"Open site shell\" terminal starts in one level up.
+```bash
+node tools/rehearsal-prep.mjs --sql ../live-import/prod.sql --uploads ../live-import/uploads --plugins ../live-import/plugins          # dry run
+node tools/rehearsal-prep.mjs --sql ../live-import/prod.sql --uploads ../live-import/uploads --plugins ../live-import/plugins --apply
+```
 
-1. **Import the media files.** Copy the production `uploads/` folder you downloaded in Phase 0.5 into the staging site at `app/public/wp-content/uploads/`. You want the staging `uploads/` to end up containing the same year/month subfolders (`2024/`, `2025/`, …) as production. If a staging `uploads/` already exists, merge into it (replace/overwrite when asked). Do this before verifying media later.
-2. **Import the database.** Load the production `.sql` from Phase 0.5 into the staging database. The simplest way is the Local site shell ("Open site shell" from Phase 1), then:
-   ```bash
-   wp db import /full/path/to/production.sql
-   ```
-   Drag the `.sql` file into the terminal window to paste its full path. (If your file is compressed as `production.sql.gz`, first run `gunzip production.sql.gz` to get the `.sql`.) You can instead use Local's built-in database GUI ("Open Adminer"/"Open Sequel") and use its Import button. Either way, Local's generated `wp-config.php` already points at the correct local DB — **do not hand-edit credentials.** This step **overwrites** the empty staging database with production's content, which is exactly what you want.
-2b. **Upgrade the database schema forward (only if production ran an older WordPress).** Because staging is WP 7 and the imported data came from an older version, run WordPress's built-in upgrade once so the schema matches WP 7:
-   ```bash
-   wp core update-db
-   ```
-   This is the automatic, supported migration referenced in Phase 1 — it adjusts the old schema in place and is safe to run even when nothing needs upgrading (it simply reports "Database upgraded successfully" or that no upgrade was required). If production happened to already run WP 7, this is a harmless no-op.
-3. **Rewrite the site URL** from the production domain to the staging domain (this is the "point it to the right place" step for content, distinct from DB credentials). Replace `https://PROD-DOMAIN` below with the real live domain (e.g. `https://inkskryfburo.co.za`), and use your actual Local URL from Phase 1:
-   ```
-   wp search-replace 'https://PROD-DOMAIN' 'https://ink-staging.local' --all-tables --precise --skip-columns=guid
-   wp option update home 'https://ink-staging.local'
-   wp option update siteurl 'https://ink-staging.local'
-   ```
-   (Leave `guid` untouched — GUIDs are permanent identifiers, not links.)
-4. **Fix uploads path** only if the production absolute path differs from the local one (`wp option get upload_path`); normally WordPress derives it and you can leave it blank.
-5. **Sanity check:** `wp option get blogname` and load the front page. It will look like the *old* site right now — that's expected. The new model arrives in Phases 3–5.
+It replaces the site database with the dump, runs `wp core update-db` (prod runs an older WordPress than the dev site; the schema is upgraded forward), rewrites the prod URLs to `https://nuwe-ink.local` with a serialization-safe `wp search-replace` (`guid` untouched), copies uploads and plugins, deploys and activates `ink-core` + `ink-foundation` (Phase 3), and sets `WP_ENVIRONMENT_TYPE`, `INK_MAIL_SINK` and `INK_MIGRATION_DATA_DIR`. Local's generated `wp-config.php` already points at the correct local DB — **do not hand-edit credentials.**
+
+**Sanity check:** load the front page. It shows the new theme over the old data until Phase 5 runs.
 
 > Subscriptions require **no import** — WooCommerce Memberships records, plan IDs, start/expiry dates all ride the DB clone. Users, comments, media attachments, and private messages likewise ride the clone. You verify these later; you do not re-create them.
 
@@ -203,10 +190,9 @@ This must happen **before any migration command**, because:
 
 **There is no asset build.** `ink-core` is pure PHP; `ink-foundation` is a block theme (raw `theme.json` + `.html` templates + hand-authored JS/CSS/fonts). No `npm`, webpack, or vite step exists for either.
 
-1. **Place the code** into the staging `wp-content/` (symlink from the repo, or copy):
-   - `wp-content/plugins/ink-core/`  ← from `ink-vibe/wp-content/plugins/ink-core/`
-   - `wp-content/themes/ink-foundation/`  ← from `ink-vibe/wp-content/themes/ink-foundation/`
-   A symlink to your working copy is convenient on staging so you can pull updates without re-copying.
+`rehearsal-prep.mjs` (Phase 2) does steps 1, 3 and 4. They are listed for later code changes and for understanding.
+
+1. **Place the code** with `node tools/deploy-to-local.mjs` (dry run) then `--apply`. It mirrors `ink-core` and `ink-foundation` from the repo, deleting files that are not in the repo. Do not symlink: the mirror would follow the link into your working copy. Re-run it after every code change; the site never reads the repo directly.
 2. **(Optional) Optimize the autoloader.** From `wp-content/plugins/ink-core/`, run `composer install --no-dev`. This generates the plugin's own `vendor/autoload.php`. It is purely an optimization — the plugin falls back to a hand-rolled PSR-4 loader (`src/autoload.php`) and runs fine without it.
 3. **Activate the plugin** (runs `Kernel\Activation`: records `ink_core_db_version`, installs custom-table schema via `dbDelta`, flushes rewrite rules, guards PHP/WP minimums):
    ```
@@ -236,7 +222,8 @@ wp plugin deactivate wordpress-seo loginizer js_composer qode-framework \
   youzify youzify-frontend-submission cbxuseronline classic-widgets joinup-core \
   ultimate-social-media-icons woocommerce-legacy-rest-api wpcustom-category-image \
   wps-bidouille automatic-translator-addon-for-loco-translate document-emberdder \
-  maintenance pdf-embedder string-locator
+  maintenance pdf-embedder string-locator \
+  advanced-cron-manager comments-plus report-content invite-anyone redirect-redirection
 wp plugin delete wordpress-seo loginizer js_composer qode-framework ...   # same list
 wp theme delete ink-v2   # legacy theme; keep a default theme installed as fallback
 ```
@@ -245,7 +232,10 @@ wp theme delete ink-v2   # legacy theme; keep a default theme installed as fallb
 - **Loginizer** — retired; Cloudflare edge login rule + origin lock replace it.
 - **WPBakery (`js_composer`) / Qode / Youzify / revslider / etc.** — legacy page-builder & profile stack; the block theme + `ink-core` + BuddyPress replace them. Their shortcodes are stripped later by `wp ink clean-shortcodes`.
 - **LocoAI addon** — forbidden (no AI Afrikaans translation).
-- **Comments Plus / Disable Comments** — optional to keep; `ink-core` already closes comments via filters. Delete once you've confirmed the `ink-core` behaviour.
+- **Comments Plus / Disable Comments** — `ink-core` already closes comments via filters. Retired (owner, 2026-10-29).
+- **Advanced Cron Manager, Report Content, Invite Anyone, Redirect Redirection** — retired (owner, 2026-10-29). Report Content is replaced by the `ink-core` form; Invite Anyone only served BuddyPress Groups (off); `redirect-redirection` is **not** the "Redirection" plugin of 4b.
+
+> **On a dev/rehearsal copy, also deactivate FluentSMTP** (`wp plugin deactivate fluent-smtp`). The prod database brings its settings with it: it would send through prod's mail server (`mail.ink.org.za`) with prod's account. `INK_MAIL_SINK` still redirects every recipient, so members are safe, but the mail would leave the machine and bounce on prod's account instead of landing in Local's Mailpit. Keep it on production (4b).
 
 ### 4b. Keep / install the production plugin set (active on staging **and** production)
 
@@ -257,6 +247,7 @@ wp theme delete ink-v2   # legacy theme; keep a default theme installed as fallb
 | **WooCommerce** | wp.org | Memberships engine (suppress storefront UI) |
 | **WooCommerce Memberships** | woocommerce.com (**premium**) | Time-based access |
 | **WooCommerce PayFast Gateway** | wp.org | ZAR payments, fixed-term (no auto-renew at launch) |
+| **FluentSMTP** | wp.org (already on prod) | Outgoing mail through `mail.ink.org.za`. Production only: deactivate on dev copies (see 4a). Keep, or replace with an equivalent SMTP plugin (owner, 2026-10-29) |
 | **Real3D Flipbook** | carried over from existing site | InkPols PDF viewer (the edition already in use; copy the folder from your prior install) |
 | **Rank Math SEO** | wp.org | **Replaces Yoast.** Config in Phase 6 |
 | **Patchstack** | wp.org + account | CVE monitoring |
@@ -356,7 +347,7 @@ Behavioural configuration that isn't captured in the migration. See each runbook
 These have **no** migration command — they are editorial:
 
 - [ ] **Sponsors** (`borg`/`sponsor`) — enter manually in wp-admin (very low volume).
-- [ ] **InkPols back-catalogue** — `migrate-inkpols` handles issues present in the legacy data; enter/curate any remaining issues manually. Confirm each issue's PDF (Real3D Flipbook) opens.
+- [ ] **InkPols back-catalogue** — prod keeps each issue as a Page with an embedded PDF, and today's `migrate-inkpols` does nothing with them. The fix is a CSV-driven step (`migration-data/inkpols-uitgawes.csv`, spec in [lovable-delta-2026-10/inkpols.md](./lovable-delta-2026-10/inkpols.md) §3, work package WP4), not manual entry. Until it ships, `/inkpols/` is empty after a refresh.
 - [ ] **Navigation review** — `rebuild-navigation` created the canonical "Hoofnavigasie"; review and adjust labels/order in the Site Editor.
 - [ ] **Post-classification cleanup** — review anything that landed in `skryfwerk` and re-file if a human decision is needed.
 - [ ] **Profile-field mapping** — reconcile any legacy profile fields you chose to keep.
@@ -381,7 +372,7 @@ Work through these before declaring staging good (and before any production cuto
 - [ ] **Membership flow:** a test purchase via PayFast → membership activates → gated content unlocks; expiry behaves.
 - [ ] **Community:** profiles load, following works (the transformed follow graph), private messages present, member directory works.
 - [ ] **Content model:** each CPT (`gedig`, `storie`, `artikel`, `biblioteek_item`, `opleiding_artikel`, `uitdaging`, `inkpols_uitgawe`) has an archive + single view rendering through the theme.
-- [ ] **Writer tiers:** spot-check that `ink_writer_tier` values match the CSV; review anything flagged by `ink_tier_import_review_flag`.
+- [ ] **Writer tiers:** gradering is derived from the result posts (`derive-tiers`). Review its unresolved by-lines and fuzzy matches, and run `docs/migration-tools/validate-gradering.php` (see [migration-runbook.md](./migration-runbook.md)).
 - [ ] **Forms:** contact form and content-report submit successfully.
 - [ ] **Language:** UI renders in Afrikaans (`WPLANG=af`); check for untranslated strings (copy-debt is tracked separately in [afrikaans-copy-worklist.md](./afrikaans-copy-worklist.md)).
 
@@ -392,16 +383,10 @@ Work through these before declaring staging good (and before any production cuto
 ## Appendix A — Complete command sequence (copy-ready)
 
 ```bash
-# PHASE 2 — DB + URL
-wp db import production.sql
-wp search-replace 'https://PROD-DOMAIN' 'https://ink-staging.local' --all-tables --precise --skip-columns=guid
-wp option update home 'https://ink-staging.local'
-wp option update siteurl 'https://ink-staging.local'
+# Run from the repo root. `wp …` below means `node tools/local.mjs wp …`.
 
-# PHASE 3 — first-party code
-(cd wp-content/plugins/ink-core && composer install --no-dev)   # optional
-wp plugin activate ink-core
-wp theme activate ink-foundation
+# PHASES 2–3 — DB, URL, uploads, plugins, first-party code (dry run first)
+node tools/rehearsal-prep.mjs --sql ../live-import/prod.sql --uploads ../live-import/uploads --plugins ../live-import/plugins --apply
 wp ink   # sanity: subcommands listed
 
 # PHASE 4 — prune legacy (see Phase 4a for full list), install keep-set via wp-admin/wp plugin install

@@ -4,13 +4,14 @@
  * nuwe-ink, ready for `wp ink migrate-all`. Works on macOS and Windows.
  *
  * Everything up to the prod export itself is automated; the export (a database
- * dump and, optionally, the uploads folder) is the only thing you bring. Leave
- * --uploads out to keep the uploads already on the site (media added to prod
- * since then will be missing: `wp ink verify-media` shows it).
+ * dump and, optionally, the uploads and plugins folders) is the only thing you
+ * bring. Leave --uploads out to keep the uploads already on the site (media added
+ * to prod since then will be missing: `wp ink verify-media` shows it). A new
+ * Local site has no plugins: pass --plugins (prod's wp-content/plugins).
  *
  * Usage:
  *   node tools/rehearsal-prep.mjs --sql <prod.sql|prod.sql.gz> [--uploads <dir|.zip|.tar.gz>]
- *        [--mail-sink sink@nuwe-ink.local] [--old-url https://ink.org.za]
+ *        [--plugins <dir>] [--mail-sink sink@nuwe-ink.local] [--old-url https://ink.org.za]
  *        [--migration-data <dir>] [--apply]
  *
  * Without --apply it is a DRY RUN: it checks the inputs and the Local site and
@@ -19,12 +20,12 @@
  *
  * What it does, in order:
  *   1. safety checks (the target really is the Local nuwe-ink site)
- *   2. drops and recreates the database, then imports the prod dump
+ *   2. drops and recreates the database, imports the prod dump, runs `wp core update-db`
  *   3. replaces the prod URL with https://<site>.local using `wp search-replace`
  *      (serialization-safe; editing the SQL text would corrupt serialized data).
  *      Only URLs are replaced, never the bare domain, so addresses such as
  *      moderator@ink.org.za in the data are left alone.
- *   4. copies the uploads in, deploys ink-core + ink-foundation (deploy-to-local.mjs)
+ *   4. copies the uploads and plugins in, deploys ink-core + ink-foundation (deploy-to-local.mjs)
  *   5. activates them, sets WP_ENVIRONMENT_TYPE, INK_MAIL_SINK and
  *      INK_MIGRATION_DATA_DIR, flushes rewrites and caches
  *
@@ -35,7 +36,7 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, statSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { deploy } from './deploy-to-local.mjs';
 import {
@@ -44,7 +45,7 @@ import {
 import { mirror } from './lib/mirror.mjs';
 
 // --- Arguments -------------------------------------------------------------
-const opts = { sql: '', uploads: '', oldUrl: '', mailSink: '', migrationData: '', apply: false };
+const opts = { sql: '', uploads: '', plugins: '', oldUrl: '', mailSink: '', migrationData: '', apply: false };
 const argv = process.argv.slice(2);
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
@@ -52,6 +53,7 @@ for (let i = 0; i < argv.length; i++) {
   switch (a) {
     case '--sql': opts.sql = value(); break;
     case '--uploads': opts.uploads = value(); break;
+    case '--plugins': opts.plugins = value(); break;
     case '--old-url': opts.oldUrl = value(); break;
     case '--mail-sink': opts.mailSink = value(); break;
     case '--migration-data': opts.migrationData = value(); break;
@@ -62,6 +64,9 @@ for (let i = 0; i < argv.length; i++) {
 
 if (!opts.sql || !existsSync(opts.sql) || !statSync(opts.sql).isFile()) die('--sql <file> is required and must exist.');
 if (opts.uploads && !existsSync(opts.uploads)) die(`--uploads path does not exist: ${opts.uploads}`);
+if (opts.plugins && !(existsSync(opts.plugins) && statSync(opts.plugins).isDirectory())) {
+  die(`--plugins must be a folder: ${opts.plugins}`);
+}
 
 const site = findSite();
 const targetUrl = `https://${site.domain}`;
@@ -97,6 +102,7 @@ console.log(`  site:           ${site.webRoot}`);
 console.log(`  database:       ${site.db.name} via ${conn}`);
 console.log(`  prod dump:      ${opts.sql}`);
 console.log(`  uploads:        ${opts.uploads || '(none given: keeping the uploads already on the site)'}`);
+console.log(`  plugins:        ${opts.plugins || '(none given: keeping the plugins already on the site)'}`);
 console.log(`  old URL:        ${opts.oldUrl || '(read from the imported database)'}`);
 console.log(`  new URL:        ${targetUrl}`);
 console.log(`  mail sink:      ${mailSink}`);
@@ -115,9 +121,24 @@ const dbName = site.db.name.replace(/`/g, '');
 mysql(site, ['-e', `DROP DATABASE IF EXISTS \`${dbName}\`; CREATE DATABASE \`${dbName}\` CHARACTER SET utf8mb4;`]);
 await mysqlImport(site, dbName, opts.sql).catch((e) => die(e.message));
 
-const prefix = wp(site, ['config', 'get', 'table_prefix'], { bare: true, capture: true });
-mysql(site, ['-N', '-e', `SELECT COUNT(*) FROM \`${dbName}\`.\`${prefix}options\``], { allowFail: true }) !== null
-  || die(`Imported database has no '${prefix}options' table. Does prod use another table prefix? Change $table_prefix in wp-config.php.`);
+// A new Local site's wp-config.php says `wp_`; prod uses its own prefix (`wpjj_`). Take it
+// from the dump: the prefix whose options and users tables both exist.
+let prefix = wp(site, ['config', 'get', 'table_prefix'], { bare: true, capture: true });
+const tables = (mysql(site, ['-N', '-e', `SELECT table_name FROM information_schema.tables WHERE table_schema='${dbName}'`]) ?? '')
+  .split(/\r?\n/).filter(Boolean);
+if (!tables.includes(`${prefix}options`)) {
+  const candidates = tables.filter((t) => t.endsWith('options')).map((t) => t.slice(0, -'options'.length))
+    .filter((p) => p && tables.includes(`${p}users`));
+  if (candidates.length !== 1) {
+    die(`Imported database has no '${prefix}options' table, and the prefix is ambiguous (${candidates.join(', ') || 'none found'}). Set $table_prefix in wp-config.php.`);
+  }
+  console.log(`  table prefix: ${prefix} -> ${candidates[0]} (from the dump)`);
+  prefix = candidates[0];
+  wp(site, ['config', 'set', 'table_prefix', prefix, '--type=variable', '--quiet'], { bare: true });
+}
+
+// Prod may run an older WordPress than the Local site; bring its schema forward.
+wp(site, ['core', 'update-db'], { bare: true });
 
 // --- 2. URLs --------------------------------------------------------------------
 say(`2/5 Pointing the site at ${targetUrl}`);
@@ -134,7 +155,7 @@ for (const from of [`https://${oldHost}`, `http://${oldHost}`, `https://www.${ba
 }
 
 // --- 3. Uploads -----------------------------------------------------------------
-say('3/5 Copying the uploads');
+say('3/5 Copying the uploads and plugins');
 const uploadsDest = path.join(site.webRoot, 'wp-content', 'uploads');
 mkdirSync(uploadsDest, { recursive: true });
 if (!opts.uploads) {
@@ -153,6 +174,25 @@ if (!opts.uploads) {
   }
   const r = mirror(from, uploadsDest, { log: () => {} });
   console.log(`  ${r.copied.length} file(s) copied`);
+}
+
+// Third-party plugins the prod database expects; ink-core comes from this repo (step 4).
+// Each plugin folder is mirrored; plugins already on the site and not in --plugins stay.
+if (opts.plugins) {
+  console.log('  plugins:');
+  const pluginsDest = path.join(site.webRoot, 'wp-content', 'plugins');
+  for (const e of readdirSync(opts.plugins, { withFileTypes: true })) {
+    if (e.name === 'ink-core' || e.name === 'index.php' || e.name.startsWith('.')) continue;
+    const from = path.join(opts.plugins, e.name);
+    const to = path.join(pluginsDest, e.name);
+    if (e.isDirectory()) {
+      const r = mirror(from, to, { deleteExtra: true, log: () => {} });
+      console.log(`    ${e.name}: ${r.copied.length} copied, ${r.deleted.length} removed`);
+    } else if (e.isFile() && e.name.endsWith('.php')) {
+      copyFileSync(from, to);
+      console.log(`    ${e.name}`);
+    }
+  }
 }
 
 // --- 4. Code --------------------------------------------------------------------

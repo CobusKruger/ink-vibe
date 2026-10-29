@@ -57,7 +57,8 @@ export function which(name) {
   const exts = IS_WINDOWS ? (process.env.PATHEXT ?? '.EXE;.BAT;.CMD').split(';').map((e) => e.toLowerCase()) : [''];
   for (const dir of (process.env.PATH ?? '').split(path.delimiter)) {
     if (!dir) continue;
-    for (const ext of IS_WINDOWS ? ['', ...exts] : exts) {
+    // Windows: PATHEXT only, so an extensionless Git Bash shim (e.g. ~/bin/wp) is not picked.
+    for (const ext of exts) {
       const candidate = path.join(dir, name + ext);
       try {
         if (statSync(candidate).isFile()) return candidate;

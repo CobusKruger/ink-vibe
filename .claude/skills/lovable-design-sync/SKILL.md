@@ -1,7 +1,7 @@
 ---
 name: lovable-design-sync
 description: >-
-  Propagate new INK design work from the ink-lovable repo into this repo's design-handoff
+  Propagate new INK design work from the verse-haven (Lovable) repo into this repo's design-handoff
   folder, planning docs, and specs. Use whenever the user says they have updated / pushed /
   added new Lovable design work, asks to "sync the Lovable design", refresh the design handoff,
   or update the specs after a design change. Keeps theme-tokens, page-map, page notes,
@@ -24,9 +24,9 @@ design.
 
 | What | Path |
 |---|---|
-| Lovable design source repo (separate git repo) | `/Users/cobus/Development/ink-lovable` |
-| Lovable token sources | `ink-lovable/DESIGN_TOKENS.md`, `src/index.css`, `tailwind.config.ts` |
-| Lovable pages/components | `ink-lovable/src/pages/*`, `ink-lovable/src/components/*` |
+| Lovable design source repo (separate git repo, formerly `ink-lovable`) | `../verse-haven` (beside this repo) |
+| Lovable token sources | `verse-haven/DESIGN_TOKENS.md`, `src/index.css`, `tailwind.config.ts` |
+| Lovable pages/components | `verse-haven/src/pages/*`, `verse-haven/src/components/*` |
 | Normalised tokens | `docs/design-handoff/tokens/theme-tokens.json`, `tokens/token-map.md` |
 | Page map | `docs/design-handoff/page-map.csv` |
 | Readiness | `docs/mockup-readiness-assessment.md` |
@@ -40,13 +40,13 @@ All paths except the Lovable repo are relative to the ink-vibe repo root.
 ## Procedure
 
 ### Step 0 — Pull, then scope the delta (do this first)
-- **Pull the latest Lovable work first:** `git -C /Users/cobus/Development/ink-lovable pull` so the
+- **Pull the latest Lovable work first:** `git -C ../verse-haven pull` so the
   local clone reflects the newest design pushes. If the pull fails (uncommitted local changes,
   detached HEAD, no remote/upstream, merge conflict), **stop and report** rather than guessing.
 - Find the **last-synced commit hash** (recorded in `docs/design-handoff/README.md` changelog).
   If none recorded, treat as a full re-sync.
-- Run `git -C /Users/cobus/Development/ink-lovable log --oneline <last>..HEAD` and
-  `git -C /Users/cobus/Development/ink-lovable diff --stat <last>..HEAD`.
+- Run `git -C ../verse-haven log --oneline <last>..HEAD` and
+  `git -C ../verse-haven diff --stat <last>..HEAD`.
 - From the changed files, decide which of Steps 1–2 apply:
   - token files changed → Step 1
   - `src/pages/*` or `src/components/*` changed → Step 2

@@ -47,6 +47,48 @@ test( 'only text before the commentary is read, and the heading line carrying "K
 	expect( parsed( $html ) )->toBe( array( 'Gedigte/Brons/1 Retha van Deventer (Piketti) - Hersinskim' ) );
 } );
 
+test( 'a short heading ending in "Kommentaar" ends the winners region (Nov 2018)', function (): void {
+	$html = "GEDIGTE WENNERS:\n<strong>BRONS:</strong>\n(1) Moria: Charleine Collins\n(3) Ontvlugting: See-Jay-El\n<strong>GEDIGTE KOMMENTAAR:</strong>\n"
+		. "1. Woordeloos verloof: Marieta McGrath\n3. Die onwerklike mooi: Palet\nVERHALE BESPREKINGS\n(1) No 2 Iemand met Iets";
+	$known = array( 'Charleine Collins', 'See-Jay-El', 'Marieta McGrath', 'Palet' );
+
+	expect( parsed( $html, $known ) )->toBe(
+		array(
+			'Gedigte/Brons/1 Charleine Collins - Moria',
+			'Gedigte/Brons/3 See-Jay-El - Ontvlugting',
+		)
+	);
+} );
+
+test( 'two-digit bracket numbers in the commentary do not turn the winners\' (1)-(3) into entry numbers', function (): void {
+	$html = "GEDIGTE WENNERS:\nGOUD:\n(1) Strandfontein: Carma Shaw\n(2) Sag soen die Nylstroomson: Anzé Bezuidenhout\nGEDIGTE KOMMENTAAR:\n(10) Moria: Charleine Collins";
+	$known = array( 'Carma Shaw', 'Anzé Bezuidenhout', 'Charleine Collins' );
+
+	expect( parsed( $html, $known ) )->toBe(
+		array(
+			'Gedigte/Goud/1 Carma Shaw - Strandfontein',
+			'Gedigte/Goud/2 Anzé Bezuidenhout - Sag soen die Nylstroomson',
+		)
+	);
+} );
+
+test( 'a title above the lists that ends in "kommentaar" does not end the region', function (): void {
+	$html = "GEDIGTE\nUitslae en kommentaar\nBRONS\n(1) No 3 Iemand met Titel";
+
+	expect( parsed( $html ) )->toBe( array( 'Gedigte/Brons/1 Iemand - Titel' ) );
+} );
+
+test( 'with a position marker, an unknown writer must still be shaped like a name', function (): void {
+	$html = "GEDIGTE\nBRONS\n1. Annamarie vd Merwe met Hartsdief\n2. Retha van Deventer (Piketti) met Hersinskim\n3. Karoo in daardie konteks met ‘n hoofletter.";
+
+	expect( parsed( $html ) )->toBe(
+		array(
+			'Gedigte/Brons/1 Annamarie vd Merwe - Hartsdief',
+			'Gedigte/Brons/2 Retha van Deventer (Piketti) - Hersinskim',
+		)
+	);
+} );
+
 test( 'a glued entry number is not a position, so order inside the block decides', function (): void {
 	$html = "GEDIGTE\nBrons:\n17.Retha van Deventer met Hersinskim\n27.Anne-Marie Kotzee met 'n Nuwe normaal\n20.Cobus Kruger met Wintersoggend";
 

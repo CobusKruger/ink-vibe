@@ -87,7 +87,7 @@ class**.
 ### The Lovable side
 
 ```
-ink-lovable/
+verse-haven/                     ← beside this repo (older docs call it ink-lovable)
   src/App.tsx                    ← the route table. The definitive page list.
   src/pages/<Page>.tsx           ← one file per route
   src/components/home|layout|reading/*.tsx

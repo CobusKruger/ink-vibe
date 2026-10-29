@@ -87,10 +87,18 @@ final class LegacyResultsParser {
 
 		// "(29) Marlene Erasmus met ..." : when a bracketed number of two or more digits leads an
 		// entry that has no "No." marker, the brackets hold the ENTRY number everywhere in the
-		// post, not the position ("(3)" is then entry 3, not third place).
+		// post, not the position ("(3)" is then entry 3, not third place). Only the winners
+		// region counts: commentary below numbers its own list ("(10) Titel: Skrywer", Nov 2018).
 		$paren_is_entry = false;
+		$in_blocks      = false;
 
 		foreach ( $all as $candidate ) {
+			if ( null !== self::header( $candidate ) ) {
+				$in_blocks = true;
+			} elseif ( $in_blocks && self::isCommentaryHeading( $candidate ) ) {
+				break;
+			}
+
 			if ( 1 === preg_match( '/^\(\d{2,3}\)\s*(?!no\b|nr\b)\p{L}/iu', $candidate ) ) {
 				$paren_is_entry = true;
 				break;
@@ -99,6 +107,12 @@ final class LegacyResultsParser {
 
 		foreach ( $all as $raw ) {
 			if ( ( '' !== $category || array() !== $rows ) && 1 === preg_match( '/^\W*(kommentaar|kommentare|komentaar|besprekings?|kritiek)\b/iu', $raw ) ) {
+				break;
+			}
+
+			// "GEDIGTE KOMMENTAAR:" only once winners were read, so a title such as
+			// "Uitslae en kommentaar" above the lists cannot end the region early.
+			if ( array() !== $rows && self::isCommentaryHeading( $raw ) ) {
 				break;
 			}
 
@@ -479,8 +493,10 @@ final class LegacyResultsParser {
 
 		// "Writer met Title". Without any marker (position, "No.", "(n)") the writer must be a known
 		// name, otherwise a prose sentence with "met" in it ("... gedig met nostalgie ...") would pass.
+		// With a marker an unknown writer is accepted, but only if it is shaped like a name: a
+		// numbered commentary sentence ("3. Karoo in daardie konteks met 'n hoofletter") is not.
 		if ( 1 === preg_match( '/^(.+?)\s+met(?:\s+|(?=[’\'‘]))(.+)$/iu', $rest, $m ) ) {
-			if ( ! $had_marker && ! isset( $known_keys[ self::nameKey( $m[1] ) ] ) ) {
+			if ( ! isset( $known_keys[ self::nameKey( $m[1] ) ] ) && ( ! $had_marker || ! self::looksLikeName( $m[1] ) ) ) {
 				return null;
 			}
 
@@ -624,6 +640,47 @@ final class LegacyResultsParser {
 			'title'    => $title,
 			'position' => $position,
 		);
+	}
+
+	/**
+	 * Whether a line is a commentary heading: one that starts with the word, or a short one that
+	 * ends in it ("GEDIGTE KOMMENTAAR:", "Verhale besprekings"). Pure.
+	 *
+	 * @param string $line A trimmed line.
+	 */
+	private static function isCommentaryHeading( string $line ): bool {
+		$word = '(kommentaar|kommentare|komentaar|besprekings?|kritiek)';
+
+		return 1 === preg_match( '/^\W*' . $word . '\b/iu', $line )
+			|| ( mb_strlen( $line ) <= 40 && 1 === preg_match( '/^\W*(?:[\p{L}\/&]+\s+){1,3}' . $word . '\W*$/iu', $line ) );
+	}
+
+	/**
+	 * Whether a writer that is not a known name is at least shaped like one: every word
+	 * capitalised, apart from name particles. Pure.
+	 *
+	 * @param string $writer The writer part of an entry.
+	 */
+	private static function looksLikeName( string $writer ): bool {
+		// Bracketed pen names ("Retha van Deventer (Piketti)") are not part of the shape test.
+		$plain = trim( (string) preg_replace( '/\([^)]*\)/u', '', $writer ) );
+
+		if ( '' === $plain ) {
+			return false;
+		}
+
+		foreach ( preg_split( '/\s+/u', $plain ) ?: array() as $word ) {
+			if ( 1 === preg_match( '/^(?:van|der|den|de|du|vd|v\.d\.|le|la|von|ter|ten|te|se|en|&)$/u', $word ) ) {
+				continue; // Name particles, and "en"/"&" joining two names.
+			}
+
+			// Only a lowercase word fails: entry-number noise ("+ No. 22") passes through.
+			if ( 1 === preg_match( '/^\p{Ll}/u', $word ) ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

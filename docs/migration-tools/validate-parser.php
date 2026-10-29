@@ -16,7 +16,12 @@ function norm( string $s ): string {
 }
 function writer_key( string $s ): string { return norm( preg_replace( '/\(.*?\)/u', '', $s ) ); }
 
-$csv = fopen( dirname( __DIR__ ) . '/data-cleanup/winners/originals/winner-list.csv', 'r' );
+// docs/data-cleanup/ (gitignored) or ../data-cleanup/ beside the repo.
+$winner_list = dirname( __DIR__ ) . '/data-cleanup/winners/originals/winner-list.csv';
+if ( ! is_readable( $winner_list ) ) {
+	$winner_list = dirname( __DIR__, 3 ) . '/data-cleanup/winners/originals/winner-list.csv';
+}
+$csv = fopen( $winner_list, 'r' );
 $head = fgetcsv( $csv );
 $exp = array(); $heading = array();
 while ( ( $r = fgetcsv( $csv ) ) !== false ) {

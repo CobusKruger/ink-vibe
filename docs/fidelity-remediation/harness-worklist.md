@@ -103,8 +103,8 @@ in the tool rather than left to a human.
 Three facts make the harness work. Each produces a different confusing failure if missed;
 `tools/fidelity/run.sh` sets all three.
 
-1. **Node 20+.** Playwright 1.63 hard-refuses on the machine default (18.17.1, via `n`).
-   `v24.12.0` is already installed under nvm. This does **not** change the default.
+1. **Node 20+.** Playwright 1.63 hard-refuses anything older. `run.sh` uses the `node` on
+   PATH if new enough, else the newest nvm-installed 20+. This does **not** change the default.
 2. **`PLAYWRIGHT_BROWSERS_PATH`.** The sandbox denies `~/Library/Caches/ms-playwright`;
    browsers live in repo-local gitignored `tmp/ms-playwright`.
 3. **`NODE_PATH`** — the tools resolve `playwright` from the repo's `node_modules`.
@@ -183,8 +183,8 @@ tools/fidelity/run.sh login --side ink --url https://nuwe-ink.local/wp-login.php
   --user fidelity-capture --pass …
 
 # start the Lovable reference server (needs sandbox off; binds :4173)
-npm --prefix ../ink-lovable run build
-npm --prefix ../ink-lovable run preview -- --port 4173 --strictPort
+npm --prefix ../verse-haven run build
+npm --prefix ../verse-haven run preview -- --port 4173 --strictPort
 ```
 
 ---

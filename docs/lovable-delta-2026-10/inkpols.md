@@ -89,7 +89,7 @@ The owner fills in `wp-content/plugins/ink-core/migration-data/inkpols-uitgawes.
 - **Prefilled per row:** `slug`, `naam`, `datum`, `pdf`, `voorblad`, `ou_url`.
 - **Blank, for the owner:** `titel`, `beskrywing`, and the six featured-item cells.
 
-⚠ **This CSV is gitignored** (`.gitignore:28`, `*.csv`), as are the other migration-data CSVs. Add a `.gitignore` exception (it holds no personal data) or copy it by hand, or it will not reach another machine.
+**This CSV is committed** through a `.gitignore` exception (no personal data), unlike the writer CSVs, which live outside the repo (`INK_MIGRATION_DATA_DIR`).
 
 ### The new migration step
 
