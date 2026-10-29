@@ -211,11 +211,11 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 
 **Volume:** low. One issue per month if published regularly; back catalogue is small enough to handle manually.
 
-**Current state:** `inkpols` custom post type with month/year meta, PDFs referenced by a fragile naming convention.
+**Current state (corrected 2026-10-29):** prod has no InkPols CPT. The `/inkpols/` index and the seven issues are root Pages holding a PDF block, with no structured metadata (`lovable-delta-2026-10/inkpols.md` §1).
 
-**Target state:** `inkpols_issue` CPT with structured metadata: issue date, volume number, cover image, PDF file, and teaser text.
+**Target state:** the `inkpols_uitgawe` CPT: naam (the post title), titel, beskrywing, issue date, cover, PDF and three featured items (`inkpols.md` §2). There is no volume or issue number.
 
-**Approach:** migrate manually or with a small targeted script. The existing PDFs should be retained in the media library and re-linked to the new issue records. The old month/year naming convention can be replaced with proper date and volume metadata.
+**Approach:** scripted from the committed `migration-data/inkpols-uitgawes.csv` by `wp ink migrate-inkpols` (`inkpols.md` §3 "As built"). The existing PDFs and covers stay in the media library and are linked by upload path; the old Pages 301 to the new issues and are trashed.
 
 **Manual vs scripted:** low enough volume for a careful manual migration or a short targeted script.
 

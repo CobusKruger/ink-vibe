@@ -200,11 +200,11 @@ test( 'the uitdaging deadline field renders a date input (no time-of-day)', func
 } );
 
 /**
- * AC-5: the facade exposes the full field meta-key surface (12 keys).
+ * AC-5: the facade exposes the full field meta-key surface (20 keys; WP4 added the InkPols titel + featured items).
  */
 test( 'Api facade exposes the field meta-key surface', function (): void {
 	expect( Api::fieldMetaKeys() )->toBe( FieldSets::metaKeys() );
-	expect( FieldSets::metaKeys() )->toHaveCount( 13 );
+	expect( FieldSets::metaKeys() )->toHaveCount( 20 );
 } );
 
 /**

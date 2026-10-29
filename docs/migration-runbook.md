@@ -2,7 +2,7 @@
 
 Rebuild the new site from a fresh copy of production. The database is disposable and every human decision is a committed file, so a rehearsal and the real cutover are the same procedure.
 
-**Status (2026-10-25):** the first rehearsal has run on a real prod copy (about 90 s, repeatable from a restored snapshot). Its findings are fixed on branch `fix/rehearsal-findings`: the theme's Pages are now created by code, announcements are no longer entries, Uitdagings are dated, the public profile is `/lede/<name>`, and highlights are saved. Not yet fixed: InkPols (prod keeps its issues as 8 Pages with an embedded PDF; the migration step is a no-op), the 140 missing upload files, the footer links, and BuddyPress's member routes are redirected, not removed.
+**Status (2026-10-25):** the first rehearsal has run on a real prod copy (about 90 s, repeatable from a restored snapshot). Its findings are fixed on branch `fix/rehearsal-findings`: the theme's Pages are now created by code, announcements are no longer entries, Uitdagings are dated, the public profile is `/lede/<name>`, and highlights are saved. InkPols is now migrated from the committed `migration-data/inkpols-uitgawes.csv` (branch `feat/inkpols-csv-migration`, `lovable-delta-2026-10/inkpols.md` §3 "As built"): one `inkpols_uitgawe` per row, attachments matched by upload path, 301s from the old Pages. Until the owner fills `titel`, `beskrywing` and the featured items, the seven issues are created as drafts and their old Pages stay live; the `inkpols` step then reports 7 drafts, and that is expected. Not yet fixed: the 140 missing upload files, the footer links, and BuddyPress's member routes are redirected, not removed.
 
 ## What remains for you
 
@@ -109,6 +109,7 @@ It runs, in order: sanitise, pages (creates the Pages the theme's page templates
 - It stops at the first failing step. Fix the cause and run the same command: steps that succeeded are skipped.
 - `--from=<step>` re-runs from that step on. `--reset` forgets all stored outcomes.
 - A step flagged `silent` or `all-zero` did nothing; decide whether that is right (for example no InkPols on a test copy) before going on.
+- `inkpols` warns once per issue it left as a draft, with the missing CSV fields; those warnings go to stderr, so `migrate-all` shows only the counts. Run `wp ink migrate-inkpols --force` to see them (it reconciles, never duplicates). After filling the CSV on a site you are not refreshing, run `wp ink migrate-inkpols --force`, `wp ink generate-redirects --force` and `wp ink verify-redirects --fix`.
 - Note the total run time. It decides the cutover window.
 
 ## Known duplicate and slug checks (staging copy, 2026-10-24)

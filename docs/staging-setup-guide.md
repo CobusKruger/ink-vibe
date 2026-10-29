@@ -22,7 +22,7 @@ Follow the phases **in order**. Ordering matters — several steps depend on ear
 | **4** | Install / prune the third-party plugin set | Correct plugin surface, legacy plugins gone |
 | **5** | Run the migration toolkit (15 `wp ink` commands, in order) | Data transformed to new model + redirects built |
 | **6** | Configure plugins (Rank Math, cache, analytics, 2FA, Redirection) | Behavioural config in place |
-| **7** | Manual data entry (sponsors, InkPols back-catalogue) | Editorial content complete |
+| **7** | Manual data entry (sponsors) and the InkPols CSV check | Editorial content complete |
 | **8** | Verify & smoke-test | Signed-off, functioning site |
 
 **Runtime prerequisites (all phases):** PHP **8.3+**, WordPress **7.0** (the version this new site is built for — you do *not* need to match the older production version; see the note in Phase 1), WP-CLI, Composer, and Local by Flywheel (or an equivalent LAMP stack).
@@ -347,7 +347,7 @@ Behavioural configuration that isn't captured in the migration. See each runbook
 These have **no** migration command — they are editorial:
 
 - [ ] **Sponsors** (`borg`/`sponsor`) — enter manually in wp-admin (very low volume).
-- [ ] **InkPols back-catalogue** — prod keeps each issue as a Page with an embedded PDF, and today's `migrate-inkpols` does nothing with them. The fix is a CSV-driven step (`migration-data/inkpols-uitgawes.csv`, spec in [lovable-delta-2026-10/inkpols.md](./lovable-delta-2026-10/inkpols.md) §3, work package WP4), not manual entry. Until it ships, `/inkpols/` is empty after a refresh.
+- [ ] **InkPols back-catalogue** — not entered by hand: `migrate-inkpols` (a `migrate-all` step) creates one `inkpols_uitgawe` per row of the committed `migration-data/inkpols-uitgawes.csv`, links the existing PDF and cover by upload path, and the old Pages 301 to the new issues ([lovable-delta-2026-10/inkpols.md](./lovable-delta-2026-10/inkpols.md) §3 "As built"). An issue is published only when its row is complete (PDF, cover, naam, titel, beskrywing, and a title + writer for the Gedig, Storie and Artikel); otherwise it is a draft and its old Page stays live. Check here: the step's warnings list every missing field (`wp ink migrate-inkpols --force` shows them again). Fill the gaps **in the CSV**, commit it, and re-run (on a site you keep: `migrate-inkpols --force`, then `generate-redirects --force` and `verify-redirects --fix`). Edits made in wp-admin are lost at the next refresh.
 - [ ] **Navigation review** — `rebuild-navigation` created the canonical "Hoofnavigasie"; review and adjust labels/order in the Site Editor.
 - [ ] **Post-classification cleanup** — review anything that landed in `skryfwerk` and re-file if a human decision is needed.
 - [ ] **Profile-field mapping** — reconcile any legacy profile fields you chose to keep.
@@ -418,7 +418,7 @@ The steps `wp ink migrate-all` runs, in order. Each can also be run on its own; 
 | 8 | `ink migrate-challenges` | Legacy challenge categories → `uitdaging` + round terms |
 | 9 | `ink sync-challenge-entries` | Attach posts filed under a challenge's source category to its round |
 | 10 | `ink link-result-posts` | Link each result post to its uitdaging (by month and year) |
-| 11 | `ink migrate-inkpols` | Legacy InkPols → `inkpols_uitgawe`; re-link existing PDFs |
+| 11 | `ink migrate-inkpols` | `inkpols-uitgawes.csv` → one `inkpols_uitgawe` per row (draft until the row is complete); link existing PDF + cover; record 301 sources; trash the old Pages |
 | 12 | `ink clean-shortcodes` | Strip legacy WPBakery `[vc_*]`, keep inner content |
 | 13 | `ink rebuild-navigation` | Build canonical "Hoofnavigasie" (new IA) |
 | 14 | `ink migrate-follows` | Confirmed friendships → two directed follows; trim BP activity >2yr |
