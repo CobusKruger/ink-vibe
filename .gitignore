@@ -35,3 +35,5 @@ wp-content/plugins/ink-core/vendor/
 !wp-content/plugins/ink-core/migration-data/inkpols-uitgawes.csv
 *.xlsx
 docs/data-cleanup/**
+# Claude Code agent worktrees.
+/.claude/worktrees/
