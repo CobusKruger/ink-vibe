@@ -50,6 +50,16 @@ final class FieldSets {
 	public const INKPOLS_PDF_ID     = 'ink_inkpols_pdf_id';
 	public const INKPOLS_TEASER     = 'ink_inkpols_teaser';
 
+	// InkPols issue heading + the three featured items (WP4, `inkpols.md` §2): plain text
+	// describing something in the PDF, never linked. The post title holds the naam.
+	public const INKPOLS_TITEL           = 'ink_inkpols_titel';
+	public const INKPOLS_GEDIG_TITEL     = 'ink_inkpols_gedig_titel';
+	public const INKPOLS_GEDIG_SKRYWER   = 'ink_inkpols_gedig_skrywer';
+	public const INKPOLS_STORIE_TITEL    = 'ink_inkpols_storie_titel';
+	public const INKPOLS_STORIE_SKRYWER  = 'ink_inkpols_storie_skrywer';
+	public const INKPOLS_ARTIKEL_TITEL   = 'ink_inkpols_artikel_titel';
+	public const INKPOLS_ARTIKEL_SKRYWER = 'ink_inkpols_artikel_skrywer';
+
 	// Challenge meta keys.
 	public const UITDAGING_THEME    = 'ink_uitdaging_theme';
 	public const UITDAGING_DEADLINE = 'ink_uitdaging_deadline';
@@ -324,6 +334,55 @@ final class FieldSets {
 						'type'     => 'string',
 						'input'    => 'textarea',
 						'sanitize' => 'sanitize_textarea_field',
+					),
+					array(
+						'key'      => self::INKPOLS_TITEL,
+						'label'    => __( 'Titel', 'ink-core' ),
+						'type'     => 'string',
+						'input'    => 'text',
+						'sanitize' => 'sanitize_text_field',
+					),
+					array(
+						'key'      => self::INKPOLS_GEDIG_TITEL,
+						'label'    => __( 'Gedig: titel', 'ink-core' ),
+						'type'     => 'string',
+						'input'    => 'text',
+						'sanitize' => 'sanitize_text_field',
+					),
+					array(
+						'key'      => self::INKPOLS_GEDIG_SKRYWER,
+						'label'    => __( 'Gedig: skrywer', 'ink-core' ),
+						'type'     => 'string',
+						'input'    => 'text',
+						'sanitize' => 'sanitize_text_field',
+					),
+					array(
+						'key'      => self::INKPOLS_STORIE_TITEL,
+						'label'    => __( 'Storie: titel', 'ink-core' ),
+						'type'     => 'string',
+						'input'    => 'text',
+						'sanitize' => 'sanitize_text_field',
+					),
+					array(
+						'key'      => self::INKPOLS_STORIE_SKRYWER,
+						'label'    => __( 'Storie: skrywer', 'ink-core' ),
+						'type'     => 'string',
+						'input'    => 'text',
+						'sanitize' => 'sanitize_text_field',
+					),
+					array(
+						'key'      => self::INKPOLS_ARTIKEL_TITEL,
+						'label'    => __( 'Artikel: titel', 'ink-core' ),
+						'type'     => 'string',
+						'input'    => 'text',
+						'sanitize' => 'sanitize_text_field',
+					),
+					array(
+						'key'      => self::INKPOLS_ARTIKEL_SKRYWER,
+						'label'    => __( 'Artikel: skrywer', 'ink-core' ),
+						'type'     => 'string',
+						'input'    => 'text',
+						'sanitize' => 'sanitize_text_field',
 					),
 				),
 			),

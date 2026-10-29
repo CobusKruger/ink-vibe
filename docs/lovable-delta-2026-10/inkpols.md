@@ -1,6 +1,6 @@
 # WP4 InkPols: specification
 
-**Status:** fully specified by the owner, 2026-10-26. No open decisions. Not built.
+**Status:** fully specified by the owner, 2026-10-26. No open decisions. The migration step (§3) is built (2026-10-29); the archive, single and home section (N2, N3, N6) are not.
 **Lovable reference:**
 - `src/pages/Magazine.tsx` (archive)
 - `src/pages/MagazineIssue.tsx` (issue)
@@ -100,6 +100,32 @@ A new step replaces the no-op `migrate-inkpols` and creates one issue per CSV ro
 - It retires the prod `/inkpols/` Page and the seven issue Pages.
 
 **Every issue follows the same required-fields rule**, because every field comes from the committed CSV. There is no exemption for imported issues, and nothing is entered by hand on nuwe-ink, which a refresh would wipe.
+
+### As built (2026-10-29)
+
+`Ink\InkPols\Migration`, still `wp ink migrate-inkpols` and still the `inkpols` step of `migrate-all`. The CSV is found through `Ink\Kernel\MigrationData` (the plugin's `migration-data/` unless `INK_MIGRATION_DATA_DIR` holds a copy).
+
+| CSV | Stored as |
+|---|---|
+| `naam` | post title (the eyebrow) |
+| `slug` | post slug, set explicitly; also `ink_inkpols_source_slug`, the get-or-create marker |
+| `datum` | publish date (midnight, site time) and `ink_inkpols_issue_date` |
+| `pdf` | `ink_inkpols_pdf_id`: the attachment whose `_wp_attached_file` equals the path (lowest ID if stored twice) |
+| `voorblad` | `ink_inkpols_cover_id` and the featured image (the social image), matched the same way |
+| `titel` | `ink_inkpols_titel` (the H2) |
+| `beskrywing` | `ink_inkpols_teaser` |
+| six featured cells | `ink_inkpols_{gedig,storie,artikel}_{titel,skrywer}` |
+| `ou_url` | `ink_migration_source_url`, the key `generate-redirects` reads |
+
+The titel and featured-item keys are new `FieldSets` fields (admin box and REST); `Issue`/`Api` do not read them yet: that is N2/N3. `ink_inkpols_volume` is no longer written (there is no issue number).
+
+**Blanks.** A row missing any required field (or whose `pdf`/`voorblad` path matches no attachment) is still created, as a **draft**, and the step prints one warning per draft listing the missing fields. The step still succeeds, so owner-pending blanks never stop `migrate-all`; its summary line counts the drafts. With today's CSV all seven issues are drafts, so `/inkpols/` and the home section stay empty until the owner fills the CSV and the migration runs again. Rows that cannot become an issue at all (invalid slug or `datum`, a repeated slug, the wrong number of cells) are skipped and reported; a missing CSV or missing column fails the step.
+
+**Redirects.** `generate-redirects` (after this step in `migrate-all`) writes `ou_url` → issue permalink for **published** issues only, like every other 301. The redirect serves only on a 404.
+
+**Retirement.** Pages are moved to the trash, never deleted. An old issue Page is trashed once its issue is published, so the 301 takes over at once; while the issue is a draft the old Page stays live and the step counts it as kept. The `/inkpols/` index Page is trashed on every run: the CPT archive owns the URL.
+
+**Re-running.** A completed run is a no-op (`ink_inkpols_csv_migration_done`, a new flag, so the old no-op step's flag does not block it). `--force` reconciles the issues in place by slug marker: title, slug, date, status and meta follow the CSV; no duplicates. On a site that is not refreshed, follow it with `wp ink generate-redirects --force` and `wp ink verify-redirects --fix`.
 
 ### Before measuring
 
