@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Whether an account is a moderator who publishes challenge result posts.
  *
- * Either the account can edit others' posts, or its login is on the committed list in
+ * Either the account can edit others' posts, or its login is on the list in
  * `result-post-authors.csv` (located by MigrationData). The list matters because the moderator account
  * `Inkmoderator` is only a subscriber once the user-reclassification step has run, so a
  * capability test alone would file its result posts as submitted writing and lose their wins.
@@ -31,7 +31,7 @@ final class ResultPostAuthors {
 	 *
 	 * @param string       $login    The account login.
 	 * @param bool         $can_edit Whether the account can edit others' posts.
-	 * @param list<string> $logins   The committed moderator logins.
+	 * @param list<string> $logins   The moderator logins.
 	 */
 	public static function matches( string $login, bool $can_edit, array $logins ): bool {
 		if ( $can_edit ) {
@@ -57,7 +57,7 @@ final class ResultPostAuthors {
 	}
 
 	/**
-	 * The committed moderator logins.
+	 * The moderator logins.
 	 *
 	 * @return list<string>
 	 */
@@ -71,7 +71,7 @@ final class ResultPostAuthors {
 		$cache = array();
 		$path  = MigrationData::path( 'result-post-authors.csv' );
 
-		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- once-off CLI reader of a committed data file.
+		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- once-off CLI reader of a local data file.
 		$handle = is_readable( $path ) ? fopen( $path, 'rb' ) : false;
 
 		if ( false !== $handle ) {

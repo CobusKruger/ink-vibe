@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ink\Migration;
 
+use Ink\Kernel\MigrationData;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -215,7 +217,7 @@ class MigrateAll {
 	 */
 	public function run( string $tiers, ?string $from = null ): array {
 		$lines    = array();
-		$problems = self::preflight( $tiers, '' !== $tiers && $this->fileExists( $tiers ) );
+		$problems = array_merge( self::preflight( $tiers, '' !== $tiers && $this->fileExists( $tiers ) ), $this->dataProblems() );
 
 		if ( array() !== $problems ) {
 			return array(
@@ -306,6 +308,15 @@ class MigrateAll {
 			'stdout' => (string) ( $result->stdout ?? '' ),
 			'stderr' => (string) ( $result->stderr ?? '' ),
 		);
+	}
+
+	/**
+	 * What stops the migration reading its data folder. Overridable seam.
+	 *
+	 * @return list<string>
+	 */
+	protected function dataProblems(): array {
+		return MigrationData::problems( MigrationData::dir() );
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <?php
 /**
- * InkPols back-catalogue migration from the committed CSV — WP4 (`inkpols.md` §3).
+ * InkPols back-catalogue migration from the CSV — WP4 (`inkpols.md` §3).
  *
  * @package Ink\Core
  */
@@ -18,11 +18,11 @@ use WP_Post;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Creates one `inkpols_uitgawe` per row of `migration-data/inkpols-uitgawes.csv`
+ * Creates one `inkpols_uitgawe` per row of `inkpols-uitgawes.csv` (`docs/migration-data.md`)
  * (`docs/lovable-delta-2026-10/inkpols.md` §3).
  *
  * Prod keeps its issues as root Pages with an embedded PDF, plus one `/inkpols/` index
- * Page, and carries no structured metadata, so every field comes from the committed CSV
+ * Page, and carries no structured metadata, so every field comes from the CSV
  * the owner fills in:
  *  - the post title is the `naam` ("Julie/Augustus 2026"), the slug is the CSV `slug`
  *    (set explicitly, never derived from the title), and the publish date is `datum` (the
@@ -105,7 +105,7 @@ class Migration {
 	public const INDEX_PAGE_PATH = 'inkpols';
 
 	/**
-	 * The columns the CSV must carry (`migration-data/README.md`).
+	 * The columns the CSV must carry (`docs/migration-data.md`).
 	 *
 	 * @var list<string>
 	 */
@@ -591,7 +591,7 @@ class Migration {
 			return null;
 		}
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- once-off CLI read of a committed local data file.
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- once-off CLI read of a local data file.
 		$contents = file_get_contents( $path );
 
 		return false === $contents ? null : $contents;

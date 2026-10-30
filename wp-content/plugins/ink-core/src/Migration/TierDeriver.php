@@ -222,7 +222,7 @@ class TierDeriver {
 
 	/**
 	 * The account directory: name key → account id, and the plain names (for the parser).
-	 * The committed by-line table wins over the site's own display names. Overridable seam.
+	 * The by-line table wins over the site's own display names. Overridable seam.
 	 *
 	 * @return array{users:array<string,int>, names:list<string>}
 	 */
@@ -258,7 +258,7 @@ class TierDeriver {
 	}
 
 	/**
-	 * Variant name key → canonical name key, from the committed alias table. Overridable seam.
+	 * Variant name key → canonical name key, from the alias table. Overridable seam.
 	 *
 	 * @return array<string, string>
 	 */
@@ -282,13 +282,16 @@ class TierDeriver {
 	 *
 	 * @param string $file The file name.
 	 * @return list<array<string, string>>
+	 * @throws \RuntimeException When the file is missing.
 	 */
 	protected function readCsv( string $file ): array {
 		$path = MigrationData::path( $file );
 
-		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- once-off CLI reader of a committed data file.
+		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- once-off CLI reader of a local data file.
+		// A missing file must not quietly lose wins, also when this step runs on its own.
 		if ( ! is_readable( $path ) ) {
-			return array();
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- CLI-only message, never HTML.
+			throw new \RuntimeException( sprintf( 'Migrasiedata nie gevind nie: %s (kyk INK_MIGRATION_DATA_DIR).', '' === $path ? $file : $path ) );
 		}
 
 		$handle = fopen( $path, 'rb' );

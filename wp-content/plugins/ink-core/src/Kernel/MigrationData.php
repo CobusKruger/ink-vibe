@@ -14,42 +14,76 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Resolves a migration input file (e.g. `writer-accounts.csv`) to a path.
  *
- * The owner keeps some of these files outside the repo. When the `INK_MIGRATION_DATA_DIR`
- * constant (wp-config.php) names a folder and the file is there, that copy wins; otherwise
- * the plugin's own `migration-data/` folder is used. The deploy mirrors the plugin with
- * `--delete`, so files copied by hand into the site's `migration-data/` do not survive it.
+ * All migration data lives outside the repo and the plugin, in the one folder named by the
+ * `INK_MIGRATION_DATA_DIR` constant (wp-config.php); `docs/migration-data.md` describes it.
+ * There is no fallback: a missing file stops `wp ink migrate-all` before any step runs,
+ * because a missing writer CSV would otherwise quietly lose wins.
  *
- * Lives in the Kernel so Content and Migration can share it without depending on each other.
+ * Lives in the Kernel so Content, InkPols and Migration can share it without depending on
+ * each other.
  */
 final class MigrationData {
 
 	/**
-	 * The path to read a file from. Pure.
+	 * The files `wp ink migrate-all` needs.
 	 *
-	 * @param string $file       The file name.
-	 * @param string $override   The configured folder, or ''.
-	 * @param string $plugin_dir The plugin's migration-data folder.
+	 * @var list<string>
 	 */
-	public static function resolve( string $file, string $override, string $plugin_dir ): string {
-		if ( '' !== $override ) {
-			$candidate = rtrim( $override, '/\\' ) . '/' . $file;
+	public const FILES = array(
+		'writer-accounts.csv',
+		'writer-aliases.csv',
+		'result-post-authors.csv',
+		'inkpols-uitgawes.csv',
+	);
 
-			if ( is_readable( $candidate ) ) {
-				return $candidate;
-			}
-		}
-
-		return rtrim( $plugin_dir, '/\\' ) . '/' . $file;
+	/**
+	 * A file's path in a folder. Pure.
+	 *
+	 * @param string $file The file name.
+	 * @param string $dir  The folder, or '' when none is configured.
+	 * @return string The path, or '' when no folder is configured.
+	 */
+	public static function resolve( string $file, string $dir ): string {
+		return '' === $dir ? '' : rtrim( $dir, '/\\' ) . '/' . $file;
 	}
 
 	/**
-	 * The path to read a file from, using the configured folder.
+	 * What stops a migration from reading its data. Reads the file system.
+	 *
+	 * @param string $dir The folder, or '' when none is configured.
+	 * @return list<string> One message per problem; empty when all is well.
+	 */
+	public static function problems( string $dir ): array {
+		if ( '' === $dir ) {
+			return array( 'INK_MIGRATION_DATA_DIR is nie in wp-config.php gestel nie.' );
+		}
+
+		$problems = array();
+
+		foreach ( self::FILES as $file ) {
+			$path = self::resolve( $file, $dir );
+
+			if ( ! is_readable( $path ) ) {
+				$problems[] = sprintf( 'Migrasiedata nie gevind nie: %s', $path );
+			}
+		}
+
+		return $problems;
+	}
+
+	/**
+	 * The configured folder, or ''.
+	 */
+	public static function dir(): string {
+		return defined( 'INK_MIGRATION_DATA_DIR' ) ? (string) constant( 'INK_MIGRATION_DATA_DIR' ) : '';
+	}
+
+	/**
+	 * The path to read a file from, or '' when no folder is configured.
 	 *
 	 * @param string $file The file name.
 	 */
 	public static function path( string $file ): string {
-		$override = defined( 'INK_MIGRATION_DATA_DIR' ) ? (string) constant( 'INK_MIGRATION_DATA_DIR' ) : '';
-
-		return self::resolve( $file, $override, dirname( __DIR__, 2 ) . '/migration-data' );
+		return self::resolve( $file, self::dir() );
 	}
 }

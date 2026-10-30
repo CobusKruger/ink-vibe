@@ -3,7 +3,7 @@
  * Unit tests for the CSV-driven InkPols back-catalogue migration (WP4, `inkpols.md` §3).
  *
  * Target: {@see \Ink\InkPols\Migration} — one `inkpols_uitgawe` per row of
- * `migration-data/inkpols-uitgawes.csv`, attachments matched by upload path, drafts for
+ * `inkpols-uitgawes.csv`, attachments matched by upload path, drafts for
  * rows that lack a required field, 301 sources recorded, old Pages trashed. Pure
  * parsers/builders + the idempotency-guarded orchestration over an in-memory fake.
  *
@@ -32,10 +32,10 @@ afterEach( function (): void {
 const INKPOLS_HEADER = 'slug,naam,titel,beskrywing,datum,pdf,voorblad,ou_url,gedig_titel,gedig_skrywer,storie_titel,storie_skrywer,artikel_titel,artikel_skrywer';
 
 /**
- * The committed CSV, as the step reads it.
+ * The CSV with its owner columns blank, as the step reads it.
  */
-function inkpols_committed_csv(): string {
-	return (string) file_get_contents( dirname( __DIR__, 3 ) . '/wp-content/plugins/ink-core/migration-data/inkpols-uitgawes.csv' );
+function inkpols_fixture_csv(): string {
+	return (string) file_get_contents( __DIR__ . '/inkpols-uitgawes.fixture.txt' );
 }
 
 /**
@@ -78,7 +78,7 @@ function inkpols_fake( ?string $csv, array $attachments = array(), array $pages 
 			$this->done   = true;
 		}
 		protected function csvPath(): string {
-			return '/plugin/migration-data/inkpols-uitgawes.csv';
+			return '/data/inkpols-uitgawes.csv';
 		}
 		protected function readCsv(): ?string {
 			return $this->csv;
@@ -126,7 +126,7 @@ function inkpols_fake( ?string $csv, array $attachments = array(), array $pages 
 // --- parsing ---
 
 test( 'parseCsv reads the committed CSV: seven rows, prefilled columns set, owner columns blank', function (): void {
-	$parsed = Migration::parseCsv( inkpols_committed_csv() );
+	$parsed = Migration::parseCsv( inkpols_fixture_csv() );
 
 	expect( $parsed['error'] )->toBe( '' );
 	expect( $parsed['problems'] )->toBe( array() );
@@ -215,7 +215,7 @@ test( 'oldPath reduces ou_url to a page path', function (): void {
 } );
 
 test( 'missingRequired lists today\'s owner blanks when the attachments match', function (): void {
-	$row = Migration::parseCsv( inkpols_committed_csv() )['rows'][0];
+	$row = Migration::parseCsv( inkpols_fixture_csv() )['rows'][0];
 
 	expect( Migration::missingRequired( $row, 11, 12 ) )->toBe(
 		array( 'titel', 'beskrywing', 'gedig_titel', 'gedig_skrywer', 'storie_titel', 'storie_skrywer', 'artikel_titel', 'artikel_skrywer' )
@@ -343,7 +343,7 @@ test( 'a --force re-run reconciles in place: no duplicates, completed rows get p
 } );
 
 test( 'run on today\'s committed CSV creates seven drafts, keeps their Pages, and is not judged all-zero', function (): void {
-	$rows        = Migration::parseCsv( inkpols_committed_csv() )['rows'];
+	$rows        = Migration::parseCsv( inkpols_fixture_csv() )['rows'];
 	$attachments = array();
 	$pages       = array( 'inkpols' => 65591 );
 
@@ -353,7 +353,7 @@ test( 'run on today\'s committed CSV creates seven drafts, keeps their Pages, an
 		$pages[ Migration::oldPath( $row['ou_url'] ) ] = 300 + $i;
 	}
 
-	$migration = inkpols_fake( inkpols_committed_csv(), $attachments, $pages );
+	$migration = inkpols_fake( inkpols_fixture_csv(), $attachments, $pages );
 	$summary   = $migration->run();
 
 	expect( $summary['created'] )->toBe( 7 );
@@ -378,7 +378,7 @@ test( 'a missing CSV is an error and leaves the step not done', function (): voi
 	$migration = inkpols_fake( null );
 	$summary   = $migration->run();
 
-	expect( $summary['error'] )->toContain( '/plugin/migration-data/inkpols-uitgawes.csv' );
+	expect( $summary['error'] )->toContain( '/data/inkpols-uitgawes.csv' );
 	expect( $migration->marked )->toBeFalse();
 	expect( $migration->posts )->toBe( array() );
 } );

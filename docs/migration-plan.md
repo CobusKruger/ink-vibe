@@ -215,7 +215,7 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 
 **Target state:** the `inkpols_uitgawe` CPT: naam (the post title), titel, beskrywing, issue date, cover, PDF and three featured items (`inkpols.md` §2). There is no volume or issue number.
 
-**Approach:** scripted from the committed `migration-data/inkpols-uitgawes.csv` by `wp ink migrate-inkpols` (`inkpols.md` §3 "As built"). The existing PDFs and covers stay in the media library and are linked by upload path; the old Pages 301 to the new issues and are trashed.
+**Approach:** scripted from `inkpols-uitgawes.csv` in the migration-data folder (`migration-data.md`) by `wp ink migrate-inkpols` (`inkpols.md` §3 "As built"). The existing PDFs and covers stay in the media library and are linked by upload path; the old Pages 301 to the new issues and are trashed.
 
 **Manual vs scripted:** low enough volume for a careful manual migration or a short targeted script.
 

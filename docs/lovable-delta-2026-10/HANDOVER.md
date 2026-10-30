@@ -1,6 +1,8 @@
 # Handover: Lovable design delta (Oct 2026)
 
-**Date:** 2026-10-26. **Read this first.** It is self-contained: it needs no access to earlier Claude sessions or to Claude's memory.
+> **Do not trust this document without checking (owner, 2026-10-30).** It was wrong about the design: it said the home page drops the current challenge, which is on the right of the hero. Treat its claims as leads and verify them in `../verse-haven` and this repo's code.
+
+**Date:** 2026-10-26. It is self-contained: it needs no access to earlier Claude sessions or to Claude's memory.
 
 It covers two sessions:
 - the main strategy session;
@@ -15,8 +17,8 @@ It covers two sessions:
 | `HANDOVER.md` | State, rulings, corrections, next steps | Start here |
 | `README.md` | The build strategy: new elements (§1), changes to existing pages (§2), method, sequence and work packages (§3), owner decisions (§4), docs to update (§5), risks (§6) | Authoritative for the method. §4 is up to date. |
 | `inkpols.md` | The full WP4 InkPols specification, including final Afrikaans copy | Authoritative for InkPols |
-| `wp-content/plugins/ink-core/migration-data/inkpols-uitgawes.csv` | InkPols issue metadata. Prefilled with slug, naam, datum, pdf, voorblad, ou_url; titel, beskrywing and the featured items are blank, for the owner. | Committed, through a `.gitignore` exception |
-| `wp-content/plugins/ink-core/migration-data/README.md` | Describes that CSV | |
+| `../migration-data/inkpols-uitgawes.csv` (moved out of the repo 2026-10-31) | InkPols issue metadata. Prefilled with slug, naam, datum, pdf, voorblad, ou_url; titel, beskrywing and the featured items are blank, for the owner. | Committed, through a `.gitignore` exception |
+| `docs/migration-data.md` | Describes the migration data | |
 
 **Lovable reference:** `ink-lovable` from `71c0847` (the last commit the fidelity rework synced) to `86b69dd`, 22 commits. It adds:
 - **New pages:** ChallengeResults, Competitions, Magazine, MagazineIssue.
@@ -52,11 +54,11 @@ It covers two sessions:
 | D9 | InkPols is fully specified in `inkpols.md`. |
 | Footer | All footer links are deferred ("a shit show"). Out of scope. |
 
-**Still open.** Recommendations are in README §4.2.
-- **D5:** results at `/uitdaging/<slug>/uitslae/`. Does the winners post 301 to it?
-- **D10:** exactly two home winner cards (Storie + Gedig), with a lifetime win count derived from placements, because `ink_tier_win_count` resets on promotion.
-- **D11:** place labels ("1ste/2de/3de plek" vs the existing "algehele wenner/wenner"), and how a Meester winner is labelled on the Goud podium.
-- **D12:** the current round is shown on Tuis only in the hero; the rebuilt winners section drops the current-challenge card.
+**Ruled 2026-10-30** (details in README §4.2):
+- **D5:** results at `/uitdaging/<slug>/uitslae/`; the winners post 301s to it.
+- **D10:** the home winners section has **four** winners, in two side-by-side pairs: Goud Gedig + Storie, and Silwer Gedig + Artikel. This departs from Lovable's two cards.
+- **D11:** labels stay "algehele wenner" / "wenner"; the actual position is still stored. A Meester winner is handled as Goud.
+- **D12:** not a decision. The active monthly challenge is on the right of the hero, as designed. Tuis order: hero → results banner → magazine (InkPols) → four winner cards → featured writing → sponsors → CTA → footer. Where the dev page differs, the dev page is wrong.
 
 ## 4. Corrections and clarifications
 
@@ -123,7 +125,6 @@ Optional: the OFF-TOKEN scripts (§5) are needed only for Treatment C pages. The
 
 1. **Owner:**
    - fill in `inkpols-uitgawes.csv` (titel, beskrywing, featured items);
-   - rule on D5, D10, D11, D12;
    - decide how the CSVs travel (§5).
 2. **Merge** branch `docs/lovable-delta-2026-10` into `main` when ready (it is committed). `git merge` needs the sandbox off.
 3. **Strategy step B:** add `data-audit-id`s, Lovable-first, to every new or changed Lovable file: ChallengeResults, Magazine, MagazineIssue, MagazineSection, ResultsBanner, Competitions, the rebuilt ChallengeSection (restore the tuisblad ids where they still pair), and the ReadStory aside. Commit in `ink-lovable`.

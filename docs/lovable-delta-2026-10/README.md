@@ -123,7 +123,7 @@ choice. Fix it before building the podium:
 |---|---|---|
 | Kompetisies | `page-kompetisies.html` + `SystemPages::PAGES['kompetisies']` | **Adopts prod Page 59192 "Eksterne Kompetisies"**, keeping its ~1 KB legacy body in the DB (hidden, undeletable). Decide in D2: adopt and empty the body (extend the existing `[upme_*]` emptying rule), or use a fresh slug and a 301. |
 | Uitslae | rewrite endpoint `uitslae` on `uitdaging` + `single_template_hierarchy` → `single-uitdaging-uitslae.html` | Code-defined; nothing in the DB. The winners `post` either stays as the canonical announcement with the endpoint as the designed view, or 301s to it (D5). |
-| InkPols | existing `archive-`/`single-inkpols_uitgawe.html` | Issues are created from the committed CSV by the new migration step. The prod `/inkpols/` Page is retired, and the seven `inkpols-2025-11…` root Pages 301 to `/inkpols/<naam-slug>/` (`inkpols.md` §3). |
+| InkPols | existing `archive-`/`single-inkpols_uitgawe.html` | Issues are created from the CSV by the new migration step. The prod `/inkpols/` Page is retired, and the seven `inkpols-2025-11…` root Pages 301 to `/inkpols/<naam-slug>/` (`inkpols.md` §3). |
 | Home blocks, reading aside | dynamic blocks in existing templates/patterns | Code-defined. |
 
 **Guard test.** Extend `tests/Unit/Kernel/SystemPagesTest.php:40-50` so that *every*
@@ -157,16 +157,16 @@ rehearsal.
 | D6 | A citation shows **only if the author has opted in** to showing it; otherwise it is not shown anywhere. | The award card and the reading-page aside render without the citation block when `ModeratorFeedback::feedbackFor()` returns nothing. The placement itself still shows. |
 | D7 | *Not a decision.* Gradering applies to Gedigte only, as established long ago. | The code violates the rule. Fixed in WP1 (§3.3, Gradering-scope fix). |
 | D8 | Accepted: add a per-round judges' letter and capture honourable mentions. | Letter meta on the `uitdaging`. `ResultsParser` stops discarding "Eervolle vermelding" (`:147-151`) and stores the mentions. |
-| D9 | InkPols fully specified (separate discussion, 2026-10-26). | See `inkpols.md`. Summary: naam (e.g. "Julie/Augustus 2026") replaces issue number and season; the three featured items (Gedig/Storie/Artikel) are plain text; Real3D on the single only; no downloads; A4 covers; metadata from a committed CSV. |
+| D9 | InkPols fully specified (separate discussion, 2026-10-26). | See `inkpols.md`. Summary: naam (e.g. "Julie/Augustus 2026") replaces issue number and season; the three featured items (Gedig/Storie/Artikel) are plain text; Real3D on the single only; no downloads; A4 covers; metadata from a CSV. |
 
-### 4.2 Still open
+### 4.2 Ruled 2026-10-30
 
-| # | Question | Conflict / evidence | Recommendation |
-|---|---|---|---|
-| D5 | Results URL, and whether the winners `post` remains. | Results today are core posts at normal permalinks, rendered through `index.html` + `post-content`. | `/uitdaging/<slug>/uitslae/` as the designed view; the winners post 301s to it. |
-| D10 | Home winners: exactly 2 cards (storie + gedig)? What about artikel? "Nth challenge win" is a **lifetime** count, but `ink_tier_win_count` resets on promotion (§14 #18). | | 2 cards as designed; derive the lifetime count from placements. |
-| D11 | Place labels: "1ste/2de/3de plek" vs the existing "algehele wenner / wenner" (`Placements.php:80-88`). How is a Meester winner labelled on the Goud podium? | Open item in `tmp/post-roadmap-followup-worklist.md:74`. | Owner copy call. |
-| D12 | Does the current round still appear on Tuis outside the hero? The rebuilt section drops the current-challenge card. | | Follow the design (hero only). |
+| # | Ruling | Consequence for the build |
+|---|---|---|
+| D5 | Results live at `/uitdaging/<slug>/uitslae/`; the winners `post` 301s to it. | Results today are core posts at normal permalinks, rendered through `index.html` + `post-content`. |
+| D10 | The home winners section shows **four** winners in two side-by-side pairs: **Goud Gedig + Storie**, then **Silwer Gedig + Artikel**. Confirmed by the owner: four cards, so the Artikel winner gets credit too. | **Divergence from Lovable (two cards):** record it in code (R6). No Lovable reference exists for the second pair, so it reuses the same card recipe. "Nth challenge win" is a **lifetime** count derived from placements, because `ink_tier_win_count` resets on promotion (§14 #18). |
+| D11 | Labels stay **"algehele wenner" / "wenner"** (`Placements.php`), as standardised earlier; the exact ranking matters less. The owner withdrew "1ste/2de/3de plek" (2026-10-31). The **actual position is still stored** for future use. | A **Meester** winner is handled as Goud on the podium (no Meester writers exist today). |
+| D12 | Not a decision. The active monthly challenge is on the **right of the hero**, as designed. Tuis order, owner, 2026-10-30: hero (intro left, challenge right) → results banner → magazine (InkPols) → winner cards (four, D10) → featured writing (recent posts for now) → sponsors → CTA → footer. | Follow this order. No divergence except D10. Where the dev page differs, the dev page is wrong. |
 
 ## 5. Documentation that must change (so a refresh and the next sync keep this work)
 

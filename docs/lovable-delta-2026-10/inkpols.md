@@ -85,11 +85,11 @@
 
 ### The input file
 
-The owner fills in `wp-content/plugins/ink-core/migration-data/inkpols-uitgawes.csv`. Its columns are described in `migration-data/README.md`.
+The owner fills in `../migration-data/inkpols-uitgawes.csv`. Its columns are described in `docs/migration-data.md`.
 - **Prefilled per row:** `slug`, `naam`, `datum`, `pdf`, `voorblad`, `ou_url`.
 - **Blank, for the owner:** `titel`, `beskrywing`, and the six featured-item cells.
 
-**This CSV is committed** through a `.gitignore` exception (no personal data), unlike the writer CSVs, which live outside the repo (`INK_MIGRATION_DATA_DIR`).
+This CSV lives outside the repo with the rest of the migration data (`INK_MIGRATION_DATA_DIR`).
 
 ### The new migration step
 
@@ -99,7 +99,7 @@ A new step replaces the no-op `migrate-inkpols` and creates one issue per CSV ro
 - It writes the 301s from `ou_url`.
 - It retires the prod `/inkpols/` Page and the seven issue Pages.
 
-**Every issue follows the same required-fields rule**, because every field comes from the committed CSV. There is no exemption for imported issues, and nothing is entered by hand on nuwe-ink, which a refresh would wipe.
+**Every issue follows the same required-fields rule**, because every field comes from the CSV. There is no exemption for imported issues, and nothing is entered by hand on nuwe-ink, which a refresh would wipe.
 
 ### As built (2026-10-29)
 

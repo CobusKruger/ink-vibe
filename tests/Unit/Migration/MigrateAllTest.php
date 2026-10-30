@@ -37,6 +37,10 @@ function orchestrator( array $script, array $state = array() ): object {
 			}
 			return array( 'code' => 0, 'stdout' => "Success: 5 done.\n", 'stderr' => '' );
 		}
+		public array $data_problems = array();
+		protected function dataProblems(): array {
+			return $this->data_problems;
+		}
 		protected function fileExists( string $path ): bool {
 			return true;
 		}
@@ -93,6 +97,16 @@ test( 'gradering is derived from the result posts unless a CSV path is given', f
 
 	expect( $by_id( '' )['tiers'] )->toBe( 'ink derive-tiers' );
 	expect( $by_id( 'x.csv' )['tiers'] )->toBe( 'ink migrate-tiers {tiers}' );
+} );
+
+test( 'missing migration data stops the run before any step', function (): void {
+	$o                = orchestrator( array() );
+	$o->data_problems = array( 'Migrasiedata nie gevind nie: /data/writer-accounts.csv' );
+	$report           = $o->run( '' );
+
+	expect( $report['failed'] )->toBeTrue();
+	expect( $report['lines'] )->toBe( $o->data_problems );
+	expect( $o->ran )->toBe( array() );
 } );
 
 test( 'a clean run executes every step in order and records them', function (): void {

@@ -9,6 +9,13 @@ Project instructions for Claude Code. These apply to all sessions in this repo.
 - **Design = `../verse-haven`** (Lovable; called `ink-lovable` in older docs). Match its colours, spacing and layout at very high fidelity.
 - **Design ≠ copy.** Its text is English and reflects simplified requirements. Afrikaans copy in this repo and the epics is the source of truth. Never port, or AI-translate, Lovable's English. Unknown copy gets a copy-debt marker.
 
+## Read the code first
+
+- Before stating what the design or the site does, read the code: `../verse-haven` for the design, this repo and the rendered page for the site.
+- Handover and planning docs are unverified leads, not facts; `docs/lovable-delta-2026-10/HANDOVER.md` has been wrong about the design. The owner's description outranks any inference.
+- **Tuis order** (owner, 2026-10-30, matches `verse-haven/src/pages/Index.tsx`): hero (intro left, active challenge right) → results banner → magazine (InkPols) → winner cards (four, not Lovable's two) → featured writing (recent posts for now) → sponsors (hand-made Borge posts) → CTA → footer. Where the dev page differs, the dev page is wrong.
+- The footer is known to be a mess and is deferred.
+
 ## Fidelity — do not repeat the rework
 
 - Read `docs/fidelity-remediation/README.md` before **any** visual/styling work. Rules R1–R9 are binding:
@@ -30,7 +37,7 @@ Project instructions for Claude Code. These apply to all sessions in this repo.
 - **dev / nuwe-ink** = Local (Flywheel) site `https://nuwe-ink.local`. It does **not** read this repo; changes are visible only after deploying (`node tools/deploy-to-local.mjs`, dry run first, then `--apply`), then cache purge.
 - **Refresh from prod:** `docs/migration-runbook.md` + `node tools/rehearsal-prep.mjs`, then `node tools/local.mjs wp ink migrate-all`. Prod is never touched.
 - **Tooling is cross-platform (macOS + Windows).** The site is found via Local's `sites.json` (`tools/lib/local-site.mjs`); never hardcode machine paths. Run WP-CLI/MySQL against the site via `node tools/local.mjs wp|mysql|mysqldump …` (plain `wp` can't connect). Windows setup: `tools/setup-windows.ps1`.
-- The writer/moderator migration CSVs live **outside** the repo in `../migration-data/` (owner's choice); the site reads them via `INK_MIGRATION_DATA_DIR` in `wp-config.php`. Don't move them into the repo.
+- **All migration data lives only in `../migration-data/`**, outside the repo (owner's choice; `docs/migration-data.md`). The site reads it via `INK_MIGRATION_DATA_DIR`, with no fallback. Never copy it into the repo. That folder is the working copy: edit it directly.
 - New-machine checklist: `docs/lovable-delta-2026-10/HANDOVER.md` §5.1.
 - Table prefix is `wpjj_`. Capture as `fidelity-capture` (recreated after every refresh), never `admin`.
 

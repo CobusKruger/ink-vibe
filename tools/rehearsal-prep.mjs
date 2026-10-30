@@ -73,10 +73,12 @@ const targetUrl = `https://${site.domain}`;
 const mailSink = opts.mailSink || `sink@${site.domain}`;
 const tmpDir = path.join(REPO_ROOT, 'tmp');
 
-// The writer/moderator CSVs live outside the repo (docs/migration-runbook.md).
-const defaultData = path.resolve(REPO_ROOT, '..', 'migration-data');
-const migrationData = opts.migrationData ? path.resolve(opts.migrationData) : existsSync(defaultData) ? defaultData : '';
-if (opts.migrationData && !existsSync(migrationData)) die(`--migration-data folder does not exist: ${migrationData}`);
+// All migration data lives outside the repo (docs/migration-data.md). Same list as
+// Ink\Kernel\MigrationData::FILES; checked now, before the database is touched.
+const migrationData = opts.migrationData ? path.resolve(opts.migrationData) : path.resolve(REPO_ROOT, '..', 'migration-data');
+for (const file of ['writer-accounts.csv', 'writer-aliases.csv', 'result-post-authors.csv', 'inkpols-uitgawes.csv']) {
+  if (!existsSync(path.join(migrationData, file))) die(`Migration data not found: ${path.join(migrationData, file)}. Pass --migration-data <dir>.`);
+}
 
 if (!existsSync(path.join(site.webRoot, 'wp-config.php'))) die(`Local site not found at: ${site.webRoot}`);
 if (!site.db.client) die(`Local's mysql client (${site.db.service} ${site.db.version}) not found.`);
@@ -106,7 +108,7 @@ console.log(`  plugins:        ${opts.plugins || '(none given: keeping the plugi
 console.log(`  old URL:        ${opts.oldUrl || '(read from the imported database)'}`);
 console.log(`  new URL:        ${targetUrl}`);
 console.log(`  mail sink:      ${mailSink}`);
-console.log(`  migration data: ${migrationData || '(none found: derive-tiers will miss renamed writers)'}`);
+console.log(`  migration data: ${migrationData}`);
 
 if (!opts.apply) {
   say('DRY RUN: nothing was changed. Re-run with --apply to do it.');
@@ -205,9 +207,7 @@ wp(site, ['plugin', 'activate', 'ink-core'], { bare: true });
 wp(site, ['theme', 'activate', 'ink-foundation'], { bare: true });
 wp(site, ['config', 'set', 'WP_ENVIRONMENT_TYPE', 'local', '--type=constant', '--quiet'], { bare: true });
 wp(site, ['config', 'set', 'INK_MAIL_SINK', mailSink, '--type=constant', '--quiet'], { bare: true });
-if (migrationData) {
-  wp(site, ['config', 'set', 'INK_MIGRATION_DATA_DIR', migrationData.split(path.sep).join('/'), '--type=constant', '--quiet'], { bare: true });
-}
+wp(site, ['config', 'set', 'INK_MIGRATION_DATA_DIR', migrationData.split(path.sep).join('/'), '--type=constant', '--quiet'], { bare: true });
 wp(site, ['rewrite', 'flush', '--quiet'], { bare: true, allowFail: true });
 wp(site, ['cache', 'flush', '--quiet'], { bare: true, allowFail: true });
 
