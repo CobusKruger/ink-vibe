@@ -1,6 +1,6 @@
 # Lovable design delta (Oct 2026): build strategy
 
-**Status:** STRATEGY. Nothing is built yet. Owner ruled on D1–D4 and D6–D9 on 2026-10-26 (§4). D5 and D10–D12 are still open.
+**Status:** STRATEGY. InkPols migration is built; the rest is not. All of D1–D13 are ruled (§4). The next round is `docs/handoffs/homepage-dev-round.md`.
 **Start with `HANDOVER.md`** (state and next steps). InkPols (WP4) is fully specified in `inkpols.md`.
 **Opened:** 2026-10-26.
 **Lovable range:** `71c0847..86b69dd`, 22 commits. `71c0847` is the last commit the fidelity rework synced.

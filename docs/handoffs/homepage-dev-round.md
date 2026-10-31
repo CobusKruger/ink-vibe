@@ -87,13 +87,13 @@ Scope: **WP1 Uitslae + WP3 Tuis + N6** (the InkPols home section) from `docs/lov
    - `Challenges/Pools.php` splits every category by Gradering: wrong. Gedigte keep per-Gradering pools; Storie and Artikel get one pool each. Consumers: `Placements::arrange`, `Coverage`, the ingestion and parser, and their tests.
    - `Ingestion::awardPromotions` counts all categories: wrong. Count Gedigte only.
    - A Meester is handled as Goud on the podium. There are none today.
-4. **Make the migration read the reviewed winner lists** instead of parsing, in `wp ink migrate-all`. Inputs: `wenners.csv`, `result-posts.csv`, `challenges.csv` (see `docs/migration-data.md`). They are still being reviewed under a separate handoff (`winner-cleanup.md`); **the draft is good enough to drive dev**, and the CSV columns are the contract between the two jobs. Requirements:
+4. **Make the migration read the reviewed winner lists** instead of parsing, in `wp ink migrate-all`. Inputs: `wenners.csv`, `result-posts.csv`, `challenges.csv` (see `docs/migration-data.md`). They are hand-curated and are the source of truth; `docs/handoffs/winner-cleanup.md` describes them, and that job runs before this one. **Do not build another way to match wins**, and compare any typed title or name through `Ink\Migration\TextKey`, which handles dropped accents and every spelling of 'n. Rows with status `best-effort` and `review` count as wins, the same as `ok`. Requirements:
    - Write placements (`ink_entry_placement`) and the entry-Gradering snapshot (`ink_entry_gradering`) on matched posts.
-   - **A win counts even with no post** (166 rows have none today), so win records can't live only in post meta. Choose a store and record why.
+   - **A win counts even with no post** (over 150 rows have none, and many never will, because writers who stopped posting are best effort), so win records can't live only in post meta. Choose a store and record why.
    - A row with no account stays recorded and promotes nobody.
    - Replace the source `derive-tiers` counts from. Thresholds are 5 wins, then 15 more (`PromotionEngine`). Check the result against `review/grade-changes.csv`.
    - Set round links from `result-posts.csv`; the two `not-results` posts lose theirs.
-   - **Trap: `challenge_id` is not stable.** Rounds are created by the migration with fresh IDs (68657–68796 on dev today), and those IDs shift between runs, more so now that 12 competitions no longer migrate. Match rounds on `ink_uitdaging_source_category`, the prod category term ID. `post_id` and `user_id` come from prod and are stable. Coordinate this column change with the cleanup job.
+   - **Trap: `challenge_id` is not stable.** Rounds are created by the migration with fresh IDs (68657–68796 on dev today), and those IDs shift between runs, more so now that 12 competitions no longer migrate. Match rounds on the `source_category` column, which is `ink_uitdaging_source_category`, the prod category term ID. `post_id` and `user_id` come from prod and are stable.
    - The card's "Nth challenge win" is a **lifetime** count derived from the records, because `ink_tier_win_count` resets on promotion.
 5. **Build the results page (N1, D5):** `/uitdaging/<slug>/uitslae/`, a rewrite endpoint and `templates/single-uitdaging-uitslae.html`, per `verse-haven/src/pages/ChallengeResults.tsx`. The old winners post 301s to it. Includes the judges' letter and honourable mentions (D8). Citations show only if the author opted in (D6). Reuse `Placements`, `ModeratorFeedback`, `WinnersPost`, `ResultPostLinker`; read them first.
 6. **Build the homepage:** the section order in §4, new blocks `ink/uitslae-banier` and the InkPols section, four cards on real data, remove the old band and the demo filter. Pages are code: template + pattern + blocks, never `post_content`. Each new page stylesheet is layout only, with a load gate covering every consumer.
@@ -119,7 +119,6 @@ Run `git status` and `git log` first; nothing is pushed. Work on a branch.
 
 ## 8. Stale information to ignore
 
-- `lovable-delta-2026-10/README.md` header says D5 and D10–D12 are open: they're ruled, in its §4.2.
 - `HANDOVER.md` §1 and §5 describe an old branch and machine, and CSVs in the repo. §3 and §5.1 are still useful.
 - Any mention of "1ste/2de/3de plek" as labels: withdrawn. Any mention of competitions as rounds: wrong. **Komps are not challenges** (owner, 2026-10-31); they work differently and have different prizes.
 - Dev still has the 12 competition rounds, with 2,153 entries, until the next migration.

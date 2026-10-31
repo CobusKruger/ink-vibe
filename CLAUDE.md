@@ -31,6 +31,14 @@ Project instructions for Claude Code. These apply to all sessions in this repo.
 
 - **Design delta** (verse-haven `71c0847..86b69dd`): start at `docs/lovable-delta-2026-10/HANDOVER.md`. Work packages WP1 Uitslae → WP6 header; **WP4 InkPols** is fully specified in `inkpols.md` and may go first.
 - **Pages are code**, never `post_content`: template + pattern + blocks, registered via `SystemPages`, CPT or rewrite.
+- **Handoffs:** `docs/handoffs/winner-cleanup.md` runs first, then `docs/handoffs/homepage-dev-round.md`. Not in parallel.
+
+## Winner data
+
+- **The hand-curated lists in `../migration-data/` are the source of truth** (`docs/migration-data.md`). `docs/migration-tools/build-winner-lists.php` only adds and fills. Do not build another way to match wins or rebuild the lists.
+- **Best effort for inactive members:** someone who has posted nothing in a year doesn't get reviewed. If the winning post can be identified, mark it; if not, move on. The win still counts.
+- **Compare typed titles and names only through `Ink\Migration\TextKey`.** It handles dropped accents, every spelling of 'n (ŉ, ñ, ń, 'n, ’n, n, N) and grades added to titles.
+- **Competitions are not challenges**, and are never counted as challenges.
 
 ## Dev site (nuwe-ink) and deployment
 

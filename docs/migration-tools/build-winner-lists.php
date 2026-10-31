@@ -1,52 +1,70 @@
 <?php
-// Drafts the reviewed winner lists in the migration-data folder, from the old result posts and the
-// July 2026 hand-verified list. Reads the database only. Run from the WordPress root of a migrated copy:
+// Keeps the reviewed winner lists in the migration-data folder up to date. The lists are the source
+// of truth: hand edits stand. Each run only adds and fills, and reads the database only:
+//   - result posts not yet in result-posts.csv are read (parser + July list) and their wins appended;
+//   - a win with no post, or no account, gets one if it can now be found;
+//   - challenge ids, activity and counts are refreshed; review lists are rewritten.
+// It never changes a filled post, account, category, grade or position, and it never rebuilds. To change those, edit the CSV.
 //   wp eval-file <repo>/docs/migration-tools/build-winner-lists.php
-// Stops if wenners.csv already exists, so reviewed work is never overwritten; FORCE=1 replaces it.
-// Writes wenners.csv, result-posts.csv, challenges.csv and, in review/, the lists to work through.
+// Set WL_OUT to work on a copy of the lists. The previous lists are kept in backup/.
 use Ink\Content\ChallengeResultTitle as T;
 use Ink\Content\ChallengeRound;
 use Ink\Kernel\MigrationData;
 use Ink\Migration\LegacyResultsParser as P;
+use Ink\Migration\TextKey;
 use Ink\Migration\TierDeriver;
 use Ink\Migration\WriterResolver;
 use Ink\Tiers\Api;
 use Ink\Tiers\PromotionEngine;
 
-const WL_NOT_RESULTS   = array( 31881, 32763 ); // Apologies for late results (owner, 2026-10-31: read, confirmed).
-const WL_OUTSIDE       = array( 14391, 14557 ); // Outside competitions: not listed, not counted (owner, 2026-10-31).
 const WL_ENTRY_WINDOW  = 150 * DAY_IN_SECONDS;  // A result follows closing by at most about 3 months (owner); rounds run about a month.
+const WL_ACTIVE_WINDOW = YEAR_IN_SECONDS;       // Nothing posted for a year: best effort, nobody reviews it (owner, 2026-10-31).
 const WL_JULY_END      = '2026-07-01';          // Later result posts are new, so the July list cannot have them.
 const WL_SAME_PERSON   = array( 168 => array( 69 ) ); // Palet, and her second account (owner, 2026-10-31).
 const WL_FRANCOIS      = 46;                    // Only ever posted the 13 posts up to 2019-09-10 (owner).
 const WL_GEDAGTES      = 66;                    // A different writer, who also appears as "Francois Meyer".
 const WL_FRANCOIS_LAST = '2019-09-10';
 const WL_SITE_OWNER    = 36;                    // Anzé removed her own posts and that is expected (owner).
-const WL_NO_RESULTS    = array( 68692, 68701 ); // Februarie 2019 and Herfs: results seem never to have been published (owner).
-const WL_KNOWN_POSTS   = array( 'mariamagdelena' => 36860, 'jongoumens' => 26062 ); // Francois Meyer's "Maria Magdalena ('n Verplasing)"; Patricia.C's "Jong oumens" (owner). The post's account gets the win.
-const WL_NOT_SAME      = array( 'diesielisweertuis', 'gestroop', 'haikoe3', 'uitgespreidesiervere' ); // Same title on another account, but not the same writer (owner, 2026-10-31).
-const WL_DELETED       = array( 'Agie', 'Charne Harding', 'Arnold van Zyl', 'Yvonne de Kock', 'Jaco Geldenhuys', 'Lynelle Clark', 'Magret Cordier' ); // Deleted accounts (owner); Charne's posts moved to anonymous, which earns no wins.
 
 global $wpdb;
 
-$out = MigrationData::dir();
+$data = MigrationData::dir();
+$out  = getenv( 'WL_OUT' ) ?: $data;
 if ( '' === $out ) {
 	WP_CLI::error( 'INK_MIGRATION_DATA_DIR is not set.' );
 }
-if ( file_exists( "$out/wenners.csv" ) && ! getenv( 'FORCE' ) ) {
-	WP_CLI::error( 'wenners.csv already exists. FORCE=1 replaces it and loses any review work.' );
+
+function wl_read( string $path ): array {
+	if ( ! is_readable( $path ) ) { return array(); }
+	$f    = fopen( $path, 'r' );
+	$head = fgetcsv( $f );
+	$head[0] = ltrim( (string) $head[0], "\xEF\xBB\xBF" );
+	$rows = array();
+	while ( false !== ( $l = fgetcsv( $f ) ) ) {
+		if ( count( $l ) === count( $head ) ) { $rows[] = array_combine( $head, $l ); }
+	}
+	fclose( $f );
+	return $rows;
+}
+$cur_wins = wl_read( "$out/wenners.csv" );
+$cur_rp   = array_column( wl_read( "$out/result-posts.csv" ), null, 'post_id' );
+$cur_ch   = wl_read( "$out/challenges.csv" );
+if ( ! $cur_wins || ! $cur_rp || ! $cur_ch ) {
+	WP_CLI::error( "wenners.csv, result-posts.csv and challenges.csv must exist in $out. They are curated and are never rebuilt: restore them from backup/." );
+}
+$deleted = array();
+foreach ( wl_read( "$data/writer-deleted.csv" ) as $r ) { $deleted[ P::nameKey( $r['name'] ) ] = true; }
+// Questions the owner has answered are not asked again.
+$answered = array();
+foreach ( glob( "$out/review/accounts-confirmed-*.csv" ) ?: array() as $file ) {
+	foreach ( wl_read( $file ) as $r ) { $answered[ P::nameKey( $r['byline'] ) . '|' . TextKey::title( $r['title'] ) ] = true; }
 }
 
 function wl_base( string $s ): string {
 	$s = mb_strtolower( html_entity_decode( $s, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
-	$s = (string) preg_replace( '/[\[\(#\-–:]*\s*\b(goud|goue|silwer|brons)\b\s*[\]\)]*/u', ' ', $s );
-	$s = (string) preg_replace( '/\(?\b\d+\s*(woorde|words|w)\b\)?/u', ' ', $s );
 	$s = (string) preg_replace( '/\(?\d+\s*%\)?/u', ' ', $s );
 	$s = (string) preg_replace( '/^\s*(gedig|verhaal|storie|artikel|rubriek|prosa|mening|meningstuk)\s*[:\-–]\s*/u', ' ', $s );
-	$s = trim( $s );
-	$s = (string) preg_replace( "/^[\x{2018}\x{2019}'\x{149}]+n\b|^\x{149}/u", '', $s );
-	$s = (string) preg_replace( '/[^\p{L}\p{N}]+/u', '', $s );
-	return remove_accents( $s );
+	return TextKey::title( $s );
 }
 function wl_close( string $a, string $b ): bool {
 	if ( '' === $a || '' === $b ) { return false; }
@@ -74,16 +92,29 @@ $aliases  = $td->a();
 $resolver = new WriterResolver( $dir['users'], $aliases );
 $known    = array_merge( $dir['names'], array_keys( $aliases ) );
 
-// Rounds, and which round each post was entered in.
-$rounds = array();
-foreach ( $wpdb->get_results( "SELECT ID, post_title, post_date FROM {$wpdb->posts} WHERE post_type='uitdaging' AND post_status <> 'auto-draft' ORDER BY post_date" ) as $u ) {
+// Rounds, and which round each post was entered in. A round's id changes with every migration; its prod category does not.
+$rounds = array(); $src_of = array(); $id_of = array();
+foreach ( $wpdb->get_results( $wpdb->prepare( "SELECT p.ID, p.post_title, p.post_date, m.meta_value src FROM {$wpdb->posts} p LEFT JOIN {$wpdb->postmeta} m ON m.post_id=p.ID AND m.meta_key=%s WHERE p.post_type='uitdaging' AND p.post_status <> 'auto-draft' ORDER BY p.post_date", 'ink_uitdaging_source_category' ) ) as $u ) {
 	$u->title = html_entity_decode( $u->post_title, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
 	$u->t     = strtotime( $u->post_date );
 	// Competitions are not challenges (owner, 2026-10-31), so they are not listed or matched.
 	if ( ChallengeRound::isCompetition( $u->title ) ) { continue; }
 	$u->kind  = 1 === preg_match( '/slypskool/iu', $u->title ) ? 'slypskool' : 'monthly';
 	$rounds[ (int) $u->ID ] = $u;
+	$src_of[ (int) $u->ID ] = (string) $u->src;
+	$id_of[ (string) $u->src ] = (int) $u->ID;
 }
+$with_round = static function ( array $r ) use ( $src_of, $id_of, $rounds ): array {
+	$src = (string) ( $r['source_category'] ?? '' );
+	if ( '' === $src && '' !== (string) ( $r['challenge_id'] ?? '' ) ) { $src = $src_of[ (int) $r['challenge_id'] ] ?? ''; }
+	$r['source_category'] = $src;
+	$id = $id_of[ $src ] ?? 0;
+	$r['challenge_id'] = $id ?: '';
+	if ( $id ) { $r['challenge'] = $rounds[ $id ]->title; }
+	return $r;
+};
+$cur_wins = array_map( $with_round, $cur_wins );
+$cur_rp   = array_map( $with_round, $cur_rp );
 $post_rounds = array();
 $round_posts = array();
 foreach ( $wpdb->get_results( "SELECT tr.object_id o, t.slug FROM {$wpdb->term_relationships} tr JOIN {$wpdb->term_taxonomy} tt USING (term_taxonomy_id) JOIN {$wpdb->terms} t USING (term_id) WHERE tt.taxonomy='uitdagingsrondte'" ) as $r ) {
@@ -171,12 +202,11 @@ $find = static function ( int $uid, string $title, int $when ) use ( $by_owner, 
 // First pass: combine parser and July list per post; winners' posts vote for the round.
 $wins = array(); $post_info = array(); $votes = array();
 foreach ( $result_posts as $id => $rp ) {
-	if ( in_array( $id, WL_OUTSIDE, true ) ) { continue; }
+	if ( isset( $cur_rp[ $id ] ) || ChallengeRound::isCompetition( $rp->title ) ) { continue; }
 	$parsed  = P::parse( $rp->html, $known );
 	$listed  = $july[ wl_base( $rp->title ) ] ?? array();
 	$on_july = array() !== $listed;
 	$post_info[ $id ] = array( 'parsed' => count( $parsed['rows'] ), 'unparsed' => count( $parsed['unparsed'] ), 'july' => count( $listed ) );
-	if ( in_array( $id, WL_NOT_RESULTS, true ) ) { continue; }
 
 	$used = array();
 	foreach ( $parsed['rows'] as $row ) {
@@ -234,19 +264,22 @@ foreach ( $wins as $w ) {
 }
 
 // Each result post's round: winners' posts, title month and the date rule must agree.
-$chosen = array(); $rp_rows = array();
+$chosen = array(); $rp_rows = array_values( $cur_rp ); $new_rp = 0;
+foreach ( $cur_rp as $id => $r ) { $chosen[ (int) $id ] = (int) $r['challenge_id']; }
 foreach ( $result_posts as $id => $rp ) {
-	if ( in_array( $id, WL_OUTSIDE, true ) ) { continue; }
-	$info = $post_info[ $id ];
-	$row  = array(
-		'post_id' => $id, 'date' => $rp->date, 'title' => $rp->title, 'url' => 'https://ink.org.za/' . $rp->slug . '/',
-		'existing_link' => $links[ $id ] ?? '', 'parsed_rows' => $info['parsed'], 'july_rows' => $info['july'], 'unparsed_lines' => $info['unparsed'],
-	);
-	if ( in_array( $id, WL_NOT_RESULTS, true ) ) {
-		$row += array( 'status' => 'not-results', 'notes' => 'Apology for late results; holds no winners. Remove its round link.' );
-		$rp_rows[] = $row;
+	if ( isset( $cur_rp[ $id ] ) ) { continue; }
+	++$new_rp;
+	$url = 'https://ink.org.za/' . $rp->slug . '/';
+	// Competitions are not challenges (owner): listed once as outside, so they are not read again.
+	if ( ChallengeRound::isCompetition( $rp->title ) ) {
+		$rp_rows[] = array( 'post_id' => $id, 'date' => $rp->date, 'title' => $rp->title, 'url' => $url, 'status' => 'outside', 'notes' => 'Competition: not a challenge, not counted.' );
 		continue;
 	}
+	$info = $post_info[ $id ];
+	$row  = array(
+		'post_id' => $id, 'date' => $rp->date, 'title' => $rp->title, 'url' => $url,
+		'existing_link' => $links[ $id ] ?? '', 'parsed_rows' => $info['parsed'], 'july_rows' => $info['july'], 'unparsed_lines' => $info['unparsed'],
+	);
 	$eligible = array_filter( $rounds, static fn( $u ) => $u->t <= $rp->t && $rp->t - $u->t <= WL_ENTRY_WINDOW );
 	$v        = array_intersect_key( $votes[ $id ] ?? array(), $eligible );
 	arsort( $v );
@@ -286,20 +319,42 @@ foreach ( $result_posts as $id => $rp ) {
 	if ( ! $info['july'] && $rp->date < WL_JULY_END ) { $notes[] = 'Not on the July list.'; }
 	$chosen[ $id ] = $pick;
 	$row += array(
-		'challenge_id' => $pick ?: '', 'challenge' => $pick ? $rounds[ $pick ]->title : '',
+		'challenge_id' => $pick ?: '', 'source_category' => $src_of[ $pick ] ?? '', 'challenge' => $pick ? $rounds[ $pick ]->title : '',
 		'how' => ! $pick ? '' : ( $pick === $existing ? 'existing link' : 'proposed' ),
 		'winner_post_votes' => $v[ $pick ] ?? 0, 'status' => $status, 'notes' => implode( ' ', $notes ),
 	);
 	$rp_rows[] = $row;
 }
 
+// A win already listed but missing its post or account gets another look.
+foreach ( $cur_wins as $i => $r ) {
+	if ( ( '' === $r['post_id'] || '' === $r['user_id'] ) && isset( $result_posts[ (int) $r['result_post'] ] ) ) {
+		$wins[] = array(
+			'rp' => (int) $r['result_post'], 'category' => $r['category'], 'grade' => $r['grade'], 'position' => $r['position'],
+			'byline' => $r['byline'], 'title' => $r['title'], 'source' => $r['source'], 'notes' => array(), 'diff' => array(), 'cur' => $i,
+		);
+	}
+}
+
+$now       = time();
+$is_active = static function ( int $uid ) use ( $by_owner, $authors_for, $now ): bool {
+	foreach ( $authors_for( $uid ) as $a ) {
+		foreach ( $by_owner[ $a ] ?? array() as $p ) { if ( 'publish' === $p->post_status && $now - $p->t <= WL_ACTIVE_WINDOW ) { return true; } }
+	}
+	return false;
+};
+$old_mismatch = wl_read( "$out/review/july-list-mismatches.csv" );
+$disputed     = array();
+foreach ( $old_mismatch as $r ) { $disputed[ $r['result_date'] . '|' . TextKey::title( $r['title'] ) ] = true; }
+
 // Second pass: settle each win's account and post.
-$rows = array(); $missing = array(); $mismatch = array(); $confirm = array();
+$rows = array(); $mismatch = $old_mismatch; $confirm = array(); $filled = array(); $new_posts = 0; $new_accounts = 0;
 foreach ( $wins as $w ) {
 	$rp    = $result_posts[ $w['rp'] ];
 	$round = $chosen[ $w['rp'] ] ?? 0;
 	$hit   = $resolver->resolve( $w['byline'] );
-	$uid   = $hit ? (int) $hit['user'] : 0;
+	$listed_uid = isset( $w['cur'] ) ? (int) $cur_wins[ $w['cur'] ]['user_id'] : 0;
+	$uid   = $listed_uid ?: ( $hit ? (int) $hit['user'] : 0 );
 	$notes = $w['notes'];
 	$status = 'ok';
 	$post  = null;
@@ -319,6 +374,18 @@ foreach ( $wins as $w ) {
 		elseif ( 1 === count( $lt ) ) { $post = $lt[0]; $match = 'close-title'; $status = 'review'; $notes[] = 'Title only close, and the post is not filed under this round.'; }
 		elseif ( count( $lt ) > 1 ) { $match = 'several'; $status = 'review'; $suggest = $lt; $notes[] = 'Several posts fit; pick one.'; }
 		elseif ( $exact || $typo ) { $dead = array_merge( $exact, $typo )[0]; $notes[] = "Post is not published: #{$dead->ID} ({$dead->post_status})."; }
+
+		// The writer's own post in this round, with one title inside the other: "Villanelle: Na jou asem weg is".
+		if ( ! $post && 'several' !== $match && $round ) {
+			$key  = wl_base( $w['title'] );
+			$held = array();
+			foreach ( $authors_for( $uid ) as $a ) {
+				foreach ( $by_owner[ $a ] ?? array() as $p ) {
+					if ( 'publish' === $p->post_status && isset( $post_rounds[ (int) $p->ID ][ $round ] ) && min( strlen( $key ), strlen( $p->k ) ) >= 6 && ( str_contains( $p->k, $key ) || str_contains( $key, $p->k ) ) ) { $held[] = $p; }
+				}
+			}
+			if ( 1 === count( $held ) ) { $post = $held[0]; $match = 'contained+round'; }
+		}
 
 		// Nothing in the window. The writer's own exact title still identifies the post: some were reposted later (owner, 2026-10-31).
 		if ( ! $post && 'several' !== $match ) {
@@ -354,16 +421,10 @@ foreach ( $wins as $w ) {
 		unset( $dead );
 	}
 
-	if ( isset( WL_KNOWN_POSTS[ wl_base( $w['title'] ) ] ) ) {
-		$post  = get_post( WL_KNOWN_POSTS[ wl_base( $w['title'] ) ] );
-		$match = 'owner';
-		$uid   = (int) $post->post_author;
-	}
-
 	// A by-line with no post of its own: the same title in the window, by any account, may name the writer.
 	$same_title = array();
 	if ( ! $post && 'several' !== $match ) {
-		foreach ( in_array( wl_base( $w['title'] ), WL_NOT_SAME, true ) ? array() : ( $by_title[ wl_base( $w['title'] ) ] ?? array() ) as $p ) {
+		foreach ( isset( $answered[ P::nameKey( $w['byline'] ) . '|' . TextKey::title( $w['title'] ) ] ) ? array() : ( $by_title[ wl_base( $w['title'] ) ] ?? array() ) as $p ) {
 			if ( $p->t <= $rp->t + DAY_IN_SECONDS && $rp->t - $p->t <= WL_ENTRY_WINDOW ) { $same_title[] = $p; }
 		}
 		if ( $same_title ) {
@@ -372,7 +433,7 @@ foreach ( $wins as $w ) {
 	}
 
 	// The by-line "Francois Meyer" covers two writers (owner): the post decides, else the date.
-	if ( WL_FRANCOIS === $uid ) {
+	if ( WL_FRANCOIS === $uid && ! $listed_uid ) {
 		if ( $post ) { $uid = (int) $post->post_author; }
 		else {
 			$uid      = $rp->date > WL_FRANCOIS_LAST ? WL_GEDAGTES : WL_FRANCOIS;
@@ -383,7 +444,7 @@ foreach ( $wins as $w ) {
 	foreach ( WL_SAME_PERSON as $main => $others ) { if ( in_array( (int) ( $post->post_author ?? 0 ), $others, true ) ) { $notes[] = "Post sits on the account being merged into #$main."; } }
 
 	if ( ! $uid ) {
-		if ( in_array( P::nameKey( $w['byline'] ), array_map( array( P::class, 'nameKey' ), WL_DELETED ), true ) ) { $notes[] = 'Account deleted (owner): recorded, nothing to promote.'; }
+		if ( isset( $deleted[ P::nameKey( $w['byline'] ) ] ) ) { $notes[] = 'Account deleted (owner): recorded, nothing to promote.'; }
 		else { $status = 'review'; $notes[] = 'No account for this by-line.'; }
 	}
 	if ( ! $post && 'several' !== $match ) {
@@ -405,6 +466,7 @@ foreach ( $wins as $w ) {
 
 	if ( WL_SITE_OWNER !== $uid ) {
 		foreach ( $same_title as $p ) {
+			if ( ! $is_active( $uid ?: (int) $p->post_author ) ) { continue; }
 			$confirm[] = array(
 				'same_person' => '', 'byline' => $w['byline'], 'by_line_account' => $uid ? $login( $uid ) : '', 'post_account' => $login( (int) $p->post_author ), 'post_account_id' => (int) $p->post_author,
 				'post_account_name' => get_userdata( (int) $p->post_author )->display_name ?? '', 'title' => $w['title'], 'post_id' => $p->ID, 'post_date' => gmdate( 'Y-m-d', $p->t ), 'category' => $w['category'],
@@ -414,9 +476,35 @@ foreach ( $wins as $w ) {
 	}
 
 	$sg = implode( ' ; ', array_map( static fn( $p ) => "#{$p->ID} " . html_entity_decode( $p->post_title, ENT_QUOTES | ENT_HTML5, 'UTF-8' ), array_slice( $suggest, 0, 6 ) ) );
+
+	// A listed win only gains what it lacked; everything else on the row stands.
+	if ( isset( $w['cur'] ) ) {
+		$c = &$cur_wins[ $w['cur'] ];
+		if ( '' === $c['user_id'] && $uid ) {
+			$c['user_id']    = $uid;
+			$c['user_login'] = $login( $uid );
+			++$new_accounts;
+		}
+		if ( '' === $c['post_id'] ) {
+			if ( $post ) {
+				$c['post_id']     = $post->ID;
+				$c['post_title']  = html_entity_decode( $post->post_title, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+				$c['match']       = $match;
+				$c['notes']       = implode( ' ', $notes );
+				$c['suggestions'] = '';
+				++$new_posts;
+				if ( 'ok' === $status ) { $filled[ $w['cur'] ] = true; }
+			} elseif ( '' !== $sg ) {
+				$c['suggestions'] = $sg;
+			}
+		}
+		unset( $c );
+		continue;
+	}
+
 	$row = array(
 		'status' => $status, 'notes' => implode( ' ', $notes ), 'result_post' => $w['rp'], 'result_date' => $rp->date,
-		'challenge_id' => $round ?: '', 'challenge' => $round ? $rounds[ $round ]->title : '',
+		'challenge_id' => $round ?: '', 'source_category' => $src_of[ $round ] ?? '', 'challenge' => $round ? $rounds[ $round ]->title : '',
 		'category' => $w['category'], 'grade' => $w['grade'], 'position' => $w['position'], 'byline' => $w['byline'],
 		'user_id' => $uid ?: '', 'user_login' => $uid ? $login( $uid ) : '', 'title' => $w['title'],
 		'post_id' => $post ? $post->ID : '', 'post_title' => $post ? html_entity_decode( $post->post_title, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) : '',
@@ -424,7 +512,6 @@ foreach ( $wins as $w ) {
 	);
 	$rows[] = $row;
 
-	if ( ! $post ) { $missing[] = $row; }
 	if ( $rp->date < WL_JULY_END ) {
 		$type = '';
 		if ( 'july' === $w['source'] ) { $type = 'On the July list, parser did not read it'; }
@@ -434,12 +521,45 @@ foreach ( $wins as $w ) {
 	}
 }
 
+// Listed and new wins together. Only the people still writing get reviewed (owner): for anyone else,
+// a win whose post can't be identified stays counted and we move on. A status someone set to ok stands.
+$new_wins = count( $rows );
+foreach ( $cur_wins as $i => $r ) {
+	if ( isset( $filled[ $i ] ) && ! isset( $disputed[ $r['result_date'] . '|' . TextKey::title( $r['title'] ) ] ) && (int) $r['position'] <= 3 ) { $r['status'] = 'ok'; }
+	$rows[] = $r;
+}
+$a_year_ago = gmdate( 'Y-m-d', $now - WL_ACTIVE_WINDOW );
+foreach ( $rows as &$r ) {
+	$r['activity'] = '' === (string) $r['user_id'] ? 'no-account' : ( $is_active( (int) $r['user_id'] ) ? 'active' : 'inactive' );
+	if ( 'review' === $r['status'] || 'best-effort' === $r['status'] ) {
+		$live = 'active' === $r['activity'] || ( 'no-account' === $r['activity'] && $r['result_date'] >= $a_year_ago );
+		$r['status'] = $live ? 'review' : 'best-effort';
+	}
+}
+unset( $r );
+
 $sort = static fn( $a, $b ) => array( $a['result_date'], $a['category'], $a['grade'], (int) $a['position'] ) <=> array( $b['result_date'], $b['category'], $b['grade'], (int) $b['position'] );
 usort( $rows, $sort );
-usort( $missing, static fn( $a, $b ) => array( str_contains( $a['notes'], 'Site owner' ) ? 1 : 0, $a['result_date'] ) <=> array( str_contains( $b['notes'], 'Site owner' ) ? 1 : 0, $b['result_date'] ) );
-usort( $mismatch, static fn( $a, $b ) => array( $a['type'], $a['result_date'] ) <=> array( $b['type'], $b['result_date'] ) );
+$missing = array_values( array_filter( $rows, static fn( $r ) => '' === (string) $r['post_id'] && 'review' === $r['status'] ) );
+$to_check = array();
+foreach ( $rows as $r ) { $to_check[ $r['result_date'] . '|' . TextKey::title( $r['title'] ) ] = $r; }
+foreach ( $mismatch as &$m ) {
+	$r = $to_check[ $m['result_date'] . '|' . TextKey::title( $m['title'] ) ] ?? null;
+	$m['status']   = $r['status'] ?? '';
+	$m['activity'] = $r['activity'] ?? '';
+	$m['post_id']  = $r['post_id'] ?? $m['post_id'];
+}
+unset( $m );
+usort( $mismatch, static fn( $a, $b ) => array( 'review' === $a['status'] ? 0 : 1, $a['type'], $a['result_date'] ) <=> array( 'review' === $b['status'] ? 0 : 1, $b['type'], $b['result_date'] ) );
+usort( $rp_rows, static fn( $a, $b ) => $a['date'] <=> $b['date'] );
 
-// Challenges.
+// Challenges: counts are refreshed; a status or note already in the list stands.
+$cur_ch_by = array();
+foreach ( $cur_ch as $r ) {
+	$src = (string) ( $r['source_category'] ?? '' );
+	if ( '' === $src && '' !== (string) ( $r['challenge_id'] ?? '' ) ) { $src = $src_of[ (int) $r['challenge_id'] ] ?? ''; }
+	$cur_ch_by[ $src ] = $r;
+}
 $ch_rows = array();
 $by_round = array();
 foreach ( $rp_rows as $r ) { if ( ! empty( $r['challenge_id'] ) ) { $by_round[ (int) $r['challenge_id'] ][] = $r['post_id']; } }
@@ -451,9 +571,9 @@ foreach ( $rounds as $id => $u ) {
 	$notes  = '';
 	if ( 'monthly' === $u->kind && ! $has && $u->t < strtotime( '-3 months' ) ) { $status = 'review'; $notes = 'Monthly round with no result post.'; }
 	if ( count( $has ) > 1 ) { $status = 'review'; $notes = 'More than one result post.'; }
-	if ( in_array( $id, WL_NO_RESULTS, true ) ) { $status = 'ok'; $notes = 'No results published (owner).'; }
+	if ( isset( $cur_ch_by[ $src_of[ $id ] ] ) ) { $status = $cur_ch_by[ $src_of[ $id ] ]['status']; $notes = $cur_ch_by[ $src_of[ $id ] ]['notes']; }
 	$ch_rows[] = array(
-		'challenge_id' => $id, 'title' => $u->title, 'opened' => substr( $u->post_date, 0, 10 ), 'kind' => $u->kind,
+		'challenge_id' => $id, 'source_category' => $src_of[ $id ], 'title' => $u->title, 'opened' => substr( $u->post_date, 0, 10 ), 'kind' => $u->kind,
 		'entries' => count( $round_posts[ $id ] ?? array() ), 'result_posts' => implode( ' ', $has ), 'wins' => $win_count[ $id ] ?? 0,
 		'status' => $status, 'notes' => $notes,
 	);
@@ -474,27 +594,22 @@ foreach ( array_unique( array_merge( array_keys( $totals ), array_map( 'intval',
 }
 usort( $grade_rows, static fn( $a, $b ) => $b['poetry_wins'] <=> $a['poetry_wins'] );
 
-if ( ! is_dir( "$out/review" ) ) { mkdir( "$out/review" ); }
-wl_write( "$out/wenners.csv", array( 'status', 'notes', 'result_post', 'result_date', 'challenge_id', 'challenge', 'category', 'grade', 'position', 'byline', 'user_id', 'user_login', 'title', 'post_id', 'post_title', 'match', 'source', 'suggestions', 'result_url' ), $rows );
-wl_write( "$out/result-posts.csv", array( 'status', 'notes', 'post_id', 'date', 'title', 'challenge_id', 'challenge', 'how', 'existing_link', 'winner_post_votes', 'parsed_rows', 'july_rows', 'unparsed_lines', 'url' ), $rp_rows );
-wl_write( "$out/challenges.csv", array( 'status', 'notes', 'challenge_id', 'title', 'opened', 'kind', 'entries', 'result_posts', 'wins' ), $ch_rows );
+foreach ( array( '', 'backup', 'review' ) as $sub ) { if ( ! is_dir( "$out/$sub" ) ) { mkdir( "$out/$sub" ); } }
+foreach ( array( 'wenners', 'result-posts', 'challenges' ) as $name ) { copy( "$out/$name.csv", "$out/backup/$name.csv" ); }
+wl_write( "$out/wenners.csv", array( 'status', 'activity', 'notes', 'result_post', 'result_date', 'challenge_id', 'source_category', 'challenge', 'category', 'grade', 'position', 'byline', 'user_id', 'user_login', 'title', 'post_id', 'post_title', 'match', 'source', 'suggestions', 'result_url' ), $rows );
+wl_write( "$out/result-posts.csv", array( 'status', 'notes', 'post_id', 'date', 'title', 'challenge_id', 'source_category', 'challenge', 'how', 'existing_link', 'winner_post_votes', 'parsed_rows', 'july_rows', 'unparsed_lines', 'url' ), $rp_rows );
+wl_write( "$out/challenges.csv", array( 'status', 'notes', 'challenge_id', 'source_category', 'title', 'opened', 'kind', 'entries', 'result_posts', 'wins' ), $ch_rows );
 wl_write( "$out/review/wins-without-a-post.csv", array( 'notes', 'result_date', 'challenge', 'category', 'grade', 'position', 'byline', 'user_login', 'title', 'suggestions', 'result_url' ), $missing );
-wl_write( "$out/review/july-list-mismatches.csv", array( 'type', 'differences', 'result_date', 'challenge', 'category', 'grade', 'position', 'byline', 'user_login', 'title', 'post_id', 'result_url' ), $mismatch );
+wl_write( "$out/review/july-list-mismatches.csv", array( 'status', 'activity', 'type', 'differences', 'result_date', 'challenge', 'category', 'grade', 'position', 'byline', 'user_login', 'title', 'post_id', 'result_url' ), $mismatch );
 usort( $confirm, static fn( $a, $b ) => array( '' !== $a['by_line_account'], $a['byline'], $a['result_date'] ) <=> array( '' !== $b['by_line_account'], $b['byline'], $b['result_date'] ) );
 wl_write( "$out/review/accounts-to-confirm.csv", array( 'same_person', 'byline', 'by_line_account', 'post_account', 'post_account_id', 'post_account_name', 'title', 'post_id', 'post_date', 'category', 'result_date', 'challenge', 'result_url' ), $confirm );
 wl_write( "$out/review/grade-changes.csv", array( 'user_id', 'user_login', 'display_name', 'poetry_wins', 'grade_now', 'grade_new' ), $grade_rows );
 
-$tally = static function ( array $l, string $k ) { $c = array(); foreach ( $l as $r ) { $c[ (string) $r[ $k ] ] = ( $c[ (string) $r[ $k ] ] ?? 0 ) + 1; } ksort( $c ); return wp_json_encode( $c, JSON_UNESCAPED_UNICODE ); };
-echo 'wins ' . count( $rows ) . ' status ' . $tally( $rows, 'status' ) . ' match ' . $tally( $rows, 'match' ) . ' source ' . $tally( $rows, 'source' ) . ' cat ' . $tally( $rows, 'category' ) . "\n";
-echo 'result posts ' . count( $rp_rows ) . ' status ' . $tally( $rp_rows, 'status' ) . ' how ' . $tally( array_filter( $rp_rows, static fn( $r ) => isset( $r['how'] ) ), 'how' ) . "\n";
+$tally = static function ( array $l, string $k ) { $c = array(); foreach ( $l as $r ) { $c[ (string) ( $r[ $k ] ?? '' ) ] = ( $c[ (string) ( $r[ $k ] ?? '' ) ] ?? 0 ) + 1; } ksort( $c ); return wp_json_encode( $c, JSON_UNESCAPED_UNICODE ); };
+echo "added: $new_rp result posts, $new_wins wins. Filled: $new_posts posts, $new_accounts accounts.\n";
+echo 'wins ' . count( $rows ) . ' status ' . $tally( $rows, 'status' ) . ' activity ' . $tally( $rows, 'activity' ) . ' match ' . $tally( $rows, 'match' ) . "\n";
+echo 'result posts ' . count( $rp_rows ) . ' status ' . $tally( $rp_rows, 'status' ) . "\n";
 echo 'challenges ' . count( $ch_rows ) . ' status ' . $tally( $ch_rows, 'status' ) . "\n";
-echo 'no post ' . count( $missing ) . ' site owner ' . count( array_filter( $missing, static fn( $r ) => str_contains( $r['notes'], 'Site owner' ) ) ) . "\n";
-echo 'mismatches ' . count( $mismatch ) . ' ' . $tally( $mismatch, 'type' ) . "\n";
+echo 'to review: no post ' . count( $missing ) . ', mismatches ' . count( array_filter( $mismatch, static fn( $m ) => 'review' === $m['status'] ) ) . ' of ' . count( $mismatch ) . ', accounts ' . count( $confirm ) . "\n";
 echo "grade changes:\n";
 foreach ( $grade_rows as $g ) { echo "  {$g['display_name']} ({$g['user_login']}) wins={$g['poetry_wins']} {$g['grade_now']} -> {$g['grade_new']}\n"; }
-echo "\nresult posts to review:\n";
-foreach ( $rp_rows as $r ) { if ( 'ok' !== $r['status'] ) { echo "  {$r['post_id']} {$r['date']} {$r['title']} => " . ( $r['challenge'] ?? '' ) . " | {$r['notes']}\n"; } }
-echo "\nchallenges to review (monthly):\n";
-foreach ( $ch_rows as $r ) { if ( 'ok' !== $r['status'] && 'monthly' === $r['kind'] ) { echo "  {$r['opened']} {$r['title']} | {$r['notes']}\n"; } }
-echo "\nJanuary 2021:\n";
-foreach ( $rows as $r ) { if ( 45211 === (int) $r['result_post'] ) { echo "  {$r['category']}/{$r['grade']}/{$r['position']} {$r['byline']} => {$r['user_login']} | {$r['title']} | {$r['post_id']}\n"; } }

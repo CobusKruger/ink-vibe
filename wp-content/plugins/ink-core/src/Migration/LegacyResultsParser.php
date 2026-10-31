@@ -550,9 +550,7 @@ final class LegacyResultsParser {
 	 * @param string $name A writer name.
 	 */
 	public static function nameKey( string $name ): string {
-		$name = (string) preg_replace( '/\(.*?\)/u', '', $name );
-
-		return (string) preg_replace( '/[^\p{L}\p{N}]+/u', '', mb_strtolower( $name ) );
+		return TextKey::name( $name );
 	}
 
 	/**
