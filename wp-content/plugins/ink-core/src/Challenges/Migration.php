@@ -213,9 +213,9 @@ class Migration {
 	 * The legacy challenge categories to migrate. Overridable seam.
 	 *
 	 * Selection is by TREE, not by name: every descendant of the configured parent
-	 * categories ({@see self::LEGACY_PARENT_SLUGS}: `projekte` for the monthly projects,
-	 * `kompetisie` for the older competitions) is a challenge round; the parents
-	 * themselves and any slug on the `ink_challenge_legacy_exclude` filter (empty by
+	 * categories ({@see self::LEGACY_PARENT_SLUGS}: `projekte`) is a challenge round; the parents
+	 * themselves, competitions ({@see ChallengeRound::isCompetition()}) and any slug on the
+	 * `ink_challenge_legacy_exclude` filter (empty by
 	 * default; `ink-slypskool` IS a challenge) are not. A blanket "every category" default would turn
 	 * ordinary blog categories into published uitdagings (R12 review), so a site
 	 * without those parents gets an empty list and a no-op run.

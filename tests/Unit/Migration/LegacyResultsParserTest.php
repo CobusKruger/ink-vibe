@@ -197,3 +197,26 @@ test( 'entries listed under an honourable-mention heading are not winners, up to
 		)
 	);
 } );
+
+test( 'January 2021 layout: "no 28 / Title Writer", split at a known trailing writer', function (): void {
+	$html = "Gedigte:\nBrons:\nno 26 / Vergeet en vergeef Reinette Thiart\nno 14/ Troudag Andries Fourie (Seirdna)\nno 1 / Oordenking (skrywer onbekend)\n";
+
+	expect( parsed( $html, array( 'Reinette Thiart', 'Andries Fourie' ) ) )->toBe(
+		array(
+			'Gedigte/Brons/1 Reinette Thiart - Vergeet en vergeef',
+			'Gedigte/Brons/2 Andries Fourie (Seirdna) - Troudag',
+		)
+	);
+} );
+
+test( 'January 2021 layout: a writer with no account still keeps their place in the order', function (): void {
+	$html = "Gedigte:\nBrons:\nno 28 / Alexanderbaai Annemarie vd Merwe\nno 26 / Vergeet en vergeef Reinette Thiart\nno 10 / Reen Helena Mellet\n";
+
+	expect( parsed( $html, array( 'Helena Mellet' ) ) )->toBe(
+		array(
+			'Gedigte/Brons/1 Annemarie vd Merwe - Alexanderbaai',
+			'Gedigte/Brons/2 Reinette Thiart - Vergeet en vergeef',
+			'Gedigte/Brons/3 Helena Mellet - Reen',
+		)
+	);
+} );

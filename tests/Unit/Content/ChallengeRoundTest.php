@@ -31,3 +31,10 @@ test( 'uitdagingIdFromSlug returns null for slugs that do not encode a positive 
 		expect( ChallengeRound::uitdagingIdFromSlug( $bad ) )->toBeNull();
 	}
 } );
+
+test( 'isCompetition picks out competitions by name, and leaves the real rounds alone', function (): void {
+	expect( ChallengeRound::isCompetition( 'INK dig- en skryfkompetisie 2022' ) )->toBeTrue();
+	expect( ChallengeRound::isCompetition( 'GrysKrag kompetisie' ) )->toBeTrue();
+	expect( ChallengeRound::isCompetition( 'INK-Slypskool' ) )->toBeFalse();
+	expect( ChallengeRound::isCompetition( 'Julie 2022 Wat skryf ek projek' ) )->toBeFalse();
+} );

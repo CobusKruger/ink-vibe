@@ -479,6 +479,11 @@ final class LegacyResultsParser {
 			$had_marker = true; // An entry-number marker was stripped.
 		}
 
+		// January 2021 layout: "no 28 / Title Writer", no separator between the two.
+		if ( 1 === preg_match( '/^\/\s*(.+)$/u', $rest, $m ) ) {
+			return self::splitByTrailingWriter( $m[1], $position, $known_keys );
+		}
+
 		// More than one "met": either two winners on a line (ambiguous: never guess) or a title that
 		// contains "met" ("Husse met lang ore"). The known-writer list settles it: accept only when
 		// the text before the FIRST "met" is a known writer and no second winner follows a connector.
@@ -578,6 +583,39 @@ final class LegacyResultsParser {
 		}
 
 		return null === $hit ? null : self::build( implode( ' ', array_slice( $words, 0, $hit ) ), implode( ' ', array_slice( $words, $hit ) ), null );
+	}
+
+	/**
+	 * Split "Title words Writer" at the longest 1-5 word suffix that is a known writer. Pure.
+	 *
+	 * @param string              $text       The text after the markers.
+	 * @param int|null            $position   Explicit position.
+	 * @param array<string, true> $known_keys Known writers by nameKey.
+	 * @return array{writer:string,title:string,position:?int}|null
+	 */
+	private static function splitByTrailingWriter( string $text, ?int $position, array $known_keys ): ?array {
+		$words = self::splitOn( '/\s+/u', trim( $text ) );
+		$count = count( $words );
+
+		for ( $n = min( 5, $count - 1 ); $n >= 1; $n-- ) {
+			$writer = implode( ' ', array_slice( $words, -$n ) );
+
+			if ( isset( $known_keys[ self::nameKey( $writer ) ] ) ) {
+				return self::build( $writer, implode( ' ', array_slice( $words, 0, $count - $n ) ), $position );
+			}
+		}
+
+		// No known writer: the longest name-shaped suffix of two or more words, so a writer with no
+		// account still holds their place in the order.
+		for ( $n = min( 4, $count - 1 ); $n >= 2; $n-- ) {
+			$writer = implode( ' ', array_slice( $words, -$n ) );
+
+			if ( self::looksLikeName( $writer ) && 1 === preg_match( '/^\p{Lu}/u', $writer ) ) {
+				return self::build( $writer, implode( ' ', array_slice( $words, 0, $count - $n ) ), $position );
+			}
+		}
+
+		return null;
 	}
 
 	/**

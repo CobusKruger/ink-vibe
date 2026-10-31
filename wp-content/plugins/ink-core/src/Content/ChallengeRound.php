@@ -35,7 +35,19 @@ final class ChallengeRound {
 	 *
 	 * @var list<string>
 	 */
-	public const LEGACY_PARENT_SLUGS = array( 'projekte', 'kompetisie' );
+	public const LEGACY_PARENT_SLUGS = array( 'projekte' );
+
+	/**
+	 * Whether a legacy category is a competition. Competitions work differently, have different
+	 * prizes and are not challenges (owner, 2026-10-31). Prod files most of them under `projekte`,
+	 * beside the real rounds, so only the name tells them apart.
+	 *
+	 * @param string $name The category name.
+	 * @return bool True for a competition.
+	 */
+	public static function isCompetition( string $name ): bool {
+		return 1 === preg_match( '/kompetisie/iu', $name );
+	}
 
 
 	/**

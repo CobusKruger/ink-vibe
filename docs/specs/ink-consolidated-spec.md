@@ -159,7 +159,7 @@ Tier-change history (promotion **or** corrective demotion — any-direction set;
 
 The promotion engine lives in `Ink\Tiers` (never reads Entitlement — the conflation rule in §4 holds).
 
-- A **win** = any **top-3 placement** (algehele wenner or wenner) in **any entry type** at the writer's *current* Gradering. Multiple placements each count — including multiple placements within one category in a single round.
+- A **win** = any **top-3 placement** (algehele wenner or wenner). Wins are recorded for **every entry type**, but only **Gedigte** wins at the writer's *current* Gradering count toward it (owner ruling, 2026-10-31). Multiple placements each count — including multiple placements within one category in a single round.
 - Thresholds: **Brons → Silwer at 5 wins**; **Silwer → Goud at 15 wins**. On promotion, `ink_tier_win_count` resets to **0** and counting begins again at the new Gradering.
 - **Meester is manual-only** — never reached by the win counter; it has no threshold. Manual promotion *and* corrective demotion by staff remain available at every level (PRD FR-12).
 - Promotion fires a **templated congratulation email** (simple form-letter text with a name-merge greeting — see §10.1 / the Notifications surface).

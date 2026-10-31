@@ -466,7 +466,7 @@ class PostReclassifier {
 							}
 						}
 
-						if ( array() !== array_intersect( $ancestry, ChallengeRound::LEGACY_PARENT_SLUGS ) ) {
+						if ( array() !== array_intersect( $ancestry, ChallengeRound::LEGACY_PARENT_SLUGS ) && ! ChallengeRound::isCompetition( (string) $term->name ) ) {
 							$mine[ (int) $term->term_id ] = (string) $term->name;
 						}
 					}
