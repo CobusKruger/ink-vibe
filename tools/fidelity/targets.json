@@ -7,7 +7,10 @@
     "`auth` names a storageState file under tmp/fidelity-auth/ when the row needs a session.",
     "`expect` selectors abort the capture rather than writing an empty file (A3).",
     "",
-    "Rows 19, 20 and 21 are SKIPPED by owner ruling and are absent."
+    "Rows 19, 20 and 21 are SKIPPED by owner ruling and are absent.",
+    "",
+    "INK URLs must survive a refresh from prod: real migrated content, never a fixture.",
+    "`bases.lovable` is the default preview port; use another if 4173 serves a different build (README §9)."
   ],
   "bases": {
     "ink": "https://nuwe-ink.local",
@@ -18,7 +21,7 @@
       "row": "00", "page": "tuisblad", "treatment": "A",
       "ink": "https://nuwe-ink.local/",
       "lovable": "http://localhost:4173/",
-      "expect": { "ink": "[data-audit-id=\"hero-h1\"],.ink-huidige-uitdaging,.ink-uitgesoekte-bydraes", "lovable": "[data-audit-id=\"hero-h1\"]" }
+      "expect": { "ink": "[data-audit-id=\"hero-h1\"],.ink-huidige-uitdaging,.ink-uitgesoekte-bydraes", "lovable": "[data-audit-id=\"hero-h1\"],[data-audit-id=\"results-banner\"],[data-audit-id=\"magazine\"],[data-audit-id=\"challenge\"],[data-audit-id=\"winner-card\"],[data-audit-id=\"winner-gedig-card\"]" }
     },
     {
       "row": "01", "page": "gemeenskap", "treatment": "A",
@@ -44,17 +47,17 @@
     },
     {
       "row": "05", "page": "uitdaging-enkel", "treatment": "A",
-      "ink": "https://nuwe-ink.local/uitdaging/skryf-n-storie-waarin-die-hoofkarakter-nooit-praat-nie/",
+      "ink": "https://nuwe-ink.local/uitdaging/oktober-2026-getal-10-projek/",
       "lovable": "http://localhost:4173/challenges/silent-protagonist"
     },
     {
       "row": "06", "page": "skrywer", "treatment": "A",
-      "ink": "https://nuwe-ink.local/author/cobus/",
+      "ink": "https://nuwe-ink.local/lede/cobus/",
       "lovable": "http://localhost:4173/writer/w1"
     },
     {
       "row": "07", "page": "lees-storie", "treatment": "A",
-      "ink": "https://nuwe-ink.local/storie/die-wenteltrap-na-die-lig/",
+      "ink": "https://nuwe-ink.local/storie/om-te-glo-maar-nie-te-sien-nie/",
       "lovable": "http://localhost:4173/read/sample"
     },
     {
@@ -93,7 +96,8 @@
     {
       "row": "12", "page": "vier-nul-vier", "treatment": "C",
       "ink": "https://nuwe-ink.local/storie/pannekoek/",
-      "lovable": "http://localhost:4173/pannekoek"
+      "lovable": "http://localhost:4173/pannekoek",
+      "note": "The 404 page: this URL returns 404 on purpose."
     },
     {
       "row": "13", "page": "oor-ink", "treatment": "B",

@@ -4,6 +4,8 @@
 
 **The job:** finish a small, bounded list of winner rows for writers who are still active, then stop. **This runs before the homepage round** (`homepage-dev-round.md`), not beside it.
 
+**The follow-on job:** §7, the Gradering fix and winner importer, is separate work that follows the cleanup. Start it only when the owner asks.
+
 ## 1. The rules that frame everything (owner, 2026-10-31)
 
 - **The hand-curated files are the source of truth.** Add to them. **Do not write another way of building them**; the owner is tired of mechanisms being reinvented. If the matcher misses something, fix `build-winner-lists.php` or edit the CSV.
@@ -88,10 +90,29 @@ Then give the owner a short list of anything you couldn't settle, and stop. Don'
 
 - **Windows 11.** `node tools/local.mjs wp …`; plain `wp` can't connect. Git Bash has no node or PHP on PATH, so use PowerShell for those. Table prefix on dev: `wpjj_`.
 - **Dev is a migrated copy of prod** at `https://nuwe-ink.local`. It sees plugin code only after `node tools/deploy-to-local.mjs --apply`, and the generator uses deployed classes such as `TextKey`.
-- **Dev grades don't change from this.** Nothing reads the lists until the homepage round builds the importer.
+- **Dev grades don't change from this.** Nothing reads the lists until the importer (§7) is built.
 - **`../migration-data/` stays out of the repo.** After changing `docs/migration-data.md`, copy it there as `README.md`.
 - **Line endings:** `writer-aliases.csv` is CRLF, `writer-accounts.csv` and `writer-deleted.csv` are LF. Git Bash `sed -i` can change them.
 - **Write generator output to a file.** `Select-Object -First` kills the pipe and reports exit 255.
 - **Tests:** `composer test:unit`. `MigrateAllTest` line 118 already fails on Windows (quoting). PHPCS has one old error in `LegacyResultsParser.php`.
 - **Git:** nothing is pushed; run `git status` first. Commit only when the owner asks, with the message in `tmp/commit-msg.txt` and `git commit -F`, and **no `Co-Authored-By` trailers**.
 - **Docs:** update `docs/migration-data.md` alongside any rule or process change.
+
+## 7. After the cleanup: Gradering fix and winner importer
+
+Moved here from `homepage-dev-round.md` (owner, 2026-10-31). The homepage winner cards and the Uitslae page read this work's output: on dev today there are **0 placements and 0 entry-Gradering snapshots**, and 102 result posts linked to rounds.
+
+**Fix Gradering (D7, D13).**
+- Gradering is **Gedigte-only**. Every win in every category is recorded; only poetry wins promote a poet.
+- `Challenges/Pools.php` splits every category by Gradering: wrong. Gedigte keep per-Gradering pools; Storie and Artikel get one pool each. Consumers: `Placements::arrange`, `Coverage`, the ingestion and parser, and their tests.
+- `Ingestion::awardPromotions` counts all categories: wrong. Count Gedigte only.
+- A Meester is handled as Goud on the podium. There are none today.
+
+**Make the migration read the reviewed winner lists** instead of parsing, in `wp ink migrate-all`. Inputs: `wenners.csv`, `result-posts.csv`, `challenges.csv` (see `docs/migration-data.md`). They are hand-curated and are the source of truth. **Do not build another way to match wins**, and compare any typed title or name through `Ink\Migration\TextKey`, which handles dropped accents and every spelling of 'n. Rows with status `best-effort` and `review` count as wins, the same as `ok`. Requirements:
+- Write placements (`ink_entry_placement`) and the entry-Gradering snapshot (`ink_entry_gradering`) on matched posts.
+- **A win counts even with no post** (over 150 rows have none, and many never will, because writers who stopped posting are best effort), so win records can't live only in post meta. Choose a store and record why.
+- A row with no account stays recorded and promotes nobody.
+- Replace the source `derive-tiers` counts from. Thresholds are 5 wins, then 15 more (`PromotionEngine`). Check the result against `review/grade-changes.csv`.
+- Set round links from `result-posts.csv`; the two `not-results` posts lose theirs.
+- **Trap: `challenge_id` is not stable.** Rounds are created by the migration with fresh IDs (68657–68796 on dev today), and those IDs shift between runs, more so now that 12 competitions no longer migrate. Match rounds on the `source_category` column, which is `ink_uitdaging_source_category`, the prod category term ID. `post_id` and `user_id` come from prod and are stable.
+- The card's "Nth challenge win" is a **lifetime** count derived from the records, because `ink_tier_win_count` resets on promotion.

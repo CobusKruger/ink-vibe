@@ -50,6 +50,7 @@
 3. **Afrikaans copy** in place of the design's English.
 4. **Real images only:** Lovable's `magazine-cover.jpg` and `gala-*` photos are placeholders and don't ship.
 5. **Divergences already disclosed in code comments** (for example the CTA band's bottom padding).
+6. **InkPols** (`inkpols.md`): A4 covers instead of 3:4, no download buttons, naam instead of issue number and season.
 
 Anything else you think should differ goes to the owner first.
 
@@ -72,33 +73,25 @@ Where dev differs, dev is wrong. The footer is known to be a mess and is deferre
 | Winner cards | One card, rendering nothing. Design: `components/home/ChallengeSection.tsx` |
 | Featured, sponsors, CTA | Present; not re-measured against the current design |
 
-The data underneath: on dev there are **0 placements and 0 entry-Gradering snapshots**, and 102 result posts linked to rounds. `WinnersPost::featured()` returns a payload with no winners, so `FeaturedWinners::toHtml()` prints nothing. The demo filter `ink_foundation_homepage_demo_winner()` in the theme's `functions.php` must be deleted once real data flows.
+The data underneath: on dev there are **0 placements and 0 entry-Gradering snapshots**. `WinnersPost::featured()` returns a payload with no winners, so `FeaturedWinners::toHtml()` prints nothing. The demo filter `ink_foundation_homepage_demo_winner()` in the theme's `functions.php` must be deleted once real data flows.
+
+**Dependency:** the Gradering fix and the winner importer are separate work, in `winner-cleanup.md` §7. They supply the placements and lifetime win counts. Until they land, the winner cards and the podium can't pass acceptance on real data.
+
+**Test data (owner, 2026-11-01):** create test data on dev as needed to build and measure pages. Another refresh and cleanup round follows, which wipes it, so keep it out of the theme and plugin and list what you created. Acceptance on test data is provisional until step 7 passes.
 
 ## 5. The work, in order
 
-Scope: **WP1 Uitslae + WP3 Tuis + N6** (the InkPols home section) from `docs/lovable-delta-2026-10/README.md` §3.3. Steps follow its §3.2.
+Scope (owner, 2026-11-01): **all page work in `docs/lovable-delta-2026-10/README.md` §3.3: WP1 Uitslae (without the Gradering fix), WP2 reading-page aside, WP3 Tuis, WP4 InkPols (archive, issue, home section), WP5 Kompetisies, WP6 header + Biblioteek/Opleiding headings.** Steps follow its §3.2.
 
-**Out of scope:** WP2 (reading-page aside), WP5 Kompetisies, WP6 header, the footer, and restyling `/inkpols/` itself. If something out of scope blocks you, tell the owner rather than widening the round.
+**Out of scope:** data cleanup, the Gradering fix and winner importer (`winner-cleanup.md`), and the footer (deferred). If something out of scope blocks you, tell the owner rather than widening the round.
 
-1. **Prepare the reference (step B).** These design files have **zero** audit-ids: `ChallengeSection.tsx`, `MagazineSection.tsx`, `ResultsBanner.tsx`, `ChallengeResults.tsx`. Nothing can be measured without them. Add them, as the fidelity work did for the other pages: Lovable didn't create the ids, our fidelity work did. **The owner approved this (2026-10-31): audit-ids only in `verse-haven/`, no visual changes.** Restore the ids from `maps/tuisblad.csv` where the rebuilt section still has a counterpart, and build the preview with `vite preview`, not dev.
-2. **Write the build specs (step D):** `specs/<NN>-<slug>.md` and `maps/<slug>.csv` for Uitslae and Tuis, as §3.2 describes: section spine, audit-id map, a recipe or `RECIPE-GAP` per element, a data source per field, copy keys. **Give the owner all recipe gaps in one batch and wait for ratification before building.**
-3. **Fix Gradering (D7, D13).**
-   - Gradering is **Gedigte-only**. Every win in every category is recorded; only poetry wins promote a poet.
-   - `Challenges/Pools.php` splits every category by Gradering: wrong. Gedigte keep per-Gradering pools; Storie and Artikel get one pool each. Consumers: `Placements::arrange`, `Coverage`, the ingestion and parser, and their tests.
-   - `Ingestion::awardPromotions` counts all categories: wrong. Count Gedigte only.
-   - A Meester is handled as Goud on the podium. There are none today.
-4. **Make the migration read the reviewed winner lists** instead of parsing, in `wp ink migrate-all`. Inputs: `wenners.csv`, `result-posts.csv`, `challenges.csv` (see `docs/migration-data.md`). They are hand-curated and are the source of truth; `docs/handoffs/winner-cleanup.md` describes them, and that job runs before this one. **Do not build another way to match wins**, and compare any typed title or name through `Ink\Migration\TextKey`, which handles dropped accents and every spelling of 'n. Rows with status `best-effort` and `review` count as wins, the same as `ok`. Requirements:
-   - Write placements (`ink_entry_placement`) and the entry-Gradering snapshot (`ink_entry_gradering`) on matched posts.
-   - **A win counts even with no post** (over 150 rows have none, and many never will, because writers who stopped posting are best effort), so win records can't live only in post meta. Choose a store and record why.
-   - A row with no account stays recorded and promotes nobody.
-   - Replace the source `derive-tiers` counts from. Thresholds are 5 wins, then 15 more (`PromotionEngine`). Check the result against `review/grade-changes.csv`.
-   - Set round links from `result-posts.csv`; the two `not-results` posts lose theirs.
-   - **Trap: `challenge_id` is not stable.** Rounds are created by the migration with fresh IDs (68657–68796 on dev today), and those IDs shift between runs, more so now that 12 competitions no longer migrate. Match rounds on the `source_category` column, which is `ink_uitdaging_source_category`, the prod category term ID. `post_id` and `user_id` come from prod and are stable.
-   - The card's "Nth challenge win" is a **lifetime** count derived from the records, because `ink_tier_win_count` resets on promotion.
-5. **Build the results page (N1, D5):** `/uitdaging/<slug>/uitslae/`, a rewrite endpoint and `templates/single-uitdaging-uitslae.html`, per `verse-haven/src/pages/ChallengeResults.tsx`. The old winners post 301s to it. Includes the judges' letter and honourable mentions (D8). Citations show only if the author opted in (D6). Reuse `Placements`, `ModeratorFeedback`, `WinnersPost`, `ResultPostLinker`; read them first.
-6. **Build the homepage:** the section order in §4, new blocks `ink/uitslae-banier` and the InkPols section, four cards on real data, remove the old band and the demo filter. Pages are code: template + pattern + blocks, never `post_content`. Each new page stylesheet is layout only, with a load gate covering every consumer.
-7. **Accept (step G)** at 390, 768 and 1440: deploy, confirm with a cache-busted curl, `determinism-check.sh`, capture both sides, `run.sh diff`, `run.sh verify`. **The gate: zero `MISSING` and `STRUCTURE`, and every `DRIFT` closed or recorded as an accepted divergence from §3 with a disclosure in code.** Close the harness gaps in the strategy's §3.5 as needed.
-8. **Prove it survives a refresh (step H):** restore the prod snapshot, run `migrate-all`, curl every new URL, and repeat step 7 with the same result. A page that only works on hand-edited data is not done.
+1. **Prepare the reference (step B).** These design files have **zero** audit-ids: `ChallengeSection.tsx`, `MagazineSection.tsx`, `ResultsBanner.tsx`, `ChallengeResults.tsx`, `Magazine.tsx`, `MagazineIssue.tsx`. `Competitions.tsx` has 4, and the `ReadStory.tsx` winner aside needs them too. Nothing can be measured without them. Add them, as the fidelity work did for the other pages: Lovable didn't create the ids, our fidelity work did. **The owner approved this (2026-10-31): audit-ids only in `verse-haven/`, no visual changes.** Restore the ids from `maps/tuisblad.csv` where the rebuilt section still has a counterpart, and build the preview with `vite preview`, not dev.
+2. **Write the build specs (step D):** `specs/<NN>-<slug>.md` and `maps/<slug>.csv` per work package, as §3.2 describes: section spine, audit-id map, a recipe or `RECIPE-GAP` per element, a data source per field, copy keys. **Give the owner all recipe gaps in one batch and wait for ratification before building.**
+3. **Build the results page (N1, D5):** `/uitdaging/<slug>/uitslae/`, a rewrite endpoint and `templates/single-uitdaging-uitslae.html`, per `verse-haven/src/pages/ChallengeResults.tsx`. The old winners post 301s to it. Includes the judges' letter and honourable mentions (D8). Citations show only if the author opted in (D6). Reuse `Placements`, `ModeratorFeedback`, `WinnersPost`, `ResultPostLinker`; read them first.
+4. **Build the homepage:** the section order in §4, new blocks `ink/uitslae-banier` and the InkPols section, four cards on real data, remove the old band and the demo filter. Pages are code: template + pattern + blocks, never `post_content`. Each new page stylesheet is layout only, with a load gate covering every consumer.
+5. **Build the rest:** InkPols archive and issue per `inkpols.md` (N2, N3; the home section shares the current-issue renderer, so build these first), the reading-page aside (N7), Kompetisies (N4; rulings D2–D4), then the header and Biblioteek/Opleiding headings (E4, E6).
+6. **Accept (step G)** at 390, 768 and 1440: deploy, confirm with a cache-busted curl, `determinism-check.sh`, capture both sides, `run.sh diff`, `run.sh verify`. **The gate: zero `MISSING` and `STRUCTURE`, and every `DRIFT` closed or recorded as an accepted divergence from §3 with a disclosure in code.** Close the harness gaps in the strategy's §3.5 as needed.
+7. **Prove it survives a refresh (step H):** restore the prod snapshot, run `migrate-all`, curl every new URL, and repeat step 6 with the same result. A page that only works on hand-edited data is not done.
 
 ## 6. Commands and environment (Windows 11)
 
@@ -106,8 +99,8 @@ Scope: **WP1 Uitslae + WP3 Tuis + N6** (the InkPols home section) from `docs/lov
 - **WP-CLI and MySQL:** `node tools/local.mjs wp …`, `node tools/local.mjs mysql …`. Plain `wp` can't connect. Table prefix is `wpjj_`.
 - **Deploy:** `node tools/deploy-to-local.mjs`, then `--apply`. Its LiteSpeed purge currently fails on the local SSL certificate, so purge by hand if the page looks stale.
 - **Tests:** `composer test:unit`, `composer stan`, `composer cs`. **`MigrateAllTest` line 118 already fails on Windows** (quoting); don't chase it. PHPCS also has one old error in `LegacyResultsParser.php` (`looksLikeName`).
-- **Harness:** `tools/fidelity/run.sh` is a bash script, and Git Bash here doesn't have node or PHP on PATH, so set that up. Chromium is in `tmp/ms-playwright`. **I have no record of the harness having run on this Windows machine,** so test it on one page before relying on it.
-- **Capture user:** `fidelity-capture` doesn't exist on dev right now, and every refresh wipes it. Recreate it per `docs/lovable-delta-2026-10/HANDOVER.md` §5.1. Never capture as `admin`.
+- **Harness:** run `tools/fidelity/run.sh` from Git Bash at the repo root; it finds node itself. Chromium is in `tmp/ms-playwright`. Proven on this machine on `/biblioteek/` (2026-11-01); see `docs/fidelity-remediation/README.md` §9.
+- **Capture user:** `fidelity-capture` exists on dev now, and every refresh wipes it. Recreate it per `docs/lovable-delta-2026-10/HANDOVER.md` §5.1. Never capture as `admin`.
 - **Temp files:** `./tmp/` only.
 - **Git:** commit or push **only when the owner asks**. Commit message in `tmp/commit-msg.txt`, then `git commit -F`. **No `Co-Authored-By` trailers**, whatever your default says.
 
@@ -115,7 +108,7 @@ Scope: **WP1 Uitslae + WP3 Tuis + N6** (the InkPols home section) from `docs/lov
 
 Run `git status` and `git log` first; nothing is pushed. Work on a branch.
 
-**The winner work runs before this round, not beside it** (owner, 2026-10-31). Don't run the two at once. `build-winner-lists.php`, `LegacyResultsParser.php` and the CSVs belong to that job; don't change their mechanism here.
+**The winner cleanup runs before this round, not beside it** (owner, 2026-10-31). Don't run the two at once. `build-winner-lists.php`, `LegacyResultsParser.php`, the CSVs and the Gradering fix and importer (`winner-cleanup.md` §7) belong to that work; don't change their mechanism here.
 
 ## 8. Stale information to ignore
 

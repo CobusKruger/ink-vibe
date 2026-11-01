@@ -112,7 +112,7 @@ Everything else in `tmp/` is regenerable output: captures, diffs, logs, Lovable 
    - Use a fresh prod copy (DB + `wp-content/uploads`).
    - Run `node tools/rehearsal-prep.mjs` (`docs/migration-runbook.md`). It also sets `INK_MIGRATION_DATA_DIR` to `../migration-data/`, so the three CSVs are read **before** `wp ink migrate-all`. Without them, writers whose wins were printed under another name lose those wins.
 4. **Recreate the `fidelity-capture` user** after every refresh, because the refresh wipes it:
-   - `node tools/local.mjs mysql < tools/fidelity/create-capture-user.sql` (table prefix `wpjj_`) and `node tools/local.mjs wp eval-file tools/fidelity/set-capture-password.php`;
+   - `node tools/local.mjs mysql -e "source tools/fidelity/create-capture-user.sql"` (table prefix `wpjj_`) and `node tools/local.mjs wp eval-file tools/fidelity/set-capture-password.php`;
    - then `run.sh login`.
 5. **Run `node tools/deploy-to-local.mjs --apply`** before the first capture. On macOS, Chromium, the preview server, `composer stan` and `git merge` all need the sandbox off.
 6. **Lovable preview:** build it and run `vite preview` (not dev) after step B has added the audit-ids.

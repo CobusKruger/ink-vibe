@@ -99,14 +99,14 @@ Order rule: build the data and the link target before the things that link to it
 
 | WP | Scope | Why here | Depends on |
 |---|---|---|---|
-| **WP1 Uitslae** | N1 + E8 + the **Gradering-scope fix** (below) | It is the hub: N5, N7 and E1 all link to it. It reuses the most existing machinery. | D5, D11 |
+| **WP1 Uitslae** | N1 + E8 (the **Gradering-scope fix** below is now separate work) | It is the hub: N5, N7 and E1 all link to it. It reuses the most existing machinery. | D5, D11 |
 | **WP2 Wenners on the reading page** | N7 | Small. It gives the stranded `ModeratorFeedback`/`WinnerBanner` capabilities a real consumer and a production-path test (the R12B lesson). | WP1 |
 | **WP3 Tuis** | E1, E2, N5 (N6 waits for WP4) | It replaces the demo-filter path with real data. | WP1, D10, D11 |
 | **WP4 InkPols** | N2, N3, N6 + the CSV-driven migration step that replaces the no-op `migrate-inkpols` | Fully specified (`inkpols.md`), with no open decision, so it **may go first**. Within WP4 the migration comes first: without it the archive is empty after a refresh and nothing can be measured. | owner fills `migration-data/inkpols-uitgawes.csv` |
 | **WP5 Kompetisies** | N4: annual-competition hero + categories, gala (details, programme, fictional ticket prices, "Evenings past" photos by year), external competitions directory, submit-a-listing box | Largest scope. | D2–D4 ruled |
 | **WP6 Chrome** | E4 (header gains Kompetisies), E6 | Small. It goes last so the nav link points at a page that exists. E5 is deferred. | D1 ruled |
 
-**Gradering-scope fix (in WP1).** The established rule is that Gradering (Brons/Silwer/Goud)
+**Gradering-scope fix.** Moved out of the WP1 round to `docs/handoffs/winner-cleanup.md` §7 (owner, 2026-10-31); it follows the winner cleanup and must land before the podium can be accepted on real data. The established rule is that Gradering (Brons/Silwer/Goud)
 is the author's grade and applies **to Gedigte only** (`migration-plan.md:234`). Story 12.5's
 `Challenges/Pools.php:19-40` instead keys pools on Gradering × category for all three types,
 so storie and artikel get Brons/Silwer/Goud pools as well. That was a code defect, not a design
@@ -134,13 +134,13 @@ rehearsal.
 
 ### 3.5 Harness gaps to close in WP1 (before any capture)
 
-- `run.sh diff` reports drift but has no pass/fail. Add `--fail-on MISSING,STRUCTURE,DRIFT`
-  with an accepted-divergence allowlist read from the map CSV, so step G is mechanical.
-- `targets.json` points at fixture URLs that a refresh deletes (`uitdaging-enkel`,
-  `/storie/die-wenteltrap…`, `/author/`). New targets use **refresh-stable** URLs: a real
-  migrated round (e.g. Oktober 2026), a real migrated InkPols issue, and the Kompetisies page.
-- `/qa-bloks/` does not exist after a refresh (it is EXCLUDED), yet the harness uses it for
-  scoped captures. Either seed it in the dev-only path or stop relying on it.
+- **Closed (2026-11-01):** `run.sh diff --fail-on MISSING,STRUCTURE,DRIFT --map <csv>` gives step G
+  a pass/fail (`docs/fidelity-remediation/README.md` §4.1).
+- **Closed (2026-11-01):** the three fixture URLs in `targets.json` now point at migrated content.
+  New targets also use **refresh-stable** URLs: a real migrated round (e.g. Oktober 2026), a real
+  migrated InkPols issue, and the Kompetisies page.
+- **Closed (2026-11-01):** `/qa-bloks/` does not exist after a refresh (it is EXCLUDED), so the
+  harness docs no longer use it; scoped captures run on real pages.
 - The Stage 3 class vocabulary is `docs/fidelity-remediation/class-map.md` (moved from `tmp/` on
   2026-10-26). Step D cites recipes by class name from it.
 
@@ -155,7 +155,7 @@ rehearsal.
 | D3 | The annual competition's **web pages are in scope**, not deferred. Only the admin side is deferred and still undefined: how entries reach the judges and how winners come back. | Build the announcements (hero + categories), the gala section with its photos, and the external competition links. Build no entry/judging pipeline for the annual round. |
 | D4 | Gala ticket prices are shown with **fictional** values and no in-site way to pay. Payments come after lidmaatskap payments are implemented. | The "Reserve" button gets no payment flow; decide its target (none / contact) in the build spec. Gala details, photos by year and external competitions are seeded from committed files (Principle 4). Mark the prices as placeholders in the seed file so they can't be mistaken for real ones. |
 | D6 | A citation shows **only if the author has opted in** to showing it; otherwise it is not shown anywhere. | The award card and the reading-page aside render without the citation block when `ModeratorFeedback::feedbackFor()` returns nothing. The placement itself still shows. |
-| D7 | *Not a decision.* Gradering applies to Gedigte only, as established long ago. | The code violates the rule. Fixed in WP1 (§3.3, Gradering-scope fix). |
+| D7 | *Not a decision.* Gradering applies to Gedigte only, as established long ago. | The code violates the rule. To be fixed per §3.3 (Gradering-scope fix), in `docs/handoffs/winner-cleanup.md` §7. |
 | D8 | Accepted: add a per-round judges' letter and capture honourable mentions. | Letter meta on the `uitdaging`. `ResultsParser` stops discarding "Eervolle vermelding" (`:147-151`) and stores the mentions. |
 | D9 | InkPols fully specified (separate discussion, 2026-10-26). | See `inkpols.md`. Summary: naam (e.g. "Julie/Augustus 2026") replaces issue number and season; the three featured items (Gedig/Storie/Artikel) are plain text; Real3D on the single only; no downloads; A4 covers; metadata from a CSV. |
 
@@ -167,7 +167,7 @@ rehearsal.
 | D10 | The home winners section shows **four** winners in two side-by-side pairs: **Goud Gedig + Storie**, then **Silwer Gedig + Artikel**. Confirmed by the owner: four cards, so the Artikel winner gets credit too. | **Divergence from Lovable (two cards):** record it in code (R6). No Lovable reference exists for the second pair, so it reuses the same card recipe. "Nth challenge win" is a **lifetime** count derived from placements, because `ink_tier_win_count` resets on promotion (§14 #18). |
 | D11 | Labels stay **"algehele wenner" / "wenner"** (`Placements.php`), as standardised earlier; the exact ranking matters less. The owner withdrew "1ste/2de/3de plek" (2026-10-31). The **actual position is still stored** for future use. | A **Meester** winner is handled as Goud on the podium (no Meester writers exist today). |
 | D12 | Not a decision. The active monthly challenge is on the **right of the hero**, as designed. Tuis order, owner, 2026-10-30: hero (intro left, challenge right) → results banner → magazine (InkPols) → winner cards (four, D10) → featured writing (recent posts for now) → sponsors → CTA → footer. | Follow this order. No divergence except D10. Where the dev page differs, the dev page is wrong. |
-| D13 | Ruled 2026-10-31. **Gradering is Gedigte-only:** every win is recorded, in all categories, but only poetry wins promote a poet. A win counts even if its post can't be found, and even if the old result post gives no grade: "if it's a win, it counts". | `Ingestion::awardPromotions` counts all categories today and must count Gedigte only (WP1). `ink-consolidated-spec.md` §"A win" is corrected. Old results need win records that don't depend on a post. Not built yet. |
+| D13 | Ruled 2026-10-31. **Gradering is Gedigte-only:** every win is recorded, in all categories, but only poetry wins promote a poet. A win counts even if its post can't be found, and even if the old result post gives no grade: "if it's a win, it counts". | `Ingestion::awardPromotions` counts all categories today and must count Gedigte only (`docs/handoffs/winner-cleanup.md` §7). `ink-consolidated-spec.md` §"A win" is corrected. Old results need win records that don't depend on a post. Not built yet. |
 
 ## 5. Documentation that must change (so a refresh and the next sync keep this work)
 

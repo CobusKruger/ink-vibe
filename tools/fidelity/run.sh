@@ -6,8 +6,9 @@
 # anyone's shell history. See docs/fidelity-remediation/README.md §9.
 #
 #   1. Node 20+ — Playwright 1.63 hard-refuses anything older. The `node` on PATH
-#      is used if it is new enough; otherwise the newest nvm-installed Node 20+
-#      (macOS nvm or nvm-windows). This does NOT change your default.
+#      is used if it is new enough; otherwise, on Windows, the Machine + User PATH
+#      from the registry (Git Bash may start without them); otherwise the newest
+#      nvm-installed Node 20+ (macOS nvm or nvm-windows). This does NOT change your default.
 #   2. PLAYWRIGHT_BROWSERS_PATH — the sandbox denies ~/Library/Caches/ms-playwright,
 #      so browsers live in the repo-local gitignored tmp/.
 #   3. NODE_PATH — the tools resolve `playwright` from the repo's node_modules.
@@ -23,9 +24,31 @@ set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 node_major() { "$1" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0; }
+path_node_ok() { command -v node >/dev/null 2>&1 && (( $(node_major node) >= 20 )); }
+
+# Git Bash (MSYS2 / Cygwin): node.exe is a native Windows program, so it gets native
+# paths, and MSYS argument mangling stays off. Otherwise a selector such as
+# a[href=/skryf] would be silently rewritten into a Windows path.
+ON_WINDOWS=0
+case "${OSTYPE:-}" in msys*|cygwin*) ON_WINDOWS=1 ;; esac
+if (( ON_WINDOWS )); then
+  REPO="$(cygpath -m "$REPO")"
+  export MSYS2_ARG_CONV_EXCL='*'
+fi
+
+# Git Bash can start with neither the Machine nor the User PATH that the Node and PHP
+# installers wrote to, so read them (and NVM_HOME) from the registry. Appended, so the
+# Unix tools keep priority.
+if (( ON_WINDOWS )) && ! path_node_ok && command -v powershell.exe >/dev/null 2>&1; then
+  win_env="$(powershell.exe -NoProfile -NonInteractive -Command     "[Environment]::GetEnvironmentVariable('Path','Machine')+';'+[Environment]::GetEnvironmentVariable('Path','User');      [Environment]::GetEnvironmentVariable('NVM_HOME','Machine')+[Environment]::GetEnvironmentVariable('NVM_HOME','User')" | tr -d '')" || win_env=""
+  win_path="$(sed -n 1p <<<"$win_env")"
+  win_nvm="$(sed -n 2p <<<"$win_env")"
+  [[ -n "$win_path" ]] && PATH="$PATH:$(cygpath -u -p "$win_path")"
+  [[ -z "${NVM_HOME:-}" && -n "$win_nvm" ]] && NVM_HOME="$win_nvm"
+fi
 
 NODE_BIN=""
-if command -v node >/dev/null 2>&1 && (( $(node_major node) >= 20 )); then
+if path_node_ok; then
   NODE_BIN="$(dirname "$(command -v node)")"
 else
   # Pick the highest major; no `sort -V` (not in every macOS sort).
@@ -60,6 +83,16 @@ fi
 
 tool="${1:-}"
 shift || true
+
+# Mangling is off, so convert a /c/… path argument here. Selectors and URLs do not match.
+if (( ON_WINDOWS )); then
+  args=()
+  for a in "$@"; do
+    if [[ "$a" =~ ^/[a-zA-Z]/ ]]; then a="$(cygpath -m "$a")"; fi
+    args+=("$a")
+  done
+  set -- ${args[@]+"${args[@]}"}
+fi
 
 case "$tool" in
   capture)    exec node "$REPO/tools/fidelity/capture.mjs" "$@" ;;

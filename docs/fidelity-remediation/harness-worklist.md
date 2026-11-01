@@ -69,6 +69,7 @@ page (`Header.tsx:60-102`, `header-main.php:83-95`), so every capture is affecte
 | | Item | Status |
 |---|---|---|
 | E9 | `tools/fidelity/diff.mjs` | ✅ done — joins on audit-id, severity-ordered Markdown |
+| E9e | Pass/fail gate | ✅ done, uncommitted — `--fail-on MISSING,STRUCTURE,DRIFT` (also `EXTRA`) with `--map <csv>` as the accepted-divergence allowlist; rules in `README.md` §4.1. Checked on synthetic captures only (no automated test: the harness has no test suite) |
 | E9d | Duplicate audit-ids (T5) | ✅ done, uncommitted — diff **refuses** an input that repeats an audit-id: it exits 2, writes nothing, and lists each duplicated id with its node paths on stderr. It used to pair the last instance silently. `capture` warns on stderr when it writes such a file (stdout unchanged). Fix it with `--scope` or by narrowing the ids |
 | E10 | `tools/fidelity/extract-primitives.mjs` | ✅ done — 110 instances / 11 kinds from the homepage alone. Emits `page,side,viewport,component_kind,selector,declarations,audit_id`. |
 | E10a | Classifier gaps from batch 1 (T2) | ✅ done, uncommitted — kinds now come from README §4.1's vocabulary only. Covered: Lovable shadcn `<Button>` and `<Button asChild>` links, mapped by variant class (`literary`→primary, `outline`/`literary-outline`→outline, `sage`, `sage-outline`, `ghost`, `link`→link-underline). INK `core/button` is registered on the `<a>`, with its kind taken from the wrapper's `is-style-*` and the wrapper row dropped. Also: class-less uppercase eyebrows, INK icon tiles (`__icon`/`__ikoon`/`rang-merk`) and Lovable icon tiles (a tinted square holding an `<svg>`), INK `-skakel` (card when surface-shaped, outline when button-shaped) and `-tipe` (pill), `checkbox` (small square native input, or Radix `peer` button), `choice-row`/`card` for bordered `<label>`s wrapping a control, `step-badge`, `list-bullet`, `tier-label` (`__gradering`), and rounded-full Lovable buttons (filter-chip, or button-icon when unlabelled). Hidden inputs, the zero-height toast `<section>` and decorative circles are dropped. `--exclude-chrome` drops header/footer. The `note` column says why a non-obvious kind was chosen |
@@ -85,7 +86,7 @@ in the tool rather than left to a human.
 | | Source | Status |
 |---|---|---|
 | E9a | Colour notation — Chromium emits `rgba(…)` or `color(srgb …)` for the same colour | ✅ canonicalised |
-| E9b | Phantom borders — Tailwind preflight sets a border colour on every element, WordPress does not | ✅ suppressed when neither side draws a border |
+| E9b | Phantom borders — Tailwind preflight sets a border colour and style on every element, WordPress does not | ✅ suppressed when neither side draws a border |
 | E9c | Systemic properties — `box-sizing`, `max-width` differ on *every* node (Tailwind preflight vs WP constrained layout) | ✅ done — a delta identical on ≥80% of paired nodes collapses to one architectural note |
 
 ## F · Docs wiring
@@ -161,16 +162,22 @@ tools/fidelity/run.sh verify --capture tmp/fidelity-captures/ink/skryf@1440-auth
 tools/fidelity/determinism-check.sh https://nuwe-ink.local/skryf/ ink skryf 1440 3 '' \
   --auth tmp/fidelity-auth/ink.json --click '.ink-skryf-type >> nth=1' --state storie
 
-# scope a capture to ONE component on a page that embeds several with the same ids
-# (here: the biblioteek archive on /qa-bloks/, which also embeds the opleiding hub)
-tools/fidelity/run.sh capture --url https://nuwe-ink.local/qa-bloks/ --side ink --page biblioteek \
-  --viewport 390,768,1440 --scope 'section.ink-biblioteek' --scope-label cards \
-  --expect 'section.ink-biblioteek [data-audit-id="library-card"]'
-#   -> tmp/fidelity-captures/ink/biblioteek@1440-scope-cards.ndjson
-tools/fidelity/determinism-check.sh https://nuwe-ink.local/qa-bloks/ ink biblioteek 1440 3 \
-  'section.ink-biblioteek [data-audit-id="library-card"]' --scope 'section.ink-biblioteek' --scope-label cards
-tools/fidelity/run.sh verify --capture tmp/fidelity-captures/ink/biblioteek@1440-scope-cards.ndjson --sample 30
+# scope a capture to one region of a real page; do the same on the Lovable side
+tools/fidelity/run.sh capture --url https://nuwe-ink.local/biblioteek/ --side ink --page biblioteek \
+  --viewport 390,768,1440 --scope main --scope-label main \
+  --expect '[data-audit-id="library-card"]'
+#   -> tmp/fidelity-captures/ink/biblioteek@1440-scope-main.ndjson
+tools/fidelity/determinism-check.sh https://nuwe-ink.local/biblioteek/ ink biblioteek 1440 3 \
+  '[data-audit-id="library-card"]' --scope main --scope-label main
+tools/fidelity/run.sh verify --capture tmp/fidelity-captures/ink/biblioteek@1440-scope-main.ndjson --sample 30
 #   verify reads the scope from _meta and fails if the selector no longer resolves to the same node
+
+# gate: exits 1 on an unaccepted finding; the map's divergence/scope rows are the allowlist
+tools/fidelity/run.sh diff \
+  --a tmp/fidelity-captures/lovable/biblioteek@1440-scope-main.ndjson \
+  --b tmp/fidelity-captures/ink/biblioteek@1440-scope-main.ndjson \
+  --map docs/fidelity-remediation/maps/biblioteek.csv --fail-on MISSING,STRUCTURE,DRIFT \
+  --out tmp/biblioteek-1440.md
 
 # primitive register for a non-00 row: header/footer are row 00's, so drop them.
 # Pass all three viewports in ONE run so identical rows collapse to 390|768|1440.

@@ -161,6 +161,7 @@ the environment facts. Targets are listed in `tools/fidelity/targets.json`, deri
 tools/fidelity/run.sh capture --url <url> --side <ink|lovable> --page <slug> \
                               --viewport 390,768,1440 --expect '<selector>,…'
 tools/fidelity/run.sh diff --a <lovable.ndjson> --b <ink.ndjson> --out <finding.md>
+tools/fidelity/run.sh diff … --map docs/fidelity-remediation/maps/<page>.csv --fail-on MISSING,STRUCTURE,DRIFT
 tools/fidelity/run.sh verify --capture <file.ndjson> --sample 30
 tools/fidelity/determinism-check.sh <url> <side> <page> <viewport> 3 ['<expect>'] [capture flags…]
 
@@ -170,7 +171,7 @@ tools/fidelity/run.sh capture … --click '<selector>' [--click '<selector>' …
 tools/fidelity/run.sh verify --capture <file> --sample 30 [--auth tmp/fidelity-auth/ink.json]
 tools/fidelity/determinism-check.sh <url> <side> <page> <vp> 3 '<expect>' --auth … --click … --state …
 
-# one component on a page that embeds several with the same ids (e.g. /qa-bloks/):
+# one component or region of a page, e.g. `main` to leave out the header and footer:
 tools/fidelity/run.sh capture … --scope '<css selector>' --scope-label <name>
 tools/fidelity/determinism-check.sh <url> <side> <page> <vp> 3 '<expect>' --scope '<css>' --scope-label <name>
 tools/fidelity/run.sh verify --capture <page>@<vp>-scope-<name>.ndjson --sample 30
@@ -188,6 +189,17 @@ tools/fidelity/run.sh verify --capture <page>@<vp>-scope-<name>.ndjson --sample 
 - **Duplicate ids:** `diff` refuses an input that repeats a `data-audit-id`. It exits 2, writes
   nothing, and lists the ids and their paths, because the join would otherwise pair an arbitrary
   instance. `capture` warns about this on stderr. Scope the capture or make the ids unique.
+- **`--fail-on`/`--map`:** the pass/fail gate. It exits 1 on an unaccepted finding in a listed
+  class (`MISSING`, `EXTRA`, `STRUCTURE`, `DRIFT`) or if nothing paired, and prints one `gate …`
+  line. `STRUCTURE` means a different tag, nearest paired ancestor or sibling order. The map is
+  the allowlist: `status` `divergence` or `scope` **with a non-empty `note`** accepts findings on
+  that id. An optional `accept` column narrows it to `;`-separated classes or properties.
+  `missing-ink` records a finding and does not accept it. A map `paired` id on one side only is
+  `MISSING`; on neither side it is listed but does not fail, because it may belong to another
+  state. `box-sizing` and `max-width` deltas are reported, not gated (E9c).
+- **`/qa-bloks/` is not a capture target.** A refresh does not recreate it, so capture real
+  pages: `/biblioteek/` and `/opleiding/` have migrated cards. Fixture-only states on those
+  pages are unmeasured unless real data shows them.
 - **Gate directories:** each determinism gate runs in its own
   `tmp/determinism/<side>-<page>@<vp>[-auth][-<state>][-scope-<name>]/`, so parallel gates are safe.
 
@@ -726,10 +738,11 @@ seeing what is actually on the page.
 **Map CSV columns:**
 
 ```
-audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
+audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note[,accept]
 ```
 
-`status` ∈ `paired` | `missing-ink` | `missing-lovable` | `scope` | `divergence`.
+`status` ∈ `paired` | `missing-ink` | `missing-lovable` | `scope` | `divergence`. `accept` is
+optional and narrows what `run.sh diff --map` accepts (§4.1 Phase 4).
 
 **Scratch:** `tmp/fidelity-captures/` for DOM and computed-style dumps. Gitignored,
 regenerable, never committed. All other transient files also go in repo-local `./tmp/`
@@ -780,7 +793,33 @@ Full contract in `harness-worklist.md`. The parts that bite:
   pre-approved in `.claude/settings.local.json`.
 - **Node 20+ is required.** Playwright 1.63 refuses anything older. `run.sh` uses the
   `node` on PATH if it is new enough, else the newest nvm-installed 20+, and does not
-  change your default. On Windows, run the `.sh` tools from Git Bash.
+  change your default.
+- **On Windows, run the `.sh` tools from Git Bash, from the repo root.** Nothing needs
+  setting up: when Git Bash has no usable `node`, `run.sh` reads the Machine + User PATH
+  and `NVM_HOME` from the registry through `powershell.exe`. It also passes native paths to
+  `node.exe` and turns MSYS argument mangling off, so a selector containing `/` arrives
+  intact; a `/c/…` path argument is converted for you. `node tools/local.mjs …` is not
+  covered, because it needs `node` first: run it from PowerShell after refreshing PATH
+  (`docs/handoffs/homepage-dev-round.md` §6).
+- **Recreate the capture user with `node tools/local.mjs mysql -e "source
+  tools/fidelity/create-capture-user.sql"`**, then `node tools/local.mjs wp eval-file
+  tools/fidelity/set-capture-password.php`. PowerShell has no `<` redirect. The password is
+  in that PHP file.
+- **Check what is on port 4173 before capturing Lovable.** Another session's preview may
+  hold it, and a capture will happily read that build. `--strictPort` only protects the
+  server you start: if it exits with "Port 4173 is already in use", the old server is still
+  answering. Use another port and pass that URL.
+- **If `verse-haven` is being edited, build from a worktree** so the build is a known commit
+  and that folder stays untouched. It stays in place until you remove it:
+  ```bash
+  git -C ../verse-haven worktree add --detach "$PWD/tmp/lovable-wt" <branch>
+  cd tmp/lovable-wt && npm ci && npx vite build && npx vite preview --port 4174 --strictPort
+  # afterwards, from ink-vibe:
+  git -C ../verse-haven worktree remove --force "$PWD/tmp/lovable-wt"
+  ```
+- **The Lovable footer repeats `footer-col-item` and `footer-col-link`**
+  (`Footer.tsx:24,27` at `86b69dd`), so `diff` refuses any whole-page Lovable capture. Until
+  that is fixed, capture page rows with `--scope main --scope-label main` on both sides.
 - **Browsers live in `tmp/ms-playwright`** — the sandbox denies the usual
   `~/Library/Caches` location.
 - **The WordPress table prefix is `wpjj_`, not `wp_`.** A stale unused `wp_users` table

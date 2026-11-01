@@ -20,6 +20,8 @@
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# Git Bash: run.sh hands paths to native node.exe unconverted, so --out must be native.
+case "${OSTYPE:-}" in msys*|cygwin*) REPO="$(cygpath -m "$REPO")" ;; esac
 URL="${1:?url required}"
 SIDE="${2:?side required}"
 PAGE="${3:?page required}"

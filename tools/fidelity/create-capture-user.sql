@@ -18,22 +18,28 @@
 -- This seeds the row only. The PASSWORD must then be set through WordPress's own
 -- hasher — this site is WP 6.8+ (db_version 61833), which no longer accepts the
 -- legacy MD5 fallback:
---     node tools/local.mjs mysql < tools/fidelity/create-capture-user.sql
+--     node tools/local.mjs mysql -e "source tools/fidelity/create-capture-user.sql"
 --     node tools/local.mjs wp eval-file tools/fidelity/set-capture-password.php
 --
 -- Idempotent: safe to re-run.
 
 -- Remove the row previously seeded into the stale table, if present.
-DELETE FROM wp_users WHERE user_login = 'fidelity-capture';
+-- A rebuilt database has no such table, and a plain DELETE would abort the script.
+SET @stale := (SELECT COUNT(*) FROM information_schema.tables
+               WHERE table_schema = DATABASE() AND table_name = 'wp_users');
+SET @sql := IF(@stale > 0, "DELETE FROM wp_users WHERE user_login = 'fidelity-capture'", 'DO 0');
+PREPARE stale_cleanup FROM @sql;
+EXECUTE stale_cleanup;
+DEALLOCATE PREPARE stale_cleanup;
 
 SET @login := 'fidelity-capture';
 SET @email := 'fidelity-capture@nuwe-ink.local';
 
 INSERT INTO wpjj_users (user_login, user_pass, user_nicename, user_email, user_registered, user_status, display_name)
 SELECT @login, '', @login, @email, NOW(), 0, 'Fidelity Capture'
-WHERE NOT EXISTS (SELECT 1 FROM (SELECT * FROM wpjj_users) u WHERE u.user_login = @login);
+WHERE NOT EXISTS (SELECT 1 FROM (SELECT * FROM wpjj_users) u WHERE u.user_login = 'fidelity-capture');
 
-SET @uid := (SELECT ID FROM wpjj_users WHERE user_login = @login);
+SET @uid := (SELECT ID FROM wpjj_users WHERE user_login = 'fidelity-capture');
 
 INSERT INTO wpjj_usermeta (user_id, meta_key, meta_value)
 SELECT @uid, 'wpjj_capabilities', 'a:1:{s:10:"subscriber";b:1;}'
@@ -53,4 +59,4 @@ WHERE NOT EXISTS (SELECT 1 FROM (SELECT * FROM wpjj_usermeta) m WHERE m.user_id 
 
 UPDATE wpjj_usermeta SET meta_value = 'false' WHERE user_id = @uid AND meta_key = 'show_admin_bar_front';
 
-SELECT ID, user_login, user_email, display_name FROM wpjj_users WHERE user_login = @login;
+SELECT ID, user_login, user_email, display_name FROM wpjj_users WHERE user_login = 'fidelity-capture';
