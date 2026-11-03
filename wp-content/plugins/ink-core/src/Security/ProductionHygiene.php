@@ -51,6 +51,7 @@ class ProductionHygiene {
 		'wp-migrate-db-pro/wp-migrate-db-pro.php',
 		'string-locator/string-locator.php',
 		'simple-custom-css/simple-custom-css.php',
+		'simple-css/simple-css.php',
 		'query-monitor/query-monitor.php',
 		'debug-bar/debug-bar.php',
 	);

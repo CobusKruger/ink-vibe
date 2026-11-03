@@ -204,6 +204,16 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 			<textarea class="ink-field ink-field--textarea" id="ink-skryf-body" name="<?php echo esc_attr( $ink_skryf['field_body'] ); ?>" rows="16" placeholder="<?php echo esc_attr( $ink_skryf_ph[ $ink_skryf_first_slug ] ?? '' ); ?>" data-audit-id="skryf-body-textarea" required></textarea>
 		</div>
 
+		<?php
+		// Optional gedig dedication (owner-approved 2026-11-02): shown above the poem as
+		// "— text —". Only a gedig keeps it, so skryf-counter.js hides the field for the other
+		// types (and the server ignores it for them). Lovable's Write.tsx has no such field.
+		?>
+		<p class="ink-skryf-field ink-skryf-field--toewyding" data-audit-id="skryf-dedication-field"<?php echo 'gedig' === $ink_skryf_first_slug ? '' : ' hidden'; ?>>
+			<label class="ink-label" for="ink-skryf-toewyding" data-audit-id="skryf-dedication-label"><?php echo esc_html__( '[NEEDS HUMAN AFRIKAANS] GEDIG-TOEWYDING-LABEL', 'ink-foundation' ); ?></label>
+			<input type="text" class="ink-field" id="ink-skryf-toewyding" name="<?php echo esc_attr( $ink_skryf['field_dedication'] ?? 'ink_submission_toewyding' ); ?>" maxlength="200" data-audit-id="skryf-dedication-input" />
+		</p>
+
 		<p class="ink-skryf-field" data-audit-id="skryf-image-field">
 			<label class="ink-label" for="ink-skryf-image"><?php echo esc_html__( 'Voorbeeld-prent (opsioneel)', 'ink-foundation' ); ?></label>
 			<input type="file" class="ink-field" id="ink-skryf-image" data-audit-id="skryf-image-input" name="<?php echo esc_attr( $ink_skryf['field_image'] ?? 'ink_submission_featured_image' ); ?>" accept="image/*" />

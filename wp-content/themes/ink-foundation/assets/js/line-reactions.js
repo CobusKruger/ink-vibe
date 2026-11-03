@@ -203,7 +203,9 @@
 
 	function init() {
 		// Per-line hearts are a signed-in feature: a guest's click would be a 401
-		// that rolls straight back, so a guest gets no heart to click.
+		// that rolls straight back, so a guest gets no heart to click. Owner ruling
+		// (2026-11-02): they stay members-only, so a logged-out MISSING on
+		// `gedig-line-heart` is accepted in maps/lees-gedig.csv, not a defect.
 		if ( ! cfg.isGuest ) {
 			var lines = document.querySelectorAll( '.ink-gedig__line[data-ink-line]' );
 			Array.prototype.forEach.call( lines, buildHeart );

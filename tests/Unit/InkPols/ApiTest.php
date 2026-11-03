@@ -28,11 +28,10 @@ afterEach( function (): void {
 	Monkey\tearDown();
 } );
 
-test( 'metaKeys returns exactly the five FR-57 issue meta keys, single-sourced from FieldSets', function (): void {
+test( 'metaKeys returns exactly the four FR-57 issue meta keys, single-sourced from FieldSets', function (): void {
 	expect( Api::metaKeys() )->toBe(
 		array(
 			FieldSets::INKPOLS_ISSUE_DATE,
-			FieldSets::INKPOLS_VOLUME,
 			FieldSets::INKPOLS_COVER_ID,
 			FieldSets::INKPOLS_PDF_ID,
 			FieldSets::INKPOLS_TEASER,

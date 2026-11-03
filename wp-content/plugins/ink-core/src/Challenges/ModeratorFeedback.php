@@ -37,10 +37,13 @@ class ModeratorFeedback {
 
 	/**
 	 * The custom comment type (NOT a re-enabled WP comment; distinct from `ink_reaksie`).
+	 * At most 20 characters: `comment_type` is varchar(20), and a longer value makes
+	 * `wp_insert_comment()` fail silently, so no feedback was ever stored under the old
+	 * 23-character `ink_moderator_terugvoer`.
 	 *
 	 * @var string
 	 */
-	public const COMMENT_TYPE = 'ink_moderator_terugvoer';
+	public const COMMENT_TYPE = 'ink_mod_terugvoer';
 
 	/**
 	 * The writer's display-toggle user meta (default OFF — feedback stays private).

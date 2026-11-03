@@ -40,7 +40,7 @@ import {
   preflightAuth, assertLoggedIn, driveState, exitOnAuthError,
 } from './state.mjs';
 
-const TOOL_VERSION = '1.0.0';
+const TOOL_VERSION = '1.1.0';
 
 // --- Phase 4 §B3: the computed-property allowlist. -------------------------
 // Capturing all ~340 computed properties per node is what makes a capture
@@ -131,6 +131,10 @@ function collect({ props, skipTags, mode, scope }) {
 
   const walk = (el) => {
     if (skipTags.includes(el.tagName)) return;
+    // A `hidden` subtree is not part of this state: a closed menu or tab panel. React unmounts
+    // the same thing, so recording it reports a false difference between the two stacks.
+    // CSS-hidden elements (`hidden md:flex`, a breakpoint) are still recorded and compared.
+    if (el.hidden) return;
 
     const auditId = el.getAttribute('data-audit-id');
     const take = mode === 'all' || auditId !== null;

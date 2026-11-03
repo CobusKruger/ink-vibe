@@ -726,8 +726,8 @@ final class Archive {
 	 * same no-op fix already made in {@see \Ink\Training\Hub::cardHtml()}).
 	 *
 	 * @param array{title?:string, permalink?:string, author?:string, genre?:string, excerpt?:string, read_minutes?:int, image?:string} $card  The item.
-	 * @param string                                                                                                                     $extra Optional extra CSS class.
-	 * @param string                                                                                                                     $audit Fidelity-audit id prefix (first card of each repeater only; '' = none).
+	 * @param string                                                                                                                    $extra Optional extra CSS class.
+	 * @param string                                                                                                                    $audit Fidelity-audit id prefix (first card of each repeater only; '' = none).
 	 * @return string
 	 */
 	private static function cardHtml( array $card, string $extra = '', string $audit = '' ): string {

@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
  * The single read-model for an InkPols `uitgawe` (issue) — Story 13.1 (FR-57).
  *
  * The `inkpols_uitgawe` CPT ({@see PostTypes::INKPOLS_UITGAWE}) and its five
- * editorial fields (issue date, volume, cover image, PDF, teaser) already exist
+ * editorial fields (issue date, cover image, PDF, teaser, titel, featured items) exist
  * from Epic 2 ({@see PostTypes} 2.1, {@see FieldSets} 2.4). This value object is
  * the typed, default-safe surface the Epic-13 reader surfaces (13.2 by-year
  * archive, 13.3 PDF viewing) consume — it reads the meta off the authoritative
@@ -40,22 +40,24 @@ final class Issue {
 	/**
 	 * Build an issue read-model from its already-resolved field values.
 	 *
-	 * @param int    $postId    The authoritative `inkpols_uitgawe` post id.
-	 * @param string $title     The issue title.
-	 * @param string $issueDate The issue date (`Y-m-d`), or '' when unset.
-	 * @param string $volume    The volume / jaargang label, or '' when unset.
-	 * @param int    $coverId   The cover-image attachment id, or 0 when unset.
-	 * @param int    $pdfId     The PDF attachment id, or 0 when unset.
-	 * @param string $teaser    The teaser / voorskou text, or '' when unset.
+	 * @param int                                                         $postId    The authoritative `inkpols_uitgawe` post id.
+	 * @param string                                                      $title     The issue title.
+	 * @param string                                                      $issueDate The issue date (`Y-m-d`), or '' when unset.
+	 * @param int                                                         $coverId   The cover-image attachment id, or 0 when unset.
+	 * @param int                                                         $pdfId     The PDF attachment id, or 0 when unset.
+	 * @param string                                                      $teaser    The teaser / voorskou text, or '' when unset.
+	 * @param string                                                      $titel     The issue's heading (`inkpols.md` §2), or '' when unset.
+	 * @param array<int, array{title:string, writer:string, tipe:string}> $featured The featured items, glans-1 to glans-3, keyed 1 to 3.
 	 */
 	public function __construct(
 		public readonly int $postId,
 		public readonly string $title,
 		public readonly string $issueDate,
-		public readonly string $volume,
 		public readonly int $coverId,
 		public readonly int $pdfId,
 		public readonly string $teaser,
+		public readonly string $titel = '',
+		public readonly array $featured = array(),
 	) {
 	}
 
@@ -74,11 +76,68 @@ final class Issue {
 			$id,
 			(string) get_the_title( $id ),
 			Scalar::asString( get_post_meta( $id, FieldSets::INKPOLS_ISSUE_DATE, true ) ),
-			Scalar::asString( get_post_meta( $id, FieldSets::INKPOLS_VOLUME, true ) ),
 			Scalar::asNonNegativeInt( get_post_meta( $id, FieldSets::INKPOLS_COVER_ID, true ) ),
 			Scalar::asNonNegativeInt( get_post_meta( $id, FieldSets::INKPOLS_PDF_ID, true ) ),
 			Scalar::asString( get_post_meta( $id, FieldSets::INKPOLS_TEASER, true ) ),
+			Scalar::asString( get_post_meta( $id, FieldSets::INKPOLS_TITEL, true ) ),
+			self::readFeatured( $id )
 		);
+	}
+
+	/**
+	 * The three featured items, `glans-1` to `glans-3`, read from the issue's meta.
+	 *
+	 * @param int $id The issue post id.
+	 * @return array<int, array{title:string, writer:string, tipe:string}>
+	 */
+	private static function readFeatured( int $id ): array {
+		$featured = array();
+
+		foreach ( FieldSets::glansKeys() as $n => $keys ) {
+			$featured[ $n ] = array(
+				'title'  => Scalar::asString( get_post_meta( $id, $keys['titel'], true ) ),
+				'writer' => Scalar::asString( get_post_meta( $id, $keys['skrywer'], true ) ),
+				'tipe'   => Scalar::asString( get_post_meta( $id, $keys['tipe'], true ) ),
+			);
+		}
+
+		return $featured;
+	}
+
+	/**
+	 * The three featured items in order, glans-1 to glans-3 (owner, 2026-11-03). `tipe` is the
+	 * editor's own free-text description of the item (a poem, a story, an interview), shown as
+	 * the kind label; nothing about the kind is hardcoded. A blank item is left out.
+	 *
+	 * @return list<array{tipe:string, title:string, writer:string}>
+	 */
+	public function items(): array {
+		$items = array();
+
+		$featured = $this->featured;
+
+		ksort( $featured );
+
+		foreach ( $featured as $item ) {
+			if ( '' !== trim( $item['title'] ) ) {
+				$items[] = array(
+					'tipe'   => $item['tipe'],
+					'title'  => $item['title'],
+					'writer' => $item['writer'],
+				);
+			}
+		}
+
+		return $items;
+	}
+
+	/**
+	 * The issue's URL.
+	 *
+	 * @return string
+	 */
+	public function permalink(): string {
+		return (string) get_permalink( $this->postId );
 	}
 
 	/**

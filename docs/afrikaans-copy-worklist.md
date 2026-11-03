@@ -70,3 +70,91 @@ the durable anchor. Code paths under `wp-content/`.
 5. Run `composer copy:scan`; then `composer copy:scan -- --update-baseline` to lock
    in the reduced count. Launch target: baseline empty.
 6. Skip any line left blank — leave its placeholder + baseline entry intact.
+| INKPOLS-ADMIN-ONVOLLEDIG | NEW row: admin labels | `plugins/ink-core/src/InkPols/PublishGuard.php` | admin only |
+| UITSLAE-H1 | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/ResultsPage.php` | public |
+| UITSLAE-META-KATEGORIE | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/ResultsPage.php` | public |
+| UITSLAE-BRIEF-H2 | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/ResultsPage.php` | public |
+| UITSLAE-BRIEF-NOTA | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/ResultsPage.php` | public |
+| UITSLAE-PODIUM-H2 | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/ResultsPage.php` | public |
+| UITSLAE-AFDELING | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/ResultsPage.php` | public |
+| UITSLAE-GEEN-SKAKEL | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/ResultsPage.php` | public |
+| UITSLAE-VERMELDING-REEL | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/ResultsPage.php` | public |
+| UITSLAE-DANKIE | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/ResultsPage.php` | public |
+| TUIS-UITSLAE-TITEL | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/ResultsBanner.php` | public |
+| TUIS-UITSLAE-CTA | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/ResultsBanner.php` | public |
+| TUIS-WENNERS-H2 | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/FeaturedWinners.php` | public |
+| TUIS-WENNER-LEES-ARTIKEL | NEW row: results / Tuis | `plugins/ink-core/src/Challenges/FeaturedWinners.php` | public |
+| UITSLAE-ADMIN-BRIEF | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| UITSLAE-ADMIN-VERMELDINGS | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-JAAR | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-UITGAWE | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-BESKRYWING | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-INSKRYWING | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-NAASWENNER | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-KAT | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-IKOON | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-IKOON-FEATHER | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-IKOON-BOOK | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-IKOON-PEN | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-WOORDLIMIET | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-RIGLYNE | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-GALA-NAAM | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-GALA-DATUM | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-GALA-DEURE | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-GALA-PLEK | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-GALA-DRAG | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-GALA-PROGRAM | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-KAARTJIE | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-PRYS | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-HOOGTEPUNT | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-FOTOS | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-ORGANISEERDER | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-STREEK | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-PRYS-EKSTERN | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-FOOI | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-GENRE | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-NOTA | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-MEDIA-KIES | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-ADMIN-MEDIA-VERWYDER | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-GENRE-POETRY | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-GENRE-FICTION | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-GENRE-NON-FICTION | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| KOMP-GENRE-MIXED | NEW row: admin labels | `plugins/ink-core/src/Content/FieldSets.php` | admin only |
+| INKPOLS-HUIDIGE | NEW row: page copy | `plugins/ink-core/src/InkPols/CurrentIssue.php` | public |
+| INKPOLS-TERUG | NEW row: page copy | `plugins/ink-core/src/InkPols/SingleIssue.php` | public |
+| KOMP-HERO-BADGE | NEW row: page copy | `plugins/ink-core/src/Competitions/Hero.php` | public |
+| KOMP-HERO-SLUIT | NEW row: page copy | `plugins/ink-core/src/Competitions/Hero.php` | public |
+| KOMP-HERO-INSKRYF | NEW row: page copy | `plugins/ink-core/src/Competitions/Hero.php` | public |
+| KOMP-HERO-RIGLYNE | NEW row: page copy | `plugins/ink-core/src/Competitions/Hero.php` | public |
+| KOMP-KAT-H2 | NEW row: page copy | `plugins/ink-core/src/Competitions/Categories.php` | public |
+| KOMP-KAT-INTRO | NEW row: page copy | `plugins/ink-core/src/Competitions/Categories.php` | public |
+| KOMP-KAT-INSKRYF | NEW row: page copy | `plugins/ink-core/src/Competitions/Categories.php` | public |
+| KOMP-GALA-KICKER | NEW row: page copy | `plugins/ink-core/src/Competitions/Gala.php` | public |
+| KOMP-GALA-DEURE | NEW row: page copy | `plugins/ink-core/src/Competitions/Gala.php` | public |
+| KOMP-GALA-PROGRAM | NEW row: page copy | `plugins/ink-core/src/Competitions/Gala.php` | public |
+| KOMP-GALA-BESPREEK | NEW row: page copy | `plugins/ink-core/src/Competitions/Gala.php` | public |
+| KOMP-GALA-VERLEDE-H3 | NEW row: page copy | `plugins/ink-core/src/Competitions/Gala.php` | public |
+| KOMP-GALA-VERLEDE-TEKS | NEW row: page copy | `plugins/ink-core/src/Competitions/Gala.php` | public |
+| KOMP-GALA-ALLES-H1 | NEW row: page copy (no design source: owner-approved page, 2026-11-02) | `plugins/ink-core/src/Competitions/GalaPage.php` | public |
+| KOMP-GIDS-KICKER | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-GIDS-H2 | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-GIDS-TEKS | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-GIDS-SOEK | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-FOOI-ALL | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-FOOI-FREE | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-FOOI-PAID | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-TELLING | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-EKS-SLUIT | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-EKS-SKAKEL | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-LEEG-TITEL | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-LEEG-TEKS | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-INDIEN-H3 | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-INDIEN-TEKS | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| KOMP-INDIEN-KNOP | NEW row: page copy | `plugins/ink-core/src/Competitions/Directory.php` | public |
+| UITDAGINGS-H1 | NEW row: page copy | `plugins/ink-core/src/Challenges/Archive.php` | public |
+| UITDAGINGS-INTRO | NEW row: page copy | `plugins/ink-core/src/Challenges/Archive.php` | public |
+| UITDAGINGS-VORIGE-H2 | NEW row: page copy | `plugins/ink-core/src/Challenges/Archive.php` | public |
+| REAKSIE-OPSTEM | NEW row: page copy | `plugins/ink-core/src/Engagement/ResponsesList.php` | public (aria-label) |
+| REAKSIE-OPSTEM-FOUT | NEW row: page copy | `plugins/ink-core/src/Engagement/ResponseUpvoteController.php` | REST error only |
+| GEDIG-TOEWYDING-LABEL | NEW row: page copy | `themes/ink-foundation/patterns/skryf.php` | public |
+| GEDIG-TOEWYDING-ADMIN | NEW row: page copy | `plugins/ink-core/src/Content/FieldSets.php` | admin |

@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace Ink\Notifications;
 
-use Ink\Content\FieldSets;
 use Ink\Kernel\Sast;
+use Ink\Kernel\Scalar;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -341,7 +341,7 @@ final class KennisgewingsSurface {
 	 * without depending on `Ink\Challenges` (not in this module's deptrac
 	 * allowlist; only `Ink\Content`/`Ink\Kernel` are).
 	 *
-	 * @param string              $deadline_raw The stored `Y-m-d[ T]H:i(:s)` deadline string.
+	 * @param string             $deadline_raw The stored `Y-m-d[ T]H:i(:s)` deadline string.
 	 * @param \DateTimeImmutable $now          The instant to measure from.
 	 * @return int
 	 */
@@ -469,8 +469,8 @@ final class KennisgewingsSurface {
 	 * kennisgewing source is not wired yet ({@see Events} docblock lists it as
 	 * "deferred — emitter ready, source not built"), so this assumes the
 	 * eventual source will pass the challenge post id as `item_id` (reading its
-	 * deadline the same way {@see \Ink\Challenges\SinglePage}/{@see
-	 * \Ink\Challenges\Archive} already do via `FieldSets::UITDAGING_DEADLINE`).
+	 * close from {@see \Ink\Challenges\Cadence}, as {@see \Ink\Challenges\SinglePage}/{@see
+	 * \Ink\Challenges\Archive} do).
 	 * Whoever wires that source should confirm this assumption still holds.
 	 *
 	 * @param NotificationType $type       The kennisgewing type.
@@ -478,11 +478,12 @@ final class KennisgewingsSurface {
 	 * @return int
 	 */
 	private static function daysUntilCloseFor( NotificationType $type, int $subject_id ): int {
-		if ( NotificationType::Uitdaging !== $type || $subject_id <= 0 || ! function_exists( 'get_post_meta' ) ) {
+		if ( NotificationType::Uitdaging !== $type || $subject_id <= 0 || ! function_exists( 'apply_filters' ) ) {
 			return 0;
 		}
 
-		$raw = (string) get_post_meta( $subject_id, FieldSets::UITDAGING_DEADLINE, true );
+		// Literal; Ink\Challenges\Cadence owns the constant and listens. Notifications has no Challenges edge.
+		$raw = Scalar::asString( apply_filters( 'ink_uitdaging_sluiting', '', $subject_id ) );
 
 		return self::daysUntilClose( $raw, Sast::now() );
 	}

@@ -236,7 +236,7 @@ final class SkrywersTab {
 	 * Build the skrywers HTML. Pure — Terms + escaping only.
 	 *
 	 * @param list<array{name:string, profile_url:string, gradering:string, tier?:string, bio:string, avatar_url:string, genres:list<string>}> $cards The writers.
-	 * @param array{paged:int, max_pages:int, genre?:string|null, sort?:string}          $nav   Render context.
+	 * @param array{paged:int, max_pages:int, genre?:string|null, sort?:string}                                                                $nav   Render context.
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
@@ -300,7 +300,7 @@ final class SkrywersTab {
 	 * One skrywer card. Pure — escaping only.
 	 *
 	 * @param array{name:string, profile_url:string, gradering:string, tier?:string, bio:string, avatar_url?:string, genres?:list<string>} $card  The card row.
-	 * @param bool                                                                                                          $audit Stamp the fidelity-audit join keys (first card only).
+	 * @param bool                                                                                                                         $audit Stamp the fidelity-audit join keys (first card only).
 	 * @return string
 	 */
 	private static function cardHtml( array $card, bool $audit = false ): string {

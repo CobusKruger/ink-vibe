@@ -119,3 +119,101 @@ test( 'periodKeyFor / periodLabelFor resolve the round cadence then derive the p
 // The production-path proof that the annual cadence is actually reused by the winners
 // machinery lives in WinnersPostTest ('generate carries the round cadence period into
 // the announcement title') — `WinnersPost::roundPeriod()` calls `periodLabelFor()`.
+
+// --- A monthly round's close derives from its month (owner, 2026-11-01). ---
+
+test( 'monthOf takes the month from the title; real round titles', function (): void {
+	expect( Cadence::monthOf( 'Oktober 2026 - Iets projek', '2026-10-01 08:00:00' ) )->toBe( array( 10, 2026 ) );
+	expect( Cadence::monthOf( 'MEI 2026 - OOP PROJEK', '2026-05-05' ) )->toBe( array( 5, 2026 ) );
+	expect( Cadence::monthOf( 'Desember 2016 tot 22 Januarie 2017 Projek: INK-gedenkbundel', '2016-12-01' ) )->toBe( array( 12, 2016 ) );
+	expect( Cadence::monthOf( 'Projek - Teenstellings (1 Mei 2016 - 31 Mei 2016)', '2016-05-02' ) )->toBe( array( 5, 2016 ) );
+} );
+
+test( 'monthOf: a round posted shortly before month-end belongs to the month in its title', function (): void {
+	expect( Cadence::monthOf( 'November 2026 - Oop projek', '2026-10-30 09:00:00' ) )->toBe( array( 11, 2026 ) );
+	expect( Cadence::monthOf( 'Januarie 2027 - Oop projek', '2026-12-30' ) )->toBe( array( 1, 2027 ) );
+} );
+
+test( 'monthOf: the post date settles a title with no year, also across new year', function (): void {
+	expect( Cadence::monthOf( 'September - Lente projek', '2017-09-01' ) )->toBe( array( 9, 2017 ) );
+	expect( Cadence::monthOf( 'Januarie projek', '2026-12-30' ) )->toBe( array( 1, 2027 ) );
+	expect( Cadence::monthOf( 'Desember projek', '2027-01-02' ) )->toBe( array( 12, 2026 ) );
+} );
+
+test( 'monthOf: the post date corrects a year that is a whole year out', function (): void {
+	// The one real case among the 128 rounds in challenges.csv.
+	expect( Cadence::monthOf( 'Junie 2016 - FAK projek', '2017-06-01' ) )->toBe( array( 6, 2017 ) );
+} );
+
+test( 'monthOf: a month in the title beats a post date in another month', function (): void {
+	expect( Cadence::monthOf( 'Mei 2026 - Laat projek', '2026-07-15' ) )->toBe( array( 5, 2026 ) );
+} );
+
+test( 'monthOf: a title with no month falls to the post date; late in a month means the next', function (): void {
+	expect( Cadence::monthOf( 'Herfs', '2016-03-16' ) )->toBe( array( 3, 2016 ) );
+	expect( Cadence::monthOf( '“Carpe Diem” (Gryp die oomblik) - Sonnet', '2016-03-30' ) )->toBe( array( 4, 2016 ) );
+	expect( Cadence::monthOf( 'Sonder maand', '2025-12-28' ) )->toBe( array( 1, 2026 ) );
+} );
+
+test( 'monthOf does not take a month out of the letters of a word', function (): void {
+	expect( Cadence::monthOf( 'Meisies projek', '2026-02-02' ) )->toBe( array( 2, 2026 ) );
+} );
+
+test( 'monthOf reads an entity-encoded title and copes with no usable date', function (): void {
+	expect( Cadence::monthOf( 'Mei 2026 &#8211; Oop', '' ) )->toBe( array( 5, 2026 ) );
+	expect( Cadence::monthOf( 'Mei sonder jaar', 'nonsens' ) )->toBeNull();
+	expect( Cadence::monthOf( 'Niks', '' ) )->toBeNull();
+} );
+
+test( 'monthlyClose is the last day of the month: October 31, a leap February 29', function (): void {
+	expect( Cadence::monthlyClose( 'Oktober 2026 - X', '2026-10-01' )->format( 'Y-m-d' ) )->toBe( '2026-10-31' );
+	expect( Cadence::monthlyClose( 'November 2026 - X', '2026-10-30' )->format( 'Y-m-d' ) )->toBe( '2026-11-30' );
+	expect( Cadence::monthlyClose( 'Februarie 2028 - X', '2028-02-01' )->format( 'Y-m-d' ) )->toBe( '2028-02-29' );
+	expect( Cadence::monthlyClose( 'Niks', '' ) )->toBeNull();
+} );
+
+test( 'closeFor derives a monthly round and ignores a stored deadline', function (): void {
+	Functions\when( 'get_post_meta' )->alias(
+		fn ( int $id, string $key ) => FieldSets::UITDAGING_CADENCE === $key ? 'maandeliks' : '2020-01-01'
+	);
+	Functions\when( 'get_post_field' )->alias(
+		fn ( string $field ) => 'post_title' === $field ? 'Oktober 2026 - Oop projek' : '2026-10-01 08:00:00'
+	);
+
+	expect( Cadence::closeFor( 5 )->format( 'Y-m-d' ) )->toBe( '2026-10-31' );
+} );
+
+test( 'closeFor keeps the stored value on an annual round, whatever its title says', function (): void {
+	Functions\when( 'get_post_meta' )->alias(
+		fn ( int $id, string $key ) => FieldSets::UITDAGING_CADENCE === $key ? 'jaarliks' : '2026-06-15'
+	);
+	Functions\expect( 'get_post_field' )->never();
+
+	expect( Cadence::closeFor( 5 )->format( 'Y-m-d' ) )->toBe( '2026-06-15' );
+} );
+
+test( 'closeFor is null for an annual round with nothing stored', function (): void {
+	Functions\when( 'get_post_meta' )->alias(
+		fn ( int $id, string $key ) => FieldSets::UITDAGING_CADENCE === $key ? 'jaarliks' : ''
+	);
+
+	expect( Cadence::closeFor( 5 ) )->toBeNull();
+} );
+
+test( 'closeString is the filter answer for modules with no Challenges edge', function (): void {
+	Functions\when( 'get_post_meta' )->justReturn( '' );
+	Functions\when( 'get_post_field' )->alias(
+		fn ( string $field ) => 'post_title' === $field ? 'Oktober 2026' : '2026-10-01'
+	);
+
+	expect( Cadence::closeString( '', 5 ) )->toBe( '2026-10-31' );
+} );
+
+test( 'hasStarted: a monthly round starts on the first; an annual one has only a close', function (): void {
+	$sast  = new \DateTimeZone( 'Africa/Johannesburg' );
+	$close = new \DateTimeImmutable( '2026-11-30', $sast );
+
+	expect( Cadence::hasStarted( $close, CadenceType::Maandeliks, new \DateTimeImmutable( '2026-10-31 23:59:59', $sast ) ) )->toBeFalse();
+	expect( Cadence::hasStarted( $close, CadenceType::Maandeliks, new \DateTimeImmutable( '2026-11-01 00:00:00', $sast ) ) )->toBeTrue();
+	expect( Cadence::hasStarted( $close, CadenceType::Jaarliks, new \DateTimeImmutable( '2026-01-01', $sast ) ) )->toBeTrue();
+} );

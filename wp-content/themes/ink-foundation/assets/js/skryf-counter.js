@@ -71,8 +71,19 @@
 		counter.textContent = text;
 	}
 
+	// The dedication is a gedig-only field: shown for a gedig, hidden (and not worth filling)
+	// for the other types. The server ignores it for them either way.
+	var dedication = form.querySelector( '.ink-skryf-field--toewyding' );
+
+	function syncDedication() {
+		if ( dedication ) {
+			dedication.hidden = selectedInput().value !== 'gedig';
+		}
+	}
+
 	function onTypeChange() {
 		var input = selectedInput();
+		syncDedication();
 		var placeholder = input.getAttribute( 'data-placeholder' );
 		if ( placeholder !== null ) {
 			body.setAttribute( 'placeholder', placeholder );
@@ -97,6 +108,7 @@
 		title.addEventListener( 'input', updatePublishState );
 	}
 
+	syncDedication();
 	render();
 	updatePublishState();
 }() );

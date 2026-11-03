@@ -3,7 +3,7 @@
 **Status:** STRATEGY. InkPols migration is built; the rest is not. All of D1–D13 are ruled (§4). The next round is `docs/handoffs/homepage-dev-round.md`.
 **Start with `HANDOVER.md`** (state and next steps). InkPols (WP4) is fully specified in `inkpols.md`.
 **Opened:** 2026-10-26.
-**Lovable range:** `71c0847..86b69dd`, 22 commits. `71c0847` is the last commit the fidelity rework synced.
+**Lovable range:** `71c0847..86b69dd`, 26 commits (36 to `cbd9d3a`, the synced reference). `71c0847` is the last commit the fidelity rework synced.
 **Read first:** `docs/fidelity-remediation/README.md`. Its rules R1–R9 apply to this work unchanged.
 
 This folder holds the plan for building the new Lovable design work right the first time. The
@@ -20,7 +20,7 @@ acceptance test.**
 | N1 | `src/pages/ChallengeResults.tsx`, `src/data/awards.ts` | Per-round results page: header (month, theme, announced date, entry count), judges' letter, **podium** with category tabs (Gedigte / Stories / Artikels); Gedigte split Goud/Silwer/Brons; 1st/2nd/3rd award cards with excerpt + judging-panel citation; honourable mentions; CTA to current round | `/uitdaging/<slug>/uitslae/`: rewrite endpoint on `uitdaging` → `templates/single-uitdaging-uitslae.html` | `Challenges/Placements.php:143-221`, `ModeratorFeedback.php:174`, `WinnersPost.php:169-208`, `ResultPostLinker.php`, `SinglePage::entryCount` | extend + new fields |
 | N2 | `src/pages/Magazine.tsx` | InkPols archive: current-issue feature (cover, "in hierdie uitgawe" list, Lees aanlyn), past issues grid with year filter chips (default "Alles") | `/inkpols/`: `templates/archive-inkpols_uitgawe.html` (exists) | `InkPols/Archive.php:109-226` (year *sections* today). **Spec: `inkpols.md`** (no download buttons, A4 covers, naam replaces issue number) | extend |
 | N3 | `src/pages/MagazineIssue.tsx` | Issue reader: top bar (back, issue title), flipbook, "in hierdie uitgawe" items, Vorige/Volgende | `/inkpols/<slug>/`: `templates/single-inkpols_uitgawe.html` (exists) | `InkPols/SingleIssue.php:77-102`, `Viewer.php` (Real3D; the flipbook appears **only** here). **Spec: `inkpols.md`** | extend |
-| N4 | `src/pages/Competitions.tsx`, `src/data/competitions.ts` | Kompetisies page: dark hero for the **annual** competition, 3 category cards (word limit, guidelines), **Gala** section (details, programme, ticket pills, reserve) + "Evenings past" gallery by year, **external competitions directory** (search, genre + fee filter chips, cards, empty state), "submit a listing" box | `/kompetisies/`: `templates/page-kompetisies.html` + SystemPages entry | Annual round = `uitdaging` with cadence `jaarliks` (`Kernel/CadenceType.php:34-36`). **Nothing exists** for categories-with-guidelines, gala or directory | mostly new-feature |
+| N4 | `src/pages/Competitions.tsx`, `src/data/competitions.ts` | Kompetisies page: dark hero for the **annual** competition, 3 category cards (word limit, guidelines), **Gala** section (details, programme, ticket pills, reserve) + "Evenings past" gallery by year, **external competitions directory** (search, genre + fee filter chips, cards, empty state), "submit a listing" box | `/kompetisies/`: `templates/page-kompetisies.html` + SystemPages entry | **Competitions are not challenges (owner):** a new `kompetisie` post type, not `uitdaging` with cadence `jaarliks`. **Nothing exists** for categories-with-guidelines, gala or directory. **Spec: `specs/05-kompetisies.md`** | mostly new-feature |
 | N5 | `src/components/home/ResultsBanner.tsx` | Home: gold link banner "Uitslae aangekondig · <maand>" → N1 | new dynamic block `ink/uitslae-banier` in `front-page.html` | `WinnersPost::latestAnnouncement()` (`:311`), `Cadence` | extend |
 | N6 | `src/components/home/MagazineSection.tsx` | Home: latest published InkPols issue; hidden when there are no issues. This is the **only** route to InkPols (D1). | new block (shares N2's current-issue renderer) | N2, `inkpols.md` | extend |
 | N7 | `src/pages/ReadStory.tsx:175-184` | Reading page: gold "1ste plek · Goud gedigte · <maand>" aside linking to N1, with the citation | new block in `reading-storie.php` / `reading-gedig.php` / artikel | `ModeratorFeedback::feedbackFor()` and `WinnerBanner::forPost` have **no consumer** (`functions.php:2147-2154` is never called) | extend |
@@ -66,11 +66,13 @@ ResultsBanner have 0. This must be fixed before anything can be measured (§3, s
    - CPT archives and singles go through the template hierarchy.
    - Per-round sub-views are a rewrite endpoint.
    - Never `post_content` layout, never a hand-made Page, never `_wp_page_template` set by hand.
-4. **Everything must survive `wp ink migrate-all` from a fresh prod copy.** Any *new* editorial
-   data the design needs (gala details, external competitions, InkPols highlights, category
-   guidelines) is either migrated from prod or seeded from a **committed input file** by a
-   `migrate-all` step. It is never typed into nuwe-ink, which a refresh wipes. Fixtures for the
-   capture harness follow the same rule.
+4. **Everything must survive `wp ink migrate-all` from a fresh prod copy, and the live site runs
+   without CSVs (THE FIRST RULE, `CLAUDE.md`).** What existed before the cutover is migrated,
+   from prod or from a hand-prepared input in `../migration-data/`. Anything that changes after
+   go-live (gala details, external competitions, InkPols issues, category guidelines) is added
+   and edited on the site, through post types and admin screens that get built. Never a seed
+   file, and never a re-run. Fixtures for the capture harness are re-runnable scripts outside
+   theme and plugin, applied after a refresh.
 5. **Lovable is structure, not copy (R2).** Afrikaans copy goes through
    `docs/afrikaans-copy-debt-process` (placeholder marker → translation sheet → wire back). An
    English mockup string never ships. Terms follow `docs/afrikaans-terms.md` (*uitdaging*,
@@ -153,7 +155,7 @@ rehearsal.
 | D1 | The header gains **Kompetisies**. INK's other header items are already correct. InkPols is **not** in the header; it is reached from its dedicated home section. The header style must match Lovable. | E4 in WP6. `prod-menu-mapping.md` "Target top-level navigation" gets Kompetisies. |
 | D2 | Kompetisies is the new design for prod's "Eksterne Kompetisies" page. | `/kompetisies/`, `page-kompetisies.html`, `SystemPages::PAGES['kompetisies']`. Adopt prod Page 59192 and empty its legacy body in code. |
 | D3 | The annual competition's **web pages are in scope**, not deferred. Only the admin side is deferred and still undefined: how entries reach the judges and how winners come back. | Build the announcements (hero + categories), the gala section with its photos, and the external competition links. Build no entry/judging pipeline for the annual round. |
-| D4 | Gala ticket prices are shown with **fictional** values and no in-site way to pay. Payments come after lidmaatskap payments are implemented. | The "Reserve" button gets no payment flow; decide its target (none / contact) in the build spec. Gala details, photos by year and external competitions are seeded from committed files (Principle 4). Mark the prices as placeholders in the seed file so they can't be mistaken for real ones. |
+| D4 | Gala ticket prices are shown with **fictional** values and no in-site way to pay. Payments come after lidmaatskap payments are implemented. | The "Reserve" button gets no payment flow; its target is none (`specs/05-kompetisies.md`). Gala details, prices, photos by year and external competitions are edited on the site (Principle 4). The price field's admin label says the price is fictional, so it can't be mistaken for a real one. |
 | D6 | A citation shows **only if the author has opted in** to showing it; otherwise it is not shown anywhere. | The award card and the reading-page aside render without the citation block when `ModeratorFeedback::feedbackFor()` returns nothing. The placement itself still shows. |
 | D7 | *Not a decision.* Gradering applies to Gedigte only, as established long ago. | The code violates the rule. To be fixed per §3.3 (Gradering-scope fix), in `docs/handoffs/winner-cleanup.md` §7. |
 | D8 | Accepted: add a per-round judges' letter and capture honourable mentions. | Letter meta on the `uitdaging`. `ResultsParser` stops discarding "Eervolle vermelding" (`:147-151`) and stores the mentions. |
@@ -171,19 +173,19 @@ rehearsal.
 
 ## 5. Documentation that must change (so a refresh and the next sync keep this work)
 
-| Doc | Change |
+| Doc | Change (status 2026-11-02 in bold) |
 |---|---|
-| `_bmad-output/project-context.md` | **New rule:** every theme page is code (template + pattern + blocks), registered in `SystemPages` / a post type / an endpoint. No layout in `post_content`. New editorial data is migrated or seeded from committed files. |
-| `.claude/skills/lovable-design-sync/SKILL.md` | Step 2: the page-map row needs `wp_target` = an **existing or planned template** plus its linkage (SystemPages / CPT / endpoint). New step: assign Lovable `data-audit-id`s for new pages, update `fidelity-remediation/agent-brief.md` §2.1 + `tools/fidelity/targets.json`. DoD: record the synced SHA (it was missed for `71c0847`). |
-| `docs/design-handoff-workflow.md`, `docs/lovable-block-theme-playbook.md` (DoD ~:250) | Add to the definition of done: "registered in code, survives `migrate-all`, accepted by harness diff". |
-| `docs/migration-runbook.md` | `migrate-all` step list (new InkPols Pages→CPT step, seed steps); Verify table: new URLs (`/kompetisies/`, `/inkpols/`, one `/uitdaging/<slug>/uitslae/`); slug-clash risks (`kompetisies` 59192, `inkpols`). |
-| `docs/migration-plan.md` | InkPols section (:210-216) is **stale**: it says prod has a CPT, but prod has Pages. URL map (:331). |
-| `docs/design-handoff/page-map.csv`, `README.md`, `lovable-repo-analysis.md`, `docs/mockup-readiness-assessment.md` | Via the sync (step C). page-map also has stale targets (`page-biblioteek`, `page-opleiding`, `page-uitdagings`, `single-skrywer`). |
-| `docs/specs/ink-consolidated-spec.md` §9.4, §14 (+ the inkpols line ~:338), `ink-feature-list.md` | Readiness; D1–D12 as §14 rows; the InkPols contradiction. |
-| `docs/fidelity-remediation/agent-brief.md` §2.1, `tools/fidelity/targets.json`, `maps/` | New rows NN for each new page (Treatment A); fix stale rows (`/meld-aan`, `/uitdagings`, `/author/cobus`). |
-| `docs/prod-menu-mapping.md`, `docs/ink-prod-menu.md` | Add Kompetisies to the target header nav (D1). Replace "pending the Lovable design" (:18 Eksterne Kompetisies, :21 gala pages) with `/kompetisies/`. |
-| `_bmad-output/planning-artifacts/architecture.md` (~:1052) | Template tree. |
-| `docs/afrikaans-terms.md`, `ui-copy-translations.md`, translation sheet | New terms/keys (uitslae, beoordelaarsbrief, eervolle vermelding, gala, seisoen…), after D2/D8/D9/D11. |
+| `_bmad-output/project-context.md` | **New rule:** every theme page is code (template + pattern + blocks), registered in `SystemPages` / a post type / an endpoint. No layout in `post_content`. Old data is migrated; anything after go-live is edited on the site (THE FIRST RULE, `CLAUDE.md`). **DONE** (rules added; CPT list gained `kompetisie`, `eksterne_kompetisie`). |
+| `.claude/skills/lovable-design-sync/SKILL.md` | Step 2: the page-map row needs `wp_target` = an **existing or planned template** plus its linkage (SystemPages / CPT / endpoint). New step: assign Lovable `data-audit-id`s for new pages, update `fidelity-remediation/agent-brief.md` §2.1 + `tools/fidelity/targets.json`. DoD: record the synced SHA (it was missed for `71c0847`). **DONE** (new Step 2a, wp_target rule, DoD). |
+| `docs/design-handoff-workflow.md`, `docs/lovable-block-theme-playbook.md` (DoD ~:250) | Add to the definition of done: "registered in code, survives `migrate-all`, accepted by harness diff". **DONE** (both). |
+| `docs/migration-runbook.md` | `migrate-all` step list (new InkPols Pages→CPT step, old-competitions import); Verify table: new URLs (`/kompetisies/`, `/inkpols/`, one `/uitdaging/<slug>/uitslae/`); slug-clash risks (`kompetisies` 59192, `inkpols`). **DONE** (plus "Dev-only data" and "Refresh-proof findings"). |
+| `docs/migration-plan.md` | InkPols section (:210-216) is **stale**: it says prod has a CPT, but prod has Pages. URL map (:331). **DONE** (InkPols section and URL map rewritten; rounds 136 vs 128 noted). |
+| `docs/design-handoff/page-map.csv`, `README.md`, `lovable-repo-analysis.md`, `docs/mockup-readiness-assessment.md` | Via the sync (step C). page-map also has stale targets (`page-biblioteek`, `page-opleiding`, `page-uitdagings`, `single-skrywer`). **DONE** (2026-11-02): `page-map.csv` (new rows, stale targets fixed), `design-handoff/README.md` (`71c0847` and `cbd9d3a` recorded), and the full sync for `lovable-repo-analysis.md` (design delta section, read from the code at `cbd9d3a`) and `mockup-readiness-assessment.md` (new rows, gap lists). |
+| `docs/specs/ink-consolidated-spec.md` §9.4, §14 (+ the inkpols line ~:338), `ink-feature-list.md` | Readiness; D1–D12 as §14 rows; the InkPols contradiction. **DONE** (2026-11-02): §9.4 readiness and design gaps; §14 rows 24-37 hold D1-D13 and this round's rulings (new features as decisions, not scope; row 23 amended; open items in #37); §6.2, §8 and §11 (the InkPols line) corrected; the stale `ink_moderator_terugvoer` name fixed (the code is `ink_mod_terugvoer`). `ink-feature-list.md`: notes on the affected rows plus a pointer table; no new feature rows (that file is superseded as the epics source). |
+| `docs/fidelity-remediation/agent-brief.md` §2.1, `tools/fidelity/targets.json`, `maps/` | New rows NN for each new page (Treatment A); fix stale rows (`/meld-aan`, `/uitdagings`, `/author/cobus`). **DONE** (2026-11-03): `targets.json` rows 17, 17b, 23 to 26 added (InkPols archive and issue now Treatment A, Uitslae with and without results, Kompetisies and its gala photos page, the Lees winner aside, the round-page banner), `agent-brief.md` §2.1 matching and its stale rows fixed (05, 06, 07, 12, 22); every INK URL checked against dev (200, or 404 where intended) and the gate list is `tools/fidelity/accept/gates.json`. The maps were already in `maps/`. |
+| `docs/prod-menu-mapping.md`, `docs/ink-prod-menu.md` | Add Kompetisies to the target header nav (D1). Replace "pending the Lovable design" (:18 Eksterne Kompetisies, :21 gala pages) with `/kompetisies/`. **DONE** for `prod-menu-mapping.md` (Kompetisies in the nav, pending lines replaced, open items closed). `ink-prod-menu.md` left alone: it is a dump of the live menu, not a target. |
+| `_bmad-output/planning-artifacts/architecture.md` (~:1052) | Template tree. **DONE** (template tree by routing class). |
+| `docs/afrikaans-terms.md`, `ui-copy-translations.md`, translation sheet | New terms/keys (uitslae, beoordelaarsbrief, eervolle vermelding, gala, seisoen…), after D2/D8/D9/D11. **DONE** for confirmed terms (uitslae, eervolle vermelding, gala, naam) and a pointer section in `ui-copy-translations.md`; beoordelaarsbrief is marked unconfirmed in both. Re-read against the code 2026-11-02: one typo and one code reference corrected. The remaining copy stays in the translation sheet as copy-debt. |
 
 ## 6. Risks carried in from the fidelity rework
 

@@ -5,8 +5,8 @@ card,base,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,"my-profiel
 card,base,border-radius,all,8px,lovable-measured,"my-profiel:profiel-about-card; skrywer:skrywer-workcard; ontdek:stories-card; biblioteek:library-card (Lovable L8, 36 inst)",canonical,
 card,base,box-shadow,all,"rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",lovable-measured,"my-profiel:profiel-about-card; skrywer:skrywer-workcard; ontdek:stories-card; biblioteek:library-card (Lovable L8, 36 inst)",canonical,Tailwind shadow-sm; no INK preset has this value (INK shadow.sm = Lovable shadow-card) - Stage 3 needs a token; only property where registered is-style-card (functions.php:1431) differs
 card,base,padding,all,24px,lovable-measured,"my-profiel:profiel-about-card; skrywer:skrywer-workcard; ontdek:stories-card; biblioteek:library-card (Lovable L8, 36 inst)",canonical,"Lovable pads the CardContent child (p-6, measured my-profiel@1440 profiel-about-card/0); one box in INK"
-card,base-lg,padding,all,32px,lovable-measured,meld-aan:auth-card; wagwoord-herstel:auth-card (Lovable L20),canonical,
-card,base-lg,inherits,all,base,lovable-measured,meld-aan:auth-card,canonical,all other properties = base (measured identical)
+card,base-lg,padding,all,32px,lovable-measured,teken-in:auth-card; wagwoord-herstel:auth-card (Lovable L20),canonical,
+card,base-lg,inherits,all,base,lovable-measured,teken-in:auth-card,canonical,all other properties = base (measured identical)
 card,shelf,background-color,all,"rgba(250, 248, 245, 0.6)",lovable-measured,"biblioteek:library-shelf-card (Lovable L19, 3 inst)",canonical,token background at 60%
 card,shelf,border-color,all,"rgba(236, 59, 19, 0.2)",lovable-measured,"biblioteek:library-shelf-card (Lovable L19, 3 inst)",canonical,token primary at 20%
 card,shelf,inherits,all,base,lovable-measured,biblioteek:library-shelf-card,canonical,radius/shadow/padding = base
@@ -351,11 +351,11 @@ list-bullet,base,size,all,6px,lovable-measured,"uitdaging-enkel: rules list bull
 list-bullet,base,border-radius,all,9999px,lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,
 list-bullet,base,background-color,all,"rgb(236, 59, 19)",lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,token primary
 list-bullet,base,margin-top,all,6px,lovable-measured,"uitdaging-enkel: rules list bullet (Lovable L1, 4 inst, no id)",canonical,
-divider,base,border-top,all,"1px solid rgb(231, 225, 218)",lovable-measured,meld-aan:auth-divider-line (Lovable L1),canonical,
-divider,base,height,all,1px,lovable-measured,meld-aan:auth-divider-line (Lovable L1),canonical,
-divider,label,padding,all,0px 8px,lovable-measured,meld-aan:auth-divider-text (Lovable L2),canonical,
-divider,label,background-color,all,"rgb(253, 253, 252)",lovable-measured,meld-aan:auth-divider-text (Lovable L2),canonical,token card -> surface-alt; masks the rule
-divider,label,color,all,"rgb(103, 111, 126)",lovable-measured,meld-aan:auth-divider-text (Lovable L2),canonical,token muted-foreground -> muted-text
-divider,label,font-size,all,12px,lovable-measured,meld-aan:auth-divider-text (Lovable L2),canonical,
-divider,label,line-height,all,16px,lovable-measured,meld-aan:auth-divider-text (Lovable L2),canonical,
-divider,label,text-transform,all,uppercase,lovable-measured,meld-aan:auth-divider-text (Lovable L2),canonical,
+divider,base,border-top,all,"1px solid rgb(231, 225, 218)",lovable-measured,teken-in:auth-divider-line (Lovable L1),canonical,
+divider,base,height,all,1px,lovable-measured,teken-in:auth-divider-line (Lovable L1),canonical,
+divider,label,padding,all,0px 8px,lovable-measured,teken-in:auth-divider-text (Lovable L2),canonical,
+divider,label,background-color,all,"rgb(253, 253, 252)",lovable-measured,teken-in:auth-divider-text (Lovable L2),canonical,token card -> surface-alt; masks the rule
+divider,label,color,all,"rgb(103, 111, 126)",lovable-measured,teken-in:auth-divider-text (Lovable L2),canonical,token muted-foreground -> muted-text
+divider,label,font-size,all,12px,lovable-measured,teken-in:auth-divider-text (Lovable L2),canonical,
+divider,label,line-height,all,16px,lovable-measured,teken-in:auth-divider-text (Lovable L2),canonical,
+divider,label,text-transform,all,uppercase,lovable-measured,teken-in:auth-divider-text (Lovable L2),canonical,

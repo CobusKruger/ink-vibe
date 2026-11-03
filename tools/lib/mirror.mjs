@@ -75,8 +75,10 @@ function walk(src, dest, rel, opts, result) {
         result.deleted.push(r);
         if (!opts.dryRun) rmSync(d, { recursive: true, force: true });
       } else {
-        // Whole seconds: filesystems store mtimes at different precisions.
-        same = ds.size === ss.size && Math.floor(ds.mtimeMs / 1000) === Math.floor(ss.mtimeMs / 1000);
+        // Within a second: filesystems store mtimes at different precisions, and utimes takes
+        // whole milliseconds. Comparing floored seconds reported a file with an mtime of
+        // x.9998 s on every run, because the copy's mtime rounded up to the next second.
+        same = ds.size === ss.size && Math.abs(ds.mtimeMs - ss.mtimeMs) < 1000;
       }
     }
     if (same) continue;

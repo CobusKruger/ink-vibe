@@ -25,6 +25,8 @@ import { mirror } from './lib/mirror.mjs';
 
 const DIRS = ['wp-content/themes/ink-foundation', 'wp-content/plugins/ink-core'];
 
+const CLEAR_PATTERN_CACHE = "global $wpdb; echo (int) $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->options . ' WHERE option_name LIKE %s', '%wp_theme_files_patterns%' ) ), ' pattern cache row(s) deleted', PHP_EOL;";
+
 export function deploy(site, { apply }) {
   if (!existsSync(path.join(site.webRoot, 'wp-config.php'))) {
     die(`No WordPress install at ${site.webRoot} (wp-config.php missing).`);
@@ -45,6 +47,15 @@ export function deploy(site, { apply }) {
     changes += r.copied.length + r.deleted.length;
   }
   console.log(`-- ${changes} change(s) --`);
+
+  // WordPress caches the list of pattern files in one option row each for CLI and web, and
+  // `wp cache flush` does not clear them, so a new pattern would render empty. Always on
+  // --apply: a stale row from an earlier deploy does the same damage with no new changes.
+  if (apply) {
+    say('clearing the pattern file cache');
+    wp(site, ['eval', CLEAR_PATTERN_CACHE], { allowFail: true })
+      || console.log('-- could not clear wp_theme_files_patterns: delete those option rows by hand --');
+  }
 
   if (apply && changes > 0) {
     say('cache purge (best-effort)');

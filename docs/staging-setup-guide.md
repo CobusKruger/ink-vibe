@@ -223,7 +223,7 @@ wp plugin deactivate wordpress-seo loginizer js_composer qode-framework \
   ultimate-social-media-icons woocommerce-legacy-rest-api wpcustom-category-image \
   wps-bidouille automatic-translator-addon-for-loco-translate document-emberdder \
   maintenance pdf-embedder string-locator \
-  advanced-cron-manager comments-plus report-content invite-anyone redirect-redirection
+  advanced-cron-manager comments-plus report-content invite-anyone redirect-redirection simple-css
 wp plugin delete wordpress-seo loginizer js_composer qode-framework ...   # same list
 wp theme delete ink-v2   # legacy theme; keep a default theme installed as fallback
 ```
@@ -272,7 +272,6 @@ wp theme delete ink-v2   # legacy theme; keep a default theme installed as fallb
 | **Loco Translate** | Author Afrikaans `.po/.mo`, then commit to `wp-content/languages/`. **Never AI-translate.** |
 | **WP Migrate (Lite)** | The DB import tool from Phase 2; uninstall right after use |
 | **Code Snippets** | Holds snippets in transit → migrate into `ink-core`, then retire |
-| **Simple CSS** | Holds CSS in transit → migrate into the theme, then retire |
 
 ### 4e. Not a plugin — edge/DNS
 

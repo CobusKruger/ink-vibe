@@ -63,9 +63,30 @@ All paths except the Lovable repo are relative to the ink-vibe repo root.
 ### Step 2 — Pages / components *(if a page or component was added or changed)*
 - Update `docs/design-handoff/page-map.csv`: add/edit the row — `source_mock` path, `wp_target`,
   blocks, and especially the **`status`** column (e.g. `design-missing` → `reference-ready`).
+- **`wp_target` must be an existing template under `wp-content/themes/ink-foundation/templates/`, or a
+  planned one named in a build spec, plus its linkage** in `template_or_pattern`: `SystemPages` (a slug
+  Page), a post type's archive/single, or an endpoint (`SystemPages::ENDPOINT_TEMPLATES`). A target no
+  template or registry knows (the old `page-biblioteek`, `page-opleiding`, `page-uitdagings`,
+  `single-skrywer`) is a stale row: fix it (`archive-biblioteek_item`, `archive-opleiding_artikel`,
+  `archive-uitdaging`, `author`). Check against `SystemPagesTest`, which fails for any template nothing routes to.
+- A new page is **built from a spec first** (`docs/lovable-delta-2026-10/README.md` §3.2, the inverted
+  method): the page-map row, the audit-ids (Step 2a) and `specs/NN-<slug>.md` + `maps/<slug>.csv` come
+  **before** code.
 - **No screenshots and no per-page `notes.md`** (both removed 2026-06-14). The Lovable source +
   tokens + `page-map.csv` are the per-page reference. Never lift copy/content from the mockup —
   copy comes from `ui-copy-translations.md`/`afrikaans-terms.md`, content from the migrated DB.
+
+### Step 2a — Audit-ids for new or changed pages *(Lovable first, R3)*
+- Every visually meaningful element of a new Lovable page needs a `data-audit-id`, unique per page (the
+  harness refuses duplicates). Lovable did not create the ids, our fidelity work did, and a rebuilt
+  component can drop them (the 2026-10 `ChallengeSection.tsx` rewrite lost all of its). **Audit-ids only,
+  no visual change**, in `../verse-haven`, with the owner's approval (given 2026-10-31 for this class
+  of change); push, and record the new SHA.
+- Then, in this repo: add the page's row to `docs/fidelity-remediation/agent-brief.md` §2.1 and to
+  `tools/fidelity/targets.json` (keep the two in step, and add the gate to `tools/fidelity/accept/gates.json` so `gate-all.sh` runs it; INK URLs must be refresh-stable: a real migrated
+  round, issue or page, never a fixture), and add `docs/lovable-delta-2026-10/maps/<slug>.csv`. Confirm
+  `tools/fidelity/run.sh capture --side lovable` resolves every `--expect` id at 390/768/1440.
+- Fix stale target rows found on the way (`/meld-aan` is now `/teken-in/`, `/uitdagings`, `/author/cobus`).
 
 ### Step 3 — Readiness (`docs/mockup-readiness-assessment.md`)
 - Move the page between **Missing / Partial / Reference-ready** in the status table.
@@ -86,6 +107,8 @@ All paths except the Lovable repo are relative to the ink-vibe repo root.
   date).
 - Add a dated entry to `docs/design-handoff/README.md` changelog **including the new last-synced
   `ink-lovable` commit hash** from Step 0.
+  **Record it every time, even for a sync with no doc change:** the `71c0847` sync of the fidelity rework
+  was never recorded, and the next sync then had to guess its starting point.
 
 ### Step 7 — Propagate into the build specs
 - `docs/specs/ink-consolidated-spec.md` **§9.4** — update the readiness table and the
@@ -112,6 +135,7 @@ All paths except the Lovable repo are relative to the ink-vibe repo root.
   `ink-core`. Extract design *intent* and re-express in WP primitives (block patterns/templates,
   `theme.json` tokens, block styles, Interactivity API). Never port JSX, Tailwind classes, shadcn
   components, react-router, or mock data/localStorage. Translation map: spec §9.7.
+- **Pages are code, never `post_content`** (`_bmad-output/project-context.md`). The page-map must not point at a hand-made Page.
 - **Rule 3 — don't invent features.** Anything new in the design that wasn't a prior decision goes
   to §14 as an open item to confirm, not into scope.
 - **Afrikaans-first** front end; English WordPress admin chrome; Afrikaans `ink-core` admin labels.
@@ -126,3 +150,7 @@ All paths except the Lovable repo are relative to the ink-vibe repo root.
 - `ink-consolidated-spec.md` §9.4 (and §14 if a new feature appeared) and `ink-feature-list.md`
   updated.
 - Step 8 sweep run; any conflicts surfaced to the user rather than silently resolved.
+- The synced SHA is recorded in `docs/design-handoff/README.md`.
+- Every new page has a `page-map.csv` row whose `wp_target` is a template that exists (or is planned in a
+  spec) and is registered in code, audit-ids in the Lovable repo, and a row in `agent-brief.md` §2.1 +
+  `targets.json`.

@@ -17,6 +17,7 @@ namespace Ink\Tests\Unit\Submission;
 
 use Ink\Submission\ChallengeLinking;
 use Brain\Monkey;
+use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 
 beforeEach( function (): void {
@@ -37,7 +38,7 @@ function ink_now(): \DateTimeImmutable {
 test( 'isOpen is true for a published uitdaging before its deadline', function (): void {
 	Functions\when( 'get_post_type' )->justReturn( 'uitdaging' );
 	Functions\when( 'get_post_status' )->justReturn( 'publish' );
-	Functions\when( 'get_post_meta' )->justReturn( '2026-12-31' );
+	Filters\expectApplied( 'ink_uitdaging_sluiting' )->andReturn( '2026-12-31' );
 
 	expect( ( new ChallengeLinking() )->isOpen( 7, ink_now() ) )->toBeTrue();
 } );
@@ -45,7 +46,7 @@ test( 'isOpen is true for a published uitdaging before its deadline', function (
 test( 'isOpen is false after the deadline has passed', function (): void {
 	Functions\when( 'get_post_type' )->justReturn( 'uitdaging' );
 	Functions\when( 'get_post_status' )->justReturn( 'publish' );
-	Functions\when( 'get_post_meta' )->justReturn( '2020-01-01' );
+	Filters\expectApplied( 'ink_uitdaging_sluiting' )->andReturn( '2020-01-01' );
 
 	expect( ( new ChallengeLinking() )->isOpen( 7, ink_now() ) )->toBeFalse();
 } );
@@ -53,14 +54,13 @@ test( 'isOpen is false after the deadline has passed', function (): void {
 test( 'isOpen is false (fail-safe) when no deadline is set', function (): void {
 	Functions\when( 'get_post_type' )->justReturn( 'uitdaging' );
 	Functions\when( 'get_post_status' )->justReturn( 'publish' );
-	Functions\when( 'get_post_meta' )->justReturn( '' );
 
 	expect( ( new ChallengeLinking() )->isOpen( 7, ink_now() ) )->toBeFalse();
 } );
 
 test( 'isOpen is false for a non-uitdaging or unpublished post', function (): void {
 	Functions\when( 'get_post_status' )->justReturn( 'publish' );
-	Functions\when( 'get_post_meta' )->justReturn( '2026-12-31' );
+	Filters\expectApplied( 'ink_uitdaging_sluiting' )->andReturn( '2026-12-31' );
 
 	Functions\when( 'get_post_type' )->justReturn( 'gedig' );
 	expect( ( new ChallengeLinking() )->isOpen( 7, ink_now() ) )->toBeFalse();

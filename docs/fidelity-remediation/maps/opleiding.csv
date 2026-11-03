@@ -51,8 +51,8 @@ library-empty,src/pages/Library.tsx,275,wp-content/plugins/ink-core/src/Training
 library-empty-title,src/pages/Library.tsx,276,,,empty-state title,missing-ink,O-16: unfiltered INK puts the title text on the box <p> itself; filtered INK has no title
 library-empty-text,src/pages/Library.tsx,277,wp-content/plugins/ink-core/src/Training/Hub.php,694,empty-state help text,paired,filtered state only; not rendered in either capture
 library-empty-btn,src/pages/Library.tsx,281,wp-content/plugins/ink-core/src/Training/Hub.php,695,clear-filters control,paired,filtered state only; not rendered in either capture
-library-cta,src/pages/Library.tsx,309,wp-content/plugins/ink-core/src/Training/ContributionCta.php,104,closing CTA,paired,O-17: Lovable full-bleed tinted <section>; INK <aside> inside the content column
-library-cta-container,src/pages/Library.tsx,310,,,CTA container,missing-ink,O-17
-library-cta-h2,src/pages/Library.tsx,311,wp-content/plugins/ink-core/src/Training/ContributionCta.php,105,CTA h2,paired,
-library-cta-text,src/pages/Library.tsx,314,wp-content/plugins/ink-core/src/Training/ContributionCta.php,106,CTA text,paired,
-library-cta-btn,src/pages/Library.tsx,318,wp-content/plugins/ink-core/src/Training/ContributionCta.php,109,CTA button,paired,O-18: shadcn <Button literary lg asChild> vs bespoke <a>
+library-cta,src/pages/Library.tsx,309,wp-content/plugins/ink-core/src/Training/ContributionCta.php,104,closing CTA,scope,"owner 2026-11-01 (owner-rulings.md): contribution CTA removed on purpose, stays absent (was O-17: Lovable full-bleed tinted <section>; INK <aside> inside the content column)"
+library-cta-container,src/pages/Library.tsx,310,,,CTA container,scope,"owner 2026-11-01 (owner-rulings.md): contribution CTA removed on purpose, stays absent (was O-17)"
+library-cta-h2,src/pages/Library.tsx,311,wp-content/plugins/ink-core/src/Training/ContributionCta.php,105,CTA h2,scope,"owner 2026-11-01 (owner-rulings.md): contribution CTA removed on purpose, stays absent"
+library-cta-text,src/pages/Library.tsx,314,wp-content/plugins/ink-core/src/Training/ContributionCta.php,106,CTA text,scope,"owner 2026-11-01 (owner-rulings.md): contribution CTA removed on purpose, stays absent"
+library-cta-btn,src/pages/Library.tsx,318,wp-content/plugins/ink-core/src/Training/ContributionCta.php,109,CTA button,scope,"owner 2026-11-01 (owner-rulings.md): contribution CTA removed on purpose, stays absent (was O-18: shadcn <Button literary lg asChild> vs bespoke <a>)"

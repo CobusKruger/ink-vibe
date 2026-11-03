@@ -1,11 +1,7 @@
 <?php
 /**
- * Unit tests for the InkPols by-year archive (Story 13.2, FR-57).
- *
- * Target: {@see \Ink\InkPols\Archive}. The pure `queryArgs()` (bounded published
- * issues), `groupByYear()` (year-DESC grouping, in-year date-DESC, undated last)
- * and `toHtml()`/`card()` (year sections, cards, cover-omission, empty state) are
- * unit-testable without WordPress.
+ * Unit tests for the InkPols archive (N2, `04-inkpols` §4, §5) and the shared
+ * current-issue renderer (§3): {@see \Ink\InkPols\Archive}, {@see \Ink\InkPols\CurrentIssue}.
  *
  * @package Ink\Tests
  */
@@ -14,14 +10,24 @@ declare(strict_types=1);
 
 namespace Ink\Tests\Unit\InkPols;
 
+use Ink\Content\FieldSets;
+use Ink\InkPols\Api;
 use Ink\InkPols\Archive;
+use Ink\InkPols\CurrentIssue;
 use Ink\InkPols\Issue;
-use Ink\Content\PostTypes;
 use Brain\Monkey;
 use Brain\Monkey\Functions;
 
 beforeEach( function (): void {
 	Monkey\setUp();
+	Functions\when( '__' )->returnArg( 1 );
+	Functions\when( 'esc_html' )->returnArg( 1 );
+	Functions\when( 'esc_html__' )->returnArg( 1 );
+	Functions\when( 'esc_attr' )->returnArg( 1 );
+	Functions\when( 'esc_url' )->returnArg( 1 );
+	Functions\when( 'home_url' )->returnArg( 1 );
+	Functions\when( 'get_permalink' )->alias( static fn ( int $id ): string => '/inkpols/' . $id );
+	Functions\when( 'wp_get_attachment_image_url' )->justReturn( '/cover.jpg' );
 } );
 
 afterEach( function (): void {
@@ -29,155 +35,159 @@ afterEach( function (): void {
 } );
 
 /**
- * Register the WP stubs the render/card path needs — escaping + permalink.
+ * A full issue read-model.
  */
-function ink_inkpols_archive_stubs(): void {
-	Functions\when( '__' )->returnArg( 1 );
-	Functions\when( 'esc_html' )->returnArg( 1 );
-	Functions\when( 'esc_attr' )->returnArg( 1 );
-	Functions\when( 'esc_url' )->returnArg( 1 );
-	Functions\when( 'get_permalink' )->alias( static fn ( int $id ): string => '/inkpols/' . $id );
-	// displayDate() touches wp_date/get_option; Brain Monkey leaves wp_date defined
-	// process-wide once any test stubs it, so stub both deterministically here.
-	Functions\when( 'get_option' )->justReturn( 'Y-m-d' );
-	Functions\when( 'wp_date' )->alias( static fn ( string $fmt, int $ts ): string => gmdate( 'Y-m-d', $ts ) );
+function ink_inkpols_full_issue( int $id, string $date ): Issue {
+	return new Issue(
+		$id,
+		'Naam ' . $id,
+		$date,
+		5,
+		6,
+		'Beskrywing ' . $id,
+		'Titel ' . $id,
+		array(
+			1 => array( 'title' => 'T1', 'writer' => 'W1', 'tipe' => 'Onderhoud' ),
+			2 => array( 'title' => 'T2', 'writer' => 'W2', 'tipe' => 'Resensie' ),
+			3 => array( 'title' => 'T3', 'writer' => 'W3', 'tipe' => 'Gedig' ),
+		)
+	);
 }
-
-/**
- * A bare Issue read-model for grouping/render tests (no WP reads).
- */
-function ink_inkpols_issue( int $id, string $date, string $volume = '', int $coverId = 0, string $teaser = '' ): Issue {
-	return new Issue( $id, 'Uitgawe ' . $id, $date, $volume, $coverId, 0, $teaser );
-}
-
-// --- queryArgs ---
-
-test( 'queryArgs lists published inkpols_uitgawe newest-first, bounded by the cap', function (): void {
-	$args = Archive::queryArgs( 500 );
-
-	expect( $args['post_type'] )->toBe( PostTypes::INKPOLS_UITGAWE );
-	expect( $args['post_status'] )->toBe( 'publish' );
-	expect( $args['posts_per_page'] )->toBe( 500 );
-	expect( $args['orderby'] )->toBe( 'date' );
-	expect( $args['order'] )->toBe( 'DESC' );
-	expect( $args['no_found_rows'] )->toBeTrue();
-} );
-
-test( 'queryArgs floors a non-positive cap to at least one', function (): void {
-	expect( Archive::queryArgs( 0 )['posts_per_page'] )->toBe( 1 );
-	expect( Archive::queryArgs( -10 )['posts_per_page'] )->toBe( 1 );
-} );
 
 test( 'MAX_ISSUES is a sane defensive bound (not an unbounded -1)', function (): void {
 	expect( Archive::MAX_ISSUES )->toBeGreaterThan( 0 );
 } );
 
-// --- groupByYear ---
+test( 'the archive context: ids, a linked cover, copy debt and no download', function (): void {
+	$html = CurrentIssue::toHtml( ink_inkpols_full_issue( 1, '2026-07-01' ), 'archive' );
 
-test( 'groupByYear groups by year DESC with in-year issues sorted by date DESC', function (): void {
-	$issues = array(
-		ink_inkpols_issue( 1, '2024-03-01' ),
-		ink_inkpols_issue( 2, '2026-06-01' ),
-		ink_inkpols_issue( 3, '2026-01-01' ),
-		ink_inkpols_issue( 4, '2025-12-01' ),
-	);
+	foreach ( array( 'magazine-current', 'magazine-current-cover-link', 'magazine-current-cover', 'magazine-current-body', 'magazine-current-eyebrow', 'magazine-current-h2', 'magazine-current-text', 'magazine-current-highlights-wrap', 'magazine-current-highlights', 'magazine-current-highlights-2-author', 'magazine-current-actions', 'magazine-current-btn-read', 'magazine-current-btn-read-icon' ) as $id ) {
+		expect( $html )->toContain( 'data-audit-id="' . $id . '"' );
+	}
 
-	$groups = Archive::groupByYear( $issues );
-
-	expect( array_column( $groups, 'year' ) )->toBe( array( '2026', '2025', '2024' ) );
-	// 2026 group: June before January (date DESC).
-	expect( $groups[0]['issues'][0]->postId )->toBe( 2 );
-	expect( $groups[0]['issues'][1]->postId )->toBe( 3 );
+	expect( $html )->toContain( '[NEEDS HUMAN AFRIKAANS] INKPOLS-HUIDIGE · Naam 1' );
+	expect( $html )->toContain( 'Lees aanlyn' );
+	expect( $html )->not->toContain( 'pdf' );
+	expect( $html )->not->toContain( 'download' );
+	expect( $html )->not->toContain( '<section' );
 } );
 
-test( 'groupByYear breaks a same-date tie by post id DESC (stable order for migrated Y-m-01 dates) — R13 review', function (): void {
-	// Migration sets every issue to a `Y-m-01` date, so same-month issues collide;
-	// the comparator must apply a deterministic post-id tiebreak.
-	$issues = array(
-		ink_inkpols_issue( 3, '2026-05-01' ),
-		ink_inkpols_issue( 9, '2026-05-01' ),
-		ink_inkpols_issue( 5, '2026-05-01' ),
-	);
+test( 'the home context: its own ids, an unlinked cover, the label and the past link', function (): void {
+	$html = CurrentIssue::toHtml( ink_inkpols_full_issue( 1, '2026-07-01' ), 'home' );
 
-	$groups = Archive::groupByYear( $issues );
+	foreach ( array( 'magazine-grid', 'magazine-cover-col', 'magazine-cover', 'magazine-body', 'magazine-eyebrow', 'magazine-h2', 'magazine-text', 'magazine-inside-label', 'magazine-inside-list', 'magazine-inside-item-0', 'magazine-inside-item-2-author', 'magazine-actions', 'magazine-btn-read', 'magazine-past-link' ) as $id ) {
+		expect( $html )->toContain( 'data-audit-id="' . $id . '"' );
+	}
 
-	expect( array_column( $groups[0]['issues'], 'postId' ) )->toBe( array( 9, 5, 3 ) );
+	expect( $html )->toContain( 'ink-cover--home' );
+	expect( $html )->toContain( 'InkPols · Naam 1' );
+	expect( $html )->toContain( 'In hierdie uitgawe' );
+	expect( $html )->toContain( 'Alle uitgawes' );
+	expect( $html )->not->toContain( 'magazine-current' );
+	expect( $html )->not->toContain( 'download' );
 } );
 
-test( 'groupByYear puts undated issues in a trailing empty-year bucket (never dropped)', function (): void {
-	$issues = array(
-		ink_inkpols_issue( 1, '' ),          // undated
-		ink_inkpols_issue( 2, '2025-05-01' ),
-		ink_inkpols_issue( 3, 'malformed' ), // also undated
-	);
+test( 'the list has three items in glans order with their own tipe as the kind label, in all three variants', function (): void {
+	$issue = ink_inkpols_full_issue( 1, '2026-07-01' );
 
-	$groups = Archive::groupByYear( $issues );
+	$default = CurrentIssue::listHtml( $issue, 'magazine-current', CurrentIssue::LIST_DEFAULT );
+	expect( substr_count( $default, '<li ' ) )->toBe( 3 );
+	expect( strpos( $default, 'Onderhoud' ) )->toBeLessThan( strpos( $default, 'Resensie' ) );
+	expect( strpos( $default, 'Resensie' ) )->toBeLessThan( strpos( $default, 'Gedig' ) );
+	expect( strpos( $default, 'T1' ) )->toBeLessThan( strpos( $default, 'T2' ) );
+	expect( strpos( $default, 'T2' ) )->toBeLessThan( strpos( $default, 'T3' ) );
+	expect( $default )->toContain( 'data-audit-id="magazine-current-highlights-0-kind">Onderhoud<' );
+	expect( $default )->toContain( 'data-audit-id="magazine-current-highlights-2-kind">Gedig<' );
 
-	expect( array_column( $groups, 'year' ) )->toBe( array( '2025', '' ) );
-	// Both undated issues survive in the trailing bucket.
-	expect( count( $groups[1]['issues'] ) )->toBe( 2 );
+	foreach ( array( CurrentIssue::LIST_HOME, CurrentIssue::LIST_COMPACT ) as $variant ) {
+		$other = CurrentIssue::listHtml( $issue, 'magazine-inside', $variant );
+		expect( strpos( $other, 'Onderhoud' ) )->toBeLessThan( strpos( $other, 'Resensie' ) );
+	}
+
+	// A different tipe shows as typed: nothing maps it to a fixed Gedig/Storie/Artikel.
+	$other = new Issue( 2, 'N', '2026-01-01', 0, 0, '', 'K', array( 1 => array( 'title' => 'X', 'writer' => 'Y', 'tipe' => 'Fotoverhaal' ) ) );
+	expect( CurrentIssue::listHtml( $other, 'p', CurrentIssue::LIST_DEFAULT ) )->toContain( '>Fotoverhaal<' );
+
+	expect( CurrentIssue::listHtml( $issue, 'magazine-inside', CurrentIssue::LIST_HOME ) )->toContain( 'ink-inkpols__lys--home' );
+	expect( CurrentIssue::listHtml( $issue, 'magazine-past-0', CurrentIssue::LIST_COMPACT ) )->toContain( 'ink-inkpols__lys--compact' );
+	expect( CurrentIssue::listHtml( $issue, '', CurrentIssue::LIST_COMPACT ) )->not->toContain( 'data-audit-id' );
 } );
 
-// --- toHtml / card ---
+test( 'the production path: Api sorts by datum, so an older issue published late never becomes current', function (): void {
+	$sorted = Api::newestFirst( array( ink_inkpols_full_issue( 1, '2025-11-01' ), ink_inkpols_full_issue( 2, '2026-07-01' ) ) );
 
-test( 'toHtml renders the heading and a year section with a card per issue', function (): void {
-	ink_inkpols_archive_stubs();
+	expect( $sorted[0]->postId )->toBe( 2 );
+	expect( Archive::toHtml( $sorted ) )->toContain( 'INKPOLS-HUIDIGE · Naam 2' );
+} );
 
-	$groups = Archive::groupByYear(
+test( 'one issue: the feature shows and past issues are hidden', function (): void {
+	$html = Archive::toHtml( array( ink_inkpols_full_issue( 1, '2026-07-01' ) ) );
+
+	expect( $html )->toContain( 'magazine-current' );
+	expect( $html )->not->toContain( 'magazine-past' );
+} );
+
+test( 'no issue: the hero text and the empty state, nothing else', function (): void {
+	$html = Archive::toHtml( array() );
+
+	expect( $html )->toContain( 'Die Argief' );
+	expect( $html )->toContain( 'Al ons uitgawes, gratis beskikbaar om aanlyn te lees' );
+	expect( $html )->toContain( 'ink-card--empty' );
+	expect( $html )->not->toContain( 'magazine-current' );
+	expect( $html )->not->toContain( 'magazine-past' );
+} );
+
+test( 'year chips: Alles active first, years newest first, ids by position, later chips without', function (): void {
+	$html = Archive::chips(
 		array(
-			ink_inkpols_issue( 1, '2026-04-01', 'Jaargang 12', 0, 'Lente.' ),
-			ink_inkpols_issue( 2, '2025-04-01' ),
+			ink_inkpols_full_issue( 1, '2024-01-01' ),
+			ink_inkpols_full_issue( 2, '2026-01-01' ),
+			ink_inkpols_full_issue( 3, '2025-01-01' ),
 		)
 	);
 
-	$html = Archive::toHtml( $groups );
-
-	expect( $html )->toContain( 'InkPols' );
-	expect( $html )->toContain( 'ink-inkpols__jaar' );
-	expect( $html )->toContain( '2026' );
-	expect( $html )->toContain( '2025' );
-	expect( $html )->toContain( 'Uitgawe 1' );
-	expect( $html )->toContain( '/inkpols/1' );
-	expect( $html )->toContain( 'Jaargang 12' );
-	expect( $html )->toContain( 'Lente.' );
+	expect( $html )->toContain( 'aria-pressed="true" data-jaar="alles" data-audit-id="magazine-past-filter-all">Alles' );
+	expect( $html )->toContain( 'data-jaar="2026" data-audit-id="magazine-past-filter-2025">2026' );
+	expect( $html )->toContain( 'data-jaar="2025" data-audit-id="magazine-past-filter-2024">2025' );
+	expect( $html )->toContain( 'data-jaar="2024">2024' );
 } );
 
-test( 'a card omits the cover image when there is no cover (no broken img)', function (): void {
-	ink_inkpols_archive_stubs();
+test( 'past issues: all but the newest, the sixth without ids, no download, every card filterable', function (): void {
+	$issues = array();
 
-	$html = Archive::card( ink_inkpols_issue( 7, '2026-04-01' ) );
-	expect( $html )->not->toContain( 'ink-inkpols__omslag' );
-	expect( $html )->toContain( 'ink-inkpols__titel' );
+	foreach ( range( 1, 7 ) as $n ) {
+		$issues[] = ink_inkpols_full_issue( $n, '2026-0' . $n . '-01' );
+	}
+
+	$html = Archive::toHtml( $issues );
+
+	expect( $html )->toContain( 'data-audit-id="magazine-past-4"' );
+	expect( $html )->not->toContain( 'magazine-past-5' );
+	expect( substr_count( $html, '<article' ) )->toBe( 6 );
+	expect( substr_count( $html, 'data-jaar="2026"' ) )->toBe( 7 );
+	expect( $html )->toContain( 'ink-btn ink-btn--sm ink-btn--primary' );
+	expect( $html )->not->toContain( 'btn-pdf' );
 } );
 
-test( 'a card renders the cover image when a cover resolves', function (): void {
-	ink_inkpols_archive_stubs();
-	Functions\when( 'wp_get_attachment_image_url' )->justReturn( '/cover.jpg' );
+test( 'a card without a cover has no broken image', function (): void {
+	Functions\when( 'wp_get_attachment_image_url' )->justReturn( false );
 
-	$html = Archive::card( ink_inkpols_issue( 7, '2026-04-01', '', 345 ) );
-	expect( $html )->toContain( 'ink-inkpols__omslag' );
-	expect( $html )->toContain( '/cover.jpg' );
+	expect( Archive::card( ink_inkpols_full_issue( 1, '2026-07-01' ) ) )->not->toContain( '<img' );
 } );
 
-test( 'the undated group renders no year heading but still lists its cards', function (): void {
-	ink_inkpols_archive_stubs();
+test( 'no hardcoded Gedig/Storie/Artikel label is left in the InkPols renderers or the model', function (): void {
+	$dir = dirname( __DIR__, 3 ) . '/wp-content/plugins/ink-core/src/InkPols';
 
-	$groups = Archive::groupByYear( array( ink_inkpols_issue( 9, '' ) ) );
-	$html   = Archive::toHtml( $groups );
+	foreach ( array( 'Issue.php', 'CurrentIssue.php', 'SingleIssue.php', 'Archive.php', 'HomeSection.php', 'PublishGuard.php' ) as $file ) {
+		$code = (string) file_get_contents( $dir . '/' . $file );
 
-	// Non-vacuous: the card is present...
-	expect( $html )->toContain( 'Uitgawe 9' );
-	// ...but no year-title element for the undated bucket.
-	expect( $html )->not->toContain( 'ink-inkpols__jaar-titel' );
-} );
+		expect( preg_match( "/Terms::label\(\s*['\"](gedig|storie|artikel)['\"]|'(gedig|storie|artikel)'\s*=>|INKPOLS_(GEDIG|STORIE|ARTIKEL)/i", $code ) )->toBe( 0, $file );
+	}
 
-test( 'toHtml shows the empty-state line (heading + Geen Uitgawes) when there are no issues', function (): void {
-	ink_inkpols_archive_stubs();
-
-	$html = Archive::toHtml( array() );
-
-	expect( $html )->toContain( 'InkPols' );      // heading still renders
-	expect( $html )->toContain( 'Geen' );
-	expect( $html )->toContain( 'ink-inkpols__leeg' );
-	expect( $html )->not->toContain( 'ink-inkpols__lys' );
+	// The glans fields' own labels do not name a kind either.
+	foreach ( FieldSets::glansKeys() as $keys ) {
+		foreach ( $keys as $key ) {
+			expect( FieldSets::labelFor( $key ) )->not->toMatch( '/gedig|storie|artikel/i' );
+		}
+	}
 } );

@@ -32,6 +32,9 @@ if ( ! class_exists( 'WP_Post' ) ) {
 		/** @var int Mirrors WP_Post::$post_author. */
 		public int $post_author = 0;
 
+		/** @var string Mirrors WP_Post::$post_title. */
+		public string $post_title = '';
+
 		/** @var string Mirrors WP_Post::$post_content. */
 		public string $post_content = '';
 	}

@@ -24,6 +24,7 @@ beforeEach( function (): void {
 	Functions\when( '__' )->returnArg( 1 );
 	Functions\when( 'esc_html' )->returnArg( 1 );
 	Functions\when( 'esc_attr' )->returnArg( 1 );
+	Functions\when( 'esc_attr__' )->returnArg( 1 );
 	Functions\when( 'number_format_i18n' )->alias( static fn ( $n, $d = 0 ): string => number_format( (float) $n, (int) $d ) );
 	Functions\when( '_n' )->alias( static fn ( string $s, string $p, int $n ): string => 1 === $n ? $s : $p );
 
@@ -130,4 +131,83 @@ test( 'toHtml renders no Reply action at all', function (): void {
 
 	expect( $html )->not->toContain( 'ink-reaksies__reply' );
 	expect( $html )->not->toContain( 'data-ink-reply-target' );
+} );
+
+/**
+ * The response upvote (owner-approved 2026-11-02): a working toggle for a signed-in member who
+ * did not write the response; a disabled, count-only button for a visitor and for the author.
+ *
+ * @param int $author The response author's user id.
+ * @return list<array<string, mixed>>
+ */
+function ink_upvote_response( int $author ): array {
+	return array(
+		array(
+			'id'      => 9,
+			'type'    => ResponseType::Lof,
+			'content' => 'Mooi.',
+			'author'  => 'Lid Een',
+			'date'    => '2026-06-26 10:00:00',
+			'user_id' => $author,
+		),
+	);
+}
+
+test( 'a signed-in member gets a pressable upvote showing the count and their vote', function (): void {
+	$votes = array(
+		9 => array(
+			'count' => 3,
+			'voted' => true,
+		),
+	);
+	$html  = ResponsesList::toHtml( 42, ink_upvote_response( 5 ), 1, $votes, 7 );
+
+	expect( $html )->toContain( '<button type="button" class="ink-reaksies__upvote' );
+	expect( $html )->toContain( 'data-ink-opstem="9"' );
+	expect( $html )->toContain( 'aria-pressed="true"' );
+	expect( $html )->toContain( 'aria-label="[NEEDS HUMAN AFRIKAANS] REAKSIE-OPSTEM"' );
+	expect( $html )->toContain( '<span data-ink-opstem-telling aria-live="polite">3</span>' );
+	expect( $html )->not->toContain( ' disabled ' );
+} );
+
+test( 'a member who has not voted sees aria-pressed false', function (): void {
+	$votes = array(
+		9 => array(
+			'count' => 2,
+			'voted' => false,
+		),
+	);
+	$html  = ResponsesList::toHtml( 42, ink_upvote_response( 5 ), 1, $votes, 7 );
+
+	expect( $html )->toContain( 'aria-pressed="false"' );
+	expect( $html )->toContain( '>2</span>' );
+} );
+
+test( 'a logged-out visitor sees the count on a disabled, non-toggling button', function (): void {
+	$votes = array(
+		9 => array(
+			'count' => 4,
+			'voted' => false,
+		),
+	);
+	$html  = ResponsesList::toHtml( 42, ink_upvote_response( 5 ), 1, $votes, 0 );
+
+	expect( $html )->toContain( '<button type="button" class="ink-reaksies__upvote' );
+	expect( $html )->toContain( ' disabled ' );
+	expect( $html )->not->toContain( 'data-ink-opstem="' );
+	expect( $html )->not->toContain( 'aria-pressed' );
+	expect( $html )->toContain( '>4</span>' );
+} );
+
+test( 'the author cannot upvote their own response', function (): void {
+	$html = ResponsesList::toHtml( 42, ink_upvote_response( 7 ), 1, array(), 7 );
+
+	expect( $html )->toContain( ' disabled ' );
+	expect( $html )->not->toContain( 'data-ink-opstem="' );
+} );
+
+test( 'a response with no upvotes yet reads 0, with no migration', function (): void {
+	$html = ResponsesList::toHtml( 42, ink_upvote_response( 5 ), 1 );
+
+	expect( $html )->toContain( '>0</span>' );
 } );

@@ -107,5 +107,5 @@ test( 'isDisplayEnabled is OFF when the meta is unset', function (): void {
 } );
 
 test( 'the custom comment type is the sanctioned exception (distinct from ink_reaksie)', function (): void {
-	expect( ModeratorFeedback::COMMENT_TYPE )->toBe( 'ink_moderator_terugvoer' );
+	expect( ModeratorFeedback::COMMENT_TYPE )->toBe( 'ink_mod_terugvoer' );
 } );

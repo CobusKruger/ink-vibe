@@ -4,9 +4,9 @@ Source: [ink-prod-menu.md](ink-prod-menu.md) (dump of the live ink.org.za menu).
 
 ## Target top-level navigation
 
-Tuis · Ontdek · **Biblioteek** · Opleiding · Uitdagings · Gemeenskap · My profiel
+Tuis · Ontdek · **Biblioteek** · Opleiding · Uitdagings · **Kompetisies** · Gemeenskap
 
-Biblioteek is new in the header nav, placed next to Opleiding. The header pattern is `wp-content/themes/ink-foundation/patterns/header-main.php`. Oor INK, Lidmaatskap and Kontak are reached from the footer and calls to action, not the header.
+Biblioteek is new in the header nav, placed next to Opleiding. Kompetisies (`/kompetisies/`) is added between Uitdagings and Gemeenskap (delta D1, 2026-11-01); InkPols stays out of the header (D1) and no other item changes. **My profiel** is off the desktop row, because the avatar menu has it (owner, 2026-11-02); logged in, it stays in the mobile panel, because the avatar menu is hidden below 1024, where the header collapses to the mobile menu. The list lives in `wp-content/themes/ink-foundation/inc/header-nav.php` and feeds the desktop nav and the mobile panel; the header pattern is `patterns/header-main.php`. Oor INK, Lidmaatskap and Kontak are reached from the footer and calls to action, not the header.
 
 ## Mapping
 
@@ -15,10 +15,10 @@ Biblioteek is new in the header nav, placed next to Opleiding. The header patter
 | Tuis | `front-page` | Exists. |
 | Lede | `page-ledegids` + Ontdek **Skrywers** tab | Exists. |
 | Projekte & Kompetisies (+ Oktober 2026 projek) | Uitdagings: `archive-uitdaging` / `single-uitdaging` | Exists. |
-| Eksterne Kompetisies | Part of the competition design | Pending the Lovable design. |
+| Eksterne Kompetisies | `/kompetisies/`, directory section | CPT `eksterne_kompetisie`; Page 59192 adopted and emptied by `SystemPages`; template `page-kompetisies.html`, built 2026-11 (gate passed on dev). |
 | Lede Bydraes (Gedigte, Verhale, Prosa) | Ontdek **Bydraes** tab (`gedig`, `storie`, `artikel`) | See "Lede Bydraes". |
 | Lees meer oor INK | `page-oor-ink` | Exists. |
-| INK se Gala-Aande (10 galas + Fotos) | New gala pages | Pending the Lovable design. |
+| INK se Gala-Aande (10 galas + Fotos) | `/kompetisies/`, gala section | The 21 old paths 301 to `/kompetisies/` (`StaticRedirects`); photos feed "Evenings past". |
 | Biblioteek | `archive-biblioteek_item` | Exists; becomes a top-level nav entry. |
 | Biblioteek › Projek wenners | **Ontdek**, new third tab (dynamic query) | See "Projek wenners". |
 | Biblioteek › Woordeboeke | Biblioteek shelf | Moves from Opleiding. |
@@ -67,13 +67,13 @@ Biblioteek holds curated reference and collection material, not member contribut
 ## Open items
 
 - Skenkings & Donasies: new page, or part of Oor INK / Lidmaatskap?
-- Gala-Aande and the competition pages: wait for the Lovable design (then run the lovable-design-sync skill and add to `design-handoff/page-map.csv`).
+- Gala-Aande and the competition pages: resolved. Built as `/kompetisies/` and `/kompetisies/gala/<jaar>/`, rows added to `design-handoff/page-map.csv` (2026-11-02).
 - Kinderliedjies parentage.
 - Boekwinkel: revisit once the production page is fixed.
 
 ## Follow-up work
 
-1. Add Biblioteek to `header-main.php`.
+1. Add Biblioteek to `header-main.php` (done; the list now lives in `inc/header-nav.php`).
 2. Add the third Ontdek tab (Projek wenners) in `patterns/ontdek.php`, with a server-rendered block in `ink-core/Discovery`.
 3. Add the shelf filter (Gedigte, Woordeboeke, collections) to the Biblioteek archive block in `ink-core/Library`.
 4. Update the redirect map for the moved URLs (Migration module).

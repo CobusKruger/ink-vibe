@@ -115,7 +115,8 @@ test( 'a clean run executes every step in order and records them', function (): 
 
 	expect( $report['failed'] )->toBeFalse();
 	expect( count( $o->ran ) )->toBe( count( MigrateAll::steps() ) );
-	expect( $o->ran[3] )->toBe( "ink migrate-tiers 'tier.csv'" );
+	// escapeshellarg() quotes for the host shell: single quotes on Unix, double quotes on Windows.
+	expect( $o->ran[3] )->toBe( 'ink migrate-tiers ' . escapeshellarg( 'tier.csv' ) );
 
 	$derived = orchestrator( array() );
 	$derived->run( '' );

@@ -64,12 +64,21 @@ $ink_badge        = function_exists( 'ink_foundation_gradering_badge' )
 $ink_tagline      = class_exists( '\Ink\Social\Tagline' )
 	? \Ink\Social\Tagline::get( $ink_user_id )
 	: '';
-$ink_avatar       = function_exists( 'get_avatar' ) ? (string) get_avatar( $ink_user_id, 112, '', '', array( 'class' => 'ink-avatar ink-avatar--profile', 'extra_attr' => 'data-audit-id="profiel-identity-avatar"' ) ) : '';
+$ink_avatar       = function_exists( 'get_avatar' ) ? (string) get_avatar(
+	$ink_user_id,
+	112,
+	'',
+	'',
+	array(
+		'class'      => 'ink-avatar ink-avatar--profile',
+		'extra_attr' => 'data-audit-id="profiel-identity-avatar"',
+	)
+) : '';
 $ink_display_name = (string) get_the_author_meta( 'display_name', $ink_user_id );
 $ink_public_url   = (string) get_author_posts_url( $ink_user_id );
 
 // Lucide icons from Profile.tsx (fidelity row 02, F4/F8): trusted, hard-coded path data.
-$ink_icon = static function ( string $paths ): string {
+$ink_icon  = static function ( string $paths ): string {
 	return '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ink-icon" aria-hidden="true" focusable="false">' . $paths . '</svg>';
 };
 $ink_icons = array(
@@ -87,12 +96,12 @@ $ink_icons = array(
 // Oorsig tab data (My Profiel rebuild §5.3). Product-owner decision 2026-09-06
 // (§7 item 5): Gradering lives in the identity strip above, Leesgetalle moved
 // to the Bydraes tab — Oorsig hosts neither directly any more.
-$ink_bio        = class_exists( '\Ink\Social\Api' ) ? \Ink\Social\Api::bioFor( $ink_user_id ) : trim( (string) get_the_author_meta( 'description', $ink_user_id ) );
-$ink_bydraes    = class_exists( '\Ink\Social\BydraesSurface' ) ? \Ink\Social\BydraesSurface::rows( $ink_user_id ) : array();
-$ink_volg_getal = class_exists( '\Ink\Social\Api' ) ? \Ink\Social\Api::followingCount( $ink_user_id ) : 0;
-$ink_ongelees   = class_exists( '\Ink\Notifications\KennisgewingsSurface' ) ? \Ink\Notifications\KennisgewingsSurface::unreadCount( $ink_user_id ) : 0;
+$ink_bio         = class_exists( '\Ink\Social\Api' ) ? \Ink\Social\Api::bioFor( $ink_user_id ) : trim( (string) get_the_author_meta( 'description', $ink_user_id ) );
+$ink_bydraes     = class_exists( '\Ink\Social\BydraesSurface' ) ? \Ink\Social\BydraesSurface::rows( $ink_user_id ) : array();
+$ink_volg_getal  = class_exists( '\Ink\Social\Api' ) ? \Ink\Social\Api::followingCount( $ink_user_id ) : 0;
+$ink_ongelees    = class_exists( '\Ink\Notifications\KennisgewingsSurface' ) ? \Ink\Notifications\KennisgewingsSurface::unreadCount( $ink_user_id ) : 0;
 $ink_hernu_datum = class_exists( '\Ink\Entitlement\Api' ) ? \Ink\Entitlement\Api::renewalDateFor( $ink_user_id ) : null;
-$ink_onlangs    = class_exists( '\Ink\Notifications\KennisgewingsSurface' ) ? \Ink\Notifications\KennisgewingsSurface::recent( $ink_user_id ) : array();
+$ink_onlangs     = class_exists( '\Ink\Notifications\KennisgewingsSurface' ) ? \Ink\Notifications\KennisgewingsSurface::recent( $ink_user_id ) : array();
 
 // Kennisgewings tab (§5.8): the full list + "Merk alles as gelees" button, rendered
 // server-side by the same ink-core read-model the Oorsig "Ongelees" stat/"Onlangse
@@ -111,7 +120,7 @@ $ink_kennisgewings_html = class_exists( '\Ink\Notifications\KennisgewingsSurface
 // WooCommerce status): the card renders only when at least one resolves, since
 // that is only ever true for a genuinely active INK membership — never fabricated
 // for a non-member, and no new membership-state source is invented here.
-$ink_lid_sedert        = class_exists( '\Ink\Entitlement\Api' ) ? \Ink\Entitlement\Api::memberSinceFor( $ink_user_id ) : null;
+$ink_lid_sedert         = class_exists( '\Ink\Entitlement\Api' ) ? \Ink\Entitlement\Api::memberSinceFor( $ink_user_id ) : null;
 $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_sedert );
 ?>
 <?php // Identity band (My Profiel rebuild, Tier-0 structural match to Profile.tsx's <section className="border-b border-border bg-cream/40">): a full-bleed tinted band housing ONLY the identity strip, distinct from the tab-shell section below (Lovable never puts the tabs inside this band). ?>
@@ -237,7 +246,8 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 						<!-- /wp:html -->
 
 						<!-- wp:paragraph {"className":"ink-profiel-oormy__bio"} -->
-						<p class="ink-profiel-oormy__bio" data-ink-profiel-veld="bio" data-audit-id="profiel-about-bio"><?php
+						<p class="ink-profiel-oormy__bio" data-ink-profiel-veld="bio" data-audit-id="profiel-about-bio">
+						<?php
 						echo '' !== $ink_bio
 							? esc_html( $ink_bio )
 							// No ratified Afrikaans exists yet for a "no bio" fallback — flagged
@@ -245,7 +255,8 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 							// invented (see docs/afrikaans-translation-sheet.md OORSIG-BIO-LEEG /
 							// docs/afrikaans-copy-worklist.md).
 							: esc_html__( '[NEEDS HUMAN AFRIKAANS] — "no bio yet" fallback copy not yet authored in ui-copy-translations.md.', 'ink-foundation' );
-						?></p>
+						?>
+						</p>
 						<!-- /wp:paragraph -->
 					</div>
 					<!-- /wp:group -->
@@ -279,7 +290,8 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 						<!-- /wp:html -->
 <?php if ( null !== $ink_hernu_datum && '' !== $ink_hernu_datum ) : ?>
 						<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text","className":"ink-profiel-oogopslag__lidmaatskap"} -->
-						<p class="has-muted-text-color has-text-color has-sm-font-size ink-profiel-oogopslag__lidmaatskap" data-audit-id="profiel-glance-membership"><?php
+						<p class="has-muted-text-color has-text-color has-sm-font-size ink-profiel-oogopslag__lidmaatskap" data-audit-id="profiel-glance-membership">
+						<?php
 						echo esc_html(
 							sprintf(
 								/* translators: %s: the member's next renewal date. */
@@ -287,7 +299,8 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 								$ink_hernu_datum
 							)
 						);
-						?></p>
+						?>
+						</p>
 						<!-- /wp:paragraph -->
 <?php endif; ?>
 					</div>
@@ -307,9 +320,9 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 <?php if ( array() !== $ink_onlangs ) : ?>
 				<!-- wp:html -->
 				<ul class="ink-profiel-onlangs__lys" data-audit-id="profiel-recent-list">
-<?php foreach ( $ink_onlangs as $ink_onlangs_i => $ink_kennisgewing ) : ?>
+	<?php foreach ( $ink_onlangs as $ink_onlangs_i => $ink_kennisgewing ) : ?>
 					<li class="ink-profiel-onlangs__item<?php echo ! empty( $ink_kennisgewing['unread'] ) ? ' is-unread' : ''; ?>"<?php echo 0 === $ink_onlangs_i ? ' data-audit-id="profiel-recent-item"' : ''; ?>><?php echo ! empty( $ink_kennisgewing['unread'] ) ? '<span class="ink-status-dot"' . ( 0 === $ink_onlangs_i ? ' data-audit-id="profiel-recent-dot"' : '' ) . ' aria-hidden="true"></span>' : ''; ?><?php echo esc_html( (string) $ink_kennisgewing['text'] ); ?></li>
-<?php endforeach; ?>
+	<?php endforeach; ?>
 				</ul>
 				<!-- /wp:html -->
 <?php endif; ?>
@@ -381,18 +394,18 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 								<dt data-audit-id="profiel-membership-status-dt"><?php echo esc_html__( 'Status', 'ink-foundation' ); ?></dt>
 								<dd data-audit-id="profiel-membership-status-dd"><?php echo esc_html__( 'Aktief', 'ink-foundation' ); ?></dd>
 							</div>
-<?php if ( null !== $ink_hernu_datum ) : ?>
+	<?php if ( null !== $ink_hernu_datum ) : ?>
 							<div class="ink-lidmaatskap-status__ry">
 								<dt><?php echo esc_html__( 'Hernieu', 'ink-foundation' ); ?></dt>
 								<dd><?php echo esc_html( $ink_hernu_datum ); ?></dd>
 							</div>
-<?php endif; ?>
-<?php if ( null !== $ink_lid_sedert ) : ?>
+	<?php endif; ?>
+	<?php if ( null !== $ink_lid_sedert ) : ?>
 							<div class="ink-lidmaatskap-status__ry">
 								<dt><?php echo esc_html__( 'Lid sedert', 'ink-foundation' ); ?></dt>
 								<dd><?php echo esc_html( $ink_lid_sedert ); ?></dd>
 							</div>
-<?php endif; ?>
+	<?php endif; ?>
 						</dl>
 						<!-- /wp:html -->
 					</div>

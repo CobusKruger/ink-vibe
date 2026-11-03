@@ -135,6 +135,10 @@
 	margin: 0;
 }
 
+.ink-skryf-field[hidden] {
+	display: none;
+}
+
 .ink-skryf-field > .ink-label {
 	margin-bottom: var(--wp--preset--spacing--s-8);
 }

@@ -29,7 +29,7 @@ afterEach( function (): void {
 	Monkey\tearDown();
 } );
 
-const INKPOLS_HEADER = 'slug,naam,titel,beskrywing,datum,pdf,voorblad,ou_url,gedig_titel,gedig_skrywer,storie_titel,storie_skrywer,artikel_titel,artikel_skrywer';
+const INKPOLS_HEADER = 'slug,naam,titel,beskrywing,datum,pdf,voorblad,ou_url,glans_1_titel,glans_1_skrywer,glans_1_tipe,glans_2_titel,glans_2_skrywer,glans_2_tipe,glans_3_titel,glans_3_skrywer,glans_3_tipe';
 
 /**
  * The CSV with its owner columns blank, as the step reads it.
@@ -45,7 +45,7 @@ function inkpols_fixture_csv(): string {
  * @param string $old  The old Page path.
  */
 function inkpols_complete_row( string $slug = 'julie-augustus-2026', string $old = '/inkpols-2026-07/' ): string {
-	return $slug . ',Julie/Augustus 2026,Die winteruitgawe,"Gedigte, stories en meer",2026-07-01,2026/09/a.pdf,2026/09/a.jpeg,' . $old . ',Reën,Anna,Die brug,Ben,Oor taal,Carla';
+	return $slug . ',Julie/Augustus 2026,Die winteruitgawe,"Gedigte, stories en meer",2026-07-01,2026/09/a.pdf,2026/09/a.jpeg,' . $old . ',Reën,Anna,Gedig,Die brug,Ben,Storie,Oor taal,Carla,Artikel';
 }
 
 /**
@@ -106,6 +106,9 @@ function inkpols_fake( ?string $csv, array $attachments = array(), array $pages 
 		protected function setIssueMeta( int $issue_id, string $key, int|string $value ): void {
 			$this->meta[ $issue_id ][ $key ] = $value;
 		}
+		protected function deleteIssueMeta( int $issue_id, string $key ): void {
+			unset( $this->meta[ $issue_id ][ $key ] );
+		}
 		protected function setCover( int $issue_id, int $cover_id ): void {
 			$this->thumbnails[ $issue_id ] = $cover_id;
 		}
@@ -139,14 +142,14 @@ test( 'parseCsv reads the committed CSV: seven rows, prefilled columns set, owne
 	expect( $first['pdf'] )->toBe( '2025/12/Inkpols_Nov_2025.pdf' );
 	expect( $first['ou_url'] )->toBe( '/inkpols-2025-11/' );
 	expect( $first['titel'] )->toBe( '' );
-	expect( $first['gedig_titel'] )->toBe( '' );
+	expect( $first['glans_1_titel'] )->toBe( '' );
 
 	expect( Migration::validRows( $parsed['rows'] )['rows'] )->toHaveCount( 7 );
 } );
 
 test( 'parseCsv strips a BOM, trims cells, keeps quoted commas and line breaks, and skips blank lines', function (): void {
 	$csv = "\xEF\xBB\xBF" . INKPOLS_HEADER . "\n\n"
-		. 'mei-2026, Mei 2026 ,,"Een, twee' . "\n" . 'drie",2026-05-01,,,,,,,,,' . "\n";
+		. 'mei-2026, Mei 2026 ,,"Een, twee' . "\n" . 'drie",2026-05-01,,,,,,,,,,,,' . "\n";
 
 	$parsed = Migration::parseCsv( $csv );
 
@@ -172,7 +175,7 @@ test( 'parseCsv fails on a header that lacks a column (every row would be misrea
 
 	expect( $parsed['rows'] )->toBe( array() );
 	expect( $parsed['error'] )->toContain( 'Kolomme ontbreek' );
-	expect( $parsed['error'] )->toContain( 'artikel_skrywer' );
+	expect( $parsed['error'] )->toContain( 'glans_3_tipe' );
 } );
 
 test( 'parseCsv fails on an empty file', function (): void {
@@ -218,7 +221,7 @@ test( 'missingRequired lists today\'s owner blanks when the attachments match', 
 	$row = Migration::parseCsv( inkpols_fixture_csv() )['rows'][0];
 
 	expect( Migration::missingRequired( $row, 11, 12 ) )->toBe(
-		array( 'titel', 'beskrywing', 'gedig_titel', 'gedig_skrywer', 'storie_titel', 'storie_skrywer', 'artikel_titel', 'artikel_skrywer' )
+		array( 'titel', 'beskrywing', 'glans_1_titel', 'glans_1_skrywer', 'glans_1_tipe', 'glans_2_titel', 'glans_2_skrywer', 'glans_2_tipe', 'glans_3_titel', 'glans_3_skrywer', 'glans_3_tipe' )
 	);
 } );
 
@@ -255,8 +258,12 @@ test( 'issueMeta maps the CSV to the FieldSets keys and the slug marker', functi
 	expect( $meta[ FieldSets::INKPOLS_COVER_ID ] )->toBe( 12 );
 	expect( $meta[ FieldSets::INKPOLS_TITEL ] )->toBe( 'Die winteruitgawe' );
 	expect( $meta[ FieldSets::INKPOLS_TEASER ] )->toBe( 'Gedigte, stories en meer' );
-	expect( $meta[ FieldSets::INKPOLS_GEDIG_TITEL ] )->toBe( 'Reën' );
-	expect( $meta[ FieldSets::INKPOLS_ARTIKEL_SKRYWER ] )->toBe( 'Carla' );
+	expect( $meta[ FieldSets::INKPOLS_GLANS_1_TITEL ] )->toBe( 'Reën' );
+	expect( $meta[ FieldSets::INKPOLS_GLANS_1_SKRYWER ] )->toBe( 'Anna' );
+	expect( $meta[ FieldSets::INKPOLS_GLANS_1_TIPE ] )->toBe( 'Gedig' );
+	expect( $meta[ FieldSets::INKPOLS_GLANS_2_TIPE ] )->toBe( 'Storie' );
+	expect( $meta[ FieldSets::INKPOLS_GLANS_3_SKRYWER ] )->toBe( 'Carla' );
+	expect( $meta[ FieldSets::INKPOLS_GLANS_3_TIPE ] )->toBe( 'Artikel' );
 	expect( $meta[ Migration::SOURCE_SLUG_META ] )->toBe( 'julie-augustus-2026' );
 } );
 
@@ -269,7 +276,7 @@ test( 'the old-URL key is the one generate-redirects reads', function (): void {
 test( 'run publishes a complete row, drafts an incomplete one, records 301 sources and trashes the right Pages', function (): void {
 	$csv = INKPOLS_HEADER . "\n"
 		. inkpols_complete_row() . "\n"
-		. "mei-junie-2026,Mei/Junie 2026,,,2026-05-01,2026/07/b.pdf,2026/07/b.jpeg,/inkpols-2026-05/,,,,,,\n";
+		. "mei-junie-2026,Mei/Junie 2026,,,2026-05-01,2026/07/b.pdf,2026/07/b.jpeg,/inkpols-2026-05/,,,,,,,,,\n";
 
 	$migration = inkpols_fake(
 		$csv,
@@ -304,7 +311,7 @@ test( 'run publishes a complete row, drafts an incomplete one, records 301 sourc
 } );
 
 test( 'a --force re-run reconciles in place: no duplicates, completed rows get published', function (): void {
-	$draft     = "julie-augustus-2026,Julie/Augustus 2026,,,2026-07-01,2026/09/a.pdf,2026/09/a.jpeg,/inkpols-2026-07/,,,,,,\n";
+	$draft     = "julie-augustus-2026,Julie/Augustus 2026,,,2026-07-01,2026/09/a.pdf,2026/09/a.jpeg,/inkpols-2026-07/,,,,,,,,,\n";
 	$migration = inkpols_fake(
 		INKPOLS_HEADER . "\n" . $draft,
 		array( '2026/09/a.pdf' => 11, '2026/09/a.jpeg' => 12 ),
@@ -394,7 +401,7 @@ test( 'a CSV missing a column is an error and touches nothing, not even the inde
 
 test( 'a bad row is reported and skipped while the others are still migrated', function (): void {
 	$csv       = INKPOLS_HEADER . "\n"
-		. "sleg,Sleg,,,2026-13-01,,,,,,,,,\n"
+		. "sleg,Sleg,,,2026-13-01,,,,,,,,,,,,\n"
 		. inkpols_complete_row() . "\n";
 	$migration = inkpols_fake( $csv, array( '2026/09/a.pdf' => 11, '2026/09/a.jpeg' => 12 ) );
 
@@ -433,4 +440,57 @@ test( 'an issue that cannot be saved is reported, not counted', function (): voi
 
 	expect( $summary['created'] )->toBe( 0 );
 	expect( $summary['problems'] )->toBe( array( 'Uitgawe "julie-augustus-2026" kon nie gestoor word nie.' ) );
+} );
+
+test( 'a --force run removes the retired Gedig/Storie/Artikel keys and keeps the glans keys', function (): void {
+	$migration = inkpols_fake(
+		INKPOLS_HEADER . "
+" . inkpols_complete_row() . "
+",
+		array( '2026/09/a.pdf' => 11, '2026/09/a.jpeg' => 12 )
+	);
+
+	$migration->run();
+
+	// An issue as the dev site holds them from before the ruling of 2026-11-03.
+	foreach ( FieldSets::INKPOLS_RETIRED_KEYS as $key ) {
+		$migration->meta[901][ $key ] = 'Toets';
+	}
+
+	$migration->run( true );
+
+	foreach ( FieldSets::INKPOLS_RETIRED_KEYS as $key ) {
+		expect( $migration->meta[901] )->not->toHaveKey( $key );
+	}
+
+	expect( $migration->meta[901][ FieldSets::INKPOLS_GLANS_2_TITEL ] )->toBe( 'Die brug' );
+	expect( FieldSets::INKPOLS_RETIRED_KEYS )->toHaveCount( 6 );
+} );
+
+test( 'a row missing any of the nine glans cells is a draft with one warning naming them', function (): void {
+	// glans 2 has no tipe and glans 3 has no titel.
+	$csv       = INKPOLS_HEADER . "
+"
+		. 'julie-augustus-2026,Julie/Augustus 2026,Die winteruitgawe,Beskrywing,2026-07-01,2026/09/a.pdf,2026/09/a.jpeg,/inkpols-2026-07/,Reën,Anna,Gedig,Die brug,Ben,,,Carla,Artikel' . "
+";
+	$migration = inkpols_fake( $csv, array( '2026/09/a.pdf' => 11, '2026/09/a.jpeg' => 12 ) );
+
+	$summary = $migration->run();
+
+	expect( $summary['drafts'] )->toBe( 1 );
+	expect( $summary['published'] )->toBe( 0 );
+	expect( $summary['incomplete'] )->toBe( array( 'julie-augustus-2026' => array( 'glans_2_tipe', 'glans_3_titel' ) ) );
+	expect( $migration->posts[901]['post_status'] )->toBe( 'draft' );
+} );
+
+test( 'the CSV columns and required list carry the nine glans cells and none of the old six', function (): void {
+	foreach ( array( 1, 2, 3 ) as $n ) {
+		foreach ( array( 'titel', 'skrywer', 'tipe' ) as $part ) {
+			expect( Migration::COLUMNS )->toContain( "glans_{$n}_{$part}" );
+			expect( Migration::REQUIRED )->toContain( "glans_{$n}_{$part}" );
+			expect( Migration::TEXT_META )->toHaveKey( "glans_{$n}_{$part}" );
+		}
+	}
+
+	expect( implode( ',', Migration::COLUMNS ) )->not->toMatch( '/gedig|storie|artikel/' );
 } );

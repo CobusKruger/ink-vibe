@@ -10,13 +10,11 @@ declare(strict_types=1);
 namespace Ink\Challenges;
 
 use Ink\Content\ChallengeRound;
-use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
 use Ink\I18n\Terms;
 use Ink\Kernel\QaFixture;
 use Ink\Kernel\Sast;
-use Ink\Kernel\Scalar;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -258,6 +256,25 @@ final class SinglePage {
 	}
 
 	/**
+	 * The round's published, non-fixture entries per post type. Impure (bounded WP_Query via
+	 * {@see self::runQuery()}, as {@see self::entryCount()}).
+	 *
+	 * @param int $uitdaging_id The producing uitdaging post id.
+	 * @return array<string, int> Post type ⇒ count.
+	 */
+	public static function entryCountsByType( int $uitdaging_id ): array {
+		$counts = array();
+
+		foreach ( self::runQuery( self::entriesQueryArgs( $uitdaging_id ) )->posts as $post ) {
+			if ( $post instanceof \WP_Post ) {
+				$counts[ $post->post_type ] = ( $counts[ $post->post_type ] ?? 0 ) + 1;
+			}
+		}
+
+		return $counts;
+	}
+
+	/**
 	 * Whether the round is still open — `now` within the inclusive end-of-day-SAST
 	 * deadline window (AD-3). Pure delegate to the single SAST boundary source.
 	 *
@@ -412,7 +429,7 @@ final class SinglePage {
 	 * @param \WP_Post $post The entry.
 	 * @return string
 	 */
-	private static function excerptFor( \WP_Post $post ): string {
+	public static function excerptFor( \WP_Post $post ): string {
 		if ( has_excerpt( $post ) ) {
 			return (string) get_the_excerpt( $post );
 		}
@@ -441,8 +458,8 @@ final class SinglePage {
 			return '';
 		}
 
-		/* translators: %d: the number of writers who already entered this challenge. */
 		$text = sprintf(
+			/* translators: %d: the number of writers who already entered this challenge. */
 			__( "Sluit aan by %d skrywers wat reeds hierdie uitdaging verken. Of dit 'n verfynde konsep is of 'n dapper eerste poging — jou stem hoort hier.", 'ink-core' ),
 			$entry_count
 		);
@@ -546,8 +563,7 @@ final class SinglePage {
 			return self::inskrywingsSectionHtml( self::entriesHtml( self::resolveEntries( $uitdaging_id ) ) );
 		}
 
-		$raw      = Scalar::asString( get_post_meta( $uitdaging_id, FieldSets::UITDAGING_DEADLINE, true ) );
-		$deadline = Deadline::parse( $raw );
+		$deadline = Cadence::closeFor( $uitdaging_id );
 
 		$status_html = '';
 

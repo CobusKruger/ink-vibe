@@ -42,16 +42,16 @@ in `ink-lovable/src/`.
 | H-1 | At 768 the nav + auth buttons wrap the header to 89px. Hamburger up to 1023px, or drop a nav link for guests? | `/` · `layout/Header.tsx:40` | / at 768 |
 | H-2 | At 390, move "Teken in"/"Sluit aan" into the mobile menu like Lovable? | `Header.tsx:59, 120-146` | / at 390 |
 | H-3 | Footer social links (Lovable has none): keep? | `Footer.tsx:10-18` | `footer-main.php:44-52` |
-| M1 | Keep site header/footer on auth pages and 404 (Lovable has none)? | `/auth` · `Auth.tsx:66-143`; `NotFound.tsx:12` | /meld-aan/ |
-| M2/M13 | Add brand lock-up above the auth card and "← back" link below? | `Auth.tsx:69-72, 139-141` | /meld-aan/ |
-| M4/M5 | Separate login/register pages + switch line, vs Lovable's tabs? | `Auth.tsx:75-81` | /meld-aan/, /registreer/ |
+| M1 | Keep site header/footer on auth pages and 404 (Lovable has none)? | `/auth` · `Auth.tsx:66-143`; `NotFound.tsx:12` | /teken-in/ |
+| M2/M13 | Add brand lock-up above the auth card and "← back" link below? | `Auth.tsx:69-72, 139-141` | /teken-in/ |
+| M4/M5 | Separate login/register pages + switch line, vs Lovable's tabs? | `Auth.tsx:75-81` | /teken-in/, /registreer/ |
 | M6/M7 | Keep h1 + intro on the auth cards (Lovable shows only the tabs)? | `Auth.tsx:74-82` | `auth-login.php:40-46` |
 | M10 | Keep "Onthou my" (implementer comment only)? | — | `auth-login.php:72-77` |
 | R8/R9 | Registreer: username + e-mail, no password (WP core) vs Lovable e-mail + password. | `Auth.tsx:103-115` | /registreer/ |
 | R10/W6 | Keep INK-only field hints (taller cards)? | `Auth.tsx:111`; `ForgotPassword.tsx:54-57` | /registreer/, /wagwoord-herstel/ |
 | W9 | Forgot-password switch line as one muted link (drops "Onthou jy jou wagwoord?")? | `ForgotPassword.tsx:61-63` | `auth-forgot-password.php:68-69` |
 | W12 | Echo the submitted address in the "sent" notice? | `ForgotPassword.tsx:46` | /wagwoord-herstel/?wagwoord=gestuur |
-| M11 | Turn on the social login section? | `Auth.tsx:120-136` | /meld-aan/ |
+| M11 | Turn on the social login section? | `Auth.tsx:120-136` | /teken-in/ |
 
 ## Features and structure
 
@@ -84,10 +84,10 @@ in `ink-lovable/src/`.
 | 02-F3/F35 | Avatar camera button / "Change photo" (deferred; contradicts §7.1). | `/profile` · `Profile.tsx:181-187, 695-704` | /my-profiel/ |
 | 07-S5/S6 | Byline: read time instead of publish date? | `/read/sample` · `ReadStory.tsx:166-169` | /storie/die-wenteltrap-na-die-lig/ |
 | 07-S8 | Share button as the 4th floating-bar control? | `ReadStory.tsx:238-240` | same |
-| 07-S15 | Upvote: inert span, no icon, always 0. Confirm deferral; add the icon? | `ReadStory.tsx:349-352` | `ResponsesList.php:38-43` |
+| 07-S15 | **Built (owner, 2026-11-02).** Upvote was an inert span, always 0; now a working per-member toggle (`ResponseUpvotes`, `ResponseUpvoteController`, `gemeenskapsreaksie.js`). | `ReadStory.tsx:349-352` | `ResponsesList.php:38-43` |
 | 07-S16 | Reply removed on an implementer comment only. Keep it out? | `ReadStory.tsx:353-355` | `ResponsesList.php:59-65` |
 | 22-S7 | Poems pre-fill hearts/highlights on every line any reader reacted to; Lovable shows none until tapped. Keep? | `/read/s2` · `PoetryReader.tsx:13,53-67` | /gedig/piet-punte/ |
-| 22-S4 | Dedication field on gedig. | `PoetryReader.tsx:26-30` | /gedig/piet-punte/ |
+| 22-S4 | **Built (owner, 2026-11-02).** Dedication field on gedig: meta `ink_gedig_toewyding`, `FieldSets` admin box, entered on `/skryf/`, shown by `GedigBody`. | `PoetryReader.tsx:26-30` | /gedig/piet-punte/ |
 | 04-S2 | Skryf: one form with a type radio vs Lovable's two steps. | `/write` · `Write.tsx:265-329` | `skryf.php:139-165` |
 | 04-S4 | Skryf success: "Lift another writer today" 3-card grid (needs a selection rule). | `Write.tsx:197-241` | `skryf.php:105-117` |
 | 04-S13 | Save / Send / Feather icons on the skryf buttons. | `Write.tsx:409,419,171` | `skryf.php:224-225,82` |

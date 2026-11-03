@@ -103,9 +103,9 @@ final class ReactionTotals {
 	 *                                    Lovable's single heart+count floating-bar
 	 *                                    button; theme-fidelity re-audit, page 3,
 	 *                                    product-owner decision).
-	 * @param int                 $post_id The work (0 outside a real render, e.g.
-	 *                                     unit tests) — needed only by the 'enkel'
-	 *                                     variant to compute its click anchor.
+	 * @param int                $post_id The work (0 outside a real render, e.g.
+	 *                                    unit tests) — needed only by the 'enkel'
+	 *                                    variant to compute its click anchor.
 	 * @return string
 	 */
 	public static function toHtml( array $counts, string $variant = 'volledig', int $post_id = 0 ): string {
@@ -232,7 +232,8 @@ final class ReactionTotals {
 			return 'gedig-reaksie-tellers';
 		}
 
-		if ( is_singular( 'storie' ) ) {
+		// Artikel is Lovable's prose branch (ReadStory.tsx's ternary has no third id).
+		if ( is_singular( array( 'storie', 'artikel' ) ) ) {
 			return 'storie-reaksie-tellers';
 		}
 

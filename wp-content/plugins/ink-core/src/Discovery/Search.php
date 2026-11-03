@@ -199,8 +199,8 @@ final class Search {
 	/**
 	 * Build the search form + result groups. Pure — escaping + Terms only.
 	 *
-	 * @param string                                                                  $raw_query The raw (unfolded) query, for the input value + heading.
-	 * @param list<array{title:string, permalink:string, type:string, author:string}> $works     Work results.
+	 * @param string                                                                       $raw_query The raw (unfolded) query, for the input value + heading.
+	 * @param list<array{title:string, permalink:string, type:string, author:string}>      $works     Work results.
 	 * @param list<array{name:string, profile_url:string, gradering:string, tier?:string}> $skrywers  Skrywer results.
 	 * @return string
 	 */

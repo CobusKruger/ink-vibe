@@ -59,6 +59,7 @@ test( 'the forbidden set names the staging/authoring-only tools', function (): v
 	expect( $set )->toContain( 'code-snippets/code-snippets.php' );
 	expect( $set )->toContain( 'wp-migrate-db/wp-migrate-db.php' );
 	expect( $set )->toContain( 'string-locator/string-locator.php' );
+	expect( $set )->toContain( 'simple-css/simple-css.php' );
 } );
 
 test( 'forbiddenSet honours the extension filter', function (): void {

@@ -45,6 +45,13 @@ if ( ! class_exists( 'WP_Query' ) ) {
 		public array $posts = array();
 
 		/**
+		 * Mirrors WP_Query::$found_posts: the staged posts' count.
+		 *
+		 * @var int
+		 */
+		public int $found_posts = 0;
+
+		/**
 		 * Mirror WP_Query's constructor signature; return the staged posts.
 		 *
 		 * @param array<string, mixed> $args The query args.
@@ -52,6 +59,7 @@ if ( ! class_exists( 'WP_Query' ) ) {
 		public function __construct( array $args = array() ) {
 			self::$ink_test_last_args = $args;
 			$this->posts              = self::$ink_test_posts;
+			$this->found_posts        = count( self::$ink_test_posts );
 		}
 	}
 }

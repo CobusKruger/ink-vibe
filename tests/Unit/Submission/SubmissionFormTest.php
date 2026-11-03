@@ -111,6 +111,23 @@ test( 'buildPost honours an explicit publish status', function (): void {
 } );
 
 /**
+ * The optional dedication (owner-approved 2026-11-02) travels as meta_input, for a gedig only.
+ */
+test( 'buildPost keeps a gedig dedication as meta_input and drops it for other types', function (): void {
+	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+
+	$form = new SubmissionForm();
+
+	$gedig = $form->buildPost( 'gedig', 'T', 'B', 7, 'draft', '  vir my ma  ' );
+	expect( $gedig['meta_input'] )->toBe( array( 'ink_gedig_toewyding' => 'vir my ma' ) );
+
+	expect( $form->buildPost( 'gedig', 'T', 'B', 7, 'draft', '   ' ) )->not->toHaveKey( 'meta_input' );
+	expect( $form->buildPost( 'gedig', 'T', 'B', 7 ) )->not->toHaveKey( 'meta_input' );
+	expect( $form->buildPost( 'storie', 'T', 'B', 7, 'draft', 'vir my ma' ) )->not->toHaveKey( 'meta_input' );
+	expect( $form->buildPost( 'artikel', 'T', 'B', 7, 'draft', 'vir my ma' ) )->not->toHaveKey( 'meta_input' );
+} );
+
+/**
  * statusForIntent maps plaas to publish; anything else is the ungated draft.
  */
 test( 'statusForIntent maps plaas to publish and else to draft', function (): void {

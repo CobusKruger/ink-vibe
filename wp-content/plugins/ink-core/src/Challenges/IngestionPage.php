@@ -75,7 +75,7 @@ class IngestionPage {
 	 *
 	 * @param int    $uitdaging_id The round.
 	 * @param string $text         The pasted plain-text results.
-	 * @return array{report:array<string,mixed>, winners:list<array{post_id:int, rank:int, author_id:int}>, commentary:list<array{post_id:int, title:string, text:string}>}
+	 * @return array{report:array<string,mixed>, winners:list<array{post_id:int, rank:int, author_id:int}>, commentary:list<array{post_id:int, title:string, text:string}>, mentions:list<string>}
 	 */
 	public function analyse( int $uitdaging_id, string $text ): array {
 		$entries = $this->entriesFor( $uitdaging_id );
@@ -134,7 +134,41 @@ class IngestionPage {
 			'report'     => $report,
 			'winners'    => $winners,
 			'commentary' => $commentary,
+			'mentions'   => $this->mentionLines( $parsed['mentions'], $map ),
 		);
+	}
+
+	/**
+	 * The mentions as field lines, `Titel | Skrywer`: an EntryID resolves to its entry, and
+	 * one with no entry in this round is left out, as unmatched commentary is.
+	 *
+	 * @param list<array{entry_id:string, text:string}>                                        $mentions The parsed mentions.
+	 * @param array<string, array{post_id:int, author_id:int, title:string, gradering:string}> $map      The stored entries.
+	 * @return list<string>
+	 */
+	private function mentionLines( array $mentions, array $map ): array {
+		$lines = array();
+
+		foreach ( $mentions as $mention ) {
+			if ( '' === $mention['entry_id'] ) {
+				$lines[] = $mention['text'];
+			} elseif ( isset( $map[ $mention['entry_id'] ] ) ) {
+				$entry   = $map[ $mention['entry_id'] ];
+				$lines[] = $entry['title'] . ' | ' . $this->authorName( $entry['author_id'] );
+			}
+		}
+
+		return $lines;
+	}
+
+	/**
+	 * A writer's display name. Overridable seam.
+	 *
+	 * @param int $author_id The writer.
+	 * @return string
+	 */
+	protected function authorName( int $author_id ): string {
+		return (string) get_the_author_meta( 'display_name', $author_id );
 	}
 
 	/**
@@ -236,7 +270,7 @@ class IngestionPage {
 			$this->renderReport( $report, $blocks );
 
 			if ( $do_commit && $confirmed && ! $blocks ) {
-				$result = $this->ingestion()->commit( $selected, $analysis['winners'], $analysis['commentary'] );
+				$result = $this->ingestion()->commit( $selected, $analysis['winners'], $analysis['commentary'], $analysis['mentions'] );
 				$this->renderCommitResult( $result );
 			}
 		}

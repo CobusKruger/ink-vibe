@@ -46,11 +46,11 @@ test( 'the Tuisblad assembles hero, challenge, featured works, sponsors and CTA 
 	expect( $markup )->toContain( 'ink-foundation/hero' );     // the hero pattern reference
 
 	// The single page <h1> lives in the hero pattern's left column (19.2, §2 AC).
-	expect( $hero )->toContain( 'wp:heading {"level":1' );
+	expect( $hero )->toContain( '<h1 data-audit-id="hero-h1"' ); // raw HTML since the Lovable structure port (2026-11-02)
 
 	// Exactly ONE visible <h1> across the assembled page: the hero owns it, and the
 	// front-page template + other assembled sections carry none.
-	expect( substr_count( $hero, 'wp:heading {"level":1' ) )->toBe( 1 );
+	expect( substr_count( $hero, '<h1' ) )->toBe( 1 );
 	expect( $markup )->not->toContain( 'wp:heading {"level":1' );
 
 	// The challenge card (dynamic ink-core block, compact) sits in the hero's right
@@ -96,9 +96,9 @@ test( 'the challenge card is a dynamic ink-core block, not a theme-side query (t
 	$template  = $ink_read( 'templates/front-page.html' );
 
 	// Non-vacuous: the challenge data comes from the server-rendered ink-core block,
-	// embedded in BOTH the hero aside (compact) and the §5 feature band (feature).
+	// in the hero only: the old feature band is gone (`03-tuis` §3).
 	expect( $hero )->toContain( 'wp:ink/huidige-uitdaging' );
-	expect( $template )->toContain( 'wp:ink/huidige-uitdaging {"variant":"kenmerk"}' );
+	expect( $template )->not->toContain( 'wp:ink/huidige-uitdaging' );
 
 	// Three-layer: the theme runs no query/computation of its own for the challenge.
 	expect( $hero )->not->toContain( 'WP_Query' );

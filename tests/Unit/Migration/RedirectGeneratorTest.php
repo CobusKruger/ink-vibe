@@ -175,6 +175,8 @@ test( 'maybeRedirect NEVER hijacks a live (non-404) URL even when its path match
 } );
 
 test( 'maybeRedirect is a no-op on a miss, an empty map, or a self-target (loop guard)', function (): void {
+	Monkey\Functions\when( 'get_option' )->justReturn( array() );
+
 	$miss = new class() extends RedirectGenerator {
 		public bool $redirected = false;
 		protected function isMissing(): bool {
@@ -228,4 +230,11 @@ test( 'maybeRedirect is a no-op on a miss, an empty map, or a self-target (loop 
 	};
 	$loop->maybeRedirect();
 	expect( $loop->redirected )->toBeFalse();
+} );
+
+test( 'register hooks the serve handler ahead of the core 404 guess (redirect_canonical, priority 10)', function (): void {
+	Monkey\Actions\expectAdded( 'template_redirect' )->with( \Mockery::type( 'array' ), 5 );
+
+	( new RedirectGenerator() )->register();
+	expect( true )->toBeTrue();
 } );

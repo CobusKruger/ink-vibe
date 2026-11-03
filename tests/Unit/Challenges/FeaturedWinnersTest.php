@@ -1,11 +1,8 @@
 <?php
 /**
- * Unit tests for the home winners featured slot + ordering (Story 15.6, FR-50-R2).
+ * Unit tests for the Tuis winners section (WP3, E1, D10).
  *
- * Target: {@see \Ink\Challenges\FeaturedWinners} — the `ink/wenner-kollig` home block.
- * We test INK-owned OUTCOMES: the pure {@see FeaturedWinners::order()} (algehele wenner
- * first) and {@see FeaturedWinners::toHtml()} (collapses with no announcement; renders
- * the announcement + ordered winners otherwise). Brain-Monkey-mocked — no WordPress/DB.
+ * Target: {@see \Ink\Challenges\FeaturedWinners}.
  *
  * @package Ink\Tests
  */
@@ -32,242 +29,101 @@ afterEach( function (): void {
 	Monkey\tearDown();
 } );
 
+/**
+ * A full slot view.
+ *
+ * @param string $title The title.
+ * @return array<string, string>
+ */
+function ink_winner_view( string $title ): array {
+	return array(
+		'title'      => $title,
+		'url'        => 'https://ink.test/' . $title,
+		'author'     => 'Skrywer ' . $title,
+		'quote'      => "reel een\nreel twee",
+		'avatar_url' => 'https://ink.test/a.png',
+		'win_label'  => '3de wen',
+	);
+}
+
 test( 'the block name is the single-source constant', function (): void {
 	expect( FeaturedWinners::BLOCK )->toBe( 'ink/wenner-kollig' );
 } );
 
-// --- order(): algehele wenner first ---
-
-test( 'order puts the algehele wenner (rank 1) first, ahead of ordinary wenners', function (): void {
-	$ordered = FeaturedWinners::order(
-		array(
-			array( 'id' => 30, 'rank' => 3, 'title' => 'Derde' ),
-			array( 'id' => 10, 'rank' => 1, 'title' => 'Algehele' ),
-			array( 'id' => 20, 'rank' => 2, 'title' => 'Tweede' ),
-		)
-	);
-
-	expect( array_column( $ordered, 'rank' ) )->toBe( array( 1, 2, 3 ) );
-	expect( $ordered[0]['is_algehele_wenner'] )->toBeTrue();
-	expect( $ordered[1]['is_algehele_wenner'] )->toBeFalse();
-} );
-
-test( 'order keeps a same-rank tie, ordered deterministically by id', function (): void {
-	$ordered = FeaturedWinners::order(
-		array(
-			array( 'id' => 55, 'rank' => 2, 'title' => 'B' ),
-			array( 'id' => 11, 'rank' => 2, 'title' => 'A' ),
-		)
-	);
-
-	// Both tied writers stay, lowest id first.
-	expect( array_column( $ordered, 'id' ) )->toBe( array( 11, 55 ) );
-} );
-
-test( 'order drops rows with no id or a non-placement rank', function (): void {
-	$ordered = FeaturedWinners::order(
-		array(
-			array( 'id' => 0, 'rank' => 1 ),   // no id
-			array( 'id' => 7, 'rank' => 0 ),   // not placed
-			array( 'id' => 9, 'rank' => 1 ),   // valid
-		)
-	);
-
-	expect( $ordered )->toHaveCount( 1 );
-	expect( $ordered[0]['id'] )->toBe( 9 );
-} );
-
-// --- toHtml(): collapses when empty (the forward-compatible 12A invariant) ---
-
-test( 'toHtml COLLAPSES to empty markup when there are no valid winners', function (): void {
+test( 'toHtml collapses with no winner: no band, no placeholder', function (): void {
 	expect( FeaturedWinners::toHtml( array() ) )->toBe( '' );
-	expect( FeaturedWinners::toHtml( array( 'winners' => array() ) ) )->toBe( '' );
-	// A 'title' with no valid winners still collapses — title is no longer the gate
-	// (fourth-pass fidelity fix, 2026-09-05: the section-level heading was removed).
-	expect( FeaturedWinners::toHtml( array( 'title' => 'Junie-uitslae' ) ) )->toBe( '' );
+	expect( FeaturedWinners::toHtml( array( 'month' => 'Mei', 'theme' => 'T', 'slots' => array() ) ) )->toBe( '' );
 } );
 
-// --- toHtml(): renders the ordered winners when populated ---
-
-test( 'toHtml renders no section-level heading, only winner CARDS in algehele-wenner-first order', function (): void {
+test( 'toHtml shows the four cards in D10 order, whatever order the payload holds', function (): void {
 	$html = FeaturedWinners::toHtml(
 		array(
-			'title'   => 'Junie-uitslae',
-			'url'     => 'https://ink.test/wenneraankondiging/junie',
-			'winners' => array(
-				array( 'id' => 20, 'rank' => 2, 'title' => 'Tweede werk', 'url' => 'https://ink.test/w/2' ),
-				array( 'id' => 10, 'rank' => 1, 'title' => 'Algehele werk', 'url' => 'https://ink.test/w/1' ),
+			'month' => 'Oktober',
+			'theme' => 'Tema',
+			'slots' => array(
+				'artikel'      => ink_winner_view( 'A' ),
+				'silwer-gedig' => ink_winner_view( 'S' ),
+				'storie'       => ink_winner_view( 'P' ),
+				'goud-gedig'   => ink_winner_view( 'G' ),
 			),
 		)
 	);
 
-	expect( $html )->toContain( 'ink-wenner-kollig' );
-
-	// No section-level heading/announcement link — removed 2026-09-05 (product-owner
-	// finding: "DESEMBER SE WENNERS" above the card is not supposed to be there;
-	// Lovable's ChallengeSection.tsx has no such heading at all).
-	expect( $html )->not->toContain( 'ink-wenner-kollig__titel' );
-	expect( $html )->not->toContain( '<h2' );
-	expect( $html )->not->toContain( 'Junie-uitslae' );
-	expect( $html )->not->toContain( 'href="https://ink.test/wenneraankondiging/junie"' );
-
-	// The upgraded DOM emits card articles, not a flat <ul>/<li> list (§5).
-	expect( $html )->toContain( 'ink-wenner-kollig__kaart' );
-	expect( $html )->toContain( '<article' );
-	expect( $html )->not->toContain( 'ink-wenner-kollig__lys' );
-
-	// Rank is conveyed by TEXT (the placement label), not colour alone (a11y).
-	expect( $html )->toContain( 'ink-wenner-kollig__rang-teks' );
-
-	// Each work title is an h3 linked to its permalink.
-	expect( $html )->toContain( '<h3 class="ink-wenner-kollig__werk ink-heading-h2-block">' );
-
-	// Algehele wenner's work appears before the ordinary wenner's work.
-	expect( strpos( $html, 'Algehele werk' ) )->toBeLessThan( strpos( $html, 'Tweede werk' ) );
-
-	// The algehele wenner card carries its distinguishing modifier + the gradient hook.
-	expect( $html )->toContain( 'ink-wenner-kollig__kaart--algehele' );
-	expect( $html )->toContain( 'ink-wenner-kollig__kaart--goud-gradient' );
-
-	// Each placed work carries a "Lees die volledige storie" read-more link (ui-copy 83).
-	expect( $html )->toContain( 'Lees die volledige storie' );
+	expect( substr_count( $html, '<article' ) )->toBe( 4 );
+	expect( strpos( $html, '"G"' ) )->toBeLessThan( strpos( $html, '"P"' ) );
+	expect( strpos( $html, '"P"' ) )->toBeLessThan( strpos( $html, '"S"' ) );
+	expect( strpos( $html, '"S"' ) )->toBeLessThan( strpos( $html, '"A"' ) );
+	expect( $html )->toContain( 'Oktober-uitdaging · "Tema"' );
+	expect( $html )->toContain( 'data-audit-id="challenge-grid"' );
 } );
 
-test( 'toHtml renders the optional card fields (avatar with alt, quote, author) when the seam supplies them', function (): void {
+test( 'audit ids pair by type: the poem takes winner-gedig-*, the prose winner-*, the second pair none', function (): void {
 	$html = FeaturedWinners::toHtml(
 		array(
-			'title'   => 'Desember-uitslae',
-			'url'     => 'https://ink.test/w/dec',
-			'winners' => array(
-				array(
-					'id'         => 10,
-					'rank'       => 1,
-					'title'      => 'Die laaste lig',
-					'url'        => 'https://ink.test/w/1',
-					'month'      => 'Desember',
-					'author'     => 'Sarah Mitchell',
-					'quote'      => 'Die kers flikker teen die ruit...',
-					'avatar_url' => 'https://ink.test/avatar.jpg',
-					'avatar_alt' => 'Sarah Mitchell',
-					'win_label'  => '3de wen',
-				),
+			'slots' => array(
+				'goud-gedig'   => ink_winner_view( 'G' ),
+				'storie'       => ink_winner_view( 'P' ),
+				'silwer-gedig' => ink_winner_view( 'S' ),
+				'artikel'      => ink_winner_view( 'A' ),
 			),
 		)
 	);
 
-	// Quote is a blockquote; author + avatar (with alt) + win_label all render.
-	// The first card carries the fidelity-audit join keys.
-	expect( $html )->toContain( '<blockquote class="ink-wenner-kollig__aanhaling" data-audit-id="winner-quote">' );
-	expect( $html )->toContain( 'Die kers flikker' );
-	expect( $html )->toContain( 'ink-wenner-kollig__foto' );
-	expect( $html )->toContain( 'alt="Sarah Mitchell"' );
-	expect( $html )->toContain( 'Sarah Mitchell' );
-	expect( $html )->toContain( '3de wen' );
+	preg_match_all( '/data-audit-id="([^"]+)"/', $html, $ids );
 
-	// The eyebrow joins month + "algehele wenner" with a SPACE for the algehele wenner.
-	expect( $html )->toContain( 'Desember algehele wenner' );
+	expect( $ids[1] )->toEqual( array_unique( $ids[1] ) );
+	expect( $ids[1] )->toContain( 'winner-gedig-card', 'winner-card', 'winner-gedig-btn-icon', 'winner-btn-icon' );
+	expect( substr_count( $html, 'data-audit-id="winner-gedig-card"' ) )->toBe( 1 );
+
+	// The poem's markup holds the G card, not the P card.
+	$gedig = substr( $html, (int) strpos( $html, 'winner-gedig-card' ), (int) strpos( $html, 'data-audit-id="winner-card"' ) - (int) strpos( $html, 'winner-gedig-card' ) );
+
+	expect( $gedig )->toContain( '"G"' )->toContain( 'ink-accent-block--poem' )->toContain( 'Lees gedig' );
 } );
 
-test( 'toHtml joins month + label with a SPACE for an ordinary (non-algehele) wenner too', function (): void {
-	// Fourth-pass fidelity fix (2026-09-05): this used to hyphen-join ("Desember-wenner"),
-	// contradicting Placements's own glossary docblock ("[Maand] wenner", space-joined
-	// for ranks 2-3 same as rank 1) — a real bug, not a style choice. No prior test
-	// locked in the hyphenated form.
-	$html = FeaturedWinners::toHtml(
-		array(
-			'winners' => array(
-				array(
-					'id'    => 20,
-					'rank'  => 2,
-					'title' => 'Tweede werk',
-					'url'   => 'https://ink.test/w/2',
-					'month' => 'Desember',
-				),
-			),
-		)
-	);
+test( 'primitive classes: card, caps-gold pill, gold button, gold-ring avatar', function (): void {
+	$html = FeaturedWinners::toHtml( array( 'slots' => array( 'storie' => ink_winner_view( 'P' ) ) ) );
 
-	expect( $html )->toContain( 'Desember wenner' );
-	expect( $html )->not->toContain( 'Desember-wenner' );
-	expect( $html )->not->toContain( 'algehele' );
+	expect( $html )->toContain( 'ink-card--winner' )
+		->toContain( 'ink-pill ink-pill--caps ink-pill--caps-gold' )
+		->toContain( 'ink-btn ink-btn--gold' )
+		->toContain( 'ink-avatar ink-avatar--gold-ring' )
+		->toContain( 'Lees storie' );
 } );
 
-test( 'toHtml OMITS the optional card sub-parts gracefully when the seam supplies only id/rank/title/url', function (): void {
-	$html = FeaturedWinners::toHtml(
-		array(
-			'title'   => 'Mei-uitslae',
-			'url'     => 'https://ink.test/w/mei',
-			'winners' => array(
-				array( 'id' => 10, 'rank' => 1, 'title' => 'Werk sonder besonderhede', 'url' => 'https://ink.test/w/1' ),
-			),
-		)
-	);
+test( 'a slot with no post, count or avatar drops the button, wins and image', function (): void {
+	$html = FeaturedWinners::toHtml( array( 'slots' => array( 'storie' => array( 'title' => 'T', 'author' => 'S' ) ) ) );
 
-	// Non-vacuous: the card itself renders...
-	expect( $html )->toContain( 'ink-wenner-kollig__kaart' );
-	expect( $html )->toContain( 'Werk sonder besonderhede' );
-
-	// ...but no quote / author block / avatar chrome when the seam did not supply them.
-	expect( $html )->not->toContain( 'ink-wenner-kollig__aanhaling' );
-	expect( $html )->not->toContain( 'ink-wenner-kollig__outeur' );
-	expect( $html )->not->toContain( 'ink-wenner-kollig__foto' );
+	expect( $html )->not->toContain( '<a ' )
+		->and( $html )->not->toContain( '<img' )
+		->and( $html )->not->toContain( 'winner-author-wins' );
 } );
 
-test( 'order keeps tied first places, and drops only the same entry listed twice', function (): void {
-	$ordered = FeaturedWinners::order(
-		array(
-			array( 'id' => 11, 'rank' => 1, 'title' => 'Eerste-een' ),
-			array( 'id' => 12, 'rank' => 1, 'title' => 'Eerste-twee' ),
-			array( 'id' => 12, 'rank' => 1, 'title' => 'Eerste-twee (weer)' ),
-			array( 'id' => 20, 'rank' => 2, 'title' => 'Tweede' ),
-		)
-	);
-
-	$rank_ones = array_filter( $ordered, static fn ( array $r ): bool => 1 === $r['rank'] );
-	expect( $rank_ones )->toHaveCount( 2 ); // a tie for first: both are algehele wenners
-	expect( array_column( $ordered, 'id' ) )->toBe( array( 11, 12, 20 ) );
-} );
-
-// --- orderFeed(): the FEED keeps every winner, algehele wenner(s) first (Story 12A.7) ---
-
-test( 'orderFeed puts the algehele wenner first, ahead of ordinary wenners', function (): void {
-	$feed = FeaturedWinners::orderFeed(
-		array(
-			array( 'id' => 30, 'rank' => 3, 'title' => 'Derde' ),
-			array( 'id' => 10, 'rank' => 1, 'title' => 'Algehele' ),
-			array( 'id' => 20, 'rank' => 2, 'title' => 'Tweede' ),
-		)
-	);
-
-	expect( array_column( $feed, 'rank' ) )->toBe( array( 1, 2, 3 ) );
-	expect( $feed[0]['is_algehele_wenner'] )->toBeTrue();
-} );
-
-test( 'orderFeed PRESERVES multiple algehele wenners (one per category pool, or a tie)', function (): void {
-	// Two rank-1s = the algehele wenner of two different (Gradering × category) pools.
-	$winners = array(
-		array( 'id' => 12, 'rank' => 1, 'title' => 'Gedig-wenner' ),
-		array( 'id' => 11, 'rank' => 1, 'title' => 'Storie-wenner' ),
-		array( 'id' => 20, 'rank' => 2, 'title' => 'Tweede' ),
-	);
-
-	// Both keep every placement; the FEED orders algehele wenners (lowest id first), then the wenner.
-	$feed = FeaturedWinners::orderFeed( $winners );
-	expect( $feed )->toHaveCount( 3 );
-	expect( array_column( $feed, 'id' ) )->toBe( array( 11, 12, 20 ) );
-	$rank_ones = array_filter( $feed, static fn ( array $r ): bool => 1 === $r['rank'] );
-	expect( $rank_ones )->toHaveCount( 2 );
-} );
-
-test( 'orderFeed drops rows with no id or a non-placement rank', function (): void {
-	$feed = FeaturedWinners::orderFeed(
-		array(
-			array( 'id' => 0, 'rank' => 1 ),
-			array( 'id' => 7, 'rank' => 0 ),
-			array( 'id' => 9, 'rank' => 1 ),
-		)
-	);
-
-	expect( $feed )->toHaveCount( 1 );
-	expect( $feed[0]['id'] )->toBe( 9 );
+test( 'winLabel: 3de wen, 1ste, 8ste, 20ste; nothing for no wins', function (): void {
+	expect( FeaturedWinners::winLabel( 0 ) )->toBe( '' );
+	expect( FeaturedWinners::winLabel( 1 ) )->toBe( '1ste wen' );
+	expect( FeaturedWinners::winLabel( 3 ) )->toBe( '3de wen' );
+	expect( FeaturedWinners::winLabel( 8 ) )->toBe( '8ste wen' );
+	expect( FeaturedWinners::winLabel( 19 ) )->toBe( '19de wen' );
+	expect( FeaturedWinners::winLabel( 20 ) )->toBe( '20ste wen' );
 } );

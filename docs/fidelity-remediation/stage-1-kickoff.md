@@ -119,7 +119,7 @@ All in `README.md` §9. Each has already cost a cycle:
 - Playwright needs Node 20+; the machine default is 18.17.1
 - The WordPress table prefix is `wpjj_`, and a stale unused `wp_users` table also exists —
   writing to it succeeds, selects back, and WordPress never sees the row
-- `wp-login.php` is intercepted to `/meld-aan`; the submit is `<button name="wp-submit">`
+- `wp-login.php` is intercepted to `/teken-in`; the submit is `<button name="wp-submit">`
 - `wp-cli` cannot reach the Local database
 
 ## Stop at the end of Stage 1

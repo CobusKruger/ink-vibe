@@ -129,12 +129,20 @@ class AuthRedirects {
 	 * `Ink\Social\AuthPageRelease`.
 	 */
 	public function registerSubmission(): void {
-		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
+		$method = isset( $_SERVER['REQUEST_METHOD'] ) && is_string( $_SERVER['REQUEST_METHOD'] )
+			? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) )
+			: '';
+
+		if ( 'POST' !== $method ) {
 			return;
 		}
 
-		$user_login = isset( $_POST['user_login'] ) && is_string( $_POST['user_login'] ) ? wp_unslash( $_POST['user_login'] ) : '';
-		$user_email = isset( $_POST['user_email'] ) && is_string( $_POST['user_email'] ) ? wp_unslash( $_POST['user_email'] ) : '';
+		// No nonce, by design: this is the anonymous registration form that core's own
+		// `wp-login.php?action=register` also accepts without one (a visitor has no
+		// session to bind a nonce to, and a cached page would serve a stale one).
+		// Abuse is gated inside `register_new_user()` by `RegistrationGuard`.
+		$user_login = isset( $_POST['user_login'] ) && is_string( $_POST['user_login'] ) ? sanitize_user( wp_unslash( $_POST['user_login'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- anonymous core register form, no nonce by design (see above).
+		$user_email = isset( $_POST['user_email'] ) && is_string( $_POST['user_email'] ) ? sanitize_email( wp_unslash( $_POST['user_email'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- anonymous core register form, no nonce by design (see above).
 
 		$errors = register_new_user( $user_login, $user_email );
 
@@ -145,8 +153,10 @@ class AuthRedirects {
 			return;
 		}
 
-		$redirect_to = ! empty( $_POST['redirect_to'] ) && is_string( $_POST['redirect_to'] )
-			? wp_unslash( $_POST['redirect_to'] )
+		// Validated by `wp_safe_redirect()` in redirect(): off-site hosts are rejected.
+		$posted_to   = isset( $_POST['redirect_to'] ) && is_string( $_POST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_POST['redirect_to'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- anonymous core register form, no nonce by design (see above).
+		$redirect_to = '' !== $posted_to
+			? $posted_to
 			: add_query_arg( self::REGISTER_NOTICE_ARG, self::NOTICE_COMPLETE, home_url( self::REGISTER_URL_PATH ) );
 
 		$this->redirect( $redirect_to );

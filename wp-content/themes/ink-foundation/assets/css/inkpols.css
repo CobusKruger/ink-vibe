@@ -1,0 +1,345 @@
+/**
+ * INK Foundation: InkPols layout and text (`04-inkpols` §7).
+ *
+ * Loads on the archive, the single and the front page (the home section, N6):
+ * ink_foundation_enqueue_inkpols_assets() in functions.php. Layout and text only: every
+ * primitive is a class from primitives.css (R8).
+ *
+ * DIVERGENCE (accepted, inkpols.md §2, permitted #6): covers are A4 (`ink-cover`).
+ */
+
+/* the page's text base, as Lovable's body; the home section is a caller's band */
+.ink-inkpols,
+.ink-inkpols__huidig {
+	font-size: var(--wp--preset--font-size--md);
+	line-height: 1.5rem;
+}
+
+.ink-inkpols *,
+.ink-inkpols__huidig,
+.ink-inkpols__huidig * {
+	box-sizing: border-box;
+}
+
+/* --- reset the elements this sheet owns: no block-theme margins --- */
+.ink-inkpols p,
+.ink-inkpols h1,
+.ink-inkpols h2,
+.ink-inkpols h3,
+.ink-inkpols ul,
+.ink-inkpols__huidig p,
+.ink-inkpols__huidig h2,
+.ink-inkpols__huidig ul {
+	margin: 0;
+}
+
+.ink-inkpols--enkel > * {
+	margin-block: 0;
+}
+
+/* --- archive hero --- */
+.ink-inkpols .ink-inkpols__argief-titel {
+	margin: var(--wp--preset--spacing--s-8) 0 var(--wp--preset--spacing--s-12);
+}
+
+.ink-inkpols .ink-inkpols__argief-teks {
+	max-width: 36rem;
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-inkpols .ink-inkpols__leeg {
+	margin-top: var(--wp--preset--spacing--s-48);
+}
+
+/* --- current issue --- */
+.ink-inkpols__huidig {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--wp--preset--spacing--s-40);
+	align-items: center;
+}
+
+.ink-inkpols__huidig--argief {
+	margin-top: var(--wp--preset--spacing--s-48);
+}
+
+.ink-inkpols__omslag-kol,
+.ink-inkpols__omslag-skakel {
+	color: inherit;
+}
+
+.ink-inkpols__omslag-kol {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.ink-inkpols__huidig-lyf {
+	max-width: 42rem;
+}
+
+.ink-inkpols__huidig .ink-inkpols__huidig-titel {
+	margin: var(--wp--preset--spacing--s-8) 0 var(--wp--preset--spacing--s-16);
+}
+
+.ink-inkpols__huidig .ink-inkpols__huidig-teks {
+	margin-bottom: var(--wp--preset--spacing--s-24);
+	color: var(--wp--preset--color--muted-text);
+	line-height: 1.625;
+}
+
+.ink-inkpols__lys-hou {
+	margin-bottom: var(--wp--preset--spacing--s-32);
+}
+
+.ink-inkpols__huidig .ink-inkpols__binne-etiket {
+	margin-bottom: var(--wp--preset--spacing--s-12);
+}
+
+.ink-inkpols__aksies {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+.ink-inkpols__huidig:not(.ink-inkpols__huidig--argief) .ink-inkpols__aksies {
+	align-items: center;
+}
+
+.ink-inkpols__alle {
+	margin-left: var(--wp--preset--spacing--s-8);
+}
+
+/* --- featured items: default, home, compact --- */
+.ink-inkpols__lys {
+	padding: 0;
+	list-style: none;
+	border-top: 1px solid var(--wp--preset--color--border);
+	border-bottom: 1px solid var(--wp--preset--color--border);
+}
+
+.ink-inkpols__ry {
+	display: flex;
+	align-items: baseline;
+	gap: var(--wp--preset--spacing--s-12);
+	padding: var(--wp--preset--spacing--s-12) 0;
+}
+
+.ink-inkpols__ry + .ink-inkpols__ry {
+	border-top: 1px solid var(--wp--preset--color--border);
+}
+
+.ink-inkpols__soort {
+	flex-shrink: 0;
+	width: 3.5rem;
+}
+
+.ink-inkpols__ry-titel {
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--display);
+}
+
+.ink-inkpols__ry-skrywer {
+	margin-left: auto;
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--xs);
+	line-height: 1rem;
+	text-align: right;
+}
+
+.ink-inkpols__huidig .ink-inkpols__lys--home {
+	margin-bottom: var(--wp--preset--spacing--s-32);
+}
+
+.ink-inkpols__lys--home .ink-inkpols__ry {
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+.ink-inkpols__lys--home .ink-inkpols__soort {
+	width: 4rem;
+}
+
+.ink-inkpols__lys--home .ink-inkpols__ry-skrywer {
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+	text-align: start;
+}
+
+.ink-inkpols__lys--compact .ink-inkpols__ry {
+	padding: var(--wp--preset--spacing--s-8) 0;
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+/* --- past issues --- */
+.ink-inkpols__verlede-kop {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--wp--preset--spacing--s-16);
+	margin-bottom: var(--wp--preset--spacing--s-40);
+}
+
+.ink-inkpols__filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--s-8);
+}
+
+.ink-inkpols__rooster {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	column-gap: var(--wp--preset--spacing--s-32);
+	row-gap: 3.5rem;
+}
+
+.ink-inkpols__kaart {
+	display: flex;
+	flex-direction: column;
+}
+
+.ink-inkpols__kaart[hidden] {
+	display: none;
+}
+
+.ink-inkpols__omslag-skakel {
+	display: block;
+	margin-bottom: 1.25rem;
+}
+
+.ink-inkpols .ink-inkpols__kaart-titel {
+	margin: var(--wp--preset--spacing--s-4) 0 var(--wp--preset--spacing--s-12);
+}
+
+.ink-inkpols__kaart-skakel {
+	color: inherit;
+	text-decoration: none;
+	transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ink-inkpols__kaart-skakel:hover {
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-inkpols__lys-hou-kompak {
+	margin-bottom: 1.25rem;
+}
+
+.ink-inkpols__kaart-aksies {
+	display: flex;
+	gap: var(--wp--preset--spacing--s-8);
+	margin-top: auto;
+}
+
+/* --- single: bar --- */
+.ink-inkpols__balk {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-16);
+	padding-top: var(--wp--preset--spacing--s-16);
+	padding-bottom: var(--wp--preset--spacing--s-16);
+}
+
+.ink-inkpols__terug,
+.ink-inkpols__nav-skakel {
+	display: inline-flex;
+	align-items: center;
+}
+
+.ink-inkpols__terug svg,
+.ink-inkpols__nav-skakel svg {
+	margin-right: var(--wp--preset--spacing--s-4);
+}
+
+/* after the label (Volgende): `:first-child` can't tell, the label is a text node */
+.ink-inkpols__nav-skakel svg.ink-inkpols__ikoon-na {
+	margin-right: 0;
+	margin-left: var(--wp--preset--spacing--s-4);
+}
+
+.ink-inkpols__balk-titel {
+	flex: 1;
+	min-width: 0;
+}
+
+/* --- single: reader --- */
+.ink-inkpols-leser {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.ink-inkpols-leser--terugval {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* --- single: contents --- */
+.ink-inkpols .ink-inkpols__inhoud {
+	max-width: 64rem;
+}
+
+.ink-inkpols .ink-inkpols__inhoud-etiket {
+	margin-bottom: var(--wp--preset--spacing--s-16);
+}
+
+.ink-inkpols__inhoud-rooster {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--wp--preset--spacing--s-24);
+}
+
+.ink-inkpols .ink-inkpols__item-titel {
+	margin-top: var(--wp--preset--spacing--s-4);
+}
+
+.ink-inkpols__item-skrywer {
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+.ink-inkpols__nav {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--wp--preset--spacing--s-16);
+	margin-top: var(--wp--preset--spacing--s-48);
+	padding-top: var(--wp--preset--spacing--s-24);
+	border-top: 1px solid var(--wp--preset--color--border);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+@media (min-width: 640px) {
+	.ink-inkpols__rooster {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 768px) {
+	.ink-inkpols__huidig {
+		grid-template-columns: auto minmax(0, 1fr);
+	}
+
+	.ink-inkpols__omslag-kol {
+		margin-left: 0;
+		margin-right: 0;
+	}
+
+	.ink-inkpols__inhoud-rooster {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1024px) {
+	.ink-inkpols__huidig {
+		gap: var(--wp--preset--spacing--s-64);
+	}
+
+	.ink-inkpols__rooster {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}

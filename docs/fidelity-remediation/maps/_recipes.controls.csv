@@ -1,5 +1,5 @@
 component_kind,variant,property,viewport,value,source,evidence,status,note
-button-size,base,display,all,inline-flex,lovable-measured,tuisblad:challenge-card-btn; meld-aan:auth-submit,canonical,"computed 'flex' on other instances = blockified flex item, not a different recipe"
+button-size,base,display,all,inline-flex,lovable-measured,tuisblad:challenge-card-btn; teken-in:auth-submit,canonical,"computed 'flex' on other instances = blockified flex item, not a different recipe"
 button-size,base,align-items,all,center,lovable-measured,all 51 Lovable <Button> instances (button-primary/outline/ghost/subtle/sage-outline),canonical,
 button-size,base,justify-content,all,center,lovable-measured,all 51 Lovable <Button> instances (button-primary/outline/ghost/subtle/sage-outline),canonical,
 button-size,base,gap,all,8px,lovable-measured,all 51 Lovable <Button> instances (button-primary/outline/ghost/subtle/sage-outline),canonical,INK: normal on most replicas (no gap declared)
@@ -16,11 +16,11 @@ button-size,sm,padding,all,0px 12px,lovable-measured,tuisblad:header-btn-join; l
 button-size,sm,font-size,all,14px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,
 button-size,sm,line-height,all,20px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,INK inherits body 1.5 → 21px/27px on 14px/18px buttons
 button-size,sm,border-radius,all,6px,lovable-measured,tuisblad:header-btn-join; lees-storie:reading-author-follow; my-profiel:profiel-about-edit-btn,canonical,
-button-size,default,height,all,40px,lovable-measured,tuisblad:challenge-card-btn; meld-aan:auth-submit; skrywer:skrywer-share-btn,canonical,
-button-size,default,padding,all,8px 16px,lovable-measured,tuisblad:challenge-card-btn; meld-aan:auth-submit; skrywer:skrywer-share-btn,canonical,
-button-size,default,font-size,all,14px,lovable-measured,tuisblad:challenge-card-btn; meld-aan:auth-submit; skrywer:skrywer-share-btn,canonical,
-button-size,default,line-height,all,20px,lovable-measured,tuisblad:challenge-card-btn; meld-aan:auth-submit; skrywer:skrywer-share-btn,canonical,INK inherits body 1.5 → 21px/27px on 14px/18px buttons
-button-size,default,border-radius,all,6px,lovable-measured,tuisblad:challenge-card-btn; meld-aan:auth-submit; skrywer:skrywer-share-btn,canonical,
+button-size,default,height,all,40px,lovable-measured,tuisblad:challenge-card-btn; teken-in:auth-submit; skrywer:skrywer-share-btn,canonical,
+button-size,default,padding,all,8px 16px,lovable-measured,tuisblad:challenge-card-btn; teken-in:auth-submit; skrywer:skrywer-share-btn,canonical,
+button-size,default,font-size,all,14px,lovable-measured,tuisblad:challenge-card-btn; teken-in:auth-submit; skrywer:skrywer-share-btn,canonical,
+button-size,default,line-height,all,20px,lovable-measured,tuisblad:challenge-card-btn; teken-in:auth-submit; skrywer:skrywer-share-btn,canonical,INK inherits body 1.5 → 21px/27px on 14px/18px buttons
+button-size,default,border-radius,all,6px,lovable-measured,tuisblad:challenge-card-btn; teken-in:auth-submit; skrywer:skrywer-share-btn,canonical,
 button-size,lg,height,all,44px,lovable-measured,tuisblad:hero-btn-primary; uitdaging-enkel:uitdaging-btn-outline; skryf:skryf-draft-btn,canonical,
 button-size,lg,padding,all,0px 32px,lovable-measured,tuisblad:hero-btn-primary; uitdaging-enkel:uitdaging-btn-outline; skryf:skryf-draft-btn,canonical,
 button-size,lg,font-size,all,16px,lovable-measured,tuisblad:hero-btn-primary; uitdaging-enkel:uitdaging-btn-outline; skryf:skryf-draft-btn,canonical,
@@ -36,12 +36,12 @@ button-size,cta,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-ruli
 button-size,cta,font-size,all,18px,owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: measured tuisblad cta-btn-primary / cta-btn-secondary (stage-2 close capture); applies to every CTA button, incl. gemeenskap-cta-btn-* (Lovable renders Inter 16px, 44px there)"
 button-size,cta,line-height,all,28px,owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: measured tuisblad cta-btn-primary / cta-btn-secondary (stage-2 close capture); applies to every CTA button, incl. gemeenskap-cta-btn-* (Lovable renders Inter 16px, 44px there)"
 button-size,cta,height,all,48px,owner-ruling,stage-2-rulings.md BTN-1,canonical,"BTN-1: measured tuisblad cta-btn-primary / cta-btn-secondary (stage-2 close capture); applies to every CTA button, incl. gemeenskap-cta-btn-* (Lovable renders Inter 16px, 44px there)"
-button-primary,base,size,all,button-size (default|sm|lg|xl),lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,inherits the shared base
-button-primary,base,background-color,all,"rgb(236, 59, 19)",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,token primary
-button-primary,base,color,all,"rgb(255, 255, 255)",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,"primary-foreground; INK surface-alt rgb(253, 252, 250); token-delta: see ruling TOKEN-1"
-button-primary,base,border,all,0,lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,
-button-primary,base,font-family,all,"Lora, Georgia, serif",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,display; INK opleiding:library-cta-btn renders Inter
-button-primary,base,box-shadow,all,"rgba(24, 29, 37, 0.08) 0px 4px 20px -4px",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; meld-aan:auth-submit (+23 Lovable literary instances),canonical,shadow.md; missing on 9 INK replicas
+button-primary,base,size,all,button-size (default|sm|lg|xl),lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; teken-in:auth-submit (+23 Lovable literary instances),canonical,inherits the shared base
+button-primary,base,background-color,all,"rgb(236, 59, 19)",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; teken-in:auth-submit (+23 Lovable literary instances),canonical,token primary
+button-primary,base,color,all,"rgb(255, 255, 255)",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; teken-in:auth-submit (+23 Lovable literary instances),canonical,"primary-foreground; INK surface-alt rgb(253, 252, 250); token-delta: see ruling TOKEN-1"
+button-primary,base,border,all,0,lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; teken-in:auth-submit (+23 Lovable literary instances),canonical,
+button-primary,base,font-family,all,"Lora, Georgia, serif",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; teken-in:auth-submit (+23 Lovable literary instances),canonical,display; INK opleiding:library-cta-btn renders Inter
+button-primary,base,box-shadow,all,"rgba(24, 29, 37, 0.08) 0px 4px 20px -4px",lovable-measured,tuisblad:hero-btn-primary; tuisblad:challenge-card-btn; teken-in:auth-submit (+23 Lovable literary instances),canonical,shadow.md; missing on 9 INK replicas
 button-primary,base,hover background-color,all,primary-light,block-style,functions.php:1497-1499,canonical,Lovable hover:bg-terracotta-light; state not captured
 button-primary,on-dark,size,all,button-size xl,lovable-measured,tuisblad:cta-btn-primary,canonical,
 button-primary,on-dark,background-color,all,"rgb(255, 255, 255)",lovable-measured,tuisblad:cta-btn-primary,canonical,INK surface-alt; token-delta: see ruling TOKEN-1
@@ -49,7 +49,7 @@ button-primary,on-dark,color,all,"rgb(236, 59, 19)",lovable-measured,tuisblad:ct
 button-primary,on-dark,box-shadow,all,none,lovable-measured,tuisblad:cta-btn-primary,canonical,
 button-primary,on-dark,font-family,all,"Lora, Georgia, serif",lovable-measured,tuisblad:cta-btn-primary,canonical,
 button-primary,pill,border-radius,all,6px,owner-ruling,stage-2-rulings.md BTN-2,canonical,BTN-2: no pill buttons (general rule); lidmaatskap-plan-btn takes the standard button radius; was most-used: lidmaatskap:lidmaatskap-plan-btn; functions.php:1461-1470
-button-primary,form-submit,recipe,all,button-primary base + button-size default; width 100%,owner-ruling,stage-2-rulings.md FORMS,canonical,"FORMS: the /auth submit recipe (meld-aan:auth-submit, Auth.tsx:96 variant literary w-full) for the contact form and any form without a Lovable equivalent"
+button-primary,form-submit,recipe,all,button-primary base + button-size default; width 100%,owner-ruling,stage-2-rulings.md FORMS,canonical,"FORMS: the /auth submit recipe (teken-in:auth-submit, Auth.tsx:96 variant literary w-full) for the contact form and any form without a Lovable equivalent"
 button-outline,base,size,all,button-size (default|lg),lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
 button-outline,base,background-color,all,transparent,lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
 button-outline,base,color,all,"rgb(236, 59, 19)",lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
@@ -57,11 +57,11 @@ button-outline,base,border,all,"2px solid rgb(236, 59, 19)",lovable-measured,uit
 button-outline,base,font-family,all,"Lora, Georgia, serif",lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
 button-outline,base,box-shadow,all,none,lovable-measured,uitdaging-enkel:uitdaging-btn-outline; tuisblad:hero-btn-outline; my-profiel:profiel-identity-edit-btn (+6),canonical,
 button-outline,base,hover,all,"background primary; color rgb(255, 255, 255)",block-style,functions.php:1525-1528,canonical,Lovable hover:bg-terracotta hover:text-primary-foreground; not captured
-button-outline,neutral,background-color,all,"rgb(250, 248, 245)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,background; INK surface; token-delta: see ruling TOKEN-1
-button-outline,neutral,color,all,"rgb(24, 29, 37)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,foreground; INK ink-text; token-delta: see ruling TOKEN-1
-button-outline,neutral,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,input/border; token-delta: see ruling TOKEN-1
-button-outline,neutral,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: Lovable renders Inter; was lovable-measured: gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple
-button-outline,neutral,box-shadow,all,none,lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; meld-aan:auth-oauth-google; meld-aan:auth-oauth-apple,canonical,
+button-outline,neutral,background-color,all,"rgb(250, 248, 245)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; teken-in:auth-oauth-google; teken-in:auth-oauth-apple,canonical,background; INK surface; token-delta: see ruling TOKEN-1
+button-outline,neutral,color,all,"rgb(24, 29, 37)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; teken-in:auth-oauth-google; teken-in:auth-oauth-apple,canonical,foreground; INK ink-text; token-delta: see ruling TOKEN-1
+button-outline,neutral,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; teken-in:auth-oauth-google; teken-in:auth-oauth-apple,canonical,input/border; token-delta: see ruling TOKEN-1
+button-outline,neutral,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: Lovable renders Inter; was lovable-measured: gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; teken-in:auth-oauth-google; teken-in:auth-oauth-apple
+button-outline,neutral,box-shadow,all,none,lovable-measured,gemeenskap:gemeenskap-hero-btn-secondary; skryf:skryf-draft-btn; teken-in:auth-oauth-google; teken-in:auth-oauth-apple,canonical,
 button-outline,neutral,hover,all,"background rgb(82, 122, 102); color rgb(253, 253, 252)",owner-ruling,stage-2-rulings.md BTN-3,canonical,"BTN-3: Lovable's sage hover, measured on gemeenskap-hero-btn-secondary (stage-2 close one-off Playwright hover (tmp/stage2/close/hover*.mjs)); border unchanged rgb(231, 225, 218); was token: ink-lovable button.tsx:14 (class only; state not captured)"
 button-outline,gold,border-color,all,"rgba(232, 177, 48, 0.4)",owner-ruling,stage-2-rulings.md LEG-2,canonical,"LEG-2: border-gold/40, measured tuisblad winner-btn (stage-2 close capture) after the Lovable fix (ChallengeSection.tsx:83); was lovable-measured: tuisblad:winner-btn"
 button-outline,gold,font-family,all,"Lora, Georgia, serif",owner-ruling,stage-2-rulings.md BTN-FONT,canonical,BTN-FONT: measured tuisblad winner-btn (stage-2 close capture) after the Lovable fix; was lovable-measured: tuisblad:winner-btn
@@ -163,49 +163,49 @@ tab,base,margin-bottom,all,-1px,token,ink-lovable class -mb-px (not captured),ca
 tab,base,color,all,"rgb(103, 111, 126)",lovable-measured,ontdek:tabs-tab,canonical,inactive; token-delta: see ruling TOKEN-1
 tab,active,color,all,"rgb(24, 29, 37)",lovable-measured,ontdek:tabs-tab-active,canonical,token-delta: see ruling TOKEN-1
 tab,active,border-bottom-color,all,"rgb(236, 59, 19)",lovable-measured,ontdek:tabs-tab-active,canonical,
-tab,segmented,height,all,32px,lovable-measured,my-profiel:profiel-tab-*; meld-aan:auth-tab-signin; meld-aan:auth-tab-signup,canonical,shadcn TabsTrigger; INK has no segmented tab (ruling F7 / M4 pending)
-tab,segmented,padding,all,6px 12px,lovable-measured,my-profiel:profiel-tab-*; meld-aan:auth-tab-signin; meld-aan:auth-tab-signup,canonical,
-tab,segmented,border-radius,all,4px,lovable-measured,my-profiel:profiel-tab-*; meld-aan:auth-tab-signin; meld-aan:auth-tab-signup,canonical,radius.sm
-tab,segmented,font,all,"14px/20px Inter, system-ui, sans-serif 500",lovable-measured,my-profiel:profiel-tab-*; meld-aan:auth-tab-signin; meld-aan:auth-tab-signup,canonical,
-tab,segmented,color,all,"rgb(103, 111, 126)",lovable-measured,my-profiel:profiel-tab-*; meld-aan:auth-tab-signin; meld-aan:auth-tab-signup,canonical,inactive; token-delta: see ruling TOKEN-1
-tab,segmented-active,background-color,all,"rgb(250, 248, 245)",lovable-measured,my-profiel:profiel-tab-overview; meld-aan:auth-tab-signin,canonical,token-delta: see ruling TOKEN-1
+tab,segmented,height,all,32px,lovable-measured,my-profiel:profiel-tab-*; teken-in:auth-tab-signin; teken-in:auth-tab-signup,canonical,shadcn TabsTrigger; INK has no segmented tab (ruling F7 / M4 pending)
+tab,segmented,padding,all,6px 12px,lovable-measured,my-profiel:profiel-tab-*; teken-in:auth-tab-signin; teken-in:auth-tab-signup,canonical,
+tab,segmented,border-radius,all,4px,lovable-measured,my-profiel:profiel-tab-*; teken-in:auth-tab-signin; teken-in:auth-tab-signup,canonical,radius.sm
+tab,segmented,font,all,"14px/20px Inter, system-ui, sans-serif 500",lovable-measured,my-profiel:profiel-tab-*; teken-in:auth-tab-signin; teken-in:auth-tab-signup,canonical,
+tab,segmented,color,all,"rgb(103, 111, 126)",lovable-measured,my-profiel:profiel-tab-*; teken-in:auth-tab-signin; teken-in:auth-tab-signup,canonical,inactive; token-delta: see ruling TOKEN-1
+tab,segmented-active,background-color,all,"rgb(250, 248, 245)",lovable-measured,my-profiel:profiel-tab-overview; teken-in:auth-tab-signin,canonical,token-delta: see ruling TOKEN-1
 tab,segmented-active,color,all,"rgb(24, 29, 37)",lovable-measured,my-profiel:profiel-tab-overview,canonical,token-delta: see ruling TOKEN-1
 tab,segmented-active,box-shadow,all,"rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",lovable-measured,my-profiel:profiel-tab-overview,canonical,Tailwind shadow-sm; INK shadow.sm preset is 0 2px 12px -2px — not the same value
-tab,segmented-list,box,all,"height 40px; padding 4px; radius 6px; bg rgb(243, 240, 237)",lovable-measured,meld-aan:auth-tabs-list,canonical,
+tab,segmented-list,box,all,"height 40px; padding 4px; radius 6px; bg rgb(243, 240, 237)",lovable-measured,teken-in:auth-tabs-list,canonical,
 nav-link,base,font,all,"16px/24px Inter, system-ui, sans-serif 400",lovable-measured,tuisblad:header-nav-home ... header-nav-community,canonical,header nav
 nav-link,base,color,all,"rgb(103, 111, 126)",lovable-measured,tuisblad:header-nav-home ... header-nav-community,canonical,muted-foreground; token-delta: see ruling TOKEN-1
 nav-link,base,text-decoration,all,none,lovable-measured,tuisblad:header-nav-home ... header-nav-community,canonical,
 nav-link,base,hover,all,"color foreground; underline-slide ::after (2px primary, width 0→100%, 0.3s)",block-style,"functions.php header nav (::after, register row tuisblad functions.php:1684/1698)",canonical,matches ink-lovable index.css:182-199 .underline-slide; state not captured
-nav-link,footer,font,all,"14px/20px Inter, system-ui, sans-serif 400",lovable-measured,tuisblad:footer-col-link; meld-aan:auth-back-link; wagwoord-herstel:auth-switch-link,canonical,INK footer 14px/21px
-nav-link,footer,color,all,"rgb(103, 111, 126)",lovable-measured,tuisblad:footer-col-link; meld-aan:auth-back-link; wagwoord-herstel:auth-switch-link,canonical,"hover foreground, no underline-slide; token-delta: see ruling TOKEN-1"
-link-underline,base,color,all,"rgb(236, 59, 19)",lovable-measured,skrywer:skrywer-werk-all-link; meld-aan:auth-forgot-link; my-profiel:profiel-edit-photo-label; wagwoord-terugstel:auth-notice-link,canonical,
-link-underline,base,font,all,"inherit size; Inter, system-ui, sans-serif 400",lovable-measured,skrywer:skrywer-werk-all-link; meld-aan:auth-forgot-link; my-profiel:profiel-edit-photo-label; wagwoord-terugstel:auth-notice-link,canonical,"size follows context: 14px/20px (sien-alle, notice), 12px/16px (forgot); INK uses 1.5 line-height"
-link-underline,base,text-decoration,all,none at rest; underline on hover,lovable-measured,skrywer:skrywer-werk-all-link; meld-aan:auth-forgot-link; my-profiel:profiel-edit-photo-label; wagwoord-terugstel:auth-notice-link,canonical,INK auth links render underlined at rest (theme.json elements.link)
+nav-link,footer,font,all,"14px/20px Inter, system-ui, sans-serif 400",lovable-measured,tuisblad:footer-col-link; teken-in:auth-back-link; wagwoord-herstel:auth-switch-link,canonical,INK footer 14px/21px
+nav-link,footer,color,all,"rgb(103, 111, 126)",lovable-measured,tuisblad:footer-col-link; teken-in:auth-back-link; wagwoord-herstel:auth-switch-link,canonical,"hover foreground, no underline-slide; token-delta: see ruling TOKEN-1"
+link-underline,base,color,all,"rgb(236, 59, 19)",lovable-measured,skrywer:skrywer-werk-all-link; teken-in:auth-forgot-link; my-profiel:profiel-edit-photo-label; wagwoord-terugstel:auth-notice-link,canonical,
+link-underline,base,font,all,"inherit size; Inter, system-ui, sans-serif 400",lovable-measured,skrywer:skrywer-werk-all-link; teken-in:auth-forgot-link; my-profiel:profiel-edit-photo-label; wagwoord-terugstel:auth-notice-link,canonical,"size follows context: 14px/20px (sien-alle, notice), 12px/16px (forgot); INK uses 1.5 line-height"
+link-underline,base,text-decoration,all,none at rest; underline on hover,lovable-measured,skrywer:skrywer-werk-all-link; teken-in:auth-forgot-link; my-profiel:profiel-edit-photo-label; wagwoord-terugstel:auth-notice-link,canonical,INK auth links render underlined at rest (theme.json elements.link)
 link-underline,slide,hover,all,color primary-light; underline-slide ::after,token,tuisblad:featured-all-link (class text-terracotta hover:text-terracotta-light underline-slide),canonical,16px/24px; INK .ink-underline-slide is home.css-only (page-scoped)
-form-field,base,height,all,40px,lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,"INK kontak 35px, skryf 36px, profiel 38px"
-form-field,base,padding,all,8px 12px,lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,
-form-field,base,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,input; token-delta: see ruling TOKEN-1
-form-field,base,border-radius,all,6px,lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,
-form-field,base,background-color,all,"rgb(250, 248, 245)",lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,background; INK reaksies input renders UA white/black; token-delta: see ruling TOKEN-1
-form-field,base,color,all,"rgb(24, 29, 37)",lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,token-delta: see ruling TOKEN-1
-form-field,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,meld-aan:auth-email-input; meld-aan:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,skryf title/body override to Lora (display)
-form-field,base,font-size,390,16px,lovable-measured,meld-aan:auth-email-input@390; wagwoord-herstel:auth-email-input@390,canonical,shadcn Input text-base md:text-sm; INK renders 14px at 390
-form-field,base,line-height,390,24px,lovable-measured,meld-aan:auth-email-input@390,canonical,
-form-field,base,font-size,768|1440,14px,lovable-measured,meld-aan:auth-email-input@768|1440,canonical,
-form-field,base,line-height,768|1440,20px,lovable-measured,meld-aan:auth-email-input@768|1440,canonical,
+form-field,base,height,all,40px,lovable-measured,teken-in:auth-email-input; teken-in:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,"INK kontak 35px, skryf 36px, profiel 38px"
+form-field,base,padding,all,8px 12px,lovable-measured,teken-in:auth-email-input; teken-in:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,
+form-field,base,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,teken-in:auth-email-input; teken-in:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,input; token-delta: see ruling TOKEN-1
+form-field,base,border-radius,all,6px,lovable-measured,teken-in:auth-email-input; teken-in:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,
+form-field,base,background-color,all,"rgb(250, 248, 245)",lovable-measured,teken-in:auth-email-input; teken-in:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,background; INK reaksies input renders UA white/black; token-delta: see ruling TOKEN-1
+form-field,base,color,all,"rgb(24, 29, 37)",lovable-measured,teken-in:auth-email-input; teken-in:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,token-delta: see ruling TOKEN-1
+form-field,base,font-family,all,"Inter, system-ui, sans-serif",lovable-measured,teken-in:auth-email-input; teken-in:auth-password-input; wagwoord-herstel:auth-email-input; my-profiel:profiel-edit-input; skryf:skryf-title-input,canonical,skryf title/body override to Lora (display)
+form-field,base,font-size,390,16px,lovable-measured,teken-in:auth-email-input@390; wagwoord-herstel:auth-email-input@390,canonical,shadcn Input text-base md:text-sm; INK renders 14px at 390
+form-field,base,line-height,390,24px,lovable-measured,teken-in:auth-email-input@390,canonical,
+form-field,base,font-size,768|1440,14px,lovable-measured,teken-in:auth-email-input@768|1440,canonical,
+form-field,base,line-height,768|1440,20px,lovable-measured,teken-in:auth-email-input@768|1440,canonical,
 form-field,textarea,font,all,"14px/20px Inter, system-ui, sans-serif",lovable-measured,lees-storie:reading-response-input; lees-gedig:reading-response-input; my-profiel:profiel-edit-textarea,canonical,all viewports (shadcn Textarea is text-sm)
 form-field,textarea,min-height,all,80px,lovable-measured,lees-storie:reading-response-input; lees-gedig:reading-response-input; my-profiel:profiel-edit-textarea,canonical,rendered 100px / 118px; INK reaksies 77px with 12px padding
-form-field,no-lovable-equivalent,recipe,all,form-field base (the /auth input recipe),owner-ruling,stage-2-rulings.md FORMS,canonical,FORMS: contact form inputs and every input with no Lovable sibling use meld-aan:auth-email-input (Auth.tsx:85)
-form-label,base,font,all,"14px Inter, system-ui, sans-serif 500",lovable-measured,meld-aan:auth-email-label; meld-aan:auth-password-label; wagwoord-herstel:auth-email-label; skryf:skryf-title-label,canonical,
-form-label,base,color,all,"rgb(24, 29, 37)",lovable-measured,meld-aan:auth-email-label; meld-aan:auth-password-label; wagwoord-herstel:auth-email-label; skryf:skryf-title-label,canonical,token-delta: see ruling TOKEN-1
-form-label,base,line-height,all,20px,owner-ruling,stage-2-rulings.md LBL-1,canonical,LBL-1: form labels have a 20px line-height; was lovable-measured: meld-aan:auth-email-label (14px) vs skryf:skryf-title-label (20px)
-form-label,no-lovable-equivalent,recipe,all,form-label base (the /auth label recipe),owner-ruling,stage-2-rulings.md FORMS,canonical,"FORMS: contact form labels follow meld-aan:auth-email-label (Auth.tsx:84), at the LBL-1 line-height"
+form-field,no-lovable-equivalent,recipe,all,form-field base (the /auth input recipe),owner-ruling,stage-2-rulings.md FORMS,canonical,FORMS: contact form inputs and every input with no Lovable sibling use teken-in:auth-email-input (Auth.tsx:85)
+form-label,base,font,all,"14px Inter, system-ui, sans-serif 500",lovable-measured,teken-in:auth-email-label; teken-in:auth-password-label; wagwoord-herstel:auth-email-label; skryf:skryf-title-label,canonical,
+form-label,base,color,all,"rgb(24, 29, 37)",lovable-measured,teken-in:auth-email-label; teken-in:auth-password-label; wagwoord-herstel:auth-email-label; skryf:skryf-title-label,canonical,token-delta: see ruling TOKEN-1
+form-label,base,line-height,all,20px,owner-ruling,stage-2-rulings.md LBL-1,canonical,LBL-1: form labels have a 20px line-height; was lovable-measured: teken-in:auth-email-label (14px) vs skryf:skryf-title-label (20px)
+form-label,no-lovable-equivalent,recipe,all,form-label base (the /auth label recipe),owner-ruling,stage-2-rulings.md FORMS,canonical,"FORMS: contact form labels follow teken-in:auth-email-label (Auth.tsx:84), at the LBL-1 line-height"
 form-label,caps,font,all,"12px/16px Inter, system-ui, sans-serif 400",lovable-measured,my-profiel:profiel-edit-label,canonical,INK 12px/18px
 form-label,caps,text-transform,all,uppercase,lovable-measured,my-profiel:profiel-edit-label,canonical,
 form-label,caps,letter-spacing,all,0.6px,lovable-measured,my-profiel:profiel-edit-label,canonical,tracking-wider (0.05em); INK 0.96px
 form-label,caps,color,all,"rgb(103, 111, 126)",lovable-measured,my-profiel:profiel-edit-label,canonical,token-delta: see ruling TOKEN-1
-form-hint,base,font,all,"12px/16px Inter, system-ui, sans-serif 400",lovable-measured,skryf:skryf-challenges-hint; meld-aan:auth-field-hint (signup state),canonical,INK 12px/18px on all 6 instances
-form-hint,base,color,all,"rgb(103, 111, 126)",lovable-measured,skryf:skryf-challenges-hint; meld-aan:auth-field-hint (signup state),canonical,token-delta: see ruling TOKEN-1
+form-hint,base,font,all,"12px/16px Inter, system-ui, sans-serif 400",lovable-measured,skryf:skryf-challenges-hint; teken-in:auth-field-hint (signup state),canonical,INK 12px/18px on all 6 instances
+form-hint,base,color,all,"rgb(103, 111, 126)",lovable-measured,skryf:skryf-challenges-hint; teken-in:auth-field-hint (signup state),canonical,token-delta: see ruling TOKEN-1
 search-field,base,height,all,48px,lovable-measured,ontdek:search-input; biblioteek:library-search-input,canonical,INK 43 / 50 / 39px on three pages
 search-field,base,padding,all,8px 12px 8px 44px,lovable-measured,ontdek:search-input; biblioteek:library-search-input,canonical,pl-11 leaves room for the leading search icon
 search-field,base,border,all,"1px solid rgb(231, 225, 218)",lovable-measured,ontdek:search-input; biblioteek:library-search-input,canonical,token-delta: see ruling TOKEN-1

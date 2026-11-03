@@ -100,7 +100,7 @@ test( 'closeComments stays false when the exception seam returns its default', f
 /**
  * AC-5 (integration): programmatic `wp_insert_comment` is unaffected by this
  * layer — it bypasses `comments_open`/`pings_open` by design, so the sanctioned
- * custom comment types (`ink_reaksie`, `ink_moderator_terugvoer`) still write.
+ * custom comment types (`ink_reaksie`, `ink_mod_terugvoer`) still write.
  * This real-WP assertion now has a home at
  * `tests/Integration/Engagement/CommentInsertionTest.php` (wp-env harness wired
  * in Story 1.11); the full integration assertion lands with its feature / the

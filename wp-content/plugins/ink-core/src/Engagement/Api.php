@@ -80,4 +80,30 @@ final class Api {
 	public static function responseCountForPost( int $post_id ): int {
 		return ResponseStore::countForPost( $post_id );
 	}
+
+	/**
+	 * A poem's opening lines with their breaks, for an excerpt: section markers and blank
+	 * lines are skipped, and tags are stripped. Tokenised by {@see GedigBody::tokenize()}.
+	 *
+	 * @param string $body  The raw stored body.
+	 * @param int    $count How many lines.
+	 * @return string
+	 */
+	public static function poemOpening( string $body, int $count ): string {
+		$lines = array();
+
+		foreach ( GedigBody::tokenize( $body ) as $token ) {
+			if ( 'line' !== $token['type'] || ! empty( $token['marker'] ) ) {
+				continue;
+			}
+
+			$lines[] = trim( wp_strip_all_tags( (string) ( $token['text'] ?? '' ) ) );
+
+			if ( count( $lines ) >= $count ) {
+				break;
+			}
+		}
+
+		return implode( "\n", $lines );
+	}
 }

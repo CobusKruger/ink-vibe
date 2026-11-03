@@ -14,7 +14,7 @@ use Ink\I18n\Terms;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers the nine INK custom post types (Story 2.1).
+ * Registers the INK custom post types (Story 2.1; WP5 added the two competition types).
  *
  * The post-type keys are the migration-load-bearing CODE IDs (old `verhaal` →
  * `storie`, `inkpols` → `inkpols_uitgawe`) and are declared once here as class
@@ -62,6 +62,10 @@ final class PostTypes {
 	public const INKPOLS_UITGAWE   = 'inkpols_uitgawe';
 	public const BORG              = 'borg';
 
+	// Competitions are not challenges (owner): no URL of their own, shown on /kompetisies/.
+	public const KOMPETISIE          = 'kompetisie';
+	public const EKSTERNE_KOMPETISIE = 'eksterne_kompetisie';
+
 	/**
 	 * Every INK post-type slug, registration order preserved.
 	 *
@@ -78,6 +82,8 @@ final class PostTypes {
 			self::UITDAGING,
 			self::INKPOLS_UITGAWE,
 			self::BORG,
+			self::KOMPETISIE,
+			self::EKSTERNE_KOMPETISIE,
 		);
 	}
 
@@ -117,6 +123,20 @@ final class PostTypes {
 		foreach ( self::definitions() as $slug => $def ) {
 			register_post_type( $slug, self::args( $def ) );
 		}
+
+		add_filter( 'use_block_editor_for_post_type', array( self::class, 'useBlockEditor' ), 10, 2 );
+	}
+
+	/**
+	 * A `kompetisie` edits on the classic screen: one save request carries title, status and
+	 * the field box, and nothing renders its body (`05-kompetisies` §3.2). Pure.
+	 *
+	 * @param bool   $use_editor The incoming decision.
+	 * @param string $post_type  The post type.
+	 * @return bool
+	 */
+	public static function useBlockEditor( bool $use_editor, string $post_type ): bool {
+		return self::KOMPETISIE === $post_type ? false : $use_editor;
 	}
 
 	/**
@@ -124,7 +144,8 @@ final class PostTypes {
 	 *
 	 * Each entry: the singular/plural {@see Terms} keys, `supports`, visibility,
 	 * archive (a string archive slug, or false for no public archive), a dashicon,
-	 * and the rewrite slug. `biblioteek_item`/`opleiding_artikel` keep the
+	 * and the rewrite slug (or false for no URL). Optional `show_ui` overrides the admin
+	 * screens, which otherwise follow `public`. `biblioteek_item`/`opleiding_artikel` keep the
 	 * documented `/biblioteek/` and `/opleiding/` URL prefixes (migration plan).
 	 *
 	 * @return array<string, array<string, mixed>>
@@ -133,7 +154,7 @@ final class PostTypes {
 		$bydrae_supports = array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'revisions' );
 
 		return array(
-			self::GEDIG             => array(
+			self::GEDIG               => array(
 				'singular' => 'gedig',
 				'plural'   => 'gedig_plural',
 				'supports' => $bydrae_supports,
@@ -142,7 +163,7 @@ final class PostTypes {
 				'icon'     => 'dashicons-edit',
 				'rewrite'  => self::GEDIG,
 			),
-			self::STORIE            => array(
+			self::STORIE              => array(
 				'singular' => 'storie',
 				'plural'   => 'storie_plural',
 				'supports' => $bydrae_supports,
@@ -151,7 +172,7 @@ final class PostTypes {
 				'icon'     => 'dashicons-book',
 				'rewrite'  => self::STORIE,
 			),
-			self::ARTIKEL           => array(
+			self::ARTIKEL             => array(
 				'singular' => 'artikel',
 				'plural'   => 'artikel_plural',
 				'supports' => $bydrae_supports,
@@ -160,7 +181,7 @@ final class PostTypes {
 				'icon'     => 'dashicons-media-document',
 				'rewrite'  => self::ARTIKEL,
 			),
-			self::SKRYFWERK         => array(
+			self::SKRYFWERK           => array(
 				'singular' => 'skryfwerk',
 				'plural'   => 'skryfwerk_plural',
 				'supports' => $bydrae_supports,
@@ -169,7 +190,7 @@ final class PostTypes {
 				'icon'     => 'dashicons-welcome-write-blog',
 				'rewrite'  => self::SKRYFWERK,
 			),
-			self::BIBLIOTEEK_ITEM   => array(
+			self::BIBLIOTEEK_ITEM     => array(
 				'singular'     => 'biblioteek_item',
 				'plural'       => 'biblioteek_item_plural',
 				'supports'     => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'page-attributes' ),
@@ -179,7 +200,7 @@ final class PostTypes {
 				'icon'         => 'dashicons-book-alt',
 				'rewrite'      => 'biblioteek',
 			),
-			self::OPLEIDING_ARTIKEL => array(
+			self::OPLEIDING_ARTIKEL   => array(
 				'singular'     => 'opleiding_artikel',
 				'plural'       => 'opleiding_artikel_plural',
 				'supports'     => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'page-attributes' ),
@@ -189,7 +210,7 @@ final class PostTypes {
 				'icon'         => 'dashicons-welcome-learn-more',
 				'rewrite'      => 'opleiding',
 			),
-			self::UITDAGING         => array(
+			self::UITDAGING           => array(
 				'singular' => 'uitdaging',
 				'plural'   => 'uitdaging_plural',
 				'supports' => array( 'title', 'editor', 'thumbnail', 'excerpt' ),
@@ -198,16 +219,18 @@ final class PostTypes {
 				'icon'     => 'dashicons-awards',
 				'rewrite'  => self::UITDAGING,
 			),
-			self::INKPOLS_UITGAWE   => array(
+			self::INKPOLS_UITGAWE     => array(
 				'singular' => 'inkpols_uitgawe',
 				'plural'   => 'inkpols_uitgawe_plural',
-				'supports' => array( 'title', 'editor', 'thumbnail', 'excerpt' ),
+				// No editor or excerpt: the single has no body section, and without `editor` WordPress
+				// gives the classic screen, so one save request carries the field box (`04-inkpols` §4a).
+				'supports' => array( 'title', 'thumbnail' ),
 				'public'   => true,
 				'archive'  => 'inkpols',
 				'icon'     => 'dashicons-media-text',
 				'rewrite'  => 'inkpols',
 			),
-			self::BORG              => array(
+			self::BORG                => array(
 				'singular' => 'borg',
 				'plural'   => 'borg_plural',
 				'supports' => array( 'title', 'editor', 'thumbnail' ),
@@ -215,6 +238,26 @@ final class PostTypes {
 				'archive'  => false, // Rendered on the "Ons borge" page, not its own archive.
 				'icon'     => 'dashicons-heart',
 				'rewrite'  => self::BORG,
+			),
+			self::KOMPETISIE          => array(
+				'singular' => 'kompetisie',
+				'plural'   => 'kompetisie_plural',
+				'supports' => array( 'title', 'editor' ), // The editor holds an imported gala's old text, for reference; nothing renders it.
+				'public'   => false,
+				'show_ui'  => true,
+				'archive'  => false,
+				'icon'     => 'dashicons-star-filled',
+				'rewrite'  => false,
+			),
+			self::EKSTERNE_KOMPETISIE => array(
+				'singular' => 'eksterne_kompetisie',
+				'plural'   => 'eksterne_kompetisie_plural',
+				'supports' => array( 'title' ),
+				'public'   => false,
+				'show_ui'  => true,
+				'archive'  => false,
+				'icon'     => 'dashicons-external',
+				'rewrite'  => false,
 			),
 		);
 	}
@@ -229,12 +272,13 @@ final class PostTypes {
 		return array(
 			'labels'          => self::labels( (string) $def['singular'], (string) $def['plural'] ),
 			'public'          => (bool) $def['public'],
+			'show_ui'         => (bool) ( $def['show_ui'] ?? $def['public'] ),
 			'show_in_rest'    => true, // Block editor + REST (AD-6).
 			'has_archive'     => $def['archive'],
 			'hierarchical'    => (bool) ( $def['hierarchical'] ?? false ),
 			'supports'        => $def['supports'],
 			'menu_icon'       => $def['icon'],
-			'rewrite'         => array( 'slug' => (string) $def['rewrite'] ),
+			'rewrite'         => false === $def['rewrite'] ? false : array( 'slug' => (string) $def['rewrite'] ),
 			// Story 3.3 (2.1 gap): a dedicated INK content capability type so the
 			// CPTs no longer inherit bare default `post` caps (false isolation).
 			'capability_type' => array( self::CAPABILITY_TYPE_SINGULAR, self::CAPABILITY_TYPE_PLURAL ),

@@ -200,7 +200,7 @@ Resolve this once the BuddyPress Groups question is answered before or during la
 3. Move surviving styles into the block theme's `theme.json` design tokens, a dedicated stylesheet, or appropriate block styles.
 4. Once the CSS is confirmed in the theme, deactivate and uninstall Simple CSS.
 
-Do not retire this plugin until the CSS audit and theme migration are confirmed complete.
+**Audit done (2026-11-02):** retire it. Of the 7 rules, 4 target the old `qodef` theme and are inert. `body { font-size: 14px }` and the two `input` rules break the new theme, which is why body text rendered at 14px. Nothing moves to the theme. It prints on every page, so it is deactivated by the staging list (4a) and forbidden on production (`ProductionHygiene`).
 
 ---
 

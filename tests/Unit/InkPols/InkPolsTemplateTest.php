@@ -31,13 +31,8 @@ test( 'the inkpols archive template embeds the archive pattern within locked chr
 	expect( $markup )->toContain( 'ink-foundation/inkpols' ); // references the archive pattern
 } );
 
-test( 'the inkpols archive pattern routes its heading via the bridge and embeds the server-rendered list block', function () use ( $ink_read ): void {
-	$markup = $ink_read( 'patterns/inkpols.php' );
-
-	// Heading from the terminology registry bridge (single-source brand label).
-	expect( $markup )->toContain( "ink_foundation_term( 'inkpols'" );
-	// The archive itself is the server-rendered ink-core block.
-	expect( $markup )->toContain( 'wp:ink/inkpols-argief' );
+test( 'the inkpols archive pattern embeds the server-rendered block, which emits its own bands', function () use ( $ink_read ): void {
+	expect( $ink_read( 'patterns/inkpols.php' ) )->toContain( 'wp:ink/inkpols-argief' );
 } );
 
 test( 'the single inkpols template embeds the reading pattern within locked chrome', function () use ( $ink_read ): void {
@@ -47,16 +42,21 @@ test( 'the single inkpols template embeds the reading pattern within locked chro
 	expect( $markup )->toContain( 'ink-foundation/reading-inkpols' );
 } );
 
-test( 'the reading-inkpols pattern carries the eyebrow label via the bridge plus title/content and the besonderhede block', function () use ( $ink_read ): void {
+test( 'the reading-inkpols pattern has bar, flipbook and contents, and no body section', function () use ( $ink_read ): void {
 	$markup = $ink_read( 'patterns/reading-inkpols.php' );
 
-	// Eyebrow label from the terminology registry bridge (single-source, not a bare literal).
-	expect( $markup )->toContain( "ink_foundation_term( 'inkpols_uitgawe'" );
-	// Core reading blocks.
-	expect( $markup )->toContain( 'wp:post-title' );
-	expect( $markup )->toContain( 'wp:post-content' );
-	// The server-rendered issue-metadata block.
-	expect( $markup )->toContain( 'wp:ink/inkpols-besonderhede' );
-	// Story 13.3: the PDF flipbook viewer block.
-	expect( $markup )->toContain( 'wp:ink/inkpols-leser' );
+	expect( strpos( $markup, 'wp:ink/inkpols-besonderhede' ) )->toBeLessThan( strpos( $markup, 'wp:ink/inkpols-leser' ) );
+	expect( strpos( $markup, 'wp:ink/inkpols-leser' ) )->toBeLessThan( strpos( $markup, 'wp:ink/inkpols-inhoud' ) );
+	expect( $markup )->not->toContain( 'wp:post-content' );
+} );
+
+test( 'theme.json holds no ink-inkpols rules any more', function () use ( $ink_read ): void {
+	expect( $ink_read( 'theme.json' ) )->not->toContain( 'ink-inkpols' );
+} );
+
+test( 'the page sheet gate covers the archive, the single and the front page', function () use ( $ink_read ): void {
+	$functions = $ink_read( 'functions.php' );
+
+	expect( $functions )->toContain( "is_post_type_archive( 'inkpols_uitgawe' )" );
+	expect( $functions )->toContain( "! is_singular( 'inkpols_uitgawe' ) && ! is_front_page()" );
 } );

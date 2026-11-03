@@ -67,6 +67,10 @@ deptrac:
           collectors:
             - type: classNameRegex
               value: '#^Ink\\InkPols\\.*#'
+        - name: Competitions
+          collectors:
+            - type: classNameRegex
+              value: '#^Ink\\Competitions\\.*#'
         - name: Notifications
           collectors:
             - type: classNameRegex
@@ -214,6 +218,10 @@ deptrac:
             - Content
         Challenges:
             - Kernel
+            # WP1: a winning poem's excerpt keeps its line breaks, through the Engagement Api
+            # facade (`Api::poemOpening`). Non-circular: Engagement depends only on
+            # Kernel/Content. Display only.
+            - Engagement
             # Story 12.1: the uitdaging single-page surface reads the
             # migration-load-bearing single sources `Ink\Content\PostTypes`
             # (UITDAGING + readableTypes), `Ink\Content\Taxonomies::UITDAGINGSRONDTE`,
@@ -262,6 +270,12 @@ deptrac:
             # Challenges->Content (12.1), Library->Content (10.1) and Discovery->Content
             # (8.1) edges. No Entitlement/Tiers edge (modelling/viewing an issue is open;
             # conflation-clean).
+            - Content
+        Competitions:
+            - Kernel
+            # WP5: `/kompetisies/` reads the `kompetisie` and `eksterne_kompetisie` slugs and
+            # meta keys from the single sources, as InkPols does. Competitions are not
+            # challenges (owner), so there is deliberately no Challenges edge.
             - Content
         Notifications:
             - Kernel

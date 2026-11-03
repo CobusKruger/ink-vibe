@@ -30,7 +30,7 @@ defined( 'ABSPATH' ) || exit;
  *  - It does NOT unregister the comments subsystem. The core Comments admin list
  *    screen stays reachable as the moderation surface for the two SANCTIONED
  *    programmatic custom comment types — `ink_reaksie` (Gemeenskapsreaksies,
- *    Epic 7) and `ink_moderator_terugvoer` (moderator feedback, Story 12A.5).
+ *    Epic 7) and `ink_mod_terugvoer` (moderator feedback, Story 12A.5).
  *  - It does NOT interfere with programmatic `wp_insert_comment()` writes.
  *    WordPress's `comments_open`/`pings_open` guard the public new-comment path,
  *    NOT direct programmatic inserts — so the structured stores that reuse the

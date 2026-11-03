@@ -61,3 +61,6 @@ skryf-success-h2,src/pages/Write.tsx,188,wp-content/themes/ink-foundation/patter
 skryf-success-text,src/pages/Write.tsx,191,wp-content/themes/ink-foundation/patterns/skryf.php,95,engage text,paired,
 skryf-success-works,src/pages/Write.tsx,197,,,community-works card grid,missing-ink,S-4 MISSING; flagged NOT BUILT at skryf.php:98-110 (owner decision pending)
 skryf-success-work-card,src/pages/Write.tsx,200,,,community-works card (first),missing-ink,S-4
+skryf-dedication-field,,,wp-content/themes/ink-foundation/patterns/skryf.php,212,optional dedication field wrapper (gedig only),scope,"Owner-approved gedig dedication field (2026-11-02; stage-4-owner-questions 22-S4): no Lovable counterpart. Shown for a gedig only; skryf-counter.js hides it for storie and artikel."
+skryf-dedication-label,,,wp-content/themes/ink-foundation/patterns/skryf.php,213,dedication field label,scope,"Owner-approved gedig dedication field (2026-11-02; stage-4-owner-questions 22-S4): no Lovable counterpart. Shown for a gedig only; skryf-counter.js hides it for storie and artikel."
+skryf-dedication-input,,,wp-content/themes/ink-foundation/patterns/skryf.php,214,dedication text input,scope,"Owner-approved gedig dedication field (2026-11-02; stage-4-owner-questions 22-S4): no Lovable counterpart. Shown for a gedig only; skryf-counter.js hides it for storie and artikel."

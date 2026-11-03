@@ -17,12 +17,14 @@ use WP_Post;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers the editorial meta + admin meta boxes for the InkPols, challenge and
- * sponsor CPTs (Story 2.4).
+ * Registers the editorial meta + admin meta boxes for the InkPols, challenge, sponsor
+ * and competition CPTs (Story 2.4).
  *
- * Native and JS-free: each field is `register_post_meta` (typed, REST-aware,
+ * Native: each field is `register_post_meta` (typed, REST-aware,
  * sanitised, capability-gated) AND a classic `add_meta_box` field rendered
- * server-side. Gutenberg renders the classic box and posts it back to
+ * server-side. The `media` and `gallery` inputs are the one progressive enhancement:
+ * `admin-media-field.js` adds the media-library buttons, and without it their real
+ * input stays visible and still saves. Gutenberg renders the classic box and posts it back to
  * `post.php`, so {@see FieldSets::save()} is the required save path — the ONLY
  * `$_POST` site in the codebase, and it is the sanctioned (never raw) WordPress
  * pattern: nonce → capability → `wp_unslash` + `sanitize_*` → `update_post_meta`.
@@ -45,25 +47,73 @@ final class FieldSets {
 
 	// InkPols issue meta keys.
 	public const INKPOLS_ISSUE_DATE = 'ink_inkpols_issue_date';
-	public const INKPOLS_VOLUME     = 'ink_inkpols_volume';
 	public const INKPOLS_COVER_ID   = 'ink_inkpols_cover_id';
 	public const INKPOLS_PDF_ID     = 'ink_inkpols_pdf_id';
 	public const INKPOLS_TEASER     = 'ink_inkpols_teaser';
 
 	// InkPols issue heading + the three featured items (WP4, `inkpols.md` §2): plain text
-	// describing something in the PDF, never linked. The post title holds the naam.
+	// describing something in the PDF, never linked. The post title holds the naam. Since the
+	// owner ruling of 2026-11-03 the items are glans-1 to glans-3 (a variety of items), each with
+	// a titel, a skrywer and a free-text tipe (what the item is) in place of the hardcoded
+	// Gedig/Storie/Artikel.
 	public const INKPOLS_TITEL           = 'ink_inkpols_titel';
-	public const INKPOLS_GEDIG_TITEL     = 'ink_inkpols_gedig_titel';
-	public const INKPOLS_GEDIG_SKRYWER   = 'ink_inkpols_gedig_skrywer';
-	public const INKPOLS_STORIE_TITEL    = 'ink_inkpols_storie_titel';
-	public const INKPOLS_STORIE_SKRYWER  = 'ink_inkpols_storie_skrywer';
-	public const INKPOLS_ARTIKEL_TITEL   = 'ink_inkpols_artikel_titel';
-	public const INKPOLS_ARTIKEL_SKRYWER = 'ink_inkpols_artikel_skrywer';
+	public const INKPOLS_GLANS_1_TITEL   = 'ink_inkpols_glans_1_titel';
+	public const INKPOLS_GLANS_1_SKRYWER = 'ink_inkpols_glans_1_skrywer';
+	public const INKPOLS_GLANS_1_TIPE    = 'ink_inkpols_glans_1_tipe';
+	public const INKPOLS_GLANS_2_TITEL   = 'ink_inkpols_glans_2_titel';
+	public const INKPOLS_GLANS_2_SKRYWER = 'ink_inkpols_glans_2_skrywer';
+	public const INKPOLS_GLANS_2_TIPE    = 'ink_inkpols_glans_2_tipe';
+	public const INKPOLS_GLANS_3_TITEL   = 'ink_inkpols_glans_3_titel';
+	public const INKPOLS_GLANS_3_SKRYWER = 'ink_inkpols_glans_3_skrywer';
+	public const INKPOLS_GLANS_3_TIPE    = 'ink_inkpols_glans_3_tipe';
+
+	/**
+	 * The longest a glans `tipe` may be (characters). It is a short label ("Gedig", "Onderhoud
+	 * met die redakteur"), shown in a small caps eyebrow.
+	 */
+	public const GLANS_TIPE_MAX = 40;
+
+	/**
+	 * The meta keys superseded by the glans fields (before 2026-11-03: exactly one Gedig, one
+	 * Storie and one Artikel). Nothing reads them; `migrate-inkpols --force` deletes them.
+	 *
+	 * @var list<string>
+	 */
+	public const INKPOLS_RETIRED_KEYS = array(
+		'ink_inkpols_gedig_titel',
+		'ink_inkpols_gedig_skrywer',
+		'ink_inkpols_storie_titel',
+		'ink_inkpols_storie_skrywer',
+		'ink_inkpols_artikel_titel',
+		'ink_inkpols_artikel_skrywer',
+	);
 
 	// Challenge meta keys.
 	public const UITDAGING_THEME    = 'ink_uitdaging_theme';
 	public const UITDAGING_DEADLINE = 'ink_uitdaging_deadline';
 	public const UITDAGING_CADENCE  = 'ink_uitdaging_cadence';
+
+	// A round's results (D8): the judges' letter (blank line = new paragraph) and the
+	// honourable mentions (one per line, `Titel | Skrywer`), read and corrected in the box.
+	public const UITDAGING_BRIEF       = 'ink_uitdaging_brief';
+	public const UITDAGING_VERMELDINGS = 'ink_uitdaging_vermeldings';
+
+	// A gedig's optional dedication (owner-approved 2026-11-02, spec 02 section 8). One line of
+	// plain text, shown as "— text —" above the poem; empty means none, so old poems need
+	// no migration. Writers enter it on /skryf/ (SubmissionForm), editors in this box.
+	public const GEDIG_TOEWYDING            = 'ink_gedig_toewyding';
+	public const GEDIG_TOEWYDING_MAX_LENGTH = 200;
+
+	// Competition meta-key prefixes, used through the two key helpers below.
+	public const KOMPETISIE_PREFIX = 'ink_kompetisie_';
+	public const EKSTERNE_PREFIX   = 'ink_eksterne_';
+
+	// The closed choices of the competition select fields.
+	public const KOMPETISIE_IKONE = array( 'feather', 'book', 'pen' );
+	public const EKSTERNE_GENRES  = array( 'gedigte', 'fiksie', 'niefiksie', 'gemeng' );
+
+	// The category and ticket slots on a `kompetisie`.
+	public const KOMPETISIE_SLOTS = 3;
 
 	// Sponsor meta keys.
 	public const BORG_LINK       = 'ink_borg_link';
@@ -130,6 +180,81 @@ final class FieldSets {
 
 		add_action( 'add_meta_boxes', array( $this, 'addMetaBoxes' ) );
 		add_action( 'save_post', array( $this, 'save' ), 10, 2 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueMediaField' ) );
+	}
+
+	/**
+	 * A `kompetisie` meta key from its suffix (`05-kompetisies` §3.2). Pure.
+	 *
+	 * @param string $suffix The key suffix, e.g. `gala_fotos`.
+	 * @return string
+	 */
+	public static function kompetisieKey( string $suffix ): string {
+		return self::KOMPETISIE_PREFIX . $suffix;
+	}
+
+	/**
+	 * An `eksterne_kompetisie` meta key from its suffix (`05-kompetisies` §3.3). Pure.
+	 *
+	 * @param string $suffix The key suffix, e.g. `fooi`.
+	 * @return string
+	 */
+	public static function eksterneKey( string $suffix ): string {
+		return self::EKSTERNE_PREFIX . $suffix;
+	}
+
+	/**
+	 * A field's admin label, or the key itself when it is not a field. Pure.
+	 *
+	 * @param string $key The meta key.
+	 * @return string
+	 */
+	public static function labelFor( string $key ): string {
+		foreach ( self::definitions() as $def ) {
+			foreach ( $def['fields'] as $field ) {
+				if ( $key === $field['key'] ) {
+					return $field['label'];
+				}
+			}
+		}
+
+		return $key;
+	}
+
+	/**
+	 * Whether a post type's box uses the media-library inputs. Pure.
+	 *
+	 * @param string $cpt The post type.
+	 * @return bool
+	 */
+	public static function usesMediaInputs( string $cpt ): bool {
+		foreach ( self::definitions()[ $cpt ]['fields'] ?? array() as $field ) {
+			if ( in_array( $field['input'], array( 'media', 'gallery' ), true ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Load the media library and the field script on the edit screens that need them.
+	 *
+	 * @param string $hook The admin page hook.
+	 */
+	public function enqueueMediaField( string $hook ): void {
+		if ( 'post.php' !== $hook && 'post-new.php' !== $hook ) {
+			return;
+		}
+
+		$screen = get_current_screen();
+
+		if ( null === $screen || ! self::usesMediaInputs( (string) $screen->post_type ) ) {
+			return;
+		}
+
+		wp_enqueue_media();
+		wp_enqueue_script( 'ink-admin-media-field', plugins_url( 'assets/js/admin-media-field.js', INK_CORE_FILE ), array(), INK_CORE_VERSION, true );
 	}
 
 	/**
@@ -210,6 +335,17 @@ final class FieldSets {
 				}
 
 				echo '</select>';
+			} elseif ( 'media' === $field['input'] || 'gallery' === $field['input'] ) {
+				printf(
+					'<input type="%1$s" id="%2$s" name="%3$s" value="%4$s" class="regular-text" data-ink-media="%5$s" data-ink-media-kies="%6$s" data-ink-media-verwyder="%7$s" />',
+					'media' === $field['input'] ? 'number' : 'text',
+					esc_attr( $id ),
+					esc_attr( $key ),
+					esc_attr( (string) $value ),
+					esc_attr( $field['input'] ),
+					esc_attr__( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-MEDIA-KIES', 'ink-core' ),
+					esc_attr__( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-MEDIA-VERWYDER', 'ink-core' )
+				);
 			} else {
 				printf(
 					'<input type="%1$s" id="%2$s" name="%3$s" value="%4$s" class="regular-text" />',
@@ -296,7 +432,7 @@ final class FieldSets {
 	 */
 	private static function definitions(): array {
 		return array(
-			PostTypes::INKPOLS_UITGAWE => array(
+			PostTypes::INKPOLS_UITGAWE     => array(
 				'cap'    => 'edit_posts', // No dedicated InkPols capability; editorial.
 				'term'   => 'inkpols_uitgawe',
 				'fields' => array(
@@ -308,24 +444,17 @@ final class FieldSets {
 						'sanitize' => array( self::class, 'sanitizeDate' ),
 					),
 					array(
-						'key'      => self::INKPOLS_VOLUME,
-						'label'    => __( 'Volume / jaargang', 'ink-core' ),
-						'type'     => 'string',
-						'input'    => 'text',
-						'sanitize' => 'sanitize_text_field',
-					),
-					array(
 						'key'      => self::INKPOLS_COVER_ID,
 						'label'    => __( 'Omslagbeeld (heg-ID)', 'ink-core' ),
 						'type'     => 'integer',
-						'input'    => 'number',
+						'input'    => 'media',
 						'sanitize' => 'absint',
 					),
 					array(
 						'key'      => self::INKPOLS_PDF_ID,
 						'label'    => __( 'PDF (heg-ID)', 'ink-core' ),
 						'type'     => 'integer',
-						'input'    => 'number',
+						'input'    => 'media',
 						'sanitize' => 'absint',
 					),
 					array(
@@ -342,51 +471,10 @@ final class FieldSets {
 						'input'    => 'text',
 						'sanitize' => 'sanitize_text_field',
 					),
-					array(
-						'key'      => self::INKPOLS_GEDIG_TITEL,
-						'label'    => __( 'Gedig: titel', 'ink-core' ),
-						'type'     => 'string',
-						'input'    => 'text',
-						'sanitize' => 'sanitize_text_field',
-					),
-					array(
-						'key'      => self::INKPOLS_GEDIG_SKRYWER,
-						'label'    => __( 'Gedig: skrywer', 'ink-core' ),
-						'type'     => 'string',
-						'input'    => 'text',
-						'sanitize' => 'sanitize_text_field',
-					),
-					array(
-						'key'      => self::INKPOLS_STORIE_TITEL,
-						'label'    => __( 'Storie: titel', 'ink-core' ),
-						'type'     => 'string',
-						'input'    => 'text',
-						'sanitize' => 'sanitize_text_field',
-					),
-					array(
-						'key'      => self::INKPOLS_STORIE_SKRYWER,
-						'label'    => __( 'Storie: skrywer', 'ink-core' ),
-						'type'     => 'string',
-						'input'    => 'text',
-						'sanitize' => 'sanitize_text_field',
-					),
-					array(
-						'key'      => self::INKPOLS_ARTIKEL_TITEL,
-						'label'    => __( 'Artikel: titel', 'ink-core' ),
-						'type'     => 'string',
-						'input'    => 'text',
-						'sanitize' => 'sanitize_text_field',
-					),
-					array(
-						'key'      => self::INKPOLS_ARTIKEL_SKRYWER,
-						'label'    => __( 'Artikel: skrywer', 'ink-core' ),
-						'type'     => 'string',
-						'input'    => 'text',
-						'sanitize' => 'sanitize_text_field',
-					),
+					...self::glansFields(),
 				),
 			),
-			PostTypes::UITDAGING       => array(
+			PostTypes::UITDAGING           => array(
 				'cap'    => Capabilities::MANAGE_CHALLENGES,
 				'term'   => 'uitdaging',
 				'fields' => array(
@@ -427,9 +515,23 @@ final class FieldSets {
 						// never an inline 'maandeliks' literal; mirrors CadenceType::fromMeta().
 						'default'     => CadenceType::default()->value,
 					),
+					array(
+						'key'      => self::UITDAGING_BRIEF,
+						'label'    => __( '[NEEDS HUMAN AFRIKAANS] UITSLAE-ADMIN-BRIEF', 'ink-core' ),
+						'type'     => 'string',
+						'input'    => 'textarea',
+						'sanitize' => 'sanitize_textarea_field',
+					),
+					array(
+						'key'      => self::UITDAGING_VERMELDINGS,
+						'label'    => __( '[NEEDS HUMAN AFRIKAANS] UITSLAE-ADMIN-VERMELDINGS', 'ink-core' ),
+						'type'     => 'string',
+						'input'    => 'textarea',
+						'sanitize' => 'sanitize_textarea_field',
+					),
 				),
 			),
-			PostTypes::BORG            => array(
+			PostTypes::BORG                => array(
 				'cap'    => Capabilities::MANAGE_SPONSORS,
 				'term'   => 'borg',
 				'fields' => array(
@@ -470,7 +572,252 @@ final class FieldSets {
 					),
 				),
 			),
+			PostTypes::GEDIG               => array(
+				'cap'    => 'edit_' . PostTypes::CAPABILITY_TYPE_PLURAL,
+				'term'   => 'gedig',
+				'fields' => array(
+					array(
+						'key'      => self::GEDIG_TOEWYDING,
+						'label'    => __( '[NEEDS HUMAN AFRIKAANS] GEDIG-TOEWYDING-ADMIN', 'ink-core' ),
+						'type'     => 'string',
+						'input'    => 'text',
+						'sanitize' => array( self::class, 'sanitizeToewyding' ),
+					),
+				),
+			),
+			PostTypes::KOMPETISIE          => array(
+				'cap'    => 'edit_' . PostTypes::CAPABILITY_TYPE_PLURAL,
+				'term'   => 'kompetisie',
+				'fields' => self::kompetisieFields(),
+			),
+			PostTypes::EKSTERNE_KOMPETISIE => array(
+				'cap'    => 'edit_' . PostTypes::CAPABILITY_TYPE_PLURAL,
+				'term'   => 'eksterne_kompetisie',
+				'fields' => self::eksterneFields(),
+			),
 		);
+	}
+
+	/**
+	 * The three featured items' meta keys: item number (1 to 3) → titel / skrywer / tipe. Pure.
+	 *
+	 * @return array<int, array{titel:string, skrywer:string, tipe:string}>
+	 */
+	public static function glansKeys(): array {
+		return array(
+			1 => array(
+				'titel'   => self::INKPOLS_GLANS_1_TITEL,
+				'skrywer' => self::INKPOLS_GLANS_1_SKRYWER,
+				'tipe'    => self::INKPOLS_GLANS_1_TIPE,
+			),
+			2 => array(
+				'titel'   => self::INKPOLS_GLANS_2_TITEL,
+				'skrywer' => self::INKPOLS_GLANS_2_SKRYWER,
+				'tipe'    => self::INKPOLS_GLANS_2_TIPE,
+			),
+			3 => array(
+				'titel'   => self::INKPOLS_GLANS_3_TITEL,
+				'skrywer' => self::INKPOLS_GLANS_3_SKRYWER,
+				'tipe'    => self::INKPOLS_GLANS_3_TIPE,
+			),
+		);
+	}
+
+	/**
+	 * The nine glans fields for the issue box, in display order. `tipe` is capped to one line.
+	 *
+	 * @return list<array{key: string, label: string, type: string, input: string, sanitize: callable}>
+	 */
+	private static function glansFields(): array {
+		$fields = array();
+
+		foreach ( self::glansKeys() as $n => $keys ) {
+			/* translators: %d: the featured item's number (1 to 3). */
+			$titel = sprintf( __( 'Glans %d: titel', 'ink-core' ), $n );
+			/* translators: %d: the featured item's number (1 to 3). */
+			$skrywer = sprintf( __( 'Glans %d: skrywer', 'ink-core' ), $n );
+			/* translators: %d: the featured item's number (1 to 3). */
+			$tipe = sprintf( __( 'Glans %d: tipe', 'ink-core' ), $n );
+
+			$fields[] = self::textField( $keys['titel'], $titel );
+			$fields[] = self::textField( $keys['skrywer'], $skrywer );
+			$fields[] = self::textField( $keys['tipe'], $tipe, 'text', array( self::class, 'sanitizeTipe' ) );
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * A glans `tipe`: one line of plain text, at most {@see GLANS_TIPE_MAX} characters. Pure.
+	 *
+	 * @param mixed $value The raw value.
+	 */
+	public static function sanitizeTipe( $value ): string {
+		$text = sanitize_text_field( is_scalar( $value ) ? (string) $value : '' );
+
+		return trim( mb_substr( $text, 0, self::GLANS_TIPE_MAX ) );
+	}
+
+	/**
+	 * One text-shaped field. Pure.
+	 *
+	 * @param string $key      The meta key.
+	 * @param string $label    The admin label.
+	 * @param string $input    The input type (`text`, `textarea`, `date`, `url`).
+	 * @param mixed  $sanitize The sanitise callback; null picks the input's own.
+	 * @return array{key: string, label: string, type: string, input: string, sanitize: callable}
+	 */
+	private static function textField( string $key, string $label, string $input = 'text', $sanitize = null ): array {
+		$defaults = array(
+			'textarea' => 'sanitize_textarea_field',
+			'date'     => array( self::class, 'sanitizeDate' ),
+			'url'      => 'esc_url_raw',
+		);
+
+		return array(
+			'key'      => $key,
+			'label'    => $label,
+			'type'     => 'string',
+			'input'    => $input,
+			'sanitize' => $sanitize ?? ( $defaults[ $input ] ?? 'sanitize_text_field' ),
+		);
+	}
+
+	/**
+	 * The `kompetisie` fields, in `05-kompetisies` §3.2's order. Labels are copy-debt
+	 * markers until the owner has the Afrikaans. The post title is the naam.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	private static function kompetisieFields(): array {
+		$category = __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-KAT', 'ink-core' );
+		$slot     = static fn ( string $noun, int $n, string $what ): string => sprintf( '%1$s %2$d: %3$s', $noun, $n, $what );
+
+		$fields = array(
+			array(
+				'key'      => self::kompetisieKey( 'jaar' ),
+				'label'    => __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-JAAR', 'ink-core' ),
+				'type'     => 'integer',
+				'input'    => 'number',
+				'sanitize' => 'absint',
+			),
+			self::textField( self::kompetisieKey( 'uitgawe' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-UITGAWE', 'ink-core' ) ),
+			self::textField( self::kompetisieKey( 'beskrywing' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-BESKRYWING', 'ink-core' ), 'textarea' ),
+			self::textField( self::kompetisieKey( 'sluitingsdatum' ), __( 'Sluitingsdatum', 'ink-core' ), 'date' ),
+			self::textField( self::kompetisieKey( 'inskrywing_nota' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-INSKRYWING', 'ink-core' ) ),
+			self::textField( self::kompetisieKey( 'naaswenner_nota' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-NAASWENNER', 'ink-core' ) ),
+		);
+
+		for ( $n = 1; $n <= self::KOMPETISIE_SLOTS; $n++ ) {
+			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_naam" ), $slot( $category, $n, __( 'naam', 'ink-core' ) ) );
+			$fields[] = array(
+				'key'      => self::kompetisieKey( "kat{$n}_ikoon" ),
+				'label'    => $slot( $category, $n, __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-IKOON', 'ink-core' ) ),
+				'type'     => 'string',
+				'input'    => 'select',
+				'options'  => array(
+					'feather' => __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-IKOON-FEATHER', 'ink-core' ),
+					'book'    => __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-IKOON-BOOK', 'ink-core' ),
+					'pen'     => __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-IKOON-PEN', 'ink-core' ),
+				),
+				'sanitize' => array( self::class, 'sanitizeIcon' ),
+				'default'  => self::KOMPETISIE_IKONE[0],
+			);
+			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_tema" ), $slot( $category, $n, __( 'Tema', 'ink-core' ) ) );
+			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_beskrywing" ), $slot( $category, $n, __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-BESKRYWING', 'ink-core' ) ), 'textarea' );
+			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_woordlimiet" ), $slot( $category, $n, __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-WOORDLIMIET', 'ink-core' ) ) );
+			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_riglyne" ), $slot( $category, $n, __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-RIGLYNE', 'ink-core' ) ), 'textarea' );
+		}
+
+		$fields[] = self::textField( self::kompetisieKey( 'gala_naam' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GALA-NAAM', 'ink-core' ) );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_beskrywing' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-BESKRYWING', 'ink-core' ), 'textarea' );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_datum' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GALA-DATUM', 'ink-core' ), 'date' );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_deure' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GALA-DEURE', 'ink-core' ) );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_plek' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GALA-PLEK', 'ink-core' ) );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_drag' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GALA-DRAG', 'ink-core' ) );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_program' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GALA-PROGRAM', 'ink-core' ), 'textarea' );
+
+		for ( $n = 1; $n <= self::KOMPETISIE_SLOTS; $n++ ) {
+			$fields[] = self::textField( self::kompetisieKey( "kaartjie{$n}_etiket" ), $slot( __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-KAARTJIE', 'ink-core' ), $n, __( 'naam', 'ink-core' ) ) );
+			// D4: the price is fictional until payments exist. This label is where that is said.
+			$fields[] = self::textField( self::kompetisieKey( "kaartjie{$n}_prys" ), $slot( __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-KAARTJIE', 'ink-core' ), $n, __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-PRYS', 'ink-core' ) ) );
+		}
+
+		$fields[] = self::textField( self::kompetisieKey( 'gala_hoogtepunt' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-HOOGTEPUNT', 'ink-core' ) );
+		$fields[] = array(
+			'key'      => self::kompetisieKey( 'gala_fotos' ),
+			'label'    => __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-FOTOS', 'ink-core' ),
+			'type'     => 'string',
+			'input'    => 'gallery',
+			'sanitize' => array( self::class, 'sanitizeIdList' ),
+		);
+
+		return $fields;
+	}
+
+	/**
+	 * The `eksterne_kompetisie` fields (`05-kompetisies` §3.3). The post title is the name.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	private static function eksterneFields(): array {
+		return array(
+			self::textField( self::eksterneKey( 'organiseerder' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-ORGANISEERDER', 'ink-core' ) ),
+			self::textField( self::eksterneKey( 'streek' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-STREEK', 'ink-core' ) ),
+			// Plain text, because a recurring closing date carries no year.
+			self::textField( self::eksterneKey( 'sluitingsdatum' ), __( 'Sluitingsdatum', 'ink-core' ) ),
+			self::textField( self::eksterneKey( 'prys' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-PRYS-EKSTERN', 'ink-core' ) ),
+			self::textField( self::eksterneKey( 'fooi' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-FOOI', 'ink-core' ) ),
+			array(
+				'key'      => self::eksterneKey( 'genre' ),
+				'label'    => __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GENRE', 'ink-core' ),
+				'type'     => 'string',
+				'input'    => 'select',
+				'options'  => array(
+					'gedigte'   => __( '[NEEDS HUMAN AFRIKAANS] KOMP-GENRE-POETRY', 'ink-core' ),
+					'fiksie'    => __( '[NEEDS HUMAN AFRIKAANS] KOMP-GENRE-FICTION', 'ink-core' ),
+					'niefiksie' => __( '[NEEDS HUMAN AFRIKAANS] KOMP-GENRE-NON-FICTION', 'ink-core' ),
+					'gemeng'    => __( '[NEEDS HUMAN AFRIKAANS] KOMP-GENRE-MIXED', 'ink-core' ),
+				),
+				'sanitize' => array( self::class, 'sanitizeGenre' ),
+				'default'  => self::EKSTERNE_GENRES[0],
+			),
+			self::textField( self::eksterneKey( 'url' ), __( 'Skakel', 'ink-core' ), 'url' ),
+			self::textField( self::eksterneKey( 'nota' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-NOTA', 'ink-core' ), 'textarea' ),
+		);
+	}
+
+	/**
+	 * Sanitise a gallery to a comma-separated attachment-id list, keeping the media-modal
+	 * order and dropping zeros and repeats.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return string `12,7,33`, or ''.
+	 */
+	public static function sanitizeIdList( $value ): string {
+		$ids = array_filter( array_map( 'absint', explode( ',', is_scalar( $value ) ? (string) $value : '' ) ) );
+
+		return implode( ',', array_unique( $ids ) );
+	}
+
+	/**
+	 * Sanitise a category icon to the closed set, folding junk to the first.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return string
+	 */
+	public static function sanitizeIcon( $value ): string {
+		return in_array( $value, self::KOMPETISIE_IKONE, true ) ? (string) $value : self::KOMPETISIE_IKONE[0];
+	}
+
+	/**
+	 * Sanitise a listing's genre to the closed set, folding junk to the first.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return string
+	 */
+	public static function sanitizeGenre( $value ): string {
+		return in_array( $value, self::EKSTERNE_GENRES, true ) ? (string) $value : self::EKSTERNE_GENRES[0];
 	}
 
 	/**
@@ -495,6 +842,21 @@ final class FieldSets {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Sanitize a gedig dedication: one line of plain text, at most
+	 * {@see self::GEDIG_TOEWYDING_MAX_LENGTH} characters. Anything else drops to ''.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return string
+	 */
+	public static function sanitizeToewyding( $value ): string {
+		$text = trim( sanitize_text_field( is_scalar( $value ) ? (string) $value : '' ) );
+
+		return function_exists( 'mb_substr' )
+			? mb_substr( $text, 0, self::GEDIG_TOEWYDING_MAX_LENGTH )
+			: substr( $text, 0, self::GEDIG_TOEWYDING_MAX_LENGTH );
 	}
 
 	/**

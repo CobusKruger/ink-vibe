@@ -60,7 +60,9 @@ class RedirectGenerator {
 	 * Register the runtime serve handler (always) + the build command (WP-CLI only).
 	 */
 	public function register(): void {
-		add_action( 'template_redirect', array( $this, 'maybeRedirect' ) );
+		// Priority 5, ahead of redirect_canonical (10): core's 404 guess sends an old path to any post whose
+		// slug equals the path's last segment (the old /22-oktober-2016-1ste-gala-aand/fotos/ went to the poem /gedig/fotos/).
+		add_action( 'template_redirect', array( $this, 'maybeRedirect' ), 5 );
 
 		if ( ! ( defined( 'WP_CLI' ) && constant( 'WP_CLI' ) ) || ! class_exists( '\WP_CLI' ) ) {
 			return;
@@ -204,7 +206,7 @@ class RedirectGenerator {
 		$target  = self::redirectTargetFor( $request, $this->loadMap() );
 
 		if ( null === $target ) {
-			$section = StaticRedirects::prefixTarget( $request );
+			$section = StaticRedirects::prefixTarget( $request ) ?? StaticRedirects::storedGalaTarget( $request, $this->storedGalaPaths() );
 			$target  = null === $section ? null : home_url( $section );
 		}
 
@@ -218,6 +220,17 @@ class RedirectGenerator {
 		}
 
 		$this->doRedirect( $target );
+	}
+
+	/**
+	 * The retired gala paths `migrate-kompetisies` stored. Overridable seam.
+	 *
+	 * @return array<mixed>
+	 */
+	protected function storedGalaPaths(): array {
+		$paths = get_option( StaticRedirects::OPTION_GALA_PATHS, array() );
+
+		return is_array( $paths ) ? $paths : array();
 	}
 
 	/**

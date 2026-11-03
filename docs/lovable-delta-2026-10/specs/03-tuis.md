@@ -1,5 +1,11 @@
 # Build spec 03: Tuis (E1, E2, N5, N6 home section)
 
+**Built (step F, 2026-11-02).** `winner-gedig-*` and `winner-*` pair by type. `FeaturedWinners::order()` and `orderFeed()` are gone with the old feed.
+
+**Accepted (2026-11-02).** Gate passes at 390, 768 and 1440 (`maps/tuis.csv`). Hero, CTA band and sponsor strip are now emitted in Lovable's node structure (raw HTML in the patterns, `HomepageStrip`), as the header was; the featured cards keep `<article>` with a stretched title link (hover and click verified against Lovable). Accepted with evidence, in the map: link-for-`<button>` on four buttons (c), BTN-FONT (a), NR-4 meta gap (a), per-type pill tone (a), CTA padding and text colour (a), and sizes that follow Afrikaans copy and data (b). `featured-lead-author-name` was missing because fixture post 68862 (the F1 entry, now the newest) had author 1, which does not exist; it now belongs to user 3799. The hero's closed-round state was measured by unpublishing round 68854 for one capture: no MISSING or STRUCTURE, only height deltas from the longer Oktober description.
+
+**Closed-round state:** measured by drafting the fixture round (`Toetsronde`), and a standing state in the gate: `tools/fidelity/accept/closed-round.sh` (group `closed` in `gates.json`: Tuis main and hero at 390, 768, 1440; it republishes the fixture afterwards).
+
 **Status:** planned, not ratified. **Date:** 2026-11-01. **Map:** `../maps/tuis.csv` (152 ids). **Gaps:** `GAP-03-01` to `GAP-03-09`. **Depends on:** spec 01 (banner target); the InkPols current-issue renderer (N2).
 This spec holds no style values (R4, R5). Recipes are joins for the capture to check. `header-nav-competitions` is WP6, and the footer is deferred.
 
@@ -10,7 +16,7 @@ This spec holds no style values (R4, R5). Recipes are joins for the capture to c
 
 ## 2. Hero challenge card: why it doesn't render
 
-**Cause: no round on dev has a deadline, so no round counts as open, and the block collapses by design.**
+**Cause: a code defect. A monthly round's period is implied by its month (owner, repeatedly: October runs 1 to 31 October, November 1 to 30 November), but `resolveCurrent()` requires a stored deadline, and no round has one.**
 
 | Step | Evidence |
 |---|---|
@@ -21,7 +27,9 @@ This spec holds no style values (R4, R5). Recipes are joins for the capture to c
 | Data | **140 published rounds, 0 with `ink_uitdaging_deadline`.** All 10 scanned rounds (68777 to 68715) print `deadline=''` |
 | Origin | `Challenges/Migration.php:31`: "no deadline is fabricated (legacy categories carry none)". Nothing else writes it |
 
-So the markup isn't at fault, and the card can be measured as soon as a deadline exists. **Today's date adds a second problem:** the newest round is Oktober 2026, posted 2026-10-01, and today is 2026-11-01. Even a month-end deadline would be closed. See Q1.
+So the markup isn't at fault. **Fix:** derive a monthly round's close from its month, in one place in `Challenges/Cadence.php`, and have every reader of `UITDAGING_DEADLINE` (`CurrentChallenge`, `Archive`, `WinnersPost`, `SinglePage`, `ChallengeLinking`, `KennisgewingsSurface`) use it. Nothing is stored or entered per round, and no migration input is needed. A round with cadence `jaarliks` keeps its stored deadline, as the code does today; competitions don't use it (spec 05). The month comes from the title, verified against the post date (owner: created in the first days of the month, normally the 1st, seldom after the 3rd, a few outliers shortly before month-end).
+
+**No new round yet (owner, 2026-11-01): keep showing the last one.** `resolveCurrent()` falls back to the newest round instead of returning null, so the hero isn't empty on dev today: it shows Oktober 2026. A round already past its close shows no "Sluit" date, because a past closing date is not a call to act.
 
 ## 3. Section spine
 
@@ -74,7 +82,7 @@ Required order: owner, 2026-10-30.
 | `hero-spotlight-btn` | None | Round URL | `Skryf in` |
 | `hero-texture` | `MECHANISM`, F10: `::before`, no node | | |
 
-Other `hero*` ids: unchanged; re-measure. Data for the card: fixture F1 until Q1 is settled.
+Other `hero*` ids: unchanged; re-measure. Data for the card: the current round (§2); fixture F1 for the open state.
 
 **Results banner (N5).** Band and the whole panel link.
 
@@ -84,8 +92,8 @@ Other `hero*` ids: unchanged; re-measure. Data for the card: fixture F1 until Q1
 | `results-banner-container` | `ink-container` | | |
 | `results-banner-link` | **GAP-03-02** | Round's `/uitslae/` URL | |
 | `results-banner-icon`, `-icon-svg` | **GAP-03-03** | | |
-| `results-banner-body` | Layout in `home.css` | | |
-| `results-banner-eyebrow` | **GAP-03-04** gold | `ChallengeResultTitle::monthLabel( round post_date )` | `Uitslae aangekondig · {Maand jaar}` (README N5) |
+| `results-banner-body` | Layout inside GAP-03-02, because the banner also shows on the round page (spec 01 §12) | | |
+| `results-banner-eyebrow` | **GAP-03-04** gold | The round's month, from its title (§2) | `Uitslae aangekondig · {Maand jaar}` (README N5) |
 | `results-banner-title` | **GAP-03-05** | Theme: spec 01 §4 | `TUIS-UITSLAE-TITEL` (debt) |
 | `results-banner-cta`, `-cta-icon` | **GAP-03-06** | | `TUIS-UITSLAE-CTA` (debt) |
 
@@ -144,14 +152,14 @@ Round: the latest announcement. Make `WinnersPost::latestAnnouncement()` reachab
 
 | Field | Source | Status |
 |---|---|---|
-| Open round | `CurrentChallenge::current()` needs `ink_uitdaging_deadline` | **Q1** |
+| Current round | `CurrentChallenge::current()`: the open round, else the newest (§2) | Code fix; fixture F1 only to measure the open state |
 | Round for banner and winners | Latest announcement | Exists: 102 linked posts |
 | Winner slots | `WinnersPost::featured()` today returns only id, rank, title, URL, flattening every pool | **Rewrite:** return four slots, rank 1 in each, ties by lowest id as in `orderFeed()` |
 | Position | `ink_entry_placement` | **Importer**: 0 rows, which is why the winner section prints nothing |
 | Goud/Silwer on Gedig | `ink_entry_gradering`; Meester as Goud (D11) | **Importer + Gradering fix** |
 | Storie, Artikel pool | Single pool after the fix. Read through `RoundResults` (spec 01), never pool keys | **Gradering fix** |
-| "Nth wen" | Lifetime count from the win records (D10; `ink_tier_win_count` resets) | **Importer**. Until then count `ink_entry_placement` rows by author behind one function, so the importer replaces one call. Ordinal form: `FeaturedWinners.php:358` assigned it to 12A; `ui-copy` gives only `3de wen` |
-| InkPols fields | CSV migration, built | Dev: 7 published with "Toetstitel" dummy data; expected per the handoff |
+| "Nth wen" | Lifetime count from the win records (D10; `ink_tier_win_count` resets) | **Importer** for old wins; **`Ingestion::commit()` must add a record for every new win**, or the count freezes at go-live. Until then count `ink_entry_placement` rows by author behind one function, so the importer replaces one call. Ordinal form: `FeaturedWinners.php:358` assigned it to 12A; `ui-copy` gives only `3de wen` |
+| InkPols fields | Old issues: CSV migration, built. New issues: the admin screen (`inkpols.md` §4) | Dev: 7 published with "Toetstitel" dummy data; expected per the handoff |
 | Featured | Newest bydraes | Exists |
 | Sponsors | Hand-made `borg` posts | 0 on dev |
 
@@ -178,7 +186,7 @@ The InkPols spec must use the same sheet and gate; **not verified**, because tha
 
 Outside theme and plugin; a refresh wipes it; list what was created. No fixture for featured writing or InkPols.
 
-**F1, open round.** `ink_uitdaging_deadline` = `2026-11-30` on **68777** (Oktober 2026 - Getal 10 projek). It's the newest round and has body text for `hero-spotlight-desc`. Set it `Y-m-d`.
+**F1, open round.** A published test `uitdaging` for the current month (November 2026), with body text for `hero-spotlight-desc`. No deadline meta: its close comes from its month (§2). It's needed only to measure the open state, with its "Sluit" date; after a refresh the hero shows the newest round either way.
 
 **F2, four winners, round 68791 (the latest announcement), real results from post 68532:**
 
@@ -217,4 +225,4 @@ Existing Afrikaans rejected on purpose: `Lees die volledige storie` is ratified 
 
 ## Questions for owner
 
-1. **Q1. After a refresh no round is open, so the hero fails step H.** The migration can't supply deadlines (§2), and step 7 requires the page to pass after `migrate-all`, with `hero-spotlight*` present. Options: (a) an editor sets the deadline on the current round after go-live, and the gate tests the hero with F1 reapplied; (b) `migrate-all` sets a deadline on the newest round from a committed input. Also: when no round is open the right column stays empty, as coded; the design has no such state. Is that acceptable?
+None. Q1 was withdrawn: a monthly round's period is implied by its month (§2).

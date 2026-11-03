@@ -68,30 +68,39 @@ This is the only table that needs owner review. Treatments are defined in `READM
 | 02 | `/profile` | `/my-profiel` | A | ✅ |
 | 03 | `/browse` | `/ontdek` | A | ✅ |
 | 04 | `/write` | `/skryf` | A | ✅ |
-| 05 | `/challenges/silent-protagonist` | `https://nuwe-ink.local/uitdaging/skryf-n-storie-waarin-die-hoofkarakter-nooit-praat-nie/` | A | ✅ |
-| 06 | `/writer/w1` | `https://nuwe-ink.local/author/cobus/` | A | ✅ |
-| 07 | `/read/sample` | `https://nuwe-ink.local/storie/die-wenteltrap-na-die-lig/` | A | ✅ — stories and articles |
+| 05 | `/challenges/silent-protagonist` | `/uitdaging/oktober-2026-getal-10-projek/` (a migrated round; the old slug no longer exists) | A | ✅ |
+| 06 | `/writer/w1` | `/lede/cobus/` | A | ✅ (`/author/cobus` is gone) |
+| 07 | `/read/sample` | `/storie/om-te-glo-maar-nie-te-sien-nie/` | A | ✅ — stories and articles. The gate uses three reading posts by prod id (`/?p=68211` storie vs `/read/s3`, `68070` gedig vs `s4`, `68214` artikel vs `s5`), signed in and out |
 | 08 | `/library` | `/biblioteek` **and** `/opleiding` | A | ✅ — audit both against the one reference |
-| 09 | `/auth` | `/meld-aan` **and** `/registreer` | A | ✅ — INK splits it in two |
+| 09 | `/auth` | `/teken-in` **and** `/registreer` | A | ✅ — INK splits it in two |
 | 10 | `/forgot-password` | `/wagwoord-herstel` | A | ✅ |
 | 11 | `/reset-password` | `wp-login.php` core flow, branded via `wp-login-brand.css` | **C** | ✅ — owner ruling: wp-login for now |
-| 12 | any bogus path (404) | http://nuwe-ink.local/storie/pannekoek/ | **C** | ✅ |
+| 12 | any bogus path (404) | `/storie/pannekoek/` (404 on purpose) | **C** | ✅ |
 | 13 | — none | `/oor-ink` | **B** | ✅ — sponsor strip has a source, rest does not |
-| 14 | — none | `/uitdagings` (the list) | **B** | ✅ — challenge card has a source, rest does not |
+| 14 | `/challenges` | `/uitdaging/` (the list) | **A** | ✅ — past rounds keep INK cards (owner): in the map. Gate: `uitdagings` |
 | 15 | — none | `/kontak` | **C** | ✅ |
 | 16 | — none | `/lidmaatskap` | **C** | ✅ |
-| 17 | — none | `/inkpols` | **C** | ✅ — list and single |
+| 17 | `/magazine` | `/inkpols/` (archive) | **A** | ✅ — was C; the design now has it (delta, Oct 2026). States: default, year filters 2025 and 2024. Gate: `inkpols` |
+| 17b | `/magazine/:slug` (`issue-14`, `issue-13`, `issue-9`) | `/inkpols/<issue>/`, issue found by lookup: newest, second newest, oldest `inkpols_uitgawe` | **A** | ✅ — one issue page |
 | 18 | — none | `/ledegids` | **C** | ✅ |
 | ~~19~~ | — none | onboarding | — | 🚫 **SKIPPED** — owner ruling, out of scope |
 | ~~20~~ | — none | membership under My Profiel | — | 🚫 **SKIPPED** — owner ruling, out of scope |
 | ~~21~~ | — none | `/qa-bloks` | — | 🚫 **SKIPPED** — QA scaffold, out of scope |
-| 22 | `https://preview--quill-muse-heart.lovable.app/read/s2` | `https://nuwe-ink.local/gedig/piet-punte/` | A | ✅ — poetry |
+| 22 | `/read/s2` | `/gedig/piet-punte/` | A | ✅ — poetry |
+| 23 | `/challenges/:slug/results` (first slug in `awards.ts`) | `/uitdaging/<round with results>/uitslae/`; round by lookup (August 2026 round, `/uitslae/` answers 200) | **A** | ✅ — Uitslae. States: default, Stories tab, Articles tab. Gate: `uitslae` |
+| 23b | — none | `/uitdaging/<round without results>/uitslae/` (October 2026 round) | **C** | ✅ — must answer 404; checked by the lookup, not captured |
+| 24 | `/competitions` | `/kompetisies/` | **A** | ✅ — Kompetisies. States: default, gala 2024 chip, empty directory filter. Gate: `kompetisies` |
+| 24b | — none | `/kompetisies/gala/2025/` (gala photos; 2016 to 2025 answer 200) | **C** | ✅ — the design has only the Evenings past block on row 24 |
+| 25 | `/read/s3` etc. (`reading-award*`) | the same reading posts as row 07, placed by the fixtures | **A** | ✅ — the winner aside, measured inside the `lees` gates |
+| 26 | none (`Challenge.tsx` has no link) | `/uitdaging/<round with results>/` (round-page results banner) | **B** | ✅ — accepted divergence (owner, 2026-11-01); scoped INK capture, not diffed |
 
 **Rows 00–12** are the thirteen Lovable routes, taken from `ink-lovable/src/App.tsx:30-45`.
 That list is definitive: `src/pages/` holds exactly thirteen files and no others. The
 `:id` / `:slug` routes are shown with the concrete sample values the mockup links to —
 `/read/sample` (`HeroSpotlight.tsx:71`), `/challenges/silent-protagonist`
 (`HeroSpotlight.tsx:30`), `/writer/w1` (`Community.tsx:206`).
+
+**Rows 17 to 26 (delta, Oct 2026)** have Lovable pages or states and are gated by `tools/fidelity/accept/gate-all.sh` (data: `tools/fidelity/accept/gates.json`; `targets.json` has the same rows). Their INK URLs are refresh-stable: a round, issue or gala year is found by lookup on the running site, never typed in, so a refresh that shifts ids does not break them. Run it from `docs/fidelity-remediation/README.md` §9.
 
 **Rows 13–21** are INK pages the mockup never had. They are *not* out of scope — see
 `README.md` §4.6. They are scheduled after the A-pages because their audit needs the
@@ -100,7 +109,7 @@ component recipe catalogue that the A-pages produce.
 **INK URL provenance.** `/`, `/ontdek`, `/biblioteek`, `/opleiding`, `/uitdagings`,
 `/inkpols`, `/gemeenskap`, `/oor-ink` and `/kontak` are the canonical IA routes from
 `ink-core/src/Migration/NavigationRebuilder.php:101-140`. `/skryf`, `/my-profiel`,
-`/meld-aan`, `/registreer` and `/lees` are read from the live header and footer patterns.
+`/teken-in`, `/registreer` and `/lees` are read from the live header and footer patterns.
 The rest are derived from the WordPress `page-<slug>.html` template convention and are
 **unverified** — the agent confirms them against the running site before use (R1).
 
@@ -119,12 +128,12 @@ No owner review needed. Fill in the blanks as pairings are confirmed.
 | 06 | `pages/Writer.tsx` | `author.html` | `profile-summary.php`? |
 | 07 | `pages/ReadStory.tsx` | `single-storie`, `single-gedig`, `single-artikel`, `single-opleiding_artikel`, `single-biblioteek_item`, `single-inkpols_uitgawe` | the six `reading-*.php` |
 | 08 | `pages/Library.tsx` | `archive-biblioteek_item.html`, `archive-opleiding_artikel.html` | `biblioteek.php`, `opleiding.php` |
-| 09 | `pages/Auth.tsx` | `page-meld-aan.html`, `page-registreer.html` | `auth-login.php`, `auth-register.php` |
+| 09 | `pages/Auth.tsx` | `page-teken-in.html`, `page-registreer.html` | `auth-login.php`, `auth-register.php` |
 | 10 | `pages/ForgotPassword.tsx` | `page-wagwoord-herstel.html` | `auth-forgot-password.php` |
 | 11 | `pages/ResetPassword.tsx` | — | `assets/css/wp-login-brand.css` |
 | 12 | `pages/NotFound.tsx` | `index.html` (fallback — no `404.html`) | — |
 | 13 | `components/home/SponsorsSection.tsx` (strip only) | `page-oor-ink.html` | `oor-ink.php`, `borg-erkenning.php` |
-| 14 | `components/home/ChallengeSection.tsx` (card only) | `archive-uitdaging.html` | `uitdaging.php` |
+| 14 | `pages/Challenges.tsx` | `archive-uitdaging.html` | `uitdaging.php` + `ink/uitdaging-argief` |
 | 15 | — | `page-kontak.html` | `kontak.php` |
 | 16 | — | `page-lidmaatskap.html` | `lidmaatskap.php`, `lidmaatskap-hernu.php` |
 | 17 | — | `archive-inkpols_uitgawe.html`, `single-inkpols_uitgawe.html` | `inkpols.php`, `reading-inkpols.php` |

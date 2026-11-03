@@ -1,0 +1,503 @@
+/**
+ * INK Foundation: Kompetisies layout and text (`05-kompetisies` §6).
+ *
+ * Loads on /kompetisies/ only: ink_foundation_enqueue_kompetisies_assets() in functions.php;
+ * the four blocks live only in this page's pattern. Layout and text only: every primitive is
+ * a class from primitives.css (R8).
+ */
+
+/* the page's text base, as Lovable's body */
+.ink-kompetisies {
+	font-size: var(--wp--preset--font-size--md);
+	line-height: 1.5rem;
+}
+
+.ink-kompetisies * {
+	box-sizing: border-box;
+}
+
+/* --- no block-theme margins on anything this page owns --- */
+.ink-kompetisies p,
+.ink-kompetisies h1,
+.ink-kompetisies h2,
+.ink-kompetisies h3,
+.ink-kompetisies ul,
+.ink-kompetisies figure {
+	margin: 0;
+}
+
+.ink-kompetisies.ink-kompetisies > * {
+	margin-block: 0;
+}
+
+.ink-kompetisies ul {
+	padding: 0;
+	list-style: none;
+}
+
+/* --- hero --- */
+.ink-komp-held {
+	max-width: 48rem;
+}
+
+.ink-komp-held__kenteken {
+	margin-bottom: var(--wp--preset--spacing--s-24);
+}
+
+.ink-kompetisies .ink-komp-held__titel {
+	margin-bottom: 1.25rem;
+}
+
+.ink-kompetisies .ink-komp-held__teks {
+	max-width: 42rem;
+	margin-bottom: var(--wp--preset--spacing--s-24);
+	font-size: var(--wp--preset--font-size--lg);
+	line-height: 1.625;
+}
+
+.ink-komp-held__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--s-12);
+	margin-bottom: var(--wp--preset--spacing--s-32);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+.ink-komp-held__aksies {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+/* --- categories --- */
+.ink-komp-kat__kop {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	margin-bottom: var(--wp--preset--spacing--s-40);
+}
+
+.ink-kompetisies .ink-komp-kat__inlei {
+	max-width: 36rem;
+	margin-top: var(--wp--preset--spacing--s-8);
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-komp-kat__rooster,
+.ink-komp-gids__rooster {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--wp--preset--spacing--s-24);
+}
+
+.ink-komp-gids__rooster[hidden],
+.ink-komp-gids__rooster > [hidden],
+.ink-komp-gids__leeg[hidden],
+.ink-komp-gids__telling[hidden],
+.ink-komp-gala__jaar[hidden] {
+	display: none;
+}
+
+/* body of a category or listing card: the full-height column */
+.ink-komp-kaart__lyf {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.ink-komp-kat__ikoon {
+	margin-bottom: 1.25rem;
+}
+
+.ink-kompetisies .ink-komp-kat__titel {
+	margin-bottom: var(--wp--preset--spacing--s-4);
+}
+
+.ink-kompetisies .ink-komp-kat__tema {
+	margin-bottom: var(--wp--preset--spacing--s-12);
+}
+
+.ink-kompetisies .ink-komp-kat__teks {
+	flex: 1;
+	margin-bottom: var(--wp--preset--spacing--s-16);
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.625;
+}
+
+.ink-komp-kat__limiet {
+	margin-bottom: var(--wp--preset--spacing--s-16);
+}
+
+.ink-kompetisies .ink-komp-kat__riglyne {
+	margin-bottom: var(--wp--preset--spacing--s-24);
+	padding-top: var(--wp--preset--spacing--s-16);
+	border-top: 1px solid var(--wp--preset--color--border);
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+.ink-komp-kat__riglyn {
+	display: flex;
+	gap: var(--wp--preset--spacing--s-8);
+}
+
+.ink-komp-kat__riglyn + .ink-komp-kat__riglyn,
+.ink-komp-gids__meta > * + * {
+	margin-top: var(--wp--preset--spacing--s-8);
+}
+
+.ink-komp-kat__stippel {
+	margin-top: var(--wp--preset--spacing--s-4);
+	color: var(--wp--preset--color--primary);
+}
+
+/* --- gala --- */
+.ink-komp-gala {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--wp--preset--spacing--s-40);
+	align-items: flex-start;
+}
+
+.ink-komp-gala > * {
+	min-width: 0;
+}
+
+.ink-komp-gala__kicker,
+.ink-komp-gids__kicker {
+	display: inline-flex;
+	margin-bottom: var(--wp--preset--spacing--s-16);
+}
+
+.ink-komp-gala__kicker > span,
+.ink-komp-gids__kicker > span {
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+	letter-spacing: 0.025em;
+}
+
+.ink-kompetisies .ink-komp-gala__titel,
+.ink-kompetisies .ink-komp-gids__titel {
+	margin-bottom: var(--wp--preset--spacing--s-16);
+}
+
+.ink-kompetisies .ink-komp-gala__teks {
+	max-width: 36rem;
+	margin-bottom: var(--wp--preset--spacing--s-24);
+	color: var(--wp--preset--color--muted-text);
+	line-height: 1.625;
+}
+
+.ink-komp-gala__info > * + * {
+	margin-top: var(--wp--preset--spacing--s-12);
+}
+
+.ink-komp-gala__info {
+	margin-bottom: var(--wp--preset--spacing--s-32);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+.ink-komp-gala__info-teks {
+	font-weight: 500;
+}
+
+.ink-komp-gala__deure {
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-komp-gala__program {
+	margin-bottom: var(--wp--preset--spacing--s-24);
+}
+
+.ink-kompetisies .ink-komp-gala__program-etiket {
+	margin-bottom: var(--wp--preset--spacing--s-12);
+}
+
+.ink-komp-gala__program-ry + .ink-komp-gala__program-ry {
+	margin-top: 0.625rem;
+}
+
+.ink-kompetisies .ink-komp-gala__program-lys {
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+.ink-komp-gala__program-ry {
+	display: flex;
+	align-items: baseline;
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+.ink-komp-gala__nommer {
+	flex-shrink: 0;
+	width: 1.25rem;
+	color: var(--wp--preset--color--primary);
+	font-family: var(--wp--preset--font-family--display);
+	font-style: italic;
+}
+
+.ink-komp-gala__program-teks {
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-komp-gala__kaartjies {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--s-12);
+	margin-bottom: var(--wp--preset--spacing--s-24);
+}
+
+.ink-komp-gala__prys {
+	color: var(--wp--preset--color--ink-text);
+	font-weight: 600;
+}
+
+.ink-kompetisies .ink-komp-gala__verlede-titel {
+	margin-bottom: var(--wp--preset--spacing--s-4);
+}
+
+.ink-kompetisies .ink-komp-gala__verlede-teks {
+	margin-bottom: var(--wp--preset--spacing--s-24);
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+/* DIVERGENCE (accepted, owner 2026-11-01): all years in one row that slides sideways and
+   never wraps; the page itself doesn't scroll. Lovable has three years and no overflow. */
+.ink-komp-gala__jare {
+	display: flex;
+	gap: var(--wp--preset--spacing--s-8);
+	margin-bottom: var(--wp--preset--spacing--s-24);
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+.ink-komp-gala__jare > * {
+	flex-shrink: 0;
+}
+
+.ink-kompetisies .ink-komp-gala__hoogtepunt {
+	margin-bottom: 1.25rem;
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--sm);
+	font-style: italic;
+	line-height: 1.25rem;
+}
+
+.ink-komp-gala__fotos {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+.ink-komp-gala__foto--breed {
+	grid-column: span 2;
+}
+
+.ink-komp-gala__onderskrif {
+	margin-top: var(--wp--preset--spacing--s-6);
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--xs);
+	line-height: 1rem;
+}
+
+/* "Sien alles" under a year's four photos (approved addition, owner 2026-11-02): the
+   ink-link--ink recipe; spacing only here. */
+.ink-komp-gala__alles {
+	margin-top: var(--wp--preset--spacing--s-16);
+}
+
+/* --- /kompetisies/gala/<jaar>/: every photo of one year (approved addition, owner
+   2026-11-02; Ink\Competitions\GalaPage). Layout only: ink-photo keeps each image in a fixed
+   3 / 2 box, so a lazy image or a loaded batch moves nothing above it. --- */
+.ink-komp-gala-fotos__terug {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	margin-bottom: var(--wp--preset--spacing--s-24);
+}
+
+.ink-komp-gala-fotos__jaar {
+	margin-bottom: var(--wp--preset--spacing--s-12);
+}
+
+.ink-kompetisies .ink-komp-gala-fotos__titel {
+	margin-bottom: var(--wp--preset--spacing--s-40);
+}
+
+.ink-komp-gala-fotos__rooster {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+.ink-komp-gala-fotos__rooster img {
+	height: auto;
+}
+
+.ink-komp-gala-fotos__blaai {
+	margin-top: var(--wp--preset--spacing--s-40);
+}
+
+.ink-komp-gala-fotos__blaai [hidden] {
+	display: none;
+}
+
+/* --- directory --- */
+.ink-komp-gids__kop {
+	max-width: 42rem;
+	margin-bottom: var(--wp--preset--spacing--s-40);
+}
+
+.ink-kompetisies .ink-komp-gids__teks {
+	color: var(--wp--preset--color--muted-text);
+	line-height: 1.625;
+}
+
+.ink-komp-gids__kontroles {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-16);
+	margin-bottom: var(--wp--preset--spacing--s-32);
+}
+
+.ink-komp-gids__soek {
+	position: relative;
+	max-width: 28rem;
+}
+
+.ink-komp-gids__soek svg {
+	position: absolute;
+	top: 50%;
+	left: var(--wp--preset--spacing--s-16);
+	color: var(--wp--preset--color--muted-text);
+	transform: translateY(-50%);
+}
+
+.ink-komp-gids__soek input {
+	display: flex;
+}
+
+.ink-komp-gala__info > *,
+.ink-komp-gids__meta > * {
+	display: flex;
+}
+
+.ink-komp-gids__chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--s-8);
+}
+
+.ink-kompetisies .ink-komp-gids__telling {
+	margin-bottom: var(--wp--preset--spacing--s-24);
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+.ink-komp-gids__kaart-kop {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var(--wp--preset--spacing--s-16);
+}
+
+.ink-kompetisies .ink-komp-gids__kaart-titel {
+	margin-bottom: var(--wp--preset--spacing--s-4);
+}
+
+.ink-kompetisies .ink-komp-gids__org {
+	margin-bottom: var(--wp--preset--spacing--s-16);
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+.ink-kompetisies .ink-komp-gids__nota {
+	flex: 1;
+	margin-bottom: var(--wp--preset--spacing--s-16);
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
+	font-style: italic;
+	line-height: 1.625;
+}
+
+.ink-komp-gids__meta {
+	margin-top: auto;
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+	padding-top: var(--wp--preset--spacing--s-16);
+	border-top: 1px solid var(--wp--preset--color--border);
+}
+
+.ink-komp-gids__skakel {
+	margin-top: var(--wp--preset--spacing--s-16);
+}
+
+.ink-kompetisies .ink-komp-gids__leeg-titel {
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--xl);
+	line-height: 1.75rem;
+}
+
+.ink-kompetisies .ink-komp-gids__leeg-teks {
+	margin-top: var(--wp--preset--spacing--s-8);
+	color: var(--wp--preset--color--muted-text);
+}
+
+.ink-komp-gids__leeg-knop {
+	margin-top: var(--wp--preset--spacing--s-24);
+}
+
+.ink-komp-gids__indien {
+	max-width: 42rem;
+	margin: 3.5rem auto 0;
+}
+
+.ink-kompetisies .ink-komp-gids__indien-titel {
+	margin-bottom: var(--wp--preset--spacing--s-8);
+}
+
+.ink-kompetisies .ink-komp-gids__indien-teks {
+	margin-bottom: var(--wp--preset--spacing--s-24);
+	color: var(--wp--preset--color--muted-text);
+	line-height: 1.625;
+}
+
+@media (min-width: 768px) {
+	.ink-komp-kat__rooster {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.ink-komp-gids__rooster {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.ink-komp-gala-fotos__rooster {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: var(--wp--preset--spacing--s-16);
+	}
+}
+
+@media (min-width: 1024px) {
+	.ink-komp-gala {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--wp--preset--spacing--s-64);
+	}
+
+	.ink-komp-gids__rooster {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.ink-komp-gala-fotos__rooster {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}

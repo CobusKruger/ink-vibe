@@ -156,10 +156,11 @@
 	line-height: 1.75rem;
 }
 
-/* h3-card (HR-2): 20/28, weight 400 */
+/* h3-card (HR-2): 20/27.5 (`leading-snug`, measured on every library, competition and
+   stories card; 2026-11-02), weight 400 */
 .ink-heading-h3-card {
 	font-size: var(--wp--preset--font-size--xl);
-	line-height: 1.75rem;
+	line-height: 1.71875rem;
 	font-weight: 400;
 }
 
@@ -297,6 +298,11 @@
 
 .ink-band--stone-soft {
 	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 20%, transparent);
+}
+
+/* cream/50: the poem reading header (ReadStory.tsx:142 `bg-cream/50`; cream = surface). */
+.ink-band--cream-soft {
+	background-color: color-mix(in srgb, var(--wp--preset--color--surface) 50%, transparent);
 }
 
 .ink-band--dark {
@@ -668,7 +674,6 @@
 	box-sizing: border-box;
 	display: inline-flex;
 	align-items: center;
-	gap: var(--wp--preset--spacing--s-4);
 	width: -moz-fit-content;
 	width: fit-content;
 	margin: 0;
@@ -678,7 +683,12 @@
 	font-size: var(--wp--preset--font-size--xs);
 	font-weight: 500;
 	line-height: 1rem;
-	white-space: nowrap;
+}
+
+/* An icon's gap, only when there is an icon: every measured text pill has `gap: normal`.
+   Zero specificity, so a variant's own gap wins. */
+:where(.ink-pill:has(> svg)) {
+	gap: var(--wp--preset--spacing--s-4);
 }
 
 .ink-pill svg {
@@ -696,8 +706,11 @@
 	font-weight: 600;
 }
 
-/* soft: secondary fill, foreground text, 4px 10px; soft-xs 2px 8px */
+/* soft: secondary fill, foreground text, 4px 10px; soft-xs 2px 8px. A plain text span,
+   not a flex row (measured tuis:featured-card-pill). */
 .ink-pill--soft {
+	display: inline-block;
+	align-items: normal;
 	padding: var(--wp--preset--spacing--s-4) 10px;
 	background-color: var(--wp--preset--color--secondary);
 	color: var(--wp--preset--color--ink-text);
@@ -753,7 +766,6 @@
 	font-size: var(--wp--preset--font-size--sm);
 	font-weight: 400;
 	line-height: 1.25rem;
-	white-space: normal;
 }
 
 .ink-pill--hint.ink-tone-accent {
@@ -766,9 +778,16 @@
 	height: 16px;
 }
 
+/* tint-15: the poem badge and hint are `bg-sage/15` (ReadStory.tsx:145,187), not /10. */
+.ink-pill--tint.ink-pill--tint-15,
+.ink-pill--hint.ink-tone-accent.ink-pill--tint-15 {
+	background-color: color-mix(in srgb, var(--ink-tone, var(--wp--preset--color--accent)) 15%, transparent);
+}
+
 /* badge tint-lg (hero badge): inline-block, primary/10, 6px 16px, 14/20 */
 .ink-pill--tint-lg {
 	display: inline-block;
+	align-items: normal;
 	padding: var(--wp--preset--spacing--s-6) var(--wp--preset--spacing--s-16);
 	background-color: color-mix(in srgb, var(--ink-tone) 10%, transparent);
 	color: var(--ink-tone);
@@ -915,6 +934,7 @@
 .ink-step-badge,
 .ink-status-dot,
 .ink-icon-tile--circle,
+.ink-icon-tile--circle-md,
 .ink-icon-tile--circle-lg {
 	box-sizing: border-box;
 	flex-shrink: 0;
@@ -929,6 +949,12 @@
 	overflow: hidden;
 	border: 0;
 	background-color: transparent;
+}
+
+/* An <img> avatar keeps the browser's own overflow: clip; Lovable sets none on the image.
+   `hidden` above is for the wrapper form, which clips its child image. */
+img.ink-avatar {
+	overflow: clip;
 }
 
 .ink-avatar img {
@@ -1043,6 +1069,7 @@
 .ink-icon-tile--sm,
 .ink-icon-tile--lg,
 .ink-icon-tile--circle,
+.ink-icon-tile--circle-md,
 .ink-icon-tile--circle-lg {
 	--ink-tone: var(--wp--preset--color--primary);
 	box-sizing: border-box;
@@ -1061,6 +1088,7 @@
 .ink-icon-tile svg,
 .ink-icon-tile--lg svg,
 .ink-icon-tile--circle svg,
+.ink-icon-tile--circle-md svg,
 .ink-icon-tile--circle-lg svg {
 	width: 20px;
 	height: 20px;
@@ -1087,6 +1115,16 @@
 	display: flex;
 	width: 40px;
 	height: 40px;
+	padding: 0;
+	border-radius: var(--wp--custom--radius--full);
+}
+
+/* circle-md: 44px circle, 20px glyph (results banner, competitions category; GAP-03-03).
+   Tone: default primary/10, or `ink-icon-tile--gold` (gold/20). */
+.ink-icon-tile--circle-md {
+	display: flex;
+	width: 44px;
+	height: 44px;
 	padding: 0;
 	border-radius: var(--wp--custom--radius--full);
 }
@@ -1125,6 +1163,12 @@
 .ink-icon-tile--gold {
 	--ink-tone: var(--wp--preset--color--gold);
 	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 20%, transparent);
+	/* Lovable ResultsBanner.tsx:12-13: the tile keeps the text colour; the glyph is gold. */
+	color: inherit;
+}
+
+.ink-icon-tile--gold svg {
+	color: var(--wp--preset--color--gold);
 }
 
 .ink-icon-tile--neutral {
@@ -1136,6 +1180,7 @@
 .ink-icon-tile--sm.ink-tone-accent,
 .ink-icon-tile--lg.ink-tone-accent,
 .ink-icon-tile--circle.ink-tone-accent,
+.ink-icon-tile--circle-md.ink-tone-accent,
 .ink-icon-tile--circle-lg.ink-tone-accent,
 .ink-icon-tile--circle-xl.ink-tone-accent { --ink-tone: var(--wp--preset--color--accent); }
 
@@ -1143,6 +1188,7 @@
 .ink-icon-tile--sm.ink-tone-ink,
 .ink-icon-tile--lg.ink-tone-ink,
 .ink-icon-tile--circle.ink-tone-ink,
+.ink-icon-tile--circle-md.ink-tone-ink,
 .ink-icon-tile--circle-lg.ink-tone-ink,
 .ink-icon-tile--circle-xl.ink-tone-ink { --ink-tone: var(--wp--preset--color--ink-text); }
 
@@ -1150,24 +1196,32 @@
    11. Tier chip (sponsor tiers) and tier label (NR-1)
    ========================================================================== */
 
+/* The chip is a plain block in the body type (recipe tier-chip base: Inter 400 16/24);
+   the name inside it carries the serif (`__naam`, SponsorsSection.tsx:46). */
 .ink-tier-chip {
 	box-sizing: border-box;
-	display: inline-flex;
-	align-items: center;
+	display: block;
 	padding: var(--wp--preset--spacing--s-12) var(--wp--preset--spacing--s-24);
 	border: 0;
 	border-radius: var(--wp--custom--radius--lg);
-	/* the sponsor name: `font-serif font-medium` (SponsorsSection.tsx:46) */
-	font-family: var(--wp--preset--font-family--display);
+	font-family: var(--wp--preset--font-family--body);
 	font-size: var(--wp--preset--font-size--md);
-	font-weight: 500;
+	font-weight: 400;
 	line-height: 1.5rem;
+}
+
+.ink-tier-chip__naam {
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 500;
 }
 
 /* goud: gold/10, gold/20 border, name text-lg (18/28) → 54px */
 .ink-tier-chip--goud {
 	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 10%, transparent);
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--gold) 20%, transparent);
+}
+
+.ink-tier-chip--goud .ink-tier-chip__naam {
 	font-size: var(--wp--preset--font-size--lg);
 	line-height: 1.75rem;
 }
@@ -1355,6 +1409,20 @@
 	pointer-events: none;
 }
 
+/* An icon's margin on top of the 8px gap: Lovable's `mr-2`, `mr-1.5` and `ml-2` (measured
+   magazine-btn-read-icon, magazine-past-0-btn-read-icon, competitions-hero-btn-primary-icon). */
+.ink-btn svg.ink-btn__icon--start {
+	margin-right: var(--wp--preset--spacing--s-8);
+}
+
+.ink-btn svg.ink-btn__icon--start-sm {
+	margin-right: var(--wp--preset--spacing--s-6);
+}
+
+.ink-btn svg.ink-btn__icon--end {
+	margin-left: var(--wp--preset--spacing--s-8);
+}
+
 /* sizes (button-size sm / lg / xl; cta = xl, BTN-1). default (40 / 8 16 / 14/20) is the base. */
 .ink-btn--sm,
 .wp-block-button.ink-btn-sm > .wp-block-button__link {
@@ -1377,7 +1445,8 @@
 .wp-block-button:is(.ink-btn-xl, .ink-btn-cta) > .wp-block-button__link {
 	height: 48px;
 	padding: 0 var(--wp--preset--spacing--s-40);
-	border-radius: var(--wp--custom--radius--md);
+	/* Lovable size xl is `rounded-lg` (recipe button-size xl: 8px). */
+	border-radius: var(--wp--custom--radius--lg);
 	font-family: var(--wp--preset--font-family--display);
 	font-size: var(--wp--preset--font-size--lg);
 	line-height: 1.75rem;
@@ -1453,6 +1522,7 @@
 
 /* gold (LEG-2): border gold/40, foreground text; filled hover gold / ink / gold */
 .ink-btn--gold {
+	max-width: 100%;
 	border-color: color-mix(in srgb, var(--wp--preset--color--gold) 40%, transparent);
 }
 
@@ -1622,23 +1692,26 @@
 	color: var(--wp--preset--color--accent);
 }
 
-/* menu toggle: p-2, 40px box, foreground. Bound to the header's core navigation
-   open / close toggles (Header.tsx:105 — display stays core's breakpoint logic). */
-.ink-icon-btn--menu,
-.wp-block-group.is-style-ink-header :is(.wp-block-navigation__responsive-container-open, .wp-block-navigation__responsive-container-close) {
+/* menu toggle: p-2, 40px box, foreground (Header.tsx:113). The icon follows
+   aria-expanded; display by breakpoint is the ink-header block style's. */
+.ink-icon-btn--menu {
 	box-sizing: border-box;
-	align-items: center;
-	justify-content: center;
-	width: 40px;
-	height: 40px;
+	display: inline-block;
+	align-items: normal;
+	justify-content: normal;
 	padding: var(--wp--preset--spacing--s-8);
 	color: var(--wp--preset--color--ink-text);
 }
 
-.ink-icon-btn--menu svg,
-.wp-block-group.is-style-ink-header :is(.wp-block-navigation__responsive-container-open, .wp-block-navigation__responsive-container-close) svg {
+.ink-icon-btn--menu svg {
+	display: block;
 	width: 24px;
 	height: 24px;
+}
+
+.ink-icon-btn--menu[aria-expanded="false"] .ink-icon-btn__close,
+.ink-icon-btn--menu[aria-expanded="true"] .ink-icon-btn__open {
+	display: none;
 }
 
 /* round: 32px circle, p-2; save = background/80 + muted; camera = primary + white */
@@ -1759,10 +1832,19 @@
 	font-size: var(--wp--preset--font-size--sm);
 	font-weight: 400;
 	line-height: 1.25rem;
+	text-align: center;
 	text-decoration: none;
-	white-space: nowrap;
 	cursor: pointer;
 	transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* plain: a text-only chip, not a flex row (measured: gala years, InkPols years). The sort
+   pill is the same. */
+.ink-chip--plain,
+.ink-chip--sort {
+	display: inline-block;
+	align-items: normal;
+	gap: normal;
 }
 
 .ink-chip svg {
@@ -1989,6 +2071,11 @@
 	color: var(--wp--preset--color--muted-text);
 	text-decoration: none;
 	transition: color 0.15s ease;
+}
+
+/* core sets z-index 1 on its navigation links; the design's links have none. */
+.wp-block-group.is-style-ink-header .wp-block-navigation-item__content {
+	z-index: auto;
 }
 
 /* nav link footer / back links: 14/20 muted, hover foreground, no slide */
@@ -2366,4 +2453,715 @@ textarea.ink-field,
 .ink-user-menu__item:focus-visible {
 	background-color: var(--wp--preset--color--muted);
 	outline: none;
+}
+
+/* ==========================================================================
+   19. Delta recipes (Lovable 3e75fb8; rows in specs/recipe-gaps.csv, ratified
+   2026-11-01). Measured from rendered captures; evidence in maps/_recipes.csv.
+   Kept together and last so each option overrides the primitive it composes with.
+   Disclosed differences from Lovable are marked DIVERGENCE.
+   ========================================================================== */
+
+/* --- headings --- */
+
+/* banner title (GAP-03-05): 18/28 → 20/28. h1-bar (RG-IP-05): 20/28 → 24/32, truncates. */
+.ink-heading-banner,
+.ink-heading-h1-bar {
+	font-family: var(--wp--preset--font-family--heading);
+	font-style: normal;
+	font-weight: 600;
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-heading-banner {
+	font-size: var(--wp--preset--font-size--lg);
+	line-height: 1.75rem;
+}
+
+.ink-heading-h1-bar {
+	overflow: hidden;
+	font-size: var(--wp--preset--font-size--xl);
+	line-height: 1.75rem;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* on-ink colour for any heading role; sizes stay the role's own (RG-KO-04). */
+[class*="ink-heading-"].ink-heading--on-ink {
+	color: var(--wp--preset--color--surface);
+}
+
+/* on-ink lede colour (RG-KO-04): surface/80. Size stays with the text it colours. */
+.ink-text--on-ink {
+	color: color-mix(in srgb, var(--wp--preset--color--surface) 80%, transparent);
+}
+
+/* --- section band --- */
+
+/* banner (GAP-03-01): top padding only, pt-10. */
+.ink-band--banner {
+	padding-top: var(--wp--preset--spacing--s-40);
+	padding-bottom: 0;
+}
+
+/* no-border (RG-KO-01): ink-band--dark without its top border. */
+.ink-band--no-border {
+	border-top: 0;
+}
+
+/* --- texture (RG-KO-03; moved from home.css so it loads on every page) ---
+   `ink-texture` is the real element, first child of its band; the plus token is the
+   measured home layer (black, .03), `--on-ink` the measured competitions layer (white, .04).
+   `ink-hero-texture` is the Tuis hero's existing class: same layer as a ::before, until
+   the hero carries the element.
+   DIVERGENCE: pointer-events none (Lovable: auto, unreachable there); it never takes a click. */
+.ink-texture,
+.ink-hero-texture::before {
+	position: absolute;
+	inset: 0;
+	opacity: 0.03;
+	pointer-events: none;
+	background-image: var(--wp--custom--ink--pattern--plus);
+}
+
+.ink-hero-texture::before {
+	content: "";
+	z-index: 0;
+}
+
+.ink-hero-texture > * {
+	position: relative;
+	z-index: 1;
+}
+
+.ink-hero-texture,
+:has(> .ink-texture) {
+	position: relative;
+	overflow: hidden;
+}
+
+.ink-texture ~ * {
+	position: relative;
+}
+
+.ink-texture--on-ink {
+	opacity: 0.03;
+	background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* --- eyebrow --- */
+
+/* caps (GAP-03-04): 12/16 600 uppercase, no pill. Tone: `--gold` or `--muted`.
+   theme (RG-KO-10): the same at weight 500, gold. */
+.ink-eyebrow--caps,
+.ink-eyebrow--theme {
+	font-size: var(--wp--preset--font-size--xs);
+	font-weight: 600;
+	line-height: 1rem;
+	letter-spacing: 0.025em;
+	text-transform: uppercase;
+}
+
+.ink-eyebrow--theme {
+	font-weight: 500;
+	color: var(--wp--preset--color--gold);
+}
+
+/* card-xs (RG-IP-08): 12/16 500 sentence case. Colour: primary, or `--accent`. */
+.ink-eyebrow--card-xs {
+	font-size: var(--wp--preset--font-size--xs);
+	line-height: 1rem;
+	letter-spacing: normal;
+	text-transform: none;
+}
+
+/* --- card --- */
+
+/* award (GAP-01-04): radius 16, no shadow, p 24 → 32, column. Lead option (GAP-01-05):
+   gold/50 border + shadow lg. Aside (GAP-02-01): gold/50 border, fixed p 24. */
+.ink-card--award,
+.ink-card--award-aside {
+	box-sizing: border-box;
+	background-color: var(--wp--preset--color--surface-alt);
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--xxl);
+	box-shadow: none;
+	padding: var(--wp--preset--spacing--s-24);
+}
+
+.ink-card--award {
+	display: flex;
+	flex-direction: column;
+}
+
+.ink-card--award-lead {
+	border-color: color-mix(in srgb, var(--wp--preset--color--gold) 50%, transparent);
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+.ink-card--award-aside {
+	border-color: color-mix(in srgb, var(--wp--preset--color--gold) 50%, transparent);
+}
+
+/* banner (GAP-03-02): gold/10 panel link holding icon, body and link; column → row.
+   Hover gold/15 + solid gold border; the inner `ink-link--ink` opens its gap to 8. */
+.ink-card--banner {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-16);
+	padding: 20px var(--wp--preset--spacing--s-24);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--gold) 40%, transparent);
+	border-radius: var(--wp--custom--radius--xxl);
+	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 10%, transparent);
+	color: var(--wp--preset--color--ink-text);
+	text-decoration: none;
+	transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ink-card--banner:hover {
+	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 15%, transparent);
+	border-color: var(--wp--preset--color--gold);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-card--banner__body {
+	flex: 1;
+}
+
+.ink-card--banner__body > p {
+	margin: 0;
+}
+
+.ink-card--banner__body > .ink-heading-banner {
+	margin-top: var(--wp--preset--spacing--s-4);
+}
+
+.ink-card--banner .ink-link--ink {
+	transition: gap 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ink-card--banner:hover .ink-link--ink {
+	gap: var(--wp--preset--spacing--s-8);
+}
+
+/* lift (RG-KO-08): option on the base card; the feature hover (-4px, shadow lg). */
+.ink-card--lift {
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ink-card--lift:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+/* The title turns primary with the card (`group-hover:text-terracotta transition-colors`,
+   Competitions.tsx:377). The resting shadow stays: competitions-external and
+   competitions-category both measure the base card's shadow at rest. */
+.ink-card--lift .ink-heading-h3-card {
+	transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ink-card--lift:hover .ink-heading-h3-card {
+	color: var(--wp--preset--color--primary);
+}
+
+/* flush + body: Lovable's Card has no padding, its CardContent does (p-6, p-8 on the large
+   card). Keeps the padding where the design has it. Competitions cards. */
+.ink-card.ink-card--flush {
+	padding: 0;
+}
+
+.ink-card__body {
+	box-sizing: border-box;
+	padding: var(--wp--preset--spacing--s-24);
+}
+
+.ink-card--lg > .ink-card__body {
+	padding: var(--wp--preset--spacing--s-32);
+}
+
+/* static (RG-KO-17): option on feature / feature-hero that removes the hover lift. */
+.ink-card--static {
+	transition: none;
+}
+
+.ink-card--static:hover {
+	transform: none;
+	box-shadow: none;
+}
+
+/* callout (RG-KO-21): dashed, filled, radius 12, p 32 → 40, centred. */
+.ink-card--callout {
+	box-sizing: border-box;
+	padding: var(--wp--preset--spacing--s-32);
+	border: 1px dashed var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--radius--xl);
+	background-color: var(--wp--preset--color--surface-alt);
+	text-align: center;
+}
+
+/* --- pill: colour options; size comes from the pill they compose with --- */
+
+/* place (GAP-01-06): 12/16 500 (pill base), 4/12, gap 6, bordered; one tone per position. */
+.ink-pill--place {
+	align-self: flex-start;
+	gap: var(--wp--preset--spacing--s-6);
+	padding: var(--wp--preset--spacing--s-4) var(--wp--preset--spacing--s-12);
+	border: 1px solid var(--wp--preset--color--border);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-pill--place svg {
+	width: 14px;
+	height: 14px;
+}
+
+.ink-pill--place-1 {
+	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 15%, transparent);
+	border-color: color-mix(in srgb, var(--wp--preset--color--gold) 50%, transparent);
+}
+
+.ink-pill--place-2 {
+	background-color: var(--wp--preset--color--secondary);
+}
+
+.ink-pill--place-3 {
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
+	border-color: color-mix(in srgb, var(--wp--preset--color--primary) 30%, transparent);
+}
+
+/* caps-gold (GAP-03-08): on `ink-pill--caps`: gold/20 fill, ink text. */
+.ink-pill--caps-gold {
+	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 20%, transparent);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* gold-caps (RG-KO-05): on `ink-pill--tint-lg` (6/16, 14/20). Gold/15, gold text, icon row.
+   Weight 600 and uppercase at this size are Lovable's; reported as nonstandard. */
+.ink-pill--gold-caps {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 15%, transparent);
+	color: var(--wp--preset--color--gold);
+	font-weight: 600;
+	letter-spacing: 0.025em;
+	text-transform: uppercase;
+}
+
+.ink-pill--gold-caps svg {
+	width: 16px;
+	height: 16px;
+}
+
+/* Lovable's icons in these two recipes may shrink when the text wraps (measured 14.9 and
+   14.5px at 390, competitions-hero-badge-icon / -meta-entry-icon); the pill base pins 0. */
+.ink-pill--gold-caps svg,
+.ink-pill--on-ink svg {
+	flex-shrink: 1;
+}
+
+/* on-ink (RG-KO-06): on `ink-pill--hint` (8/16, 14/20 400, gap 8, icon 16). Gold icon. */
+.ink-pill--on-ink {
+	background-color: color-mix(in srgb, var(--wp--preset--color--surface) 10%, transparent);
+	color: var(--wp--preset--color--surface);
+}
+
+.ink-pill--on-ink svg {
+	color: var(--wp--preset--color--gold);
+}
+
+/* ticket (RG-KO-12): on `ink-pill--hint`. Background fill, border, primary 14px icon. */
+.ink-pill--ticket {
+	border: 1px solid var(--wp--preset--color--border);
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-pill--ticket svg {
+	width: 14px;
+	height: 14px;
+	color: var(--wp--preset--color--primary);
+}
+
+/* --- status dot: tier dots (GAP-01-08), 12px --- */
+
+.ink-status-dot--tier {
+	width: 12px;
+	height: 12px;
+}
+
+.ink-status-dot--goud {
+	background-color: var(--wp--preset--color--gold);
+}
+
+.ink-status-dot--silwer {
+	background-color: color-mix(in srgb, var(--wp--preset--color--muted-text) 50%, transparent);
+}
+
+.ink-status-dot--brons {
+	background-color: var(--wp--preset--color--primary);
+}
+
+/* --- accent block --- */
+
+/* citation (GAP-01-07): 2px gold rule, pl 16. poem (GAP-03-09): gold/40, sets its own text. */
+.ink-accent-block--citation,
+.ink-accent-block--poem {
+	padding: 0 0 0 var(--wp--preset--spacing--s-16);
+	border-left-color: var(--wp--preset--color--gold);
+}
+
+.ink-accent-block--poem {
+	border-left-color: color-mix(in srgb, var(--wp--preset--color--gold) 40%, transparent);
+	color: var(--wp--preset--color--muted-text);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--md);
+	line-height: 1.625;
+	white-space: pre-line;
+}
+
+/* top (RG-IP-12): 2px primary top rule, pt 12, no left rule. */
+.ink-accent-block--top {
+	padding: var(--wp--preset--spacing--s-12) 0 0;
+	border-left: 0;
+	border-top: 2px solid var(--wp--preset--color--primary);
+}
+
+/* --- framed media: one base for covers, photos and the flipbook frame ---
+   radius 4, 1px border ring. Lovable also asks for a card shadow on these; its ring
+   utility displaces it, so none renders and none is set here. */
+.ink-cover,
+.ink-photo,
+.ink-reader-frame {
+	box-sizing: border-box;
+	display: block;
+	border-radius: var(--wp--custom--radius--sm);
+	box-shadow: 0 0 0 1px var(--wp--preset--color--border);
+}
+
+.ink-cover,
+.ink-photo {
+	max-width: 100%;
+	object-fit: cover;
+	transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* cover (RG-IP-06): 176px, lifts on hover.
+   DIVERGENCE (accepted, inkpols.md §2, handoff permitted #6): covers keep the A4 ratio of
+   the real issues; Lovable measures 3 / 4. */
+.ink-cover {
+	width: 176px;
+	aspect-ratio: 210 / 297;
+}
+
+.ink-cover:hover {
+	transform: translateY(-4px);
+}
+
+/* tilted (GAP-03-07): 224 → 256, -1deg, straightens on hover. --home: 224 → 288. */
+.ink-cover--tilted {
+	width: 224px;
+	transform: rotate(-1deg);
+}
+
+.ink-cover--tilted:hover {
+	transform: rotate(0deg);
+}
+
+/* photo (RG-KO-15): full width, 3/2, radius 6, scales on hover. */
+.ink-photo {
+	width: 100%;
+	aspect-ratio: 3 / 2;
+	border-radius: var(--wp--custom--radius--md);
+}
+
+.ink-photo:hover {
+	transform: scale(1.02);
+}
+
+/* flipbook frame (RG-IP-11): card fill, max 1024, centred, 4/3 → 16/10. */
+.ink-reader-frame {
+	width: 100%;
+	max-width: 1024px;
+	margin-left: auto;
+	margin-right: auto;
+	overflow: hidden;
+	aspect-ratio: 4 / 3;
+	background-color: var(--wp--preset--color--surface-alt);
+}
+
+/* --- segmented tabs, rounded (GAP-01-03): on `ink-segmented` > `__tab` --- */
+
+.ink-segmented--pill {
+	align-items: normal;
+	justify-content: normal;
+	height: auto;
+	border-radius: var(--wp--custom--radius--full);
+	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 50%, transparent);
+	/* Lovable's tablist sets no colour of its own: it inherits the foreground. */
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-segmented--pill .ink-segmented__tab {
+	display: inline-block;
+	align-items: normal;
+	justify-content: normal;
+	padding: var(--wp--preset--spacing--s-8) 20px;
+	white-space: normal;
+	border-radius: var(--wp--custom--radius--full);
+}
+
+.ink-segmented--pill .ink-segmented__tab:hover {
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-segmented--pill .ink-segmented__tab.is-active,
+.ink-segmented--pill .ink-segmented__tab[aria-selected="true"],
+.ink-segmented--pill .ink-segmented__tab[aria-current="page"] {
+	background-color: var(--wp--preset--color--surface-alt);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* --- meta item: options on `ink-meta ink-meta--sm` (14/20) --- */
+
+/* ink (RG-KO-11): foreground, gap 8, primary 16px icon. --gap-12: the gala info rows. */
+.ink-meta--ink {
+	gap: var(--wp--preset--spacing--s-8);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-meta--ink svg,
+.ink-meta--sm-wide svg {
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-meta--gap-12 {
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+/* sm-wide (RG-KO-19): muted, gap 8, primary 14px icon. */
+.ink-meta--sm-wide {
+	gap: var(--wp--preset--spacing--s-8);
+}
+
+.ink-meta--sm-wide svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* --- button: ghost on ink (RG-KO-07), on `ink-btn ink-btn--lg` ---
+   The hover of `ink-btn--outline-on-dark` inside the ink band, with a surface/30 border.
+   DIVERGENCE: serif per BTN-FONT (Lovable's ghost renders Inter here). */
+.ink-btn--ghost-on-ink {
+	background-color: transparent;
+	color: var(--wp--preset--color--surface);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--surface) 30%, transparent);
+	box-shadow: none;
+}
+
+.ink-btn--ghost-on-ink:hover {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* --- links --- */
+
+/* ink (GAP-03-06): foreground 14/20 500 with a 16px arrow; primary on hover as a link.
+   In `ink-card--banner` it is not the hover target, so only its gap changes (above). */
+.ink-link--ink,
+.ink-link--medium {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-4);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--sm);
+	font-weight: 500;
+	line-height: 1.25rem;
+	text-decoration: none;
+}
+
+.ink-link--ink {
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-link--ink svg {
+	flex-shrink: 0;
+	width: 16px;
+	height: 16px;
+}
+
+.ink-link--ink svg.ink-link__icon--end {
+	margin-left: var(--wp--preset--spacing--s-4);
+}
+
+/* An icon with its own margin (Lovable `ml-1`, MagazineSection.tsx:61) takes no gap on
+   top of it: 4px between label and icon, not 8. */
+.ink-link--ink:has(> svg.ink-link__icon--end) {
+	gap: normal;
+}
+
+a.ink-link--ink:hover {
+	color: var(--wp--preset--color--primary);
+}
+
+/* medium (RG-KO-20): primary, 14px icon; hover primary-light, no underline. */
+.ink-link--medium {
+	color: var(--wp--preset--color--primary);
+}
+
+.ink-link--medium svg {
+	flex-shrink: 0;
+	width: 14px;
+	height: 14px;
+}
+
+.ink-link--medium:hover {
+	color: var(--wp--preset--color--primary-light);
+}
+
+/* --- search field on card fill (RG-KO-16): on `ink-search-field`, 44px --- */
+
+.ink-search-field--card {
+	height: 44px;
+	background-color: var(--wp--preset--color--surface-alt);
+}
+
+/* --- mobile menu (RG-CH-01): inline panel below 1024 (accepted divergence: the design's
+   is 768, 06-chrome §3); markup in patterns/header-main.php --- */
+
+@keyframes ink-fade-in {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+.ink-mobile-menu {
+	padding: var(--wp--preset--spacing--s-16) 0;
+	border-top: 1px solid var(--wp--preset--color--border);
+	animation: ink-fade-in 0.5s ease-out;
+}
+
+.ink-mobile-menu[hidden] {
+	display: none;
+}
+
+.ink-mobile-menu__nav {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+.ink-mobile-menu__actions {
+	display: flex;
+	gap: var(--wp--preset--spacing--s-12);
+	padding-top: var(--wp--preset--spacing--s-16);
+}
+
+.ink-mobile-menu__actions > * {
+	flex: 1;
+}
+
+.ink-nav-link--mobile {
+	display: block;
+	padding: var(--wp--preset--spacing--s-8) 0;
+	color: var(--wp--preset--color--ink-text);
+	font-family: var(--wp--preset--font-family--ui);
+	font-size: var(--wp--preset--font-size--md);
+	font-weight: 400;
+	line-height: 1.5rem;
+	text-decoration: none;
+}
+
+/* --- section 19 responsive + motion --- */
+
+@media (min-width: 768px) {
+	.ink-heading-banner {
+		font-size: var(--wp--preset--font-size--xl);
+	}
+
+	.ink-heading-h1-bar {
+		font-size: 1.5rem;
+		line-height: 2rem;
+	}
+
+	.ink-card--award {
+		padding: var(--wp--preset--spacing--s-32);
+	}
+
+	.ink-card--banner {
+		flex-direction: row;
+		align-items: center;
+		gap: var(--wp--preset--spacing--s-24);
+	}
+
+	.ink-card--callout {
+		padding: var(--wp--preset--spacing--s-40);
+	}
+
+	.ink-reader-frame {
+		aspect-ratio: 16 / 10;
+	}
+}
+
+/* soft-lg (RG-UI-01): on `ink-card--soft`, p 32 → 40. */
+@media (min-width: 768px) {
+	.ink-card--soft-lg {
+		padding: var(--wp--preset--spacing--s-40);
+	}
+}
+
+/* solid (RG-UI-02): primary fill, 2/10, 600, icon 14; keeps the shadcn transparent border,
+   where count-chip solid has none. */
+.ink-pill--solid {
+	padding: 2px 10px;
+	border: 1px solid transparent;
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary-foreground);
+	font-weight: 600;
+}
+
+.ink-pill--solid svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* wide (RG-UI-03): on `ink-meta-row`, gap 24. */
+.ink-meta-row--wide {
+	gap: var(--wp--preset--spacing--s-24);
+}
+
+@media (min-width: 1024px) {
+	.ink-cover--tilted {
+		width: 256px;
+	}
+
+	.ink-cover--home {
+		width: 288px;
+	}
+
+	.ink-mobile-menu {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ink-card--banner,
+	.ink-card--banner .ink-link--ink,
+	.ink-card--lift,
+	.ink-card--lift .ink-heading-h3-card,
+	.ink-cover,
+	.ink-photo {
+		transition: none;
+	}
+
+	.ink-mobile-menu {
+		animation: none;
+	}
+
+	.ink-card--lift:hover,
+	.ink-cover:not(.ink-cover--tilted):hover,
+	.ink-photo:hover {
+		transform: none;
+	}
 }

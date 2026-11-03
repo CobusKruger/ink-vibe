@@ -15,22 +15,22 @@ library-search-icon-wrap,,,wp-content/plugins/ink-core/src/Library/Archive.php,5
 library-search-icon,src/pages/Library.tsx,217,wp-content/plugins/ink-core/src/Library/Archive.php,574,search svg,paired,stamped via withAuditId() on the icon() output
 library-search-input,src/pages/Library.tsx,219,wp-content/plugins/ink-core/src/Library/Archive.php,575,search input,paired,
 library-search-btn,,,wp-content/plugins/ink-core/src/Library/Archive.php,579,Soek submit button,missing-lovable,B-5 EXTRA
-library-shelf,src/pages/Library.tsx,232,wp-content/plugins/ink-core/src/Library/Archive.php,542,featured shelf,paired,NOT RENDERED on INK: no non-fixture items (limits §6)
-library-shelf-head,src/pages/Library.tsx,233,,,shelf header row,missing-ink,B-9 MECHANISM
-library-shelf-h2,src/pages/Library.tsx,235,wp-content/plugins/ink-core/src/Library/Archive.php,543,shelf h2,paired,NOT RENDERED on INK
-library-shelf-sub,src/pages/Library.tsx,238,,,shelf subtitle,missing-ink,B-8
-library-shelf-grid,src/pages/Library.tsx,243,wp-content/plugins/ink-core/src/Library/Archive.php,544,shelf grid,paired,B-10: <div> grid vs <ul>; NOT RENDERED on INK
-library-shelf-card,src/pages/Library.tsx,245,wp-content/plugins/ink-core/src/Library/Archive.php,549,first featured card,paired,first card only; Lovable ArticleCard <Card> at :343; INK cardHtml() <li> at :682; NOT RENDERED on INK
-library-shelf-card-image,,,wp-content/plugins/ink-core/src/Library/Archive.php,658,first featured card: cover image,missing-lovable,B-18 DIVERGENCE (accepted); only when the item has a thumbnail
-library-shelf-card-body,src/pages/Library.tsx,348,wp-content/plugins/ink-core/src/Library/Archive.php,684,first featured card: content column,paired,NOT RENDERED on INK
-library-shelf-card-meta,src/pages/Library.tsx,349,wp-content/plugins/ink-core/src/Library/Archive.php,664,first featured card: badge + read-time row,paired,NOT RENDERED on INK
-library-shelf-card-badge,src/pages/Library.tsx,350,wp-content/plugins/ink-core/src/Library/Archive.php,667,first featured card: category badge,paired,Lovable <Badge outline> <div>; INK <span>; NOT RENDERED on INK
-library-shelf-card-time,src/pages/Library.tsx,353,wp-content/plugins/ink-core/src/Library/Archive.php,671,first featured card: read time,paired,NOT RENDERED on INK
-library-shelf-card-title,src/pages/Library.tsx,358,wp-content/plugins/ink-core/src/Library/Archive.php,686,first featured card: title,paired,B-15: <h3> vs <a>; NOT RENDERED on INK
-library-shelf-card-excerpt,src/pages/Library.tsx,361,wp-content/plugins/ink-core/src/Library/Archive.php,679,first featured card: excerpt,paired,NOT RENDERED on INK
-library-shelf-card-footer,src/pages/Library.tsx,364,wp-content/plugins/ink-core/src/Library/Archive.php,688,first featured card: author + read row,paired,NOT RENDERED on INK
-library-shelf-card-author,src/pages/Library.tsx,365,wp-content/plugins/ink-core/src/Library/Archive.php,689,first featured card: author,paired,B-17: no "by" prefix; NOT RENDERED on INK
-library-shelf-card-read,src/pages/Library.tsx,366,wp-content/plugins/ink-core/src/Library/Archive.php,690,first featured card: Read affordance,paired,B-16: <span> vs aria-hidden <a>; NOT RENDERED on INK
+library-shelf,src/pages/Library.tsx,232,wp-content/plugins/ink-core/src/Library/Archive.php,542,featured shelf,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was NOT RENDERED on INK: no non-fixture items (limits §6))"
+library-shelf-head,src/pages/Library.tsx,233,,,shelf header row,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was B-9 MECHANISM)"
+library-shelf-h2,src/pages/Library.tsx,235,wp-content/plugins/ink-core/src/Library/Archive.php,543,shelf h2,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was NOT RENDERED on INK)"
+library-shelf-sub,src/pages/Library.tsx,238,,,shelf subtitle,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was B-8)"
+library-shelf-grid,src/pages/Library.tsx,243,wp-content/plugins/ink-core/src/Library/Archive.php,544,shelf grid,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was B-10: <div> grid vs <ul>; NOT RENDERED on INK)"
+library-shelf-card,src/pages/Library.tsx,245,wp-content/plugins/ink-core/src/Library/Archive.php,549,first featured card,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was first card only; Lovable ArticleCard <Card> at :343; INK cardHtml() <li> at :682; NOT RENDERED on INK)"
+library-shelf-card-image,,,wp-content/plugins/ink-core/src/Library/Archive.php,658,first featured card: cover image,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was B-18 DIVERGENCE (accepted); only when the item has a thumbnail)"
+library-shelf-card-body,src/pages/Library.tsx,348,wp-content/plugins/ink-core/src/Library/Archive.php,684,first featured card: content column,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was NOT RENDERED on INK)"
+library-shelf-card-meta,src/pages/Library.tsx,349,wp-content/plugins/ink-core/src/Library/Archive.php,664,first featured card: badge + read-time row,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was NOT RENDERED on INK)"
+library-shelf-card-badge,src/pages/Library.tsx,350,wp-content/plugins/ink-core/src/Library/Archive.php,667,first featured card: category badge,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was Lovable <Badge outline> <div>; INK <span>; NOT RENDERED on INK)"
+library-shelf-card-time,src/pages/Library.tsx,353,wp-content/plugins/ink-core/src/Library/Archive.php,671,first featured card: read time,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was NOT RENDERED on INK)"
+library-shelf-card-title,src/pages/Library.tsx,358,wp-content/plugins/ink-core/src/Library/Archive.php,686,first featured card: title,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was B-15: <h3> vs <a>; NOT RENDERED on INK)"
+library-shelf-card-excerpt,src/pages/Library.tsx,361,wp-content/plugins/ink-core/src/Library/Archive.php,679,first featured card: excerpt,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was NOT RENDERED on INK)"
+library-shelf-card-footer,src/pages/Library.tsx,364,wp-content/plugins/ink-core/src/Library/Archive.php,688,first featured card: author + read row,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was NOT RENDERED on INK)"
+library-shelf-card-author,src/pages/Library.tsx,365,wp-content/plugins/ink-core/src/Library/Archive.php,689,first featured card: author,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was B-17: no ""by"" prefix; NOT RENDERED on INK)"
+library-shelf-card-read,src/pages/Library.tsx,366,wp-content/plugins/ink-core/src/Library/Archive.php,690,first featured card: Read affordance,scope,"owner ruling, 2026-11-01, step F brief: Biblioteek has no ""Alles"" state, so the shelf stays out of the page; Archive.php:638 unchanged (was B-16: <span> vs aria-hidden <a>; NOT RENDERED on INK)"
 library-browse,src/pages/Library.tsx,252,,,categories + grid section,missing-ink,B-1
 library-filters,src/pages/Library.tsx,253,wp-content/plugins/ink-core/src/Library/Archive.php,599,filter row,paired,
 library-filter,src/pages/Library.tsx,259,wp-content/plugins/ink-core/src/Library/Archive.php,608,first (active All/Alles) filter chip,paired,first chip only; B-12 <button> vs <a> from Kernel/ArchiveRender::pill(); id stamped in Archive::filterHtml(); Kernel untouched
@@ -53,8 +53,8 @@ library-empty,src/pages/Library.tsx,275,wp-content/plugins/ink-core/src/Library/
 library-empty-title,src/pages/Library.tsx,276,wp-content/plugins/ink-core/src/Library/Archive.php,508,empty-state title,paired,Lovable not rendered in the default capture
 library-empty-text,src/pages/Library.tsx,277,,,empty-state help text,missing-ink,B-20
 library-empty-btn,src/pages/Library.tsx,281,wp-content/plugins/ink-core/src/Library/Archive.php,503,clear-filters control,paired,B-21: INK only when filtered; neither side rendered in capture
-library-cta,src/pages/Library.tsx,309,,,closing CTA band,missing-ink,B-22
-library-cta-container,src/pages/Library.tsx,310,,,CTA container,missing-ink,B-22
-library-cta-h2,src/pages/Library.tsx,311,,,CTA h2,missing-ink,B-22
-library-cta-text,src/pages/Library.tsx,314,,,CTA text,missing-ink,B-22
-library-cta-btn,src/pages/Library.tsx,318,,,CTA button (literary lg asChild),missing-ink,B-22
+library-cta,src/pages/Library.tsx,309,,,closing CTA band,scope,"owner 2026-11-01 (owner-rulings.md): contribution CTA removed on purpose, stays absent (was B-22)"
+library-cta-container,src/pages/Library.tsx,310,,,CTA container,scope,"owner 2026-11-01 (owner-rulings.md): contribution CTA removed on purpose, stays absent (was B-22)"
+library-cta-h2,src/pages/Library.tsx,311,,,CTA h2,scope,"owner 2026-11-01 (owner-rulings.md): contribution CTA removed on purpose, stays absent (was B-22)"
+library-cta-text,src/pages/Library.tsx,314,,,CTA text,scope,"owner 2026-11-01 (owner-rulings.md): contribution CTA removed on purpose, stays absent (was B-22)"
+library-cta-btn,src/pages/Library.tsx,318,,,CTA button (literary lg asChild),scope,"owner 2026-11-01 (owner-rulings.md): contribution CTA removed on purpose, stays absent (was B-22)"

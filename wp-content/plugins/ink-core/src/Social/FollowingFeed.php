@@ -248,11 +248,11 @@ final class FollowingFeed {
 	 * One activity-feed card. Pure — Terms + escaping only.
 	 *
 	 * @param array{title:string, permalink:string, type:string, author:string, authorUrl?:string, authorAvatar?:string, excerpt?:string, daysAgo?:string, hartjies?:int, hartjieLabel?:string, gemeenskap?:int} $card The work.
-	 * @param bool $first Whether this is the feed's first card (carries the fidelity join keys, maps/my-profiel.csv).
+	 * @param bool                                                                                                                                                                                               $first Whether this is the feed's first card (carries the fidelity join keys, maps/my-profiel.csv).
 	 * @return string
 	 */
 	private static function cardHtml( array $card, bool $first = false ): string {
-		$audit = static fn( string $suffix ): string => $first ? ' data-audit-id="profiel-activity-' . $suffix . '"' : '';
+		$audit      = static fn( string $suffix ): string => $first ? ' data-audit-id="profiel-activity-' . $suffix . '"' : '';
 		$author_url = isset( $card['authorUrl'] ) ? (string) $card['authorUrl'] : '';
 		$avatar     = isset( $card['authorAvatar'] ) ? (string) $card['authorAvatar'] : '';
 		$excerpt    = isset( $card['excerpt'] ) ? (string) $card['excerpt'] : '';

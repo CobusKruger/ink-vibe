@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Engagement;
 
+use Ink\Content\FieldSets;
 use Ink\Kernel\ProseFormat;
 
 defined( 'ABSPATH' ) || exit;
@@ -112,7 +113,7 @@ final class GedigBody {
 			return self::toHtml( '' );
 		}
 
-		return self::toHtml( $post->post_content );
+		return self::toHtml( $post->post_content, (string) get_post_meta( $post->ID, FieldSets::GEDIG_TOEWYDING, true ) );
 	}
 
 	/**
@@ -137,7 +138,7 @@ final class GedigBody {
 		$tokens = array();
 
 		foreach ( $lines as $index => $line ) {
-			if ( '' === trim( $line ) ) {
+			if ( self::isBlankLine( $line ) ) {
 				$tokens[] = array( 'type' => 'blank' );
 				continue;
 			}
@@ -255,36 +256,73 @@ final class GedigBody {
 		// line-boundary rule below can see (and misread) it as just a line.
 		$body = (string) preg_replace( '/\s*<div>\s*<\/div>\s*/i', $stanza, $body );
 
-		// 3. Shape 3 vs shape 5 both use <p>, with OPPOSITE </p><p> conventions —
-		// the one reliable signal that differs is whether <br> appears anywhere.
-		$has_br            = 1 === preg_match( '/<br\b/i', $body );
+		// 3. Word's <o:p> wrappers (`<p class="MsoNormal"><o:p>&nbsp;</o:p></p>` is its
+		// blank line) carry no meaning of their own: drop the tags, keep any content,
+		// so the blank-paragraph rule below sees an ordinary blank <p>.
+		$body = (string) preg_replace( '/<\/?o:p\b[^>]*>/i', '', $body );
+
+		// 4. A bare &nbsp; (or U+00A0) between two paragraphs, outside any <p>, is the
+		// same blank-line signal (classic-editor era posts). Make it an empty
+		// paragraph, otherwise the two paragraphs glue into one line below.
+		$body = (string) preg_replace( '/<\/p>\s*(?:&nbsp;|\xC2\xA0)(?:\s|&nbsp;|\xC2\xA0)*(?=<p\b)/i', '</p><p></p>', $body );
+
+		// 5. A blank <p> is shape 5's explicit stanza-break signal (a harmless no-op
+		// for shape 3). "Blank" means nothing but whitespace, &nbsp;, <br> and empty
+		// inline wrappers: `<p> </p>`, `<p>&nbsp;</p>`, `<p><br></p>`,
+		// `<p><span style="mso-…">&nbsp;</span></p>`.
+		$body = (string) preg_replace( '/\s*<p[^>]*>(?:\s|&nbsp;|\xC2\xA0|<br\b[^>]*>|<\/?(?:span|b|i|em|strong|font)\b[^>]*>)*+<\/p>\s*/i', $stanza, $body );
+
+		// 6. Shape 3 vs shape 5 both use <p>, with OPPOSITE </p><p> conventions —
+		// the one reliable signal that differs is whether <br> appears anywhere
+		// (checked after the blank paragraphs, which may hold a bare <br>, are gone).
+		$has_br             = 1 === preg_match( '/<br\b/i', $body );
 		$paragraph_boundary = $has_br ? $stanza : $line;
 
-		// 4. A blank/&nbsp;-only <p> is shape 5's explicit stanza-break signal
-		// (harmless no-op for shape 3, which never produces one in practice).
-		$body = (string) preg_replace( '/\s*<p[^>]*>\s*(?:&nbsp;|\xC2\xA0)?\s*<\/p>\s*/i', $stanza, $body );
-
-		// 5. <br> / <br/> / <br /> / <br class="…" /> (any attributes) is always
+		// 7. <br> / <br/> / <br /> / <br class="…" /> (any attributes) is always
 		// a line break — its own trailing pretty-print whitespace is consumed in
 		// the SAME match so it can never double up with a following real break.
 		$body = (string) preg_replace( '/<br\b[^>]*>\s*/i', $line, $body );
 
-		// 6. </p> immediately followed by <p …> — shape-dependent (step 3).
+		// 8. </p> immediately followed by <p …> — shape-dependent (step 6).
 		$body = (string) preg_replace( '/<\/p>\s*<p\b[^>]*>/i', $paragraph_boundary, $body );
 
-		// 7 & 8. </div><div> / </span><span> — always just the next line (shape
+		// 9. </div><div> / </span><span> — always just the next line (shape
 		// 4's only stanza signal, the empty-div pair, is already consumed above).
 		$body = (string) preg_replace( '/<\/div>\s*<div\b[^>]*>/i', $line, $body );
-		$body = (string) preg_replace( '/<\/span>\s*<span\b[^>]*>/i', $line, $body );
+		// Inside <p> paragraphs (Word, classic editor) adjacent spans are runs of ONE
+		// line (`<span>*d</span><span>o</span><span>·pa·mien</span>`), not lines; only
+		// the div-based (Facebook) shape uses them as line units.
+		if ( ! preg_match( '/<p\b/i', $body ) || preg_match( '/<div\b/i', $body ) ) {
+			$body = (string) preg_replace( '/<\/span>\s*<span\b[^>]*>/i', $line, $body );
+		}
 
-		// 9. Whatever p/div/span tags remain (the very first opening tag, the
-		// very last closing tag, wrappers that never bordered another wrapper
-		// tag) are pure structural noise now — strip fully, whitespace included.
-		$body = (string) preg_replace( '/\s*<\/?(?:p|div|span)\b[^>]*>\s*/i', '', $body );
+		// 10. Whatever p/div tags remain (the very first opening tag, the very last
+		// closing tag, wrappers that never bordered another wrapper tag) are pure
+		// structural noise now — strip fully, whitespace included. A <span> is
+		// inline: its tags go but the spaces beside it are real text
+		// (`Die <span lang="en">groot</span> ding`), so no whitespace is eaten.
+		$body = (string) preg_replace( '/\s*<\/?(?:p|div)\b[^>]*>\s*/i', '', $body );
+		$body = (string) preg_replace( '/<\/?span\b[^>]*>/i', '', $body );
 
-		// 10. Materialise the placeholders — only now, once nothing further in
+		// 11. Materialise the placeholders — only now, once nothing further in
 		// this pass will eat whitespace and risk consuming a real newline.
 		return str_replace( array( $stanza, $line ), array( "\n\n", "\n" ), $body );
+	}
+
+	/**
+	 * Whether a physical line has no visible content: empty, whitespace, or only
+	 * non-breaking spaces (the `&nbsp;` entity or a literal U+00A0).
+	 *
+	 * Word and web editors pad an empty line with a non-breaking space, which PHP's
+	 * `trim()` does not strip, so such a line used to render as an interactive empty
+	 * line instead of a stanza break. Only a line of nothing but these counts as
+	 * blank: leading whitespace before real text is still kept verbatim.
+	 *
+	 * @param string $line One physical line (raw, or already stripped of tags).
+	 * @return bool
+	 */
+	private static function isBlankLine( string $line ): bool {
+		return '' === trim( (string) preg_replace( '/&nbsp;|&#0*160;|&#x0*a0;|\xC2\xA0/i', ' ', $line ) );
 	}
 
 	/**
@@ -306,24 +344,33 @@ final class GedigBody {
 	 * Build the stanza-aware HTML for a stored body.
 	 *
 	 * Consecutive content lines are grouped into `ink-gedig__stanza` containers;
-	 * each blank physical line emits an `ink-gedig__sep` element so the original
-	 * blank-line spacing is reproduced verbatim. Content lines are re-sanitised on
+	 * a run of one or more blank lines (owner ruling 2026-11-02) emits ONE
+	 * `ink-gedig__sep` element, and blank lines at the start or end emit none. Content lines are re-sanitised on
 	 * output through the shared inline allowlist (preserves text nodes incl. leading
 	 * spaces; strips/escapes anything else) and carry their resonance anchor.
 	 *
-	 * @param string $body The raw stored body.
+	 * @param string $body       The raw stored body.
+	 * @param string $dedication The poem's dedication; '' (the default, and every old poem) renders none.
 	 * @return string The stanza-aware HTML.
 	 */
-	public static function toHtml( string $body ): string {
+	public static function toHtml( string $body, string $dedication = '' ): string {
 		$tokens  = self::tokenize( $body );
 		$allowed = ProseFormat::allowedInlineTags();
 
-		$html        = '<div class="ink-gedig" data-audit-id="gedig-poem">';
+		// Lovable PoetryReader.tsx:31: the stanzas sit in one `gedig-stanzas` column (stanza breaks
+		// are the spacer divs between them).
+		// Lovable PoetryReader.tsx:26-30: an optional centred line "— dedication —" before the
+		// stanzas, shown only when the poem has one.
+		$dedication  = trim( $dedication );
+		$html        = '<div class="ink-gedig" data-audit-id="gedig-poem">'
+			. ( '' !== $dedication ? '<p class="ink-gedig__toewyding" data-audit-id="gedig-dedication">— ' . esc_html( $dedication ) . ' —</p>' : '' )
+			. '<div class="ink-gedig__stanzas" data-audit-id="gedig-stanzas">';
 		$stanza_open = false;
 		// Fidelity-audit join keys (docs/fidelity-remediation/maps/lees-gedig.csv):
 		// first stanza / first content line only, so each id occurs once per page.
 		$first_stanza = true;
 		$first_line   = true;
+		$pending_sep  = false; // One stanza break owed before the next stanza (stacked blanks collapse; none at start or end).
 
 		foreach ( $tokens as $token ) {
 			if ( 'blank' === $token['type'] ) {
@@ -331,7 +378,7 @@ final class GedigBody {
 					$html       .= '</div>';
 					$stanza_open = false;
 				}
-				$html .= '<div class="ink-gedig__sep" aria-hidden="true"></div>';
+				$pending_sep = true;
 				continue;
 			}
 
@@ -354,16 +401,20 @@ final class GedigBody {
 			// has real text and stays interactive.
 			$rendered = wp_kses( (string) $token['text'], $allowed );
 
-			if ( '' === trim( strip_tags( $rendered ) ) ) {
+			if ( self::isBlankLine( strip_tags( $rendered ) ) ) {
 				if ( $stanza_open ) {
 					$html       .= '</div>';
 					$stanza_open = false;
 				}
-				$html .= '<div class="ink-gedig__sep" aria-hidden="true"></div>';
+				$pending_sep = true;
 				continue;
 			}
 
 			if ( ! $stanza_open ) {
+				if ( $pending_sep && ! $first_stanza ) {
+					$html .= '<div class="ink-gedig__sep" aria-hidden="true"></div>';
+				}
+				$pending_sep = false;
 				$html        .= '<div class="ink-gedig__stanza"' . ( $first_stanza ? ' data-audit-id="gedig-stanza"' : '' ) . '>';
 				$stanza_open  = true;
 				$first_stanza = false;
@@ -392,7 +443,7 @@ final class GedigBody {
 			$html .= '</div>';
 		}
 
-		$html .= '</div>';
+		$html .= '</div></div>';
 
 		return $html;
 	}

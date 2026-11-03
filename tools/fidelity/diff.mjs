@@ -25,7 +25,10 @@
  * --map supplies the accepted-divergence allowlist: a row with status `divergence` or
  * `scope` AND a non-empty note (the disclosure, R6) accepts findings on that id. An
  * optional `accept` column narrows it to `;`-separated classes and/or properties
- * (e.g. `DRIFT` or `padding-bottom;font-size`). `missing-ink` records a finding and
+ * (e.g. `DRIFT` or `padding-bottom;font-size`). A token may carry a viewport scope after
+ * `@`, so it accepts only at those capture widths: `width@768`, `width@390|768`,
+ * `display@<1024`, `height@>=1024`. A malformed scope exits 2. A scoped token never
+ * accepts a capture whose `_meta` has no viewport. `missing-ink` records a finding and
  * does not accept it.
  */
 
@@ -97,7 +100,27 @@ function normaliseColour(v) {
 }
 
 const isColourProp = (p) => p === 'color' || p === 'background-color' || p.endsWith('-color');
-const normalise = (prop, v) => (isColourProp(prop) ? normaliseColour(v) : v);
+
+/** Colours inside a longer value, e.g. a gradient stop or a shadow layer. */
+const normaliseEmbeddedColours = (v) => v
+  .replace(/color\(srgb [^)]*\)/g, normaliseColour)
+  .replace(/rgba\(\d+, \d+, \d+, 1\)/g, normaliseColour);
+
+/** A shadow layer with no offset, blur or spread paints nothing, whatever its colour:
+ *  Tailwind's ring utilities always emit two of them. Drop those, compare what paints. */
+function normaliseShadow(v) {
+  if (v === 'none') return v;
+  const layers = normaliseEmbeddedColours(v).split(/,\s*(?![^()]*\))/)
+    .filter((layer) => !/(^|\s)0px 0px 0px 0px(\s|$)/.test(layer));
+  return layers.length ? layers.join(', ') : 'none';
+}
+
+const normalise = (prop, v) => {
+  if (isColourProp(prop)) return normaliseColour(v);
+  if (prop === 'box-shadow') return normaliseShadow(v);
+  if (prop === 'background-image') return normaliseEmbeddedColours(v);
+  return v;
+};
 
 /** A border colour on an edge that draws no border is not a visible difference.
  *  Tailwind's preflight sets a default border-color on every element; WordPress
@@ -132,7 +155,30 @@ function parseCsv(text) {
   return rows;
 }
 
-/** audit_id → { status, note, accept: Set|null } from a Phase 3 map. */
+/**
+ * One accept token: `<class or property>[@<viewports>]`. Viewports are `|`-separated
+ * terms, each a width, `<N` or `>=N`. Throws on anything else: a typo here must not
+ * silently widen or drop an acceptance.
+ */
+export function parseAcceptToken(token) {
+  const at = token.indexOf('@');
+  if (at < 0) return { what: token, matches: () => true };
+  const what = token.slice(0, at);
+  const terms = token.slice(at + 1).split('|').map((term) => {
+    const m = term.match(/^(<|>=)?(\d+)$/);
+    if (!m) throw new Error(`accept token "${token}": bad viewport term "${term}"; use 768, <1024 or >=1024`);
+    return { op: m[1] ?? '=', n: Number(m[2]) };
+  });
+  if (!what) throw new Error(`accept token "${token}": nothing before @`);
+  return {
+    what,
+    matches: (vp) => typeof vp === 'number' && terms.some(({ op, n }) => (
+      op === '<' ? vp < n : op === '>=' ? vp >= n : vp === n
+    )),
+  };
+}
+
+/** audit_id → { status, note, accept: tokens|null } from a Phase 3 map. */
 async function loadMap(file) {
   const [head, ...rows] = parseCsv((await readFile(file, 'utf8')).replace(/^\uFEFF/, ''));
   const col = (name) => head.indexOf(name);
@@ -142,7 +188,7 @@ async function loadMap(file) {
     if (!r[col('audit_id')]) continue;
     const accept = col('accept') >= 0 ? (r[col('accept')] ?? '').split(';').map((t) => t.trim()).filter(Boolean) : [];
     map.set(r[col('audit_id')], {
-      status: r[col('status')], note: (r[col('note')] ?? '').trim(), accept: accept.length ? new Set(accept) : null,
+      status: r[col('status')], note: (r[col('note')] ?? '').trim(), accept: accept.length ? accept.map(parseAcceptToken) : null,
     });
   }
   return map;
@@ -164,14 +210,21 @@ if (badClass) {
   console.error(`--fail-on: unknown class ${badClass}; use ${GATE_CLASSES.join(',')}`);
   process.exit(2);
 }
-const map = args.map ? await loadMap(args.map) : new Map();
+let map;
+try {
+  map = args.map ? await loadMap(args.map) : new Map();
+} catch (e) {
+  console.error(`--map: ${e.message}`);
+  process.exit(2);
+}
+const A = await load(args.a);   // reference (Lovable)
+const B = await load(args.b);   // INK
 const isAccepted = (id, cls, prop) => {
   const row = map.get(id);
   if (!row || !ACCEPTING_STATUS.has(row.status) || !row.note) return false;
-  return !row.accept || row.accept.has(cls) || (prop !== undefined && row.accept.has(prop));
+  if (!row.accept) return true;
+  return row.accept.some((t) => (t.what === cls || (prop !== undefined && t.what === prop)) && t.matches(B.meta.viewport));
 };
-const A = await load(args.a);   // reference (Lovable)
-const B = await load(args.b);   // INK
 
 // T5: the join is one record per audit-id. A repeated id would silently pair an
 // arbitrary instance (the last one), so refuse rather than write a wrong finding.

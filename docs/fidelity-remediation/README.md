@@ -164,6 +164,7 @@ tools/fidelity/run.sh diff --a <lovable.ndjson> --b <ink.ndjson> --out <finding.
 tools/fidelity/run.sh diff … --map docs/fidelity-remediation/maps/<page>.csv --fail-on MISSING,STRUCTURE,DRIFT
 tools/fidelity/run.sh verify --capture <file.ndjson> --sample 30
 tools/fidelity/determinism-check.sh <url> <side> <page> <viewport> 3 ['<expect>'] [capture flags…]
+tools/fidelity/run.sh interactions        # reading pages: response upvote + poem dedication (signed in, adds and removes its own test data)
 
 # authenticated page, and/or a state reached by clicking (Lovable /write's editor step):
 tools/fidelity/run.sh capture … --auth tmp/fidelity-auth/ink.json
@@ -193,10 +194,15 @@ tools/fidelity/run.sh verify --capture <page>@<vp>-scope-<name>.ndjson --sample 
   class (`MISSING`, `EXTRA`, `STRUCTURE`, `DRIFT`) or if nothing paired, and prints one `gate …`
   line. `STRUCTURE` means a different tag, nearest paired ancestor or sibling order. The map is
   the allowlist: `status` `divergence` or `scope` **with a non-empty `note`** accepts findings on
-  that id. An optional `accept` column narrows it to `;`-separated classes or properties.
-  `missing-ink` records a finding and does not accept it. A map `paired` id on one side only is
+  that id. An optional `accept` column narrows it to `;`-separated classes or properties, and a
+  token may carry a viewport scope so it accepts only at those capture widths: `width@768`,
+  `width@390|768`, `display@<1024`, `height@>=1024`. A divergence that exists only at some widths
+  must be scoped. A malformed scope exits 2. `missing-ink` records a finding and does not accept it. A map `paired` id on one side only is
   `MISSING`; on neither side it is listed but does not fail, because it may belong to another
   state. `box-sizing` and `max-width` deltas are reported, not gated (E9c).
+- **`hidden` subtrees are not recorded.** An element with the `hidden` attribute (a closed menu, an
+  inactive tab panel) is not in that state, and React unmounts the same thing. Capture it open with
+  `--click … --state`. CSS-hidden elements, such as `hidden md:flex`, are still recorded and compared.
 - **`/qa-bloks/` is not a capture target.** A refresh does not recreate it, so capture real
   pages: `/biblioteek/` and `/opleiding/` have migrated cards. Fixture-only states on those
   pages are unmeasured unless real data shows them.
@@ -414,7 +420,7 @@ Rows 08a/08b (`biblioteek`, `opleiding`) needed no new kind. They file the follo
 The Lovable instance rows for the shared `/library` reference are recorded once, in
 `_primitive-observations.biblioteek.csv`, so Stage 2 does not count them twice.
 
-Added during rows 09a/09b (`meld-aan`, `registreer`, `findings/09a-meld-aan-primitives.md`):
+Added during rows 09a/09b (`teken-in`, `registreer`, `findings/09a-teken-in-primitives.md`):
 
 ```
 divider              horizontal rule, optionally with a centred label ('or continue with');
@@ -430,7 +436,7 @@ Rows 09a/09b file the following under existing kinds:
 
 They drop RegistrationGuard's off-screen honeypot (`.ink-reg-hp`), which the tool files as
 `form-label` + `form-field`. The Lovable rows for the shared `/auth` reference, sign-up state
-included, are recorded once, in `_primitive-observations.meld-aan.csv`.
+included, are recorded once, in `_primitive-observations.teken-in.csv`.
 
 Added during row 02 (`my-profiel`, `findings/02-my-profiel-primitives.md`):
 
@@ -486,6 +492,14 @@ Rows 10/11 file the following under existing kinds:
 - `<input type=submit>` buttons, which the tool files as `form-field`, under their button variant;
 - Lovable's muted "← Back to sign in" link under `nav-link`, as on row 09;
 - INK's `.ink-auth-secondary` under `button-outline`.
+
+Added with the delta recipes (`docs/lovable-delta-2026-10/specs/recipe-gaps.csv`):
+
+```
+cover                framed media on one base (magazine cover, gallery photo, flipbook frame)
+texture              decorative pattern layer as its own element (plus pattern on a hero band)
+mobile-menu          inline mobile navigation panel and its nav and action rows
+```
 
 `run.sh primitives` also emits a generic `button` fallback. It is not a kind: resolve
 each such row to a variant before it enters the register.
@@ -742,7 +756,8 @@ audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note[,a
 ```
 
 `status` ∈ `paired` | `missing-ink` | `missing-lovable` | `scope` | `divergence`. `accept` is
-optional and narrows what `run.sh diff --map` accepts (§4.1 Phase 4).
+optional and narrows what `run.sh diff --map` accepts, by class, property and viewport
+(§4.1 Phase 4).
 
 **Scratch:** `tmp/fidelity-captures/` for DOM and computed-style dumps. Gitignored,
 regenerable, never committed. All other transient files also go in repo-local `./tmp/`
@@ -783,6 +798,29 @@ A findings document is not ready until:
 - **`git merge` in this repo needs the sandbox off** (FS deny on `docs/`).
 - **Do not add commit attribution trailers** — enforced via `attribution.commit: ""`.
 
+### The full acceptance gate (one command)
+
+```bash
+tools/fidelity/accept/gate-all.sh [label] [--no-fixtures] [--no-closed] [--determinism] [--refresh-refs]
+```
+
+Git Bash on Windows or bash on macOS, from anywhere in the repo (it changes to the root). It finds Node through `run.sh`, needs no setup beyond the list below, and never refreshes or restores the database. Run it in the background and poll its log: it takes tens of minutes. Exit 0 only if every gate passed; the last line is `GATES: pass=N fail=M of T`.
+
+| Step | Script | What it does |
+|---|---|---|
+| 1 | `accept/fixtures.sh rebuild` | Dev-only test data in order (`tools/fixtures/*.php`, idempotent), then re-centres the relative response times (`fix-dates.php`) and flushes caches. `--no-fixtures` only re-centres |
+| 2 | `accept/gates.mjs` | Every page, state, auth and viewport in `accept/gates.json` (header, Tuis, Challenges, Uitslae and its tabs, Lees storie/gedig/artikel signed in and out, InkPols archive, year filters and three issues, Kompetisies and its states): 68 gates at 390, 768, 1440. INK is captured fresh; Lovable is captured once into `tmp/fidelity-captures/accept/ref` and reused until the preview build changes |
+| 3 | `accept/closed-round.sh` | The closed-round Tuis: drafts the fixture round "Toetsronde", gates Tuis main and the hero (6 gates), and always republishes it |
+| 4 (`--determinism`) | `accept/lees-determinism.sh`, `accept/lovable-determinism.sh` | Lees: 36 checks (3 byte-identical captures + a verify each). Lovable: the same for every stored reference. Slow; Lovable-side noise fails some on every machine, so compare the count with the last run |
+
+What it needs, none of it machine-specific in the repo:
+
+- Local site `nuwe-ink` up and deployed (`node tools/deploy-to-local.mjs --apply`), refreshed data, and the `fidelity-capture` user (recreate it as below; the gate signs it in itself, and finds it by login).
+- A Lovable preview of `../verse-haven` built at the delta commit, with its URL in `LOVABLE_URL` or `"lovablePreview"` in the gitignored `tools/local.config.json` (else `bases.lovable` in `targets.json`). The gate checks the build carries the audit-ids it clicks on, and clears its stored references when the build changes. `"lovableRepo"` in the same file overrides the `../verse-haven` location.
+- Browsers in `tmp/ms-playwright` (error text tells you the install command).
+
+Rounds, InkPols issues and the Lovable results slug are found by lookup (`lookups` in `gates.json`), so a refresh that shifts ids needs no edit. Add a page by adding a row to `gates.json` (and `targets.json`, `agent-brief.md` §2.1). Single pieces: `gates.mjs --group inkpols --only issue`, `--list` to see what would run.
+
 ### The capture harness
 
 Full contract in `harness-worklist.md`. The parts that bite:
@@ -820,6 +858,7 @@ Full contract in `harness-worklist.md`. The parts that bite:
 - **The Lovable footer repeats `footer-col-item` and `footer-col-link`**
   (`Footer.tsx:24,27` at `86b69dd`), so `diff` refuses any whole-page Lovable capture. Until
   that is fixed, capture page rows with `--scope main --scope-label main` on both sides.
+- **A new pattern file renders empty after a deploy until the pattern cache is cleared.** WordPress keeps the list in `_site_transient_wp_theme_files_patterns-*`, one row each for CLI and web, and `wp cache flush` does not clear them. `deploy-to-local.mjs --apply` deletes those option rows.
 - **Browsers live in `tmp/ms-playwright`** — the sandbox denies the usual
   `~/Library/Caches` location.
 - **The WordPress table prefix is `wpjj_`, not `wp_`.** A stale unused `wp_users` table
@@ -829,7 +868,7 @@ Full contract in `harness-worklist.md`. The parts that bite:
   `node tools/local.mjs wp …` and `node tools/local.mjs mysql …`, which pass Local's port
   (Windows) or socket (macOS) through (`tools/lib/local-site.mjs`).
 - **`wp-login.php` is intercepted** by `ink-core`'s `Accounts\AuthRedirects` and sent to
-  `/meld-aan`. Log in there; the submit control is `<button name="wp-submit">`, not core's
+  `/teken-in`. Log in there; the submit control is `<button name="wp-submit">`, not core's
   `<input id="wp-submit">`.
 - **The `fidelity-capture` session expires.** Authed runs fail with exit 3 ("AUTH
   EXPIRED … run.sh login") rather than capturing a logged-out page; refresh with

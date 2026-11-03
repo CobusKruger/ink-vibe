@@ -68,7 +68,7 @@ afterEach( function (): void {
  * AC-1: the registrar declares exactly the nine migration-load-bearing slugs as
  * class constants, single-sourced through `PostTypes::all()`.
  */
-test( 'all() exposes exactly the nine INK CPT slugs with exact code IDs', function (): void {
+test( 'all() exposes exactly the eleven INK CPT slugs with exact code IDs', function (): void {
 	expect( PostTypes::all() )->toBe( array(
 		'gedig',
 		'storie',
@@ -79,6 +79,8 @@ test( 'all() exposes exactly the nine INK CPT slugs with exact code IDs', functi
 		'uitdaging',
 		'inkpols_uitgawe',
 		'borg',
+		'kompetisie',
+		'eksterne_kompetisie',
 	) );
 } );
 
@@ -101,11 +103,11 @@ test( 'the slug constants are the exact migration-load-bearing code IDs', functi
 /**
  * AC-1: `register()` registers exactly the nine CPTs, once each.
  */
-test( 'register() registers exactly the nine expected post types', function (): void {
+test( 'register() registers exactly the eleven expected post types', function (): void {
 	$registered = ink_capture_registered_post_types();
 
 	expect( array_keys( $registered ) )->toBe( PostTypes::all() );
-	expect( $registered )->toHaveCount( 9 );
+	expect( $registered )->toHaveCount( 11 );
 } );
 
 /**
@@ -234,4 +236,43 @@ test( 'an unregistered CPT label key trips _doing_it_wrong', function (): void {
 test( 'Api facade exposes the slug surface', function (): void {
 	expect( Api::all() )->toBe( PostTypes::all() );
 	expect( Api::bydraeTypes() )->toBe( array( 'gedig', 'storie', 'artikel', 'skryfwerk' ) );
+} );
+
+/**
+ * WP5: no URL of their own, so no clash with Page 59192 or category `kompetisie`; but real admin screens.
+ */
+test( 'the competition types have admin screens and no URL', function (): void {
+	$registered = ink_capture_registered_post_types();
+
+	foreach ( array( 'kompetisie', 'eksterne_kompetisie' ) as $slug ) {
+		expect( $registered[ $slug ]['public'] )->toBeFalse();
+		expect( $registered[ $slug ]['show_ui'] )->toBeTrue();
+		expect( $registered[ $slug ]['show_in_rest'] )->toBeTrue();
+		expect( $registered[ $slug ]['has_archive'] )->toBeFalse();
+		expect( $registered[ $slug ]['rewrite'] )->toBeFalse();
+	}
+
+	expect( $registered['kompetisie']['supports'] )->toBe( array( 'title', 'editor' ) );
+	expect( $registered['eksterne_kompetisie']['supports'] )->toBe( array( 'title' ) );
+} );
+
+test( 'show_ui follows public on every existing type, and rewrite stays an array', function (): void {
+	foreach ( ink_capture_registered_post_types() as $slug => $args ) {
+		if ( in_array( $slug, array( 'kompetisie', 'eksterne_kompetisie' ), true ) ) {
+			continue;
+		}
+
+		expect( $args['show_ui'] )->toBe( $args['public'] );
+		expect( $args['rewrite'] )->toHaveKey( 'slug' );
+	}
+} );
+
+test( 'a kompetisie edits on the classic screen; other types keep the incoming decision', function (): void {
+	expect( PostTypes::useBlockEditor( true, 'kompetisie' ) )->toBeFalse();
+	expect( PostTypes::useBlockEditor( true, 'gedig' ) )->toBeTrue();
+	expect( PostTypes::useBlockEditor( false, 'gedig' ) )->toBeFalse();
+} );
+
+test( 'an InkPols issue has no editor or excerpt: the single has no body section', function (): void {
+	expect( ink_capture_registered_post_types()['inkpols_uitgawe']['supports'] )->toBe( array( 'title', 'thumbnail' ) );
 } );

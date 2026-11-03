@@ -1,10 +1,6 @@
 <?php
 /**
- * Unit tests for the InkPols single-issue metadata block (Story 13.2, FR-57).
- *
- * Target: {@see \Ink\InkPols\SingleIssue}. The pure `metaHtml()` (cover/date/
- * volume/teaser rows, each omitted when absent; '' when the whole set is empty)
- * is unit-testable without WordPress.
+ * Unit tests for the InkPols issue page (N3, `04-inkpols` §4, §6): {@see \Ink\InkPols\SingleIssue}.
  *
  * @package Ink\Tests
  */
@@ -20,44 +16,85 @@ use Brain\Monkey\Functions;
 
 beforeEach( function (): void {
 	Monkey\setUp();
+	Functions\when( '__' )->returnArg( 1 );
 	Functions\when( 'esc_html' )->returnArg( 1 );
+	Functions\when( 'esc_html__' )->returnArg( 1 );
 	Functions\when( 'esc_attr' )->returnArg( 1 );
 	Functions\when( 'esc_url' )->returnArg( 1 );
-	// displayDate() touches wp_date/get_option; Brain Monkey leaves wp_date defined
-	// process-wide once any test stubs it, so stub both deterministically here.
-	Functions\when( 'get_option' )->justReturn( 'Y-m-d' );
-	Functions\when( 'wp_date' )->alias( static fn ( string $fmt, int $ts ): string => gmdate( 'Y-m-d', $ts ) );
+	Functions\when( 'home_url' )->returnArg( 1 );
+	Functions\when( 'get_permalink' )->alias( static fn ( int $id ): string => '/inkpols/' . $id );
 } );
 
 afterEach( function (): void {
 	Monkey\tearDown();
 } );
 
-test( 'metaHtml renders cover, date, volume and teaser rows for a full issue', function (): void {
-	Functions\when( 'wp_get_attachment_image_url' )->justReturn( '/cover.jpg' );
+/**
+ * An issue read-model with one featured item.
+ */
+function ink_inkpols_single_issue( int $id ): Issue {
+	return new Issue( $id, 'Naam ' . $id, '2026-07-01', 0, 0, '', 'Titel ' . $id, array( 1 => array( 'title' => 'S', 'writer' => 'SS', 'tipe' => 'Gedig' ) ) );
+}
 
-	$issue = new Issue( 1, 'Herfsuitgawe', '2026-04-01', 'Jaargang 12', 345, 0, 'Lente en letterkunde.' );
-	$html  = SingleIssue::metaHtml( $issue );
+test( 'the bar has naam, titel, the debt back link and no download', function (): void {
+	$html = SingleIssue::barHtml( ink_inkpols_single_issue( 1 ) );
 
-	expect( $html )->toContain( 'ink-inkpols-besonderhede' );
-	expect( $html )->toContain( '/cover.jpg' );
-	expect( $html )->toContain( '2026-04-01' );          // displayDate Y-m-d fallback (no wp_date)
-	expect( $html )->toContain( 'Jaargang 12' );
-	expect( $html )->toContain( 'Lente en letterkunde.' );
+	expect( $html )->toContain( 'data-audit-id="magazine-issue-h1">Titel 1' );
+	expect( $html )->toContain( 'data-audit-id="magazine-issue-eyebrow">Naam 1' );
+	expect( $html )->toContain( '[NEEDS HUMAN AFRIKAANS] INKPOLS-TERUG' );
+	expect( $html )->toContain( 'href="/inkpols/"' );
+	expect( $html )->not->toContain( 'btn-pdf' );
 } );
 
-test( 'metaHtml omits each field that is absent (no malformed empty rows)', function (): void {
-	// No cover, no date, only a volume.
-	$issue = new Issue( 1, 't', '', 'Jaargang 1', 0, 0, '' );
-	$html  = SingleIssue::metaHtml( $issue );
+test( 'a middle issue links Vorige to the older and Volgende to the newer', function (): void {
+	$html = SingleIssue::contentsHtml( ink_inkpols_single_issue( 2 ), ink_inkpols_single_issue( 1 ), ink_inkpols_single_issue( 3 ) );
 
-	expect( $html )->toContain( 'Jaargang 1' );
-	expect( $html )->not->toContain( 'ink-inkpols-besonderhede__omslag' );
-	expect( $html )->not->toContain( 'ink-inkpols-besonderhede__datum' );
-	expect( $html )->not->toContain( 'ink-inkpols-besonderhede__voorskou' );
+	expect( $html )->toContain( 'data-audit-id="magazine-issue-nav-older" href="/inkpols/1"' );
+	expect( $html )->toContain( 'data-audit-id="magazine-issue-nav-newer" href="/inkpols/3"' );
+	expect( $html )->toContain( 'Vorige' );
+	expect( $html )->toContain( 'Volgende' );
+	expect( $html )->not->toContain( 'nav-spacer' );
+	expect( $html )->toContain( 'In hierdie uitgawe' );
+	expect( $html )->toContain( 'ink-accent-block--top' );
 } );
 
-test( 'metaHtml returns empty string when the issue carries no metadata at all', function (): void {
-	$issue = new Issue( 1, 't', '', '', 0, 0, '' );
-	expect( SingleIssue::metaHtml( $issue ) )->toBe( '' );
+test( 'the oldest holds the left slot with the spacer; the newest has no Volgende', function (): void {
+	expect( SingleIssue::contentsHtml( ink_inkpols_single_issue( 1 ), null, ink_inkpols_single_issue( 2 ) ) )->toContain( 'magazine-issue-nav-spacer' );
+	expect( SingleIssue::contentsHtml( ink_inkpols_single_issue( 2 ), ink_inkpols_single_issue( 1 ), null ) )->not->toContain( 'nav-newer' );
+} );
+
+test( 'neighbours reads a newest-first list', function (): void {
+	$list = array( ink_inkpols_single_issue( 3 ), ink_inkpols_single_issue( 2 ), ink_inkpols_single_issue( 1 ) );
+
+	$near = SingleIssue::neighbours( $list, 2 );
+	expect( $near['older']?->postId )->toBe( 1 );
+	expect( $near['newer']?->postId )->toBe( 3 );
+
+	expect( SingleIssue::neighbours( $list, 3 )['newer'] )->toBeNull();
+	expect( SingleIssue::neighbours( $list, 1 )['older'] )->toBeNull();
+	expect( SingleIssue::neighbours( $list, 9 ) )->toBe( array( 'older' => null, 'newer' => null ) );
+} );
+
+test( 'the issue page lists the glans items in order, each with its own tipe', function (): void {
+	$issue = new Issue(
+		1,
+		'Naam',
+		'2026-07-01',
+		0,
+		0,
+		'',
+		'Titel',
+		array(
+			1 => array( 'title' => 'Een', 'writer' => 'A', 'tipe' => 'Onderhoud' ),
+			2 => array( 'title' => 'Twee', 'writer' => 'B', 'tipe' => 'Fotoverhaal' ),
+			3 => array( 'title' => 'Drie', 'writer' => 'C', 'tipe' => 'Resensie' ),
+		)
+	);
+
+	$html = SingleIssue::contentsHtml( $issue, null, null );
+
+	expect( $html )->toContain( 'data-audit-id="magazine-issue-item-0-kind">Onderhoud<' );
+	expect( $html )->toContain( 'data-audit-id="magazine-issue-item-1-kind">Fotoverhaal<' );
+	expect( strpos( $html, 'Een' ) )->toBeLessThan( strpos( $html, 'Twee' ) );
+	expect( strpos( $html, 'Twee' ) )->toBeLessThan( strpos( $html, 'Drie' ) );
 } );

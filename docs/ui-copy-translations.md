@@ -852,3 +852,16 @@ per-field validation notices. Wired into the live code; leak-scan baseline lower
 | Library | Opleiding | Ingetekende-toestand keuselys (amptelike seksienaam) |
 | Sign out | Meld af | Ingetekende-toestand keuselys (`afmeld` → Meld af) |
 | Start Writing | Begin skryf | Ingetekende-toestand HRA (reeds gestandaardiseer) |
+
+---
+
+## Ontwerp-delta (verse-haven `71c0847..cbd9d3a`, 2026-11)
+
+Nuwe bladsye: Uitslae (`ChallengeResults.tsx`), InkPols-argief en -uitgawe (`Magazine.tsx`, `MagazineIssue.tsx`), Kompetisies (`Competitions.tsx`) en Uitdagings (`Challenges.tsx`). Hulle Engelse teks is plekhouer en word **nie** hier vertaal nie. Elke nuwe reël is in die kode gemerk `[NEEDS HUMAN AFRIKAANS] <SLEUTEL>` en in `afrikaans-translation-sheet.md` (kruisverwysing: `afrikaans-copy-worklist.md`) vir 'n mens om in te vul; sleutels: `UITSLAE-*`, `KOMP-*`, `INKPOLS-*`, `UITDAGINGS-*`.
+
+Reeds in die kode as Afrikaans (nie kopieskuld nie): "Uitslae", "Uitslae aangekondig · <maand>", "Aangekondig %s", "Eervolle vermeldings", "Sien alles", "Alles" (InkPols-jaarfilter), "Lees", "Skryf in", "Vee filters uit", "— Terugvoer van die moderator". Terme: `afrikaans-terms.md` (Uitslae, eervolle vermelding, gala, naam). "Beoordelaarsbrief" daar is 'n **onbevestigde** werkterm en word nie as goedgekeurde kopie gebruik nie.
+
+| Engels | Afrikaans | Notas |
+|---|---|---|
+| Competitions (header) | Kompetisies | Kopbalk-item tussen Uitdagings en Gemeenskap (D1); die ontwerp se "Magazine"-item word nie bygevoeg nie |
+| Submit a listing (mailto) | — | Onderwerpreël: "Nuwe kompetisie kennisgewing"; adres `skryfafrikaans@ink.org.za` (eienaar) |

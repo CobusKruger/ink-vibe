@@ -80,6 +80,7 @@ class MigrateAll {
 			array( 'challenge-entries', 'ink sync-challenge-entries' ),
 			array( 'result-posts', 'ink link-result-posts' ),
 			array( 'inkpols', 'ink migrate-inkpols' ),
+			array( 'kompetisies', 'ink migrate-kompetisies' ),
 			array( 'clean-shortcodes', 'ink clean-shortcodes' ),
 			array( 'rebuild-navigation', 'ink rebuild-navigation' ),
 			array( 'follows', 'ink migrate-follows' ),

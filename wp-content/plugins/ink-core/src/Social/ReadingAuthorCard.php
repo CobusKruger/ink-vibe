@@ -112,8 +112,9 @@ final class ReadingAuthorCard {
 		$profile = (string) get_author_posts_url( $author_id );
 		$prefix  = self::auditIdPrefix();
 
-		$html  = '<section class="ink-outeur-kaart" data-audit-id="reading-author-card">';
-		$html .= '<div class="ink-outeur-kaart__foto-omhulsel">' . (string) $avatar . '</div>';
+		// Lovable ReadStory.tsx:262-268: a <div> row with the avatar <img> as its first child.
+		$html  = '<div class="ink-outeur-kaart" data-audit-id="reading-author-card">';
+		$html .= (string) $avatar;
 		$html .= '<div class="ink-outeur-kaart__inhoud" data-audit-id="reading-author-body">';
 		$html .= '<h3 class="ink-outeur-kaart__naam ink-heading-h3"' . ( null !== $prefix ? ' data-audit-id="' . esc_attr( $prefix ) . '-author-name"' : '' ) . '>' . esc_html( $name ) . '</h3>';
 
@@ -123,14 +124,14 @@ final class ReadingAuthorCard {
 
 		$html .= '<div class="ink-outeur-kaart__aksies" data-audit-id="reading-author-actions">';
 		if ( null !== $following ) {
-			$html .= FollowToggle::toHtml( $author_id, $following, 'sm' );
+			$html .= FollowToggle::toHtml( $author_id, $following, 'sm', 'reading-author-follow' );
 		}
 		$html .= '<a class="ink-outeur-kaart__sien-alle ink-btn ink-btn--sm ink-btn--subtle" data-audit-id="reading-author-all-works" href="' . esc_url( $profile ) . '">'
 			. esc_html( Terms::label( 'sien_alle_werke' ) ) . '</a>';
 		$html .= '</div>';
 
 		$html .= '</div>';
-		$html .= '</section>';
+		$html .= '</div>';
 
 		return $html;
 	}
@@ -154,7 +155,8 @@ final class ReadingAuthorCard {
 			return 'gedig';
 		}
 
-		if ( is_singular( 'storie' ) ) {
+		// Artikel is Lovable's prose branch: ReadStory.tsx's ternary has no third id.
+		if ( is_singular( array( 'storie', 'artikel' ) ) ) {
 			return 'storie';
 		}
 

@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Ink\Challenges;
 
-use Ink\Content\ChallengeResultTitle;
 use Ink\Content\ChallengeRound;
 use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
@@ -25,10 +24,19 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Renders the `ink/uitdaging-argief` block: the challenges list page (Archetype B).
  *
- * Lists published `uitdaging` posts newest-first, paginated, each as a card with the
- * tema, the sluitingsdatum and a server-computed **countdown** ("Nog N dae" while
- * open, "Sluit vandag" on the deadline day, "Gesluit" once closed) derived from the
- * inclusive end-of-day-SAST deadline ({@see Sast}). Reads stay SERVER-RENDERED via
+ * The design's heading and featured current-round card ({@see CurrentChallenge::current()}:
+ * the open round, else the newest), then the other published `uitdaging` posts newest-first,
+ * paginated, each as INK's standard card with the tema, the sluitingsdatum and a
+ * server-computed **countdown** ("Nog N dae" while open, "Sluit vandag" on the deadline day,
+ * "Gesluit" once closed) derived from the inclusive end-of-day-SAST deadline ({@see Sast}).
+ *
+ * Disclosed divergences from `Challenges.tsx` (`07-uitdagings`, owner rulings; R6):
+ * - Past rounds are INK's cards and pager, not the design's rows (2026-11-01).
+ * - The featured card's date slot holds the countdown, not a closing date (2026-11-02).
+ * - A closed featured card says "Gesluit" and "Lees meer" and has no date slot.
+ * - The meta items' icon gap is the small meta item's 6px (NR-4), where the design has 8px.
+ *
+ * Reads stay SERVER-RENDERED via
  * `WP_Query` (AD-7), mirroring the {@see \Ink\Library\Archive} house style: pure
  * {@see self::queryArgs()} + pure {@see self::countdownLabel()}/{@see self::toHtml()}
  * + a thin {@see self::render()}.
@@ -98,6 +106,20 @@ final class Archive {
 	private const ICON_ARROW = '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>';
 
 	/**
+	 * Lucide `sparkles` icon path data: the featured card's badge.
+	 *
+	 * @var string
+	 */
+	private const ICON_SPARKLES = '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>';
+
+	/**
+	 * Lucide `users` icon path data: the featured card's entry counts.
+	 *
+	 * @var string
+	 */
+	private const ICON_USERS = '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>';
+
+	/**
 	 * Register the server-rendered block.
 	 *
 	 * Invoked from {@see Module::register()}, which the Kernel already dispatches
@@ -129,10 +151,12 @@ final class Archive {
 	 *
 	 * @param int $paged    The requested page (clamped to >= 1).
 	 * @param int $per_page Challenges per page.
+	 * @param int $exclude  The featured round, left out on every page so page contents don't
+	 *                      shift between pages; 0 for none.
 	 * @return array<string, mixed>
 	 */
-	public static function queryArgs( int $paged, int $per_page ): array {
-		return array(
+	public static function queryArgs( int $paged, int $per_page, int $exclude = 0 ): array {
+		$args = array(
 			'post_type'           => PostTypes::UITDAGING,
 			'post_status'         => 'publish',
 			'posts_per_page'      => $per_page,
@@ -141,6 +165,12 @@ final class Archive {
 			'order'               => 'DESC',
 			'ignore_sticky_posts' => true,
 		);
+
+		if ( $exclude > 0 ) {
+			$args['post__not_in'] = array( $exclude );
+		}
+
+		return $args;
 	}
 
 	/**
@@ -231,9 +261,10 @@ final class Archive {
 	 * @return string
 	 */
 	public static function render(): string {
-		$paged = ArchiveRender::requestInt( self::PAGED_VAR, 1 );
-		$query = self::runQuery( self::queryArgs( $paged, self::PER_PAGE ) );
-		$now   = Sast::now();
+		$paged   = ArchiveRender::requestInt( self::PAGED_VAR, 1 );
+		$current = CurrentChallenge::current();
+		$query   = self::runQuery( self::queryArgs( $paged, self::PER_PAGE, is_array( $current ) ? (int) $current['id'] : 0 ) );
+		$now     = Sast::now();
 
 		$cards = array();
 
@@ -242,15 +273,13 @@ final class Archive {
 				continue;
 			}
 
-			$deadline = Deadline::parse(
-				Scalar::asString( get_post_meta( (int) $post->ID, FieldSets::UITDAGING_DEADLINE, true ) )
-			);
+			$deadline = Cadence::closeFor( (int) $post->ID );
 
 			$cards[] = self::cardHtml(
 				array(
 					'title'     => get_the_title( $post ),
 					'permalink' => (string) get_permalink( $post ),
-					'month'     => ChallengeResultTitle::monthLabel( (string) $post->post_date ),
+					'month'     => null !== $deadline ? Cadence::periodLabelFor( (int) $post->ID, $deadline ) : '',
 					'excerpt'   => wp_trim_words( trim( wp_strip_all_tags( (string) $post->post_content ) ), 28 ),
 					'entries'   => self::entryCount( (int) $post->ID ),
 					'tema'      => Scalar::asString( get_post_meta( (int) $post->ID, FieldSets::UITDAGING_THEME, true ) ),
@@ -267,8 +296,63 @@ final class Archive {
 			array(
 				'paged'     => max( 1, $paged ),
 				'max_pages' => (int) $query->max_num_pages,
-			)
+			),
+			is_array( $current ) && max( 1, $paged ) === 1 ? self::currentHtml( $current, self::currentCountdown( $current, $now ) ) : ''
 		);
+	}
+
+	/**
+	 * The featured card's countdown: an open round's only, since a closed card has no date
+	 * slot. Pure.
+	 *
+	 * @param array<string, mixed> $round The {@see CurrentChallenge::current()} payload.
+	 * @param \DateTimeInterface   $now   The instant to measure from.
+	 * @return string
+	 */
+	public static function currentCountdown( array $round, \DateTimeInterface $now ): string {
+		$close = $round['close'] ?? null;
+
+		return ! empty( $round['is_open'] ) && $close instanceof \DateTimeImmutable ? self::countdownLabel( $close, $now ) : '';
+	}
+
+	/**
+	 * The current-round band, from the design's featured card. Pure: Terms + escaping only.
+	 *
+	 * @param array<string, mixed> $round     The {@see CurrentChallenge::current()} payload.
+	 * @param string               $countdown The countdown for the date slot ('' for none).
+	 * @return string
+	 */
+	public static function currentHtml( array $round, string $countdown ): string {
+		$is_open     = ! empty( $round['is_open'] );
+		$month       = (string) ( $round['month'] ?? '' );
+		$excerpt     = (string) ( $round['excerpt'] ?? '' );
+		$type_counts = is_array( $round['type_counts'] ?? null ) ? CurrentChallenge::typeCountsLabel( $round['type_counts'] ) : '';
+		$status      = Terms::label( $is_open ? 'uitdaging_oop' : 'uitdaging_gesluit' );
+		$action      = $is_open ? __( 'Skryf in', 'ink-core' ) : __( 'Lees meer', 'ink-core' );
+
+		$items = '';
+
+		if ( '' !== $countdown ) {
+			$items .= '<span class="ink-meta ink-meta--sm" data-audit-id="uitdagings-current-meta-close">' . self::icon( self::ICON_CALENDAR ) . esc_html( $countdown ) . '</span>';
+		}
+
+		if ( '' !== $type_counts ) {
+			$items .= '<span class="ink-meta ink-meta--sm" data-audit-id="uitdagings-current-meta-entries">' . self::icon( self::ICON_USERS ) . esc_html( $type_counts ) . '</span>';
+		}
+
+		return '<section class="ink-band ink-band--step" data-audit-id="uitdagings-current">'
+			. '<div class="ink-uitdagings__houer ink-container" data-audit-id="uitdagings-current-container">'
+			. '<div class="ink-card--soft ink-card--soft-lg" data-audit-id="uitdagings-current-card">'
+			. '<div class="ink-uitdagings__huidig-kenteken ink-pill ink-pill--solid" data-audit-id="uitdagings-current-badge">'
+			. self::icon( self::ICON_SPARKLES, 'uitdagings-current-badge-icon' )
+			. esc_html( '' !== $month ? $status . ' · ' . $month : $status )
+			. '</div>'
+			. '<h2 class="ink-uitdagings__huidig-titel ink-heading-h2-section" data-audit-id="uitdagings-current-title">"' . esc_html( (string) ( $round['theme'] ?? '' ) ) . '"</h2>'
+			. ( '' !== $excerpt ? '<p class="ink-uitdagings__huidig-beskrywing" data-audit-id="uitdagings-current-description">' . esc_html( $excerpt ) . '</p>' : '' )
+			. ( '' !== $items ? '<div class="ink-uitdagings__huidig-meta ink-meta-row ink-meta-row--wide" data-audit-id="uitdagings-current-meta">' . $items . '</div>' : '' )
+			. '<div class="ink-uitdagings__huidig-aksies">'
+			. '<a class="ink-btn ink-btn--primary" data-audit-id="uitdagings-current-enter" href="' . esc_url( (string) ( $round['url'] ?? '' ) ) . '">' . esc_html( $action ) . self::icon( self::ICON_ARROW ) . '</a>'
+			. '</div></div></div></section>';
 	}
 
 	/**
@@ -368,52 +452,72 @@ final class Archive {
 	 * {@see SinglePage}'s own copy of the same convention (each module keeps its
 	 * own copy — no shared Kernel icon helper exists yet).
 	 *
-	 * @param string $paths The inner SVG markup.
+	 * @param string $paths    The inner SVG markup.
+	 * @param string $audit_id The audit id, or '' for none.
 	 * @return string
 	 */
-	private static function icon( string $paths ): string {
-		return '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" '
+	private static function icon( string $paths, string $audit_id = '' ): string {
+		return '<svg' . ( '' !== $audit_id ? ' data-audit-id="' . esc_attr( $audit_id ) . '"' : '' ) . ' xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" '
 			. 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '
 			. 'class="ink-icon" aria-hidden="true" focusable="false">' . $paths . '</svg>';
 	}
 
 	/**
-	 * Build the archive HTML. Pure — Terms + escaping only.
+	 * Build the page HTML: hero, the current-round band on page 1, then the past-rounds band.
+	 * Pure: Terms + escaping only.
 	 *
-	 * The intro band + list band mirror `Hub::toHtml()`'s shell (Post-Epic-19
-	 * fidelity pass, workstream 7's card-grid parity; fidelity Stage 4 row 14).
+	 * Copy with no Afrikaans in the repo yet is a registered copy-debt marker
+	 * (`docs/afrikaans-translation-sheet.md`). The pager and empty state are INK-only: `scope`.
 	 *
-	 * @param list<string>                    $cards The pre-rendered card markup.
-	 * @param array{paged:int, max_pages:int} $nav The render context.
+	 * @param list<string>                    $cards   The pre-rendered past-round cards.
+	 * @param array{paged:int, max_pages:int} $nav     The render context.
+	 * @param string                          $current The current-round band ('' for none).
 	 * @return string
 	 */
-	public static function toHtml( array $cards, array $nav ): string {
-		// Fidelity Stage 4 (row 14, Treatment C OFF-RECIPE): the index-page shell the
-		// Lovable index pages use (`Library.tsx` intro) — a full-bleed tinted intro band
-		// with its own container, then the list in a `container py-12 md:py-16` band.
-		// Same shell as `Ink\Training\Hub` / `Ink\Library\Archive`; the root is
-		// `alignfull` and the pattern adds no padding of its own.
-		$intro = '<section class="ink-uitdagings__intro ink-band ink-band--intro ink-band--flush" data-audit-id="uitdagings-intro">'
-			. '<div class="ink-uitdagings__intro-houer ink-container">'
-			. '<div class="ink-uitdagings__intro-binne">'
-			. '<h1 class="ink-uitdagings__heading ink-heading-h1-index" data-audit-id="uitdagings-h1">' . esc_html( Terms::label( 'uitdaging_plural' ) ) . '</h1>'
-			. '</div></div></section>';
+	public static function toHtml( array $cards, array $nav, string $current = '' ): string {
+		$hero = '<section class="ink-band ink-band--step ink-band--border-b" data-audit-id="uitdagings-hero">'
+			. '<div class="ink-uitdagings__houer ink-container" data-audit-id="uitdagings-hero-container">'
+			. '<p class="ink-uitdagings__boskrif ink-eyebrow" data-audit-id="uitdagings-eyebrow">' . esc_html__( 'Maandelikse uitdagings', 'ink-core' ) . '</p>'
+			. '<h1 class="ink-uitdagings__heading ink-heading-h1-index" data-audit-id="uitdagings-title">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] UITDAGINGS-H1', 'ink-core' ) . '</h1>'
+			. '<p class="ink-uitdagings__inleiding" data-audit-id="uitdagings-intro">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] UITDAGINGS-INTRO', 'ink-core' ) . '</p>'
+			. '</div></section>';
 
-		$band = '<section class="ink-uitdagings__lys-band ink-container ink-band ink-band--step">';
+		return '<div class="ink-uitdagings alignfull">' . $hero . $current . self::pastHtml( $cards, $nav, '' !== $current ) . '</div>';
+	}
+
+	/**
+	 * The past-rounds band; with no cards, the empty state, unless the current round is the
+	 * only one there is. Pure.
+	 *
+	 * @param list<string>                    $cards       The pre-rendered past-round cards.
+	 * @param array{paged:int, max_pages:int} $nav         The render context.
+	 * @param bool                            $has_current Whether the page shows a current round.
+	 * @return string
+	 */
+	private static function pastHtml( array $cards, array $nav, bool $has_current ): string {
+		if ( array() === $cards && $has_current ) {
+			return '';
+		}
 
 		if ( array() === $cards ) {
 			/* translators: %s: the challenges (uitdagings) label. */
 			$empty = sprintf( __( 'Geen %s gevind nie.', 'ink-core' ), Terms::label( 'uitdaging_plural' ) );
 
-			return '<div class="ink-uitdagings alignfull">' . $intro . $band
-				. '<p class="ink-uitdagings__leeg">' . esc_html( $empty ) . '</p></section></div>';
+			return '<section class="ink-band ink-band--step"><div class="ink-container">'
+				. '<p class="ink-uitdagings__leeg">' . esc_html( $empty ) . '</p></div></section>';
 		}
-
-		$html = '<div class="ink-uitdagings alignfull">' . $intro . $band . '<ul class="ink-uitdagings__list" data-audit-id="uitdagings-list">' . implode( '', $cards ) . '</ul>';
 
 		$paged     = isset( $nav['paged'] ) ? (int) $nav['paged'] : 1;
 		$max_pages = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;
 
-		return $html . ArchiveRender::pagination( $paged, $max_pages, 'ink-uitdagings', self::PAGED_VAR ) . '</section></div>';
+		return '<section class="ink-band ink-band--step ink-band--border-t" data-audit-id="uitdagings-past">'
+			// The standard wide container, as on Biblioteek and Opleiding, because these are the
+			// standard cards (DIVERGENCE, decided 2026-11-02; maps/uitdagings.csv). The design's
+			// narrow column stays on the two bands above.
+			. '<div class="ink-container" data-audit-id="uitdagings-past-container">'
+			. '<h2 class="ink-uitdagings__vorige-titel ink-heading-h2-section" data-audit-id="uitdagings-past-title">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] UITDAGINGS-VORIGE-H2', 'ink-core' ) . '</h2>'
+			. '<ul class="ink-uitdagings__list">' . implode( '', $cards ) . '</ul>'
+			. ArchiveRender::pagination( $paged, $max_pages, 'ink-uitdagings', self::PAGED_VAR )
+			. '</div></section>';
 	}
 }

@@ -24,8 +24,10 @@ defined( 'ABSPATH' ) || exit;
  * runs), the content stays empty (the template supplies everything), and the
  * Pages are protected from being trashed or re-slugged by accident.
  *
- * A test asserts that every `page-*.html` in the theme is either listed here or
- * explicitly excluded, so a new template cannot ship without its Page.
+ * A test asserts that every template in the theme is accounted for ({@see self::routeOf()}):
+ * a Page listed here, a post type's archive or single, an endpoint view, core's own
+ * hierarchy, or an explicit exclusion. A template nothing routes to fails CI instead of
+ * being discovered at rehearsal.
  *
  * @package Ink\Core
  */
@@ -58,6 +60,44 @@ final class SystemPages {
 		'oor-ink'          => 'Oor INK',
 		'kontak'           => 'Kontak',
 		'ledegids'         => 'Ledegids',
+		'kompetisies'      => 'Kompetisies',
+	);
+
+	/**
+	 * Adopted Pages whose legacy body the template replaces. It is emptied on every run,
+	 * with its `_simple_css` meta, which Simple CSS would otherwise still print on the page.
+	 *
+	 * @var list<string>
+	 */
+	public const EMPTY_BODY = array( 'kompetisies' );
+
+	/**
+	 * The Simple CSS plugin's per-post meta.
+	 */
+	private const SIMPLE_CSS_META = '_simple_css';
+
+	/**
+	 * Endpoint views: a template a rewrite endpoint or rule routes to, and its query var.
+	 * `kompetisies-gala` is `/kompetisies/gala/<jaar>/` (`Ink\Competitions\GalaPage`).
+	 *
+	 * @var array<string, string>
+	 */
+	public const ENDPOINT_TEMPLATES = array(
+		'single-uitdaging-uitslae' => 'uitslae',
+		'kompetisies-gala'         => 'ink_gala_jaar',
+	);
+
+	/**
+	 * Templates core's own hierarchy routes to, with the reason each is accounted for.
+	 *
+	 * @var array<int|string, string>
+	 */
+	public const CORE_TEMPLATES = array(
+		'404'        => 'Core: a request with no match.',
+		'index'      => 'Core: the fallback, and how core posts render.',
+		'front-page' => 'Core: the static front page.',
+		'page'       => 'Core: any Page without its own template.',
+		'author'     => 'Core: the author archive, the public writer profile.',
 	);
 
 	/**
@@ -81,6 +121,41 @@ final class SystemPages {
 	 * A legacy login/profile page body that holds only a UPME shortcode.
 	 */
 	private const LEGACY_SHORTCODE = '/^\s*\[upme_[a-z_]+[^\]]*\]\s*$/';
+
+	/**
+	 * How a theme template (name without `.html`) gets routed to, or null when nothing does. Pure.
+	 *
+	 * @param string       $template   The template name.
+	 * @param list<string> $post_types The registered post types.
+	 * @return string|null `page`, `managed`, `excluded`, `post-type`, `endpoint`, `core`.
+	 */
+	public static function routeOf( string $template, array $post_types ): ?string {
+		if ( isset( self::ENDPOINT_TEMPLATES[ $template ] ) ) {
+			return 'endpoint';
+		}
+
+		if ( isset( self::CORE_TEMPLATES[ $template ] ) ) {
+			return 'core';
+		}
+
+		if ( 1 === preg_match( '/^page-(.+)$/', $template, $page ) ) {
+			if ( isset( self::PAGES[ $page[1] ] ) ) {
+				return 'page';
+			}
+
+			if ( isset( self::EXCLUDED[ $page[1] ] ) ) {
+				return 'excluded';
+			}
+
+			return in_array( $page[1], self::MANAGED_ELSEWHERE, true ) ? 'managed' : null;
+		}
+
+		if ( 1 === preg_match( '/^(?:archive|single)-(.+)$/', $template, $type ) && in_array( $type[1], $post_types, true ) ) {
+			return 'post-type';
+		}
+
+		return null;
+	}
 
 	/**
 	 * Wire the guards and the self-healing ensure step.
@@ -191,7 +266,9 @@ final class SystemPages {
 				$fix['post_status'] = 'publish';
 			}
 
-			if ( 1 === preg_match( self::LEGACY_SHORTCODE, (string) $page->post_content ) ) {
+			$empties = in_array( $slug, self::EMPTY_BODY, true );
+
+			if ( 1 === preg_match( self::LEGACY_SHORTCODE, (string) $page->post_content ) || ( $empties && '' !== (string) $page->post_content ) ) {
 				$fix['post_content'] = '';
 			}
 
@@ -199,11 +276,17 @@ final class SystemPages {
 				wp_update_post( array_merge( array( 'ID' => (int) $page->ID ), $fix ) );
 			}
 
+			$css_removed = $empties && '' !== (string) get_post_meta( (int) $page->ID, self::SIMPLE_CSS_META, true );
+
+			if ( $css_removed ) {
+				delete_post_meta( (int) $page->ID, self::SIMPLE_CSS_META );
+			}
+
 			if ( '1' !== (string) get_post_meta( (int) $page->ID, self::META, true ) ) {
 				update_post_meta( (int) $page->ID, self::META, 1 );
 			}
 
-			$out[ array() === $fix ? 'existing' : 'repaired' ][] = $slug;
+			$out[ array() === $fix && ! $css_removed ? 'existing' : 'repaired' ][] = $slug;
 		}
 
 		return $out;

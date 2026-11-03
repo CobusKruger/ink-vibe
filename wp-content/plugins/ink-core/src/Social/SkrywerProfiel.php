@@ -678,7 +678,7 @@ final class SkrywerProfiel {
 		$html .= '<section class="ink-container ink-skrywerprofiel__cta" data-audit-id="skrywer-cta">'
 			. '<div class="ink-skrywerprofiel__cta-binne" data-audit-id="skrywer-cta-inner">'
 			/* translators: %s: the writer's first name. */
-			. '<h2 class="ink-heading-h2-section ink-skrywerprofiel__cta-titel" data-audit-id="skrywer-cta-title">' . esc_html( sprintf( __( "Moenie %s se volgende stuk misloop nie.", 'ink-core' ), $first_name ) ) . '</h2>'
+			. '<h2 class="ink-heading-h2-section ink-skrywerprofiel__cta-titel" data-audit-id="skrywer-cta-title">' . esc_html( sprintf( __( 'Moenie %s se volgende stuk misloop nie.', 'ink-core' ), $first_name ) ) . '</h2>'
 			. '<p class="ink-skrywerprofiel__cta-teks" data-audit-id="skrywer-cta-text">' . esc_html__( 'Volg om nuwe stories in jou leesvloei te ontvang, en wees die eerste om \'n deurdagte nota te los wanneer hulle publiseer.', 'ink-core' ) . '</p>'
 			. '<div class="ink-skrywerprofiel__cta-aksies" data-audit-id="skrywer-cta-actions">';
 

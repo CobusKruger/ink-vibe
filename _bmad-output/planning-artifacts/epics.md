@@ -1022,7 +1022,7 @@ So that poems display with correct structure. (FR-25)
 
 **Given** a gedig
 **When** it renders
-**Then** the layout is stanza-aware, preserves line breaks and blank-line/stanza spacing and leading whitespace verbatim, styles author-entered Roman-numeral stanza markers, and allows per-line resonance on content lines (not blank separators).
+**Then** the layout is stanza-aware, preserves line breaks and leading whitespace verbatim, and collapses any run of blank lines (and blank lines at the start or end) to a single stanza break (owner ruling 2026-11-02), styles author-entered Roman-numeral stanza markers, and allows per-line resonance on content lines (not blank separators).
 
 ### Story 7.3: Line highlighting + reactions
 

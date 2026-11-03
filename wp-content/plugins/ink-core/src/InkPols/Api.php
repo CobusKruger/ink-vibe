@@ -50,7 +50,64 @@ final class Api {
 	}
 
 	/**
-	 * The five InkPols issue meta keys (the FR-57 fields), in registration order.
+	 * The current issue: the newest `datum` among published issues, or null.
+	 *
+	 * @return Issue|null
+	 */
+	public static function latestPublishedIssue(): ?Issue {
+		return self::publishedIssues()[0] ?? null;
+	}
+
+	/**
+	 * The published issues, newest `datum` first (`04-inkpols` §3): the date field decides,
+	 * so an older issue published late never becomes the current one.
+	 *
+	 * @return list<Issue>
+	 */
+	public static function publishedIssues(): array {
+		$issues = array();
+
+		foreach ( self::publishedIds() as $id ) {
+			$issues[] = Issue::forPost( $id );
+		}
+
+		return self::newestFirst( $issues );
+	}
+
+	/**
+	 * Sort issues by `datum`, newest first; ties and undated issues keep their order. Pure.
+	 *
+	 * @param list<Issue> $issues The issues.
+	 * @return list<Issue>
+	 */
+	public static function newestFirst( array $issues ): array {
+		usort( $issues, static fn ( Issue $a, Issue $b ): int => strcmp( $b->issueDate, $a->issueDate ) );
+
+		return $issues;
+	}
+
+	/**
+	 * The published issue ids.
+	 *
+	 * @return list<int>
+	 */
+	private static function publishedIds(): array {
+		$query = new \WP_Query(
+			array(
+				'post_type'           => PostTypes::INKPOLS_UITGAWE,
+				'post_status'         => 'publish',
+				'posts_per_page'      => Archive::MAX_ISSUES,
+				'fields'              => 'ids',
+				'ignore_sticky_posts' => true,
+				'no_found_rows'       => true,
+			)
+		);
+
+		return array_map( 'intval', $query->posts );
+	}
+
+	/**
+	 * The four core InkPols issue meta keys (the FR-57 fields), in registration order.
 	 * Delegates to {@see FieldSets} so the keys stay single-sourced.
 	 *
 	 * @return list<string>
@@ -58,7 +115,6 @@ final class Api {
 	public static function metaKeys(): array {
 		return array(
 			FieldSets::INKPOLS_ISSUE_DATE,
-			FieldSets::INKPOLS_VOLUME,
 			FieldSets::INKPOLS_COVER_ID,
 			FieldSets::INKPOLS_PDF_ID,
 			FieldSets::INKPOLS_TEASER,

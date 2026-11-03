@@ -1049,9 +1049,15 @@ ink-core/
 ink-foundation/
 ├── style.css · theme.json     # theme.json tokens from design-handoff/tokens (NFR-2)
 ├── functions.php              # enqueue, register patterns/block styles ONLY — no business logic
-├── templates/                 # front-page, single-{storie,gedig,uitdaging}, single-skrywer,
-│                              #   archive-*, page-{ontdek,opleiding,biblioteek,lidmaatskap,skryf,...}
-├── parts/                     # header, footer, section shells
+├── templates/                 # every template is routed in code (SystemPages::routeOf, guarded by SystemPagesTest):
+│                              #   pages: page-{teken-in,wagwoord-herstel,skryf,ontdek,gemeenskap,my-profiel,lidmaatskap,
+│                              #     onboarding,oor-ink,kontak,ledegids,kompetisies} (SystemPages::PAGES), page-registreer (managed elsewhere)
+│                              #   post types: single-{storie,gedig,artikel,uitdaging,biblioteek_item,opleiding_artikel,inkpols_uitgawe},
+│                              #     archive-{uitdaging,biblioteek_item,opleiding_artikel,inkpols_uitgawe}
+│                              #   endpoints: single-uitdaging-uitslae (/uitdaging/<slug>/uitslae/), kompetisies-gala (/kompetisies/gala/<jaar>/)
+│                              #   core: front-page, index, page, author (public profile), 404
+│                              #   excluded: page-qa-bloks, page-my-profiel-lidmaatskap
+├── parts/                     # header, footer, section shells (header nav list: inc/header-nav.php)
 ├── patterns/                  # ink-foundation/{slug}: hero, featured grid, CTA, profile summary,
 │                              #   pricing table, archetypes A–D (locked structure)
 ├── styles/                    # block style variations

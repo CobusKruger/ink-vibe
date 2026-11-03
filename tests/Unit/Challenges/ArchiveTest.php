@@ -225,3 +225,83 @@ test( 'cardHtml says "1 inskrywing" in the singular and hides a zero count', fun
 
 	expect( $one )->toContain( '1 inskrywing<' )->and( $none )->not->toContain( 'inskrywing' );
 } );
+
+test( 'queryArgs leaves the current round out on every page', function (): void {
+	foreach ( array( 1, 2, 7 ) as $page ) {
+		expect( Archive::queryArgs( $page, 12, 42 )['post__not_in'] )->toBe( array( 42 ) );
+	}
+
+	expect( Archive::queryArgs( 1, 12 ) )->not->toHaveKey( 'post__not_in' );
+} );
+
+function ink_archive_round( array $over = array() ): array {
+	return array_merge(
+		array(
+			'id'          => 42,
+			'theme'       => 'Nuwe begin',
+			'url'         => 'https://ink.test/uitdaging/nov',
+			'excerpt'     => 'Skryf oor nuwe begin.',
+			'is_open'     => true,
+			'month'       => 'November 2026',
+			'close'       => new \DateTimeImmutable( '2026-11-30 00:00:00', new \DateTimeZone( 'Africa/Johannesburg' ) ),
+			'type_counts' => array( 'gedig' => 2 ),
+		),
+		$over
+	);
+}
+
+test( 'the open current card shows Oop, the countdown in the date slot, and Skryf in', function (): void {
+	$html = Archive::currentHtml( ink_archive_round(), 'Nog 5 dae' );
+
+	expect( $html )->toContain( 'Oop · November 2026' )
+		->and( $html )->toContain( '"Nuwe begin"' )
+		->and( $html )->toContain( 'Skryf oor nuwe begin.' )
+		->and( $html )->toContain( 'ink-card--soft ink-card--soft-lg' )
+		->and( $html )->toContain( 'ink-pill--solid' )
+		->and( $html )->toContain( 'ink-meta-row--wide' )
+		->and( $html )->toMatch( '/data-audit-id="uitdagings-current-meta-close">.*Nog 5 dae/' )
+		->and( $html )->toContain( 'Skryf in' )
+		->and( $html )->toContain( 'https://ink.test/uitdaging/nov' );
+} );
+
+test( 'the closed current card says Gesluit and Lees meer, with no date slot', function (): void {
+	$round = ink_archive_round( array( 'is_open' => false, 'type_counts' => array() ) );
+	$html  = Archive::currentHtml( $round, Archive::currentCountdown( $round, new \DateTimeImmutable( '2026-12-05' ) ) );
+
+	expect( $html )->toContain( 'Gesluit · November 2026' )
+		->and( $html )->toContain( 'Lees meer' )
+		->and( $html )->not->toContain( 'Skryf in' )
+		->and( $html )->not->toContain( 'uitdagings-current-meta' );
+} );
+
+test( 'currentCountdown uses countdownLabel for an open round', function (): void {
+	$now = new \DateTimeImmutable( '2026-11-25 09:00:00', new \DateTimeZone( 'Africa/Johannesburg' ) );
+
+	expect( Archive::currentCountdown( ink_archive_round(), $now ) )->toBe( 'Nog 5 dae' );
+} );
+
+test( 'the current card drops an empty description', function (): void {
+	expect( Archive::currentHtml( ink_archive_round( array( 'excerpt' => '' ) ), '' ) )->not->toContain( 'uitdagings-current-description' );
+} );
+
+test( 'the page has the hero, the current band only when given, and no scope ids', function (): void {
+	$cards = array( Archive::cardHtml( array( 'title' => 'A', 'permalink' => '#a' ) ) );
+	$one   = Archive::toHtml( $cards, array( 'paged' => 1, 'max_pages' => 2 ), '<section data-audit-id="uitdagings-current"></section>' );
+	$two   = Archive::toHtml( $cards, array( 'paged' => 2, 'max_pages' => 2 ) );
+
+	expect( $one )->toContain( 'data-audit-id="uitdagings-hero"' )
+		->and( strpos( $one, 'uitdagings-hero' ) )->toBeLessThan( strpos( $one, 'uitdagings-current' ) )
+		->and( strpos( $one, 'uitdagings-current' ) )->toBeLessThan( strpos( $one, 'uitdagings-past' ) )
+		->and( $one )->toContain( 'ink-pager' )
+		->and( $one )->not->toContain( 'uitdagings-pagination' )
+		->and( $one )->not->toContain( 'uitdagings-past-list' )
+		->and( $two )->toContain( 'data-audit-id="uitdagings-hero"' )
+		->and( $two )->not->toContain( 'uitdagings-current' )
+		->and( $two )->toContain( 'data-audit-id="uitdagings-past"' );
+} );
+
+test( 'a current round with nothing else shows no past band and no empty state', function (): void {
+	$html = Archive::toHtml( array(), array( 'paged' => 1, 'max_pages' => 0 ), '<section data-audit-id="uitdagings-current"></section>' );
+
+	expect( $html )->not->toContain( 'uitdagings-past' )->and( $html )->not->toContain( 'Geen' );
+} );

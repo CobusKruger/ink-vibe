@@ -1,5 +1,7 @@
 # Build spec 02: reading-page winner aside (N7)
 
+**Built (step F, 2026-11-02).** The citation goes through `ModeratorFeedback::feedbackFor()` only.
+
 **Status:** planned, not ratified. **Date:** 2026-11-01. **Map:** `../maps/lees-wenner.csv` (5 ids). **Gap:** `GAP-02-01`. **Depends on:** spec 01 (link target).
 This spec holds no style values (R4, R5). Recipes are joins for the capture to check.
 
@@ -43,8 +45,8 @@ Insert `<!-- wp:ink/lees-wenner /-->` after the `ink-lees-byline` group and befo
 | Position | `ink_entry_placement` | **Importer**: 0 rows on dev |
 | Grade (gedig) | `ink_entry_gradering`; Meester shows as Goud (D11) | **Importer + Gradering fix** |
 | Round | The post's `uitdagingsrondte` term, slug `ChallengeRound::slugFor()` | Exists: e.g. `uitdaging-68791`. Needs a new reverse lookup from term to round id. Use the importer's record if one exists |
-| Round month | `ChallengeResultTitle::monthLabel( round post_date )` | Derived. `Cadence` needs a deadline; no round has one |
-| Citation, opt-in | `ink_moderator_terugvoer`, `ink_wys_moderator_terugvoer` | Exists; 0 comments and 0 opt-ins on dev |
+| Round month | From the round's title, verified against the post date (owner), through the one helper in `Challenges/Cadence.php` (`03-tuis` §2) | Derived |
+| Citation, opt-in | `ink_mod_terugvoer`, `ink_wys_moderator_terugvoer` | Exists; 0 comments and 0 opt-ins on dev |
 
 **Page caching and privacy:** `feedbackFor()` is the only read. Do not call `commentsFor()`, which is ungated.
 
@@ -78,9 +80,16 @@ Layout in the existing `assets/css/reading.css`, gate `is_singular( array( 'gedi
 | Afrikaans copy | Item 3 |
 | Citation block absent without opt-in | D6 |
 
-**Noticed outside this package, Lovable wins, for whoever re-measures the reading pages:**
-- Lovable shows the hint to everyone; INK only when logged in.
-- Lovable's byline shows read time; INK's shows the date.
+**Acceptance round, 2026-11-02.** The three reading patterns now follow `ReadStory.tsx` node for node (`inc/reading-parts.php` supplies the byline, badge, hint and share fragments; the patterns hold the block markup). The byline shows read time, not the date; the engagement bar has a share button (`lees-deel.js`); the author card and responses use Lovable's structure. Gate maps: `fidelity-remediation/maps/lees-{storie,gedig,artikel}.csv` (the five winner-aside ids are appended to each). Gedig is compared with Lovable `/read/s4` (plain first line, no dedication). Result: DRIFT 0 at 390, 768 and 1440, logged out and signed in; what is left is reported below.
+
+**Feature conflicts, resolved by the owner (2026-11-02):**
+- The interaction hint and, on a poem, the per-line heart stay members-only (highlights and line reactions are stored per member). Logged out: `storie-hint`, `gedig-hint`, `reading-hint-icon`, `gedig-line-heart` MISSING, recorded as `divergence` in the three maps and disclosed in code (`inc/reading-parts.php`, the reading patterns, `line-reactions.js`).
+- The response upvote is built: `ResponseUpvotes` (one `ink_upvote_user` comment-meta row per voter, no table), `ResponseUpvoteController` (`POST ink/v1/gemeenskapsreaksie/<id>/opstem`, logged in plus REST nonce, never your own response), `gemeenskapsreaksie.js`. A `<button>` in every state: signed-in non-authors toggle it (`aria-pressed`, count updates without a reload); logged-out visitors and the author get a disabled button showing the count. Old responses read 0, no migration. The pressed colour is the counted-button primitive's `aria-pressed` colour; the design has no pressed state.
+- The poem dedication is built: post meta `ink_gedig_toewyding` (one line, 200 characters), a `FieldSets` box on the gedig, a field on `/skryf/` (gedig only, `skryf-counter.js` hides it for storie and artikel), shown by `GedigBody` as "— text —", hidden when empty. `gedig-dedication` is `paired`. There is no front-end editor for a published work, so a writer enters it when submitting; editors change it in admin.
+- Poem lines stay member-only and persisted.
+- Checks: `tools/fidelity/run.sh interactions` clicks the upvote signed in, tests the dedication on the reading page and `/skryf/`, and removes its test data. Gedig is now compared with Lovable `/read/s2` (it has a dedication), storie `/read/s3`, artikel `/read/s5`, INK posts 68211, 68070, 68214.
+
+**Test data added 2026-11-02** (a refresh wipes it): three `ink_reaksie` responses (insight, praise, suggestion) on posts 68211, 68070 and 68214, by user 3799.
 
 ## 9. Test fixture for dev
 

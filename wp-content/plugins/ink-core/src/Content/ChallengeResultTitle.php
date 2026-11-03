@@ -52,7 +52,20 @@ final class ChallengeResultTitle {
 	 * @param string $mysql_date A `Y-m-d H:i:s` (or `Y-m-d`) date.
 	 */
 	public static function monthLabel( string $mysql_date ): string {
-		$names = array( 1 => 'Januarie', 'Februarie', 'Maart', 'April', 'Mei', 'Junie', 'Julie', 'Augustus', 'September', 'Oktober', 'November', 'Desember' );
+		$names = array(
+			1 => 'Januarie',
+			'Februarie',
+			'Maart',
+			'April',
+			'Mei',
+			'Junie',
+			'Julie',
+			'Augustus',
+			'September',
+			'Oktober',
+			'November',
+			'Desember',
+		);
 
 		if ( 1 !== preg_match( '/^(\d{4})-(\d{2})-/', $mysql_date, $m ) || ! isset( $names[ (int) $m[2] ] ) ) {
 			return '';
@@ -104,6 +117,28 @@ final class ChallengeResultTitle {
 		}
 
 		return null === $best ? null : array( $best[1], (int) $year[1] );
+	}
+
+	/**
+	 * The first Afrikaans month named as a whole word in a title, or null. Pure.
+	 *
+	 * Whole words, because a round's theme can contain a month's letters ("Meisies"), and
+	 * unlike {@see self::monthYear()} a year is not needed ("September - Lente projek").
+	 *
+	 * @param string $title A challenge name.
+	 * @return int|null The month, 1-12.
+	 */
+	public static function monthNumber( string $title ): ?int {
+		$names = array( 'januarie', 'februarie', 'maart', 'april', 'mei', 'junie', 'julie', 'augustus', 'september', 'oktober', 'november', 'desember' );
+		$plain = html_entity_decode( $title, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+
+		if ( 1 !== preg_match( '/\b(' . implode( '|', $names ) . ')\b/iu', $plain, $m ) ) {
+			return null;
+		}
+
+		$index = array_search( mb_strtolower( $m[1] ), $names, true );
+
+		return false === $index ? null : (int) $index + 1;
 	}
 
 	/**

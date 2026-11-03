@@ -333,3 +333,389 @@ AF:
 404-TUIS-SKAKEL
 EN: Return to Home *(underlined link to the home page under the message)*
 AF:
+
+---
+
+## Header (step F, 2026-11-01)
+
+Every visitor on a phone gets this; screen readers read it aloud. The code shows `[NEEDS HUMAN AFRIKAANS] CHROME-MENU` until it's filled.
+
+CHROME-MENU
+EN: Label of the button that opens and closes the mobile menu: "Menu"
+AF:
+
+---
+
+## Admin screens: results, InkPols, Kompetisies (step E, 2026-11-01)
+
+Only editors see these; the code shows `[NEEDS HUMAN AFRIKAANS] <ID>` until they're filled.
+
+INKPOLS-ADMIN-ONVOLLEDIG
+EN: Notice when an issue goes back to draft: "This issue was not published. These fields are still blank"
+AF:
+
+UITSLAE-ADMIN-BRIEF
+EN: Round: judges' letter (a blank line starts a new paragraph)
+AF:
+
+UITSLAE-ADMIN-VERMELDINGS
+EN: Round: honourable mentions, one per line, Title | Writer
+AF:
+
+KOMP-ADMIN-JAAR
+EN: Year
+AF:
+
+KOMP-ADMIN-UITGAWE
+EN: Edition
+AF:
+
+KOMP-ADMIN-BESKRYWING
+EN: Description
+AF:
+
+KOMP-ADMIN-INSKRYWING
+EN: Entry note
+AF:
+
+KOMP-ADMIN-NAASWENNER
+EN: Runner-up note
+AF:
+
+KOMP-ADMIN-KAT
+EN: Category
+AF:
+
+KOMP-ADMIN-IKOON
+EN: Icon
+AF:
+
+KOMP-ADMIN-IKOON-FEATHER
+EN: Icon option: feather
+AF:
+
+KOMP-ADMIN-IKOON-BOOK
+EN: Icon option: book
+AF:
+
+KOMP-ADMIN-IKOON-PEN
+EN: Icon option: pen
+AF:
+
+KOMP-ADMIN-WOORDLIMIET
+EN: Word limit
+AF:
+
+KOMP-ADMIN-RIGLYNE
+EN: Guidelines, one per line
+AF:
+
+KOMP-ADMIN-GALA-NAAM
+EN: Gala name
+AF:
+
+KOMP-ADMIN-GALA-DATUM
+EN: Gala date
+AF:
+
+KOMP-ADMIN-GALA-DEURE
+EN: Gala doors
+AF:
+
+KOMP-ADMIN-GALA-PLEK
+EN: Gala venue
+AF:
+
+KOMP-ADMIN-GALA-DRAG
+EN: Gala dress
+AF:
+
+KOMP-ADMIN-GALA-PROGRAM
+EN: Gala programme, one item per line
+AF:
+
+KOMP-ADMIN-KAARTJIE
+EN: Ticket
+AF:
+
+KOMP-ADMIN-PRYS
+EN: Ticket price (fictional until payments exist)
+AF:
+
+KOMP-ADMIN-HOOGTEPUNT
+EN: Gala highlight
+AF:
+
+KOMP-ADMIN-FOTOS
+EN: Gala photos
+AF:
+
+KOMP-ADMIN-ORGANISEERDER
+EN: Organiser
+AF:
+
+KOMP-ADMIN-STREEK
+EN: Region
+AF:
+
+KOMP-ADMIN-PRYS-EKSTERN
+EN: Prize
+AF:
+
+KOMP-ADMIN-FOOI
+EN: Entry fee (blank means free)
+AF:
+
+KOMP-ADMIN-GENRE
+EN: Genre
+AF:
+
+KOMP-ADMIN-NOTA
+EN: Note
+AF:
+
+KOMP-ADMIN-MEDIA-KIES
+EN: Choose (media button)
+AF:
+
+KOMP-ADMIN-MEDIA-VERWYDER
+EN: Remove (media button)
+AF:
+
+KOMP-GENRE-POETRY
+EN: Poetry
+AF:
+
+KOMP-GENRE-FICTION
+EN: Fiction
+AF:
+
+KOMP-GENRE-NON-FICTION
+EN: Non-fiction
+AF:
+
+KOMP-GENRE-MIXED
+EN: Mixed
+AF:
+
+## Uitslae and Tuis (step F, 2026-11-01)
+
+UITSLAE-H1
+EN: Results page title, after the theme: "“Theme” — the winners"
+AF:
+
+UITSLAE-META-KATEGORIE
+EN: Results hero, end of the meta line: "Poetry, stories and articles"
+AF:
+
+UITSLAE-BRIEF-H2
+EN: Heading: "A note from the judges"
+AF:
+
+UITSLAE-BRIEF-NOTA
+EN: Below the letter: "Entries are judged anonymously. The panel does not see writers' names until results are final."
+AF:
+
+UITSLAE-PODIUM-H2
+EN: Heading: "The podium"
+AF:
+
+UITSLAE-AFDELING
+EN: After the grade: "Gold section"
+AF:
+
+UITSLAE-GEEN-SKAKEL
+EN: A win with no post on the site: "Coming to Inkwell soon"
+AF:
+
+UITSLAE-VERMELDING-REEL
+EN: Joins title and writer in a mention: "“Title” by Writer"
+AF:
+
+UITSLAE-DANKIE
+EN: Closing thanks: "And to all {n} writers who entered — thank you. Every piece was read in full."
+AF:
+
+TUIS-UITSLAE-TITEL
+EN: Results banner, after the theme: "“Theme” — meet the winners in poetry, stories and articles"
+AF:
+
+TUIS-UITSLAE-CTA
+EN: Results banner link: "Read the announcement"
+AF:
+
+TUIS-WENNERS-H2
+EN: Tuis winners heading: "Last month's winners"
+AF:
+
+TUIS-WENNER-LEES-ARTIKEL
+EN: Tuis Artikel card button; the others are "Lees storie" and "Lees gedig"
+AF:
+
+---
+
+## Public pages: InkPols and Kompetisies (step F, 2026-11-02)
+
+The code shows `[NEEDS HUMAN AFRIKAANS] <ID>` until they're filled.
+
+INKPOLS-HUIDIGE
+EN: Current issue
+AF:
+
+INKPOLS-TERUG
+EN: Back to Archive
+AF:
+
+KOMP-HERO-BADGE
+EN: Our flagship competition
+AF:
+
+KOMP-HERO-SLUIT
+EN: Entries close
+AF:
+
+KOMP-HERO-INSKRYF
+EN: Enter the Competition
+AF:
+
+KOMP-HERO-RIGLYNE
+EN: Read the Guidelines
+AF:
+
+KOMP-KAT-H2
+EN: Three categories, one annual prize
+AF:
+
+KOMP-KAT-INTRO
+EN: Judged blind, in every category.
+AF:
+
+KOMP-KAT-INSKRYF
+EN: Enter (followed by the category name)
+AF:
+
+KOMP-GALA-KICKER
+EN: One evening a year
+AF:
+
+KOMP-GALA-DEURE
+EN: doors from
+AF:
+
+KOMP-GALA-PROGRAM
+EN: Evening programme
+AF:
+
+KOMP-GALA-BESPREEK
+EN: Reserve Your Seat
+AF:
+
+KOMP-GALA-VERLEDE-H3
+EN: Evenings Past
+AF:
+
+KOMP-GALA-VERLEDE-TEKS
+EN: A look back at the galas that came before.
+AF:
+
+KOMP-GALA-ALLES-H1
+EN: (no design source) heading of /kompetisies/gala/<jaar>/, every photo of one gala, e.g. "Photos of the gala"
+AF:
+
+KOMP-GIDS-KICKER
+EN: Beyond Inkwell
+AF:
+
+KOMP-GIDS-H2
+EN: Other writing competitions
+AF:
+
+KOMP-GIDS-TEKS
+EN: A vetted list of contests from further afield. We check each listing before it appears here — always confirm details on the organiser's own site before entering.
+AF:
+
+KOMP-GIDS-SOEK
+EN: Search competitions, organisers, regions…
+AF:
+
+KOMP-FOOI-ALL
+EN: Any entry fee
+AF:
+
+KOMP-FOOI-FREE
+EN: Free to enter
+AF:
+
+KOMP-FOOI-PAID
+EN: Paid entry
+AF:
+
+KOMP-TELLING
+EN: competition / competitions (needs singular and plural; the number stands before it)
+AF:
+
+KOMP-EKS-SLUIT
+EN: Closes
+AF:
+
+KOMP-EKS-SKAKEL
+EN: Visit organiser
+AF:
+
+KOMP-LEEG-TITEL
+EN: No competitions match that search.
+AF:
+
+KOMP-LEEG-TEKS
+EN: Try clearing the filters or searching for something broader.
+AF:
+
+KOMP-INDIEN-H3
+EN: Run a writing competition?
+AF:
+
+KOMP-INDIEN-TEKS
+EN: We list vetted contests that treat writers fairly — clear rights, real judges, honest deadlines. Send us yours and we will take a look.
+AF:
+
+KOMP-INDIEN-KNOP
+EN: Submit a listing
+AF:
+
+---
+
+## Public page: Uitdagings (step F, 2026-11-02)
+
+The code shows `[NEEDS HUMAN AFRIKAANS] <ID>` until they're filled.
+
+UITDAGINGS-H1
+EN: One prompt, every month
+AF:
+
+UITDAGINGS-INTRO
+EN: Each month we set a single theme for stories, poems and articles. Entries are judged anonymously and the top three in each category are announced early the following month.
+AF:
+
+UITDAGINGS-VORIGE-H2
+EN: Past challenges
+AF:
+
+## Reading pages: response upvote and poem dedication (step F, 2026-11-02)
+
+Owner-approved features. The code shows `[NEEDS HUMAN AFRIKAANS] <ID>` until they're filled.
+
+REAKSIE-OPSTEM
+EN: (accessible name of the upvote button on a response; the button shows a chevron and a count, so this is read by screen readers only)
+AF:
+
+REAKSIE-OPSTEM-FOUT
+EN: (error text when an upvote is refused: not signed in, not a response, or your own response; the page never offers a control that triggers it)
+AF:
+
+GEDIG-TOEWYDING-LABEL
+EN: (label of the optional dedication field on the Skryf form, shown for a gedig only; the dedication shows above the poem as an em-dash-framed line)
+AF:
+
+GEDIG-TOEWYDING-ADMIN
+EN: (label of the dedication field in the gedig's admin box)
+AF:

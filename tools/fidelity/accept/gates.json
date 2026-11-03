@@ -1,0 +1,86 @@
+{
+  "_comment": [
+    "The acceptance gate: every page/state/viewport/auth combination that was accepted with MISSING=0 STRUCTURE=0 DRIFT=0.",
+    "Run it with tools/fidelity/accept/gate-all.sh (docs/fidelity-remediation/README.md §9). Nothing here is machine-specific.",
+    "",
+    "Both sides are captured scoped to `scope`; INK is captured fresh every run, the Lovable reference is captured once into",
+    "the ref dir and reused until the Lovable build changes (or --refresh-refs). The diff uses `map` with --fail-on.",
+    "",
+    "`lovable` and `ink` are paths under the two bases (tools/fidelity/targets.json `bases`, overridden by INK_URL / LOVABLE_URL",
+    "or `lovablePreview` in tools/local.config.json). `{name}` is a lookup resolved at run time (see `lookups`), so a refresh that",
+    "shifts ids or adds rounds does not break a path. Reading posts use `?p=<id>`: prod post ids are stable.",
+    "",
+    "gate fields: group, page (capture name), lovable, ink, map, scope/scopeLabel, auth ('none' | 'both'), states (each:",
+    "name, click[], viewports[]; a gate with no `states` has the one default state), display (name shown in the report).",
+    "Group `closed` runs only inside tools/fidelity/accept/closed-round.sh, which drafts the fixture round first."
+  ],
+  "viewports": [390, 768, 1440],
+  "failOn": "MISSING,STRUCTURE,DRIFT",
+  "maps": {
+    "delta": "docs/lovable-delta-2026-10/maps",
+    "stage1": "docs/fidelity-remediation/maps"
+  },
+  "lookups": {
+    "_comment": "round: a published `uitdaging` whose slug starts with `prefix` (newest first). uitslae is the status that round's /uitslae/ must give: 200 = has results, 404 = none. issue: published inkpols_uitgawe, newest first; `index` -1 is the oldest. award: first slug in verse-haven/src/data/awards.ts (the Lovable results page).",
+    "roundWithResults": { "type": "round", "prefix": "augustus-2026-", "uitslae": 200 },
+    "roundWithoutResults": { "type": "round", "prefix": "oktober-2026-", "uitslae": 404 },
+    "issueNewest": { "type": "issue", "index": 0 },
+    "issueMid": { "type": "issue", "index": 1 },
+    "issueOldest": { "type": "issue", "index": -1 },
+    "award": { "type": "award" }
+  },
+  "gates": [
+    {
+      "group": "header", "page": "chrome", "lovable": "/", "ink": "/", "map": "delta/chrome.csv",
+      "scope": "[data-audit-id=header]", "scopeLabel": "header", "auth": "both",
+      "states": [
+        { "name": null },
+        { "name": "menu", "viewports": [390], "click": ["[data-audit-id=header-menu-toggle]"] }
+      ]
+    },
+    { "group": "tuis", "page": "tuis", "lovable": "/", "ink": "/", "map": "delta/tuis.csv" },
+    { "group": "uitdagings", "page": "uitdagings", "lovable": "/challenges", "ink": "/uitdaging/", "map": "delta/uitdagings.csv" },
+    {
+      "group": "uitslae", "page": "uitslae",
+      "lovable": "/challenges/{award}/results", "ink": "/uitdaging/{roundWithResults}/uitslae/", "map": "delta/uitslae.csv",
+      "states": [
+        { "name": null },
+        { "name": "short-story", "click": ["[data-audit-id=results-tab-short-story]"] },
+        { "name": "article", "click": ["[data-audit-id=results-tab-article]"] }
+      ]
+    },
+    { "group": "lees", "page": "lees-storie", "lovable": "/read/s3", "ink": "/?p=68211", "map": "stage1/lees-storie.csv", "auth": "both" },
+    { "group": "lees", "page": "lees-gedig", "lovable": "/read/s4", "ink": "/?p=68070", "map": "stage1/lees-gedig.csv", "auth": "both" },
+    { "group": "lees", "page": "lees-artikel", "lovable": "/read/s5", "ink": "/?p=68214", "map": "stage1/lees-artikel.csv", "auth": "both" },
+    {
+      "group": "inkpols", "page": "inkpols", "lovable": "/magazine", "ink": "/inkpols/", "map": "delta/inkpols.csv",
+      "states": [
+        { "name": null },
+        { "name": "year1", "click": ["[data-audit-id=magazine-past-filter-2025]"] },
+        { "name": "year2", "click": ["[data-audit-id=magazine-past-filter-2024]"] }
+      ]
+    },
+    { "group": "inkpols", "page": "issue-new", "lovable": "/magazine/issue-14", "ink": "/inkpols/{issueNewest}/", "map": "delta/inkpols.csv" },
+    { "group": "inkpols", "page": "issue-mid", "lovable": "/magazine/issue-13", "ink": "/inkpols/{issueMid}/", "map": "delta/inkpols.csv" },
+    { "group": "inkpols", "page": "issue-old", "lovable": "/magazine/issue-9", "ink": "/inkpols/{issueOldest}/", "map": "delta/inkpols.csv" },
+    {
+      "group": "kompetisies", "page": "kompetisies", "lovable": "/competitions", "ink": "/kompetisies/", "map": "delta/kompetisies.csv",
+      "states": [
+        { "name": null },
+        { "name": "gala-2024", "click": ["[data-audit-id=\"competitions-gala-past-year-2024\"]"] },
+        { "name": "empty", "click": ["[data-audit-id=\"competitions-directory-genre-poetry\"]", "[data-audit-id=\"competitions-directory-fee-free\"]"] }
+      ]
+    },
+    {
+      "group": "closed", "page": "tuis", "display": "tuis-closed", "lovable": "/", "ink": "/", "map": "delta/tuis.csv"
+    },
+    {
+      "group": "closed", "page": "hero", "display": "hero-closed", "lovable": "/", "ink": "/", "map": "delta/tuis.csv",
+      "scope": "[data-audit-id=hero]", "scopeLabel": "hero"
+    }
+  ],
+  "preflight": {
+    "_comment": "The Lovable preview must be a build that carries the audit-ids these gates click and scope on (an older build answers 'click selector matched nothing').",
+    "lovableBundleMustContain": ["magazine-past-filter", "results-tab", "competitions-gala-past-year", "header-menu-toggle"]
+  }
+}

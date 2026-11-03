@@ -1,6 +1,6 @@
 <?php
 /**
- * InkPols by-year issue archive server block — Story 13.2 (FR-57).
+ * InkPols archive server block — N2 (`04-inkpols`), first built in Story 13.2 (FR-57).
  *
  * @package Ink\Core
  */
@@ -9,25 +9,20 @@ declare(strict_types=1);
 
 namespace Ink\InkPols;
 
-use Ink\Content\PostTypes;
 use Ink\I18n\Terms;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Renders the `ink/inkpols-argief` block: the InkPols issue archive, grouped
- * by year (newest year first), Story 13.2 (FR-57).
+ * Renders the `ink/inkpols-argief` block: the hero with the current issue, then the past
+ * issues with year chips (`Magazine.tsx`). The block emits its own bands, so the root is
+ * `alignfull` and the pattern adds no padding.
  *
- * Lists published `inkpols_uitgawe` issues, builds each into the 13.1
- * {@see Issue} read-model, then groups + sorts them by year IN PHP (never via a
- * fragile `meta_value` orderby, which would INNER JOIN and silently drop issues
- * missing the issue-date meta). Reads stay SERVER-RENDERED via `WP_Query` (AD-7),
- * mirroring the {@see \Ink\Library\Archive} house style: pure {@see queryArgs()}
- * + pure {@see groupByYear()}/{@see toHtml()} + a thin {@see render()}.
+ * Audit ids: past issues 0..4 and the first two year chips carry the ids Lovable has (the
+ * chips by position, `04-inkpols` §10). Later instances are real data and carry none, so
+ * the ids stay unique.
  *
- * Conflation-clean: references only `Ink\InkPols` (the read-model) + `Ink\Content`
- * (the CPT slug) + the `Terms` registry + WP core — zero `Ink\Tiers`/
- * `Ink\Entitlement`. Browsing published issues is open (never gated).
+ * Conflation-clean: browsing published issues is open, never gated.
  *
  * @package Ink\Core
  */
@@ -41,19 +36,29 @@ final class Archive {
 	public const BLOCK = 'ink/inkpols-argief';
 
 	/**
-	 * Defensive upper bound on issues rendered — a periodical is bounded, but an
-	 * unbounded `-1` query is the smell the Epic-12 review flagged (12.1 R12).
+	 * Defensive upper bound on issues read: a periodical is bounded, but an unbounded `-1`
+	 * query is the smell the Epic-12 review flagged (12.1 R12).
 	 *
 	 * @var int
 	 */
 	public const MAX_ISSUES = 500;
 
 	/**
-	 * Register the server-rendered block.
+	 * How many past issues carry audit ids: Lovable has five.
 	 *
-	 * Invoked from {@see Module::register()}, which the Kernel already dispatches
-	 * on `init` — so `registerBlock()` is called DIRECTLY here rather than nesting
-	 * a second `add_action( 'init', … )` from within the running `init` hook.
+	 * @var int
+	 */
+	private const STAMPED_PAST = 5;
+
+	/**
+	 * Audit ids of the year chips, by position (`04-inkpols` §5).
+	 *
+	 * @var list<string>
+	 */
+	private const YEAR_CHIP_IDS = array( 'magazine-past-filter-2025', 'magazine-past-filter-2024' );
+
+	/**
+	 * Register the server-rendered block. Dispatched on `init` through {@see Module::register()}.
 	 */
 	public function register(): void {
 		self::registerBlock();
@@ -76,186 +81,120 @@ final class Archive {
 	}
 
 	/**
-	 * Build the `WP_Query` args for the published issues. Pure.
-	 *
-	 * Newest-first by POST date (not a meta-join): every published issue is
-	 * included, and the by-year grouping/sort runs in {@see groupByYear()}.
-	 *
-	 * @param int $max The defensive cap on rows.
-	 * @return array<string, mixed>
-	 */
-	public static function queryArgs( int $max ): array {
-		return array(
-			'post_type'           => PostTypes::INKPOLS_UITGAWE,
-			'post_status'         => 'publish',
-			'posts_per_page'      => max( 1, $max ),
-			'orderby'             => 'date',
-			'order'               => 'DESC',
-			'ignore_sticky_posts' => true,
-			'no_found_rows'       => true,
-		);
-	}
-
-	/**
-	 * Group issues by publication year, newest year first. Pure.
-	 *
-	 * Issues within a year are sorted by issue date DESC (a `Y-m-d` string compare
-	 * is chronological). An issue with no parseable year (`Issue::year() === ''`)
-	 * is collected into a trailing undated bucket — never dropped.
-	 *
-	 * @param list<Issue> $issues The issue read-models.
-	 * @return list<array{year:string, issues:list<Issue>}>
-	 */
-	public static function groupByYear( array $issues ): array {
-		$buckets = array();
-
-		foreach ( $issues as $issue ) {
-			$year               = $issue->year();
-			$buckets[ $year ][] = $issue;
-		}
-
-		// PHP coerces a numeric-string array key ('2026') to an int key, so
-		// re-stringify to keep the declared `year:string` contract; the bucket
-		// lookup below coerces back to the int key transparently.
-		$years = array_map( 'strval', array_keys( $buckets ) );
-
-		// Years descending; the undated bucket ('') sorts last regardless.
-		usort(
-			$years,
-			static function ( string $a, string $b ): int {
-				if ( '' === $a ) {
-					return 1;
-				}
-				if ( '' === $b ) {
-					return -1;
-				}
-				return strcmp( $b, $a );
-			}
-		);
-
-		$groups = array();
-
-		foreach ( $years as $year ) {
-			$within = $buckets[ $year ];
-			usort(
-				$within,
-				static function ( Issue $a, Issue $b ): int {
-					// Date DESC, with post id DESC as a stable tiebreak — migrated issues
-					// all land on a `Y-m-01` date, so same-month issues would otherwise
-					// sort in an undefined order (R13 review).
-					$by_date = strcmp( $b->issueDate, $a->issueDate );
-
-					return 0 !== $by_date ? $by_date : ( $b->postId <=> $a->postId );
-				}
-			);
-
-			$groups[] = array(
-				'year'   => $year,
-				'issues' => $within,
-			);
-		}
-
-		return $groups;
-	}
-
-	/**
-	 * Block render callback. Queries, builds read-models, groups, renders.
+	 * Block render callback.
 	 *
 	 * @return string
 	 */
 	public static function render(): string {
-		$query = new \WP_Query( self::queryArgs( self::MAX_ISSUES ) );
-
-		$issues = array();
-
-		foreach ( $query->posts as $post ) {
-			if ( $post instanceof \WP_Post ) {
-				$issues[] = Issue::forPost( $post );
-			}
-		}
-
-		return self::toHtml( self::groupByYear( $issues ) );
+		return self::toHtml( Api::publishedIssues() );
 	}
 
 	/**
-	 * Build the archive HTML — a section per year. Pure (Terms + escaping only).
+	 * The archive. Pure: Terms and escaping only.
 	 *
-	 * @param list<array{year:string, issues:list<Issue>}> $groups The year groups.
+	 * @param list<Issue> $issues Published issues, newest `datum` first.
 	 * @return string
 	 */
-	public static function toHtml( array $groups ): string {
-		$heading = '<h1 class="ink-inkpols__heading ink-heading-h1-index" data-audit-id="inkpols-heading">' . esc_html( Terms::label( 'inkpols' ) ) . '</h1>';
+	public static function toHtml( array $issues ): string {
+		$current = $issues[0] ?? null;
+		$past    = array_slice( $issues, 1 );
 
-		if ( array() === $groups ) {
+		if ( null === $current ) {
 			/* translators: %s: the Uitgawes (issues) plural label. */
 			$empty = sprintf( __( 'Geen %s gevind nie.', 'ink-core' ), Terms::label( 'inkpols_uitgawe_plural' ) );
-
-			return '<section class="ink-inkpols alignwide" data-audit-id="inkpols-archive">' . $heading
-				. '<p class="ink-inkpols__leeg ink-card--empty" data-audit-id="inkpols-empty">' . esc_html( $empty ) . '</p></section>';
+			$body  = '<p class="ink-inkpols__leeg ink-card--empty">' . esc_html( $empty ) . '</p>';
+		} else {
+			$body = CurrentIssue::toHtml( $current, CurrentIssue::CONTEXT_ARCHIVE );
 		}
 
-		$html = '<section class="ink-inkpols alignwide" data-audit-id="inkpols-archive">' . $heading;
-
-		// Fidelity-audit join keys (docs/fidelity-remediation/maps/inkpols.csv) go on
-		// the FIRST year group and its FIRST card only, so the ids stay unique.
-		$first = true;
-
-		foreach ( $groups as $group ) {
-			$aid   = static fn ( string $id ): string => $first ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
-			$html .= '<section class="ink-inkpols__jaar"' . $aid( 'inkpols-year' ) . '>';
-
-			if ( '' !== $group['year'] ) {
-				$html .= '<h2 class="ink-inkpols__jaar-titel ink-heading-h2-block"' . $aid( 'inkpols-year-title' ) . '>' . esc_html( $group['year'] ) . '</h2>';
-			}
-
-			$html .= '<ul class="ink-inkpols__lys"' . $aid( 'inkpols-list' ) . '>';
-
-			foreach ( $group['issues'] as $issue ) {
-				$html .= self::card( $issue, $first );
-				$first = false;
-			}
-
-			$html .= '</ul></section>';
-		}
-
-		return $html . '</section>';
+		return '<div class="ink-inkpols alignfull">'
+			. '<section class="ink-band ink-band--border-b ink-band--step" data-audit-id="magazine-archive-hero">'
+			. '<div class="ink-container" data-audit-id="magazine-archive-container">'
+			. '<p class="ink-eyebrow ink-eyebrow--card" data-audit-id="magazine-archive-eyebrow">' . esc_html( Terms::label( 'inkpols' ) ) . '</p>'
+			. '<h1 class="ink-inkpols__argief-titel ink-heading-h1-index" data-audit-id="magazine-archive-h1">' . esc_html( Terms::label( 'inkpols_argief' ) ) . '</h1>'
+			. '<p class="ink-inkpols__argief-teks" data-audit-id="magazine-archive-text">' . esc_html( Terms::label( 'inkpols_argief_teks' ) ) . '</p>'
+			. $body
+			. '</div></section>'
+			. self::pastHtml( $past )
+			. '</div>';
 	}
 
 	/**
-	 * One issue card — cover (when present) + title→permalink + date + volume +
-	 * teaser. Pure — escaping only.
+	 * The past-issues band; '' with none (hidden with one issue, `inkpols.md`). Pure.
 	 *
-	 * @param Issue $issue The issue read-model.
-	 * @param bool  $audit Stamp the fidelity-audit join keys (first card only).
+	 * @param list<Issue> $past The past issues, newest first.
 	 * @return string
 	 */
-	public static function card( Issue $issue, bool $audit = false ): string {
-		$permalink = (string) get_permalink( $issue->postId );
-		$cover_url = $issue->coverUrl();
-		$aid       = static fn ( string $id ): string => $audit ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';
+	public static function pastHtml( array $past ): string {
+		if ( array() === $past ) {
+			return '';
+		}
 
-		$cover = '' !== $cover_url
-			? '<a class="ink-inkpols__omslag-skakel"' . $aid( 'inkpols-cover-link' ) . ' href="' . esc_url( $permalink ) . '">'
-				. '<img class="ink-inkpols__omslag"' . $aid( 'inkpols-cover' ) . ' src="' . esc_url( $cover_url ) . '" alt="' . esc_attr( $issue->title ) . '" /></a>'
-			: '';
+		$cards = '';
 
-		$date = '' !== $issue->displayDate()
-			? '<span class="ink-inkpols__datum ink-meta"' . $aid( 'inkpols-date' ) . '>' . esc_html( $issue->displayDate() ) . '</span>'
-			: '';
+		foreach ( $past as $index => $issue ) {
+			$cards .= self::card( $issue, $index < self::STAMPED_PAST ? "magazine-past-{$index}" : '' );
+		}
 
-		$volume = '' !== $issue->volume
-			? '<span class="ink-inkpols__volume ink-meta"' . $aid( 'inkpols-volume' ) . '>' . esc_html( $issue->volume ) . '</span>'
-			: '';
+		return '<section class="ink-band ink-band--step" data-audit-id="magazine-past" data-ink-inkpols-argief>'
+			. '<div class="ink-container" data-audit-id="magazine-past-container">'
+			. '<div class="ink-inkpols__verlede-kop" data-audit-id="magazine-past-head">'
+			. '<h2 class="ink-heading-h2-section" data-audit-id="magazine-past-h2">' . esc_html( Terms::label( 'alle_uitgawes' ) ) . '</h2>'
+			. '<div class="ink-inkpols__filters" data-audit-id="magazine-past-filters">' . self::chips( $past ) . '</div>'
+			. '</div>'
+			. '<div class="ink-inkpols__rooster" data-audit-id="magazine-past-grid">' . $cards . '</div>'
+			. '</div></section>';
+	}
 
-		$teaser = '' !== $issue->teaser
-			? '<p class="ink-inkpols__voorskou"' . $aid( 'inkpols-teaser' ) . '>' . esc_html( $issue->teaser ) . '</p>'
-			: '';
+	/**
+	 * Alles, then each year among the past issues, newest first. Pure.
+	 *
+	 * @param list<Issue> $past The past issues.
+	 * @return string
+	 */
+	public static function chips( array $past ): string {
+		$years = array();
 
-		return '<li class="ink-inkpols__item ink-card"' . $aid( 'inkpols-card' ) . '>'
-			. $cover
-			. '<a class="ink-inkpols__titel ink-heading-h3-card"' . $aid( 'inkpols-title' ) . ' href="' . esc_url( $permalink ) . '">' . esc_html( $issue->title ) . '</a>'
-			. ( '' !== $date . $volume ? '<div class="ink-inkpols__meta ink-meta-row ink-meta-row--tight">' . $date . $volume . '</div>' : '' )
-			. $teaser
-			. '</li>';
+		foreach ( $past as $issue ) {
+			if ( '' !== $issue->year() ) {
+				$years[ $issue->year() ] = true;
+			}
+		}
+
+		$years = array_map( 'strval', array_keys( $years ) );
+		rsort( $years, SORT_STRING );
+
+		$html = '<button type="button" class="ink-chip ink-chip--plain" aria-pressed="true" data-jaar="alles" data-audit-id="magazine-past-filter-all">' . esc_html( Terms::label( 'alles' ) ) . '</button>';
+
+		foreach ( $years as $position => $year ) {
+			$html .= '<button type="button" class="ink-chip ink-chip--plain" aria-pressed="false" data-jaar="' . esc_attr( $year ) . '"' . CurrentIssue::aid( self::YEAR_CHIP_IDS[ $position ] ?? '' ) . '>' . esc_html( $year ) . '</button>';
+		}
+
+		return $html;
+	}
+
+	/**
+	 * One past issue. Without JS every card stays visible. Pure.
+	 *
+	 * @param Issue  $issue The issue.
+	 * @param string $id    The card's audit id, the prefix of its children's; '' stamps none.
+	 * @return string
+	 */
+	public static function card( Issue $issue, string $id = '' ): string {
+		$url = $issue->permalink();
+		$aid = static fn ( string $suffix ): string => CurrentIssue::aid( '' === $id ? '' : $id . $suffix );
+
+		return '<article class="ink-inkpols__kaart" data-jaar="' . esc_attr( $issue->year() ) . '"' . $aid( '' ) . '>'
+			. '<a class="ink-inkpols__omslag-skakel"' . $aid( '-cover-link' ) . ' href="' . esc_url( $url ) . '">'
+			. CurrentIssue::coverImg( $issue, '' === $id ? '' : $id . '-cover', 'ink-cover', true )
+			. '</a>'
+			. '<span class="ink-eyebrow ink-eyebrow--card-xs"' . $aid( '-eyebrow' ) . '>' . esc_html( $issue->title ) . '</span>'
+			. '<h3 class="ink-inkpols__kaart-titel ink-heading-h3"' . $aid( '-title' ) . '>'
+			. '<a class="ink-inkpols__kaart-skakel"' . $aid( '-title-link' ) . ' href="' . esc_url( $url ) . '">' . esc_html( $issue->titel ) . '</a>'
+			. '</h3>'
+			. '<div class="ink-inkpols__lys-hou-kompak"' . $aid( '-highlights-wrap' ) . '>' . CurrentIssue::listHtml( $issue, $id, CurrentIssue::LIST_COMPACT ) . '</div>'
+			. '<div class="ink-inkpols__kaart-aksies"' . $aid( '-actions' ) . '>'
+			. CurrentIssue::readButton( $url, 'ink-btn ink-btn--sm ink-btn--primary', '' === $id ? '' : $id . '-btn-read' )
+			. '</div></article>';
 	}
 }

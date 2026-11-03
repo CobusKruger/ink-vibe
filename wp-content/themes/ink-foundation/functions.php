@@ -16,6 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // No direct access.
 }
 
+require_once __DIR__ . '/inc/header-nav.php';
+
 /**
  * The QA/component-gallery page slug (Phase 2, Theme Visual-Fidelity rework —
  * `docs/theme-fidelity-rework-plan.md`, workstream B).
@@ -159,6 +161,26 @@ function ink_foundation_enqueue_user_menu(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_user_menu' );
 
 /**
+ * Enqueue the header's mobile menu toggle. Site-wide and for every visitor: the
+ * toggle renders on every page, logged in or out (06-chrome §4).
+ */
+function ink_foundation_enqueue_header_menu(): void {
+	$theme = wp_get_theme();
+
+	wp_enqueue_script(
+		'ink-foundation-header-menu',
+		get_theme_file_uri( 'assets/js/header-menu.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_header_menu' );
+
+/**
  * Enqueue the Skryf live-counter enhancement + stylesheet on the Skryf page only
  * (Story 6.2; stylesheet added in the Theme Visual-Fidelity Phase 2 pass, page 8).
  *
@@ -251,6 +273,58 @@ function ink_foundation_enqueue_kontak_assets(): void {
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_kontak_assets' );
 
 /**
+ * InkPols layout and text: the archive, the single, and the home section, which shares the
+ * current-issue renderer (`04-inkpols` §7). The year chips' script: the archive only.
+ */
+function ink_foundation_enqueue_inkpols_assets(): void {
+	$is_archive = function_exists( 'is_post_type_archive' ) && is_post_type_archive( 'inkpols_uitgawe' );
+
+	if ( ! $is_archive && ! is_singular( 'inkpols_uitgawe' ) && ! is_front_page() ) {
+		return;
+	}
+
+	$version = (string) wp_get_theme()->get( 'Version' );
+
+	wp_enqueue_style( 'ink-foundation-inkpols', get_theme_file_uri( 'assets/css/inkpols.css' ), array(), $version );
+
+	if ( $is_archive ) {
+		wp_enqueue_script( 'ink-foundation-inkpols-argief', get_theme_file_uri( 'assets/js/inkpols-argief.js' ), array(), $version, array( 'strategy' => 'defer' ) );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_inkpols_assets' );
+
+/**
+ * Kompetisies layout, text and script: the four blocks live only in this page's pattern
+ * (`05-kompetisies` §6).
+ */
+function ink_foundation_enqueue_kompetisies_assets(): void {
+	if ( ! function_exists( 'is_page' ) || ! is_page( 'kompetisies' ) ) {
+		return;
+	}
+
+	$version = (string) wp_get_theme()->get( 'Version' );
+
+	wp_enqueue_style( 'ink-foundation-kompetisies', get_theme_file_uri( 'assets/css/kompetisies.css' ), array(), $version );
+	wp_enqueue_script( 'ink-foundation-kompetisies', get_theme_file_uri( 'assets/js/kompetisies.js' ), array(), $version, array( 'strategy' => 'defer' ) );
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_kompetisies_assets' );
+
+/**
+ * Uitdagings list layout and text: the archive, and the QA gallery, which embeds the same
+ * block (`07-uitdagings` §5).
+ */
+function ink_foundation_enqueue_uitdagings_assets(): void {
+	$is_archive = function_exists( 'is_post_type_archive' ) && is_post_type_archive( 'uitdaging' );
+
+	if ( ! $is_archive && ! ( function_exists( 'is_page' ) && is_page( INK_FOUNDATION_QA_GALLERY_SLUG ) ) ) {
+		return;
+	}
+
+	wp_enqueue_style( 'ink-foundation-uitdagings', get_theme_file_uri( 'assets/css/uitdagings.css' ), array(), (string) wp_get_theme()->get( 'Version' ) );
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_uitdagings_assets' );
+
+/**
  * Enqueue the Auth (teken-in / registreer / wagwoord-herstel) stylesheet on
  * those three pages only (Theme-Fidelity re-audit, page 16 — the last page).
  *
@@ -310,8 +384,48 @@ function ink_foundation_enqueue_reading_engagement_assets(): void {
 		array(),
 		(string) $theme->get( 'Version' )
 	);
+
+	// The engagement bar's share button (inc/reading-parts.php).
+	wp_enqueue_script(
+		'ink-foundation-lees-deel',
+		get_theme_file_uri( 'assets/js/lees-deel.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		array( 'strategy' => 'defer' )
+	);
 }
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_reading_engagement_assets' );
+
+/**
+ * Enqueue the results page's layout sheet and tab script, on a round's results view only:
+ * the block `ink/uitslae` renders nowhere else (`01-uitslae` §8). `load_scope` = `used_in`.
+ */
+function ink_foundation_enqueue_uitslae_assets(): void {
+	if ( ! class_exists( 'Ink\\Challenges\\ResultsRoute' ) || ! \Ink\Challenges\ResultsRoute::isResultsView() ) {
+		return;
+	}
+
+	$theme = wp_get_theme();
+
+	wp_enqueue_style(
+		'ink-foundation-uitslae',
+		get_theme_file_uri( 'assets/css/uitslae.css' ),
+		array(),
+		(string) $theme->get( 'Version' )
+	);
+
+	wp_enqueue_script(
+		'ink-foundation-uitslae-tabs',
+		get_theme_file_uri( 'assets/js/uitslae-tabs.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_uitslae_assets' );
 
 /**
  * Stamp `data-audit-id="gedig-title"`/`"storie-title"` onto the rendered
@@ -418,7 +532,7 @@ add_filter( 'render_block_core/post-content', 'ink_foundation_audit_id_reading_b
  * blocks with no static markup in `reading-uitdaging.php` to hand-edit — same
  * mechanism as the reading-page filters above.
  *
- * @param string $block_content The rendered block.
+ * @param string              $block_content The rendered block.
  * @param array<string,mixed> $block The parsed block.
  */
 function ink_foundation_audit_id_uitdaging( string $block_content, array $block ): string {
@@ -472,48 +586,55 @@ function ink_foundation_audit_id_site_title( string $block_content, array $block
 add_filter( 'render_block_core/site-title', 'ink_foundation_audit_id_site_title', 10, 2 );
 
 /**
- * Stamp the header `<nav>` and its mobile "open menu" toggle with their
- * fidelity-audit join keys (maps/tuisblad.csv). `wp:navigation` is dynamic.
- * The theme has exactly one navigation block (header-main.php).
+ * Stamp the header `<nav>` with its fidelity-audit join key (maps/tuisblad.csv).
+ * `wp:navigation` is dynamic. The theme has exactly one navigation block
+ * (header-main.php); the menu toggle is our own button there (06-chrome §4).
  *
  * @param string $block_content The rendered block.
  */
 function ink_foundation_audit_id_navigation( string $block_content ): string {
 	$with_audit_id = preg_replace( '/<nav\b/', '<nav data-audit-id="header-nav"', $block_content, 1 );
-	$with_audit_id = null !== $with_audit_id
-		? preg_replace( '/<button\b([^>]*\bwp-block-navigation__responsive-container-open\b)/', '<button data-audit-id="header-menu-toggle"$1', $with_audit_id, 1 )
-		: null;
 
 	return null !== $with_audit_id ? $with_audit_id : $block_content;
 }
 add_filter( 'render_block_core/navigation', 'ink_foundation_audit_id_navigation' );
 
 /**
+ * Stamp the header template part's `<header>` with its join key: it is the design's
+ * `<header>` (Header.tsx:28). Template parts print their own wrapper, so a filter does it.
+ *
+ * @param string              $block_content The rendered block.
+ * @param array<string,mixed> $block         The parsed block.
+ */
+function ink_foundation_audit_id_header_part( string $block_content, array $block ): string {
+	if ( 'header' !== ( $block['attrs']['slug'] ?? '' ) ) {
+		return $block_content;
+	}
+
+	$with_audit_id = preg_replace( '/<header\b/', '<header data-audit-id="header"', $block_content, 1 );
+
+	return null !== $with_audit_id ? $with_audit_id : $block_content;
+}
+add_filter( 'render_block_core/template-part', 'ink_foundation_audit_id_header_part', 10, 2 );
+
+/**
  * Stamp each header nav link's `<a>` with its fidelity-audit join key, keyed by
- * the link's authored URL (maps/tuisblad.csv). `/opleiding` pairs with Lovable's
- * "Library" (agent-brief.md §2.1 row 08); `/my-profiel` has no Lovable nav
- * counterpart (spine finding F4, SCOPE).
+ * the link's authored URL, trailing slash included (06-chrome §2,
+ * inc/header-nav.php). `/biblioteek/` pairs with Lovable's "Library"; `/opleiding/`
+ * has no Lovable nav counterpart (D1: SCOPE).
  *
  * @param string              $block_content The rendered block.
  * @param array<string,mixed> $block         The parsed block.
  */
 function ink_foundation_audit_id_navigation_link( string $block_content, array $block ): string {
-	$audit_ids = array(
-		'/'           => 'header-nav-home',
-		'/ontdek'     => 'header-nav-browse',
-		'/opleiding'  => 'header-nav-library',
-		'/uitdagings' => 'header-nav-challenges',
-		'/uitdaging/' => 'header-nav-challenges', // The archive's real URL (S-U1); keep both until the header link moves.
-		'/gemeenskap' => 'header-nav-community',
-		'/my-profiel' => 'header-nav-profile',
-	);
-	$url       = $block['attrs']['url'] ?? '';
+	$url      = $block['attrs']['url'] ?? '';
+	$audit_id = is_string( $url ) ? ink_foundation_header_nav_audit_id( $url ) : null;
 
-	if ( ! is_string( $url ) || ! isset( $audit_ids[ $url ] ) ) {
+	if ( null === $audit_id ) {
 		return $block_content;
 	}
 
-	$with_audit_id = preg_replace( '/<a\b/', '<a data-audit-id="' . $audit_ids[ $url ] . '"', $block_content, 1 );
+	$with_audit_id = preg_replace( '/<a\b/', '<a data-audit-id="' . $audit_id . '"', $block_content, 1 );
 
 	return null !== $with_audit_id ? $with_audit_id : $block_content;
 }
@@ -652,6 +773,9 @@ function ink_foundation_login_headerurl(): string {
 }
 add_filter( 'login_headerurl', 'ink_foundation_login_headerurl' );
 
+/**
+ * Use the site name as the login logo text (matches the `login_headerurl` link above).
+ */
 function ink_foundation_login_headertext(): string {
 	return get_bloginfo( 'name' );
 }
@@ -814,8 +938,9 @@ function ink_foundation_enqueue_gemeenskapsreaksie(): void {
 		'ink-foundation-gemeenskapsreaksie',
 		'inkGemeenskapsreaksie',
 		array(
-			'restUrl' => esc_url_raw( rest_url( 'ink/v1/gemeenskapsreaksie' ) ),
-			'nonce'   => wp_create_nonce( 'wp_rest' ),
+			'restUrl'   => esc_url_raw( rest_url( 'ink/v1/gemeenskapsreaksie' ) ),
+			'upvoteUrl' => esc_url_raw( rest_url( 'ink/v1/gemeenskapsreaksie/0/opstem' ) ),
+			'nonce'     => wp_create_nonce( 'wp_rest' ),
 		)
 	);
 }
@@ -1112,7 +1237,7 @@ add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_skrywer_deel' );
 /**
  * Enqueue the home (Tuisblad) stylesheet on the front page only (Epic 19, §0.8).
  *
- * home.css holds ONLY the home page's own layout and decoration (the hero grid
+ * The file home.css holds ONLY the home page's own layout and decoration (the hero grid
  * and plus-pattern texture, the .ink-text-gradient accent, fade-up / hover-scale
  * motion, the card corner tints and crown watermark, the grids and per-element
  * rhythm, the CTA panel, and the prefers-reduced-motion base). Every primitive the
@@ -1242,7 +1367,7 @@ add_filter( 'ink_home_current_challenge', 'ink_foundation_qa_fixture_current_cha
 /**
  * Fixture payload for `ink/wenner-kollig` (the winner spotlight). Hooks
  * `Ink\Challenges\FeaturedWinners::FEATURED_FILTER`; shape per that class's
- * {@see \Ink\Challenges\FeaturedWinners::orderFeed()} docblock.
+ * {@see \Ink\Challenges\WinnersPost::featuredPayload()}.
  *
  * @param mixed $data The filter's incoming value (null unless another filter
  *                     already supplied a payload).
@@ -1254,111 +1379,26 @@ function ink_foundation_qa_fixture_featured_winner( mixed $data ): mixed {
 	}
 
 	return array(
-		'winners' => array(
-			array(
-				'id'        => 900001,
-				'rank'      => 1,
+		'month' => 'Augustus',
+		'theme' => 'Die Laaste Reën',
+		'slots' => array(
+			'goud-gedig' => array(
 				'title'     => 'Die Laaste Reën',
 				'url'       => '#qa-fixture-winner-1',
-				'month'     => 'Augustus',
 				'author'    => 'M. van der Merwe',
-				'quote'     => 'Elke druppel het ’n storie gedra wat ek nooit geweet het ek moes vertel nie.',
+				'quote'     => 'Elke druppel het ’n storie gedra',
 				'win_label' => '2de wen',
 			),
-			array(
-				'id'     => 900002,
-				'rank'   => 2,
+			'storie'     => array(
 				'title'  => 'Skadu’s van Somer',
 				'url'    => '#qa-fixture-winner-2',
-				'month'  => 'Augustus',
 				'author' => 'J. Botha',
-			),
-			array(
-				'id'     => 900003,
-				'rank'   => 3,
-				'title'  => 'Die Huis op die Hoek',
-				'url'    => '#qa-fixture-winner-3',
-				'month'  => 'Augustus',
-				'author' => 'L. Naidoo',
+				'quote'  => 'Elke druppel het ’n storie gedra wat ek nooit geweet het ek moes vertel nie.',
 			),
 		),
 	);
 }
 add_filter( 'ink_home_featured_winner', 'ink_foundation_qa_fixture_featured_winner' ); // Ink\Challenges\FeaturedWinners::FEATURED_FILTER.
-
-/**
- * FRONT-PAGE VISUAL-PARITY DEMO CONTENT for `ink/wenner-kollig` — **not** a
- * completion of Epic 12A's real winner-data wiring.
- *
- * Read this before touching it. `Ink\Challenges\FeaturedWinners` sources its whole
- * payload from one filter ({@see \Ink\Challenges\FeaturedWinners::FEATURED_FILTER})
- * and nothing in `ink-core` hooks it — its own docblock still says "Epic 12A is
- * unbuilt", which is now STALE (12A shipped and merged). The winner spotlight is
- * therefore a **stranded capability**: the block, its markup, its ordering contract
- * and its styling all exist, but no production code path ever feeds it, so the
- * Tuisblad's winner slot can never render real adjudication results. Confirmed
- * against this install's database on 2026-09-05: zero `ink_entry_placement` meta
- * rows exist, so there is not even latent real data to query. Closing that gap
- * (querying the most recent concluded challenge's `Placements` and composing the
- * announcement payload) is real feature work owned by Challenges, NOT by the theme,
- * and remains OPEN.
- *
- * What this function does instead: supply believable demo content on the REAL front
- * page only, so the section's fidelity can be reviewed against Lovable's "December
- * Winner" card at all (product-owner finding #3, "there is no test fixture for the
- * winning entry"). It is deliberately a SEPARATE hook from
- * {@see ink_foundation_qa_fixture_featured_winner()} rather than a widening of that
- * function's gate: conflating "QA gallery fixture payload" with "content a visitor
- * sees on the real home page" is exactly the mistake that let `QA FIXTURE — `
- * sponsor posts leak onto the live site earlier in this rework. For the same reason
- * the copy here carries NO `QA FIXTURE — ` prefix — it is front-of-house demo
- * content, and {@see \Ink\Kernel\QaFixture} exclusion must not apply to it.
- *
- * Delete this function (and its `add_filter`) the moment Challenges supplies the
- * real payload; the block will pick the real data up with no other change.
- *
- * No section-level 'title'/'url' any more (fourth-pass follow-up, 2026-09-05):
- * {@see \Ink\Challenges\FeaturedWinners::toHtml()} stopped rendering a section
- * heading (direct product-owner finding: "DESEMBER SE WENNERS" above the card is
- * not supposed to be there — Lovable's `ChallengeSection.tsx` has no such heading,
- * each card carries its own eyebrow). This entry is rank 2 (an ordinary wenner,
- * not the algehele wenner) with an avatar, matching Lovable's own "December
- * Winner" / "Sarah Mitchell" demo card exactly (same fields populated, same
- * Unsplash placeholder photo Lovable's own `ChallengeSection.tsx` hardcodes for
- * this entry — reused rather than inventing a new placeholder).
- *
- * @param mixed $data The filter's incoming value (null unless another filter
- *                     already supplied a payload).
- * @return mixed
- */
-function ink_foundation_homepage_demo_winner( mixed $data ): mixed {
-	if ( ! function_exists( 'is_front_page' ) || ! is_front_page() ) {
-		return $data;
-	}
-
-	// Never override a real payload, so this evaporates the moment 12A wires one up.
-	if ( null !== $data ) {
-		return $data;
-	}
-
-	return array(
-		'winners' => array(
-			array(
-				'id'         => 1,
-				'rank'       => 2,
-				'title'      => __( 'Die laaste lig van winter', 'ink-foundation' ),
-				'url'        => '/uitdaging/',
-				'month'      => __( 'Desember', 'ink-foundation' ),
-				'author'     => 'Sarie Mostert',
-				'quote'      => __( 'Die kers het geflikker teen die ryp-geverfde venster, elke dansende skaduwee ’n herinnering aan somers lank verby …', 'ink-foundation' ),
-				'avatar_url' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
-				'avatar_alt' => 'Sarie Mostert',
-				'win_label'  => __( '3de wen', 'ink-foundation' ),
-			),
-		),
-	);
-}
-add_filter( 'ink_home_featured_winner', 'ink_foundation_homepage_demo_winner' ); // Ink\Challenges\FeaturedWinners::FEATURED_FILTER.
 
 /**
  * Fixture payload for `ink/uitgesoekte-bydraes` ("Die redakteur se keuse" featured
@@ -1617,48 +1657,30 @@ function ink_foundation_register_block_styles(): void {
 	// themselves are the primitives `nav-link` recipe (primitives.css). Token-only (Gate A); the surface/95 translucency uses
 	// the color-mix convention with an opaque `surface` fallback first (§0.7).
 	//
-	// The translucent surface + backdrop-blur live on a `::before` decorative
-	// layer, NOT on `.is-style-ink-header` itself (Phase 2 fidelity pass fix):
-	// `backdrop-filter` on an element establishes a new containing block for
-	// any `position:fixed` DESCENDANT (CSS Filter Effects spec, same family as
-	// `transform`/`perspective`/`contain:paint`). WordPress core's mobile nav
-	// overlay (`.wp-block-navigation__responsive-container.is-menu-open`) is a
-	// `position:fixed` element nested inside this header, expecting to size
-	// itself against the viewport — with backdrop-filter on the header, it
-	// instead sized against the header's own ~64px-tall row, collapsing the
-	// mobile menu to an unusable 64px-tall sliver. Confirmed via live
-	// getBoundingClientRect() before/after on `nuwe-ink.local` at a 500×757
-	// viewport: {width:500,height:64} with the filter present vs the correct
-	// full-viewport {width:500,height:757} with it removed. Moving the same
-	// filter + tint onto a `::before` (which has no fixed-position descendants
-	// of its own) keeps the identical frosted-glass visual, verified pixel-
-	// identical on desktop, while leaving the real header element filter-free
-	// so its nav-overlay descendant is free to size against the viewport again.
+	// The `<header>` template part is the design's `<header>` (Header.tsx:28): sticky, tint,
+	// blur and border; the inner group is its `.container`. A `backdrop-filter` makes a
+	// containing block for any `position:fixed` descendant. None exists since 06-chrome
+	// retired core's overlay; a future one must not sit inside the header, or it sizes
+	// against the row.
 	register_block_style(
 		'core/group',
 		array(
 			'name'         => 'ink-header',
 			'label'        => __( 'INK kopstuk', 'ink-foundation' ),
-			// The sticky positioning lives on the semantic `<header
-			// class="wp-block-template-part">` WRAPPER, not on this inner
-			// `.is-style-ink-header` group (fourth-pass fidelity fix, 2026-09-05,
-			// product-owner finding #10 "the Lovable header is sticky, the Ink one
-			// scrolls away"). `position:sticky` only floats an element WITHIN its own
-			// containing block; the inner group's containing block is the `<header>`
-			// element, which is sized to exactly the same 65px as the group itself, so
-			// there was zero room to stick and the whole thing scrolled away with the
-			// page (confirmed live on nuwe-ink.local: at scrollY 1200 the header's
-			// getBoundingClientRect().top read -1168, i.e. never stuck at all, despite
-			// position/top/z-index all computing correctly). The `<header>`'s OWN parent
-			// is `.wp-site-blocks`, which spans the whole document — so the same three
-			// declarations, moved one level out, have the full page height to stick
-			// through. Only the positioning moves; the border/tint/blur/row treatment
-			// stays on the inner group so the visual is byte-identical.
+			// `position:sticky` needs the template part: its parent, `.wp-site-blocks`, spans the
+			// document, while the group's parent is only as tall as the group.
 			'inline_style' => 'header.wp-block-template-part{'
 				. 'position:sticky;'
 				. 'top:0;'
 				. 'z-index:50;'
+				. 'border-bottom:1px solid var(--wp--preset--color--border);'
+				. 'background-color:var(--wp--preset--color--surface);'
+				. 'background-color:color-mix(in srgb, var(--wp--preset--color--surface) 95%, transparent);'
+				. '-webkit-backdrop-filter:blur(4px);'
+				. 'backdrop-filter:blur(4px);'
 				. '}'
+				// Tailwind's preflight, for the header only: the design's boxes are all border-box.
+				. 'header.wp-block-template-part,header.wp-block-template-part *{box-sizing:border-box;}'
 				// Now that the header genuinely sticks, it must clear WordPress's own
 				// admin bar for signed-in users — the admin bar is `position:fixed` at
 				// 32px tall above 782px, so a `top:0` sticky header slides underneath
@@ -1669,31 +1691,63 @@ function ink_foundation_register_block_styles(): void {
 				. '@media screen and (max-width:782px){'
 				. 'body.admin-bar header.wp-block-template-part{top:0;}'
 				. '}'
+				// The group is the design's `.container mx-auto px-4`; the row fills it.
 				. '.wp-block-group.is-style-ink-header{'
-				. 'border-bottom:1px solid var(--wp--preset--color--border);'
-				. '}'
-				. '.wp-block-group.is-style-ink-header::before{'
-				. 'content:"";'
-				. 'position:absolute;'
-				. 'inset:0;'
-				. 'z-index:-1;'
-				. 'background-color:var(--wp--preset--color--surface);'
-				. 'background-color:color-mix(in srgb, var(--wp--preset--color--surface) 95%, transparent);'
-				. '-webkit-backdrop-filter:blur(4px);'
-				. 'backdrop-filter:blur(4px);'
+				. 'max-width:1400px;'
+				. 'margin-inline:auto;'
 				. '}'
 				. '.wp-block-group.is-style-ink-header .ink-header-row{'
-				. 'min-height:64px;'
+				. 'flex-wrap:nowrap;'
+				. 'gap:normal;'
+				. 'width:100%;'
+				. 'max-width:none;'
+				. 'height:4rem;'
+				. 'margin-inline:0;'
+				. '}'
+				. '.wp-block-group.is-style-ink-header .ink-header-row > .wp-block-navigation{'
+				. 'position:static;'
+				. 'flex-wrap:nowrap;'
+				. '}'
+				. '.wp-block-group.is-style-ink-header .ink-header-actions{'
+				. 'display:flex;'
+				. 'align-items:center;'
+				. 'gap:var(--wp--preset--spacing--s-12);'
+				. '}'
+				. '.wp-block-group.is-style-ink-header .ink-header-brand{'
+				. 'display:flex;'
+				. 'align-items:center;'
+				. 'gap:var(--wp--preset--spacing--s-8);'
+				. 'color:var(--wp--preset--color--ink-text);'
+				. 'text-decoration:none;'
 				. '}'
 				// Stage 4 (fidelity): Lovable's `<main>` starts flush under the sticky
 				// header; WP's root blockGap put 24px between them on every page.
 				. '.wp-site-blocks > header.wp-block-template-part + *{margin-block-start:0;}'
-				// Wordmark: Lovable `text-xl` is 20/28 (the body 1.5 gave 30).
-				. '.wp-block-group.is-style-ink-header .wp-block-site-title{line-height:1.75rem;}'
-				// Below WP's 600px hamburger breakpoint the nav block is just the menu
-				// toggle; Lovable puts it at the row's right edge, so it goes last.
-				. '@media (max-width:599px){'
-				. '.wp-block-group.is-style-ink-header .ink-header-row > .wp-block-navigation{order:3;}'
+				// Wordmark: Lovable `font-serif text-xl font-semibold text-foreground`.
+				. '.ink-header-logo-text{'
+				. 'color:var(--wp--preset--color--ink-text);'
+				. 'font-family:var(--wp--preset--font-family--display);'
+				. 'font-size:var(--wp--preset--font-size--xl);'
+				. 'font-weight:600;'
+				. 'line-height:1.75rem;'
+				. '}'
+				// Below 1024 the row is the logo and the menu toggle (Header.tsx:40,65,112;
+				// 06-chrome H1, H2). ACCEPTED DIVERGENCE (owner, 2026-11-02): the design
+				// switches at 768; INK's longer link list needs one clean row at every
+				// width, so 1024 here, in primitives.css and in header-menu.js.
+				. '@media (max-width:1023.98px){'
+				. '.wp-block-group.is-style-ink-header .ink-header-row > .wp-block-navigation,'
+				. '.wp-block-group.is-style-ink-header .ink-header-row > .ink-header-actions{display:none;}'
+				. '}'
+				. '@media (min-width:1024px){'
+				. '.wp-block-group.is-style-ink-header .ink-header-row > .ink-icon-btn--menu{display:none;}'
+				. '}'
+				// The panel sits flush under the row. The header is sticky, so a panel
+				// taller than a short screen scrolls inside itself or its end is
+				// unreachable. Lovable has no such rule; disclosed, no effect at 390x844.
+				. '.wp-block-group.is-style-ink-header > .ink-mobile-menu{max-width:none;margin:0;}'
+				. '@media (max-width:1023.98px) and (max-height:640px){'
+				. '.wp-block-group.is-style-ink-header > .ink-mobile-menu{box-sizing:border-box;max-height:calc(100dvh - 65px);overflow-y:auto;}'
 				. '}'
 				// Logo hover (Lovable: `transition-transform group-hover:rotate-12`
 				// on the feather icon, triggered by hovering the whole logo Link).
@@ -1707,29 +1761,11 @@ function ink_foundation_register_block_styles(): void {
 				. '.wp-block-group.is-style-ink-header .ink-header-brand:hover .ink-header-feather{'
 				. 'transform:rotate(12deg);'
 				. '}'
-				. '@media (prefers-reduced-motion:reduce){'
-				. '.wp-block-group.is-style-ink-header .ink-header-feather{transition:none;}'
-				. '}'
 				// The nav links' muted colour, hover/focus colour, underline-slide and
 				// focus ring are the primitives `nav-link` recipe (primitives.css binds
 				// it to `.is-style-ink-header .wp-block-navigation-item__content`).
-				// Mobile menu overlay (< 600px, WP core's own breakpoint for the
-				// hamburger toggle): the nav block's desktop `justifyContent:"right"`
-				// (correct for the horizontal row) was also right-aligning the
-				// STACKED overlay list, crowding every link flush against the
-				// screen edge. WP core's own overlay padding additionally computes
-				// to 0 here because it reads an unset `--wp--style--root--padding-*`
-				// custom property. Override both so the open mobile menu reads as a
-				// left-aligned, breathing-room list (matching Lovable's mobile nav
-				// panel) instead of a right-hugging column.
-				. '@media (max-width:599px){'
-				. '.wp-block-group.is-style-ink-header .wp-block-navigation__responsive-container.is-menu-open{'
-				. 'padding:var(--wp--preset--spacing--s-32) var(--wp--preset--spacing--s-24);'
-				. '}'
-				. '.wp-block-group.is-style-ink-header .wp-block-navigation__responsive-container-content,'
-				. '.wp-block-group.is-style-ink-header .wp-block-navigation__responsive-container-content .wp-block-navigation__container{'
-				. 'align-items:flex-start!important;'
-				. '}'
+				. '@media (prefers-reduced-motion:reduce){'
+				. '.wp-block-group.is-style-ink-header .ink-header-feather{transition:none;}'
 				. '}',
 		)
 	);

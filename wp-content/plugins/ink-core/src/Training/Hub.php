@@ -468,8 +468,8 @@ final class Hub {
 	 *
 	 * @param list<array{title:string, permalink:string, author:string, excerpt?:string, category?:string, read_minutes?:int}> $cards    The items.
 	 * @param list<array{title:string, permalink:string, author:string, excerpt?:string, category?:string, read_minutes?:int}> $featured The featured strip items.
-	 * @param list<array{slug:string, name:string}>                                                                           $facets   The vaardigheid facet terms.
-	 * @param array{paged:int, max_pages:int, total?:int, vaardigheid?:string|null, search?:string}                           $nav Render context.
+	 * @param list<array{slug:string, name:string}>                                                                            $facets   The vaardigheid facet terms.
+	 * @param array{paged:int, max_pages:int, total?:int, vaardigheid?:string|null, search?:string}                            $nav Render context.
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $featured, array $facets, array $nav ): string {
@@ -601,7 +601,7 @@ final class Hub {
 
 		$html = '<section class="ink-opleiding__rak ink-container ink-band ink-band--step" data-audit-id="library-shelf">'
 			. '<div class="ink-opleiding__rak-kop" data-audit-id="library-shelf-head"><div>'
-			. '<h2 class="ink-opleiding__rak-titel ink-heading-h2-sub" data-audit-id="library-shelf-h2">' . esc_html__( 'Die redakteur se rak', 'ink-core' ) . '</h2>'
+			. '<h2 class="ink-opleiding__rak-titel ink-heading-h2-section" data-audit-id="library-shelf-h2">' . esc_html__( 'Die redakteur se rak', 'ink-core' ) . '</h2>'
 			. '<p class="ink-opleiding__rak-onderskrif" data-audit-id="library-shelf-sub">' . esc_html__( 'Drie stukke om mee te begin.', 'ink-core' ) . '</p>'
 			. '</div></div>'
 			. '<ul class="ink-opleiding__rak-lys" data-audit-id="library-shelf-grid">';

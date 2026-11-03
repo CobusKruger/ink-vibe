@@ -91,7 +91,7 @@
 | 5.5 | Gradering in discovery & winners | K/T | P1 | Filter writers by Gradering; segment challenge participation; label winners (e.g. "Oktober Goud-wenner"). |
 | 5.6 | Gradering ≠ lidmaatskap guardrails | K | P0 | Code/config keeps Gradering and lidmaatskap strictly separate (the conflation rule; `Ink\Tiers` never reads Entitlement). |
 | 5.7 | **Win-count meta + reset-on-promotion** | K | P0 | **[2026-06-20 / R3]** New user-meta `ink_tier_win_count` — count of top-3 placements toward the next Gradering; reset to 0 by `Tiers::promote()` on every promotion. |
-| 5.8 | **Automatic promotion engine** | K | P0 | **[2026-06-20 / R3]** A *win* = any top-3 placement, any entry type, at the writer's current Gradering; multiple placements (incl. multiple in one category) each count. **Brons → Silwer at 5 wins; Silwer → Goud at 15 wins.** Goud/Meester have no auto-threshold. **Triggered as the final step of R2 (12A.3)**; lives in `Ink\Tiers` (never reads Entitlement). |
+| 5.8 | **Automatic promotion engine** | K | P0 | **[2026-06-20 / R3]** A *win* = any top-3 placement, recorded for every entry type; **only Gedigte wins at the writer's current Gradering count (owner, 2026-10-31, §14 #33; not built yet)**; multiple placements (incl. multiple in one category) each count. **Brons → Silwer at 5 wins; Silwer → Goud at 15 wins.** Goud/Meester have no auto-threshold. **Triggered as the final step of R2 (12A.3)**; lives in `Ink\Tiers` (never reads Entitlement). |
 | 5.9 | **My Profiel "wins needed" subtext** | T | P1 | **[2026-06-20 / R3]** On My Profiel (private): e.g. "4 top 3 uitslae nodig om Silwer te bereik". Uses `_n()` plurals. |
 | 5.10 | **Promotion congratulation email** | K/P | P1 | **[2026-06-20 / R3]** Templated congratulation email on auto-promotion (simple form-letter via 12A.0); e.g. "Baie geluk! Jy is na Silwer bevorder." |
 
@@ -118,9 +118,9 @@
 | # | Feature | Layer | Pri | Notes / acceptance |
 |---|---|---|---|---|
 | 7.1 | Single reading templates | T | P0 | Detail (Archetype C) for `storie`/`artikel` (reference-ready). |
-| 7.2 | **Gedig reading layout** | T | P1 | Designed 2026-06-14 (`PoetryReader.tsx`): stanza-aware, preserves line breaks, Roman-numeral stanza markers, per-line resonance (heart). Poem body left-aligned (2026-06-20). Reference-ready. |
+| 7.2 | **Gedig reading layout** | T | P1 | Designed 2026-06-14 (`PoetryReader.tsx`): stanza-aware, preserves line breaks, Roman-numeral stanza markers, per-line resonance (heart). Poem body left-aligned (2026-06-20). Reference-ready. **2026-11-02 (owner, spec §14 #31):** runs of blank lines collapse to one stanza break and blank lines at the start or end render nothing (FR-25); a poem **dedication** field is added (design: `PoetryReader.tsx`); poem lines stay member-only and persisted. |
 | 7.3 | Line highlighting + reactions | K+T | P1 | Select text → highlight; reactions hartjie/duim op/wow. Encouragement, not critique. No public annotation. |
-| 7.4 | Structured community responses | K+T | P1 | "Gemeenskapsreaksies": types Lof/Insig/Voorstel. Replaces WP comments. |
+| 7.4 | Structured community responses | K+T | P1 | "Gemeenskapsreaksies": types Lof/Insig/Voorstel. Replaces WP comments. **2026-11-02 (owner, §14 #31):** a response can be **upvoted** by a signed-in member (design: `ReadStory.tsx`). |
 | 7.5 | Contextual prompts after a piece | K/T | P2 | Guided response prompts (may vary by content type). |
 | 7.6 | Suggested next reads | K | P2 | By tone/form/topic/Gradering via taxonomy. |
 | 7.7 | Reading list (leeslys) | K+T | P1 | Save/remove works; toasts; surfaced on profile. |
@@ -191,13 +191,13 @@
 | # | Feature | Layer | Pri | Notes / acceptance |
 |---|---|---|---|---|
 | 12.1 | `uitdaging` single page | T | P1 | Prompt, literary devices, submission rules, prize, deadline, resources, entries list (`Challenge.tsx` reference). |
-| 12.2 | Uitdagings list page | T | P1 | Archetype B; countdown; partial mock only. |
+| 12.2 | Uitdagings list page | T | P1 | Designed 2026-11-01 (`Challenges.tsx`): heading, featured current-round card with countdown. Past rounds keep INK's standard cards (owner, §14 #34). No longer Archetype B / partial mock. |
 | 12.3 | Challenge metadata | K | P1 | `challenge_theme`, `challenge_deadline`; **monthly** cadence (resolved §14.3). |
 | 12.4 | Entry capture | K | P1 | `inskrywing` linked to round via `uitdagingsrondte`. |
-| 12.5 | **Gradering-based competition pools** | K | P1 | Brons vs Brons, Silwer vs Silwer, Goud vs Goud. Placements (1st–3rd) announced per Gradering. |
+| 12.5 | **Gradering-based competition pools** | K | P1 | Brons vs Brons, Silwer vs Silwer, Goud vs Goud. Placements (1st–3rd) announced per Gradering. **Corrected 2026-10-31 (owner, §14 #33): Gradering applies to Gedigte only.** Storie and Artikel are one pool each. The code still pools all three types; the fix is `docs/handoffs/winner-cleanup.md` §7. |
 | 12.6 | Structured placement records | K | P0 (for admin) | Queryable **placement** records per Gradering — 1st/2nd/3rd, not only the single winner; powers the craft-progression metric (PRD SM-8); surfaces contextually ("Oktober Goud-wenner"). Feeds the R2 ingestion (12A.3) and R3 auto-promotion (5.8). |
 | 12.7 | Winner → Gradering promotion link | K | P1 | Optional link from graderingsgeskiedenis to challenge result. |
-| 12.8 | Historical challenge migration | K | P1 | Once-off DB update (§14.6): challenge categories → `uitdagingsrondte` terms + an `uitdaging` record per round; preserves each piece's challenge linkage. Full brief/deadline only where old data exists. |
+| 12.8 | Historical challenge migration | K | P1 | Once-off DB update (§14.6): challenge categories → `uitdagingsrondte` terms + an `uitdaging` record per round; preserves each piece's challenge linkage. Full brief/deadline only where old data exists. A monthly round has no stored deadline: it runs from the first to the last day of its month (`Cadence`). |
 
 ---
 
@@ -246,7 +246,7 @@
 
 | # | Feature | Layer | Pri | Notes / acceptance |
 |---|---|---|---|---|
-| 12B.1 | Annual competition management | K/T | P2 | **[2026-06-20 / R9]** Annual-cadence competition reusing the EntryID collation (12A.1/12A.2), paste-text ingestion + coverage report (12A.3), winners post/banner/featuring (12A.4/12A.6/12A.7) and auto-promotion (5.8). Post-launch. *(Note: the source requirements doc mislabels this "R8"; it is R9.)* |
+| 12B.1 | Annual competition management | K/T | P2 | **[2026-06-20 / R9]** Annual-cadence competition reusing the EntryID collation (12A.1/12A.2), paste-text ingestion + coverage report (12A.3), winners post/banner/featuring (12A.4/12A.6/12A.7) and auto-promotion (5.8). Post-launch. *(Note: the source requirements doc mislabels this "R8"; it is R9.)* **Amended 2026-10-31 (owner, §14 #23, #25):** competitions are not challenges, so this feature does **not** reuse `uitdaging` or the `jaarliks` cadence. Only the entry and judging side stays P2 and undefined. |
 
 ---
 
@@ -254,10 +254,10 @@
 
 | # | Feature | Layer | Pri | Notes / acceptance |
 |---|---|---|---|---|
-| 13.1 | `inkpols_uitgawe` model | K | P1 | Structured meta: issue date, volume, cover image, PDF, teaser. |
-| 13.2 | Issue archive (by year) | T | P1 | Clean archive + robust single-issue page. |
-| 13.3 | PDF viewing | P | P1 | Real3D Flipbook (reactivate). No individual-article extraction. |
-| 13.4 | Back-catalogue migration | K | P1 | Re-link existing PDFs; replace month/year naming with date+volume meta. |
+| 13.1 | `inkpols_uitgawe` model | K | P1 | Structured meta: issue date, cover image, PDF, titel, beskrywing, three featured items. **The post title is the naam (e.g. "Julie/Augustus 2026"); there is no volume or issue number** (D9, §14 #30). |
+| 13.2 | Issue archive (by year) | T | P1 | Designed 2026-11 (`Magazine.tsx`): current issue, year chips, past issues grid. No download buttons (D9). Also a Tuis section (`MagazineSection.tsx`), hidden with no issues. Built. |
+| 13.3 | PDF viewing | P | P1 | Real3D Flipbook (reactivate), on the issue page only (`MagazineIssue.tsx`). No individual-article extraction, no PDF download. |
+| 13.4 | Back-catalogue migration | K | P1 | Prod issues are Pages, not a CPT. Created from `inkpols-uitgawes.csv` (naam, datum, pdf, voorblad); the old Pages 301 to `/inkpols/<naam-slug>/`. |
 
 ---
 
@@ -276,12 +276,12 @@
 
 | # | Feature | Layer | Pri | Notes / acceptance |
 |---|---|---|---|---|
-| 15.1 | Tuisblad | T | P0 | Hero spotlight, challenge section, featured works, sponsors, CTA (reference-ready). |
+| 15.1 | Tuisblad | T | P0 | Reference-ready. Order (owner, 2026-10-30, §14 #32): hero (intro + active challenge), results banner, InkPols, winner cards (four, not the design's two), featured works, sponsors, CTA. The results banner and InkPols section are built. |
 | 15.2 | Gemeenskap page | T | P1 | Visitor conversion/marketing (value props, principles, how-it-works, CTAs). |
 | 15.3 | Oor INK | T | P1 | Mission, contact, sponsors, org pages. Assembly-only. Use placeholders for founding year + SA legal status; pre-launch content gate (§14.4). |
 | 15.4 | Kontak | T+P | P1 | Form page — **custom `ink-core` form** (resolved; no CF7 / Fluent Forms — PRD OQ-8). |
-| 15.5 | Footer / social links | T | P1 | Theme-native pattern (replaces Ultimate Social Media Icons). |
-| 15.6 | **Winners-post featured slot + featured-feed ordering (R2)** | T | P1 | **[2026-06-20 / R2]** Home featured slot hosts the auto-generated wenneraankondiging (12A.4); featured-feed ordering puts **algehele wenner first**, ahead of ordinary wenners (drives/consumes 12A.7). |
+| 15.5 | Footer / social links | T | P1 | Theme-native pattern (replaces Ultimate Social Media Icons). **Deferred (owner, 2026-11):** the footer is known to be wrong and needs its own clean-up; the design's new Competitions and Magazine footer links are not built. |
+| 15.6 | **Winners-post featured slot + featured-feed ordering (R2)** | T | P1 | **[2026-06-20 / R2]** Home featured slot hosts the auto-generated wenneraankondiging (12A.4); featured-feed ordering puts **algehele wenner first**, ahead of ordinary wenners (drives/consumes 12A.7). **2026-11:** the Tuis winners section is now four cards and the old feed ordering is gone from the block (`FeaturedWinners::order()`); the results banner links to the round's results (§14 #27, #32). |
 
 *(Auth flows moved to Epic 3 — accounts are a foundational prerequisite, not an org-pages concern.)*
 
@@ -333,6 +333,26 @@
 | 18.8 | Full test suite buildout | K | P1 | Decision: §14.17. **Builds on the Foundation-phase scaffold (1.11)** — extends it to the full pyramid: **unit** (Pest/PHPUnit + Brain Monkey/WP_Mock) for `ink-core` rules; **integration** (`wp-env` + WP test lib / wp-browser) for plugin seams (membership⇒submit, expired⇒denied, tier⇒meta+log); **E2E** (Playwright) for critical journeys (register→buy via PayFast sandbox→submit→publish→read→renew). CI per change + E2E smoke on staging deploy. Risk-based depth (smoke for minor, full for major). Includes automated English-leak scan. Concentrate in `ink-core`; theme via E2E/visual. |
 | 18.9 | **Analytics-provider selection (R8)** | P | P1 | **[2026-06-20 / R8]** Select an analytics provider — **none exists today** anywhere in the plan. New vetted-plugin seam. Sharpens the deferred POPIA question (OQ-3); read counts surfaced on My Profiel via 9.12. |
 | 18.10 | **Registration anti-spam hardening (R6)** | P/K | P1 | **[2026-06-20 / R6]** Extends the security stack (18.3) with the registration anti-abuse surface from the 3.4 spike + optional pending-approval state (3.6). |
+
+---
+
+## Design delta 2026-11 (verse-haven `71c0847..cbd9d3a`): decisions, not new scope rows
+
+> Per the design-sync Rule 3, features the design introduced are recorded as **decisions** in `ink-consolidated-spec.md` §14, not added here as scope. Each was ruled by the owner; the feature rows above carry only the notes that change them. This table is the pointer.
+
+| Design element | Decision | Touches |
+|---|---|---|
+| Header gains Kompetisies; no Magazine link; mobile menu below 1024 | §14 #24 | 15.5 |
+| `/kompetisies/` (annual competition, gala, directory, submit box), `/kompetisies/gala/<jaar>/` | §14 #25, #26, #35 | 12B.1 |
+| `/uitdaging/<slug>/uitslae/`, round-page link, old result 301s | §14 #27 | 12.2, 12.6 |
+| Citation shown only with opt-in; winner aside on the reading page | §14 #28 | 12A.5 |
+| Judges' letter, honourable mentions | §14 #29 | 12.3 |
+| InkPols naam, no downloads, home section | §14 #30 | 13.1-13.4 |
+| Response upvote, poem dedication | §14 #31 | 7.2, 7.4 |
+| Tuis order, four winners, results banner | §14 #32 | 15.1, 15.6 |
+| Gradering Gedigte-only | §14 #33 | 12.5, 5.8 |
+| Uitdagings list page | §14 #34 | 12.2 |
+| Open items | §14 #37 | |
 
 ---
 

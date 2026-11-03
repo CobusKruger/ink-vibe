@@ -71,6 +71,24 @@ test( 'toHtml COLLAPSES to empty markup when there is no open challenge (no titl
 
 // --- toHtml(): compact hero card (§3) ---
 
+test( 'a closed round says Lees meer on the hero button, an open one Skryf in', function ( bool $open, string $shown, string $hidden ): void {
+	$html = CurrentChallenge::toHtml(
+		array(
+			'title'   => 'Nuwe begin',
+			'url'     => 'https://ink.test/uitdaging/nuwe-begin',
+			'is_open' => $open,
+		),
+		CurrentChallenge::VARIANT_COMPACT
+	);
+
+	expect( $html )->toContain( $shown )->not->toContain( $hidden );
+} )->with(
+	array(
+		array( true, 'Skryf in', 'Lees meer' ),
+		array( false, 'Lees meer', 'Skryf in' ),
+	)
+);
+
 test( 'toHtml (compact) renders the §3 hero card: badge, h2 title, excerpt, deadline meta, CTA', function (): void {
 	$html = CurrentChallenge::toHtml(
 		array(
@@ -91,7 +109,7 @@ test( 'toHtml (compact) renders the §3 hero card: badge, h2 title, excerpt, dea
 
 	// Title is an h2 (correct order under the hero h1); the body excerpt renders.
 	// The compact card carries the hero-spotlight fidelity-audit join key.
-	expect( $html )->toContain( '<h2 class="ink-huidige-uitdaging__titel ink-heading-h3-spotlight" data-audit-id="hero-spotlight-title">Nuwe begin</h2>' );
+	expect( $html )->toContain( '<h2 class="ink-huidige-uitdaging__titel ink-heading-h3-spotlight" data-audit-id="hero-spotlight-title">"Nuwe begin"</h2>' );
 	expect( $html )->toContain( 'Skryf oor' );
 
 	// Deadline meta ("Sluit <date>") + the "Skryf in" CTA linking the challenge.
@@ -176,4 +194,38 @@ test( 'toHtml (feature) omits the entry-count meta gracefully when there are zer
 
 	expect( $html )->toContain( 'Sluit 31 Julie 2026' );
 	expect( $html )->not->toContain( 'inskrywing' );
+} );
+
+test( 'the hero card carries the month tag, the theme in quotes, the short date and per-type counts', function (): void {
+	$html = CurrentChallenge::toHtml(
+		array(
+			'title'          => 'Nuwe begin',
+			'url'            => 'https://ink.test/u',
+			'deadline'       => '31 Julie 2026',
+			'deadline_short' => '31 Jul',
+			'eyebrow'        => 'Julie-uitdaging',
+			'type_counts'    => array( 'gedig' => 18, 'storie' => 0, 'artikel' => 1 ),
+		)
+	);
+
+	expect( $html )->toContain( 'Julie-uitdaging' )
+		->toContain( '"Nuwe begin"' )
+		->toContain( 'Sluit 31 Jul · 18 gedigte · 1 artikel' );
+} );
+
+test( 'a closed round shows no Sluit: its payload has no date', function (): void {
+	$html = CurrentChallenge::toHtml(
+		array(
+			'title'          => 'Oud',
+			'deadline'       => '',
+			'deadline_short' => '',
+			'type_counts'    => array( 'gedig' => 2 ),
+		)
+	);
+
+	expect( $html )->not->toContain( 'Sluit' )->toContain( '2 gedigte' );
+} );
+
+test( 'shortDate gives the short Afrikaans form', function (): void {
+	expect( CurrentChallenge::shortDate( new \DateTimeImmutable( '2026-10-31 12:00:00', new \DateTimeZone( 'Africa/Johannesburg' ) ) ) )->toBe( '31 Okt' );
 } );

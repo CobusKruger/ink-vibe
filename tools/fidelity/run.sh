@@ -19,6 +19,7 @@
 #
 # Usage:  tools/fidelity/run.sh capture --url … --side … --page …
 #         tools/fidelity/run.sh diff    --a … --b …
+#         tools/fidelity/run.sh interactions   (reading-page upvote + dedication checks)
 
 set -euo pipefail
 
@@ -100,8 +101,10 @@ case "$tool" in
   primitives) exec node "$REPO/tools/fidelity/extract-primitives.mjs" "$@" ;;
   verify)     exec node "$REPO/tools/fidelity/verify.mjs" "$@" ;;
   login)      exec node "$REPO/tools/fidelity/login.mjs" "$@" ;;
+  interactions) exec node "$REPO/tools/fidelity/lees-interactions.mjs" "$@" ;;
+  node)       exec node "$@" ;;  # any script, with the same Node, PATH and env (tools/fidelity/accept/ uses it, also for tools/local.mjs)
   *)
-    echo "usage: run.sh <capture|diff|primitives|verify|login> [args…]" >&2
+    echo "usage: run.sh <capture|diff|primitives|verify|login|interactions|node> [args…]" >&2
     exit 1
     ;;
 esac

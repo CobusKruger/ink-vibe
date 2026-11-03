@@ -6,139 +6,86 @@
  * Inserter: no
  * Description: Leessjabloon vir 'n storie (prosa) — tipe-etiket, titel, byskrif en 'n leesbare hoofkolom op die 768px-leesmaat (Argetipe C, Storie 7.1, FR-24).
  *
- * Presentation only (three-layer separation). The post title, author, date and
- * body are core blocks resolved per-post at render time; the only ink-core
- * touch is the Afrikaans type label, sourced from the terminology registry via
- * the `ink_foundation_term()` bridge (single-source, never a bare literal).
- * No WP comments UI — comments are disabled site-wide (Ink\Engagement\Comments,
- * Story 1.8) and the reading surface adds none.
+ * Presentation only (three-layer separation). The page follows Lovable's `ReadStory.tsx`
+ * prose branch node for node (acceptance 2026-11-02): raw-HTML wrappers around the dynamic
+ * blocks, so WordPress's group layout adds no wrappers, block-gap margins or positioning.
+ * Fragments (byline with read time, type badge, hint, share) come from inc/reading-parts.php.
+ * The header column is Lovable's max-w-3xl (768px, `.ink-lees-intro`, reading.css). Copy is
+ * authored Afrikaans (docs/ui-copy-translations.md); the type label comes from the terminology
+ * registry via ink_foundation_term().
  *
- * Text-highlight-reactions hint (post-Epic-19 storie fidelity pass, FR-24/26):
- * mirrors reading-gedig's `ink-gedig-hint` pill, but with the ratified copy for
- * THIS interaction — "Kies enige teks om jou gunsteling passasies uit te lig"
- * (docs/ui-copy-translations.md row 421, the exact translation of Lovable's own
- * "Select any text to highlight your favorite passages" wenk-etiket) and the
- * `highlight`/`highlight-foreground` design tokens rather than gedig's
- * accent-green tint, matching Lovable's own `bg-highlight/20` treatment for
- * this specific hint pill.
- *
- * Theme-fidelity THIRD pass (docs/theme-fidelity-audit-handoff.md, lees-storie,
- * 2026-09-03): the second pass's own "done" claims for this page didn't
- * survive fresh Tier-0/1/2 scrutiny — three real gaps found and fixed here.
- * (1) `ink/reaksie-tellers` rendered the un-collapsed 3-reaction `'volledig'`
- * default (confirmed live: "♥ 1 hartjie 👍 0 duim op ✨ 0 wows"), not the
- * single-heart `'enkel'` variant — the product-owner decision to collapse this
- * display (originally lees-gedig-only) is a decision about `ReadStory.tsx`'s
- * shared "Floating Action Bar" component, not gedig-specific, so it applies
- * here too. (2) `.ink-reaksie-bar` was nested inside the body `<section>`, so
- * `position:sticky` (assets/css/reading.css, now enqueued on this page too)
- * had no tall containing block to float across and rendered as a plain static
- * pill — moved to a top-level block, direct child of `<main class="ink-
- * reading-main">` (templates/single-storie.html), the same fix already applied
- * to reading-gedig.php and the same DOM shape Lovable's own sticky div has.
- * (3) `ink/outeur-kaart` was never wired in at all — Lovable's `ReadStory.tsx`
- * "Author Section" is shared, UNCONDITIONAL code (not gated by `isPoetry`), so
- * lees-storie is missing a section lees-gedig already has; added, reusing the
- * exact `ink/outeur-kaart` block + `.ink-outeur-kaart-band` framing
- * reading-gedig.php already established. `data-audit-id` measurement anchors
- * were added throughout (title via a `render_block_core/post-title` filter,
- * first paragraph via a new `render_block_core/post-content` filter — both
- * `functions.php`, storie-scoped; the badge/hint pills directly here; the
- * engagement bar wrapper directly here; author-card name/bio already
- * parametrised in `Ink\Social\ReadingAuthorCard`).
- *
- * Fourth pass (docs/theme-fidelity-audit-handoff.md, 2026-09-05): removed the
- * invented "deur" label (see reading-gedig.php's docblock — same fix, same
- * `isLink` approximation of Lovable's single avatar+name `<Link>`); fixed the
- * separator to a real bullet (`•`); added the `.ink-lees-intro` wrapper class
- * (new shared rule, `text-align:center`) because `.ink-lees-tipe`'s own
- * `display:inline-flex` defeats its own `has-text-align-center` block class —
- * gedig already worked by accident via its own `.ink-gedig-intro{text-align:
- * center}` wrapper; storie had no such wrapper, so the badge rendered
- * left-aligned despite carrying the "centered" class; header section padding
- * corrected to Lovable's uniform `py-12` (48px, was 64/48 top/bottom), and the
- * header now carries Lovable's `bg-secondary/30` background + `border-b`
- * (previously plain, matching the body section with no visual separation) —
- * reusing the exact `color-mix(... secondary 30% ...)` recipe already
- * established for this page's own author-card band.
+ * @package Ink\Foundation
  */
 
-$ink_type_label = function_exists( 'ink_foundation_term' )
-	? ink_foundation_term( 'storie', 'Storie' )
-	: 'Storie';
+$ink_type = 'storie';
 
-$ink_storie_highlighter_svg = '<span aria-hidden="true" style="display:inline-flex"><svg data-audit-id="reading-hint-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg></span>';
+require_once get_theme_file_path( 'inc/reading-parts.php' );
 ?>
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-band ink-band--sm ink-band--stone ink-band--border-b","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="reading-header" class="wp-block-group alignfull ink-band ink-band--sm ink-band--stone ink-band--border-b" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"className":"ink-lees-intro","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"constrained","contentSize":"768px"}} -->
-	<div data-audit-id="reading-header-inner" class="wp-block-group ink-lees-intro">
-		<!-- wp:paragraph {"className":"ink-lees-tipe ink-pill ink-pill--tint ink-tone-primary","textAlign":"center"} -->
-		<p data-audit-id="storie-badge" class="ink-lees-tipe ink-pill ink-pill--tint ink-tone-primary has-text-align-center"><?php echo esc_html( $ink_type_label ); ?></p>
-		<!-- /wp:paragraph -->
+<!-- wp:html -->
+<div data-audit-id="reading-header" class="alignfull ink-band ink-band--sm ink-band--stone ink-band--border-b ink-lees-kop">
+	<div class="ink-container"><div data-audit-id="reading-header-inner" class="ink-lees-intro">
+		<?php echo ink_foundation_reading_badge( $ink_type ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built escaped. Label: ink_foundation_term( 'storie' ). ?>
+<!-- /wp:html -->
 
-		<!-- wp:post-title {"level":1,"textAlign":"center","className":"ink-heading-h1-reading"} /-->
+<!-- wp:post-title {"level":1,"className":"ink-heading-h1-reading"} /-->
 
-		<!-- wp:group {"className":"ink-lees-byline","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
-		<div data-audit-id="reading-byline" class="wp-block-group ink-lees-byline">
-			<!-- wp:avatar {"size":40,"isLink":true,"className":"ink-avatar ink-avatar--40"} /-->
+<!-- wp:html -->
+		<?php /* The byline is the `.ink-lees-byline` row: one author link, a bullet, the read time. */ echo ink_foundation_reading_byline(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built escaped. ?>
+<!-- /wp:html -->
 
-			<!-- wp:post-author-name {"isLink":true,"fontSize":"md","textColor":"ink-text","style":{"typography":{"fontWeight":"500"}}} /-->
+<!-- wp:ink/lees-wenner /-->
 
-			<!-- wp:paragraph {"fontSize":"md","textColor":"muted-text"} -->
-			<p data-audit-id="reading-byline-sep" class="has-muted-text-color has-text-color has-md-font-size">•</p>
-			<!-- /wp:paragraph -->
-
-			<!-- wp:post-date {"fontSize":"md","textColor":"muted-text"} /-->
-		</div>
-		<!-- /wp:group -->
-
-<?php if ( is_user_logged_in() ) : ?>
-		<!-- wp:paragraph {"className":"ink-storie-hint ink-pill ink-pill--hint","textAlign":"center"} -->
-		<p data-audit-id="storie-hint" class="ink-storie-hint ink-pill ink-pill--hint has-text-align-center"><?php echo $ink_storie_highlighter_svg; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static, hand-authored inline SVG, no user input */ ?><?php echo esc_html__( 'Kies enige teks om jou gunsteling passasies uit te lig', 'ink-foundation' ); ?></p>
-		<!-- /wp:paragraph -->
+<!-- wp:html -->
+<?php if ( is_user_logged_in() ) : // Owner ruling 2026-11-02: the interaction hint stays members-only (logged-out MISSING is accepted in the map). ?>
+		<?php echo ink_foundation_reading_hint( $ink_type ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built escaped. ?>
 <?php endif; ?>
-	</div>
-	<!-- /wp:group -->
-</section>
-<!-- /wp:group -->
-
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-band ink-band--sm","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="reading-body" class="wp-block-group alignfull ink-band ink-band--sm" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:post-content {"className":"ink-lees-storie__prose","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"fontSize":"lg","layout":{"type":"constrained","contentSize":"672px"}} /-->
-</section>
-<!-- /wp:group -->
-
-<!-- wp:group {"lock":{"move":true,"remove":true},"className":"ink-reaksie-bar ink-toolbar"} -->
-<div data-audit-id="storie-engagement-bar" class="wp-block-group ink-reaksie-bar ink-toolbar">
-	<!-- wp:ink/reaksie-tellers {"variant":"enkel"} /-->
-
-	<!-- wp:ink/kommentaar-telling /-->
-
-	<!-- wp:ink/leeslys-knoppie /-->
+	</div></div>
 </div>
-<!-- /wp:group -->
+<article data-audit-id="reading-body" class="alignfull ink-band ink-band--sm"><div class="ink-container"><div class="ink-lees-kolom">
+<!-- /wp:html -->
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-outeur-kaart-band ink-band ink-band--sm ink-band--stone ink-band--border-y","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="reading-author-band" class="wp-block-group alignfull ink-outeur-kaart-band ink-band ink-band--sm ink-band--stone ink-band--border-y" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"672px"}} -->
-	<div class="wp-block-group">
-		<!-- wp:ink/outeur-kaart /-->
+<!-- wp:post-content {"className":"ink-lees-storie__prose","fontSize":"lg","layout":{"type":"default"}} /-->
+
+<!-- wp:html -->
+	</div></div>
+</article>
+
+<div data-audit-id="storie-engagement-bar" class="alignfull ink-reaksie-bar"><div class="ink-container">
+	<div data-audit-id="reading-engagement-pill" class="ink-toolbar ink-reaksie-bar__pil">
+<!-- /wp:html -->
+
+<!-- wp:ink/reaksie-tellers {"variant":"enkel"} /-->
+
+<!-- wp:ink/kommentaar-telling /-->
+
+<!-- wp:ink/leeslys-knoppie /-->
+
+<!-- wp:html -->
+		<?php echo ink_foundation_reading_share_button(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built escaped. ?>
 	</div>
-	<!-- /wp:group -->
-</section>
-<!-- /wp:group -->
+</div></div>
 
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-band ink-band--sm","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="reading-responses" class="wp-block-group alignfull ink-band ink-band--sm" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"constrained","contentSize":"672px"}} -->
-	<div class="wp-block-group">
-		<!-- wp:ink/gemeenskapsreaksies /-->
+<section data-audit-id="reading-author-band" class="alignfull ink-outeur-kaart-band ink-band ink-band--sm ink-band--stone ink-band--border-y"><div class="ink-container">
+<!-- /wp:html -->
 
-		<!-- wp:ink/verwante-stukke /-->
+<!-- wp:ink/outeur-kaart /-->
 
-		<!-- wp:ink/opleiding-verwant /-->
-	</div>
-	<!-- /wp:group -->
-</section>
-<!-- /wp:group -->
+<!-- wp:html -->
+</div></section>
+
+<section data-audit-id="reading-responses" class="alignfull ink-band ink-band--sm"><div class="ink-container">
+<!-- /wp:html -->
+
+<!-- wp:ink/gemeenskapsreaksies /-->
+
+<!-- wp:html -->
+<div class="ink-lees-kolom">
+<!-- /wp:html -->
+
+<!-- wp:ink/verwante-stukke /-->
+
+<!-- wp:ink/opleiding-verwant /-->
+
+<!-- wp:html -->
+</div></div></section>
+<!-- /wp:html -->

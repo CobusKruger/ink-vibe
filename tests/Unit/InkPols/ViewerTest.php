@@ -62,6 +62,15 @@ test( 'embedHtml degrades to the Lees die uitgawe direct-PDF link when the plugi
 	expect( $html )->toContain( 'Lees die uitgawe' );
 } );
 
+test( 'embedHtml puts the viewer in the reader band and frame', function (): void {
+	$html = Viewer::embedHtml( 'https://ink.test/x.pdf', true, '<div id="flipbook">…</div>' );
+
+	expect( $html )->toContain( 'ink-band ink-band--cream ink-band--border-b ink-band--step' );
+	expect( $html )->toContain( 'class="ink-reader-frame" data-audit-id="magazine-issue-reader-frame"' );
+	expect( $html )->toContain( 'data-audit-id="magazine-issue-reader-embed"' );
+	expect( $html )->not->toContain( 'download' );
+} );
+
 test( 'embedHtml renders nothing when there is no PDF URL', function (): void {
 	expect( Viewer::embedHtml( '', true, '<div>x</div>' ) )->toBe( '' );
 	expect( Viewer::embedHtml( '', false, '' ) )->toBe( '' );

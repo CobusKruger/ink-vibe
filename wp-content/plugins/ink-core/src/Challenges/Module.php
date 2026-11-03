@@ -34,6 +34,11 @@ final class Module implements ModuleContract {
 	 * bootstrap stays thin (the Library/Discovery house style).
 	 */
 	public function register(): void {
+		Cadence::register();
+		( new ResultsRoute() )->register();
+		( new ResultsPage() )->register();
+		( new ResultsBanner() )->register();
+		( new ReadingAward() )->register();
 		( new SinglePage() )->register();
 		( new Archive() )->register();
 		( new Entry() )->register();

@@ -337,7 +337,7 @@ final class WorksArchive {
 	 * Build the archive HTML. Pure — Terms + escaping only.
 	 *
 	 * @param list<array{title:string, permalink:string, type:string, author:string, avatar_url:string, excerpt:string, read_minutes:int, hart_count:int, response_count:int}> $cards The works.
-	 * @param array{paged:int, max_pages:int, type?:string|null, sort?:string, year?:int|null, years?:list<int>} $nav Render context.
+	 * @param array{paged:int, max_pages:int, type?:string|null, sort?:string, year?:int|null, years?:list<int>}                                                               $nav Render context.
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
@@ -455,9 +455,9 @@ final class WorksArchive {
 	// --- Lucide inner-SVG paths (§0.9 — emitted inline by the block PHP), mirroring
 	// {@see \Ink\Discovery\FeaturedStream}'s icon set. ---
 
-	private const ICON_CLOCK   = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
-	private const ICON_HEART   = '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>';
-	private const ICON_MESSAGE = '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>';
+	private const ICON_CLOCK       = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
+	private const ICON_HEART       = '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>';
+	private const ICON_MESSAGE     = '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>';
 	private const ICON_FEATHER     = '<path d="M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1 1z"/><path d="M16 8 2 22"/><path d="M17.5 15H9"/>';
 	private const ICON_BOOK_OPEN   = '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>';
 	private const ICON_SCROLL_TEXT = '<path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/>';

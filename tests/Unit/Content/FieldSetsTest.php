@@ -66,17 +66,19 @@ afterEach( function (): void {
 } );
 
 /**
- * AC-2: field meta registers against exactly the three editorial CPTs — never a
- * bydrae/library/training CPT.
+ * AC-2: field meta registers against the editorial and competition CPTs, plus the gedig
+ * (its optional dedication, owner-approved 2026-11-02) — never storie, artikel or a
+ * library/training CPT.
  */
-test( 'field meta registers against only inkpols_uitgawe, uitdaging, borg', function (): void {
+test( 'field meta registers against only the editorial and competition CPTs', function (): void {
 	$registered = ink_capture_registered_fields();
 
 	$cpts = array_values( array_unique( array_map( fn ( $e ) => $e['cpt'], $registered ) ) );
 	sort( $cpts );
 
-	expect( $cpts )->toBe( array( 'borg', 'inkpols_uitgawe', 'uitdaging' ) );
-	expect( $cpts )->not->toContain( 'gedig' );
+	expect( $cpts )->toBe( array( 'borg', 'eksterne_kompetisie', 'gedig', 'inkpols_uitgawe', 'kompetisie', 'uitdaging' ) );
+	expect( $cpts )->not->toContain( 'storie' );
+	expect( $cpts )->not->toContain( 'artikel' );
 } );
 
 /**
@@ -88,14 +90,24 @@ test( 'each CPT registers its expected field keys', function (): void {
 
 	// InkPols.
 	expect( $keys )->toContain( 'ink_inkpols_issue_date' );
-	expect( $keys )->toContain( 'ink_inkpols_volume' );
+	expect( $keys )->not->toContain( 'ink_inkpols_volume' );
 	expect( $keys )->toContain( 'ink_inkpols_cover_id' );
 	expect( $keys )->toContain( 'ink_inkpols_pdf_id' );
 	expect( $keys )->toContain( 'ink_inkpols_teaser' );
+	foreach ( array( 1, 2, 3 ) as $n ) {
+		foreach ( array( 'titel', 'skrywer', 'tipe' ) as $part ) {
+			expect( $keys )->toContain( "ink_inkpols_glans_{$n}_{$part}" );
+		}
+	}
+	foreach ( FieldSets::INKPOLS_RETIRED_KEYS as $retired ) {
+		expect( $keys )->not->toContain( $retired );
+	}
 	// Challenge.
 	expect( $keys )->toContain( 'ink_uitdaging_theme' );
 	expect( $keys )->toContain( 'ink_uitdaging_deadline' );
 	expect( $keys )->toContain( 'ink_uitdaging_cadence' );
+	expect( $keys )->toContain( 'ink_uitdaging_brief' );
+	expect( $keys )->toContain( 'ink_uitdaging_vermeldings' );
 	// Sponsor.
 	expect( $keys )->toContain( 'ink_borg_link' );
 	expect( $keys )->toContain( 'ink_borg_tier' );
@@ -200,11 +212,11 @@ test( 'the uitdaging deadline field renders a date input (no time-of-day)', func
 } );
 
 /**
- * AC-5: the facade exposes the full field meta-key surface (20 keys; WP4 added the InkPols titel + featured items).
+ * AC-5: the facade exposes the full field meta-key surface (72 keys: 19 existing less InkPols volume, with the six Gedig/Storie/Artikel item keys swapped for nine glans keys, plus the two results fields, 39 kompetisie, 8 eksterne, 1 gedig dedication).
  */
 test( 'Api facade exposes the field meta-key surface', function (): void {
 	expect( Api::fieldMetaKeys() )->toBe( FieldSets::metaKeys() );
-	expect( FieldSets::metaKeys() )->toHaveCount( 20 );
+	expect( FieldSets::metaKeys() )->toHaveCount( 72 );
 } );
 
 /**
@@ -444,4 +456,40 @@ test( 'borg field-set uses the MANAGE_SPONSORS cap and it is in the activation g
 	}
 
 	expect( \Ink\Kernel\Capabilities::all() )->toContain( \Ink\Kernel\Capabilities::MANAGE_SPONSORS );
+} );
+
+/**
+ * Gedig dedication (owner-approved 2026-11-02): one plain line, capped, empty means none.
+ */
+test( 'the gedig dedication registers on the gedig and sanitises to one capped line', function (): void {
+	$registered = ink_capture_registered_fields();
+	$field      = $registered['gedig::ink_gedig_toewyding'];
+
+	expect( $field['args']['type'] )->toBe( 'string' );
+	expect( $field['args']['default'] )->toBe( '' );
+
+	expect( FieldSets::sanitizeToewyding( '  vir my ma  ' ) )->toBe( 'vir my ma' );
+	expect( FieldSets::sanitizeToewyding( '' ) )->toBe( '' );
+	expect( FieldSets::sanitizeToewyding( array( 'x' ) ) )->toBe( '' );
+	expect( mb_strlen( FieldSets::sanitizeToewyding( str_repeat( 'ë', 500 ) ) ) )->toBe( FieldSets::GEDIG_TOEWYDING_MAX_LENGTH );
+} );
+
+/**
+ * Owner ruling 2026-11-03: each glans item has a titel, a skrywer and a `tipe`, all plain strings
+ * in REST; the `tipe` sanitiser caps it to one short line.
+ */
+test( 'the glans fields are REST strings and the tipe is length-capped', function (): void {
+	$registered = ink_capture_registered_fields();
+
+	foreach ( array( 1, 2, 3 ) as $n ) {
+		foreach ( array( 'titel', 'skrywer', 'tipe' ) as $part ) {
+			$entry = $registered[ "inkpols_uitgawe::ink_inkpols_glans_{$n}_{$part}" ];
+			expect( $entry['args']['type'] )->toBe( 'string' );
+			expect( $entry['args']['show_in_rest'] )->toBeTrue();
+			expect( $entry['args']['default'] )->toBe( '' );
+		}
+	}
+
+	$tipe = $registered['inkpols_uitgawe::ink_inkpols_glans_2_tipe']['args']['sanitize_callback'];
+	expect( mb_strlen( $tipe( str_repeat( 'x', 500 ) ) ) )->toBe( FieldSets::GLANS_TIPE_MAX );
 } );

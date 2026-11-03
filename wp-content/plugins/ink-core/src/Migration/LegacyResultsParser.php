@@ -705,7 +705,9 @@ final class LegacyResultsParser {
 			return false;
 		}
 
-		foreach ( preg_split( '/\s+/u', $plain ) ?: array() as $word ) {
+		$words = preg_split( '/\s+/u', $plain );
+
+		foreach ( false === $words ? array() : $words as $word ) {
 			if ( 1 === preg_match( '/^(?:van|der|den|de|du|vd|v\.d\.|le|la|von|ter|ten|te|se|en|&)$/u', $word ) ) {
 				continue; // Name particles, and "en"/"&" joining two names.
 			}

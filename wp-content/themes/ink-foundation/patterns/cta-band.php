@@ -5,54 +5,40 @@
  * Categories: call-to-action, ink-foundation
  * Description: Die tuisblad se HRA-baan (Epic 19, Storie 19.5, §8) — 'n terracotta-gradiëntbaan (135°, primary → primary-light), rondte-hoeke (24px), gesentreer, met twee dowwe dekoratiewe sirkels en twee xl-knoppies. Voorbladvormgewing leef in home.css.
  *
- * Presentation only (three-layer separation): no business logic. This is a locked,
- * static pattern — copy is authored Afrikaans through the `ink-foundation` text domain
- * (Gate D), colours/spacing/radius all resolve to theme.json tokens (Gate A; "white" =
- * the `surface-alt` token). The gradient, the two aria-hidden decorative circles, the
- * rounded band and the inverted xl button treatment are painted in assets/css/home.css
- * (front-page-only, which is correct — the CTA band is a home section). The button icons
- * are decorative inline SVGs via ink_foundation_icon() (§0.9); the band fades up once on
- * mount via .ink-animate-fade-up (reduced-motion safe, §0.6).
+ * Presentation only (three-layer separation): no business logic. The markup follows
+ * Lovable's CallToAction.tsx node for node (section > container > band > circles +
+ * content), emitted as raw HTML so WordPress's group layout adds no wrappers, block-gap
+ * margins or positioning (acceptance 2026-11-02, as the header). Copy is authored
+ * Afrikaans through the `ink-foundation` text domain (Gate D). The gradient panel and
+ * circles are painted in assets/css/home.css; the buttons are the `button-primary
+ * on-dark` and `button-outline on-dark` primitives at size xl.
+ *
+ * MECHANISM (accepted, maps/tuis.csv): Lovable's two buttons are `<button>`s with no
+ * destination; here they are links to /skryf/ and /ontdek/, styled by the same recipes.
  *
  * @package Ink\Foundation
  */
 
+$ink_cta_write = function_exists( 'ink_foundation_is_member_logged_in' ) && ink_foundation_is_member_logged_in()
+	? home_url( '/skryf/' )
+	: add_query_arg( 'redirect_to', rawurlencode( home_url( '/skryf/' ) ), home_url( '/teken-in/' ) );
 ?>
 <!-- Bottom padding is deliberately s-64, NOT the s-80 that mirrors the top: the theme footer contributes its own 80px margin-top on every page, so an s-80 bottom padding put 160px between the band and the footer against the 144px above it (64px of borg-strook bottom padding + this section's 80px top padding). Lovable has the identical 160px-below/144px-above asymmetry (measured live), but the product owner overrode it directly on 2026-09-05 ("huge spacing below … matches Lovable, but isn't right; it should match the spacing above"), so 64 + the footer's 80 = the 144px above. A deliberate, disclosed divergence from the reference. -->
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-band ink-band--lg","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"bottom":"var:preset|spacing|s-64","left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="cta" class="wp-block-group alignfull ink-band ink-band--lg" style="padding-right:var(--wp--preset--spacing--s-16);padding-bottom:var(--wp--preset--spacing--s-64);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"align":"wide","className":"ink-cta-band ink-animate-fade-up","lock":{"move":true,"remove":true},"layout":{"type":"constrained"}} -->
-	<div data-audit-id="cta-band" class="wp-block-group alignwide ink-cta-band ink-animate-fade-up">
-		<!-- wp:html -->
-		<span data-audit-id="cta-circle-left" class="ink-cta-band__sirkel ink-cta-band__sirkel--links" aria-hidden="true"></span>
-		<span data-audit-id="cta-circle-right" class="ink-cta-band__sirkel ink-cta-band__sirkel--regs" aria-hidden="true"></span>
-		<!-- /wp:html -->
-
-		<!-- wp:group {"className":"ink-cta-band__inhoud","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}},"layout":{"type":"constrained"}} -->
-		<div data-audit-id="cta-content" class="wp-block-group ink-cta-band__inhoud">
-			<!-- wp:heading {"textAlign":"center","level":2,"className":"ink-heading-h2-on-dark"} -->
-			<h2 data-audit-id="cta-h2" class="wp-block-heading has-text-align-center ink-heading-h2-on-dark"><?php esc_html_e( 'Jou woorde verdien lesers', 'ink-foundation' ); ?></h2>
-			<!-- /wp:heading -->
-
-			<!-- wp:paragraph {"align":"center","className":"ink-cta-band__teks","fontSize":"lg","textColor":"surface-alt"} -->
-			<p data-audit-id="cta-text" class="has-text-align-center ink-cta-band__teks has-surface-alt-color has-text-color has-lg-font-size"><?php esc_html_e( "Of jy nou 'n ervare skrywer is of pas begin, ons gemeenskap is hier om te lees, betrokke te raak en jou te help groei.", 'ink-foundation' ); ?></p>
-			<!-- /wp:paragraph -->
-
-			<!-- The two CTA buttons are core/button blocks carrying the primitives `button-primary on-dark` (`is-style-ink-on-dark`) and `button-outline on-dark` (LEG-1, `is-style-ink-outline-on-dark`) block styles, bound in primitives.css; size = the `ink-btn-xl` / `ink-btn-cta` wrapper class. -->
-			<!-- wp:buttons {"className":"ink-cta-band__knoppies","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-16"}},"layout":{"type":"flex","justifyContent":"center","flexWrap":"wrap"}} -->
-			<div class="wp-block-buttons ink-cta-band__knoppies" data-audit-id="cta-actions">
-				<!-- wp:button {"className":"is-style-ink-on-dark ink-btn-xl"} -->
-				<div class="wp-block-button is-style-ink-on-dark ink-btn-xl"><a class="wp-block-button__link wp-element-button" data-audit-id="cta-btn-primary" href="<?php echo esc_url( function_exists( 'ink_foundation_is_member_logged_in' ) && ink_foundation_is_member_logged_in() ? home_url( '/skryf/' ) : add_query_arg( 'redirect_to', rawurlencode( home_url( '/skryf/' ) ), home_url( '/teken-in/' ) ) ); ?>"><?php echo ink_foundation_icon( '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>' ) . esc_html__( 'Begin vandag skryf', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a></div>
-				<!-- /wp:button -->
-
-				<!-- wp:button {"className":"is-style-ink-outline-on-dark ink-btn-cta"} -->
-				<div class="wp-block-button is-style-ink-outline-on-dark ink-btn-cta"><a class="wp-block-button__link wp-element-button" data-audit-id="cta-btn-secondary" href="/ontdek/"><?php echo ink_foundation_icon( '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' ) . esc_html__( 'Ontdek stories', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a></div>
-				<!-- /wp:button -->
+<!-- wp:html -->
+<section data-audit-id="cta" class="alignfull ink-band ink-band--lg ink-cta">
+	<div class="ink-container">
+		<div data-audit-id="cta-band" class="ink-cta-band">
+			<div data-audit-id="cta-circle-left" class="ink-cta-band__sirkel ink-cta-band__sirkel--links" aria-hidden="true"></div>
+			<div data-audit-id="cta-circle-right" class="ink-cta-band__sirkel ink-cta-band__sirkel--regs" aria-hidden="true"></div>
+			<div data-audit-id="cta-content" class="ink-cta-band__inhoud">
+				<h2 data-audit-id="cta-h2" class="ink-heading-h2-on-dark"><?php esc_html_e( 'Jou woorde verdien lesers', 'ink-foundation' ); ?></h2>
+				<p data-audit-id="cta-text" class="ink-cta-band__teks"><?php esc_html_e( "Of jy nou 'n ervare skrywer is of pas begin, ons gemeenskap is hier om te lees, betrokke te raak en jou te help groei.", 'ink-foundation' ); ?></p>
+				<div data-audit-id="cta-actions" class="ink-cta-band__knoppies">
+					<a data-audit-id="cta-btn-primary" class="ink-btn ink-btn--xl ink-btn--on-dark" href="<?php echo esc_url( $ink_cta_write ); ?>"><?php echo str_replace( 'class="ink-icon"', 'class="ink-icon ink-btn__icon--start"', ink_foundation_icon( '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>' ) ) . esc_html__( 'Begin vandag skryf', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a>
+					<a data-audit-id="cta-btn-secondary" class="ink-btn ink-btn--xl ink-btn--outline-on-dark" href="<?php echo esc_url( home_url( '/ontdek/' ) ); ?>"><?php echo str_replace( 'class="ink-icon"', 'class="ink-icon ink-btn__icon--start"', ink_foundation_icon( '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>' ) ) . esc_html__( 'Ontdek stories', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a>
+				</div>
 			</div>
-			<!-- /wp:buttons -->
 		</div>
-		<!-- /wp:group -->
 	</div>
-	<!-- /wp:group -->
 </section>
-<!-- /wp:group -->
+<!-- /wp:html -->

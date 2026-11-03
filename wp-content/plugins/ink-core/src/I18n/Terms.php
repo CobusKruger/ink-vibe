@@ -177,6 +177,20 @@ final class Terms {
 			'inkpols_uitgawe_plural'        => __( 'Uitgawes', 'ink-core' ),
 			// Story 13.3: the direct-PDF fallback button (glossary "lees die uitgawe").
 			'inkpols_lees_uitgawe'          => __( 'Lees die uitgawe', 'ink-core' ),
+			// N2/N3: owner-supplied, final (`inkpols.md` §2).
+			'inkpols_argief'                => __( 'Die Argief', 'ink-core' ),
+			'inkpols_argief_teks'           => __( 'Al ons uitgawes, gratis beskikbaar om aanlyn te lees', 'ink-core' ),
+			'lees_aanlyn'                   => __( 'Lees aanlyn', 'ink-core' ),
+			'alle_uitgawes'                 => __( 'Alle uitgawes', 'ink-core' ),
+			'in_hierdie_uitgawe'            => __( 'In hierdie uitgawe', 'ink-core' ),
+			'alles'                         => __( 'Alles', 'ink-core' ),
+			'vorige'                        => __( 'Vorige', 'ink-core' ),
+			'volgende'                      => __( 'Volgende', 'ink-core' ),
+			// WP5: competitions are not challenges (owner). D1 and the prod menu label.
+			'kompetisie'                    => __( 'Kompetisie', 'ink-core' ),
+			'kompetisie_plural'             => __( 'Kompetisies', 'ink-core' ),
+			'eksterne_kompetisie'           => __( 'Eksterne Kompetisie', 'ink-core' ),
+			'eksterne_kompetisie_plural'    => __( 'Eksterne Kompetisies', 'ink-core' ),
 			'borg'                          => __( 'Borg', 'ink-core' ),
 			'borg_plural'                   => __( 'Borge', 'ink-core' ),
 			// Story 14.3/14.4: the sponsor-strip eyebrow + recognition-section title

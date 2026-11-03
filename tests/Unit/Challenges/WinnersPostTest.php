@@ -60,10 +60,9 @@ test( 'composeBody with no entries renders only the frame', function (): void {
 } );
 
 test( 'featuredPayload assembles the slot payload', function (): void {
-	$payload = WinnersPost::featuredPayload( 'Wenners: Mei', 'https://ink.test/w', array( array( 'id' => 1, 'rank' => 1, 'title' => 'A', 'url' => 'u' ) ) );
-
-	expect( $payload['title'] )->toBe( 'Wenners: Mei' );
-	expect( $payload['winners'][0]['rank'] )->toBe( 1 );
+	expect( WinnersPost::featuredPayload( 'Mei', 'Tema', array( 'storie' => array( 'title' => 'T' ) ) ) )->toBe(
+		array( 'month' => 'Mei', 'theme' => 'Tema', 'slots' => array( 'storie' => array( 'title' => 'T' ) ) )
+	);
 } );
 
 test( 'generate composes + inserts an announcement and links it to the round', function (): void {
@@ -170,73 +169,71 @@ test( 'generate is idempotent — an existing announcement is returned, not re-p
 } );
 
 test( 'featured passes through a payload already set by a higher-priority filter', function (): void {
-	$existing = array( 'title' => 'Reeds gestel', 'url' => 'x', 'winners' => array() );
+	$existing = array( 'slots' => array( 'storie' => array() ), 'title' => 'Reeds gestel', 'url' => 'x', 'winners' => array() );
 
 	expect( ( new WinnersPost() )->featured( $existing ) )->toBe( $existing );
 } );
 
-test( 'featured builds the slot payload from the latest announcement + its placed entries', function (): void {
-	Functions\when( 'get_post_meta' )->justReturn( 7 );
-	Functions\when( 'get_the_title' )->justReturn( 'Wenners: Mei' );
-	Functions\when( 'get_permalink' )->justReturn( 'https://ink.test/wenners-mei' );
+test( 'featured builds the four slots from the latest announcement\'s round', function (): void {
+	Functions\when( 'get_post_meta' )->alias( static fn ( int $id, string $key ): int|string => WinnersPost::UITDAGING_META === $key ? 7 : '' );
+	Functions\when( 'get_post_field' )->alias( static fn ( string $field ): string => 'post_title' === $field ? 'Mei 2026 projek' : '2026-05-01 00:00:00' );
+	Functions\when( 'get_the_title' )->justReturn( 'Mei 2026 projek' );
 
 	$wp = new class() extends WinnersPost {
-		protected function latestAnnouncement(): int {
+		public function latestAnnouncement(): int {
 			return 900;
 		}
-		protected function placedEntries( int $uitdaging_id ): array {
-			return array( array( 'id' => 10, 'rank' => 1 ), array( 'id' => 11, 'rank' => 2 ) );
-		}
-		protected function entryView( int $post_id ): array {
-			return array( 'title' => 'Werk ' . $post_id, 'url' => 'https://ink.test/' . $post_id );
-		}
-	};
-
-	$payload = $wp->featured( null );
-
-	expect( $payload['title'] )->toBe( 'Wenners: Mei' );
-	expect( $payload['winners'] )->toHaveCount( 2 );
-	expect( $payload['winners'][0] )->toBe( array( 'id' => 10, 'rank' => 1, 'title' => 'Werk 10', 'url' => 'https://ink.test/10' ) );
-} );
-
-test( 'featured surfaces EVERY category winner in the home payload — the D1 read-collapse outcome', function (): void {
-	// The round's placed entries (post the per-(Gradering × category) grouping) carry TWO
-	// algehele wenners of one Gradering: a Gedig rank-1 and a Storie rank-1. The home slot
-	// payload must include BOTH — featured() must not collapse them back to one rank-1.
-	Functions\when( 'get_post_meta' )->justReturn( 7 );
-	Functions\when( 'get_the_title' )->justReturn( 'Wenners: Mei' );
-	Functions\when( 'get_permalink' )->justReturn( 'https://ink.test/wenners-mei' );
-
-	$wp = new class() extends WinnersPost {
-		protected function latestAnnouncement(): int {
-			return 900;
-		}
-		protected function placedEntries( int $uitdaging_id ): array {
-			// As flattened from Placements::forRound across the goud|gedig + goud|storie pools.
+		protected function roundRows( int $uitdaging_id ): array {
 			return array(
-				array( 'id' => 10, 'rank' => 1 ), // Goud-Gedig algehele wenner
-				array( 'id' => 11, 'rank' => 1 ), // Goud-Storie algehele wenner
-				array( 'id' => 12, 'rank' => 2 ), // Goud-Gedig wenner
+				array( 'category' => 'gedig', 'tier' => 'goud', 'position' => 1, 'post_id' => 10, 'title' => 'Gedig' ),
+				array( 'category' => 'storie', 'tier' => 'goud', 'position' => 1, 'post_id' => 11, 'title' => 'Storie' ),
 			);
 		}
-		protected function entryView( int $post_id ): array {
-			return array( 'title' => 'Werk ' . $post_id, 'url' => 'https://ink.test/' . $post_id );
+		protected function slotView( array $row ): array {
+			return array( 'title' => (string) $row['title'] );
 		}
 	};
 
 	$payload = $wp->featured( null );
 
-	// All three placements reach the slot payload (non-vacuous: the two rank-1s coexist).
-	expect( $payload['winners'] )->toHaveCount( 3 );
-	expect( array_column( $payload['winners'], 'id' ) )->toBe( array( 10, 11, 12 ) );
+	expect( $payload['month'] )->toBe( 'Mei' );
+	expect( $payload['theme'] )->toBe( 'Mei 2026 projek' );
+	expect( array_keys( $payload['slots'] ) )->toBe( array( 'goud-gedig', 'storie' ) );
+} );
 
-	$rank_ones = array_filter( $payload['winners'], static fn ( array $w ): bool => 1 === $w['rank'] );
-	expect( $rank_ones )->toHaveCount( 2 ); // both category algehele wenners survive
+test( 'slotsFrom gives Goud Gedig, Storie, Silwer Gedig, Artikel: position 1 only, by type', function (): void {
+	$slots = WinnersPost::slotsFrom(
+		array(
+			array( 'category' => 'artikel', 'tier' => 'goud', 'position' => 1, 'post_id' => 40 ),
+			array( 'category' => 'gedig', 'tier' => 'silwer', 'position' => 1, 'post_id' => 30 ),
+			array( 'category' => 'gedig', 'tier' => 'goud', 'position' => 2, 'post_id' => 21 ),
+			array( 'category' => 'gedig', 'tier' => 'goud', 'position' => 1, 'post_id' => 20 ),
+			array( 'category' => 'storie', 'tier' => 'silwer', 'position' => 1, 'post_id' => 10 ),
+			array( 'category' => 'gedig', 'tier' => 'brons', 'position' => 1, 'post_id' => 50 ),
+		)
+	);
+
+	expect( array_keys( $slots ) )->toBe( array( 'goud-gedig', 'storie', 'silwer-gedig', 'artikel' ) );
+	expect( array_map( static fn ( array $row ): int => $row['post_id'], $slots ) )->toBe(
+		array( 'goud-gedig' => 20, 'storie' => 10, 'silwer-gedig' => 30, 'artikel' => 40 )
+	);
+} );
+
+test( 'slotsFrom: Meester counts as Goud, a tie goes to the lowest post id, an empty slot is left out', function (): void {
+	$slots = WinnersPost::slotsFrom(
+		array(
+			array( 'category' => 'gedig', 'tier' => 'meester', 'position' => 1, 'post_id' => 22 ),
+			array( 'category' => 'gedig', 'tier' => 'goud', 'position' => 1, 'post_id' => 20 ),
+		)
+	);
+
+	expect( array_keys( $slots ) )->toBe( array( 'goud-gedig' ) );
+	expect( $slots['goud-gedig']['post_id'] )->toBe( 20 );
 } );
 
 test( 'featured collapses (returns the incoming value) when there is no announcement', function (): void {
 	$wp = new class() extends WinnersPost {
-		protected function latestAnnouncement(): int {
+		public function latestAnnouncement(): int {
 			return 0;
 		}
 	};

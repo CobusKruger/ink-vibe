@@ -54,6 +54,10 @@
  * the auto-generated WordPress excerpt instead would just duplicate the opdrag text
  * directly beneath the title.
  *
+ * DIVERGENCE (accepted, owner 2026-11-01, `owner-rulings.md`): the results banner between the
+ * hero and the prompt. `Challenge.tsx` has no link to the results. It renders only when the
+ * round has results (`Ink\Challenges\ResultsBanner`).
+ *
  * @package Ink\Foundation
  */
 
@@ -103,6 +107,8 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 </section>
 <!-- /wp:group -->
 
+<!-- wp:ink/uitslae-banier {"konteks":"rondte"} /-->
+
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-band","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
 <section data-audit-id="uitdaging-prompt" class="wp-block-group alignfull ink-band" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"align":"wide","className":"ink-uitdaging__opdrag","lock":{"move":true,"remove":true},"layout":{"type":"default"}} -->
@@ -137,7 +143,7 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 
 		<?php if ( function_exists( 'ink_foundation_uitdaging_cta_subtitel' ) ) : ?>
 		<!-- wp:html -->
-		<?php echo ink_foundation_uitdaging_cta_subtitel( get_the_ID() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- returns self-escaped HTML from Ink\Challenges\SinglePage::ctaSubtitleHtml(). ?>
+			<?php echo ink_foundation_uitdaging_cta_subtitel( get_the_ID() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- returns self-escaped HTML from Ink\Challenges\SinglePage::ctaSubtitleHtml(). ?>
 		<!-- /wp:html -->
 		<?php endif; ?>
 

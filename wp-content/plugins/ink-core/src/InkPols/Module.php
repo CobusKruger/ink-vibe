@@ -42,7 +42,9 @@ final class Module implements ModuleContract {
 	public function register(): void {
 		( new Archive() )->register();
 		( new SingleIssue() )->register();
+		( new HomeSection() )->register();
 		( new Viewer() )->register();
 		( new Migration() )->register();
+		( new PublishGuard() )->register();
 	}
 }

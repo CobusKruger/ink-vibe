@@ -1,6 +1,6 @@
 # WP4 InkPols: specification
 
-**Status:** fully specified by the owner, 2026-10-26. No open decisions. The migration step (§3) is built (2026-10-29); the archive, single and home section (N2, N3, N6) are not.
+**Status:** fully specified by the owner, 2026-10-26. No open decisions. The migration step (§3) is built (2026-10-29); the archive and single (N2, N3) and the shared current-issue renderer are built (2026-11-02), with the home block on that renderer.
 **Lovable reference:**
 - `src/pages/Magazine.tsx` (archive)
 - `src/pages/MagazineIssue.tsx` (issue)
@@ -46,7 +46,7 @@
 - **naam:** the months plus the year, e.g. `Julie/Augustus 2026`. It is the eyebrow wherever the design shows "Issue 14 · Winter 2026", and it **replaces the issue number everywhere**. There is no issue number and no season.
 - **titel:** the H2. For imported issues the owner will probably use the cover story.
 - **beskrywing**
-- **three featured items, exactly one each of Gedig, Storie and Artikel:** a title and a writer each. They are **plain text describing something in the PDF**. They are not linked and not loaded on the site.
+- **three featured items, `glans-1`, `glans-2`, `glans-3`** (owner ruling 2026-11-03; they replace "exactly one each of Gedig, Storie and Artikel"): a `titel`, a `skrywer` and a `tipe` each. `tipe` is free text saying what the item is; it is the kind label, and nothing about the kind is hardcoded. They are **plain text describing something in the PDF**. They are not linked and not loaded on the site. All nine fields are required. Display order is glans-1, 2, 3. (The owner typed "gland-3" once: read as glans-3.)
 
 **Where issues appear**
 - **The latest *published* issue** goes in the home section (`MagazineSection.tsx`) and is the current-issue feature at the top of `/inkpols/`. Past issues follow below it.
@@ -87,7 +87,7 @@
 
 The owner fills in `../migration-data/inkpols-uitgawes.csv`. Its columns are described in `docs/migration-data.md`.
 - **Prefilled per row:** `slug`, `naam`, `datum`, `pdf`, `voorblad`, `ou_url`.
-- **Blank, for the owner:** `titel`, `beskrywing`, and the six featured-item cells.
+- **Blank, for the owner:** `titel`, `beskrywing`, and the nine featured-item cells (`glans_{1,2,3}_{titel,skrywer,tipe}`).
 
 This CSV lives outside the repo with the rest of the migration data (`INK_MIGRATION_DATA_DIR`).
 
@@ -114,12 +114,12 @@ A new step replaces the no-op `migrate-inkpols` and creates one issue per CSV ro
 | `voorblad` | `ink_inkpols_cover_id` and the featured image (the social image), matched the same way |
 | `titel` | `ink_inkpols_titel` (the H2) |
 | `beskrywing` | `ink_inkpols_teaser` |
-| six featured cells | `ink_inkpols_{gedig,storie,artikel}_{titel,skrywer}` |
+| nine featured cells | `ink_inkpols_glans_{1,2,3}_{titel,skrywer,tipe}` (2026-11-03; replaced `ink_inkpols_{gedig,storie,artikel}_{titel,skrywer}`, which `--force` deletes from each issue) |
 | `ou_url` | `ink_migration_source_url`, the key `generate-redirects` reads |
 
 The titel and featured-item keys are new `FieldSets` fields (admin box and REST); `Issue`/`Api` do not read them yet: that is N2/N3. `ink_inkpols_volume` is no longer written (there is no issue number).
 
-**Blanks.** A row missing any required field (or whose `pdf`/`voorblad` path matches no attachment) is still created, as a **draft**, and the step prints one warning per draft listing the missing fields. The step still succeeds, so owner-pending blanks never stop `migrate-all`; its summary line counts the drafts. With today's CSV all seven issues are drafts, so `/inkpols/` and the home section stay empty until the owner fills the CSV and the migration runs again. Rows that cannot become an issue at all (invalid slug or `datum`, a repeated slug, the wrong number of cells) are skipped and reported; a missing CSV or missing column fails the step.
+**Blanks.** A row missing any required field (or whose `pdf`/`voorblad` path matches no attachment) is still created, as a **draft**, and the step prints one warning per draft listing the missing fields. The step still succeeds, so owner-pending blanks never stop `migrate-all`; its summary line counts the drafts. **Correction (2026-11-02):** the CSV now holds dummy `Toets…` values in every field, so all seven issues are **published** (refresh proof: "7 gepubliseer, 0 as konsep") and show test text on `/inkpols/` and the home section until the owner replaces the CSV. Rows that cannot become an issue at all (invalid slug or `datum`, a repeated slug, the wrong number of cells) are skipped and reported; a missing CSV or missing column fails the step.
 
 **Redirects.** `generate-redirects` (after this step in `migrate-all`) writes `ou_url` → issue permalink for **published** issues only, like every other 301. The redirect serves only on a 404.
 
@@ -130,3 +130,9 @@ The titel and featured-item keys are new `FieldSets` fields (admin box and REST)
 ### Before measuring
 
 None of the four Lovable magazine files has a `data-audit-id` yet. Add them Lovable-first (README §3.2 step B) before anything can be measured. The acceptance target must be a **migrated** issue URL, so that it survives a refresh.
+
+## 4. After go-live
+
+The CSV and this step only bring in the seven issues from before the cutover. **Every issue after that is added and edited in admin**, under InkPols, by an editor; nothing is fed to the site and the migration doesn't run again. `--force` makes title, slug, date, status and meta follow the CSV, so it would overwrite site edits: rehearsals only, never the live site.
+
+The same required-fields rule applies in admin: a publish with a required field blank stays a draft and says what's missing. The build gaps are in `specs/04-inkpols.md` §4a.

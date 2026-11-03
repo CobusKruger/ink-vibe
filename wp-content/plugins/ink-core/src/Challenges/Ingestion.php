@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Challenges;
 
+use Ink\Content\FieldSets;
 use Ink\Tiers\Api as TiersApi;
 
 defined( 'ABSPATH' ) || exit;
@@ -21,7 +22,8 @@ defined( 'ABSPATH' ) || exit;
  * moderator comments (12A.5 — reserved seam), (3) fire the Biblioteek auto-update hook
  * (R4/10.6), (4) record the placements (12.6 {@see Placements}), (5) the featured feed
  * follows from the winners post (12A.7), (6) trigger the Gradering auto-promotion engine
- * ({@see TiersApi::awardWins}, 5.8 — a win = any top-3 placement).
+ * ({@see TiersApi::awardWins}, 5.8 — a win = any top-3 placement). Every placed win also
+ * gets a record ({@see WinRecords}), and the round's honourable mentions are written.
  *
  * Idempotency-in-the-write (R12 lesson): a per-round commit-done marker guards the WHOLE
  * pipeline, so a re-run after a successful commit double-posts nothing, double-comments
@@ -55,15 +57,18 @@ class Ingestion {
 	 * @param int                                                 $uitdaging_id The round.
 	 * @param list<array{post_id:int, rank:int, author_id:int}>   $winners      Resolved, rank-unique winners.
 	 * @param list<array{post_id:int, title:string, text:string}> $commentary   Resolved per-entry commentary.
-	 * @return array{committed:bool, reason:string, post_id:int, feedback:int, placed:int, promoted:int}
+	 * @param list<string>                                        $mentions     Honourable mentions, `Titel | Skrywer` lines.
+	 * @return array{committed:bool, reason:string, post_id:int, feedback:int, placed:int, wins:int, mentions:int, promoted:int}
 	 */
-	public function commit( int $uitdaging_id, array $winners, array $commentary ): array {
+	public function commit( int $uitdaging_id, array $winners, array $commentary, array $mentions = array() ): array {
 		$result = array(
 			'committed' => false,
 			'reason'    => '',
 			'post_id'   => 0,
 			'feedback'  => 0,
 			'placed'    => 0,
+			'wins'      => 0,
+			'mentions'  => 0,
 			'promoted'  => 0,
 		);
 
@@ -104,8 +109,15 @@ class Ingestion {
 		foreach ( $winners as $winner ) {
 			if ( $this->recordPlacement( (int) ( $winner['post_id'] ?? 0 ), (int) ( $winner['rank'] ?? 0 ) ) ) {
 				++$result['placed'];
+
+				// Every new win gets a record, or the lifetime count freezes at go-live (`03-tuis` §6).
+				if ( $this->recordWin( $uitdaging_id, $winner ) ) {
+					++$result['wins'];
+				}
 			}
 		}
+
+		$result['mentions'] = $this->commitMentions( $uitdaging_id, $mentions );
 
 		// (6) Trigger auto-promotion (a win = any top-3 placement at current grade).
 		$result['promoted'] = $this->awardPromotions( $uitdaging_id, $winners );
@@ -225,7 +237,7 @@ class Ingestion {
 	 * Write the Terugvoer van die moderator comments (Story 12A.5). Overridable seam.
 	 *
 	 * Filled by Story 12A.5: delegates to {@see ModeratorFeedback::recordForRound()}
-	 * (one `ink_moderator_terugvoer` comment per entry; idempotent).
+	 * (one `ink_mod_terugvoer` comment per entry; idempotent).
 	 *
 	 * @param int                                                 $uitdaging_id The round.
 	 * @param list<array{post_id:int, title:string, text:string}> $commentary   The commentary.
@@ -262,6 +274,35 @@ class Ingestion {
 	 */
 	protected function recordPlacement( int $post_id, int $rank ): bool {
 		return Placements::record( $post_id, $rank );
+	}
+
+	/**
+	 * Add the win record for one placed win ({@see WinRecords}). Overridable seam.
+	 *
+	 * @param int                                         $uitdaging_id The round.
+	 * @param array{post_id:int, rank:int, author_id:int} $winner       The winner.
+	 * @return bool Whether a record was added.
+	 */
+	protected function recordWin( int $uitdaging_id, array $winner ): bool {
+		return WinRecords::recordEntry( $uitdaging_id, $winner );
+	}
+
+	/**
+	 * Write the round's honourable mentions (D8). Overridable seam. A paste with no mention
+	 * heading leaves the field alone, so a list an editor typed in the box survives.
+	 *
+	 * @param int          $uitdaging_id The round.
+	 * @param list<string> $mentions     `Titel | Skrywer` lines.
+	 * @return int How many were written.
+	 */
+	protected function commitMentions( int $uitdaging_id, array $mentions ): int {
+		if ( array() === $mentions ) {
+			return 0;
+		}
+
+		update_post_meta( $uitdaging_id, FieldSets::UITDAGING_VERMELDINGS, sanitize_textarea_field( implode( "\n", $mentions ) ) );
+
+		return count( $mentions );
 	}
 
 	/**

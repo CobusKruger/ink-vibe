@@ -215,9 +215,9 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 
 **Target state:** the `inkpols_uitgawe` CPT: naam (the post title), titel, beskrywing, issue date, cover, PDF and three featured items (`inkpols.md` §2). There is no volume or issue number.
 
-**Approach:** scripted from `inkpols-uitgawes.csv` in the migration-data folder (`migration-data.md`) by `wp ink migrate-inkpols` (`inkpols.md` §3 "As built"). The existing PDFs and covers stay in the media library and are linked by upload path; the old Pages 301 to the new issues and are trashed.
+**Approach:** scripted from `inkpols-uitgawes.csv` in the migration-data folder (`migration-data.md`) by `wp ink migrate-inkpols` (`inkpols.md` §3 "As built"), once, for the seven issues that exist before the cutover. The existing PDFs and covers stay in the media library and are linked by upload path; the old Pages 301 to the new issues (`/inkpols-2025-11/` and the six after it to `/inkpols/<naam-slug>/`) and are trashed, and the prod `/inkpols/` index Page is trashed because the CPT archive owns the URL. An issue whose required fields are all filled is **published**; one with a blank stays a draft and its old Page stays live. Today's CSV holds dummy `Toets…` values, so all seven publish with test text: replace it before launch. **After go-live an editor adds each issue in admin** (THE FIRST RULE); the migration is not run again.
 
-**Manual vs scripted:** low enough volume for a careful manual migration or a short targeted script.
+**Manual vs scripted:** scripted from the CSV (above); nothing is typed on the dev site.
 
 ---
 
@@ -230,6 +230,8 @@ Note: subscription data does not need a separate import. WooCommerce Memberships
 **Target state:** a challenge CPT that stores the challenge brief, deadline, theme, and then related winner records per tier.
 
 **Approach:** on prod a writer enters a challenge by ticking its category (for example "Oktober 2026 – Getal 10 projek"). Every descendant of the `projekte` category is a challenge round, except competitions (`kompetisie` in the name), which work differently, have different prizes and are not challenges (owner, 2026-10-31). `migrate-challenges` creates an Uitdaging per round and remembers its source category; `SourceCategorySync` then keeps the link permanent, so ticking that category on a post appends the round term and the entry joins the challenge with no manual step (`wp ink sync-challenge-entries` pulls in everything already filed). Entries are found through the round term across all content types. Cloned term counts are stale, so the pipeline recounts them.
+
+**Rounds created:** the 2026-11-02 refresh created **136** rounds, not the 128 the plan expected. The extra eight are competition-like rounds that `ChallengeRound::isCompetition()` (a `kompetisie` match on the category name) does not catch: the 2022 and 2026 "INK Dig- en skryfkompetisie", GrysKrag, SA Vryskutskrywer, INK-Slypskool, and the 3de and 4de Skryfkompetisie. The owner ruled that competitions are not challenges, so they belong to the winner-cleanup domain (`docs/handoffs/winner-cleanup.md` §7) and are not yet excluded in code. Unresolved: the list above has seven names for eight rounds, and the dev titles also show "INK DIG- EN SKRYFKOMPETISIE 2025" and "INK DIGKOMPETISIE 2020"; check which are in the 136 when excluding them.
 
 Gradering authority is the challenge result posts ("<Maand> <jaar> – <naam> projek – Kommentaar en uitslae"), together with Gedigte-only win counts. Title markers such as "(Goud)" are only a cross-check report, because writers forget them, add them on the sly, or put them on non-poems.
 
@@ -328,8 +330,15 @@ Any post or page that moves to a new URL needs a redirect from the old URL. Give
 | `/biblioteek/[slug]/` | `/biblioteek/[slug]/` (may stay) | High |
 | `/opleiding/[slug]/` | `/opleiding/[slug]/` (may stay) | Medium |
 | `/biblioteek/projek-wenners/[tier]/[slug]/` | new library URL | Medium |
-| `/inkpols/[slug]/` (legacy `inkpols` CPT) | `/inkpols/[slug]/` (`inkpols_uitgawe`, archive base `inkpols` — kept) | Low |
-| Challenge post URLs | new challenge URL | Low |
+| `/inkpols/` (a Page on prod; **not** a legacy CPT) | the CPT archive at the same URL; the Page is trashed | 1 |
+| `/inkpols-2025-11/` … (seven root Pages) | `/inkpols/<naam-slug>/` (e.g. `/inkpols/julie-augustus-2026/`); 301 per published issue, from the CSV column `ou_url` | 7 |
+| Challenge post URLs | `/uitdaging/<slug>/` | Low |
+| Result posts (`…-kommentaar-en-uitslae`, ~102 linked to a round) | 301 to `/uitdaging/<round-slug>/uitslae/` (D5: each post to its own round; the post itself is kept, it holds the announced date) | ~100 |
+| `/kompetisies/` (prod Page 59192 "Eksterne Kompetisies", adopted, body emptied) | same URL, `page-kompetisies` | 1 |
+| `/ink-se-gala-aande/`, the ten gala Pages and their ten Fotos Pages (21 paths) | 301 to `/kompetisies/`; photos feed `/kompetisies/gala/<jaar>/` (new, 404 for a year with no gala) | 21 |
+| `/ink-dig-en-skryfkompetisie-2022/` (Page 49428) | kept, 200; imported as a `kompetisie` | 1 |
+
+**New URLs from the design delta (2026-11):** `/uitdaging/<slug>/uitslae/` (endpoint; 404 for a round with no results), `/kompetisies/`, `/kompetisies/gala/<jaar>/`. All are code-defined (`SystemPages`, post type or endpoint), so a refresh recreates them with no database edit. They are rows in the `migration-runbook.md` Verify table.
 
 **Archive-URL prefixes kept unchanged** (no redirect needed for the archive base, only for moved singles): `/biblioteek/` (`biblioteek_item`), `/opleiding/` (`opleiding_artikel`), and `/inkpols/` (`inkpols_uitgawe`). The `inkpols_uitgawe` CPT registers its archive at the `inkpols` base (`PostTypes::definitions()`), so legacy `/inkpols/` issue URLs map onto the same prefix; the `inkpols`→`inkpols_uitgawe` post-type rename (Story 16.5) preserves the slug, and `PostReclassifier` records each issue's pre-rename permalink for the Story 16.7 301.
 

@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Ink\Discovery;
 
-use Ink\Kernel\ArchiveRender;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
 use Ink\Engagement\Api as EngagementApi;
@@ -300,7 +299,7 @@ final class FeaturedStream {
 		// as independent literals.
 		$header = '<div class="' . esc_attr( $base . '__kop' ) . '" data-audit-id="featured-head">'
 			. '<div class="' . esc_attr( $base . '__kop-teks' ) . '" data-audit-id="featured-head-text">'
-			. '<p class="' . esc_attr( $base . '__boskrif ink-eyebrow' ) . '" data-audit-id="featured-eyebrow">' . esc_html__( 'Die redakteur se keuse', 'ink-core' ) . '</p>'
+			. '<span class="' . esc_attr( $base . '__boskrif ink-eyebrow' ) . '" data-audit-id="featured-eyebrow">' . esc_html__( 'Die redakteur se keuse', 'ink-core' ) . '</span>'
 			. '<h2 id="' . esc_attr( $title_id ) . '" class="' . esc_attr( $base . '__titel ink-heading-h2-section' ) . '" data-audit-id="featured-h2">'
 			. esc_html__( 'In die kollig', 'ink-core' ) . '</h2>'
 			. '</div>'
@@ -322,6 +321,8 @@ final class FeaturedStream {
 			. '<div class="' . esc_attr( $base . '__houer ink-container' ) . '" data-audit-id="featured-container">'
 			. $header
 			. '<div class="' . esc_attr( $base . '__rooster' ) . '" data-audit-id="featured-grid">' . $cards . '</div>'
+			. '<a class="' . esc_attr( $base . '__alles-mobiel ink-link' ) . '" data-audit-id="featured-all-link-mobile" href="' . esc_url( self::allWorksUrl() ) . '">'
+			. esc_html( Terms::label( 'sien_alle_werke' ) ) . ' →</a>'
 			. '</div></section>';
 	}
 
@@ -343,7 +344,7 @@ final class FeaturedStream {
 		$base    = 'ink-uitgesoekte-bydraes';
 		$classes = $base . '__kaart ink-card--feature' . ( $featured ? ' ' . $base . '__kaart--uitgesoek' : '' );
 		// Primitives: the spanning card's title is `heading h2-block`, a standard card's `h3-card`.
-		$title_role = $featured ? 'ink-heading-h2-block' : 'ink-heading-h3-card';
+		$title_role = $featured ? 'ink-heading-h2-block' : 'ink-heading-h3';
 
 		$title    = (string) ( $item['title'] ?? '' );
 		$url      = (string) ( $item['url'] ?? '' );
@@ -391,7 +392,8 @@ final class FeaturedStream {
 	 * @return string
 	 */
 	private static function metaTopHtml( string $base, string $category, string $type, int $minutes, string $aid = '' ): string {
-		$out = '<div class="' . esc_attr( $base . '__meta-top ink-meta-row ink-meta-row--tight' ) . '"' . self::auditId( $aid, 'meta' ) . '>';
+		// Lovable's row is a plain flex layout (no type of its own): layout in home.css.
+		$out = '<div class="' . esc_attr( $base . '__meta-top' ) . '"' . self::auditId( $aid, 'meta' ) . '>';
 
 		if ( '' !== $category ) {
 			$pil_classes = $base . '__pil ink-pill ink-pill--soft';
@@ -453,7 +455,13 @@ final class FeaturedStream {
 		}
 
 		if ( '' !== $author ) {
-			$author_html .= ArchiveRender::authorLabel( $base . '__outeur-naam', $author, (string) ( $item['author_url'] ?? '' ), self::auditId( $aid, 'author-name' ) );
+			// MECHANISM (accepted, maps/tuis.csv): Lovable's whole card is one link and the
+			// name a plain span. Here the name keeps its profile link (the archive cards'
+			// author link), in the text colour, above the title's whole-card link (home.css).
+			$author_url   = (string) ( $item['author_url'] ?? '' );
+			$author_html .= '' === $author_url
+				? '<span class="' . esc_attr( $base . '__outeur-naam' ) . '"' . self::auditId( $aid, 'author-name' ) . '>' . esc_html( $author ) . '</span>'
+				: '<a class="' . esc_attr( $base . '__outeur-naam' ) . '"' . self::auditId( $aid, 'author-name' ) . ' href="' . esc_url( $author_url ) . '">' . esc_html( $author ) . '</a>';
 		}
 
 		$author_html .= '</div>';
@@ -461,7 +469,7 @@ final class FeaturedStream {
 		$hart_count     = (int) ( $item['hart_count'] ?? 0 );
 		$response_count = (int) ( $item['response_count'] ?? 0 );
 
-		$counts = '<div class="' . esc_attr( $base . '__tellers ink-meta-row' ) . '"' . self::auditId( $aid, 'stats' ) . '>'
+		$counts = '<div class="' . esc_attr( $base . '__tellers' ) . '"' . self::auditId( $aid, 'stats' ) . '>'
 			. self::countHtml( $base, self::ICON_HEART, $hart_count, EngagementApi::hartjieCountLabel( $hart_count ), self::auditId( $aid, 'stat' ) )
 			. self::countHtml( $base, self::ICON_MESSAGE, $response_count, self::responseCountLabel( $response_count ) )
 			. '</div>';

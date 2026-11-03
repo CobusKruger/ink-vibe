@@ -55,7 +55,7 @@ test( 'each reading pattern renders the post via core blocks at the 768px readin
 		// Positive markers (these make the no-comments check non-vacuous).
 		expect( $markup )->toContain( 'wp:post-title' );
 		expect( $markup )->toContain( 'wp:post-content' );
-		expect( $markup )->toContain( '"contentSize":"768px"' );
+		expect( $markup )->toContain( 'ink-lees-intro' ); // the 768px column (max-w-3xl), reading.css
 	}
 } );
 
@@ -94,7 +94,7 @@ test( 'the gedig reading template exists and renders the poem via the ink/gedig-
 	// Poem body is the custom server block (bypasses wpautop) — NOT core/post-content.
 	expect( $pattern )->toContain( 'wp:ink/gedig-body' );
 	expect( $pattern )->not->toContain( 'wp:post-content' );
-	expect( $pattern )->toContain( '"contentSize":"768px"' );
+	expect( $pattern )->toContain( 'ink-lees-intro' ); // the 768px column (max-w-3xl), reading.css
 	expect( $pattern )->toContain( "ink_foundation_term( 'gedig'" );
 
 	// Non-vacuous no-comments guard: real reading markup present, THEN markers absent.

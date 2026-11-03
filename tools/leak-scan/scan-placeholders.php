@@ -45,7 +45,7 @@ const SCAN_EXTENSIONS = ['php', 'html'];
 
 const EXCLUDE_FRAGMENTS = ['/vendor/', '/node_modules/', '/tests/'];
 
-$projectRoot = dirname(__DIR__, 2);
+$projectRoot = str_replace('\\', '/', dirname(__DIR__, 2));
 $baselinePath = __DIR__ . '/placeholder-baseline.json';
 $updateBaseline = in_array('--update-baseline', $argv, true);
 
@@ -73,7 +73,8 @@ function scanLiveCode(string $projectRoot): array {
 				continue;
 			}
 
-			$path = $file->getPathname();
+			// Forward slashes on every OS: baseline keys are portable and the fragments match.
+			$path = str_replace('\\', '/', $file->getPathname());
 			$ext = strtolower($file->getExtension());
 			if (!in_array($ext, SCAN_EXTENSIONS, true)) {
 				continue;

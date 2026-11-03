@@ -9,17 +9,19 @@ declare(strict_types=1);
 
 namespace Ink\Challenges;
 
-use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
 use Ink\I18n\Terms;
+use Ink\Kernel\CadenceType;
 use Ink\Kernel\QaFixture;
 use Ink\Kernel\Sast;
-use Ink\Kernel\Scalar;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Renders the `ink/huidige-uitdaging` block: the current OPEN uitdaging as a card.
+ * Renders the `ink/huidige-uitdaging` block: the current uitdaging as a card: the open
+ * round, else the newest (owner, 2026-11-01: if there is no new challenge yet, the site
+ * keeps showing the last one). A closed round's payload has no `deadline`, so its card
+ * shows no "Sluit", and `is_open` tells a caller which of the two it got.
  *
  * The Tuisblad surfaces the live challenge twice (the Lovable design): a COMPACT card
  * in the hero right column (§3) and a larger FEATURE card in the feature band below the
@@ -30,7 +32,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * House style mirrors {@see HomepageStrip}/{@see FeaturedWinners}: a thin impure
  * {@see render()} over a pure {@see toHtml()} + a data seam ({@see DATA_FILTER}) with a
- * live default ({@see current()}), and **graceful collapse** — no open uitdaging yields
+ * live default ({@see current()}), and **graceful collapse** — no uitdaging at all yields
  * the empty string, so the hero aside / feature column simply shows nothing (no
  * placeholder teaser). Conflation-clean: references only `Ink\Content` (CPT + deadline
  * meta), the `Kernel` helpers, the {@see Terms} registry, {@see Deadline}/{@see SinglePage}
@@ -162,7 +164,7 @@ final class CurrentChallenge {
 	/**
 	 * The current open-challenge payload, memoised per request. Impure (WP_Query + meta).
 	 *
-	 * @return array<string, mixed>|null Null when there is no open uitdaging.
+	 * @return array<string, mixed>|null Null when there is no uitdaging at all.
 	 */
 	public static function current(): ?array {
 		if ( self::$memo_set ) {
@@ -176,7 +178,10 @@ final class CurrentChallenge {
 	}
 
 	/**
-	 * Resolve the first still-open uitdaging from the newest-first scan. Impure.
+	 * Resolve the open uitdaging from the newest-first scan, else the newest one. Impure.
+	 *
+	 * "Open" is underway and not yet closed: a round posted a few days before its month
+	 * starts doesn't push out the round still running ({@see Cadence::hasStarted()}).
 	 *
 	 * Skips any post whose title carries the {@see QaFixture} `QA FIXTURE — `
 	 * convention — real seeded QA content (e.g. seeded for the uitdagings-list
@@ -187,8 +192,9 @@ final class CurrentChallenge {
 	 * @return array<string, mixed>|null
 	 */
 	private static function resolveCurrent(): ?array {
-		$query = new \WP_Query( self::queryArgs( self::SCAN_LIMIT ) );
-		$now   = Sast::now();
+		$query  = new \WP_Query( self::queryArgs( self::SCAN_LIMIT ) );
+		$now    = Sast::now();
+		$newest = null;
 
 		foreach ( $query->posts as $post ) {
 			if ( ! $post instanceof \WP_Post ) {
@@ -199,25 +205,87 @@ final class CurrentChallenge {
 				continue;
 			}
 
-			$deadline = Deadline::parse(
-				Scalar::asString( get_post_meta( (int) $post->ID, FieldSets::UITDAGING_DEADLINE, true ) )
-			);
+			$newest = $newest ?? $post;
+			$close  = Cadence::closeFor( (int) $post->ID );
 
-			if ( ! $deadline instanceof \DateTimeImmutable || ! Sast::isThroughEndOfDay( $deadline, $now ) ) {
-				continue;
+			if ( self::isOpen( $close, Cadence::forUitdaging( (int) $post->ID ), $now ) ) {
+				return self::payload( $post, $close, true );
 			}
-
-			return array(
-				'title'       => get_the_title( $post ),
-				'url'         => (string) get_permalink( $post ),
-				'excerpt'     => self::excerptFor( $post ),
-				'deadline'    => Deadline::format( $deadline ),
-				'eyebrow'     => self::monthEyebrow( $deadline ),
-				'entry_count' => self::entryCount( (int) $post->ID ),
-			);
 		}
 
-		return null;
+		return null === $newest ? null : self::payload( $newest, Cadence::closeFor( (int) $newest->ID ), false );
+	}
+
+	/**
+	 * Whether a round with this close is open now. Pure.
+	 *
+	 * @param \DateTimeImmutable|null $close   The round's close.
+	 * @param CadenceType             $cadence The round's cadence.
+	 * @param \DateTimeInterface      $now     The instant to test.
+	 * @return bool
+	 */
+	public static function isOpen( ?\DateTimeImmutable $close, CadenceType $cadence, \DateTimeInterface $now ): bool {
+		return null !== $close && Sast::isThroughEndOfDay( $close, $now ) && Cadence::hasStarted( $close, $cadence, $now );
+	}
+
+	/**
+	 * The card payload for a round. `deadline` is blank on a closed round: a past closing
+	 * date is not a call to act. Impure (post + entry reads).
+	 *
+	 * @param \WP_Post                $post    The round.
+	 * @param \DateTimeImmutable|null $close   The round's close.
+	 * @param bool                    $is_open Whether the round is open.
+	 * @return array<string, mixed>
+	 */
+	private static function payload( \WP_Post $post, ?\DateTimeImmutable $close, bool $is_open ): array {
+		return array(
+			'id'             => (int) $post->ID,
+			'theme'          => RoundResults::themeFor( (int) $post->ID ),
+			'month'          => null === $close ? '' : Cadence::periodLabelFor( (int) $post->ID, $close ),
+			'close'          => $close,
+			'title'          => get_the_title( $post ),
+			'url'            => (string) get_permalink( $post ),
+			'excerpt'        => self::excerptFor( $post ),
+			'deadline'       => $is_open && null !== $close ? Deadline::format( $close ) : '',
+			'deadline_short' => $is_open && null !== $close ? self::shortDate( $close ) : '',
+			'is_open'        => $is_open,
+			'eyebrow'        => null === $close ? '' : self::monthEyebrow( $close ),
+			'entry_count'    => self::entryCount( (int) $post->ID ),
+			'type_counts'    => SinglePage::entryCountsByType( (int) $post->ID ),
+		);
+	}
+
+	/**
+	 * A closing date in the hero's short form: "31 Jan" (`ui-copy-translations.md`). Pure.
+	 *
+	 * @param \DateTimeImmutable $close The round's close.
+	 * @return string
+	 */
+	public static function shortDate( \DateTimeImmutable $close ): string {
+		$sast = $close->setTimezone( new \DateTimeZone( Sast::TIMEZONE ) );
+
+		return $sast->format( 'j' ) . ' ' . mb_substr( Cadence::monthName( (int) $sast->format( 'n' ) ), 0, 3 );
+	}
+
+	/**
+	 * The per-type entry counts as `ui-copy-translations.md` has them, "18 gedigte · 12 stories ·
+	 * 4 artikels", zero counts dropped. Pure (Terms).
+	 *
+	 * @param array<string, int> $counts Post type ⇒ count.
+	 * @return string
+	 */
+	public static function typeCountsLabel( array $counts ): string {
+		$parts = array();
+
+		foreach ( array( PostTypes::GEDIG, PostTypes::STORIE, PostTypes::ARTIKEL ) as $type ) {
+			$count = (int) ( $counts[ $type ] ?? 0 );
+
+			if ( $count > 0 ) {
+				$parts[] = $count . ' ' . mb_strtolower( Terms::label( 1 === $count ? $type : $type . '_plural' ) );
+			}
+		}
+
+		return implode( ' · ', $parts );
 	}
 
 	/**
@@ -236,16 +304,13 @@ final class CurrentChallenge {
 
 	/**
 	 * The "[Maand]-uitdaging" eyebrow for the feature card (ui-copy: "Januarie-uitdaging").
-	 * Month is localised (Afrikaans) via `wp_date`; the join is authored copy. Impure.
+	 * The month name comes from {@see Cadence}; the join is authored copy. Pure.
 	 *
 	 * @param \DateTimeImmutable $deadline The deadline instant.
 	 * @return string
 	 */
 	private static function monthEyebrow( \DateTimeImmutable $deadline ): string {
-		$sast  = $deadline->setTimezone( new \DateTimeZone( Sast::TIMEZONE ) );
-		$month = function_exists( 'wp_date' )
-			? (string) wp_date( 'F', $sast->getTimestamp() )
-			: $sast->format( 'F' );
+		$month = Cadence::monthName( (int) $deadline->setTimezone( new \DateTimeZone( Sast::TIMEZONE ) )->format( 'n' ) );
 
 		if ( '' === $month ) {
 			return '';
@@ -294,7 +359,7 @@ final class CurrentChallenge {
 	/**
 	 * Build the card HTML for the given payload + variant. Pure (Terms + escaping only).
 	 *
-	 * Collapses to '' when there is no open challenge (no title) — no empty chrome. The
+	 * Collapses to '' when there is no challenge (no title) — no empty chrome. The
 	 * decorative corner tint + the icons are `aria-hidden`; the title is an `h2` (correct
 	 * order under the hero `h1`). Emits the block's own `.ink-huidige-uitdaging*` classes;
 	 * the theme (home.css) supplies the token styling.
@@ -318,6 +383,9 @@ final class CurrentChallenge {
 		$deadline    = (string) ( $data['deadline'] ?? '' );
 		$eyebrow     = (string) ( $data['eyebrow'] ?? '' );
 		$entry_count = (int) ( $data['entry_count'] ?? 0 );
+		// The hero carries the month tag, the short date and the per-type counts (`03-tuis` §5).
+		$short_date  = (string) ( $data['deadline_short'] ?? $deadline );
+		$type_counts = is_array( $data['type_counts'] ?? null ) ? self::typeCountsLabel( $data['type_counts'] ) : '';
 
 		// Primitives (assets/css/primitives.css): the compact card is `card feature-hero`,
 		// the feature card `card soft`. The BEM classes carry only the page layout.
@@ -326,11 +394,13 @@ final class CurrentChallenge {
 		$title_role = self::VARIANT_FEATURE === $variant ? 'ink-heading-h2-sub' : 'ink-heading-h3-spotlight';
 		$aid     = self::auditPrefix( $variant );
 
-		$out  = '<section class="' . esc_attr( $classes ) . '"' . self::auditId( $aid ) . '>';
-		$out .= '<span class="' . esc_attr( $base . '__hoek' ) . '"' . self::auditId( $aid . '-corner' ) . ' aria-hidden="true"></span>';
+		$out  = '<div class="' . esc_attr( $classes ) . '"' . self::auditId( $aid ) . '>';
+		$out .= '<div class="' . esc_attr( $base . '__hoek' ) . '"' . self::auditId( $aid . '-corner' ) . ' aria-hidden="true"></div>';
 		$out .= '<div class="' . esc_attr( $base . '__inhoud' ) . '"' . self::auditId( $aid . '-body' ) . '>';
-		$out .= self::headerHtml( $base, $variant, $deadline, $eyebrow );
-		$out .= '<h2 class="' . esc_attr( $base . '__titel ' . $title_role ) . '"' . self::auditId( $aid . '-title' ) . '>' . esc_html( $title ) . '</h2>';
+		$out .= self::headerHtml( $base, $variant, self::VARIANT_FEATURE === $variant ? $deadline : $short_date, $eyebrow, $type_counts );
+		// Lovable wraps the theme in quotes on the hero card.
+		$shown = self::VARIANT_FEATURE === $variant ? $title : '"' . $title . '"';
+		$out  .= '<h2 class="' . esc_attr( $base . '__titel ' . $title_role ) . '"' . self::auditId( $aid . '-title' ) . '>' . esc_html( $shown ) . '</h2>';
 
 		if ( '' !== $excerpt ) {
 			$out .= '<p class="' . esc_attr( $base . '__uittreksel' ) . '"' . self::auditId( $aid . '-desc' ) . '>' . esc_html( $excerpt ) . '</p>';
@@ -342,12 +412,13 @@ final class CurrentChallenge {
 
 		if ( '' !== $url ) {
 			$out .= '<a class="' . esc_attr( $base . '__aksie ink-btn ink-btn--primary' ) . '"' . self::auditId( $aid . '-btn' ) . ' href="' . esc_url( $url ) . '">'
-				. '<span>' . esc_html__( 'Skryf in', 'ink-core' ) . '</span>'
+				// A closed round takes no entries. Missing means open: only `current()` sets it.
+				. '<span>' . esc_html( ( $data['is_open'] ?? true ) ? __( 'Skryf in', 'ink-core' ) : __( 'Lees meer', 'ink-core' ) ) . '</span>'
 				. self::icon( self::ICON_ARROW )
 				. '</a>';
 		}
 
-		return $out . '</div></section>';
+		return $out . '</div></div>';
 	}
 
 	/**
@@ -358,9 +429,10 @@ final class CurrentChallenge {
 	 * @param string $variant  The card variant.
 	 * @param string $deadline The formatted deadline (may be '').
 	 * @param string $eyebrow  The month eyebrow (may be '').
+	 * @param string $counts   The per-type entry counts (may be '').
 	 * @return string
 	 */
-	private static function headerHtml( string $base, string $variant, string $deadline, string $eyebrow ): string {
+	private static function headerHtml( string $base, string $variant, string $deadline, string $eyebrow, string $counts = '' ): string {
 		$aid = self::auditPrefix( $variant );
 
 		if ( self::VARIANT_FEATURE === $variant ) {
@@ -377,14 +449,17 @@ final class CurrentChallenge {
 		$out = '<div class="' . esc_attr( $base . '__kop' ) . '"' . self::auditId( $aid . '-head' ) . '>'
 			. '<span class="' . esc_attr( $base . '__kenteken ink-pill ink-pill--caps' ) . '"' . self::auditId( $aid . '-badge' ) . '>'
 			. self::icon( self::ICON_SPARKLES )
-			. '<span class="' . esc_attr( $base . '__kenteken-teks' ) . '">' . esc_html( Terms::label( 'uitdaging' ) ) . '</span>'
+			. '<span class="' . esc_attr( $base . '__kenteken-teks' ) . '">' . esc_html( '' !== $eyebrow ? $eyebrow : Terms::label( 'uitdaging' ) ) . '</span>'
 			. '</span>';
 
-		if ( '' !== $deadline ) {
+		// A closed round has no deadline in its payload: a past date is not a call to act.
+		/* translators: %s: the challenge deadline date. */
+		$date_parts = array_filter( array( '' !== $deadline ? sprintf( __( 'Sluit %s', 'ink-core' ), $deadline ) : '', $counts ) );
+
+		if ( array() !== $date_parts ) {
 			$out .= '<span class="' . esc_attr( $base . '__meta-datum ink-meta' ) . '"' . self::auditId( $aid . '-date' ) . '>'
 				. self::icon( self::ICON_CALENDAR )
-				/* translators: %s: the challenge deadline date. */
-				. '<time>' . esc_html( sprintf( __( 'Sluit %s', 'ink-core' ), $deadline ) ) . '</time>'
+				. '<time>' . esc_html( implode( ' · ', $date_parts ) ) . '</time>'
 				. '</span>';
 		}
 

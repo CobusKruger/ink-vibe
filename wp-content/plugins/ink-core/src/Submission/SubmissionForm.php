@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Submission;
 
+use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
 use Ink\Entitlement\Api as EntitlementApi;
 use WP_Error;
@@ -61,6 +62,11 @@ class SubmissionForm {
 	public const FIELD_TYPE  = 'ink_submission_type';
 	public const FIELD_TITLE = 'ink_submission_title';
 	public const FIELD_BODY  = 'ink_submission_body';
+
+	/**
+	 * The optional gedig dedication field (ignored for storie and artikel).
+	 */
+	public const FIELD_DEDICATION = 'ink_submission_toewyding';
 
 	/**
 	 * The intent field + its two values: save a konsep vs plaas (publish).
@@ -142,9 +148,10 @@ class SubmissionForm {
 	 * @param string $body      The bydrae body (already sanitised).
 	 * @param int    $author_id The submitting skrywer's user id.
 	 * @param string $status    The post status (`draft` for a konsep, `publish` for plaas).
+	 * @param string $dedication The optional dedication; kept only for a gedig, as `meta_input`.
 	 * @return array<string, mixed>|WP_Error The `wp_insert_post` args, or an error.
 	 */
-	public function buildPost( string $type, string $title, string $body, int $author_id, string $status = 'draft' ) {
+	public function buildPost( string $type, string $title, string $body, int $author_id, string $status = 'draft', string $dedication = '' ) {
 		if ( ! in_array( $type, self::submittableTypes(), true ) ) {
 			return new WP_Error( 'ink_submission_invalid_type', 'Onbekende bydrae-tipe.' );
 		}
@@ -157,13 +164,23 @@ class SubmissionForm {
 			return new WP_Error( 'ink_submission_missing_body', 'Inhoud ontbreek.' );
 		}
 
-		return array(
+		$postarr = array(
 			'post_type'    => $type,
 			'post_title'   => $title,
 			'post_content' => $body,
 			'post_status'  => $status,
 			'post_author'  => $author_id,
 		);
+
+		if ( PostTypes::GEDIG === $type && '' !== trim( $dedication ) ) {
+			$dedication = FieldSets::sanitizeToewyding( $dedication );
+
+			if ( '' !== $dedication ) {
+				$postarr['meta_input'] = array( FieldSets::GEDIG_TOEWYDING => $dedication );
+			}
+		}
+
+		return $postarr;
 	}
 
 	/**
@@ -209,6 +226,10 @@ class SubmissionForm {
 			$body = ProseSanitizer::sanitize( (string) wp_unslash( $_POST[ self::FIELD_BODY ] ) );
 		}
 
+		$dedication = isset( $_POST[ self::FIELD_DEDICATION ] ) && is_scalar( $_POST[ self::FIELD_DEDICATION ] )
+			? sanitize_text_field( wp_unslash( $_POST[ self::FIELD_DEDICATION ] ) )
+			: '';
+
 		$intent = isset( $_POST[ self::INTENT_FIELD ] ) && is_scalar( $_POST[ self::INTENT_FIELD ] )
 			? sanitize_key( wp_unslash( $_POST[ self::INTENT_FIELD ] ) )
 			: self::INTENT_DRAFT;
@@ -226,7 +247,7 @@ class SubmissionForm {
 			$denied = true;
 		}
 
-		$postarr = $this->buildPost( $type, $title, $body, $user_id, $status );
+		$postarr = $this->buildPost( $type, $title, $body, $user_id, $status, $dedication );
 
 		if ( is_wp_error( $postarr ) ) {
 			$this->redirect( $this->formUrl( 'fout' ) );

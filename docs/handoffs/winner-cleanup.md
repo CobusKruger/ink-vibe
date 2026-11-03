@@ -94,7 +94,7 @@ Then give the owner a short list of anything you couldn't settle, and stop. Don'
 - **`../migration-data/` stays out of the repo.** After changing `docs/migration-data.md`, copy it there as `README.md`.
 - **Line endings:** `writer-aliases.csv` is CRLF, `writer-accounts.csv` and `writer-deleted.csv` are LF. Git Bash `sed -i` can change them.
 - **Write generator output to a file.** `Select-Object -First` kills the pipe and reports exit 255.
-- **Tests:** `composer test:unit`. `MigrateAllTest` line 118 already fails on Windows (quoting). PHPCS has one old error in `LegacyResultsParser.php`.
+- **Tests:** `composer test:unit`. PHPCS has 45 errors in total, a baseline older than the delta work (Accounts/AuthRedirects.php alone has 14: unslashed or unsanitised input and form data without a nonce check, probably false alarms). A re-run on 2026-11-02 counted 46, so treat the figure as about 45 and do not chase it. The old `MigrateAllTest` Windows quoting failure is fixed; the unit suite passes (1855 tests).
 - **Git:** nothing is pushed; run `git status` first. Commit only when the owner asks, with the message in `tmp/commit-msg.txt` and `git commit -F`, and **no `Co-Authored-By` trailers**.
 - **Docs:** update `docs/migration-data.md` alongside any rule or process change.
 
@@ -115,4 +115,5 @@ Moved here from `homepage-dev-round.md` (owner, 2026-10-31). The homepage winner
 - Replace the source `derive-tiers` counts from. Thresholds are 5 wins, then 15 more (`PromotionEngine`). Check the result against `review/grade-changes.csv`.
 - Set round links from `result-posts.csv`; the two `not-results` posts lose theirs.
 - **Trap: `challenge_id` is not stable.** Rounds are created by the migration with fresh IDs (68657–68796 on dev today), and those IDs shift between runs, more so now that 12 competitions no longer migrate. Match rounds on the `source_category` column, which is `ink_uitdaging_source_category`, the prod category term ID. `post_id` and `user_id` come from prod and are stable.
+- **Rounds created are 136, not 128 (refresh of 2026-11-02).** Eight competition-like rounds get through the migration's competition filter (`ChallengeRound::isCompetition()` matches `kompetisie` on the category name): the 2022 and 2026 "INK Dig- en skryfkompetisie", GrysKrag, SA Vryskutskrywer, INK-Slypskool, and the 3de and 4de Skryfkompetisie. The owner ruled that **competitions are not challenges**, so they must not be rounds or count as challenge wins. Decide here how to exclude them (the filter, or the `ink_challenge_legacy_exclude` hook) and match on `source_category`. Check which eight: the dev titles also show "INK DIG- EN SKRYFKOMPETISIE 2025" and "INK DIGKOMPETISIE 2020".
 - The card's "Nth challenge win" is a **lifetime** count derived from the records, because `ink_tier_win_count` resets on promotion.

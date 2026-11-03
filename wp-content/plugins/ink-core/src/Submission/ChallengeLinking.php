@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Ink\Submission;
 
 use Ink\Content\ChallengeRound;
-use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
 use Ink\Kernel\QaFixture;
@@ -214,13 +213,16 @@ class ChallengeLinking {
 	}
 
 	/**
-	 * The raw stored deadline string for a uitdaging.
+	 * A uitdaging's close as a `Y-m-d` string, from `Ink\Challenges\Cadence`: a monthly
+	 * round closes on the last day of its month, an annual one on its stored date. Read
+	 * through the filter (literal; the listener owns the constant) because Submission has
+	 * no Challenges edge.
 	 *
 	 * @param int $uitdaging_id The uitdaging id.
-	 * @return string The stored deadline, or ''.
+	 * @return string The close, or ''.
 	 */
 	protected function deadlineRaw( int $uitdaging_id ): string {
-		return Scalar::asString( get_post_meta( $uitdaging_id, FieldSets::UITDAGING_DEADLINE, true ) );
+		return Scalar::asString( apply_filters( 'ink_uitdaging_sluiting', '', $uitdaging_id ) );
 	}
 
 	/**

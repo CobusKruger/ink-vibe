@@ -149,3 +149,7 @@ Design handoff is complete when:
 3. page-map.csv links each page to WordPress implementation targets.
 4. agent-brief.md exists and points agents to authoritative paths.
 5. Token mapping to theme.json is documented.
+6. The last-synced verse-haven SHA is recorded in `design-handoff/README.md` (`lovable-design-sync` Step 6).
+7. Every page's `wp_target` is a template that exists or is planned in a build spec, and is registered in code: `SystemPages`, a post type, or an endpoint. Never a hand-made Page or `post_content` layout.
+
+**A built page is done only when** it is registered in code, survives `wp ink migrate-all` from a fresh prod copy (its URL answers 200, not a redirect, and is a row in the runbook's Verify table), and is accepted by the harness diff (`tools/fidelity/run.sh diff --fail-on MISSING,STRUCTURE,DRIFT` at 390, 768 and 1440). Audit-ids and the build spec come before the code (`lovable-delta-2026-10/README.md` §3.2).

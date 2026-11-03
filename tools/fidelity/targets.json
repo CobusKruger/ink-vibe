@@ -10,7 +10,12 @@
     "Rows 19, 20 and 21 are SKIPPED by owner ruling and are absent.",
     "",
     "INK URLs must survive a refresh from prod: real migrated content, never a fixture.",
-    "`bases.lovable` is the default preview port; use another if 4173 serves a different build (README §9)."
+    "A row may carry \"lookup\": the slug in its INK URL is found on the running site, never typed in. The lookup definitions",
+    "(round with / without results, newest, second-newest and oldest InkPols issue, Lovable's results slug) and the full gate",
+    "list (pages, states, viewports, maps) are in tools/fidelity/accept/gates.json; \"gate\" names the group that runs the row.",
+    "Run everything with tools/fidelity/accept/gate-all.sh (docs/fidelity-remediation/README.md §9).",
+    "`bases.lovable` is the default preview URL. Override with LOVABLE_URL or \"lovablePreview\" in tools/local.config.json if",
+    "4173 serves a different build (README §9). Rows 17 to 26 are the delta pages (Oct 2026), added 2026-11-03."
   ],
   "bases": {
     "ink": "https://nuwe-ink.local",
@@ -18,9 +23,10 @@
   },
   "targets": [
     {
-      "row": "00", "page": "tuisblad", "treatment": "A",
+      "row": "00", "page": "tuisblad", "treatment": "A", "gate": "tuis, closed",
       "ink": "https://nuwe-ink.local/",
       "lovable": "http://localhost:4173/",
+      "note": "Two standing states: open round (default) and closed round (fixture round drafted, accept/closed-round.sh; hero and main).",
       "expect": { "ink": "[data-audit-id=\"hero-h1\"],.ink-huidige-uitdaging,.ink-uitgesoekte-bydraes", "lovable": "[data-audit-id=\"hero-h1\"],[data-audit-id=\"results-banner\"],[data-audit-id=\"magazine\"],[data-audit-id=\"challenge\"],[data-audit-id=\"winner-card\"],[data-audit-id=\"winner-gedig-card\"]" }
     },
     {
@@ -106,19 +112,67 @@
       "note": "Sponsor strip references SponsorsSection.tsx; the rest has no source."
     },
     {
-      "row": "14", "page": "uitdagings", "treatment": "B",
+      "row": "14", "page": "uitdagings", "treatment": "A",
       "ink": "https://nuwe-ink.local/uitdaging/",
-      "lovable": null,
-      "note": "Challenge card references ChallengeSection.tsx; the rest has no source."
+      "lovable": "http://localhost:4173/challenges",
+      "note": "Past rounds keep INK cards (owner): scope in the map."
     },
     { "row": "15", "page": "kontak", "treatment": "C", "ink": "https://nuwe-ink.local/kontak/", "lovable": null },
     { "row": "16", "page": "lidmaatskap", "treatment": "C", "ink": "https://nuwe-ink.local/lidmaatskap/", "lovable": null },
-    { "row": "17", "page": "inkpols", "treatment": "C", "ink": "https://nuwe-ink.local/inkpols/", "lovable": null },
+    {
+      "row": "17", "page": "inkpols", "treatment": "A", "gate": "inkpols",
+      "ink": "https://nuwe-ink.local/inkpols/",
+      "lovable": "http://localhost:4173/magazine",
+      "note": "Archive. Was C. States: default, year1 (2025 filter), year2 (2024 filter). Map lovable-delta-2026-10/maps/inkpols.csv."
+    },
+    {
+      "row": "17b", "page": "inkpols-issue", "treatment": "A", "gate": "inkpols", "lookup": "issueNewest",
+      "ink": "https://nuwe-ink.local/inkpols/julie-augustus-2026/",
+      "lovable": "http://localhost:4173/magazine/issue-14",
+      "note": "An issue: newest published inkpols_uitgawe (lookup). Also gated: second newest vs issue-13 (lookup issueMid) and oldest vs issue-9 (issueOldest). Slugs shown are as of the 2026-11 dummy CSV."
+    },
     { "row": "18", "page": "ledegids", "treatment": "C", "ink": "https://nuwe-ink.local/ledegids/", "lovable": null },
     {
       "row": "22", "page": "lees-gedig", "treatment": "A",
       "ink": "https://nuwe-ink.local/gedig/piet-punte/",
       "lovable": "http://localhost:4173/read/s2"
+    },
+    {
+      "row": "23", "page": "uitslae", "treatment": "A", "gate": "uitslae", "lookup": "roundWithResults",
+      "ink": "https://nuwe-ink.local/uitdaging/augustus-2026-aanhalingsprojek/uitslae/",
+      "lovable": "http://localhost:4173/challenges/firelight/results",
+      "expect": { "ink": "[data-audit-id=\"results-hero\"]", "lovable": "[data-audit-id=\"results-hero\"]" },
+      "note": "Results for a round that has them (/uitslae/ answers 200). Lovable slug = first in verse-haven awards.ts (lookup award). States: default, short-story and article tabs. Uses dev fixtures (placements, citations)."
+    },
+    {
+      "row": "23b", "page": "uitslae-geen", "treatment": "C", "lookup": "roundWithoutResults",
+      "ink": "https://nuwe-ink.local/uitdaging/oktober-2026-getal-10-projek/uitslae/",
+      "lovable": null,
+      "note": "A round without results: /uitslae/ must answer 404 (checked by the lookup, not captured)."
+    },
+    {
+      "row": "24", "page": "kompetisies", "treatment": "A", "gate": "kompetisies",
+      "ink": "https://nuwe-ink.local/kompetisies/",
+      "lovable": "http://localhost:4173/competitions",
+      "note": "States: default, gala-2024 (Evenings past chip), empty (genre poetry + free fee filter). Uses dev fixtures (Toets competitions)."
+    },
+    {
+      "row": "24b", "page": "kompetisies-gala", "treatment": "C",
+      "ink": "https://nuwe-ink.local/kompetisies/gala/2025/",
+      "lovable": null,
+      "note": "Gala photos page (infinite scroll). The design has only the Evenings past block on row 24. Years 2016 to 2025 answer 200, 1999 answers 404. Not in the gate."
+    },
+    {
+      "row": "25", "page": "lees-wenner", "treatment": "A", "gate": "lees",
+      "ink": "https://nuwe-ink.local/?p=68211",
+      "lovable": "http://localhost:4173/read/s3",
+      "note": "The winner aside (reading-award*, 5 ids) on a placed work; measured inside the lees-storie/gedig/artikel gates (their maps carry the rows; delta maps/lees-wenner.csv is the spec's list). Posts 68211, 68070, 68214 are placed by tools/fixtures/uitslae-fixtures.php."
+    },
+    {
+      "row": "26", "page": "ronde-banner", "treatment": "B", "lookup": "roundWithResults",
+      "ink": "https://nuwe-ink.local/uitdaging/augustus-2026-aanhalingsprojek/",
+      "lovable": null,
+      "note": "Results banner on the round page (round-results-banner, 9 ids in maps/uitslae.csv). The design's Challenge.tsx has no link there: accepted divergence, owner 2026-11-01. Measured by a scoped INK capture, not diffed; absent on a round without results (row 05 URL)."
     }
   ]
 }

@@ -74,7 +74,52 @@
 	// does, so `Ink\Engagement\ResponsesList` no longer renders it at all.
 	// Nothing here needs to reference it any more.
 
+	// Response upvote: one toggle per member per response, through
+	// `ink/v1/gemeenskapsreaksie/<id>/opstem`. The server answers with the new count and
+	// the member's vote, and the page shows exactly that (no reload, nothing guessed).
+	function toggleUpvote( button ) {
+		var id = parseInt( button.getAttribute( 'data-ink-opstem' ), 10 );
+		var counter = button.querySelector( '[data-ink-opstem-telling]' );
+
+		if ( isNaN( id ) || ! cfg.upvoteUrl || ! counter || button.disabled ) {
+			return;
+		}
+
+		button.disabled = true;
+
+		window.fetch( cfg.upvoteUrl.replace( '/0/opstem', '/' + id + '/opstem' ), {
+			method: 'POST',
+			credentials: 'same-origin',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-WP-Nonce': cfg.nonce
+			}
+		} ).then( function ( res ) {
+			return res.ok ? res.json() : null;
+		} ).then( function ( data ) {
+			if ( data && typeof data.count === 'number' ) {
+				counter.textContent = String( data.count );
+				button.setAttribute( 'aria-pressed', data.voted ? 'true' : 'false' );
+			}
+		} ).catch( function () {
+			/* leave the control as it was; the server is the source of truth */
+		} ).then( function () {
+			button.disabled = false;
+		} );
+	}
+
+	function initUpvotes() {
+		var buttons = document.querySelectorAll( '.ink-reaksies__upvote[data-ink-opstem]' );
+		Array.prototype.forEach.call( buttons, function ( button ) {
+			button.addEventListener( 'click', function () {
+				toggleUpvote( button );
+			} );
+		} );
+	}
+
 	function init() {
+		initUpvotes();
+
 		var forms = document.querySelectorAll( '.ink-reaksies__form' );
 		Array.prototype.forEach.call( forms, function ( form ) {
 			var content = form.querySelector( '[name="ink_reaksie_content"]' );

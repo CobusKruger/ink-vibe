@@ -33,6 +33,8 @@ afterEach( function (): void {
 function ink_test_ingestion(): Ingestion {
 	return new class() extends Ingestion {
 		public bool $committed_flag      = false;
+		public array $wins               = array();
+		public array $mentions           = array();
 		/** @var list<array{int,int}> */
 		public array $placements         = array();
 		/** @var array<int,int> */
@@ -67,6 +69,16 @@ function ink_test_ingestion(): Ingestion {
 		protected function recordPlacement( int $post_id, int $rank ): bool {
 			$this->placements[] = array( $post_id, $rank );
 			return true;
+		}
+
+		protected function recordWin( int $uitdaging_id, array $winner ): bool {
+			$this->wins[] = array( $uitdaging_id, $winner['post_id'] );
+			return true;
+		}
+
+		protected function commitMentions( int $uitdaging_id, array $mentions ): int {
+			$this->mentions = $mentions;
+			return count( $mentions );
 		}
 
 		protected function awardWins( int $author_id, int $count, int $uitdaging_id ) {
@@ -197,4 +209,74 @@ test( 'analyse keys tie detection on the STORED gradering, not the pasted header
 	// not blocked. Keyed on the pasted header they would have looked like two separate pools.
 	expect( $analysis['report']['ties'] )->toBe( array( 'brons|gedig|1' ) );
 	expect( \Ink\Challenges\Coverage::blocksCommit( $analysis['report'] ) )->toBeFalse();
+} );
+
+test( 'commit adds a win record for each new win, and none for an unplaced one', function (): void {
+	$ing = ink_test_ingestion();
+
+	$result = $ing->commit(
+		7,
+		array(
+			array( 'post_id' => 10, 'rank' => 1, 'author_id' => 100 ),
+			array( 'post_id' => 11, 'rank' => 2, 'author_id' => 0 ), // No account: recorded all the same.
+		),
+		array()
+	);
+
+	expect( $ing->wins )->toBe( array( array( 7, 10 ), array( 7, 11 ) ) );
+	expect( $result['wins'] )->toBe( 2 );
+} );
+
+test( 'commit writes the mentions inside the commit-done guard', function (): void {
+	$ing     = ink_test_ingestion();
+	$winners = array( array( 'post_id' => 10, 'rank' => 1, 'author_id' => 100 ) );
+
+	$first = $ing->commit( 7, $winners, array(), array( 'Lig | Anna Smit' ) );
+
+	expect( $first['mentions'] )->toBe( 1 );
+	expect( $ing->mentions )->toBe( array( 'Lig | Anna Smit' ) );
+
+	// A re-run on a committed round writes neither records nor mentions.
+	$ing->mentions = array();
+	$ing->wins     = array();
+	$second        = $ing->commit( 7, $winners, array(), array( 'Iets anders | X' ) );
+
+	expect( $second['reason'] )->toBe( 'reeds_gepleeg' );
+	expect( $ing->mentions )->toBe( array() );
+	expect( $ing->wins )->toBe( array() );
+} );
+
+test( 'commitMentions sanitises the lines and leaves the field alone when there are none', function (): void {
+	\Brain\Monkey\Functions\when( 'sanitize_textarea_field' )->returnArg( 1 );
+	\Brain\Monkey\Functions\expect( 'update_post_meta' )->once()->with( 7, 'ink_uitdaging_vermeldings', "Lig | Anna\nGedig | Piet" );
+
+	$ing = new class() extends Ingestion {
+		public function write( array $mentions ): int {
+			return $this->commitMentions( 7, $mentions );
+		}
+	};
+
+	expect( $ing->write( array() ) )->toBe( 0 );
+	expect( $ing->write( array( 'Lig | Anna', 'Gedig | Piet' ) ) )->toBe( 2 );
+} );
+
+test( 'analyse resolves mention EntryIDs to `Titel | Skrywer` and keeps plain-text mentions', function (): void {
+	$page = new class() extends IngestionPage {
+		protected function entriesFor( int $uitdaging_id ): array {
+			return array(
+				array( 'id' => 10, 'entry_id' => 'Gedig 1', 'author_id' => 100, 'title' => 'Wenner', 'gradering' => 'brons' ),
+				array( 'id' => 11, 'entry_id' => 'Gedig 7', 'author_id' => 101, 'title' => 'Nag', 'gradering' => 'brons' ),
+			);
+		}
+
+		protected function authorName( int $author_id ): string {
+			return 'Skrywer ' . $author_id;
+		}
+	};
+
+	$analysis = $page->analyse( 7, "WENNERS\nBrons Gedigte\n1ste: Gedig 1\nEervolle vermeldings\nGedig 7\nGedig 99\nLig op water | Anna Smit\n" );
+
+	// Gedig 99 has no entry in this round, so it is left out, as unmatched commentary is.
+	expect( $analysis['mentions'] )->toBe( array( 'Nag | Skrywer 101', 'Lig op water | Anna Smit' ) );
+	expect( array_column( $analysis['winners'], 'post_id' ) )->toBe( array( 10 ) );
 } );

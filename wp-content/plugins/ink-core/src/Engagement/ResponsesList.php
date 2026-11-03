@@ -35,12 +35,10 @@ defined( 'ABSPATH' ) || exit;
  * functional gap, not just a styling one; the client
  * (assets/js/gemeenskapsreaksie.js) keeps the disabled state in sync as the
  * visitor types). Each response card shows the author's avatar and a relative
- * ("[N] ... gelede") timestamp instead of an absolute date, plus an upvote count;
- * the upvote count is a truthful, currently-always-zero READ (no per-response
- * upvote store exists yet — that's reaction-system machinery (AD-5a) deliberately
- * deferred to the cross-page reaction-system reconciliation dispatch alongside
- * the whole-poem reaction bar and line reactions, not invented here), so it is
- * rendered as inert text, not a button implying a working toggle.
+ * ("[N] ... gelede") timestamp instead of an absolute date, plus an upvote control.
+ * The upvote is a real feature since 2026-11-02 (owner-approved, spec 02 section 8):
+ * {@see ResponseUpvotes} stores it on the response comment, {@see ResponseUpvoteController}
+ * toggles it, and gemeenskapsreaksie.js updates the count without a reload.
  *
  * Fourth pass (docs/theme-fidelity-audit-handoff.md, 2026-09-05): `ReadStory.tsx`
  * read directly confirmed the compose card renders BEFORE the existing-response
@@ -117,7 +115,11 @@ final class ResponsesList {
 			return '';
 		}
 
-		return self::toHtml( $post_id, ResponseStore::forPost( $post_id ), ResponseStore::countForPost( $post_id ) );
+		$responses = ResponseStore::forPost( $post_id );
+		$viewer    = function_exists( 'get_current_user_id' ) ? (int) get_current_user_id() : 0;
+		$upvotes   = ResponseUpvotes::summaryFor( array_map( static fn ( array $response ): int => $response['id'], $responses ), $viewer );
+
+		return self::toHtml( $post_id, $responses, ResponseStore::countForPost( $post_id ), $upvotes, $viewer );
 	}
 
 	/**
@@ -134,10 +136,15 @@ final class ResponsesList {
 	 * @param int                                                                                              $post_id   The work.
 	 * @param list<array{id:int, type:ResponseType, content:string, author:string, date:string, user_id?:int}> $responses The existing typed responses.
 	 * @param int                                                                                              $count     The filtered response count.
+	 * @param array<int, array{count:int, voted:bool}>                                                         $upvotes   Per response id: its upvote count and whether the viewer upvoted it. A response missing here reads 0.
+	 * @param int                                                                                              $viewer    The signed-in viewer's user id, or 0 when logged out.
 	 * @return string
 	 */
-	public static function toHtml( int $post_id, array $responses, int $count ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- kept for signature stability, see docblock.
-		$html  = '<section id="kommentaar" class="ink-reaksies" data-audit-id="reading-responses-inner" aria-label="' . esc_attr( Terms::label( 'gemeenskapsreaksie_plural' ) ) . '">';
+	public static function toHtml( int $post_id, array $responses, int $count, array $upvotes = array(), int $viewer = 0 ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- kept for signature stability, see docblock.
+		// Lovable ReadStory.tsx:290-376 node for node: a column <div>, the compose card, then a
+		// <div> list of cards, each card > row > avatar + body; the meta row reads author,
+		// badge, date. The column keeps the #kommentaar anchor the bar's count links to.
+		$html  = '<div id="kommentaar" class="ink-reaksies" data-audit-id="reading-responses-inner" role="region" aria-label="' . esc_attr( Terms::label( 'gemeenskapsreaksie_plural' ) ) . '">';
 		$html .= '<h2 class="ink-reaksies__heading ink-heading-h2-block" data-audit-id="reading-responses-h2">' . esc_html( Terms::label( 'gemeenskapsreaksie_plural' ) ) . '</h2>';
 
 		// Compose FIRST, existing responses SECOND — `ReadStory.tsx`'s literal
@@ -145,14 +152,19 @@ final class ResponsesList {
 		// to render the inverse.
 		$html .= self::formHtml( $post_id );
 
-		$html .= '<ul class="ink-reaksies__list" data-audit-id="reading-response-list">';
+		$html .= '<div class="ink-reaksies__list" data-audit-id="reading-response-list">';
 		foreach ( $responses as $index => $response ) {
 			$type    = $response['type'];
 			$user_id = isset( $response['user_id'] ) ? (int) $response['user_id'] : 0;
+			$votes   = $upvotes[ $response['id'] ] ?? array(
+				'count' => 0,
+				'voted' => false,
+			);
 			// Fidelity-audit join keys: first instance of the repeater only.
 			$aid = static fn ( string $role ): string => 0 === $index ? ' data-audit-id="reading-response-' . $role . '"' : '';
 
-			$html .= '<li class="ink-reaksies__item ink-card--feature ink-reaksie--' . esc_attr( $type->value ) . '"' . $aid( 'item' ) . '>';
+			$html .= '<div class="ink-reaksies__item ink-card--feature ink-reaksie--' . esc_attr( $type->value ) . '"' . $aid( 'item' ) . '>'
+				. '<div class="ink-reaksies__ry"' . $aid( 'row' ) . '>';
 
 			if ( function_exists( 'get_avatar' ) ) {
 				$avatar_args = array( 'class' => 'ink-reaksies__avatar ink-avatar ink-avatar--40' );
@@ -164,25 +176,53 @@ final class ResponsesList {
 
 			$html .= '<div class="ink-reaksies__body"' . $aid( 'body' ) . '>'
 				. '<div class="ink-reaksies__meta"' . $aid( 'meta' ) . '>'
-				. '<span class="ink-reaksies__who"' . $aid( 'who' ) . '>'
-				. '<span class="ink-reaksies__badge ink-pill ink-pill--tint-xs ' . esc_attr( self::typeTone( $type ) ) . '"' . $aid( 'badge' ) . '>' . self::badgeIcon( $type ) . esc_html( Terms::label( $type->value ) ) . '</span>'
 				. '<span class="ink-reaksies__author"' . $aid( 'author' ) . '>' . esc_html( $response['author'] ) . '</span>'
-				. '</span>'
-				. '<span class="ink-reaksies__date ink-meta"' . $aid( 'date' ) . '>' . esc_html( self::relativeDateLabel( $response['date'] ) ) . '</span>'
+				. '<span class="ink-reaksies__badge ink-pill ink-pill--tint-xs ' . esc_attr( self::typeTone( $type ) ) . '"' . $aid( 'badge' ) . '>' . self::badgeIcon( $type ) . esc_html( Terms::label( $type->value ) ) . '</span>'
+				. '<span class="ink-reaksies__datum"' . $aid( 'date' ) . '>' . esc_html( self::relativeDateLabel( $response['date'] ) ) . '</span>'
 				. '</div>'
 				. '<p class="ink-reaksies__text"' . $aid( 'text' ) . '>' . esc_html( $response['content'] ) . '</p>'
 				. '<div class="ink-reaksies__footer"' . $aid( 'footer' ) . '>'
-				. '<span class="ink-reaksies__upvote ink-icon-label ink-icon-label--sm"' . $aid( 'upvote' ) . '>' . esc_html( (string) 0 ) . '</span>'
+				. self::upvoteHtml( $response['id'], $user_id, $votes, $viewer, $aid( 'upvote' ) )
 				. '</div>'
 				. '</div>';
 
-			$html .= '</li>';
+			$html .= '</div></div>';
 		}
-		$html .= '</ul>';
+		$html .= '</div>';
 
-		$html .= '</section>';
+		$html .= '</div>';
 
 		return $html;
+	}
+
+	/**
+	 * The upvote control: Lovable's `<button>` chevron + count (`ReadStory.tsx:363-366`).
+	 *
+	 * A signed-in member who did not write the response gets a working toggle
+	 * (`ink/v1/gemeenskapsreaksie/<id>/opstem`, wired in gemeenskapsreaksie.js) with
+	 * `aria-pressed`. Everyone else (logged out, or the author) gets the same button
+	 * `disabled`: the count stays visible and the control is not interactive. The same
+	 * tag in every state keeps the markup equal to the design's. A pressed state is not
+	 * in the design; it reuses the counted-button primitive's `aria-pressed` colour, like
+	 * the like button (owner-approved feature, 2026-11-02).
+	 *
+	 * @param int                          $comment_id The response id.
+	 * @param int                          $author_id  The response author's user id.
+	 * @param array{count:int, voted:bool} $summary    Its upvote count and the viewer's vote.
+	 * @param int                          $viewer     The signed-in viewer, or 0.
+	 * @param string                       $audit      The ` data-audit-id` attribute, or ''.
+	 * @return string
+	 */
+	private static function upvoteHtml( int $comment_id, int $author_id, array $summary, int $viewer, string $audit ): string {
+		$can_vote = $viewer > 0 && $viewer !== $author_id;
+		$attrs    = $can_vote
+			? ' data-ink-opstem="' . esc_attr( (string) $comment_id ) . '" aria-pressed="' . ( $summary['voted'] ? 'true' : 'false' ) . '"'
+			: ' disabled';
+
+		return '<button type="button" class="ink-reaksies__upvote ink-icon-label ink-icon-label--sm"' . $attrs
+			. ' aria-label="' . esc_attr__( '[NEEDS HUMAN AFRIKAANS] REAKSIE-OPSTEM', 'ink-core' ) . '"' . $audit . '>'
+			. '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m18 15-6-6-6 6"/></svg>'
+			. '<span data-ink-opstem-telling aria-live="polite">' . esc_html( (string) $summary['count'] ) . '</span></button>';
 	}
 
 	/**

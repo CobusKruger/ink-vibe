@@ -341,7 +341,7 @@ A **skrywer** can *Stoor konsep* or *Plaas*; on publish, a success screen prompt
 The system provides a single reading template per CPT for **storie**/**artikel** (content width ~768px; no WP comments). *(Afrikaans legibility is a tone goal — §6 — not an acceptance criterion here.)*
 
 #### FR-25: Poetry reading layout (P1, FL 7.2)
-The system provides a **gedig** reading layout that is stanza-aware, preserves line breaks and **blank-line/stanza spacing and leading whitespace verbatim** (no collapsing), supports **author-entered** Roman-numeral stanza markers (the author types them; the system styles/highlights them — they are not auto-generated), and allows per-line resonance (on content lines, not blank separators).
+The system provides a **gedig** reading layout that is stanza-aware, preserves line breaks and **leading whitespace verbatim** (no collapsing), and collapses any run of consecutive blank lines to **one stanza break**, with none at the start or end of the poem (owner ruling 2026-11-02; this replaces "blank-line/stanza spacing verbatim"), supports **author-entered** Roman-numeral stanza markers (the author types them; the system styles/highlights them — they are not auto-generated), and allows per-line resonance (on content lines, not blank separators).
 
 #### FR-26: Line highlight + reactions (P1, FL 7.3)
 A **lid** can highlight selected text and add a **reaksie** (hartjie / duim op / wow). Realizes UJ-3.

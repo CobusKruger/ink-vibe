@@ -6,6 +6,22 @@
 
 **The one thing that matters most:** the owner has already paid for one full fidelity rework, because earlier agents built their own variations of the design and judged them by eye. **Do not build a variation. Do not improve on the design. Do not call anything "close enough".** The page is finished when the capture harness says it matches, not when it looks right to you.
 
+## Status after the round (2026-11-02): read this before §4 and §5
+
+§4 "Where it stands now" and §5 describe the start of the round and are kept for history. What happened (details: `docs/lovable-delta-2026-10/worklist.md`):
+
+**Built** (code in `ink-core` and `ink-foundation`, all registered in code):
+- Tuis in the owner's order: hero (challenge on the right, closed-round "Lees meer"), results banner (`ink/uitslae-banier`), InkPols (`ink/inkpols-tuis`), winner cards (`ink/wenner-kollig`), featured, sponsors, CTA. The old challenge/winner band is gone.
+- Uitslae at `/uitdaging/<slug>/uitslae/` (endpoint, three tabs, judges' letter, honourable mentions, citation only with the author's opt-in) and the 301 from old result posts; the banner on the round page; the winner aside and response upvote and poem dedication on the reading pages.
+- InkPols archive, issue page and admin (publish guard). Kompetisies (`kompetisie` and `eksterne_kompetisie` post types) and `/kompetisies/gala/<jaar>/`. Header with Kompetisies and the mobile menu below 1024. The Challenges page (`/uitdaging/`).
+- Month-based round dates (a monthly round runs from the first to the last day of its month).
+
+**Accepted** (capture gate: MISSING, STRUCTURE and DRIFT all 0, with accepted divergences disclosed in code): Tuis, Uitslae (all tabs), Lees (18 states, signed in and out), InkPols archive and issues, Kompetisies (all states), header, Challenges. The refresh proof passed on 2026-11-02: `migrate-all` clean, 54 URLs as expected, 68 of 68 gates (`migration-runbook.md`). **Acceptance of the winner cards and the podium is provisional: it was measured on test fixtures** (`migration-runbook.md` "Dev-only data"), because the importer does not exist.
+
+**Not accepted or still open:** the closed-round hero fails the gate at 768 (height only); `verify` is intermittent on `reading-response-author` width; sideways scroll at 390 on Kompetisies (526) and the issue page (422) should clear with real copy; Afrikaans copy-debt markers are unresolved; the footer is deferred; the owner still has to run `docs/migration-tools/tag-old-competitions.sql` on production before the next snapshot; the InkPols CSV holds dummy `Toets…` text that goes live (replace it before launch).
+
+**Out of scope and still pending (separate work, `winner-cleanup.md`):** the winner cleanup, the **winner importer** (placements, Gradering snapshots and win records from the reviewed lists; until then dev has 0 placements), the **Gradering fix** (Gedigte-only, `Pools` and `Ingestion::awardPromotions`), and removing the competition-like rounds from the 136 created (`winner-cleanup.md` §7). The demo winner filter in the theme's `functions.php` is to be deleted once real data flows. The 45 PHPCS errors are the last item in the worklist, to be triaged after everything else.
+
 ## 1. Read these first, in this order
 
 1. `CLAUDE.md` in this repo and `../CLAUDE.md`: ground rules.
@@ -98,7 +114,7 @@ Scope (owner, 2026-11-01): **all page work in `docs/lovable-delta-2026-10/README
 - **Refresh PATH first in PowerShell:** `$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')`
 - **WP-CLI and MySQL:** `node tools/local.mjs wp …`, `node tools/local.mjs mysql …`. Plain `wp` can't connect. Table prefix is `wpjj_`.
 - **Deploy:** `node tools/deploy-to-local.mjs`, then `--apply`. Its LiteSpeed purge currently fails on the local SSL certificate, so purge by hand if the page looks stale.
-- **Tests:** `composer test:unit`, `composer stan`, `composer cs`. **`MigrateAllTest` line 118 already fails on Windows** (quoting); don't chase it. PHPCS also has one old error in `LegacyResultsParser.php` (`looksLikeName`).
+- **Tests:** `composer test:unit`, `composer stan`, `composer cs`. PHPCS has 45 errors in total, a baseline older than the delta work (Accounts/AuthRedirects.php alone has 14: unslashed or unsanitised input and form data without a nonce check, probably false alarms). A re-run on 2026-11-02 counted 46, so treat the figure as about 45 and do not chase it. The old `MigrateAllTest` Windows quoting failure is fixed; the unit suite passes (1855 tests).
 - **Harness:** run `tools/fidelity/run.sh` from Git Bash at the repo root; it finds node itself. Chromium is in `tmp/ms-playwright`. Proven on this machine on `/biblioteek/` (2026-11-01); see `docs/fidelity-remediation/README.md` §9.
 - **Capture user:** `fidelity-capture` exists on dev now, and every refresh wipes it. Recreate it per `docs/lovable-delta-2026-10/HANDOVER.md` §5.1. Never capture as `admin`.
 - **Temp files:** `./tmp/` only.
@@ -114,7 +130,7 @@ Run `git status` and `git log` first; nothing is pushed. Work on a branch.
 
 - `HANDOVER.md` §1 and §5 describe an old branch and machine, and CSVs in the repo. §3 and §5.1 are still useful.
 - Any mention of "1ste/2de/3de plek" as labels: withdrawn. Any mention of competitions as rounds: wrong. **Komps are not challenges** (owner, 2026-10-31); they work differently and have different prizes.
-- Dev still has the 12 competition rounds, with 2,153 entries, until the next migration.
+- (Stale: the 2026-11-02 refresh created 136 rounds, eight of them competition-like; see "Status after the round".)
 - `inkpols-uitgawes.csv` holds **dummy metadata** ("Toetstitel: …"). That's expected; the owner replaces it. Also, the fidelity log says no CSS exists for `ink-inkpols*` classes, so check before sharing renderers with the archive.
 
 ## 9. Mistakes already made, so you don't repeat them

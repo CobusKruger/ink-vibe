@@ -105,16 +105,18 @@ final class FollowToggle {
 	 * @param int    $skrywer_id The target skrywer.
 	 * @param bool   $following  Whether the viewer already follows them.
 	 * @param string $size       Optional button size modifier: '', 'sm' or 'lg'.
+	 * @param string $audit_id   The fidelity join key: the skrywer page's by default, the
+	 *                           reading author card's (`reading-author-follow`) there.
 	 * @return string
 	 */
-	public static function toHtml( int $skrywer_id, bool $following, string $size = '' ): string {
+	public static function toHtml( int $skrywer_id, bool $following, string $size = '', string $audit_id = 'skrywer-follow-btn' ): string {
 		$size    = in_array( $size, array( 'sm', 'lg' ), true ) ? ' ink-btn--' . $size : '';
 		$classes = 'ink-btn' . $size . ' ' . ( $following ? 'ink-btn--subtle' : 'ink-btn--primary' ) . ' ink-volg-knoppie' . ( $following ? ' is-following' : '' );
 		$label   = $following ? Terms::label( 'volg_tans' ) : Terms::label( 'volg' );
 
 		return '<button type="button" class="' . esc_attr( $classes ) . '"'
 			. ' data-ink-skrywer="' . esc_attr( (string) $skrywer_id ) . '"'
-			. ' data-audit-id="skrywer-follow-btn"'
+			. ' data-audit-id="' . esc_attr( $audit_id ) . '"'
 			. ' aria-pressed="' . ( $following ? 'true' : 'false' ) . '">'
 			. esc_html( $label )
 			. '</button>';

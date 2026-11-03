@@ -30,9 +30,9 @@ defined( 'ABSPATH' ) || exit;
  *  - `pdf` and `voorblad` are matched to EXISTING attachments by upload path
  *    (`_wp_attached_file`); nothing is uploaded or copied. The cover is also the featured
  *    image, so the SEO plugin uses it as the social image;
- *  - `titel`, `beskrywing` and the three featured items go to the {@see FieldSets} meta.
+ *  - `titel`, `beskrywing` and the three featured items (`glans_{1,2,3}_{titel,skrywer,tipe}`) go to the {@see FieldSets} meta.
  *
- * **Required to publish** (§2): PDF, cover, naam, titel, beskrywing and the six featured
+ * **Required to publish** (§2): PDF, cover, naam, titel, beskrywing and the nine featured
  * cells, with no exemption for imported issues. A row missing any of them is still
  * created, as a DRAFT, and every missing field is reported; the run itself succeeds, so
  * owner-pending blanks never stop `migrate-all`. Filling the CSV and re-running publishes.
@@ -118,12 +118,15 @@ class Migration {
 		'pdf',
 		'voorblad',
 		'ou_url',
-		'gedig_titel',
-		'gedig_skrywer',
-		'storie_titel',
-		'storie_skrywer',
-		'artikel_titel',
-		'artikel_skrywer',
+		'glans_1_titel',
+		'glans_1_skrywer',
+		'glans_1_tipe',
+		'glans_2_titel',
+		'glans_2_skrywer',
+		'glans_2_tipe',
+		'glans_3_titel',
+		'glans_3_skrywer',
+		'glans_3_tipe',
 	);
 
 	/**
@@ -137,12 +140,15 @@ class Migration {
 		'naam',
 		'titel',
 		'beskrywing',
-		'gedig_titel',
-		'gedig_skrywer',
-		'storie_titel',
-		'storie_skrywer',
-		'artikel_titel',
-		'artikel_skrywer',
+		'glans_1_titel',
+		'glans_1_skrywer',
+		'glans_1_tipe',
+		'glans_2_titel',
+		'glans_2_skrywer',
+		'glans_2_tipe',
+		'glans_3_titel',
+		'glans_3_skrywer',
+		'glans_3_tipe',
 	);
 
 	/**
@@ -153,12 +159,15 @@ class Migration {
 	public const TEXT_META = array(
 		'titel'           => FieldSets::INKPOLS_TITEL,
 		'beskrywing'      => FieldSets::INKPOLS_TEASER,
-		'gedig_titel'     => FieldSets::INKPOLS_GEDIG_TITEL,
-		'gedig_skrywer'   => FieldSets::INKPOLS_GEDIG_SKRYWER,
-		'storie_titel'    => FieldSets::INKPOLS_STORIE_TITEL,
-		'storie_skrywer'  => FieldSets::INKPOLS_STORIE_SKRYWER,
-		'artikel_titel'   => FieldSets::INKPOLS_ARTIKEL_TITEL,
-		'artikel_skrywer' => FieldSets::INKPOLS_ARTIKEL_SKRYWER,
+		'glans_1_titel'   => FieldSets::INKPOLS_GLANS_1_TITEL,
+		'glans_1_skrywer' => FieldSets::INKPOLS_GLANS_1_SKRYWER,
+		'glans_1_tipe'    => FieldSets::INKPOLS_GLANS_1_TIPE,
+		'glans_2_titel'   => FieldSets::INKPOLS_GLANS_2_TITEL,
+		'glans_2_skrywer' => FieldSets::INKPOLS_GLANS_2_SKRYWER,
+		'glans_2_tipe'    => FieldSets::INKPOLS_GLANS_2_TIPE,
+		'glans_3_titel'   => FieldSets::INKPOLS_GLANS_3_TITEL,
+		'glans_3_skrywer' => FieldSets::INKPOLS_GLANS_3_SKRYWER,
+		'glans_3_tipe'    => FieldSets::INKPOLS_GLANS_3_TIPE,
 	);
 
 	/**
@@ -519,6 +528,11 @@ class Migration {
 				$this->setIssueMeta( $issue_id, $key, $value );
 			}
 
+			// The Gedig/Storie/Artikel keys the glans fields replaced (owner, 2026-11-03).
+			foreach ( FieldSets::INKPOLS_RETIRED_KEYS as $key ) {
+				$this->deleteIssueMeta( $issue_id, $key );
+			}
+
 			if ( $cover_id > 0 ) {
 				$this->setCover( $issue_id, $cover_id );
 			}
@@ -728,6 +742,16 @@ class Migration {
 	 */
 	protected function setIssueMeta( int $issue_id, string $key, int|string $value ): void {
 		update_post_meta( $issue_id, $key, $value );
+	}
+
+	/**
+	 * Remove one issue meta key. Overridable seam.
+	 *
+	 * @param int    $issue_id The issue post id.
+	 * @param string $key      The meta key.
+	 */
+	protected function deleteIssueMeta( int $issue_id, string $key ): void {
+		delete_post_meta( $issue_id, $key );
 	}
 
 	/**

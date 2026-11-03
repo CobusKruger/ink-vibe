@@ -2,6 +2,14 @@
 
 Project instructions for Claude Code. These apply to all sessions in this repo.
 
+## THE FIRST RULE (owner, 2026-11-01)
+
+**THE PRESENCE OF A CSV DOES NOT MEAN WE'RE NOT WRITING CODE FOR THE SITE ANYMORE.** Data is prepped for the migration so we don't need to handle every extreme corner case. **When the site goes live, it runs entirely without being fed new CSV files.**
+
+- `migrate-all` uses CSVs only to import what existed before the cutover.
+- Anything that changes after go-live is added and edited on the site, through real features (post types, admin screens), and that code gets built.
+- Never propose a CSV, a seed file or a re-run of a migration as how the live site is operated. Never invent a way to avoid doing the work.
+
 ## Project at a glance
 
 - New site to replace prod **ink.org.za**. WordPress: theme `wp-content/themes/ink-foundation`, plugin `wp-content/plugins/ink-core`.
@@ -24,6 +32,7 @@ Project instructions for Claude Code. These apply to all sessions in this repo.
   - join on `data-audit-id`, assigned Lovable-first;
   - primitives (buttons, cards, pills, forms, headings, bands) live only in the shared `primitives.css`. Never page-scoped.
   - deliberate divergences are disclosed in code comments; respect them.
+- **The acceptance gate is one command:** `tools/fidelity/accept/gate-all.sh` (Git Bash on Windows, bash on macOS; page/state list in `tools/fidelity/accept/gates.json`; how to run it and what it needs: `docs/fidelity-remediation/README.md` §9). Do not rebuild it in `tmp/`.
 - New pages follow the *inverted* method (`docs/lovable-delta-2026-10/README.md`): ratified build spec + audit-ids **before** code; the capture/diff harness is the acceptance test.
 - "Lovable wins" for routine style mismatches. Escalate only real conflicts or scope questions.
 
@@ -31,6 +40,8 @@ Project instructions for Claude Code. These apply to all sessions in this repo.
 
 - **Design delta** (verse-haven `71c0847..86b69dd`): start at `docs/lovable-delta-2026-10/HANDOVER.md`. Work packages WP1 Uitslae → WP6 header; **WP4 InkPols** is fully specified in `inkpols.md` and may go first.
 - **Pages are code**, never `post_content`: template + pattern + blocks, registered via `SystemPages`, CPT or rewrite.
+- **Monthly rounds have no separate deadline:** a round runs from the first to the last day of its month (October: 1 to 31 October). Never treat this as missing data or ask for it. The month comes from the title; recent rounds all carry it. The post date verifies it: rounds are created in the first days of the month, normally the 1st, seldom after the 3rd, with a few outliers shortly before month-end. If there is no new challenge yet, the site keeps showing the last one.
+- **Post type follows the category map in `docs/migration-plan.md` §"Current state"** (`artikels`, `algemeengorrel`, `rubrieke`, `prosa`, `prosa-lede-bydraes` give `artikel`). Search the docs for a ruling before asking the owner.
 - **Handoffs:** `docs/handoffs/winner-cleanup.md` runs first, then `docs/handoffs/homepage-dev-round.md`. Not in parallel. The Gradering fix and winner importer (`winner-cleanup.md` §7) are separate work that follows the cleanup.
 
 ## Winner data

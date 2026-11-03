@@ -140,3 +140,33 @@ test( 'Wenner, spaced ordinals and bracketed ranks all count as ranks', function
 test( 'a Geen line closes a tie so the next entry line is not swallowed into it', function (): void {
 	expect( winnersOf( "WENNERS\nBrons Gedigte\n1ste: Gedig 3\n2de: Geen\nGedig 7" ) )->toBe( array( 'brons gedig #1 Gedig 3' ) );
 } );
+
+test( 'the mentions come back next to the winners, and never become winners', function (): void {
+	$parsed = ResultsParser::parse( "WENNERS\nBrons Gedigte\n1ste: Gedig 3\nEervolle vermelding: Gedig 9\nGedig 10\nSilwer Gedigte\n1: Gedig 4\nKOMMENTAAR\nGedig 3: T\nTeks" );
+
+	expect( array_column( $parsed['winners'], 'entry_id' ) )->toBe( array( 'Gedig 3', 'Gedig 4' ) );
+	expect( $parsed['mentions'] )->toBe(
+		array(
+			array( 'entry_id' => 'Gedig 9', 'text' => '' ),
+			array( 'entry_id' => 'Gedig 10', 'text' => '' ),
+		)
+	);
+} );
+
+test( 'a plain-text mention is kept as printed, list marker dropped, even with a grade word in its title', function (): void {
+	$parsed = ResultsParser::parse( "WENNERS\nBrons Gedigte\n1ste: Gedig 3\nEervolle vermeldings\n- Lig op water|Anna Smit\nGoud in die grond | Piet Pompies\nSilwer Gedigte\n1: Gedig 4" );
+
+	expect( array_column( $parsed['mentions'], 'text' ) )->toBe( array( 'Lig op water | Anna Smit', 'Goud in die grond | Piet Pompies' ) );
+	// The title's grade word opened no pool: Gedig 4 still sits under Silwer, from its real header.
+	expect( $parsed['winners'][1]['grade'] )->toBe( 'silwer' );
+} );
+
+test( 'a paste with no mention heading has no mentions', function (): void {
+	expect( ResultsParser::parse( "WENNERS\nBrons Gedigte\n1ste: Gedig 3" )['mentions'] )->toBe( array() );
+} );
+
+test( 'a pool header ends the mention list', function (): void {
+	$parsed = ResultsParser::parse( "WENNERS\nEervolle vermelding\nGedig 9\nSilwer Gedigte\nGedig 10" );
+
+	expect( array_column( $parsed['mentions'], 'entry_id' ) )->toBe( array( 'Gedig 9' ) );
+} );

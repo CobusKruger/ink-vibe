@@ -14,12 +14,15 @@ declare(strict_types=1);
 
 namespace Ink\Tests\Unit\Kernel;
 
+use Ink\Challenges\ResultsRoute;
+use Ink\Content\PostTypes;
 use Ink\Kernel\SystemPages;
 use Brain\Monkey;
 use Brain\Monkey\Functions;
 
 beforeEach( function (): void {
 	Monkey\setUp();
+	Functions\when( 'delete_post_meta' )->justReturn( true );
 } );
 
 afterEach( function (): void {
@@ -49,13 +52,44 @@ test( 'every page template in the theme has a system Page or a documented exclus
 	}
 } );
 
+test( 'every template in the theme is accounted for: Page, post type, endpoint, core or exclusion (README §3.4)', function (): void {
+	$templates = glob( dirname( __DIR__, 3 ) . '/wp-content/themes/ink-foundation/templates/*.html' );
+	expect( $templates )->not->toBeEmpty();
+
+	foreach ( $templates as $file ) {
+		$name = basename( $file, '.html' );
+
+		expect( SystemPages::routeOf( $name, PostTypes::all() ) )->not->toBeNull( "Nothing routes to templates/{$name}.html" );
+	}
+} );
+
+test( 'routeOf names each route, and fails a template nothing routes to', function (): void {
+	$types = PostTypes::all();
+
+	expect( SystemPages::routeOf( 'page-kompetisies', $types ) )->toBe( 'page' )
+		->and( SystemPages::routeOf( 'page-registreer', $types ) )->toBe( 'managed' )
+		->and( SystemPages::routeOf( 'page-qa-bloks', $types ) )->toBe( 'excluded' )
+		->and( SystemPages::routeOf( 'single-uitdaging', $types ) )->toBe( 'post-type' )
+		->and( SystemPages::routeOf( 'archive-inkpols_uitgawe', $types ) )->toBe( 'post-type' )
+		->and( SystemPages::routeOf( 'single-uitdaging-uitslae', $types ) )->toBe( 'endpoint' )
+		->and( SystemPages::routeOf( 'front-page', $types ) )->toBe( 'core' )
+		->and( SystemPages::routeOf( 'page-niemand', $types ) )->toBeNull()
+		->and( SystemPages::routeOf( 'single-bestaan-nie', $types ) )->toBeNull()
+		->and( SystemPages::routeOf( 'archive-bestaan-nie', $types ) )->toBeNull()
+		->and( SystemPages::routeOf( 'iets-anders', $types ) )->toBeNull();
+} );
+
+test( 'the registered endpoint view is the one the route class serves', function (): void {
+	expect( SystemPages::ENDPOINT_TEMPLATES[ ResultsRoute::TEMPLATE ] )->toBe( ResultsRoute::ENDPOINT );
+} );
+
 test( 'the registry has no slug that is both a system Page and excluded', function (): void {
 	expect( array_intersect( array_keys( SystemPages::PAGES ), array_keys( SystemPages::EXCLUDED ), SystemPages::MANAGED_ELSEWHERE ) )->toBe( array() );
 } );
 
 test( 'ensure creates a missing Page empty, published and flagged', function (): void {
 	Functions\when( 'get_page_by_path' )->alias( fn ( string $slug ) => 'skryf' === $slug ? null : ink_test_page( 7, 'publish', '', $slug ) );
-	Functions\when( 'get_post_meta' )->justReturn( '1' );
+	Functions\when( 'get_post_meta' )->alias( fn ( int $id, string $key ) => SystemPages::META === $key ? '1' : '' );
 	Functions\when( 'is_wp_error' )->justReturn( false );
 
 	$inserted = array();
@@ -81,7 +115,7 @@ test( 'ensure creates a missing Page empty, published and flagged', function ():
 
 test( 'ensure is a no-op when every Page exists and is flagged', function (): void {
 	Functions\when( 'get_page_by_path' )->alias( fn ( string $slug ) => ink_test_page( 7, 'publish', '', $slug ) );
-	Functions\when( 'get_post_meta' )->justReturn( '1' );
+	Functions\when( 'get_post_meta' )->alias( fn ( int $id, string $key ) => SystemPages::META === $key ? '1' : '' );
 	Functions\expect( 'wp_insert_post' )->never();
 	Functions\expect( 'wp_update_post' )->never();
 	Functions\expect( 'update_post_meta' )->never();
@@ -103,7 +137,7 @@ test( 'ensure empties a legacy UPME login shortcode and republishes a trashed Pa
 			};
 		}
 	);
-	Functions\when( 'get_post_meta' )->justReturn( '1' );
+	Functions\when( 'get_post_meta' )->alias( fn ( int $id, string $key ) => SystemPages::META === $key ? '1' : '' );
 
 	$updates = array();
 	Functions\when( 'wp_update_post' )->alias(
@@ -121,11 +155,59 @@ test( 'ensure empties a legacy UPME login shortcode and republishes a trashed Pa
 } );
 
 test( 'ensure leaves real content on an existing Page alone', function (): void {
-	Functions\when( 'get_page_by_path' )->alias( fn ( string $slug ) => ink_test_page( 7, 'publish', '<p>Hallo</p>', $slug ) );
-	Functions\when( 'get_post_meta' )->justReturn( '1' );
+	Functions\when( 'get_page_by_path' )->alias( fn ( string $slug ) => ink_test_page( 7, 'publish', 'kompetisies' === $slug ? '' : '<p>Hallo</p>', $slug ) );
+	Functions\when( 'get_post_meta' )->alias( fn ( int $id, string $key ) => SystemPages::META === $key ? '1' : '' );
 	Functions\expect( 'wp_update_post' )->never();
 
 	expect( SystemPages::ensure()['repaired'] )->toBe( array() );
+} );
+
+test( 'ensure adopts Page 59192: empties its body and its Simple CSS meta, and is idempotent', function (): void {
+	$legacy = '<p>LET WEL ...</p>';
+
+	Functions\when( 'get_page_by_path' )->alias(
+		function ( string $slug ) use ( &$legacy ) {
+			return ink_test_page( 'kompetisies' === $slug ? 59192 : 7, 'publish', 'kompetisies' === $slug ? $legacy : '', $slug );
+		}
+	);
+
+	$css = 'body{}';
+	Functions\when( 'get_post_meta' )->alias(
+		function ( int $id, string $key ) use ( &$css ) {
+			return '_simple_css' === $key ? ( 59192 === $id ? $css : '' ) : '1';
+		}
+	);
+	Functions\when( 'delete_post_meta' )->alias(
+		function ( int $id, string $key ) use ( &$css ): bool {
+			expect( $id )->toBe( 59192 );
+			expect( $key )->toBe( '_simple_css' );
+			$css = '';
+			return true;
+		}
+	);
+
+	$updates = array();
+	Functions\when( 'wp_update_post' )->alias(
+		function ( array $a ) use ( &$updates, &$legacy ): int {
+			$updates[] = $a;
+			$legacy    = '';
+			return $a['ID'];
+		}
+	);
+
+	expect( SystemPages::ensure()['repaired'] )->toBe( array( 'kompetisies' ) )
+		->and( $updates )->toBe( array( array( 'ID' => 59192, 'post_content' => '' ) ) )
+		->and( $css )->toBe( '' );
+
+	// Second run: nothing left to do.
+	$updates = array();
+	expect( SystemPages::ensure()['repaired'] )->toBe( array() )
+		->and( $updates )->toBe( array() );
+} );
+
+test( 'kompetisies is a system Page, so the template guard and the deletion guard cover it', function (): void {
+	expect( SystemPages::PAGES )->toHaveKey( 'kompetisies' )
+		->and( SystemPages::EMPTY_BODY )->toBe( array( 'kompetisies' ) );
 } );
 
 test( 'ensure reports a failed insert', function (): void {
@@ -146,7 +228,7 @@ test( 'ensureIfStale skips once the registry version is applied', function (): v
 test( 'ensureIfStale records the version only when nothing failed', function (): void {
 	Functions\when( 'get_option' )->justReturn( 'old' );
 	Functions\when( 'get_page_by_path' )->alias( fn ( string $slug ) => ink_test_page( 7, 'publish', '', $slug ) );
-	Functions\when( 'get_post_meta' )->justReturn( '1' );
+	Functions\when( 'get_post_meta' )->alias( fn ( int $id, string $key ) => SystemPages::META === $key ? '1' : '' );
 	Functions\expect( 'update_option' )->once()->with( SystemPages::VERSION_OPTION, SystemPages::version() );
 
 	SystemPages::ensureIfStale();

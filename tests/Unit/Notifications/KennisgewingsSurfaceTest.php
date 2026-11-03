@@ -15,11 +15,11 @@ declare(strict_types=1);
 
 namespace Ink\Tests\Unit\Notifications;
 
-use Ink\Content\FieldSets;
 use Ink\Notifications\Kennisgewings;
 use Ink\Notifications\KennisgewingsSurface;
 use Ink\Notifications\NotificationType;
 use Brain\Monkey;
+use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 
 beforeEach( function (): void {
@@ -298,7 +298,7 @@ test( 'rows maps, groups, orders and marks unread across every wired Notificatio
 		}
 	);
 
-	Functions\when( 'get_post_meta' )->justReturn( '2026-09-11' ); // Uitdaging deadline.
+	Filters\expectApplied( 'ink_uitdaging_sluiting' )->andReturn( '2026-09-11' ); // Uitdaging close.
 
 	$rows = KennisgewingsSurface::rows( 7 );
 
@@ -399,7 +399,7 @@ test( 'unreadCount shares the same rows() query and counts only unread rows', fu
 	expect( KennisgewingsSurface::unreadCount( 7 ) )->toBe( 1 );
 } );
 
-test( 'the Uitdaging days-until-close reads FieldSets::UITDAGING_DEADLINE off the subject post', function (): void {
+test( 'the Uitdaging days-until-close asks Cadence for the subject post close, through the filter', function (): void {
 	Functions\when( 'current_datetime' )->justReturn( new \DateTimeImmutable( '2026-09-06 23:59:59', new \DateTimeZone( 'Africa/Johannesburg' ) ) );
 
 	Functions\when( 'bp_notifications_get_notifications_for_user' )->justReturn(
@@ -409,7 +409,7 @@ test( 'the Uitdaging days-until-close reads FieldSets::UITDAGING_DEADLINE off th
 	);
 
 	Functions\when( 'get_the_title' )->justReturn( 'Herfs Uitdaging' );
-	Functions\expect( 'get_post_meta' )->once()->with( 300, FieldSets::UITDAGING_DEADLINE, true )->andReturn( '2026-09-11' );
+	Filters\expectApplied( 'ink_uitdaging_sluiting' )->once()->with( '', 300 )->andReturn( '2026-09-11' );
 
 	$rows = KennisgewingsSurface::rows( 7 );
 

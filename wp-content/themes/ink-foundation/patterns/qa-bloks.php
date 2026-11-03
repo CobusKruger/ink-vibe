@@ -63,11 +63,11 @@
 	<!-- /wp:heading -->
 
 	<!-- wp:paragraph {"fontSize":"sm","textColor":"muted-text"} -->
-	<p class="has-muted-text-color has-text-color has-sm-font-size"><code>ink/huidige-uitdaging</code> (variant <code>kenmerk</code>) + <code>ink/wenner-kollig</code>, side by side exactly as the feature band on the tuisblad. Fixture data via the <code>ink_home_current_challenge</code> and <code>ink_home_featured_winner</code> filters, both gated to this page.</p>
+	<p class="has-muted-text-color has-text-color has-sm-font-size"><code>ink/huidige-uitdaging</code> (variant <code>kenmerk</code>) + <code>ink/wenner-kollig</code>, side by side. Fixture data via the <code>ink_home_current_challenge</code> and <code>ink_home_featured_winner</code> filters, both gated to this page.</p>
 	<!-- /wp:paragraph -->
 
-	<!-- wp:group {"className":"ink-feature-grid","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-32"}},"layout":{"type":"grid","columnCount":2}} -->
-	<div class="wp-block-group ink-feature-grid">
+	<!-- wp:group {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-32"}},"layout":{"type":"grid","columnCount":2}} -->
+	<div class="wp-block-group">
 		<!-- wp:ink/huidige-uitdaging {"variant":"kenmerk"} /-->
 
 		<!-- wp:ink/wenner-kollig /-->

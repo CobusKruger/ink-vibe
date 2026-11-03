@@ -25,6 +25,9 @@ defined( 'ABSPATH' ) || exit;
  *   3de: Geen
  *   Silwer Stories
  *   1: Storie 2
+ *   Eervolle vermeldings
+ *   Gedig 7
+ *   Lig op die water | Anna Smit
  *
  *   KOMMENTAAR
  *   Gedig 3: Maanlig
@@ -41,6 +44,11 @@ defined( 'ABSPATH' ) || exit;
  * supplies the Gradering. In KOMMENTAAR, a line beginning with an EntryID starts a
  * commentary block (the rest of the line after ":" is the title); following lines are
  * its text until the next EntryID or section.
+ *
+ * Lines under an honourable-mention heading ("Eervolle vermelding") go to **mentions**,
+ * and never become winners. Each is an EntryID for {@see IngestionPage::analyse()} to
+ * resolve, or plain `Titel | Skrywer` text as printed. The list ends at the next pool
+ * header or rank line.
  *
  * The coverage report ({@see Coverage}) + the explicit confirm gate are the safety net
  * for an imperfect parse — nothing is committed on the parse alone.
@@ -68,7 +76,7 @@ final class ResultsParser {
 	 * Parse pasted results text into winners + commentary. Pure.
 	 *
 	 * @param string $text The pasted plain-text results.
-	 * @return array{winners:list<array{grade:string, type:string, rank:int, entry_id:string}>, commentary:list<array{entry_id:string, title:string, text:string}>}
+	 * @return array{winners:list<array{grade:string, type:string, rank:int, entry_id:string}>, commentary:list<array{entry_id:string, title:string, text:string}>, mentions:list<array{entry_id:string, text:string}>}
 	 */
 	public static function parse( string $text ): array {
 		$lines = preg_split( '/\R/', $text );
@@ -83,6 +91,7 @@ final class ResultsParser {
 		$mention    = false; // Inside an honourable-mention list: not winners.
 		$winners    = array();
 		$commentary = array();
+		$mentions   = array();
 		$current    = null; // The open commentary block.
 
 		foreach ( $lines as $raw ) {
@@ -105,7 +114,7 @@ final class ResultsParser {
 			}
 
 			if ( 'wenners' === $section ) {
-				self::parseWinnerLine( $line, $pool_grade, $last_rank, $mention, $winners );
+				self::parseWinnerLine( $line, $pool_grade, $last_rank, $mention, $winners, $mentions );
 				continue;
 			}
 
@@ -119,6 +128,7 @@ final class ResultsParser {
 		return array(
 			'winners'    => $winners,
 			'commentary' => $commentary,
+			'mentions'   => $mentions,
 		);
 	}
 
@@ -130,15 +140,16 @@ final class ResultsParser {
 	 * unnumbered line of EntryIDs right after a rank line shares its rank. Both are emitted
 	 * as-is so the {@see Coverage} gate blocks the commit loudly on the shared slot; silently
 	 * dropping the second entry would lose a winner. An honourable-mention heading ("Eervolle
-	 * vermelding") suppresses the unnumbered entries that follow it.
+	 * vermelding") sends what follows it, and any EntryID on the heading itself, to the mentions.
 	 *
 	 * @param string                                                            $line       The trimmed line.
 	 * @param string                                                            $pool_grade The running Gradering context (by ref).
 	 * @param int                                                               $last_rank  The last rank seen in this pool (by ref).
 	 * @param bool                                                              $mention    Whether an honourable-mention list is open (by ref).
 	 * @param list<array{grade:string, type:string, rank:int, entry_id:string}> $winners   The winners accumulator (by ref).
+	 * @param list<array{entry_id:string, text:string}>                         $mentions  The mentions accumulator (by ref).
 	 */
-	private static function parseWinnerLine( string $line, string &$pool_grade, int &$last_rank, bool &$mention, array &$winners ): void {
+	private static function parseWinnerLine( string $line, string &$pool_grade, int &$last_rank, bool &$mention, array &$winners, array &$mentions ): void {
 		$has_grade = 1 === preg_match( self::GRADE_RE, $line, $gm );
 		$entries   = preg_match_all( self::ENTRY_ID_RE, $line, $ems, PREG_SET_ORDER ) ? $ems : array();
 		$has_entry = array() !== $entries;
@@ -147,6 +158,24 @@ final class ResultsParser {
 		if ( 1 === preg_match( '/vermelding|bogemiddelde/i', $line ) ) {
 			$mention   = true;
 			$last_rank = 0;
+
+			foreach ( $entries as $em ) {
+				$mentions[] = array(
+					'entry_id' => self::normaliseEntryId( $em[1], (int) $em[2] ),
+					'text'     => '',
+				);
+			}
+
+			return;
+		}
+
+		// A plain-text mention names a writer after a bar. Its title may hold a grade word
+		// ("Goud in die grond | Anna Smit"), so this comes before the pool-header test.
+		if ( $mention && 0 === $rank && ! $has_entry && str_contains( $line, '|' ) ) {
+			$mentions[] = array(
+				'entry_id' => '',
+				'text'     => self::mentionText( $line ),
+			);
 			return;
 		}
 
@@ -161,6 +190,25 @@ final class ResultsParser {
 		// A tie continuation: entries with no rank of their own share the previous rank.
 		if ( 0 === $rank && $has_entry && $last_rank > 0 && ! $mention ) {
 			$rank = $last_rank;
+		}
+
+		// Still inside the mention list and not a new pool or rank: a mention, never a winner.
+		if ( $mention && 0 === $rank ) {
+			foreach ( $entries as $em ) {
+				$mentions[] = array(
+					'entry_id' => self::normaliseEntryId( $em[1], (int) $em[2] ),
+					'text'     => '',
+				);
+			}
+
+			if ( ! $has_entry ) {
+				$mentions[] = array(
+					'entry_id' => '',
+					'text'     => self::mentionText( $line ),
+				);
+			}
+
+			return;
 		}
 
 		// A rank line: needs a rank AND an EntryID (a "Geen" line is intentionally dropped).
@@ -189,6 +237,18 @@ final class ResultsParser {
 			$last_rank = 0;
 			$mention   = false;
 		}
+	}
+
+	/**
+	 * A plain-text mention as stored: any list marker dropped, `Titel | Skrywer` spacing. Pure.
+	 *
+	 * @param string $line The trimmed line.
+	 * @return string
+	 */
+	private static function mentionText( string $line ): string {
+		$parts = array_map( 'trim', explode( '|', (string) preg_replace( '/^[\-\x{2013}\x{2022}*]\s*/u', '', $line ), 2 ) );
+
+		return implode( ' | ', $parts );
 	}
 
 	/**

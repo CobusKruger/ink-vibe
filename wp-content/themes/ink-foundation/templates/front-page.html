@@ -1,22 +1,16 @@
 <!-- wp:template-part {"slug":"header","theme":"ink-foundation","tagName":"header","area":"header","lock":{"move":true,"remove":true}} /-->
 
-<!-- Fourth-pass fidelity fix (2026-09-05, product-owner finding #11 "top and bottom spacing on the Redakteur se keuse section are bigger than on the design"): blockGap is pinned to 0. Every home section already carries its OWN vertical rhythm as section padding (hero/feature-band/featured-grid/borg s-64, cta-band s-80), exactly like Lovable, where `<main>` stacks `<section className="py-16">` siblings with NO gap between them at all (measured live: section boxes are edge-to-edge, 0px apart). Without this, WordPress's default 24px blockGap was silently added BETWEEN every pair of sections — and between the header and the first section — inflating every inter-section gap by 24px over the design. -->
+<!-- Fourth-pass fidelity fix (2026-09-05, product-owner finding #11 "top and bottom spacing on the Redakteur se keuse section are bigger than on the design"): blockGap is pinned to 0. Every home section already carries its OWN vertical rhythm as section padding (hero/winners/featured-grid/borg s-64, cta-band s-80), exactly like Lovable, where `<main>` stacks `<section className="py-16">` siblings with NO gap between them at all (measured live: section boxes are edge-to-edge, 0px apart). Without this, WordPress's default 24px blockGap was silently added BETWEEN every pair of sections — and between the header and the first section — inflating every inter-section gap by 24px over the design. -->
 <!-- wp:group {"tagName":"main","align":"full","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"},"blockGap":"0"}},"layout":{"type":"constrained"}} -->
 <main class="wp-block-group alignfull" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
 	<!-- wp:pattern {"slug":"ink-foundation/hero"} /-->
 
-	<!-- Kenmerk-strook (Story 19.3, §5): the current-challenge FEATURE card + the Wenneraankondiging winner card, two columns ≥1024px (stack below, via home.css). Both are collapsing ink-core blocks — each renders nothing when there is no open challenge / no live winner (graceful, no placeholder). The winner slot stays between the hero and the featured-works grid (Story 15.6 page-map). -->
-	<!-- wp:group {"tagName":"section","align":"full","className":"ink-feature-band ink-band ink-band--cream","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
-	<section data-audit-id="challenge" class="wp-block-group alignfull ink-feature-band ink-band ink-band--cream" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-		<!-- wp:group {"align":"wide","className":"ink-feature-grid","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-32"}},"layout":{"type":"grid","columnCount":2}} -->
-		<div data-audit-id="challenge-grid" class="wp-block-group alignwide ink-feature-grid">
-			<!-- wp:ink/huidige-uitdaging {"variant":"kenmerk"} /-->
+	<!-- Order: owner, 2026-10-30, matching verse-haven Index.tsx: hero, results banner, magazine, winners, featured writing, sponsors, CTA. Each ink-core block owns its band and renders nothing when it has nothing to show. -->
+	<!-- wp:ink/uitslae-banier /-->
 
-			<!-- wp:ink/wenner-kollig /-->
-		</div>
-		<!-- /wp:group -->
-	</section>
-	<!-- /wp:group -->
+	<!-- wp:ink/inkpols-tuis /-->
+
+	<!-- wp:ink/wenner-kollig /-->
 
 	<!-- wp:pattern {"slug":"ink-foundation/featured-grid"} /-->
 

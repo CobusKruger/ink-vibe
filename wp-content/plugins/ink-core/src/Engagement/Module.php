@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  * Owns INK reading engagement (which lives here, NOT in free-form WP comments).
  * Live at 1.8: the site-wide comment-disable layer ({@see Comments}) that closes
  * WordPress's public commenting surface while leaving the sanctioned programmatic
- * custom comment types (`ink_reaksie`, `ink_moderator_terugvoer`) untouched.
+ * custom comment types (`ink_reaksie`, `ink_mod_terugvoer`) untouched.
  *
  * RESERVED for Epic 7: line highlights + reactions, structured community
  * responses (Gemeenskapsreaksies: Lof/Insig/Voorstel), the reading list (leeslys)
@@ -42,6 +42,7 @@ final class Module implements ModuleContract {
 		( new ReactionController() )->register();
 		( new HighlightController() )->register();
 		( new ResponseController() )->register();
+		( new ResponseUpvoteController() )->register();
 		( new ResponsesList() )->register();
 		( new ResponseCount() )->register();
 		( new SuggestedReads() )->register();

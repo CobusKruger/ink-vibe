@@ -31,6 +31,10 @@ beforeEach( function (): void {
 		}
 	);
 	Functions\when( 'wp_unslash' )->returnArg( 1 );
+	Functions\when( 'sanitize_text_field' )->alias( static fn ( string $v ): string => trim( strip_tags( $v ) ) );
+	Functions\when( 'sanitize_user' )->alias( static fn ( string $v ): string => trim( strip_tags( $v ) ) );
+	Functions\when( 'sanitize_email' )->alias( static fn ( string $v ): string => trim( strip_tags( $v ) ) );
+	Functions\when( 'esc_url_raw' )->returnArg( 1 );
 } );
 
 afterEach( function (): void {
@@ -178,4 +182,23 @@ test( 'registerSubmission honours a posted redirect_to on success (non-vacuous â
 	expect( $sut->halted )->toBeTrue();
 
 	unset( $_POST['user_login'], $_POST['user_email'], $_POST['redirect_to'] );
+} );
+
+test( 'registerSubmission sanitises posted credentials before handing them to register_new_user()', function (): void {
+	$_SERVER['REQUEST_METHOD'] = 'POST';
+	$_POST['user_login']       = '  <b>nuwelid</b> ';
+	$_POST['user_email']       = ' nuwelid@ink.test<script>';
+
+	Functions\expect( 'register_new_user' )
+		->once()
+		->with( 'nuwelid', 'nuwelid@ink.test' )
+		->andReturn( 42 );
+	Functions\expect( 'wp_safe_redirect' )->once();
+
+	$sut = ink_auth_redirects_testable();
+	$sut->registerSubmission();
+
+	expect( $sut->halted )->toBeTrue();
+
+	unset( $_POST['user_login'], $_POST['user_email'] );
 } );

@@ -9,8 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Challenges;
 
-use Ink\Content\FieldSets;
-use Ink\Kernel\Scalar;
+use Ink\Content\PostTypes;
 use Ink\Notifications\Api as Notifications;
 use Ink\Notifications\Template;
 
@@ -27,10 +26,8 @@ defined( 'ABSPATH' ) || exit;
  * links it to its round via {@see self::UITDAGING_META}, and publishes it. Idempotent: an
  * existing announcement for the round is returned, never duplicated.
  *
- * It also hooks {@see FeaturedWinners::FEATURED_FILTER} (15.6) to supply the home slot's
- * `{title, url, winners}` payload from the latest announcement + the round's placements —
- * the slot collapsed to empty until now. Ordering (algehele wenner first) is
- * {@see FeaturedWinners::order} (12A.7's rule).
+ * It also hooks {@see FeaturedWinners::FEATURED_FILTER} (15.6) to supply the home section's
+ * four winner slots from the latest announcement's round ({@see self::slotsFrom()}, D10).
  *
  * Conflation-clean: reads placements + post data only — zero `Ink\Entitlement`/`Ink\Tiers`.
  *
@@ -146,17 +143,62 @@ class WinnersPost {
 	/**
 	 * Build the FEATURED_FILTER payload. Pure.
 	 *
-	 * @param string                                                  $title   The announcement title.
-	 * @param string                                                  $url     The announcement permalink.
-	 * @param list<array{id:int, rank:int, title:string, url:string}> $winners The winner rows.
-	 * @return array{title:string, url:string, winners:list<array{id:int, rank:int, title:string, url:string}>}
+	 * @param string                              $month The round's month name, or ''.
+	 * @param string                              $theme The round's theme.
+	 * @param array<string, array<string, mixed>> $slots The slots: key ⇒ card view.
+	 * @return array{month:string, theme:string, slots:array<string, array<string, mixed>>}
 	 */
-	public static function featuredPayload( string $title, string $url, array $winners ): array {
+	public static function featuredPayload( string $month, string $theme, array $slots ): array {
 		return array(
-			'title'   => $title,
-			'url'     => $url,
-			'winners' => $winners,
+			'month' => $month,
+			'theme' => $theme,
+			'slots' => $slots,
 		);
+	}
+
+	/**
+	 * The four home winner slots from a round's rows, in display order. Pure.
+	 *
+	 * DIVERGENCE (accepted, D10, handoff permitted #1): four cards, not Lovable's two: Goud
+	 * Gedig + Storie, then Silwer Gedig + Artikel. Each slot takes position 1, ties by lowest
+	 * post id as the home feed always has. Meester counts as Goud (D11). A slot with no winner
+	 * is left out. Storie and Artikel ignore the tier, so the Gradering fix changes nothing here.
+	 *
+	 * @param list<array<string, mixed>> $rows The rows, from {@see RoundResults::forRound()}.
+	 * @return array<string, array<string, mixed>> Slot key ⇒ winning row.
+	 */
+	public static function slotsFrom( array $rows ): array {
+		$wanted = array(
+			'goud-gedig'   => array( PostTypes::GEDIG, 'goud' ),
+			'storie'       => array( PostTypes::STORIE, '' ),
+			'silwer-gedig' => array( PostTypes::GEDIG, 'silwer' ),
+			'artikel'      => array( PostTypes::ARTIKEL, '' ),
+		);
+		$slots  = array();
+
+		foreach ( $wanted as $key => $rule ) {
+			$matches = array_filter(
+				$rows,
+				static function ( array $row ) use ( $rule ): bool {
+					$tier     = 'meester' === ( $row['tier'] ?? '' ) ? 'goud' : (string) ( $row['tier'] ?? '' );
+					$category = (string) ( $row['category'] ?? '' );
+
+					return $category === $rule[0]
+						&& Placements::RANK_FIRST === (int) ( $row['position'] ?? 0 )
+						&& ( '' === $rule[1] || $tier === $rule[1] );
+				}
+			);
+
+			if ( array() === $matches ) {
+				continue;
+			}
+
+			usort( $matches, static fn ( array $a, array $b ): int => (int) ( $a['post_id'] ?? 0 ) <=> (int) ( $b['post_id'] ?? 0 ) );
+
+			$slots[ $key ] = $matches[0];
+		}
+
+		return $slots;
 	}
 
 	/**
@@ -208,17 +250,15 @@ class WinnersPost {
 	}
 
 	/**
-	 * Supply the home featured-slot payload (the FEATURED_FILTER callback).
-	 *
-	 * Yields the latest announcement + its round's placed entries; leaves a payload set
-	 * by a higher-priority filter untouched. Returns the incoming value (collapsing the
-	 * slot) when there is no announcement yet.
+	 * Supply the home featured-slot payload (the FEATURED_FILTER callback): the four winner
+	 * slots of the latest announcement's round. Leaves a payload set by a higher-priority
+	 * filter untouched, and returns the incoming value with no announcement.
 	 *
 	 * @param mixed $value The incoming filter value.
 	 * @return mixed
 	 */
 	public function featured( $value ) {
-		if ( is_array( $value ) && '' !== (string) ( $value['title'] ?? '' ) ) {
+		if ( is_array( $value ) && array() !== ( $value['slots'] ?? array() ) ) {
 			return $value;
 		}
 
@@ -229,22 +269,32 @@ class WinnersPost {
 		}
 
 		$uitdaging_id = (int) get_post_meta( $post_id, self::UITDAGING_META, true );
-		$winners      = array();
+		$slots        = array();
 
-		foreach ( $this->placedEntries( $uitdaging_id ) as $entry ) {
-			$view      = $this->entryView( $entry['id'] );
-			$winners[] = array(
-				'id'    => $entry['id'],
-				'rank'  => $entry['rank'],
-				'title' => $view['title'],
-				'url'   => $view['url'],
-			);
+		foreach ( self::slotsFrom( $this->roundRows( $uitdaging_id ) ) as $key => $row ) {
+			$slots[ $key ] = $this->slotView( $row );
 		}
 
-		return self::featuredPayload(
-			(string) get_the_title( $post_id ),
-			(string) get_permalink( $post_id ),
-			$winners
+		return self::featuredPayload( RoundResults::monthFor( $uitdaging_id ), RoundResults::themeFor( $uitdaging_id ), $slots );
+	}
+
+	/**
+	 * What a card needs from a winning row. Overridable seam.
+	 *
+	 * @param array<string, mixed> $row The winning row.
+	 * @return array<string, mixed>
+	 */
+	protected function slotView( array $row ): array {
+		$post_id = (int) ( $row['post_id'] ?? 0 );
+		$user_id = (int) ( $row['user_id'] ?? 0 );
+
+		return array(
+			'title'      => (string) ( $row['title'] ?? '' ),
+			'url'        => $post_id > 0 ? (string) get_permalink( $post_id ) : '',
+			'author'     => (string) ( $row['author'] ?? '' ),
+			'quote'      => (string) ( $row['excerpt'] ?? '' ),
+			'avatar_url' => (string) get_avatar_url( $user_id, array( 'size' => 96 ) ),
+			'win_label'  => FeaturedWinners::winLabel( WinRecords::lifetimeCountFor( $user_id ) ),
 		);
 	}
 
@@ -304,11 +354,12 @@ class WinnersPost {
 	}
 
 	/**
-	 * The most-recent announcement post id (0 if none). Overridable seam.
+	 * The most-recent announcement post id (0 if none). The public read behind the results
+	 * banner and the home winners. Overridable seam.
 	 *
 	 * @return int
 	 */
-	protected function latestAnnouncement(): int {
+	public function latestAnnouncement(): int {
 		$ids = get_posts(
 			array(
 				'post_type'        => 'post',
@@ -326,30 +377,13 @@ class WinnersPost {
 	}
 
 	/**
-	 * The placed entries (rank 1–3) for a round, flattened across every pool. Overridable
-	 * seam.
-	 *
-	 * {@see Placements::forRound()} buckets per (Gradering × category) since the D1
-	 * read-collapse fix, so flattening here surfaces EVERY category's podium (a Goud-Gedig
-	 * algehele wenner AND a Goud-Storie algehele wenner both appear) — the home featured
-	 * feed ({@see FeaturedWinners::orderFeed()}) then lists them all.
+	 * A round's result rows. Overridable seam.
 	 *
 	 * @param int $uitdaging_id The round.
-	 * @return list<array{id:int, rank:int}>
+	 * @return list<array<string, mixed>>
 	 */
-	protected function placedEntries( int $uitdaging_id ): array {
-		$out = array();
-
-		foreach ( Placements::forRound( $uitdaging_id ) as $rows ) {
-			foreach ( $rows as $row ) {
-				$out[] = array(
-					'id'   => (int) $row['id'],
-					'rank' => (int) $row['rank'],
-				);
-			}
-		}
-
-		return $out;
+	protected function roundRows( int $uitdaging_id ): array {
+		return RoundResults::forRound( $uitdaging_id );
 	}
 
 	/**
@@ -385,9 +419,7 @@ class WinnersPost {
 	 * @return string
 	 */
 	protected function roundPeriod( int $uitdaging_id ): string {
-		$deadline = Deadline::parse(
-			Scalar::asString( get_post_meta( $uitdaging_id, FieldSets::UITDAGING_DEADLINE, true ) )
-		);
+		$deadline = Cadence::closeFor( $uitdaging_id );
 
 		return null === $deadline ? '' : Cadence::periodLabelFor( $uitdaging_id, $deadline );
 	}

@@ -118,7 +118,7 @@ final class FollowingList {
 		$intro   = '<p class="ink-volg-lys__intro" data-audit-id="profiel-following-sub">' . esc_html__( 'Nuwe werk van hierdie skrywers verskyn in jou aktiwiteitsvoer.', 'ink-core' ) . '</p>';
 
 		if ( array() === $writers ) {
-			$empty_title = __( "Jy volg nog niemand nie", 'ink-core' );
+			$empty_title = __( 'Jy volg nog niemand nie', 'ink-core' );
 			$empty_body  = __( "Volg 'n skrywer om hul nuwe stukke in jou aktiwiteitsvoer te sien.", 'ink-core' );
 			$cta         = __( 'Ontdek skrywers', 'ink-core' );
 

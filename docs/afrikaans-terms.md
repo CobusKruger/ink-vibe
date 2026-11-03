@@ -119,19 +119,25 @@ Die reël is eenvoudig: **kies een term per konsep en hou by daardie term.**
 
 | Konsep | UI-term (Afrikaans) | Kode-ID / sleutel | Notas |
 |---|---|---|---|
+| Die jaarlikse kompetisie (een pos per jaar) | **kompetisie** / **kompetisies** | post_type: `kompetisie` | **Nie 'n uitdaging nie** (eienaar, 2026-10-31). `/kompetisies/`. |
+| 'n Inskrywing in die gids van eksterne kompetisies | **eksterne kompetisie** / **eksterne kompetisies** | post_type: `eksterne_kompetisie` | Prod-kieslys-etiket. |
 | Die maandelikse kompetisie | **uitdaging** | post_type: `uitdaging` | Moenie "kompetisie", "projek" of "challenge" gebruik nie. |
 | Die tema of opdrag van 'n uitdaging | **tema** | `challenge_theme` | |
 | Die sluitingsdatum | **sluitingsdatum** | `challenge_deadline` | |
-| Hoe gereeld 'n uitdaging hardloop (maandeliks of jaarliks) | **kadens** | `ink_uitdaging_cadence`; enum `Ink\Kernel\CadenceType` (`maandeliks` / `jaarliks`) | **12B.1 (R9):** admin-keuse op die uitdaging. Verstek = **maandeliks** (elke bestaande rondte bly maandeliks). **jaarliks** = die jaarlikse kompetisie, wat dieselfde beoordeling-pyplyn op 'n jaarlikse kadens hergebruik (geen nuwe meganika). Die jaarlikse periode-etiket is bloot die jaar ("2026"), so die wenner-etiket lees "2026 Goud-wenner" sonder nuwe kopie. *Etikette "Kadens"/"Maandeliks"/"Jaarliks" wag op menslike bekragtiging — sien vertaalblad.* |
+| Hoe gereeld 'n uitdaging hardloop (maandeliks of jaarliks) | **kadens** | `ink_uitdaging_cadence`; enum `Ink\Kernel\CadenceType` (`maandeliks` / `jaarliks`) | **12B.1 (R9):** admin-keuse op die uitdaging. Verstek = **maandeliks** (elke bestaande rondte bly maandeliks). **jaarliks** bly 'n opsie op die uitdaging met 'n gestoorde sluitingsdatum; die jaarlikse kompetisie gebruik dit **nie** (eienaar: kompetisies is nie uitdagings nie, post_type `kompetisie`). *Etikette "Kadens"/"Maandeliks"/"Jaarliks" wag op menslike bekragtiging — sien vertaalblad.* |
 | 'n Inskrywing vir 'n uitdaging | **inskrywing** | `challenge_entry` | Meervoud: "inskrywings" ("1 inskrywing" / "4 inskrywings"). |
 | Die volgnommer van 'n inskrywing (per tipe, per uitdaging) | **EntryID** | `entry_number` | **R1/R2:** interne/admin-konsep. Per-tipe volgorde (Gedigte, Stories, Artikels apart), toegeken by kollasie en gestoor om uitslae later te pas. Nie noodwendig lid-blootgestel nie; 'n Afrikaanse UI-etiket word deur 'n mens geskryf indien ooit nodig. |
 | 'n Inskrywing wat 2de of 3de geplaas het | **wenner** | — | Banier: "[Maand] wenner" (bv. "Desember wenner"), met kleur/ikoon vir Goud/Silwer/Brons. |
 | 'n Inskrywing wat 1ste geplaas het | **algehele wenner** | — | Banier: "[Maand] algehele wenner". Kry meer prominente plasing in die voer as gewone wenners. |
 | Geen wenner in 'n kategorie/gradering nie | **Geen** | — | Soos in die beoordelaars se uitslae aangedui. |
-| Die beoordelaar/moderator se terugvoer op 'n inskrywing | **Terugvoer van die moderator** | `ink_moderator_terugvoer` | **R2:** gestoor as 'n gestruktureerde reaksie (custom `comment_type`), nie 'n oop WP-kommentaar nie. Vertoon op die werk slegs as die skrywer dit op My Profiel aanskakel. |
+| Die beoordelaar/moderator se terugvoer op 'n inskrywing | **Terugvoer van die moderator** | `ink_mod_terugvoer` | **R2:** gestoor as 'n gestruktureerde reaksie (custom `comment_type`), nie 'n oop WP-kommentaar nie. Vertoon op die werk slegs as die skrywer dit op My Profiel aanskakel. |
 | Die aankondiging van 'n uitdaging | **uitdagingaankondiging** | — | |
 | Die aankondiging van wenners | **wenneraankondiging** | — | Outomaties gegenereer uit 'n vormbriefsjabloon; verskyn in 'n uitgeligte posisie op die tuisblad. |
 | Die resultate van 'n uitdaging | **uitdaginguitslae** | — | |
+| Die uitslaebladsy van een rondte | **Uitslae** | URL `/uitdaging/<slug>/uitslae/`; eindpunt `uitslae` | In kode: "Uitslae", "Uitslae aangekondig · <maand>" (tuisblad-banier), "Aangekondig %s". Die ander bladsyopskrifte (`UITSLAE-H1`, `UITSLAE-PODIUM-H2`, …) is kopieskuld en wag op 'n mens. |
+| 'n Vermelding sonder plek | **eervolle vermelding** / **eervolle vermeldings** | `ink_uitdaging_vermeldings` | Die opskrif "Eervolle vermeldings" is in kode (D8). |
+| Die beoordelaars se brief oor 'n rondte | **beoordelaarsbrief** (werkterm) | `ink_uitdaging_brief` | **ONBEVESTIG: 'n werkterm wat deur 'n vorige dokumentasie-ronde bygevoeg is, nie deur die eienaar gekies nie.** Die bladsyopskrif is kopieskuld (`UITSLAE-BRIEF-H2`). Moenie die Engelse "judges' letter" vertaal nie; 'n mens bevestig die term. |
+| Die jaarlikse gala-aand | **gala** / **gala-aand** | — | Soos die ou bladsye (`…-gala-aand`). Fotos per jaar: `/kompetisies/gala/<jaar>/`; skakel "Sien alles" (in kode). Die res van die galakopie is kopieskuld (`KOMP-GALA-*`). |
 
 ---
 
@@ -141,7 +147,10 @@ Die reël is eenvoudig: **kies een term per konsep en hou by daardie term.**
 |---|---|---|---|
 | Die INK-tydskrif | **InkPols** | — | Die naam bly soos is — dit is 'n handelsmerk. |
 | 'n Spesifieke uitgawe | **uitgawe** | post_type: `inkpols_uitgawe` | Moenie "issue" gebruik nie. |
-| Die PDF van 'n uitgawe | **lees die uitgawe** | — | Knopieteks vir die PDF-skakel. |
+| Die PDF van 'n uitgawe | **lees die uitgawe** | — | Knopieteks vir die PDF-skakel. Die ontwerp se aflaaiknoppies word nie gebou nie (`inkpols.md`). |
+| Die naam van 'n uitgawe (bv. "Julie/Augustus 2026") | **naam** | CSV-kolom `naam`; die plasing se titel | Vervang uitgawenommer en seisoen (D9): moenie "volume", "uitgawe nr." of "seisoen" gebruik nie. |
+| Die opskrif en beskrywing van 'n uitgawe | **titel**, **beskrywing** | `ink_inkpols_titel`, `ink_inkpols_teaser` | Verpligte velde om te publiseer. |
+| Alle uitgawes van 'n jaar wys | **Alles** (jaarfilter) | — | Reeds in kode (`Terms::label( 'alles' )`). |
 
 ---
 
@@ -298,7 +307,7 @@ Gebruik die `ink_` voorvoegsel:
 
 ### Custom comment types
 
-- `ink_moderator_terugvoer` ("Terugvoer van die moderator" — programmaties geskryf, nie 'n oop WP-kommentaar nie)
+- `ink_mod_terugvoer` ("Terugvoer van die moderator" — programmaties geskryf, nie 'n oop WP-kommentaar nie)
 
 ### Taxonomy slugs
 

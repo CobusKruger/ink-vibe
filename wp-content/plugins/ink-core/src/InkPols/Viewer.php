@@ -147,14 +147,20 @@ final class Viewer {
 			return '';
 		}
 
-		if ( $flipbook_available ) {
-			return '<div class="ink-inkpols-leser" data-audit-id="inkpols-single-viewer">' . $shortcode_output . '</div>';
-		}
+		// Real3D's subtree is plugin output, not measured (`04-inkpols` §6). DIVERGENCE (accepted,
+		// `inkpols.md` §2): the flipbook replaces Lovable's unconnected placeholder. The PDF link
+		// below is the plugin-off fallback (FR-57 a11y), a read link and not a download button.
+		$embed = $flipbook_available
+			? '<div class="ink-inkpols-leser" data-audit-id="magazine-issue-reader-embed">' . $shortcode_output . '</div>'
+			: '<div class="ink-inkpols-leser ink-inkpols-leser--terugval" data-audit-id="magazine-issue-reader-embed">'
+				. '<a class="ink-inkpols-leser__skakel ink-btn ink-btn--primary ink-btn--lg" href="' . esc_url( $pdf_url ) . '">'
+				. esc_html( Terms::label( 'inkpols_lees_uitgawe' ) )
+				. '</a></div>';
 
-		return '<div class="ink-inkpols-leser ink-inkpols-leser--terugval" data-audit-id="inkpols-single-viewer">'
-			. '<a class="ink-inkpols-leser__skakel ink-btn ink-btn--primary ink-btn--lg" data-audit-id="inkpols-single-pdf-link" href="' . esc_url( $pdf_url ) . '">'
-			. esc_html( Terms::label( 'inkpols_lees_uitgawe' ) )
-			. '</a></div>';
+		return '<section class="ink-band ink-band--cream ink-band--border-b ink-band--step" data-audit-id="magazine-issue-reader">'
+			. '<div class="ink-container" data-audit-id="magazine-issue-reader-container">'
+			. '<div class="ink-reader-frame" data-audit-id="magazine-issue-reader-frame">' . $embed . '</div>'
+			. '</div></section>';
 	}
 
 	/**
