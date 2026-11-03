@@ -39,6 +39,8 @@ function ink_test_ingestion(): Ingestion {
 		public array $placements         = array();
 		/** @var array<int,int> */
 		public array $awarded            = array();
+		/** @var list<int> Post ids that are not poems (Storie, Artikel). */
+		public array $prose_ids          = array();
 		/** @var list<int> */
 		public array $biblioteek_ids     = array();
 		public int $winners_post_calls   = 0;
@@ -69,6 +71,10 @@ function ink_test_ingestion(): Ingestion {
 		protected function recordPlacement( int $post_id, int $rank ): bool {
 			$this->placements[] = array( $post_id, $rank );
 			return true;
+		}
+
+		protected function promotesWriter( int $post_id ): bool {
+			return ! in_array( $post_id, $this->prose_ids, true );
 		}
 
 		protected function recordWin( int $uitdaging_id, array $winner ): bool {
@@ -279,4 +285,40 @@ test( 'analyse resolves mention EntryIDs to `Titel | Skrywer` and keeps plain-te
 	// Gedig 99 has no entry in this round, so it is left out, as unmatched commentary is.
 	expect( $analysis['mentions'] )->toBe( array( 'Nag | Skrywer 101', 'Lig op water | Anna Smit' ) );
 	expect( array_column( $analysis['winners'], 'post_id' ) )->toBe( array( 10 ) );
+} );
+
+test( 'a Storie or Artikel win is recorded and placed but promotes nobody: Gradering is Gedigte-only', function (): void {
+	$ing            = ink_test_ingestion();
+	$ing->prose_ids = array( 11, 12 );
+
+	$result = $ing->commit(
+		7,
+		array(
+			array( 'post_id' => 10, 'rank' => 1, 'author_id' => 100 ), // a Gedig
+			array( 'post_id' => 11, 'rank' => 1, 'author_id' => 100 ), // a Storie by the same writer
+			array( 'post_id' => 12, 'rank' => 2, 'author_id' => 200 ), // a Storie only
+		),
+		array()
+	);
+
+	expect( $result['placed'] )->toBe( 3 );
+	expect( $result['wins'] )->toBe( 3 );
+	expect( $ing->awarded )->toBe( array( 100 => 1 ) );
+} );
+
+test( 'only Gedigte wins reach the promotion engine', function (): void {
+	$ing            = ink_test_ingestion();
+	$ing->prose_ids = array( 11, 12 );
+
+	$ing->commit(
+		8,
+		array(
+			array( 'post_id' => 10, 'rank' => 1, 'author_id' => 100 ),
+			array( 'post_id' => 11, 'rank' => 2, 'author_id' => 100 ),
+			array( 'post_id' => 12, 'rank' => 1, 'author_id' => 200 ),
+		),
+		array()
+	);
+
+	expect( $ing->awarded )->toBe( array( 100 => 1 ) );
 } );

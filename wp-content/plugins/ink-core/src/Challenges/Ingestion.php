@@ -187,7 +187,7 @@ class Ingestion {
 	}
 
 	/**
-	 * Award auto-promotion wins: one win per top-3 placement, summed per author. A writer
+	 * Award auto-promotion wins: one win per top-3 placement of a Gedig, summed per author. A writer
 	 * with two top-3 placements this round earns two wins (the engine accumulates). Pure
 	 * grouping; the write is the {@see awardWins()} seam.
 	 *
@@ -201,7 +201,8 @@ class Ingestion {
 		foreach ( $winners as $winner ) {
 			$author = (int) ( $winner['author_id'] ?? 0 );
 
-			if ( $author > 0 ) {
+			// Gradering is Gedigte-only (D7): a Storie or Artikel win is recorded but promotes nobody.
+			if ( $author > 0 && $this->promotesWriter( (int) ( $winner['post_id'] ?? 0 ) ) ) {
 				$wins_by_author[ $author ] = ( $wins_by_author[ $author ] ?? 0 ) + 1;
 			}
 		}
@@ -218,6 +219,16 @@ class Ingestion {
 	}
 
 	// --- Overridable side-effect seams (the Brain-Monkey isolation rule) ---------------
+
+	/**
+	 * Whether a win on this post counts toward promotion: only a Gedig does (D7). Overridable seam.
+	 *
+	 * @param int $post_id The winning post.
+	 * @return bool
+	 */
+	protected function promotesWriter( int $post_id ): bool {
+		return Pools::isGraded( (string) get_post_type( $post_id ) );
+	}
 
 	/**
 	 * Generate the wenneraankondiging post (Story 12A.4). Overridable seam.

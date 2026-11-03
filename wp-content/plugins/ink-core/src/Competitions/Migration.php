@@ -1,6 +1,6 @@
 <?php
 /**
- * Old competitions from the one CSV — WP5 (`05-kompetisies` §3.6).
+ * Old galas and competitions, from the old page tree — WP5 (`05-kompetisies` §3.6).
  *
  * @package Ink\Core
  */
@@ -11,7 +11,6 @@ namespace Ink\Competitions;
 
 use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
-use Ink\Kernel\MigrationData;
 use Ink\Kernel\Scalar;
 use Ink\Migration\StaticRedirects;
 use WP_Post;
@@ -28,17 +27,14 @@ defined( 'ABSPATH' ) || exit;
  * **by the meta the owner sets on production first** (`ink_old_gala`, `ink_old_gala_fotos`,
  * `ink_old_competition`, each holding the year; `docs/migration-tools/tag-old-competitions.sql`),
  * then, as a fallback that warns "found by title; tag it", by the Page's title and its "Foto..." child.
- * Name, year and body come from the gala Page, photos from its Fotos Page. `kompetisies-oud.csv` is
- * optional and holds overrides only: the owner's `hoogtepunt` and `onderskrifte` (captions, one
- * `attachment-id|caption` per line, the id being the one in the old shortcodes), keyed by `sleutel`
- * (`gala-2025`, `kompetisie-2022`) or by a bare year. A row matching nothing found is a competition
- * the tree cannot show and carries its own `naam`, `jaar` and `bladsy` ({@see mergeRows()}).
+ * Name, year and body come from the gala Page, photos from its Fotos Page. No file is read: the
+ * highlight and the captions are edited on the site.
  *
  * Photos are the ids in the Fotos Page's `vc_media_grid`, `vc_masonry_media_grid`, `vc_gallery`
  * and `vc_single_image` shortcodes, in page order, without repeats ({@see photoIds()}). A gallery
  * form the parser does not handle is reported, never skipped silently. Videos are attachments
  * too and link the same way; {@see GalaPage} plays them. Nothing the pages cannot give is
- * invented: the highlight and captions stay blank and are listed.
+ * invented: the highlight and captions stay blank.
  *
  * Once-off (`OPTION_DONE`), get-or-create on {@see SOURCE_KEY_META}. Re-running with `--force`
  * rewrites the same photos (the Pages are read even once trashed). After a gala's photos are
@@ -68,14 +64,7 @@ class Migration {
 	public const CLI_COMMAND = 'ink migrate-kompetisies';
 
 	/**
-	 * The input file, located by {@see MigrationData}.
-	 *
-	 * @var string
-	 */
-	public const CSV_FILE = 'kompetisies-oud.csv';
-
-	/**
-	 * Meta linking a post to its CSV row: the get-or-create marker.
+	 * Meta linking a post to its gala or competition key: the get-or-create marker.
 	 *
 	 * @var string
 	 */
@@ -111,13 +100,6 @@ class Migration {
 	public const META_COMPETITION = 'ink_old_competition';
 
 	/**
-	 * The columns the CSV may carry; only `sleutel` is required. A blank cell overrides nothing.
-	 *
-	 * @var list<string>
-	 */
-	public const COLUMNS = array( 'sleutel', 'naam', 'jaar', 'bladsy', 'fotos_bladsy', 'hoogtepunt', 'onderskrifte' );
-
-	/**
 	 * Register the WP-CLI trigger, only under WP-CLI.
 	 */
 	public function register(): void {
@@ -138,7 +120,7 @@ class Migration {
 					\WP_CLI::log( sprintf( '%s: %d photos', $row_key, $count ) );
 				}
 
-				foreach ( array_merge( $summary['warnings'], $summary['problems'], $summary['blanks'] ) as $line ) {
+				foreach ( array_merge( $summary['warnings'], $summary['problems'] ) as $line ) {
 					\WP_CLI::warning( $line );
 				}
 
@@ -163,90 +145,6 @@ class Migration {
 			$summary['retired'],
 			$summary['skipped'] ? ' (skipped, already done)' : ''
 		);
-	}
-
-	/**
-	 * Parse the CSV into rows that can become a post. Pure.
-	 *
-	 * @param string $csv The file contents.
-	 * @return array{rows:list<array<string, string>>, problems:list<string>, error:string}
-	 */
-	public static function parseCsv( string $csv ): array {
-		$out = array(
-			'rows'     => array(),
-			'problems' => array(),
-			'error'    => '',
-		);
-
-		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fwrite, WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- an in-memory stream, so fgetcsv can read quoted multi-line cells; no file is touched.
-		$handle = fopen( 'php://temp', 'r+b' );
-
-		if ( false === $handle ) {
-			$out['error'] = 'Could not read kompetisies-oud.csv.';
-			return $out;
-		}
-
-		fwrite( $handle, $csv );
-		rewind( $handle );
-
-		$header = fgetcsv( $handle, null, ',', '"', '' );
-		$rows   = array();
-		$line   = is_array( $header ) ? fgetcsv( $handle, null, ',', '"', '' ) : false;
-
-		while ( false !== $line ) {
-			$rows[] = $line;
-			$line   = fgetcsv( $handle, null, ',', '"', '' );
-		}
-
-		fclose( $handle );
-		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fwrite, WordPress.WP.AlternativeFunctions.file_system_operations_fclose
-
-		if ( ! is_array( $header ) ) {
-			$out['error'] = 'kompetisies-oud.csv is empty.';
-			return $out;
-		}
-
-		$header    = array_map( static fn ( $cell ): string => trim( (string) $cell ), $header );
-		$header[0] = ltrim( $header[0], "\xEF\xBB\xBF" );
-
-		// Only the key is required; every other column is an optional override.
-		if ( ! in_array( 'sleutel', $header, true ) ) {
-			$out['error'] = 'Column missing from kompetisies-oud.csv: sleutel.';
-			return $out;
-		}
-
-		$seen = array();
-
-		foreach ( $rows as $index => $cells ) {
-			if ( array( null ) === $cells ) {
-				continue; // A blank line.
-			}
-
-			if ( count( $cells ) !== count( $header ) ) {
-				$out['problems'][] = sprintf( 'Row %d skipped: %d cells, %d expected.', $index + 2, count( $cells ), count( $header ) );
-				continue;
-			}
-
-			$row = array_combine( $header, array_map( static fn ( $cell ): string => trim( (string) $cell ), $cells ) );
-			$key = $row['sleutel'];
-
-			$row = array_merge( array_fill_keys( self::COLUMNS, '' ), $row );
-
-			if ( 1 !== preg_match( '/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $key ) || ( '' !== $row['jaar'] && 1 !== preg_match( '/^\d{4}$/', $row['jaar'] ) ) ) {
-				$out['problems'][] = sprintf( 'Row "%s" skipped: needs a lower-case sleutel and, when given, a four-digit jaar.', $key );
-				continue;
-			}
-
-			if ( isset( $seen[ $key ] ) ) {
-				$out['problems'][] = sprintf( 'Row "%s" skipped: the sleutel is already used earlier in the file.', $key );
-				continue;
-			}
-
-			$seen[ $key ]  = true;
-			$out['rows'][] = $row;
-		}
-
-		return $out;
 	}
 
 	/**
@@ -328,7 +226,7 @@ class Migration {
 			}
 
 			if ( 0 === $fotos ) {
-				$notes[] = sprintf( 'Page %d "%s" looks like a gala but has no Fotos Page: not imported (give it a row in kompetisies-oud.csv to import it).', $page['id'], $page['title'] );
+				$notes[] = sprintf( 'Page %d "%s" looks like a gala but has no Fotos Page: not imported.', $page['id'], $page['title'] );
 				continue;
 			}
 
@@ -350,8 +248,6 @@ class Migration {
 				'jaar'         => $year,
 				'bladsy'       => (string) $page['id'],
 				'fotos_bladsy' => (string) $fotos,
-				'hoogtepunt'   => '',
-				'onderskrifte' => '',
 			);
 		}
 
@@ -369,8 +265,6 @@ class Migration {
 				'jaar'         => $page['competition'],
 				'bladsy'       => (string) $page['id'],
 				'fotos_bladsy' => '',
-				'hoogtepunt'   => '',
-				'onderskrifte' => '',
 			);
 		}
 
@@ -378,54 +272,6 @@ class Migration {
 			'galas'    => $galas,
 			'notes'    => $notes,
 			'warnings' => $warnings,
-		);
-	}
-
-	/**
-	 * The discovered galas with the CSV laid over them. Pure.
-	 *
-	 * A CSV row whose `sleutel` is a discovered key, or a bare year that only one discovered
-	 * gala has, overrides that gala with each cell it fills. Any other row is a competition
-	 * the page tree cannot show (a competition that is not tagged) and needs `naam`, `jaar` and `bladsy`.
-	 * A gala with no row imports in full.
-	 *
-	 * @param list<array<string, string>> $galas     {@see discoverGalas()} rows.
-	 * @param list<array<string, string>> $overrides {@see parseCsv()} rows.
-	 * @return array{rows:list<array<string, string>>, problems:list<string>}
-	 */
-	public static function mergeRows( array $galas, array $overrides ): array {
-		$rows     = array();
-		$problems = array();
-		$standing = array();
-
-		foreach ( $galas as $gala ) {
-			$rows[ $gala['sleutel'] ] = $gala;
-		}
-
-		foreach ( $overrides as $row ) {
-			$key = $row['sleutel'];
-
-			if ( ! isset( $rows[ $key ] ) && 1 === preg_match( '/^\d{4}$/', $key ) ) {
-				$same = array_keys( array_filter( $rows, static fn ( array $gala ): bool => $gala['jaar'] === $key ) );
-				$key  = 1 === count( $same ) ? $same[0] : $key;
-			}
-
-			if ( isset( $rows[ $key ] ) ) {
-				$rows[ $key ] = array_merge( $rows[ $key ], array_filter( $row, static fn ( string $cell ): bool => '' !== $cell ), array( 'sleutel' => $key ) );
-				continue;
-			}
-
-			if ( '' === $row['naam'] || '' === $row['jaar'] || (int) $row['bladsy'] <= 0 ) {
-				$problems[] = sprintf( 'Row "%s" skipped: it matches no gala in the page tree, so it needs naam, jaar and bladsy.', $row['sleutel'] );
-				continue;
-			}
-
-			$standing[ $row['sleutel'] ] = $row;
-		}
-
-		return array(
-			'rows'     => array_values( array_merge( $rows, $standing ) ),
-			'problems' => $problems,
 		);
 	}
 
@@ -480,27 +326,6 @@ class Migration {
 	}
 
 	/**
-	 * The `onderskrifte` cell: one `attachment-id|caption` per line. Pure.
-	 *
-	 * @param string $cell The cell.
-	 * @return array<int, string> Caption by attachment id.
-	 */
-	public static function parseCaptions( string $cell ): array {
-		$out = array();
-
-		foreach ( (array) preg_split( '/\R/', $cell ) as $line ) {
-			$parts = array_map( 'trim', explode( '|', $line, 2 ) );
-			$id    = (int) $parts[0];
-
-			if ( $id > 0 && '' !== ( $parts[1] ?? '' ) ) {
-				$out[ $id ] = $parts[1];
-			}
-		}
-
-		return $out;
-	}
-
-	/**
 	 * Which old Pages a row retires: its two Pages, only when it has a Fotos Page. Pure.
 	 *
 	 * @param array<string, string> $row The row.
@@ -517,28 +342,10 @@ class Migration {
 	}
 
 	/**
-	 * The owner cells this row still lacks, for the report. Pure.
-	 *
-	 * @param array<string, string> $row The row.
-	 * @return list<string>
-	 */
-	public static function blanks( array $row ): array {
-		// A row with no gala has nothing to highlight or caption.
-		if ( (int) ( $row['fotos_bladsy'] ?? 0 ) <= 0 ) {
-			return array();
-		}
-
-		// Captions are optional (up to ~656 photos a year), so only the highlight is nagged.
-		$blanks = '' === ( $row['hoogtepunt'] ?? '' ) ? array( 'hoogtepunt' ) : array();
-
-		return $blanks;
-	}
-
-	/**
 	 * Run the migration. Idempotent unless `$force`.
 	 *
 	 * @param bool $force Re-run even when already completed. Rehearsals only.
-	 * @return array{skipped:bool, error:string, created:int, updated:int, photos:int, retired:int, problems:list<string>, warnings:list<string>, blanks:list<string>, per_row:array<string, int>}
+	 * @return array{skipped:bool, error:string, created:int, updated:int, photos:int, retired:int, problems:list<string>, warnings:list<string>, per_row:array<string, int>}
 	 */
 	public function run( bool $force = false ): array {
 		$summary = array(
@@ -550,7 +357,6 @@ class Migration {
 			'retired'  => 0,
 			'problems' => array(),
 			'warnings' => array(),
-			'blanks'   => array(),
 			'per_row'  => array(),
 		);
 
@@ -559,23 +365,13 @@ class Migration {
 			return $summary;
 		}
 
-		// The galas come from the page tree; the file, when there is one, only overrides.
-		$csv    = $this->readCsv();
-		$parsed = null === $csv ? self::parseCsv( "sleutel\n" ) : self::parseCsv( $csv );
-
-		if ( '' !== $parsed['error'] ) {
-			$summary['error'] = $parsed['error'];
-			return $summary;
-		}
-
 		$found  = self::discoverGalas( $this->candidatePages() );
-		$merged = self::mergeRows( $found['galas'], $parsed['rows'] );
 		$retire = array( self::GALA_INDEX_PAGE );
 
-		$summary['problems'] = array_merge( $parsed['problems'], $found['notes'], $merged['problems'] );
+		$summary['problems'] = $found['notes'];
 		$summary['warnings'] = $found['warnings'];
 
-		foreach ( $merged['rows'] as $row ) {
+		foreach ( $found['galas'] as $row ) {
 			$key    = $row['sleutel'];
 			$result = $this->ensurePost( $key, $this->postArr( $row ) );
 
@@ -587,7 +383,6 @@ class Migration {
 			++$summary[ $result['created'] ? 'created' : 'updated' ];
 
 			$photo_ids = array();
-			$captions  = self::parseCaptions( $row['onderskrifte'] );
 			$fotos     = (int) $row['fotos_bladsy'];
 
 			if ( $fotos > 0 ) {
@@ -609,10 +404,6 @@ class Migration {
 					}
 
 					$photo_ids[] = $attachment;
-
-					if ( isset( $captions[ $attachment ] ) ) {
-						$this->setCaption( $attachment, $captions[ $attachment ] );
-					}
 				}
 
 				// Never wipe photos already linked, never trash a Page whose photos were not read.
@@ -622,23 +413,14 @@ class Migration {
 				}
 			}
 
-			foreach ( array_diff_key( $captions, array_flip( $photo_ids ) ) as $orphan => $unused ) {
-				$summary['problems'][] = sprintf( 'Competition "%s": caption for id %d is not a photo of its Fotos Page.', $key, $orphan );
-			}
-
 			$summary['photos']         += count( $photo_ids );
 			$summary['per_row'][ $key ] = count( $photo_ids );
 
 			$this->setMeta( $result['id'], self::SOURCE_KEY_META, $key );
 			$this->setMeta( $result['id'], FieldSets::kompetisieKey( 'jaar' ), (int) $row['jaar'] );
-			$this->setMeta( $result['id'], FieldSets::kompetisieKey( 'gala_hoogtepunt' ), $row['hoogtepunt'] );
 
 			if ( array() !== $photo_ids ) {
 				$this->setMeta( $result['id'], FieldSets::kompetisieKey( 'gala_fotos' ), implode( ',', $photo_ids ) );
-			}
-
-			foreach ( self::blanks( $row ) as $blank ) {
-				$summary['blanks'][] = sprintf( 'Competition "%s" imported with %s blank.', $key, $blank );
 			}
 
 			if ( $fotos > 0 ) {
@@ -689,22 +471,6 @@ class Migration {
 	 */
 	protected function markDone(): void {
 		update_option( self::OPTION_DONE, true, false );
-	}
-
-	/**
-	 * The CSV contents, or null when missing. Overridable seam.
-	 */
-	protected function readCsv(): ?string {
-		$path = MigrationData::path( self::CSV_FILE );
-
-		if ( '' === $path || ! is_readable( $path ) ) {
-			return null;
-		}
-
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- once-off CLI read of a local data file.
-		$contents = file_get_contents( $path );
-
-		return false === $contents ? null : $contents;
 	}
 
 	/**
@@ -779,9 +545,9 @@ class Migration {
 	}
 
 	/**
-	 * Get-or-create the post for a CSV key. Overridable seam.
+	 * Get-or-create the post for a key. Overridable seam.
 	 *
-	 * @param string               $key     The CSV key.
+	 * @param string               $key     The key.
 	 * @param array<string, mixed> $postarr The post arguments.
 	 * @return array{id:int, created:bool}
 	 */
@@ -829,23 +595,6 @@ class Migration {
 	 */
 	protected function isAttachment( int $attachment_id ): bool {
 		return 'attachment' === get_post_type( $attachment_id );
-	}
-
-	/**
-	 * Write a caption on the attachment, where the media modal edits it. Overridable seam.
-	 *
-	 * @param int    $attachment_id The attachment.
-	 * @param string $caption       The caption.
-	 */
-	protected function setCaption( int $attachment_id, string $caption ): void {
-		wp_update_post(
-			wp_slash(
-				array(
-					'ID'           => $attachment_id,
-					'post_excerpt' => $caption,
-				)
-			)
-		);
 	}
 
 	/**

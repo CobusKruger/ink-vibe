@@ -61,6 +61,7 @@ test( 'toHtml returns empty for an invalid rank (no banner on a non-placed entry
 } );
 
 test( 'forPost reads the placement + gradering snapshot and renders the banner', function (): void {
+	Functions\when( 'get_post_type' )->justReturn( 'gedig' );
 	Functions\when( 'get_post_meta' )->alias(
 		function ( $id, $key ) {
 			if ( 'ink_entry_placement' === $key ) {
@@ -83,4 +84,14 @@ test( 'forPost returns empty for a work with no placement', function (): void {
 	Functions\when( 'get_post_meta' )->justReturn( '' ); // placementFor → 0
 
 	expect( WinnerBanner::forPost( 42 ) )->toBe( '' );
+} );
+
+test( 'a Storie banner carries no grade: Gradering is Gedigte-only (D7)', function (): void {
+	Functions\when( 'get_post_type' )->justReturn( 'storie' );
+	Functions\when( 'get_post_meta' )->alias( fn ( $id, $key ) => 'ink_entry_placement' === $key ? '1' : 'goud' );
+
+	$html = WinnerBanner::forPost( 42 );
+
+	expect( $html )->toContain( 'ink-wenner-banier--algehele' );
+	expect( $html )->not->toContain( 'ink-gradering--' );
 } );

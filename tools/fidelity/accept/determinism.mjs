@@ -3,7 +3,7 @@
  * first capture against a live read. Prints one line per failure and a RUN summary. Exit 0 only if all pass.
  *   tools/fidelity/run.sh node tools/fidelity/accept/determinism.mjs lees|lovable [--label L] [--ref-dir D]
  * lees:   every Lees capture, INK and Lovable, signed in and out, 3 viewports (3 types x 2 sides x 2 x 3 = 36).
- *         Re-centre the response times first (accept/fixtures.sh recentre): the wrapper lees-determinism.sh does.
+ *         
  * lovable: every stored Lovable reference capture (parameters read from its _meta) in the ref dir. Lovable-side noise
  *         (animations, hover timing) makes some of these fail on every machine; compare against the previous count.
  */

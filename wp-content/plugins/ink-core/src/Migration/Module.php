@@ -18,8 +18,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * Houses the scripted, ordered migration commands that move the cloned INK site
  * onto the new model: DB sanitise ({@see DbSanitiser}, 16.1), user role
- * reassignment ({@see UserReclassifier}, 16.2), writer-tier CSV import
- * ({@see TierImport}, 16.3), read-only subscription verification
+ * reassignment ({@see UserReclassifier}, 16.2), writer-tier derivation
+ * read-only subscription verification
  * ({@see SubscriptionVerifier}, 16.4), post → CPT reclassification
  * ({@see PostReclassifier}, 16.5), library/training sub-path migration
  * ({@see LibraryTrainingMigrator}, 16.6), 301 redirect generation + serving
@@ -53,8 +53,8 @@ final class Module implements ModuleContract {
 	public function register(): void {
 		( new DbSanitiser() )->register();
 		( new UserReclassifier() )->register();
-		( new TierImport() )->register();
 		( new TierDeriver() )->register();
+		( new WinnerImporter() )->register();
 		( new SubscriptionVerifier() )->register();
 		( new PostReclassifier() )->register();
 		( new LibraryTrainingMigrator() )->register();

@@ -42,12 +42,13 @@ Project instructions for Claude Code. These apply to all sessions in this repo.
 - **Pages are code**, never `post_content`: template + pattern + blocks, registered via `SystemPages`, CPT or rewrite.
 - **Monthly rounds have no separate deadline:** a round runs from the first to the last day of its month (October: 1 to 31 October). Never treat this as missing data or ask for it. The month comes from the title; recent rounds all carry it. The post date verifies it: rounds are created in the first days of the month, normally the 1st, seldom after the 3rd, with a few outliers shortly before month-end. If there is no new challenge yet, the site keeps showing the last one.
 - **Post type follows the category map in `docs/migration-plan.md` §"Current state"** (`artikels`, `algemeengorrel`, `rubrieke`, `prosa`, `prosa-lede-bydraes` give `artikel`). Search the docs for a ruling before asking the owner.
-- **Handoffs:** `docs/handoffs/winner-cleanup.md` runs first, then `docs/handoffs/homepage-dev-round.md`. Not in parallel. The Gradering fix and winner importer (`winner-cleanup.md` §7) are separate work that follows the cleanup.
+- **Handoffs:** `docs/handoffs/homepage-dev-round.md` (done). The Gradering fix, the competition exclusion and the winner importer are built (2026-11-03) and wait to be proved on a real refresh: `docs/handoffs/winner-cleanup.md`.
 
 ## Winner data
 
-- **The hand-curated lists in `../migration-data/` are the source of truth** (`docs/migration-data.md`). `docs/migration-tools/build-winner-lists.php` only adds and fills. Do not build another way to match wins or rebuild the lists.
-- **Best effort for inactive members:** someone who has posted nothing in a year doesn't get reviewed. If the winning post can be identified, mark it; if not, move on. The win still counts.
+- **Wins come from the old challenge result posts**, read by `LegacyResultsParser` (`wp ink derive-tiers`). No hand-curated winner list is an input (owner, 2026-11-03).
+- **Migration inputs are exactly three files in `../migration-data/`** (`docs/migration-data.md`): `writer-accounts.csv`, `writer-aliases.csv`, `inkpols-uitgawes.csv`. **Every other CSV, spreadsheet or list is banned as a migration input.** Old lists live in `../backup-data/` and are never read by code.
+- **Best effort for inactive members:** someone who has posted nothing in a year doesn't get reviewed. A win count slightly off for them is accepted.
 - **Compare typed titles and names only through `Ink\Migration\TextKey`.** It handles dropped accents, every spelling of 'n (ŉ, ñ, ń, 'n, ’n, n, N) and grades added to titles.
 - **Competitions are not challenges**, and are never counted as challenges.
 
@@ -56,7 +57,7 @@ Project instructions for Claude Code. These apply to all sessions in this repo.
 - **dev / nuwe-ink** = Local (Flywheel) site `https://nuwe-ink.local`. It does **not** read this repo; changes are visible only after deploying (`node tools/deploy-to-local.mjs`, dry run first, then `--apply`), then cache purge.
 - **Refresh from prod:** `docs/migration-runbook.md` + `node tools/rehearsal-prep.mjs`, then `node tools/local.mjs wp ink migrate-all`. Prod is never touched.
 - **Tooling is cross-platform (macOS + Windows).** The site is found via Local's `sites.json` (`tools/lib/local-site.mjs`); never hardcode machine paths. Run WP-CLI/MySQL against the site via `node tools/local.mjs wp|mysql|mysqldump …` (plain `wp` can't connect). Windows setup: `tools/setup-windows.ps1`.
-- **All migration data lives only in `../migration-data/`**, outside the repo (owner's choice; `docs/migration-data.md`). The site reads it via `INK_MIGRATION_DATA_DIR`, with no fallback. Never copy it into the repo. That folder is the working copy: edit it directly.
+- **All migration data lives only in `../migration-data/`** (three files), outside the repo (owner's choice; `docs/migration-data.md`). The site reads it via `INK_MIGRATION_DATA_DIR`, with no fallback. Never copy it into the repo. That folder is the working copy: edit it directly.
 - New-machine checklist: `docs/lovable-delta-2026-10/HANDOVER.md` §5.1.
 - Table prefix is `wpjj_`. Capture as `fidelity-capture` (recreated after every refresh), never `admin`.
 

@@ -9,18 +9,16 @@ declare(strict_types=1);
 
 namespace Ink\Content;
 
-use Ink\Kernel\MigrationData;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Whether an account is a moderator who publishes challenge result posts.
  *
- * Either the account can edit others' posts, or its login is on the list in
- * `result-post-authors.csv` (located by MigrationData). The list matters because the moderator account
- * `Inkmoderator` is only a subscriber once the user-reclassification step has run, so a
- * capability test alone would file its result posts as submitted writing and lose their wins.
- * Lives in Content so Migration and Challenges can share it without depending on each other.
+ * Either the account can edit others' posts, or it is the author of a post with a result title
+ * ({@see ChallengeResultTitle::isResultTitle()}). The second part is read from the posts, not from a
+ * file: the moderator account `Inkmoderator` is only a subscriber once the user-reclassification step
+ * has run, so a capability test alone would file its result posts as submitted writing and lose their
+ * wins. Lives in Content so Migration and Challenges can share it without depending on each other.
  *
  * @package Ink\Core
  */
@@ -31,7 +29,7 @@ final class ResultPostAuthors {
 	 *
 	 * @param string       $login    The account login.
 	 * @param bool         $can_edit Whether the account can edit others' posts.
-	 * @param list<string> $logins   The moderator logins.
+	 * @param list<string> $logins   The logins that authored a result post.
 	 */
 	public static function matches( string $login, bool $can_edit, array $logins ): bool {
 		if ( $can_edit ) {
@@ -39,6 +37,24 @@ final class ResultPostAuthors {
 		}
 
 		return in_array( strtolower( $login ), array_map( 'strtolower', $logins ), true );
+	}
+
+	/**
+	 * The distinct logins that authored a post with a result title. Pure.
+	 *
+	 * @param list<array{login:string, title:string}> $rows Post author login and title.
+	 * @return list<string>
+	 */
+	public static function loginsFromPosts( array $rows ): array {
+		$logins = array();
+
+		foreach ( $rows as $row ) {
+			if ( '' !== $row['login'] && ChallengeResultTitle::isResultTitle( $row['title'] ) && ! in_array( $row['login'], $logins, true ) ) {
+				$logins[] = $row['login'];
+			}
+		}
+
+		return $logins;
 	}
 
 	/**
@@ -57,7 +73,7 @@ final class ResultPostAuthors {
 	}
 
 	/**
-	 * The moderator logins.
+	 * The logins that authored a result post, read once from the posts.
 	 *
 	 * @return list<string>
 	 */
@@ -68,27 +84,21 @@ final class ResultPostAuthors {
 			return $cache;
 		}
 
+		global $wpdb;
+
 		$cache = array();
-		$path  = MigrationData::path( 'result-post-authors.csv' );
 
-		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- once-off CLI reader of a local data file.
-		$handle = is_readable( $path ) ? fopen( $path, 'rb' ) : false;
-
-		if ( false !== $handle ) {
-			fgetcsv( $handle ); // Header.
-			$line = fgetcsv( $handle );
-
-			while ( false !== $line ) {
-				if ( isset( $line[0] ) && '' !== trim( (string) $line[0] ) ) {
-					$cache[] = trim( (string) $line[0] );
-				}
-
-				$line = fgetcsv( $handle );
-			}
-
-			fclose( $handle );
+		if ( ! $wpdb instanceof \wpdb ) {
+			return $cache;
 		}
-		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- once-off migration read; the title test is applied in PHP.
+		$rows = $wpdb->get_results(
+			"SELECT u.user_login AS login, p.post_title AS title FROM {$wpdb->posts} p JOIN {$wpdb->users} u ON u.ID = p.post_author WHERE p.post_type IN ('post','skryfwerk','artikel') AND p.post_status = 'publish' AND (p.post_title LIKE '%itsla%' OR p.post_title LIKE '%enner%')",
+			ARRAY_A
+		);
+
+		$cache = self::loginsFromPosts( is_array( $rows ) ? $rows : array() );
 
 		return $cache;
 	}

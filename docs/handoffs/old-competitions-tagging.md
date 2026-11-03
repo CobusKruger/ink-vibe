@@ -62,21 +62,13 @@ The script adds 21 rows (10 + 10 + 1). Facts about it:
 
 **Redirects.** The 21 old paths (`/ink-se-gala-aande/`, ten gala Pages, ten Fotos Pages) are a fixed list in `Migration\StaticRedirects::EXACT`, all going to `/kompetisies/`. For a gala that is not on that list, the migration records the old path of every Page it trashes in the option `ink_gala_old_paths`, before trashing, and `RedirectGenerator::maybeRedirect()` serves those paths through `StaticRedirects::storedGalaTarget()`. A new 2026 gala therefore redirects with no code change.
 
-## 4. The CSV that remains
+## 4. No CSV remains
 
-`../migration-data/kompetisies-oud.csv` is now **optional overrides** only. It is 285 bytes. A missing file is harmless.
-
-| Column | Use |
-|---|---|
-| `sleutel` | The only required column: the key (`gala-2025`) or a bare year |
-| `hoogtepunt` | A short highlight for that gala |
-| `onderskrifte` | Captions, one `attachment-id|caption` per line |
-
-A blank cell overrides nothing. The old 151 KB version, with every photo path, is in `../migration-data/backup/kompetisies-oud.csv`. The current file still has a now-redundant `kompetisie-2022` row, which is harmless.
+`kompetisies-oud.csv` is gone (2026-11-03) and no code reads a file for this step. The highlight and the captions are edited on the site. The old versions, with every photo path, are in `../backup-data/migration-data/`.
 
 ## 5. Order and other traps
 
-- **The step must run before `clean-shortcodes`.** Cleaning strips the gallery shortcodes from the Fotos Pages. `migrate-all` runs them in the right order, but the step **cannot be re-run on a cleaned database**: dev's Fotos Pages already hold only `<p></p>`. A first `--force` run on dev blanked the galleries before the guard existed; they were rebuilt from the backup CSV (656, 441, 464, 571, 431, 386, 166, 101, 103, 60 photos for 2025 down to 2016, 3,379 in all).
+- **The step must run before `clean-shortcodes`.** Cleaning strips the gallery shortcodes from the Fotos Pages. `migrate-all` runs them in the right order, but the step **cannot be re-run on a cleaned database**: dev's Fotos Pages already hold only `<p></p>`. A first `--force` run on dev blanked the galleries before the guard existed; they were rebuilt from the then-current CSV (656, 441, 464, 571, 431, 386, 166, 101, 103, 60 photos for 2025 down to 2016, 3,379 in all).
 - The 2024 Fotos Page (61228) has three empty `vc_media_grid` shortcodes with no `include` list. This gives a harmless warning on every run; the 441 count still matches.
 - Never `--force` on the live site. After go-live nothing here runs.
 - A new gala before the cutover: add the same three-row pattern to the SQL for its two Pages and run it on production before the snapshot. If forgotten, the title fallback finds it and warns.
@@ -98,6 +90,6 @@ Not verified:
 - `docs/migration-tools/tag-old-competitions.sql`: the script.
 - `wp-content/plugins/ink-core/src/Competitions/Migration.php`: discovery and import.
 - `wp-content/plugins/ink-core/src/Migration/StaticRedirects.php`, `RedirectGenerator.php`: redirects.
-- `wp-content/plugins/ink-core/src/Kernel/MigrationData.php`: the CSV is no longer in `FILES`; `tools/rehearsal-prep.mjs` no longer requires it.
+- `wp-content/plugins/ink-core/src/Competitions/Migration.php` reads no file; `Kernel/MigrationData.php` lists three files, none of them for this step.
 - Docs: `docs/migration-data.md`, `docs/migration-runbook.md` (step 2a: run the SQL on production before the export), `docs/lovable-delta-2026-10/specs/05-kompetisies.md` §3.6 to 3.7.
 - Tests: `tests/Unit/Competitions/MigrationTest.php`, `tests/Unit/Migration/RedirectGeneratorTest.php`.

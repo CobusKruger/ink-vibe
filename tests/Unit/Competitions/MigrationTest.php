@@ -1,6 +1,6 @@
 <?php
 /**
- * Unit tests for importing old competitions from the one CSV (`05-kompetisies` §3.6, §3.7).
+ * Unit tests for importing old galas and competitions from the page tree (`05-kompetisies` §3.6, §3.7).
  *
  * Targets: {@see \Ink\Competitions\Migration}, the gala rows of
  * {@see \Ink\Migration\StaticRedirects}, and the `kompetisies` step of `migrate-all`.
@@ -31,13 +31,11 @@ afterEach( function (): void {
 /**
  * A migration with its I/O recorded.
  *
- * @param string|null $csv The file contents; null is no file.
  */
-function ink_kompetisie_migration( ?string $csv ): Migration {
-	return new class( $csv ) extends Migration {
+function ink_kompetisie_migration(): Migration {
+	return new class() extends Migration {
 		public array $posts    = array();
 		public array $meta     = array();
-		public array $captions = array();
 		public array $trashed  = array();
 		public array $existing = array();
 		public array $bodies   = array();
@@ -46,7 +44,7 @@ function ink_kompetisie_migration( ?string $csv ): Migration {
 		public bool $done      = false;
 		private int $next      = 100;
 
-		public function __construct( private ?string $csv ) {
+		public function __construct() {
 			$this->pages = ink_kompetisie_pages();
 		}
 
@@ -56,10 +54,6 @@ function ink_kompetisie_migration( ?string $csv ): Migration {
 
 		protected function markDone(): void {
 			$this->done = true;
-		}
-
-		protected function readCsv(): ?string {
-			return $this->csv;
 		}
 
 		protected function candidatePages(): array {
@@ -94,10 +88,6 @@ function ink_kompetisie_migration( ?string $csv ): Migration {
 			return $attachment_id < 9000;
 		}
 
-		protected function setCaption( int $attachment_id, string $caption ): void {
-			$this->captions[ $attachment_id ] = $caption;
-		}
-
 		protected function setMeta( int $post_id, string $key, int|string $value ): void {
 			$this->meta[ $post_id ][ $key ] = $value;
 		}
@@ -110,7 +100,7 @@ function ink_kompetisie_migration( ?string $csv ): Migration {
 }
 
 /**
- * The page tree: two galas (one, 2026, absent from any CSV), the index, a gala with no
+ * The page tree: two galas (one, 2026, untagged), the index, a gala with no
  * Fotos Page, and a Foto page that hangs under nothing.
  *
  * @return list<array{id:int, parent:int, title:string, date:string}>
@@ -129,8 +119,6 @@ function ink_kompetisie_pages(): array {
 	);
 }
 
-const INK_KOMP_HEADER = "sleutel,naam,jaar,bladsy,fotos_bladsy,hoogtepunt,onderskrifte\n";
-
 /**
  * A Fotos Page body with a grid, a gallery and a repeat.
  */
@@ -147,8 +135,6 @@ test( 'discoverGalas finds each gala and its Fotos Page from the tree: key, name
 			'jaar'         => '2026',
 			'bladsy'       => '70001',
 			'fotos_bladsy' => '70002',
-			'hoogtepunt'   => '',
-			'onderskrifte' => '',
 		)
 	);
 	// The index, a Foto page under nothing and a gala with no Fotos Page are not galas; the last is reported.
@@ -177,8 +163,6 @@ test( 'tagged Pages are found by their meta, with no warning, even when the titl
 			'jaar'         => '2022',
 			'bladsy'       => '49428',
 			'fotos_bladsy' => '',
-			'hoogtepunt'   => '',
-			'onderskrifte' => '',
 		)
 	);
 } );
@@ -213,8 +197,8 @@ test( 'a gala with only one of its two tags is found, and only the missing tag i
 	);
 } );
 
-test( 'a tagged competition imports with no CSV row and its Page is kept; warnings reach the summary, not the problems', function (): void {
-	$m        = ink_kompetisie_migration( null );
+test( 'a tagged competition imports and its Page is kept; warnings reach the summary, not the problems', function (): void {
+	$m        = ink_kompetisie_migration();
 	$m->pages = array(
 		array( 'id' => 52672, 'parent' => 0, 'title' => '12 NOVEMBER 2022 - 7de GALA AAND', 'date' => '2022-10-01 00:00:00', 'gala' => '2022', 'fotos' => '', 'competition' => '' ),
 		array( 'id' => 52674, 'parent' => 52672, 'title' => 'Fotos', 'date' => '2022-11-20 00:00:00', 'gala' => '', 'fotos' => '2022', 'competition' => '' ),
@@ -232,14 +216,6 @@ test( 'a tagged competition imports with no CSV row and its Page is kept; warnin
 	expect( $m->posts['kompetisie-2022']['post_content'] )->toBe( 'Ou blad 49428' );
 	expect( $m->meta[ $m->existing['kompetisie-2022'] ][ FieldSets::kompetisieKey( 'jaar' ) ] )->toBe( 2022 );
 	expect( $m->trashed )->not->toContain( 49428 );
-
-	// The same competition with a CSV row of only a highlight: the row overrides, it does not duplicate.
-	$again        = ink_kompetisie_migration( INK_KOMP_HEADER . "kompetisie-2022,,,,,Hoogtepunt,\n" );
-	$again->pages = $m->pages;
-	$result       = $again->run();
-
-	expect( $result['created'] )->toBe( 2 );
-	expect( $again->meta[ $again->existing['kompetisie-2022'] ][ FieldSets::kompetisieKey( 'gala_hoogtepunt' ) ] )->toBe( 'Hoogtepunt' );
 } );
 
 test( 'two galas in one year get -2 on the second, in id order', function (): void {
@@ -250,8 +226,8 @@ test( 'two galas in one year get -2 on the second, in id order', function (): vo
 	expect( array_column( Migration::discoverGalas( $pages )['galas'], 'sleutel' ) )->toBe( array( 'gala-2026', 'gala-2026-2', 'gala-2025', 'gala-2016' ) );
 } );
 
-test( 'a gala with no CSV row imports in full: name, body, year, photos from its Fotos Page, Pages trashed, paths stored', function (): void {
-	$m                = ink_kompetisie_migration( null );
+test( 'a gala imports in full: name, body, year, photos from its Fotos Page, Pages trashed, paths stored', function (): void {
+	$m                = ink_kompetisie_migration();
 	$m->bodies[70002] = INK_KOMP_FOTOS;
 
 	$summary = $m->run();
@@ -275,7 +251,6 @@ test( 'a gala with no CSV row imports in full: name, body, year, photos from its
 	expect( $meta[ Migration::SOURCE_KEY_META ] )->toBe( 'gala-2026' );
 	expect( $meta[ FieldSets::kompetisieKey( 'jaar' ) ] )->toBe( 2026 );
 	expect( $meta[ FieldSets::kompetisieKey( 'gala_fotos' ) ] )->toBe( '11,12,13,14,15,16' );
-	expect( $meta[ FieldSets::kompetisieKey( 'gala_hoogtepunt' ) ] )->toBe( '' );
 	expect( $meta )->not->toHaveKey( FieldSets::kompetisieKey( 'beskrywing' ) );
 
 	// The new gala's two Pages go to the trash with the others, and their paths are kept for the 301.
@@ -284,44 +259,10 @@ test( 'a gala with no CSV row imports in full: name, body, year, photos from its
 	expect( $m->stored )->toContain( '/oud-70001' );
 	expect( $m->stored )->toContain( '/oud-70002' );
 	expect( $m->stored )->toContain( '/oud-28477' );
-	expect( $summary['blanks'] )->toHaveCount( 3 );
-} );
-
-test( 'CSV rows override by sleutel or bare year and add the 2022 competition; captions go on the attachment', function (): void {
-	$m                = ink_kompetisie_migration(
-		INK_KOMP_HEADER
-		. 'gala-2026,,,,,Mooi aand,"12|Tweede' . "\n" . '99|Vreemd"' . "\n"
-		. "2025,,,,,Ander aand,\n"
-		. "kompetisie-2022,INK dig- en Skryfkompetisie 2022,2022,49428,,,\n"
-	);
-	$m->bodies[70002] = INK_KOMP_FOTOS;
-
-	$summary = $m->run();
-
-	expect( $summary['created'] )->toBe( 4 );
-	expect( $m->meta[ $m->existing['gala-2026'] ][ FieldSets::kompetisieKey( 'gala_hoogtepunt' ) ] )->toBe( 'Mooi aand' );
-	expect( $m->meta[ $m->existing['gala-2025'] ][ FieldSets::kompetisieKey( 'gala_hoogtepunt' ) ] )->toBe( 'Ander aand' );
-	expect( $m->posts['gala-2026']['post_title'] )->toBe( '14 November 2026 - 11de Gala' );
-	expect( $m->captions )->toBe( array( 12 => 'Tweede' ) );
-	expect( $summary['problems'] )->toContain( 'Competition "gala-2026": caption for id 99 is not a photo of its Fotos Page.' );
-
-	// The competition is not a gala: imported, its Page kept.
-	expect( $m->posts['kompetisie-2022']['post_content'] )->toBe( 'Ou blad 49428' );
-	expect( $m->trashed )->not->toContain( 49428 );
-	expect( $summary['blanks'] )->not->toContain( 'Competition "kompetisie-2022" imported with hoogtepunt blank.' );
-} );
-
-test( 'mergeRows skips a row that matches no gala and lacks naam, jaar or bladsy', function (): void {
-	$galas  = Migration::discoverGalas( ink_kompetisie_pages() )['galas'];
-	$parsed = Migration::parseCsv( INK_KOMP_HEADER . "vreemd,Naam,2020,,,,\n" . "gala-1999,,,,,H,\n" );
-	$merged = Migration::mergeRows( $galas, $parsed['rows'] );
-
-	expect( $merged['rows'] )->toHaveCount( 3 );
-	expect( $merged['problems'] )->toHaveCount( 2 );
 } );
 
 test( 'the gala Page, its Fotos Page and the index go to the trash once photos are linked', function (): void {
-	$m = ink_kompetisie_migration( INK_KOMP_HEADER . "kompetisie-2022,K,2022,49428,,,\n" );
+	$m = ink_kompetisie_migration();
 
 	foreach ( array( 64688, 70002, 9949 ) as $fotos ) {
 		$m->bodies[ $fotos ] = INK_KOMP_FOTOS;
@@ -336,7 +277,7 @@ test( 'the gala Page, its Fotos Page and the index go to the trash once photos a
 } );
 
 test( 'a Fotos Page that yields no photos is reported, keeps its Pages and does not blank linked photos', function (): void {
-	$m = ink_kompetisie_migration( null );
+	$m = ink_kompetisie_migration();
 
 	$summary = $m->run();
 
@@ -346,7 +287,7 @@ test( 'a Fotos Page that yields no photos is reported, keeps its Pages and does 
 } );
 
 test( 'an id that is not an attachment is reported and left out; an empty Fotos Page keeps its Pages', function (): void {
-	$m                = ink_kompetisie_migration( null );
+	$m                = ink_kompetisie_migration();
 	$m->bodies[70002] = '[vc_media_grid include="7,9500,8"]';
 	$m->bodies[64688] = '';
 
@@ -359,19 +300,8 @@ test( 'an id that is not an attachment is reported and left out; an empty Fotos 
 	expect( $m->trashed )->toContain( 70001 );
 } );
 
-test( 'a missing file is fine; a file with no sleutel column fails the step and writes nothing', function (): void {
-	expect( ink_kompetisie_migration( null )->run()['error'] )->toBe( '' );
-
-	$m = ink_kompetisie_migration( "naam\nx\n" );
-
-	expect( $m->run()['error'] )->toContain( 'sleutel' );
-	expect( $m->posts )->toBe( array() );
-	expect( $m->trashed )->toBe( array() );
-	expect( $m->done )->toBeFalse();
-} );
-
 test( 'once-off: a second run writes nothing; force reconciles by marker without duplicating', function (): void {
-	$m = ink_kompetisie_migration( null );
+	$m = ink_kompetisie_migration();
 
 	expect( $m->run()['created'] )->toBe( 3 );
 	$m->posts = array();
@@ -383,27 +313,6 @@ test( 'once-off: a second run writes nothing; force reconciles by marker without
 	$forced = $m->run( true );
 	expect( $forced['created'] )->toBe( 0 );
 	expect( $forced['updated'] )->toBe( 3 );
-} );
-
-test( 'parseCsv skips a bad row and reports it; a BOM, a blank line and missing optional columns are fine', function (): void {
-	$parsed = Migration::parseCsv(
-		"\xEF\xBB\xBF" . INK_KOMP_HEADER
-		. "goeie-ry,G,2025,1,2,H,\n"
-		. "\n"
-		. "goeie-ry,Herhaal,2024,3,4,H,\n"
-		. "SLEG SLEUTEL,G,2025,1,2,H,\n"
-		. "sonder-jaar,G,twintig,1,2,H,\n"
-		. "te-kort,G\n"
-	);
-
-	expect( array_column( $parsed['rows'], 'sleutel' ) )->toBe( array( 'goeie-ry' ) );
-	expect( $parsed['problems'] )->toHaveCount( 4 );
-	expect( $parsed['error'] )->toBe( '' );
-
-	$slim = Migration::parseCsv( "sleutel,hoogtepunt\ngala-2025,Mooi\n" );
-
-	expect( $slim['rows'][0]['hoogtepunt'] )->toBe( 'Mooi' );
-	expect( $slim['rows'][0]['onderskrifte'] )->toBe( '' );
 } );
 
 
@@ -419,11 +328,6 @@ test( 'unhandledGalleries flags other forms and a gallery with no ids, not the f
 	expect( Migration::unhandledGalleries( '<p><img src="a.jpg"></p>' ) )->toHaveCount( 1 );
 } );
 
-test( 'parseCaptions reads attachment-id|caption per line', function (): void {
-	expect( Migration::parseCaptions( "12|Een; en twee\n x |nee\n13| Drie \n14|" ) )->toBe( array( 12 => 'Een; en twee', 13 => 'Drie' ) );
-	expect( Migration::parseCaptions( '' ) )->toBe( array() );
-} );
-
 test( 'summaryLine satisfies migrate-all: real work is ok, the rerun is ok', function (): void {
 	$base = array( 'skipped' => false, 'created' => 11, 'updated' => 0, 'photos' => 40, 'retired' => 21, 'problems' => array() );
 
@@ -437,10 +341,6 @@ test( 'the step runs in migrate-all ahead of generate-redirects', function (): v
 	expect( $ids )->toContain( 'kompetisies' );
 	expect( array_search( 'kompetisies', $ids, true ) )->toBeLessThan( array_search( 'generate-redirects', $ids, true ) );
 	expect( array_column( MigrateAll::steps(), 1, 0 )['kompetisies'] )->toBe( Migration::CLI_COMMAND );
-} );
-
-test( 'the file is optional: not in the files a migration needs', function (): void {
-	expect( MigrationData::FILES )->not->toContain( Migration::CSV_FILE );
 } );
 
 test( 'a retired gala path outside the fixed list redirects from the stored option', function (): void {

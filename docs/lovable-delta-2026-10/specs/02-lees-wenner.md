@@ -103,7 +103,7 @@ Uses spec 01 §11 (round 68679). Create it once.
 
 Each author: `ink_wys_moderator_terugvoer` = 1, plus one comment from post 68266. **D6 check:** turn opt-in off on one and confirm the citation and attribution go while the link stays. **No-placement check:** a post with none shows no aside, e.g. 68206 until it's placed. Add production-path unit tests (README §6, "capability without a consumer").
 
-Measure at 390, 768, 1440, logged out, then logged in as `fidelity-capture` so the hint appears. Provisional until the importer lands.
+Measure at 390, 768, 1440, logged out, then logged in as `fidelity-capture` so the hint appears. The importer is built (2026-11-03); acceptance on real data comes with the next refresh.
 
 ## Questions for owner
 

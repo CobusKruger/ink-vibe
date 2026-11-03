@@ -210,6 +210,20 @@ class Migration {
 	}
 
 	/**
+	 * Whether a legacy category under `projekte` is a challenge round: not on the exclude list and
+	 * not a competition (owner, 2026-10-31: competitions are not challenges and never count as
+	 * challenge wins). Pure.
+	 *
+	 * @param string       $slug    The category slug.
+	 * @param string       $name    The category name.
+	 * @param list<string> $exclude Slugs to leave out.
+	 * @return bool
+	 */
+	public static function isChallengeCategory( string $slug, string $name, array $exclude = array() ): bool {
+		return ! in_array( $slug, $exclude, true ) && ! ChallengeRound::isCompetition( $name );
+	}
+
+	/**
 	 * The legacy challenge categories to migrate. Overridable seam.
 	 *
 	 * Selection is by TREE, not by name: every descendant of the configured parent
@@ -242,7 +256,7 @@ class Migration {
 			);
 
 			foreach ( is_array( $children ) ? $children : array() as $child ) {
-				if ( $child instanceof \WP_Term && ! in_array( $child->slug, $exclude, true ) ) {
+				if ( $child instanceof \WP_Term && self::isChallengeCategory( $child->slug, $child->name, $exclude ) ) {
 					$rows[ (int) $child->term_id ] = (object) array(
 						'term_id'     => (int) $child->term_id,
 						'name'        => (string) $child->name,

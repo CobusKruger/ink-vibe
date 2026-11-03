@@ -4,7 +4,7 @@
 
 **Accepted (2026-11-02).** Gate passes at 390, 768 and 1440 (`maps/tuis.csv`). Hero, CTA band and sponsor strip are now emitted in Lovable's node structure (raw HTML in the patterns, `HomepageStrip`), as the header was; the featured cards keep `<article>` with a stretched title link (hover and click verified against Lovable). Accepted with evidence, in the map: link-for-`<button>` on four buttons (c), BTN-FONT (a), NR-4 meta gap (a), per-type pill tone (a), CTA padding and text colour (a), and sizes that follow Afrikaans copy and data (b). `featured-lead-author-name` was missing because fixture post 68862 (the F1 entry, now the newest) had author 1, which does not exist; it now belongs to user 3799. The hero's closed-round state was measured by unpublishing round 68854 for one capture: no MISSING or STRUCTURE, only height deltas from the longer Oktober description.
 
-**Closed-round state:** measured by drafting the fixture round (`Toetsronde`), and a standing state in the gate: `tools/fidelity/accept/closed-round.sh` (group `closed` in `gates.json`: Tuis main and hero at 390, 768, 1440; it republishes the fixture afterwards).
+**Closed-round state:** was measured by drafting a fixture round; that gate and the fixtures were removed (2026-11-03). It needs a real way to close the newest round before it can be gated again.
 
 **Status:** planned, not ratified. **Date:** 2026-11-01. **Map:** `../maps/tuis.csv` (152 ids). **Gaps:** `GAP-03-01` to `GAP-03-09`. **Depends on:** spec 01 (banner target); the InkPols current-issue renderer (N2).
 This spec holds no style values (R4, R5). Recipes are joins for the capture to check. `header-nav-competitions` is WP6, and the footer is deferred.

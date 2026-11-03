@@ -133,22 +133,12 @@ The box's only media input today is a number ("heg-ID"), which makes an editor l
 
 **After a save:** the page is cached and neither type is public, so on `save_post` of either type purge Page 59192 through the same call the site uses elsewhere for LiteSpeed. Otherwise an edit doesn't show.
 
-### 3.6 Importing old competitions: the only CSV
+### 3.6 Importing old competitions: no file
 
 **Discovery, not a list (owner, 2026-11-02):** `wp ink migrate-kompetisies`, the `kompetisies` step of `migrate-all`, ahead of `clean-shortcodes` and `generate-redirects`, finds the galas and the 2022 competition itself in the old page tree, **by meta first** (owner, 2026-11-02): the owner runs `docs/migration-tools/tag-old-competitions.sql` on production before the snapshot (runbook step 2a), which sets `ink_old_gala` = year on each gala Page, `ink_old_gala_fotos` = year on its Fotos Page and `ink_old_competition` = year on the competition Page (49428). **Fallback, with a warning "found by title; tag it":** a top-level Page whose title holds "gala" with a child Page whose title starts "Foto" (the Fotos Page); a tagged gala lacking a tagged Fotos Page takes that child; a tagged Fotos Page under an untagged gala is used. An untagged competition is not found. Name, year (the tag, else the first four-digit year in the title) and body come from the gala or competition Page; the photos from the Fotos Page; the key is `gala-<jaar>` (`-2` for a second in a year). `INK se Gala-Aande` (28477) is the fixed index. A gala added to production before the cutover imports with no file edit; a gala Page with no Fotos Page is reported, not guessed. Same shape as `migrate-inkpols`: once-off (`ink_kompetisies_csv_migration_done`), get-or-create on marker `ink_kompetisie_source_key`. **It runs before `clean-shortcodes`** because the photos are the ids in the Fotos Pages' gallery shortcodes; where those are already gone it reads none, reports it, links nothing and keeps the Pages.
 
-**`../migration-data/kompetisies-oud.csv` is optional overrides only and may be missing**, read through `InkKernelMigrationData::path()` and no longer a required file (so not in `MigrationData::FILES` or `tools/rehearsal-prep.mjs`). Blank owner cells import and are listed.
+**No file is read** (2026-11-03): `kompetisies-oud.csv` is gone. The galas and the 2022 competition come from the tags on the old Pages; the highlight and captions are edited on the site.
 
-**What it holds: what the pages cannot say.** A row whose `sleutel` is a discovered key (or a bare year only one gala has) overrides that gala with each cell it fills; a blank cell overrides nothing. The competition is `kompetisie-<jaar>` (`kompetisie-2022`), discovered from its tag, so it needs no row; a row keyed so only fills its `hoogtepunt`. A row matching nothing found still works if it carries its own `naam`, `jaar` and `bladsy`. The shipped file holds ten empty `gala-<jaar>` rows for the owner to fill, plus the former `kompetisie-2022` row, now redundant.
-
-| Column | Holds | Filled by |
-|---|---|---|
-| `sleutel` | Required. `gala-2025`, a bare year, or `kompetisie-2022` | Owner |
-| `hoogtepunt` | `gala_hoogtepunt` | **Owner** |
-| `onderskrifte` | Optional captions, one `attachment-id\|caption` per line, written to the attachment's caption. The id is the one in the Fotos Page's shortcodes (and the media library). It replaces the former path-keyed `fotos` cell, whose photo list is no longer in the file | **Owner** |
-| `naam`, `jaar`, `bladsy`, `fotos_bladsy` | Overrides, or the full description of a competition no tag marks (`bladsy` is copied to `post_content` verbatim) | Builder |
-
-**Who fills it:** the owner, for `hoogtepunt` and captions. It's outside the repo, and 285 bytes where it was 151 KB (a backup is in `../migration-data/backup/`).
 The ten galas and how their Fotos Pages hold the photos (checked: the parser reads all forms; per-year counts are 2025: 656, 2024: 441, 2023: 464, 2022: 571, 2021: 431, 2020: 386, 2019: 166, 2018: 101, 2017: 103, 2016: 60, 3,379 in all). Kept in page order, repeats dropped:
 
 | `jaar` | `bladsy` | `fotos_bladsy` | Photos on the Fotos Page, and how they're held |
@@ -407,7 +397,7 @@ Page 66669 (ATKV-Tak Loerie) is an external competition's notice. It stays as it
 
 ## 9. Test data
 
-Create on dev for build and measurement, keep out of the theme and plugin, and list what was created. **Never Lovable's English, and never in `kompetisies-oud.csv`.** Test values use a `Toets` prefix. A refresh wipes them, so keep them in one re-runnable `tools/fixtures/kompetisies-toets.php`, run with `node tools/local.mjs wp eval-file` after `migrate-all` at step H, like the fixtures in `03-tuis` §9.
+There is no test data (the fixture scripts were removed 2026-11-03). Competitions and directory listings are added on the site through the post types. **Never Lovable's English, and never in `kompetisies-oud.csv`.**
 
 | Creates | Needs | Why |
 |---|---|---|
@@ -471,7 +461,7 @@ Fictional prices are D4 and match the design's structure. The LET WEL disclaimer
 
 ## 12. Docs to update at build
 
-`docs/migration-data.md` and `../migration-data/README.md` (`kompetisies-oud.csv`), `docs/migration-runbook.md` (step list, Verify table, never `--force` on live), `docs/prod-menu-mapping.md` rows 18 and 21, `docs/afrikaans-terms.md` (new terms; correct the `kadens` row), `_bmad-output/planning-artifacts/epics.md` Epic 12B (competitions don't reuse the monthly machinery).
+`docs/migration-data.md`, `docs/migration-runbook.md` (step list, Verify table, never `--force` on live), `docs/prod-menu-mapping.md` rows 18 and 21, `docs/afrikaans-terms.md` (new terms; correct the `kadens` row), `_bmad-output/planning-artifacts/epics.md` Epic 12B (competitions don't reuse the monthly machinery).
 
 ## 12a. Every photo of a gala year (owner, 2026-11-02)
 
@@ -481,4 +471,4 @@ Fictional prices are D4 and match the design's structure. The LET WEL disclaimer
 
 **Q1 (resolved 2026-11-02: every photo; see §12a). How many photos per gala year?** The ruling says the old Fotos Pages feed the gallery. They hold up to 656 photos a year; the design shows two to four. Searched `docs/`, `_bmad-output/`, the code and `owner-rulings.md`: no number.
 - **Resolved:** all of them, read from the Fotos Pages by the migration; no number in any file.
-- **Does not block the build:** it changes only the CSV's contents.
+- **Does not block the build.**

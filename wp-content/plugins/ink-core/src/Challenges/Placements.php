@@ -25,7 +25,8 @@ defined( 'ABSPATH' ) || exit;
  * per-Gradering-per-round automatically. The read grouping ({@see self::arrange()}) is
  * additionally keyed by category ({@see Pools::poolKey()}) so the one-per-rank guard
  * scopes per (Gradering × category) and per-category winners are not collapsed away
- * (the D1 read-collapse fix).
+ * (the D1 read-collapse fix). Only the Gedigte are graded (D7): Storie and Artikel are one
+ * pool each, keyed `|<category>`.
  *
  * Rank semantics (glossary): rank 1 = **algehele wenner** ("[Maand] algehele wenner");
  * ranks 2–3 = **wenner** ("[Maand] wenner"). {@see self::record()}/{@see self::clear()}
@@ -166,15 +167,26 @@ final class Placements {
 			$gradering = Scalar::asString( $entry['gradering'] ?? '' );
 			$category  = Scalar::asString( $entry['category'] ?? '' );
 
-			// Resolve to the pool the entry competes in: Meester folds into Goud
-			// (elevated Goud member); empty/junk has no valid Tier and is dropped.
-			$entry_tier = Tier::tryFrom( $gradering );
-
-			if ( $id <= 0 || null === $entry_tier || ! self::isValidRank( $rank ) ) {
+			if ( $id <= 0 || ! self::isValidRank( $rank ) ) {
 				continue;
 			}
 
-			$by_pool[ Pools::poolKey( $entry_tier->competitionTier()->value, $category ) ][] = array(
+			// Only the Gedigte are graded (D7): every other category is one pool, whatever
+			// the writer's grade. A Gedig resolves to the pool it competes in: Meester folds
+			// into Goud (elevated Goud member); empty/junk has no valid Tier and is dropped.
+			if ( '' !== $category && ! Pools::isGraded( $category ) ) {
+				$pool_key = Pools::poolKey( '', $category );
+			} else {
+				$entry_tier = Tier::tryFrom( $gradering );
+
+				if ( null === $entry_tier ) {
+					continue;
+				}
+
+				$pool_key = Pools::poolKey( $entry_tier->competitionTier()->value, $category );
+			}
+
+			$by_pool[ $pool_key ][] = array(
 				'id'                 => $id,
 				'rank'               => $rank,
 				'is_algehele_wenner' => self::isAlgeheleWenner( $rank ),

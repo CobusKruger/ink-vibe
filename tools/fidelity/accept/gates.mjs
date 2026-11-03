@@ -7,7 +7,7 @@
  *                          [--ref-dir D] [--refresh-refs] [--list]
  * Normally run via tools/fidelity/accept/gate-all.sh. Data: gates.json. Exit 0 only if every gate passed.
  *
- * Default groups: everything except `closed` (closed-round.sh runs that one with the fixture round drafted).
+ * Default groups: all of them.
  */
 import { mkdirSync, rmSync, readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
@@ -20,7 +20,7 @@ const argv = process.argv.slice(2);
 const opt = (n, d = null) => { const i = argv.indexOf(`--${n}`); return i >= 0 ? argv[i + 1] : d; };
 const flag = (n) => argv.includes(`--${n}`);
 const label = opt('label', `run-${new Date().toISOString().replace(/[-:T]/g, '').slice(0, 12)}`);
-const groups = opt('group') ? opt('group').split(',') : [...new Set(gatesFile.gates.map((g) => g.group))].filter((g) => g !== 'closed');
+const groups = opt('group') ? opt('group').split(',') : [...new Set(gatesFile.gates.map((g) => g.group))];
 const only = opt('only');
 const refDir = opt('ref-dir', 'tmp/fidelity-captures/accept/ref');
 const outDir = `tmp/fidelity-captures/accept/${label}`;

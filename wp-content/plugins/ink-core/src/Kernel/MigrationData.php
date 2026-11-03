@@ -32,7 +32,6 @@ final class MigrationData {
 	public const FILES = array(
 		'writer-accounts.csv',
 		'writer-aliases.csv',
-		'result-post-authors.csv',
 		'inkpols-uitgawes.csv',
 	);
 

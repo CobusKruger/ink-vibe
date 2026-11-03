@@ -26,7 +26,8 @@
  *      Only URLs are replaced, never the bare domain, so addresses such as
  *      moderator@ink.org.za in the data are left alone.
  *   4. copies the uploads and plugins in, deploys ink-core + ink-foundation (deploy-to-local.mjs)
- *   5. activates them, sets WP_ENVIRONMENT_TYPE, INK_MAIL_SINK and
+ *   5. activates them, deactivates the retired plugins and FluentSMTP (the prod database
+ *      arrives with prod's plugin state), sets WP_ENVIRONMENT_TYPE, INK_MAIL_SINK and
  *      INK_MIGRATION_DATA_DIR, flushes rewrites and caches
  *
  * Mail: Local runs Mailpit for this site. With INK_MAIL_SINK set, ink-core
@@ -43,6 +44,17 @@ import {
   REPO_ROOT, die, findSite, mysql, mysqlImport, requireConnection, say, systemTar, wp,
 } from './lib/local-site.mjs';
 import { mirror } from './lib/mirror.mjs';
+
+// Plugins the new site retires (docs/staging-setup-guide.md 4a), plus FluentSMTP, which would send
+// through prod's mail server. The prod database has them all active. Deactivated, never deleted.
+// `simple-css` matters most: its stored CSS sets the body text to 14px on every page.
+const RETIRED_PLUGINS = [
+  'wordpress-seo', 'loginizer', 'js_composer', 'qode-framework', 'youzify', 'youzify-frontend-submission',
+  'cbxuseronline', 'classic-widgets', 'joinup-core', 'ultimate-social-media-icons', 'woocommerce-legacy-rest-api',
+  'wpcustom-category-image', 'wps-bidouille', 'automatic-translator-addon-for-loco-translate', 'document-emberdder',
+  'maintenance', 'pdf-embedder', 'string-locator', 'advanced-cron-manager', 'comments-plus', 'report-content',
+  'invite-anyone', 'redirect-redirection', 'simple-css', 'fluent-smtp',
+];
 
 // --- Arguments -------------------------------------------------------------
 const opts = { sql: '', uploads: '', plugins: '', oldUrl: '', mailSink: '', migrationData: '', apply: false };
@@ -76,7 +88,7 @@ const tmpDir = path.join(REPO_ROOT, 'tmp');
 // All migration data lives outside the repo (docs/migration-data.md). Same list as
 // Ink\Kernel\MigrationData::FILES; checked now, before the database is touched.
 const migrationData = opts.migrationData ? path.resolve(opts.migrationData) : path.resolve(REPO_ROOT, '..', 'migration-data');
-for (const file of ['writer-accounts.csv', 'writer-aliases.csv', 'result-post-authors.csv', 'inkpols-uitgawes.csv']) {
+for (const file of ['writer-accounts.csv', 'writer-aliases.csv', 'inkpols-uitgawes.csv']) {
   if (!existsSync(path.join(migrationData, file))) die(`Migration data not found: ${path.join(migrationData, file)}. Pass --migration-data <dir>.`);
 }
 
@@ -205,6 +217,13 @@ deploy(site, { apply: true });
 say('5/5 Activating, constants, rewrite rules');
 wp(site, ['plugin', 'activate', 'ink-core'], { bare: true });
 wp(site, ['theme', 'activate', 'ink-foundation'], { bare: true });
+const activeNames = (wp(site, ['plugin', 'list', '--status=active', '--field=name'], { bare: true, capture: true, allowFail: true }) ?? '')
+  .split('\n').map((name) => name.trim());
+const retired = RETIRED_PLUGINS.filter((name) => activeNames.includes(name));
+if (retired.length > 0) {
+  wp(site, ['plugin', 'deactivate', ...retired], { bare: true, allowFail: true });
+  console.log(`  deactivated ${retired.length} retired plugin(s): ${retired.join(', ')}`);
+}
 wp(site, ['config', 'set', 'WP_ENVIRONMENT_TYPE', 'local', '--type=constant', '--quiet'], { bare: true });
 wp(site, ['config', 'set', 'INK_MAIL_SINK', mailSink, '--type=constant', '--quiet'], { bare: true });
 wp(site, ['config', 'set', 'INK_MIGRATION_DATA_DIR', migrationData.split(path.sep).join('/'), '--type=constant', '--quiet'], { bare: true });
@@ -217,6 +236,8 @@ console.log(`  home:        ${get(['option', 'get', 'home'])}`);
 console.log(`  environment: ${get(['eval', 'echo wp_get_environment_type();'])}`);
 console.log(`  ink-core:    ${get(['plugin', 'get', 'ink-core', '--field=status'])}`);
 console.log(`  theme:       ${get(['theme', 'get', 'ink-foundation', '--field=status'])}`);
+const stillActive = get(['plugin', 'list', '--status=active', '--field=name']).split('\n').map((name) => name.trim());
+console.log(`  retired plugins still active: ${RETIRED_PLUGINS.filter((name) => stillActive.includes(name)).join(', ') || 'none'}`);
 console.log(`  posts:       ${get(['eval', 'global $wpdb; echo $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_status=\'publish\'");'])}`);
 console.log();
 console.log(`Next: log in at ${targetUrl}/wp-admin/, then run: node tools/local.mjs wp ink migrate-all`);

@@ -141,7 +141,7 @@ final class Coverage {
 	}
 
 	/**
-	 * The pool slots (grade|type|rank) shared by more than one DIFFERENT entry: ties. Pure.
+	 * The pool slots (grade|type|rank, the grade only for a Gedig) shared by more than one DIFFERENT entry: ties. Pure.
 	 *
 	 * @param list<array{grade:string, type:string, rank:int, entry_id:string}> $winners Parsed winners.
 	 * @return list<string> Descriptors "grade|type|rank".
@@ -150,7 +150,9 @@ final class Coverage {
 		$by_slot = array();
 
 		foreach ( $winners as $winner ) {
-			$slot = ( $winner['grade'] ?? '' ) . '|' . ( $winner['type'] ?? '' ) . '|' . ( $winner['rank'] ?? 0 );
+			$type = (string) ( $winner['type'] ?? '' );
+			// Only the Gedigte are graded (D7): a Storie or Artikel competes in one pool whatever grade header it sat under.
+			$slot = ( Pools::isGraded( $type ) ? ( $winner['grade'] ?? '' ) : '' ) . '|' . $type . '|' . ( $winner['rank'] ?? 0 );
 
 			$by_slot[ $slot ][ (string) ( $winner['entry_id'] ?? '' ) ] = true;
 		}

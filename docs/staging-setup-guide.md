@@ -235,7 +235,7 @@ wp theme delete ink-v2   # legacy theme; keep a default theme installed as fallb
 - **Comments Plus / Disable Comments** — `ink-core` already closes comments via filters. Retired (owner, 2026-10-29).
 - **Advanced Cron Manager, Report Content, Invite Anyone, Redirect Redirection** — retired (owner, 2026-10-29). Report Content is replaced by the `ink-core` form; Invite Anyone only served BuddyPress Groups (off); `redirect-redirection` is **not** the "Redirection" plugin of 4b.
 
-> **On a dev/rehearsal copy, also deactivate FluentSMTP** (`wp plugin deactivate fluent-smtp`). The prod database brings its settings with it: it would send through prod's mail server (`mail.ink.org.za`) with prod's account. `INK_MAIL_SINK` still redirects every recipient, so members are safe, but the mail would leave the machine and bounce on prod's account instead of landing in Local's Mailpit. Keep it on production (4b).
+> **On a dev/rehearsal copy FluentSMTP is also deactivated** (`tools/rehearsal-prep.mjs` does this together with the list above; by hand: `wp plugin deactivate fluent-smtp`). The prod database brings its settings with it: it would send through prod's mail server (`mail.ink.org.za`) with prod's account. `INK_MAIL_SINK` still redirects every recipient, so members are safe, but the mail would leave the machine and bounce on prod's account instead of landing in Local's Mailpit. Keep it on production (4b).
 
 ### 4b. Keep / install the production plugin set (active on staging **and** production)
 
@@ -291,7 +291,7 @@ wp ink migrate-all
 
 It runs every migration step in the required order (sanitise, pages, users, gradering, subscriptions, content re-typing, challenges, result posts, InkPols, cleanup, navigation, follows, options, redirects, media checks), stops at the first failure, and flags any step that printed nothing or only zeros. Each step's outcome is stored, so a re-run resumes where it stopped; `--from=<step>` restarts from a step and `--reset` clears the stored state. The commands are CLI-only and their output is in Afrikaans.
 
-Gradering is derived from the old result posts (`wp ink derive-tiers`); no tier file is needed. To import a hand-built tier CSV instead, pass `--tiers=<csv>`.
+Gradering is derived from the old result posts (`wp ink derive-tiers`); no tier file is needed.
 
 The step list, the input files, and how to check the result are in [migration-runbook.md](./migration-runbook.md).
 
@@ -410,14 +410,16 @@ The steps `wp ink migrate-all` runs, in order. Each can also be run on its own; 
 | 1 | `ink migrate-sanitise` | Strip transients + finished Action Scheduler rows |
 | 2 | `ink ensure-pages` | Create the system Pages the theme's templates and links need |
 | 3 | `ink migrate-users` | Collapse non-staff onto `subscriber`; optional legacy-meta clean |
-| 4 | `ink derive-tiers` | Derive each writer's gradering from the old result posts (Gedigte wins); with `--tiers=<csv>`, `ink migrate-tiers <csv>` imports a hand-built file instead |
+| 4 | `ink derive-tiers` | Derive each writer's gradering from the old result posts (Gedigte wins) |
 | 5 | `ink verify-subscriptions` | Read-only WooCommerce Memberships report |
 | 6 | `ink migrate-library-training` | `/biblioteek/`→`biblioteek_item`, `/opleiding/`→`opleiding_artikel` |
 | 7 | `ink migrate-posts` | Flat posts → typed CPTs (else `skryfwerk`); keeps moderator result posts as posts |
 | 8 | `ink migrate-challenges` | Legacy challenge categories → `uitdaging` + round terms |
 | 9 | `ink sync-challenge-entries` | Attach posts filed under a challenge's source category to its round |
 | 10 | `ink link-result-posts` | Link each result post to its uitdaging (by month and year) |
+| 10b | `ink import-winners` | Every win on the old result posts → a record on its round (all categories, with or without a post or an account); placements and entry-Gradering snapshots on the winning posts found |
 | 11 | `ink migrate-inkpols` | `inkpols-uitgawes.csv` → one `inkpols_uitgawe` per row (draft until the row is complete); link existing PDF + cover; record 301 sources; trash the old Pages |
+| 11b | `ink migrate-kompetisies` | Old galas and the 2022 competition (found by the tags from `tag-old-competitions.sql`) → `kompetisie` posts; photos linked; old Pages trashed and 301ed. Must run before `clean-shortcodes` |
 | 12 | `ink clean-shortcodes` | Strip legacy WPBakery `[vc_*]`, keep inner content |
 | 13 | `ink rebuild-navigation` | Build canonical "Hoofnavigasie" (new IA) |
 | 14 | `ink migrate-follows` | Confirmed friendships → two directed follows; trim BP activity >2yr |

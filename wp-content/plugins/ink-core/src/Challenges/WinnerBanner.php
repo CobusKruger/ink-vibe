@@ -96,7 +96,10 @@ final class WinnerBanner {
 			return '';
 		}
 
-		$grade = Scalar::asString( get_post_meta( $post_id, Entry::GRADERING_META_KEY, true ) );
+		// Only the Gedigte are graded (D7): a Storie or Artikel banner carries no grade colour.
+		$grade = Pools::isGraded( (string) get_post_type( $post_id ) )
+			? Scalar::asString( get_post_meta( $post_id, Entry::GRADERING_META_KEY, true ) )
+			: '';
 
 		return self::toHtml( $rank, $grade, Placements::placementLabel( $rank ) );
 	}

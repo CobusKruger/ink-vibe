@@ -16,11 +16,11 @@
 - InkPols archive, issue page and admin (publish guard). Kompetisies (`kompetisie` and `eksterne_kompetisie` post types) and `/kompetisies/gala/<jaar>/`. Header with Kompetisies and the mobile menu below 1024. The Challenges page (`/uitdaging/`).
 - Month-based round dates (a monthly round runs from the first to the last day of its month).
 
-**Accepted** (capture gate: MISSING, STRUCTURE and DRIFT all 0, with accepted divergences disclosed in code): Tuis, Uitslae (all tabs), Lees (18 states, signed in and out), InkPols archive and issues, Kompetisies (all states), header, Challenges. The refresh proof passed on 2026-11-02: `migrate-all` clean, 54 URLs as expected, 68 of 68 gates (`migration-runbook.md`). **Acceptance of the winner cards and the podium is provisional: it was measured on test fixtures** (`migration-runbook.md` "Dev-only data"), because the importer does not exist.
+**Accepted** (capture gate: MISSING, STRUCTURE and DRIFT all 0, with accepted divergences disclosed in code): Tuis, Uitslae (all tabs), Lees (18 states, signed in and out), InkPols archive and issues, Kompetisies (all states), header, Challenges. The refresh proof passed on 2026-11-02: `migrate-all` clean, 54 URLs as expected, 68 of 68 gates (`migration-runbook.md`). **Acceptance of the winner cards and the podium is provisional: it was measured on test data that has since been removed** (the fixture scripts, `migration-runbook.md` "Test data"). Re-accept them on real data once the winner importer exists.
 
-**Not accepted or still open:** the closed-round hero fails the gate at 768 (height only); `verify` is intermittent on `reading-response-author` width; sideways scroll at 390 on Kompetisies (526) and the issue page (422) should clear with real copy; Afrikaans copy-debt markers are unresolved; the footer is deferred; the owner still has to run `docs/migration-tools/tag-old-competitions.sql` on production before the next snapshot; the InkPols CSV holds dummy `Toets…` text that goes live (replace it before launch).
+**Not accepted or still open:** the closed-round hero gate (fixture-driven) was removed, its last result was a failure at 768 (height only); `verify` is intermittent on `reading-response-author` width; sideways scroll at 390 on Kompetisies (526) and the issue page (422) should clear with real copy; Afrikaans copy-debt markers are unresolved; the footer is deferred; the owner still has to run `docs/migration-tools/tag-old-competitions.sql` on production before the next snapshot; the InkPols CSV holds dummy `Toets…` text that goes live (replace it before launch).
 
-**Out of scope and still pending (separate work, `winner-cleanup.md`):** the winner cleanup, the **winner importer** (placements, Gradering snapshots and win records from the reviewed lists; until then dev has 0 placements), the **Gradering fix** (Gedigte-only, `Pools` and `Ingestion::awardPromotions`), and removing the competition-like rounds from the 136 created (`winner-cleanup.md` §7). The demo winner filter in the theme's `functions.php` is to be deleted once real data flows. The 45 PHPCS errors are the last item in the worklist, to be triaged after everything else.
+**Out of scope and still pending (separate work, `winner-cleanup.md`):** the winner cleanup, the **winner importer** (placements, Gradering snapshots and win records from the old result posts), the **Gradering fix** (Gedigte-only) and the competition exclusion are built (2026-11-03, `winner-cleanup.md` §2) and still to be proved on a real refresh. The demo winner filter in the theme's `functions.php` is to be deleted once real data flows. The 45 PHPCS errors are the last item in the worklist, to be triaged after everything else.
 
 ## 1. Read these first, in this order
 
@@ -89,7 +89,7 @@ Where dev differs, dev is wrong. The footer is known to be a mess and is deferre
 | Winner cards | One card, rendering nothing. Design: `components/home/ChallengeSection.tsx` |
 | Featured, sponsors, CTA | Present; not re-measured against the current design |
 
-The data underneath: on dev there are **0 placements and 0 entry-Gradering snapshots**. `WinnersPost::featured()` returns a payload with no winners, so `FeaturedWinners::toHtml()` prints nothing. The demo filter `ink_foundation_homepage_demo_winner()` in the theme's `functions.php` must be deleted once real data flows.
+The data underneath: on dev there are **0 placements and 0 entry-Gradering snapshots**. `WinnersPost::featured()` returns a payload with no winners, so `FeaturedWinners::toHtml()` prints nothing. The theme's demo winner filter is already deleted (`ResultsPageTest` pins it).
 
 **Dependency:** the Gradering fix and the winner importer are separate work, in `winner-cleanup.md` §7. They supply the placements and lifetime win counts. Until they land, the winner cards and the podium can't pass acceptance on real data.
 
@@ -104,7 +104,7 @@ Scope (owner, 2026-11-01): **all page work in `docs/lovable-delta-2026-10/README
 1. **Prepare the reference (step B).** These design files have **zero** audit-ids: `ChallengeSection.tsx`, `MagazineSection.tsx`, `ResultsBanner.tsx`, `ChallengeResults.tsx`, `Magazine.tsx`, `MagazineIssue.tsx`. `Competitions.tsx` has 4, and the `ReadStory.tsx` winner aside needs them too. Nothing can be measured without them. Add them, as the fidelity work did for the other pages: Lovable didn't create the ids, our fidelity work did. **The owner approved this (2026-10-31): audit-ids only in `verse-haven/`, no visual changes.** Restore the ids from `maps/tuisblad.csv` where the rebuilt section still has a counterpart, and build the preview with `vite preview`, not dev.
 2. **Write the build specs (step D):** `specs/<NN>-<slug>.md` and `maps/<slug>.csv` per work package, as §3.2 describes: section spine, audit-id map, a recipe or `RECIPE-GAP` per element, a data source per field, copy keys. **Give the owner all recipe gaps in one batch and wait for ratification before building.**
 3. **Build the results page (N1, D5):** `/uitdaging/<slug>/uitslae/`, a rewrite endpoint and `templates/single-uitdaging-uitslae.html`, per `verse-haven/src/pages/ChallengeResults.tsx`. The old winners post 301s to it. Includes the judges' letter and honourable mentions (D8). Citations show only if the author opted in (D6). Reuse `Placements`, `ModeratorFeedback`, `WinnersPost`, `ResultPostLinker`; read them first.
-4. **Build the homepage:** the section order in §4, new blocks `ink/uitslae-banier` and the InkPols section, four cards on real data, remove the old band and the demo filter. Pages are code: template + pattern + blocks, never `post_content`. Each new page stylesheet is layout only, with a load gate covering every consumer.
+4. **Build the homepage:** the section order in §4, new blocks `ink/uitslae-banier` and the InkPols section, four cards on real data, remove the old band. Pages are code: template + pattern + blocks, never `post_content`. Each new page stylesheet is layout only, with a load gate covering every consumer.
 5. **Build the rest:** InkPols archive and issue per `inkpols.md` (N2, N3; the home section shares the current-issue renderer, so build these first), the reading-page aside (N7), Kompetisies (N4; rulings D2–D4), then the header and Biblioteek/Opleiding headings (E4, E6).
 6. **Accept (step G)** at 390, 768 and 1440: deploy, confirm with a cache-busted curl, `determinism-check.sh`, capture both sides, `run.sh diff`, `run.sh verify`. **The gate: zero `MISSING` and `STRUCTURE`, and every `DRIFT` closed or recorded as an accepted divergence from §3 with a disclosure in code.** Close the harness gaps in the strategy's §3.5 as needed.
 7. **Prove it survives a refresh (step H):** restore the prod snapshot, run `migrate-all`, curl every new URL, and repeat step 6 with the same result. A page that only works on hand-edited data is not done.
@@ -124,14 +124,14 @@ Scope (owner, 2026-11-01): **all page work in `docs/lovable-delta-2026-10/README
 
 Run `git status` and `git log` first; nothing is pushed. Work on a branch.
 
-**The winner cleanup runs before this round, not beside it** (owner, 2026-10-31). Don't run the two at once. `build-winner-lists.php`, `LegacyResultsParser.php`, the CSVs and the Gradering fix and importer (`winner-cleanup.md` §7) belong to that work; don't change their mechanism here.
+The Gradering fix and the winner importer (`winner-cleanup.md`) are separate work; don't change `LegacyResultsParser.php` or the migration inputs from here.
 
 ## 8. Stale information to ignore
 
 - `HANDOVER.md` §1 and §5 describe an old branch and machine, and CSVs in the repo. §3 and §5.1 are still useful.
 - Any mention of "1ste/2de/3de plek" as labels: withdrawn. Any mention of competitions as rounds: wrong. **Komps are not challenges** (owner, 2026-10-31); they work differently and have different prizes.
 - (Stale: the 2026-11-02 refresh created 136 rounds, eight of them competition-like; see "Status after the round".)
-- `inkpols-uitgawes.csv` holds **dummy metadata** ("Toetstitel: …"). That's expected; the owner replaces it. Also, the fidelity log says no CSS exists for `ink-inkpols*` classes, so check before sharing renderers with the archive.
+- `inkpols-uitgawes.csv` holds the owner's real metadata (8 issues, 2026-11-03). Also, the fidelity log says no CSS exists for `ink-inkpols*` classes, so check before sharing renderers with the archive.
 
 ## 9. Mistakes already made, so you don't repeat them
 

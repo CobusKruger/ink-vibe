@@ -255,6 +255,6 @@ A page is done only when:
 - it passes Afrikaans terminology checks
 - it remains maintainable in the WordPress Site Editor
 - **it is registered in code** (`SystemPages::PAGES`, a post type's archive/single, or a rewrite endpoint in `SystemPages::ENDPOINT_TEMPLATES`), with its layout in template + pattern + blocks and nothing in `post_content`
-- **it survives `wp ink migrate-all`** from a fresh prod copy: its URL is a row in the `migration-runbook.md` Verify table and answers as expected on the refreshed database; test data lives in `tools/fixtures/`, not in the theme or plugin
+- **it survives `wp ink migrate-all`** from a fresh prod copy: its URL is a row in the `migration-runbook.md` Verify table and answers as expected on the refreshed database; there is no test data: pages show migrated data
 - **it is accepted by the harness diff** (`tools/fidelity/run.sh diff --fail-on MISSING,STRUCTURE,DRIFT` at 390, 768 and 1440; every `DRIFT` closed or recorded as an accepted divergence with a disclosure in code), against a build spec and audit-ids written before the code (`docs/lovable-delta-2026-10/README.md` §3.2)
 - primitives (buttons, cards, pills, forms, headings, bands) live only in `primitives.css`

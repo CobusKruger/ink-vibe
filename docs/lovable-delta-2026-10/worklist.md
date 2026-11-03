@@ -52,15 +52,15 @@ Ticked only when an agent has reported it and the orchestrator has read the repo
 **Finish**
 - [x] Word-pasted poems: no huge gaps; 4 stanza-detection and empty-line bugs fixed in GedigBody (in repo, not yet deployed; changes how 1,439 of 11,250 poems render)
 - [x] 16px check: no regression from the 16px body or the lost input margin on any page; `meld-aan` capture aborted because the page is now `/teken-in/` (map still named `meld-aan.csv`). Pages with Lovable counterparts still fail the gate on old Stage 1 maps (missing-ink rows), unrelated to this round
-- [x] Refresh proof (2026-11-02): restore + tag SQL + `migrate-all` clean (20 steps ok), 54 URLs as expected, gates 68 of 68 with MISSING/STRUCTURE/DRIFT 0 once fixtures are rebuilt by script. Open: closed-round hero fails the gate at 768 (height only); `verify` intermittent on `reading-response-author` width (0.015-0.3px); 136 rounds created vs 128 expected (competition-like rounds, winner-cleanup domain)
+- [x] Refresh proof (2026-11-02): restore + tag SQL + `migrate-all` clean (20 steps ok), 54 URLs as expected, gates 68 of 68 with MISSING/STRUCTURE/DRIFT 0 on fixtures that have since been removed. Open: `verify` intermittent on `reading-response-author` width (0.015-0.3px); 136 rounds created vs 128 expected (competition-like rounds, winner-cleanup domain)
 - [x] Docs in delta README §5 updated: every row DONE (the harness row, `targets.json` and `agent-brief.md` §2.1, closed 2026-11-03)
-- [x] Acceptance gate promoted out of `tmp/` into `tools/fidelity/accept/` (one command, `gate-all.sh`; 68 of 68 plus 6 closed-round gates reproduced 2026-11-03)
+- [x] Acceptance gate promoted out of `tmp/` into `tools/fidelity/accept/` (one command, `gate-all.sh`; 68 of 68 reproduced 2026-11-03; the 6 closed-round gates were removed with the fixtures)
 - [ ] Commit, when the owner asks
 - [ ] (running) PHPCS: triage and fix the 46 errors (45 at HEAD + 1 new); then re-run the full gate (tools/fidelity/accept/gate-all.sh) once more on the final code
 
 ## Separate work, not in this list
 
-- Winner cleanup, Gradering fix and importer (`docs/handoffs/winner-cleanup.md`). Until they land, winner cards and the podium are measured on test data only.
+- Gradering fix, competition exclusion and winner importer: built 2026-11-03 (`docs/handoffs/winner-cleanup.md`); the winner cards and the podium get their first acceptance on real data at the next refresh.
 - Footer (deferred). LET WEL text (later).
 
 ## Waiting on the owner

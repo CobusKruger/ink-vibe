@@ -13,8 +13,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Reads the winners out of a prod "uitslae en kommentaar" post (HTML written by hand over
- * ten years, so the layout drifts). Rule set, following the July 2026 extraction spec
- * (docs/data-cleanup/winners/list of winner announcement posts.md):
+ * ten years, so the layout drifts). Rule set, following the July 2026 extraction spec:
  *
  *  - Only text BEFORE the judges' commentary is read: the first line that starts with
  *    "kommentaar"/"kommentare" once a block is open (a title line carrying those words

@@ -73,7 +73,7 @@ It covers two sessions:
 - **Handoff changelog (agent finding 4).** `docs/design-handoff/README.md` last records ink-lovable `04217f7` (July). The `lovable-design-sync` skill scopes each run from that recorded hash. Record `71c0847` as the baseline at the next sync, or that sync will re-process everything since July. This is a one-line fix in strategy step C.
 - **Other stranded or stale facts the subagents found:**
   - Nothing calls `ModeratorFeedback::feedbackFor()` or the theme's `ink_foundation_wenner_banier()`; WP2 gives them their first consumer.
-  - The home winners card renders only from a theme demo filter (`functions.php:1336-1361`); the real `WinnersPost::featured()` payload carries only id/rank/title/url.
+  - (Stale, removed: the demo filter no longer exists.)
   - `SystemPages` adopts an existing prod Page with the same slug and keeps its body.
   - `/qa-bloks/` and several harness fixture URLs in `tools/fidelity/targets.json` do not survive a refresh.
 
@@ -87,12 +87,12 @@ It covers two sessions:
 
 | Item | Why it matters | Action |
 |---|---|---|
-| `migration-data/writer-accounts.csv`, `writer-aliases.csv`, `result-post-authors.csv` | Read by the migration, **not** the one-off estimate files in `docs/data-cleanup/`. The first two map old or misspelled by-lines to accounts in `TierDeriver` (`:232`, `:267`). The third names the moderators whose posts are result posts (`ResultPostAuthors.php:70`). If they are missing nothing fails, but wins under old or variant names count for nobody, and Inkmoderator's rounds may be missed. They are gitignored by the blanket `*.csv` rule. | **Done (2026-10-28):** copied to `C:\dev\ink\migration-data`, kept outside the repo by owner choice, and read via `INK_MIGRATION_DATA_DIR` (`docs/migration-runbook.md`) |
+| `migration-data/writer-accounts.csv`, `writer-aliases.csv`, `inkpols-uitgawes.csv` | The only files the migration reads (`docs/migration-data.md`). The first two map old or misspelled by-lines to accounts in `TierDeriver`; without them wins under old or variant names count for nobody. They are gitignored by the blanket `*.csv` rule. | **Done (2026-10-28):** copied to `C:\dev\ink\migration-data`, kept outside the repo by owner choice, and read via `INK_MIGRATION_DATA_DIR` (`docs/migration-runbook.md`) |
 | `tmp/post-roadmap-followup-worklist.md` | The **active** launch-prep worklist with owner decisions (e.g. the Meester-label item behind D11) | Copy, or move into `docs/` |
 | `tmp/migration-rework-worklist.md` | Decisions log of the migration rework. Mostly done, and largely captured in `docs/migration-runbook.md` | Copy (reference only) |
 | `tmp/rows-c/off-token.py` (plus `tmp/fidelity-password/off-token.py`, `tmp/r1314/offtoken.py`) | The **generator** cited by the committed Treatment C findings (12, 15–18) for the OFF-TOKEN check. Without it those findings cannot be re-run. | Copy, or move into `tools/fidelity/` and update the "Rerun" lines in those findings |
 | `tmp/nuwe-ink-prepared.sql.gz` (2026-10-25 prepared prod dump) | Source for the InkPols analysis and for rehearsals | Copy, or take a fresh prod copy |
-| `docs/data-cleanup/` | Winners/gradering canonical files (hold emails, so deliberately gitignored). Gradering is now derived by `wp ink derive-tiers`, so they are optional. | Copy if you want the history |
+| `../backup-data/` | Old winner lists and the July 2026 cleanup files (hold emails). Nothing reads them. | Copy if you want the history |
 | `_bmad/custom/config.user.toml` | Your local BMAD user config | Copy |
 | `tmp/wpcli.sh` | Helper that points wp-cli at Local's MySQL socket | **Replaced (2026-10-28)** by `node tools/local.mjs wp …`, which works on macOS and Windows |
 | The Local `nuwe-ink` site, its DB and its `wp-content/uploads` | The capture target | Rebuild: new Local site, fresh prod copy (DB + uploads), `wp ink migrate-all` |
@@ -110,7 +110,7 @@ Everything else in `tmp/` is regenerable output: captures, diffs, logs, Lovable 
 3. **Rebuild nuwe-ink.**
    - Create the Local site `nuwe-ink` and start it.
    - Use a fresh prod copy (DB + `wp-content/uploads`).
-   - Run `node tools/rehearsal-prep.mjs` (`docs/migration-runbook.md`). It also sets `INK_MIGRATION_DATA_DIR` to `../migration-data/`, so the three CSVs are read **before** `wp ink migrate-all`. Without them, writers whose wins were printed under another name lose those wins.
+   - Run `node tools/rehearsal-prep.mjs` (`docs/migration-runbook.md`). It also sets `INK_MIGRATION_DATA_DIR` to `../migration-data/`, so the migration CSVs are read **before** `wp ink migrate-all`. Without them, writers whose wins were printed under another name lose those wins.
 4. **Recreate the `fidelity-capture` user** after every refresh, because the refresh wipes it:
    - `node tools/local.mjs mysql -e "source tools/fidelity/create-capture-user.sql"` (table prefix `wpjj_`) and `node tools/local.mjs wp eval-file tools/fidelity/set-capture-password.php`;
    - then `run.sh login`.

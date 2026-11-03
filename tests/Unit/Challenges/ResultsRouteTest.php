@@ -129,6 +129,7 @@ test( 'a round with no results is a 404', function (): void {
 	$query = ink_results_wp_query();
 
 	Functions\when( 'get_posts' )->justReturn( array() );
+	Functions\when( 'get_post_meta' )->justReturn( array() ); // no stored win records either
 	\WP_Query::$ink_test_posts = array();
 
 	Functions\expect( 'status_header' )->once()->with( 404 );

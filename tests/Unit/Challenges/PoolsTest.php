@@ -68,45 +68,58 @@ test( 'group folds a Meester entry into the Goud pool; empty/junk form no pool',
 	expect( $pools )->not->toHaveKey( 'rubbish' );
 } );
 
-test( 'group folds a Meester entry into the (Goud × category) pool — D1 interaction', function (): void {
+test( 'group folds a Meester Gedig into the (Goud × category) pool; a Storie is one pool whatever its grade', function (): void {
 	$entries = array(
 		array( 'id' => 1, 'gradering' => 'goud', 'category' => 'gedig' ),
 		array( 'id' => 2, 'gradering' => 'meester', 'category' => 'gedig' ),  // → goud|gedig
-		array( 'id' => 3, 'gradering' => 'meester', 'category' => 'storie' ), // → goud|storie
+		array( 'id' => 3, 'gradering' => 'meester', 'category' => 'storie' ), // → |storie
 	);
 
 	$pools = Pools::group( $entries );
 
 	expect( $pools['goud|gedig'] )->toBe( array( 1, 2 ) );
-	expect( $pools['goud|storie'] )->toBe( array( 3 ) );
+	expect( $pools['|storie'] )->toBe( array( 3 ) );
 	expect( $pools )->not->toHaveKey( 'meester|gedig' );
+	expect( $pools )->not->toHaveKey( 'goud|storie' );
 } );
 
-test( 'group keys on (Gradering × category) when entries carry a category — the D1 fix', function (): void {
-	// One Goud Gedig + one Goud Storie + one Goud Gedig: the two categories form two
-	// distinct pools within Goud, so a per-category podium is never collapsed away.
+test( 'Gedigte pool per Gradering; Storie and Artikel are one pool each — the Gedigte-only rule (D7)', function (): void {
 	$entries = array(
 		array( 'id' => 1, 'gradering' => 'goud', 'category' => 'gedig' ),
 		array( 'id' => 2, 'gradering' => 'goud', 'category' => 'storie' ),
 		array( 'id' => 3, 'gradering' => 'goud', 'category' => 'gedig' ),
 		array( 'id' => 4, 'gradering' => 'brons', 'category' => 'gedig' ),
+		array( 'id' => 5, 'gradering' => 'brons', 'category' => 'storie' ), // same pool as id 2
+		array( 'id' => 6, 'gradering' => '', 'category' => 'artikel' ),      // never snapshotted: still pooled
+		array( 'id' => 7, 'gradering' => 'rubbish', 'category' => 'gedig' ), // a Gedig with no valid grade forms no pool
 	);
 
 	$pools = Pools::group( $entries );
 
 	expect( $pools['goud|gedig'] )->toBe( array( 1, 3 ) );
-	expect( $pools['goud|storie'] )->toBe( array( 2 ) );
 	expect( $pools['brons|gedig'] )->toBe( array( 4 ) );
-	// The collapsed Gradering-only key must NOT exist when a category is present.
+	expect( $pools['|storie'] )->toBe( array( 2, 5 ) );
+	expect( $pools['|artikel'] )->toBe( array( 6 ) );
 	expect( $pools )->not->toHaveKey( 'goud' );
+	expect( $pools )->not->toHaveKey( 'brons|storie' );
+	expect( array_merge( ...array_values( $pools ) ) )->not->toContain( 7 );
 } );
 
-test( 'poolKey / splitPoolKey round-trip (Gradering × category, and category-less)', function (): void {
+test( 'only the Gedigte are graded', function (): void {
+	expect( Pools::isGraded( 'gedig' ) )->toBeTrue();
+	expect( Pools::isGraded( 'storie' ) )->toBeFalse();
+	expect( Pools::isGraded( 'artikel' ) )->toBeFalse();
+	expect( Pools::isGraded( '' ) )->toBeFalse();
+} );
+
+test( 'poolKey / splitPoolKey round-trip (Gradering × category, category-less, and ungraded)', function (): void {
 	expect( Pools::poolKey( 'goud', 'gedig' ) )->toBe( 'goud|gedig' );
 	expect( Pools::poolKey( 'goud' ) )->toBe( 'goud' ); // category-less degrades to Gradering-only
+	expect( Pools::poolKey( '', 'storie' ) )->toBe( '|storie' );
 
 	expect( Pools::splitPoolKey( 'goud|gedig' ) )->toBe( array( 'goud', 'gedig' ) );
 	expect( Pools::splitPoolKey( 'goud' ) )->toBe( array( 'goud', '' ) );
+	expect( Pools::splitPoolKey( '|storie' ) )->toBe( array( '', 'storie' ) );
 } );
 
 test( 'poolLabel returns the Gradering label for a tier', function (): void {

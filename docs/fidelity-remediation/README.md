@@ -801,17 +801,15 @@ A findings document is not ready until:
 ### The full acceptance gate (one command)
 
 ```bash
-tools/fidelity/accept/gate-all.sh [label] [--no-fixtures] [--no-closed] [--determinism] [--refresh-refs]
+tools/fidelity/accept/gate-all.sh [label] [--determinism] [--refresh-refs]
 ```
 
 Git Bash on Windows or bash on macOS, from anywhere in the repo (it changes to the root). It finds Node through `run.sh`, needs no setup beyond the list below, and never refreshes or restores the database. Run it in the background and poll its log: it takes tens of minutes. Exit 0 only if every gate passed; the last line is `GATES: pass=N fail=M of T`.
 
 | Step | Script | What it does |
 |---|---|---|
-| 1 | `accept/fixtures.sh rebuild` | Dev-only test data in order (`tools/fixtures/*.php`, idempotent), then re-centres the relative response times (`fix-dates.php`) and flushes caches. `--no-fixtures` only re-centres |
-| 2 | `accept/gates.mjs` | Every page, state, auth and viewport in `accept/gates.json` (header, Tuis, Challenges, Uitslae and its tabs, Lees storie/gedig/artikel signed in and out, InkPols archive, year filters and three issues, Kompetisies and its states): 68 gates at 390, 768, 1440. INK is captured fresh; Lovable is captured once into `tmp/fidelity-captures/accept/ref` and reused until the preview build changes |
-| 3 | `accept/closed-round.sh` | The closed-round Tuis: drafts the fixture round "Toetsronde", gates Tuis main and the hero (6 gates), and always republishes it |
-| 4 (`--determinism`) | `accept/lees-determinism.sh`, `accept/lovable-determinism.sh` | Lees: 36 checks (3 byte-identical captures + a verify each). Lovable: the same for every stored reference. Slow; Lovable-side noise fails some on every machine, so compare the count with the last run |
+| 1 | `accept/gates.mjs` | Every page, state, auth and viewport in `accept/gates.json` (header, Tuis, Challenges, Uitslae and its tabs, Lees storie/gedig/artikel signed in and out, InkPols archive, year filters and three issues, Kompetisies and its states): 68 gates at 390, 768, 1440. INK is captured fresh; Lovable is captured once into `tmp/fidelity-captures/accept/ref` and reused until the preview build changes |
+| 2 (`--determinism`) | `accept/lees-determinism.sh`, `accept/lovable-determinism.sh` | Lees: 36 checks (3 byte-identical captures + a verify each). Lovable: the same for every stored reference. Slow; Lovable-side noise fails some on every machine, so compare the count with the last run |
 
 What it needs, none of it machine-specific in the repo:
 

@@ -61,24 +61,23 @@ class MigrateAll {
 	private const MAY_BE_ZERO = array( 'pages', 'verify-subscriptions', 'verify-redirects', 'verify-media', 'clean-shortcodes', 'recount' );
 
 	/**
-	 * The pipeline, in order. Gradering is derived from the result posts by default; give a
-	 * tier CSV path to import that file instead.
+	 * The pipeline, in order. Gradering is derived from the result posts.
 	 *
-	 * @param string $tiers Optional tier CSV path.
 	 * @return list<array{0:string,1:string}> Pairs of [step id, WP-CLI command].
 	 */
-	public static function steps( string $tiers = '' ): array {
+	public static function steps(): array {
 		return array(
 			array( 'sanitise', 'ink migrate-sanitise' ),
 			array( 'pages', 'ink ensure-pages' ),
 			array( 'users', 'ink migrate-users' ),
-			array( 'tiers', '' === $tiers ? 'ink derive-tiers' : 'ink migrate-tiers {tiers}' ),
+			array( 'tiers', 'ink derive-tiers' ),
 			array( 'verify-subscriptions', 'ink verify-subscriptions' ),
 			array( 'library-training', 'ink migrate-library-training' ),
 			array( 'posts', 'ink migrate-posts' ),
 			array( 'challenges', 'ink migrate-challenges' ),
 			array( 'challenge-entries', 'ink sync-challenge-entries' ),
 			array( 'result-posts', 'ink link-result-posts' ),
+			array( 'winners', 'ink import-winners' ),
 			array( 'inkpols', 'ink migrate-inkpols' ),
 			array( 'kompetisies', 'ink migrate-kompetisies' ),
 			array( 'clean-shortcodes', 'ink clean-shortcodes' ),
@@ -151,24 +150,6 @@ class MigrateAll {
 	}
 
 	/**
-	 * Pre-flight problems that must stop the run before anything mutates. Pure.
-	 *
-	 * The tier CSV is optional (gradering is derived from the result posts); when a path
-	 * IS given it must exist.
-	 *
-	 * @param string $tiers_path   The optional tier CSV path argument.
-	 * @param bool   $tiers_exists Whether that file exists.
-	 * @return list<string>
-	 */
-	public static function preflight( string $tiers_path, bool $tiers_exists ): array {
-		if ( '' !== $tiers_path && ! $tiers_exists ) {
-			return array( sprintf( 'Tier-CSV nie gevind nie: %s', $tiers_path ) );
-		}
-
-		return array();
-	}
-
-	/**
 	 * Register the WP-CLI trigger — ONLY under WP-CLI (never a web request).
 	 */
 	public function register(): void {
@@ -183,14 +164,13 @@ class MigrateAll {
 		\WP_CLI::add_command(
 			self::CLI_COMMAND,
 			function ( array $args, array $assoc ): void {
-				$tiers = isset( $assoc['tiers'] ) ? (string) $assoc['tiers'] : '';
-				$from  = isset( $assoc['from'] ) ? (string) $assoc['from'] : null;
+				$from = isset( $assoc['from'] ) ? (string) $assoc['from'] : null;
 
 				if ( isset( $assoc['reset'] ) ) {
 					delete_option( self::OPTION_STATE );
 				}
 
-				$report = $this->run( $tiers, $from );
+				$report = $this->run( $from );
 
 				foreach ( $report['lines'] as $line ) {
 					\WP_CLI::log( $line );
@@ -212,13 +192,12 @@ class MigrateAll {
 	/**
 	 * Run the pipeline.
 	 *
-	 * @param string      $tiers The tier CSV path.
-	 * @param string|null $from  Restart at this step id.
+	 * @param string|null $from Restart at this step id.
 	 * @return array{failed:bool, flagged:int, lines:list<string>}
 	 */
-	public function run( string $tiers, ?string $from = null ): array {
+	public function run( ?string $from = null ): array {
 		$lines    = array();
-		$problems = array_merge( self::preflight( $tiers, '' !== $tiers && $this->fileExists( $tiers ) ), $this->dataProblems() );
+		$problems = $this->dataProblems();
 
 		if ( array() !== $problems ) {
 			return array(
@@ -232,8 +211,8 @@ class MigrateAll {
 		$flagged  = 0;
 		$commands = array();
 
-		foreach ( self::steps( $tiers ) as $step ) {
-			$commands[ $step[0] ] = str_replace( '{tiers}', escapeshellarg( $tiers ), $step[1] );
+		foreach ( self::steps() as $step ) {
+			$commands[ $step[0] ] = $step[1];
 		}
 
 		foreach ( self::pending( $state, $from ) as $id ) {
@@ -318,15 +297,6 @@ class MigrateAll {
 	 */
 	protected function dataProblems(): array {
 		return MigrationData::problems( MigrationData::dir() );
-	}
-
-	/**
-	 * Whether a file exists. Overridable seam.
-	 *
-	 * @param string $path The path.
-	 */
-	protected function fileExists( string $path ): bool {
-		return is_file( $path );
 	}
 
 	/**

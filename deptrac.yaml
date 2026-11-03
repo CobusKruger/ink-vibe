@@ -321,6 +321,11 @@ deptrac:
             # depends only on Kernel/Content/Tiers, never back on Migration. No
             # Entitlement/Tiers gate (the social graph is open).
             - Social
+            # The winner importer (`wp ink import-winners`) writes the old wins as
+            # Challenges' own records (`WinRecords`, `Placements`, the entry-Gradering
+            # snapshot key). Challenges depends on Kernel/Engagement/Content/Tiers/
+            # Notifications and never back on Migration.
+            - Challenges
         Seo:
             - Kernel
             # Story 18.1: the Rank Math schema seo seam maps each reader-facing

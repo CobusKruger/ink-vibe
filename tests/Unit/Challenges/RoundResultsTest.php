@@ -110,7 +110,7 @@ test( 'forRound gives one row per placed entry, in the spec shape', function ():
 			'citation' => '',
 		)
 	);
-	expect( $by_id[6]['tier'] )->toBe( 'silwer' );
+	expect( $by_id[6]['tier'] )->toBe( '' ); // a Storie has no Gradering (D7)
 	expect( $by_id[6]['position'] )->toBe( 2 );
 } );
 
@@ -284,19 +284,79 @@ test( 'a row the round already holds is not added twice', function (): void {
 	expect( WinRecords::record( $row ) )->toBeFalse();
 } );
 
-test( 'the lifetime count counts placements by author, placed readable posts only', function (): void {
-	$args = WinRecords::lifetimeQueryArgs( 50 );
+test( 'the lifetime count is a writer win rows over all rounds, found by the account in the JSON', function (): void {
+	$row = WinRecords::row( 9, 0, 50, 1, 'storie', '', 'T', 'Skrywer', 'import' );
 
-	expect( $args['author'] )->toBe( 50 );
-	expect( $args['post_type'] )->toBe( array( 'gedig', 'storie', 'artikel' ) );
-	expect( $args['post_status'] )->toBe( 'publish' );
-	expect( $args['meta_query'][0]['key'] )->toBe( Placements::PLACEMENT_META_KEY );
-	expect( $args['meta_query'][0]['compare'] )->toBe( 'BETWEEN' );
-	expect( $args['meta_query'][0]['value'] )->toBe( array( 1, 3 ) );
-	expect( array_key_exists( 'no_found_rows', $args ) )->toBeFalse();
+	expect( $row )->toBe(
+		array(
+			'round_id' => 9,
+			'post_id'  => 0,
+			'user_id'  => 50,
+			'position' => 1,
+			'category' => 'storie',
+			'grade'    => '',
+			'title'    => 'T',
+			'byline'   => 'Skrywer',
+			'source'   => 'import',
+		)
+	);
+
+	// The needle the count searches for sits in a row exactly as it is stored, and 5 does not match 50.
+	expect( json_encode( $row ) )->toContain( '"user_id":50,' );
+	expect( json_encode( $row ) )->not->toContain( '"user_id":5,' );
+	expect( WinRecords::userLike( '"user_id":50,' ) )->toBe( '%"user_id":50,%' );
 
 	expect( WinRecords::lifetimeCountFor( 0 ) )->toBe( 0 );
+	expect( WinRecords::clearSource( '' ) )->toBe( 0 );
+} );
 
-	\WP_Query::$ink_test_posts = array( 1, 2, 3 );
-	expect( WinRecords::lifetimeCountFor( 50 ) )->toBe( 3 );
+test( 'the importer\'s records join the placements: a win with no post still shows, and a placed post is not listed twice', function (): void {
+	\WP_Query::$ink_test_posts = array( ink_results_post( 5, 'gedig', 50 ) );
+	ink_results_stub( array( 5 => array( 'goud', 1 ) ) );
+
+	$records = array(
+		json_encode( WinRecords::row( 9, 5, 50, 1, 'gedig', 'goud', 'Titel 5', '', 'import' ) ),     // the placed post, again
+		json_encode( WinRecords::row( 9, 0, 0, 2, 'storie', '', 'Verlore woorde', 'Agie', 'import' ) ), // no post, no account
+		json_encode( WinRecords::row( 9, 0, 70, 3, 'gedig', 'silwer', 'Ou gedig', '', 'import' ) ),    // no post, an account
+	);
+
+	$base = fn ( int $id, string $key ) => match ( $key ) {
+		Entry::GRADERING_META_KEY      => 'goud',
+		Placements::PLACEMENT_META_KEY => 1,
+		default                        => '',
+	};
+
+	Functions\when( 'get_post_meta' )->alias(
+		function ( int $id, string $key, bool $single = false ) use ( $records, $base ) {
+			return WinRecords::META === $key ? $records : $base( $id, $key );
+		}
+	);
+
+	$rows  = RoundResults::forRound( 9 );
+	$by_id = array();
+
+	foreach ( $rows as $row ) {
+		$by_id[ $row['title'] ] = $row;
+	}
+
+	expect( $rows )->toHaveCount( 3 );
+	expect( $by_id['Titel 5']['tier'] )->toBe( 'goud' );
+	expect( $by_id['Verlore woorde'] )->toMatchArray(
+		array(
+			'category' => 'storie',
+			'tier'     => '', // a Storie has no Gradering (D7)
+			'position' => 2,
+			'post_id'  => 0,
+			'author'   => 'Agie',
+			'user_id'  => 0,
+			'excerpt'  => '',
+		)
+	);
+	expect( $by_id['Ou gedig'] )->toMatchArray(
+		array(
+			'tier'    => 'silwer',
+			'post_id' => 0,
+			'author'  => 'Skrywer 70',
+		)
+	);
 } );

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Challenges;
 
+use Ink\Content\PostTypes;
 use Ink\I18n\Terms;
 use Ink\Kernel\Scalar;
 use Ink\Kernel\Tier;
@@ -16,28 +17,23 @@ use Ink\Kernel\Tier;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Groups a round's entries into per-Gradering competition pools.
+ * Groups a round's entries into competition pools.
  *
- * Judging is fair because writers compete only within their own Gradering: Brons vs
- * Brons, Silwer vs Silwer, Goud vs Goud (FR-49). The pool is taken from the
- * **entry-time** Gradering snapshot ({@see Entry::GRADERING_META_KEY}, Story 12.4),
- * NOT the writer's live grade — so a promotion after entry never moves an entry
- * between pools. Meester is an ELEVATED GOUD MEMBER: it forms no pool of its own but
- * competes WITHIN the Goud pool ({@see Tier::competitionTier()}), eligible to take a
- * Goud podium slot — a Meester·Gedig entry buckets into `goud|gedig` alongside the
- * Goud·Gedig entries.
+ * **Gradering is Gedigte-only** (owner, D7/D13). Poems compete within their own Gradering:
+ * Brons vs Brons, Silwer vs Silwer, Goud vs Goud (FR-49), taken from the **entry-time**
+ * snapshot ({@see Entry::GRADERING_META_KEY}), NOT the writer's live grade, so a promotion
+ * after entry never moves an entry between pools. Meester is an ELEVATED GOUD MEMBER: it forms
+ * no pool of its own but competes WITHIN the Goud pool ({@see Tier::competitionTier()}).
+ * Every other category (Storie, Artikel, anything else) is ONE pool of its own, whatever grade
+ * its writer holds: its key is `|<category>` ({@see self::poolKey()} with an empty Gradering).
  *
  * THE conflation rule: pools are governed by Gradering ({@see Tier}) ONLY. There is
- * zero `Ink\Entitlement` here — a paid/free lidmaatskap never affects the pool. The
- * read helper feeds the placement records (Story 12.6) and the R2 ingestion (12A).
+ * zero `Ink\Entitlement` here: a paid/free lidmaatskap never affects the pool. The read helper
+ * feeds the placement records (Story 12.6) and the R2 ingestion (12A).
  *
- * Within a Gradering the competition is run PER CATEGORY (gedig/storie/artikel — the
- * entry's post type, the same dimension as the judges' EntryID type word and the
- * {@see Coverage} `grade|type|rank` slot). The read pools are therefore keyed on
- * (Gradering × category) via {@see self::poolKey()} so the read-side one-per-rank guard
- * scopes within a category — two algehele wenners in different categories of one
- * Gradering both survive (the D1 read-collapse fix). Category is a read-side grouping
- * key only; it is not an `Ink\Entitlement` dimension, so the conflation rule holds.
+ * Within the Gedigte the competition is run PER CATEGORY too (the entry's post type), so the
+ * read pools are keyed on (Gradering × category) via {@see self::poolKey()}: two algehele
+ * wenners in different categories both survive (the D1 read-collapse fix).
  *
  * @package Ink\Core
  */
@@ -94,6 +90,16 @@ final class Pools {
 	}
 
 	/**
+	 * Whether a category is graded: only the Gedigte are (D7). Pure.
+	 *
+	 * @param string $category The entry category (post type).
+	 * @return bool
+	 */
+	public static function isGraded( string $category ): bool {
+		return PostTypes::GEDIG === $category;
+	}
+
+	/**
 	 * Split a composite pool key back into its [gradering, category] parts. Pure.
 	 *
 	 * The inverse of {@see self::poolKey()}: "goud|gedig" → ['goud', 'gedig']; a
@@ -112,7 +118,7 @@ final class Pools {
 	/**
 	 * Bucket entries into competition pools by entry-time gradering × category. Pure.
 	 *
-	 * Entries whose snapshot is empty or junk (no valid {@see Tier}) are excluded — they
+	 * Gedigte whose snapshot is empty or junk (no valid {@see Tier}) are excluded: they
 	 * do not enter a competition pool. A Meester entry is NOT excluded: it competes in
 	 * the Goud pool ({@see Tier::competitionTier()}), so it buckets under the Goud key
 	 * (a Meester·Gedig entry lands in `goud|gedig`). Pool insertion order follows
@@ -148,7 +154,21 @@ final class Pools {
 					continue;
 				}
 
+				if ( '' !== $category && ! self::isGraded( $category ) ) {
+					continue; // One pool for the whole category, below.
+				}
+
 				$pools[ self::poolKey( $tier->value, $category ) ][] = $id;
+			}
+		}
+
+		// Storie, Artikel and the rest: one pool each, whatever the writer's grade.
+		foreach ( $entries as $entry ) {
+			$category = Scalar::asString( $entry['category'] ?? '' );
+			$id       = (int) ( $entry['id'] ?? 0 );
+
+			if ( $id > 0 && '' !== $category && ! self::isGraded( $category ) ) {
+				$pools[ self::poolKey( '', $category ) ][] = $id;
 			}
 		}
 

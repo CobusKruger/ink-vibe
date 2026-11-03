@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Ink\Challenges;
 
-use Ink\Content\PostTypes;
 use Ink\Kernel\Scalar;
 
 defined( 'ABSPATH' ) || exit;
@@ -17,15 +16,14 @@ defined( 'ABSPATH' ) || exit;
 /**
  * One record per win, and the writer's lifetime count (D10, `03-tuis` §6).
  *
- * **Interim store.** `winner-cleanup.md` §7 leaves the choice of store to the winner
- * importer, which isn't built. Until then a record is a row of non-unique meta on the round
- * ({@see META}), which holds a win with no post or no account as readily as one with both.
- * The importer may adopt it or replace the bodies of {@see self::record()} and
- * {@see self::lifetimeCountFor()}; every caller goes through these two.
+ * **The store** (decided when the winner importer was built): a row of non-unique meta on the
+ * round ({@see META}), one JSON row per win. It holds a win with no post or no account as readily
+ * as one with both, so a win by a writer who left still counts. The importer
+ * ({@see \Ink\Migration\WinnerImporter}) writes the old wins (`source` = `import`); a live results
+ * commit ({@see Ingestion}) writes the new ones, through the same {@see self::record()}.
  *
- * The lifetime count is counted from `ink_entry_placement` rows by author, as `03-tuis` §6
- * says to until the importer lands: its old wins aren't in any store yet, and
- * `ink_tier_win_count` resets on promotion, so it can't serve.
+ * The lifetime count is the number of a writer's rows over all rounds. `ink_tier_win_count`
+ * resets on promotion, so it cannot serve.
  *
  * @package Ink\Core
  */
@@ -48,10 +46,12 @@ final class WinRecords {
 	 * @param string $category     The category (post type).
 	 * @param string $grade        The entry-time Gradering, or ''.
 	 * @param string $title        The win's title.
-	 * @return array{round_id:int, post_id:int, user_id:int, position:int, category:string, grade:string, title:string}
+	 * @param string $byline       The by-line as printed, for a win with no account; '' to leave it out.
+	 * @param string $source       Where the row came from (`import`); '' to leave it out.
+	 * @return array{round_id:int, post_id:int, user_id:int, position:int, category:string, grade:string, title:string, byline?:string, source?:string}
 	 */
-	public static function row( int $uitdaging_id, int $post_id, int $user_id, int $position, string $category, string $grade, string $title ): array {
-		return array(
+	public static function row( int $uitdaging_id, int $post_id, int $user_id, int $position, string $category, string $grade, string $title, string $byline = '', string $source = '' ): array {
+		$row = array(
 			'round_id' => $uitdaging_id,
 			'post_id'  => max( 0, $post_id ),
 			'user_id'  => max( 0, $user_id ),
@@ -60,6 +60,16 @@ final class WinRecords {
 			'grade'    => $grade,
 			'title'    => $title,
 		);
+
+		if ( '' !== $byline ) {
+			$row['byline'] = $byline;
+		}
+
+		if ( '' !== $source ) {
+			$row['source'] = $source;
+		}
+
+		return $row;
 	}
 
 	/**
@@ -88,7 +98,7 @@ final class WinRecords {
 	/**
 	 * Store a win row. Skips one the round already holds, so a retried write can't count twice.
 	 *
-	 * @param array{round_id:int, post_id:int, user_id:int, position:int, category:string, grade:string, title:string} $row The row.
+	 * @param array{round_id:int, post_id:int, user_id:int, position:int, category:string, grade:string, title:string, byline?:string, source?:string} $row The row.
 	 * @return bool Whether a record was added.
 	 */
 	public static function record( array $row ): bool {
@@ -126,44 +136,62 @@ final class WinRecords {
 	}
 
 	/**
-	 * A writer's lifetime win count: the one function the importer replaces.
+	 * A writer's lifetime win count: every win recorded for the account, in any category, on any round.
 	 *
 	 * @param int $user_id The writer.
 	 * @return int
 	 */
 	public static function lifetimeCountFor( int $user_id ): int {
-		if ( $user_id <= 0 ) {
+		global $wpdb;
+
+		if ( $user_id <= 0 || ! $wpdb instanceof \wpdb ) {
 			return 0;
 		}
 
-		$query = new \WP_Query( self::lifetimeQueryArgs( $user_id ) );
-
-		return (int) $query->found_posts;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one indexed-by-key count over a few thousand rows; the rows are JSON in meta.
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value LIKE %s",
+				self::META,
+				self::userLike( $wpdb->esc_like( '"user_id":' . $user_id . ',' ) )
+			)
+		);
 	}
 
 	/**
-	 * The query behind {@see self::lifetimeCountFor()}: placed, readable posts by this writer. Pure.
+	 * The LIKE pattern that finds a writer's rows: `"user_id":<id>,` anywhere in the JSON. Pure.
 	 *
-	 * @param int $user_id The writer.
-	 * @return array<string, mixed>
+	 * @param string $escaped The escaped needle.
+	 * @return string
 	 */
-	public static function lifetimeQueryArgs( int $user_id ): array {
-		return array(
-			'post_type'           => PostTypes::readableTypes(),
-			'post_status'         => 'publish',
-			'author'              => $user_id,
-			'fields'              => 'ids',
-			'posts_per_page'      => 1,
-			'ignore_sticky_posts' => true,
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- one writer's posts; the author filter bounds it.
-			'meta_query'          => array(
-				array(
-					'key'     => Placements::PLACEMENT_META_KEY,
-					'value'   => array( Placements::RANK_FIRST, Placements::MAX_RANK ),
-					'compare' => 'BETWEEN',
-					'type'    => 'NUMERIC',
-				),
-			),
+	public static function userLike( string $escaped ): string {
+		return '%' . $escaped . '%';
+	}
+
+	/**
+	 * Delete the rows one source wrote, on every round (a rehearsal re-run of the importer).
+	 *
+	 * @param string $source The source marker, e.g. `import`.
+	 * @return int How many rows went.
+	 */
+	public static function clearSource( string $source ): int {
+		global $wpdb;
+
+		if ( '' === $source || ! $wpdb instanceof \wpdb ) {
+			return 0;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- a once-off rehearsal clean-up of this module's own meta.
+		$gone = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value LIKE %s",
+				self::META,
+				'%' . $wpdb->esc_like( '"source":"' . $source . '"' ) . '%'
+			)
 		);
+
+		wp_cache_flush();
+
+		return is_int( $gone ) ? $gone : 0;
 	}
 }

@@ -9,7 +9,7 @@
 
 **Lovable:** `src/pages/ChallengeResults.tsx`, `src/data/awards.ts`, `src/components/ui/button.tsx`, `src/App.tsx` (routes).
 **INK:** `Challenges/{Placements,WinnersPost,ModeratorFeedback,ResultPostLinker,Pools,Ingestion,ResultsParser,SinglePage,CurrentChallenge,Deadline}.php`, `Migration/LegacyResultsParser.php`, `Content/{FieldSets (uitdaging fields),ChallengeResultTitle}.php`, `templates/single-uitdaging.html`, `patterns/reading-uitdaging.php`, `functions.php` (enqueue pattern), `primitives.css` (classes cited).
-**Dev (read-only, 2026-11-01):** rewrite rules, round and result-post data, `wenners.csv` headers and counts.
+**Dev (read-only, 2026-11-01):** rewrite rules, round and result-post data, the old `wenners.csv` headers and counts (that file is now in `../backup-data/`).
 
 ## 2. Section spine
 
@@ -87,7 +87,7 @@ Repeater slots: `{slot}` = `gold`, `silver`, `bronze`, `short-story`, `article`;
 |---|---|---|
 | Position | `ink_entry_placement` | **Importer**: 0 rows on dev |
 | Grade | `ink_entry_gradering` | **Importer + Gradering fix**: 0 rows. `Pools::group()` drops entries with no snapshot, so today Storie and Artikel need one. Do not build on that; the fix changes the pool key |
-| Win without a post (156 rows in `wenners.csv`) | Importer's store, not chosen yet | **Importer**, old rounds only. Drives the `-soon` state. A win on a new round always has a post |
+| Win without a post (156 rows in the old `wenners.csv`) | Importer's store, not chosen yet | **Importer**, old rounds only. Drives the `-soon` state. A win on a new round always has a post |
 | Win title and by-line | Importer's row (`title`, `byline`), else post title and author | **Importer** for old rounds. Post titles carry noise, e.g. "Geld praat die hardste (Goud) (1382 woorde)". Do not clean titles here; prefer the listed title |
 | Category tab | Post type where a post exists; below otherwise | **Importer**, old rounds only |
 | Citation | Comment type `ink_mod_terugvoer`, opt-in `ink_wys_moderator_terugvoer` | Exists. 0 comments and 0 opt-ins on dev, so no citation shows on real data today |
@@ -97,14 +97,14 @@ Repeater slots: `{slot}` = `gold`, `silver`, `bronze`, `short-story`, `article`;
 
 **Category to tab, for a win with no post (ruled, `migration-plan.md` "Current state").** There is no second map. The importer sends the win's category through `PostReclassifier::cptForCategorySlugs()`, the existing `CATEGORY_CPT_MAP`, at import, and stores the result; `RoundResults` reads what is stored.
 
-| `wenners.csv` `category` | Slug passed to the map | Tab |
+| Parser `category` | Slug passed to the map | Tab |
 |---|---|---|
 | Gedigte | `gedigte` | Gedigte |
 | Verhale | `verhale-kortverhale` | Stories |
 | Artikels, Rubrieke, Prosa | `artikels`, `rubrieke`, `prosa` | Artikels |
 | Meningstukke, Algemeen | **`algemeengorrel`** | Artikels |
 
-**Trap:** `wenners.csv` holds labels, not slugs, and the map has `'algemeen' => storie` for the `algemeen-verhale` tree. Sending the label "Algemeen" straight in gives Stories, against the ruling. So the importer's only table is label to slug, above; a label it doesn't know is reported, not defaulted (`cptForCategorySlugs()` would return `skryfwerk`). Unit-test all seven.
+**Trap:** the parser's categories are labels, not slugs, and the map has `'algemeen' => storie` for the `algemeen-verhale` tree. Sending the label "Algemeen" straight in gives Stories, against the ruling. So the importer's only table is label to slug, above; a label it doesn't know is reported, not defaulted (`cptForCategorySlugs()` would return `skryfwerk`). Unit-test all seven.
 
 **Read seam.** `RoundResults::forRound( int ): array` is the page's only data path. Rows: `category`, `tier`, `position`, `post_id` (0 = none), `title`, `author`, `user_id`, `excerpt`. It reads `Placements::forRound()` now; the importer's store plugs in behind it. It applies filter `ink_uitslae_rows`, house style like `CurrentChallenge::DATA_FILTER`. Do not read pool keys in the page.
 
@@ -119,7 +119,7 @@ Repeater slots: `{slot}` = `gold`, `silver`, `bronze`, `short-story`, `article`;
 
 Mentions are lines, not JSON, because `FieldSets` saves scalars and an editor has to be able to read and correct them in the box.
 
-**Not touched:** `LegacyResultsParser.php`, `build-winner-lists.php`, `wenners.csv`, `result-posts.csv`, `challenges.csv`. Mentions are not wins and never enter that data.
+**Not touched:** `LegacyResultsParser.php`. Mentions are not wins and never enter that data.
 
 **New rounds: entered on the site, with no CSV and no migration step.**
 - **Letter:** typed in the round's admin box.
@@ -209,7 +209,7 @@ Create on dev, outside theme and plugin; a refresh wipes it. List what was creat
 - Open round for `results-mentions-btn`: fixture F1 in spec 03 §9.
 - **D6 check:** turn opt-in off for one author and confirm the block goes. Add a unit test too.
 
-Measure at 390, 768, 1440, for the default state and both tab states. Acceptance here is provisional until the importer lands (handoff step 7).
+Measure at 390, 768, 1440, for the default state and both tab states. The importer is built (2026-11-03); acceptance on real data comes with the next refresh.
 
 ## 12. E8: banner on the round page
 

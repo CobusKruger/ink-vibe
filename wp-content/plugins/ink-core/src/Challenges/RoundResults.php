@@ -73,9 +73,53 @@ final class RoundResults {
 			}
 		}
 
+		// Wins the placements do not show: the old wins with no post, no account, or a post that is
+		// not an entry of the round (the winner importer's records).
+		$listed = array();
+
+		foreach ( $rows as $row ) {
+			$listed[ (int) $row['post_id'] ] = true;
+		}
+
+		foreach ( WinRecords::forRound( $uitdaging_id ) as $win ) {
+			$post_id = (int) ( $win['post_id'] ?? 0 );
+
+			if ( $post_id > 0 && isset( $listed[ $post_id ] ) ) {
+				continue;
+			}
+
+			$rows[] = self::recordRow( $win );
+		}
+
 		$filtered = apply_filters( self::ROWS_FILTER, $rows, $uitdaging_id );
 
 		return is_array( $filtered ) ? $filtered : $rows;
+	}
+
+	/**
+	 * One row from a stored win record. A win with no post shows the title and the writer, with no link.
+	 *
+	 * @param array<string, mixed> $win The record.
+	 * @return array{category:string, tier:string, position:int, post_id:int, title:string, author:string, user_id:int, excerpt:string, citation:string}
+	 */
+	private static function recordRow( array $win ): array {
+		$category = Scalar::asString( $win['category'] ?? '' );
+		$post_id  = (int) ( $win['post_id'] ?? 0 );
+		$user_id  = (int) ( $win['user_id'] ?? 0 );
+		$post     = $post_id > 0 ? get_post( $post_id ) : null;
+		$author   = $user_id > 0 ? (string) get_the_author_meta( 'display_name', $user_id ) : '';
+
+		return array(
+			'category' => $category,
+			'tier'     => Pools::isGraded( $category ) ? Scalar::asString( $win['grade'] ?? '' ) : '',
+			'position' => (int) ( $win['position'] ?? 0 ),
+			'post_id'  => $post instanceof \WP_Post ? $post_id : 0,
+			'title'    => Scalar::asString( $win['title'] ?? '' ),
+			'author'   => '' !== $author ? $author : Scalar::asString( $win['byline'] ?? '' ),
+			'user_id'  => $user_id,
+			'excerpt'  => $post instanceof \WP_Post ? self::excerptFor( $post ) : '',
+			'citation' => '',
+		);
 	}
 
 	/**

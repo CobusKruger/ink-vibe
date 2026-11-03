@@ -230,3 +230,12 @@ test( 'only writing counts as an entry: result posts and announcements are core 
 	expect( Migration::ENTRY_TYPES )->toBe( array( 'gedig', 'storie', 'artikel', 'skryfwerk' ) )
 		->and( Migration::ENTRY_TYPES )->not->toContain( 'post' );
 } );
+
+test( 'competitions are not challenge rounds: the category name decides, the exclude list adds slugs', function (): void {
+	expect( Migration::isChallengeCategory( 'oktober-2026-getal-10-projek', 'Oktober 2026 - Getal 10 projek' ) )->toBeTrue();
+	expect( Migration::isChallengeCategory( 'ink-slypskool', 'INK-Slypskool' ) )->toBeTrue(); // a challenge, per the owner
+	expect( Migration::isChallengeCategory( 'grys', 'GrysKrag kompetisie' ) )->toBeFalse();
+	expect( Migration::isChallengeCategory( 'k', 'INK DIGKOMPETISIE 2020 (1 Maart 2020 – 30 September 2020)' ) )->toBeFalse();
+	expect( Migration::isChallengeCategory( 'k', '3de Skryfkompetisie – Ink.org.za (1 Julie 2017 tot 10 Oktober 2017)' ) )->toBeFalse();
+	expect( Migration::isChallengeCategory( 'mei-2020', 'Mei 2020', array( 'mei-2020' ) ) )->toBeFalse();
+} );

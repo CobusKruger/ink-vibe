@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * For a win with no post, the importer stores the post type this gives it. There is no
- * second category map: `wenners.csv` holds labels, not slugs, so this holds only the
+ * second category map: the parser's categories are labels, not slugs, so this holds only the
  * label-to-slug step (`migration-plan.md` "Current state"), and
  * {@see PostReclassifier::cptForCategorySlugs()} decides.
  *
@@ -45,7 +45,7 @@ final class WinCategory {
 	 * The post type for a label, or null when the label isn't known: the importer reports
 	 * that instead of letting the map default it to `skryfwerk`.
 	 *
-	 * @param string $label The `wenners.csv` category.
+	 * @param string $label The category label the parser reads.
 	 * @return string|null
 	 */
 	public static function postTypeFor( string $label ): ?string {

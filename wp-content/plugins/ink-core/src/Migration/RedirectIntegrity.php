@@ -55,7 +55,7 @@ class RedirectIntegrity {
 	 * Register the verify command — WP-CLI only (mirrors 16.7's generate-redirects).
 	 *
 	 * All `WP_CLI::*` I/O lives inside the closure, AFTER the `class_exists` guard
-	 * (the house pattern — see {@see TierImport}/{@see RedirectGenerator}); the
+	 * (the house pattern — see {@see RedirectGenerator}); the
 	 * pure audit/flatten + the load/store seams do the work.
 	 */
 	public function register(): void {

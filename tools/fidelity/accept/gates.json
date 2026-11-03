@@ -11,8 +11,7 @@
     "shifts ids or adds rounds does not break a path. Reading posts use `?p=<id>`: prod post ids are stable.",
     "",
     "gate fields: group, page (capture name), lovable, ink, map, scope/scopeLabel, auth ('none' | 'both'), states (each:",
-    "name, click[], viewports[]; a gate with no `states` has the one default state), display (name shown in the report).",
-    "Group `closed` runs only inside tools/fidelity/accept/closed-round.sh, which drafts the fixture round first."
+    "name, click[], viewports[]; a gate with no `states` has the one default state), display (name shown in the report)."
   ],
   "viewports": [390, 768, 1440],
   "failOn": "MISSING,STRUCTURE,DRIFT",
@@ -70,13 +69,6 @@
         { "name": "gala-2024", "click": ["[data-audit-id=\"competitions-gala-past-year-2024\"]"] },
         { "name": "empty", "click": ["[data-audit-id=\"competitions-directory-genre-poetry\"]", "[data-audit-id=\"competitions-directory-fee-free\"]"] }
       ]
-    },
-    {
-      "group": "closed", "page": "tuis", "display": "tuis-closed", "lovable": "/", "ink": "/", "map": "delta/tuis.csv"
-    },
-    {
-      "group": "closed", "page": "hero", "display": "hero-closed", "lovable": "/", "ink": "/", "map": "delta/tuis.csv",
-      "scope": "[data-audit-id=hero]", "scopeLabel": "hero"
     }
   ],
   "preflight": {

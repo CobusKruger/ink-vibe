@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Migration;
 
 use Ink\Content\ChallengeResultTitle;
+use Ink\Content\ChallengeRound;
 use Ink\Content\ResultPostAuthors;
 use Ink\Kernel\MigrationData;
 use Ink\Kernel\Tier;
@@ -113,6 +114,7 @@ class TierDeriver {
 	 * @return array{
 	 *   posts:int, unparsed:int,
 	 *   wins:array<int,int>,
+	 *   win_rows:list<array{result_post:int, result_date:string, writer:string, user:int, title:string, position:int, category:string, grading:string}>,
 	 *   standings:array<int, array{tier:Tier, count:int}>,
 	 *   by_tier:array{brons:int, silwer:int, goud:int},
 	 *   unresolved:array<string,int>, fuzzy:array<string,string>
@@ -123,6 +125,7 @@ class TierDeriver {
 		$resolver   = new WriterResolver( $directory['users'], $this->aliasMap() );
 		$posts      = $this->resultPosts();
 		$wins       = array();
+		$win_rows   = array();
 		$unresolved = array();
 		$fuzzy      = array();
 		$unparsed   = 0;
@@ -132,11 +135,24 @@ class TierDeriver {
 			$unparsed += count( $parsed['unparsed'] );
 
 			foreach ( $parsed['rows'] as $row ) {
+				$hit = $resolver->resolve( $row['writer'] );
+
+				// Every win is listed, whatever its category and whether or not the by-line resolves:
+				// the winner importer records them all (a win with no account promotes nobody).
+				$win_rows[] = array(
+					'result_post' => (int) $post->id,
+					'result_date' => (string) ( $post->date ?? '' ),
+					'writer'      => (string) $row['writer'],
+					'user'        => null === $hit ? 0 : (int) $hit['user'],
+					'title'       => (string) $row['title'],
+					'position'    => (int) $row['position'],
+					'category'    => (string) $row['category'],
+					'grading'     => (string) $row['grading'],
+				);
+
 				if ( 'Gedigte' !== $row['category'] ) {
 					continue; // Gradering counts poetry wins only.
 				}
-
-				$hit = $resolver->resolve( $row['writer'] );
 
 				if ( null === $hit ) {
 					$unresolved[ $row['writer'] ] = ( $unresolved[ $row['writer'] ] ?? 0 ) + 1;
@@ -171,6 +187,7 @@ class TierDeriver {
 			'posts'      => count( $posts ),
 			'unparsed'   => $unparsed,
 			'wins'       => $wins,
+			'win_rows'   => $win_rows,
 			'standings'  => $standings,
 			'by_tier'    => $by_tier,
 			'unresolved' => $unresolved,
@@ -209,9 +226,11 @@ class TierDeriver {
 		$out = array();
 
 		foreach ( is_array( $posts ) ? $posts : array() as $post ) {
-			if ( ChallengeResultTitle::isResultTitle( (string) $post->post_title ) && ResultPostAuthors::isModerator( (int) $post->post_author ) ) {
+			// A competition's result post is not a challenge result (owner): never read for wins.
+			if ( ChallengeResultTitle::isResultTitle( (string) $post->post_title ) && ! ChallengeRound::isCompetition( (string) $post->post_title ) && ResultPostAuthors::isModerator( (int) $post->post_author ) ) {
 				$out[] = (object) array(
 					'id'   => (int) $post->ID,
+					'date' => (string) $post->post_date,
 					'html' => (string) $post->post_content,
 				);
 			}

@@ -99,3 +99,22 @@ test( 'derive grades a writer by lifetime wins across posts', function (): void 
 	expect( $report['standings'][3]['tier'] )->toBe( Tier::Silwer );
 	expect( $report['standings'][3]['count'] )->toBe( 1 ); // 6 total = 5 to leave brons + 1 toward goud.
 } );
+
+test( 'derive lists every win for the importer: all categories, with or without an account', function (): void {
+	$html = "GEDIGTE\nBrons\n(1) No 1 Carma Shaw met Een\n(2) No 3 Onbekende Skrywer met Drie\nPROSA:\n(1) No 4 Carma Shaw met Prosa\n";
+
+	$rows = deriverFor( $html )->derive()['win_rows'];
+
+	expect( $rows )->toHaveCount( 3 );
+	expect( array_column( $rows, 'user' ) )->toBe( array( 3, 0, 3 ) ); // the unknown writer is listed, with no account
+	expect( array_column( $rows, 'category' ) )->toBe( array( 'Gedigte', 'Gedigte', 'Prosa' ) );
+	expect( $rows[0] )->toMatchArray(
+		array(
+			'result_post' => 1,
+			'writer'      => 'Carma Shaw',
+			'title'       => 'Een',
+			'position'    => 1,
+			'grading'     => 'Brons',
+		)
+	);
+} );

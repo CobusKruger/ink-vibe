@@ -41,9 +41,6 @@ function orchestrator( array $script, array $state = array() ): object {
 		protected function dataProblems(): array {
 			return $this->data_problems;
 		}
-		protected function fileExists( string $path ): bool {
-			return true;
-		}
 		protected function loadState(): array {
 			return $this->stored;
 		}
@@ -84,25 +81,16 @@ test( 'pending skips succeeded steps on resume, and --from restarts at a step', 
 	expect( MigrateAll::pending( array() )[0] )->toBe( 'sanitise' );
 } );
 
-test( 'preflight needs no tier CSV, but stops when a given one is missing', function (): void {
-	expect( MigrateAll::preflight( '', false ) )->toBe( array() );
-	expect( MigrateAll::preflight( 'x.csv', false ) )->not->toBe( array() );
-	expect( MigrateAll::preflight( 'x.csv', true ) )->toBe( array() );
-} );
+test( 'gradering is derived from the result posts', function (): void {
+	$cmds = array_column( array_map( static fn ( array $s ): array => array( 'id' => $s[0], 'cmd' => $s[1] ), MigrateAll::steps() ), 'cmd', 'id' );
 
-test( 'gradering is derived from the result posts unless a CSV path is given', function (): void {
-	$by_id = static function ( string $tiers ): array {
-		return array_column( array_map( static fn ( array $s ): array => array( 'id' => $s[0], 'cmd' => $s[1] ), MigrateAll::steps( $tiers ) ), 'cmd', 'id' );
-	};
-
-	expect( $by_id( '' )['tiers'] )->toBe( 'ink derive-tiers' );
-	expect( $by_id( 'x.csv' )['tiers'] )->toBe( 'ink migrate-tiers {tiers}' );
+	expect( $cmds['tiers'] )->toBe( 'ink derive-tiers' );
 } );
 
 test( 'missing migration data stops the run before any step', function (): void {
 	$o                = orchestrator( array() );
 	$o->data_problems = array( 'Migrasiedata nie gevind nie: /data/writer-accounts.csv' );
-	$report           = $o->run( '' );
+	$report           = $o->run();
 
 	expect( $report['failed'] )->toBeTrue();
 	expect( $report['lines'] )->toBe( $o->data_problems );
@@ -111,37 +99,32 @@ test( 'missing migration data stops the run before any step', function (): void 
 
 test( 'a clean run executes every step in order and records them', function (): void {
 	$o      = orchestrator( array() );
-	$report = $o->run( 'tier.csv' );
+	$report = $o->run();
 
 	expect( $report['failed'] )->toBeFalse();
 	expect( count( $o->ran ) )->toBe( count( MigrateAll::steps() ) );
-	// escapeshellarg() quotes for the host shell: single quotes on Unix, double quotes on Windows.
-	expect( $o->ran[3] )->toBe( 'ink migrate-tiers ' . escapeshellarg( 'tier.csv' ) );
-
-	$derived = orchestrator( array() );
-	$derived->run( '' );
-	expect( $derived->ran[3] )->toBe( 'ink derive-tiers' );
+	expect( $o->ran[3] )->toBe( 'ink derive-tiers' );
 	expect( $o->saved['verify-media']['status'] )->toBe( 'ok' );
 } );
 
 test( 'it stops at the first failing step and a re-run resumes there', function (): void {
 	$o = orchestrator( array( 'ink migrate-posts' => array( 'code' => 1, 'stdout' => '', 'stderr' => 'boom' ) ) );
 
-	$first = $o->run( 'tier.csv' );
+	$first = $o->run();
 	expect( $first['failed'] )->toBeTrue();
 	expect( end( $o->ran ) )->toBe( 'ink migrate-posts' );
 	expect( $o->saved['posts']['status'] )->toBe( 'failed' );
 
 	$o->ran = array();
 	$o2     = orchestrator( array(), $o->saved );
-	$o2->run( 'tier.csv' );
+	$o2->run();
 
 	expect( $o2->ran[0] )->toBe( 'ink migrate-posts' ); // earlier steps skipped
 } );
 
 test( 'a silent step is flagged but does not stop the run', function (): void {
 	$o      = orchestrator( array( 'ink migrate-challenges' => array( 'code' => 0, 'stdout' => '', 'stderr' => '' ) ) );
-	$report = $o->run( 'tier.csv' );
+	$report = $o->run();
 
 	expect( $report['failed'] )->toBeFalse();
 	expect( $report['flagged'] )->toBe( 1 );

@@ -26,7 +26,7 @@
       "row": "00", "page": "tuisblad", "treatment": "A", "gate": "tuis, closed",
       "ink": "https://nuwe-ink.local/",
       "lovable": "http://localhost:4173/",
-      "note": "Two standing states: open round (default) and closed round (fixture round drafted, accept/closed-round.sh; hero and main).",
+      "note": "One standing state: the open round. The closed-round state has no gate (its fixtures were removed).",
       "expect": { "ink": "[data-audit-id=\"hero-h1\"],.ink-huidige-uitdaging,.ink-uitgesoekte-bydraes", "lovable": "[data-audit-id=\"hero-h1\"],[data-audit-id=\"results-banner\"],[data-audit-id=\"magazine\"],[data-audit-id=\"challenge\"],[data-audit-id=\"winner-card\"],[data-audit-id=\"winner-gedig-card\"]" }
     },
     {
@@ -166,7 +166,7 @@
       "row": "25", "page": "lees-wenner", "treatment": "A", "gate": "lees",
       "ink": "https://nuwe-ink.local/?p=68211",
       "lovable": "http://localhost:4173/read/s3",
-      "note": "The winner aside (reading-award*, 5 ids) on a placed work; measured inside the lees-storie/gedig/artikel gates (their maps carry the rows; delta maps/lees-wenner.csv is the spec's list). Posts 68211, 68070, 68214 are placed by tools/fixtures/uitslae-fixtures.php."
+      "note": "The winner aside (reading-award*, 5 ids) on a placed work; measured inside the lees-storie/gedig/artikel gates (their maps carry the rows; delta maps/lees-wenner.csv is the spec's list). Placed posts need the winner importer's data."
     },
     {
       "row": "26", "page": "ronde-banner", "treatment": "B", "lookup": "roundWithResults",

@@ -58,3 +58,35 @@ it( 'names each missing file', function (): void {
 it( 'reports an unconfigured folder', function (): void {
 	expect( MigrationData::problems( '' )[0] )->toContain( 'INK_MIGRATION_DATA_DIR' );
 } );
+
+it( 'needs exactly the three owner-maintained files, and no code reads any other file name', function (): void {
+	expect( MigrationData::FILES )->toBe( array( 'writer-accounts.csv', 'writer-aliases.csv', 'inkpols-uitgawes.csv' ) );
+
+	$root    = dirname( __DIR__, 3 ) . '/wp-content/plugins/ink-core/src';
+	$strays  = array();
+	$files   = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $root, \FilesystemIterator::SKIP_DOTS ) );
+
+	foreach ( $files as $file ) {
+		if ( 'php' !== $file->getExtension() ) {
+			continue;
+		}
+
+		foreach ( (array) file( $file->getPathname() ) as $line ) {
+			$code = trim( (string) $line );
+
+			if ( '' === $code || str_starts_with( $code, '*' ) || str_starts_with( $code, '//' ) || str_starts_with( $code, '/*' ) ) {
+				continue;
+			}
+
+			if ( preg_match_all( "/'([A-Za-z0-9_.-]+\.csv)'/", $code, $found ) > 0 ) {
+				foreach ( $found[1] as $name ) {
+					if ( ! in_array( $name, MigrationData::FILES, true ) ) {
+						$strays[] = $file->getFilename() . ': ' . $name;
+					}
+				}
+			}
+		}
+	}
+
+	expect( $strays )->toBe( array() );
+} );

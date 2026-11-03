@@ -113,22 +113,22 @@ test( 'arrange keeps BOTH category rank-1s of one Gradering — the D1 read-coll
 
 	$by_pool = Placements::arrange( $placed );
 
-	// Two distinct Goud pools — one per category — each keyed via Pools::poolKey.
+	// Two distinct pools: the Goud Gedigte, and the Storie (ungraded, D7), each keyed via Pools::poolKey.
 	expect( $by_pool )->toHaveKey( 'goud|gedig' );
-	expect( $by_pool )->toHaveKey( 'goud|storie' );
+	expect( $by_pool )->toHaveKey( '|storie' );
 
 	// BOTH algehele wenners survive (the regression that proves D1 is fixed).
 	expect( array_column( $by_pool['goud|gedig'], 'id' ) )->toBe( array( 10, 12 ) );
 	expect( array_column( $by_pool['goud|gedig'], 'rank' ) )->toBe( array( 1, 2 ) );
 	expect( $by_pool['goud|gedig'][0]['is_algehele_wenner'] )->toBeTrue();
 
-	expect( array_column( $by_pool['goud|storie'], 'id' ) )->toBe( array( 11 ) );
-	expect( $by_pool['goud|storie'][0]['is_algehele_wenner'] )->toBeTrue();
+	expect( array_column( $by_pool['|storie'], 'id' ) )->toBe( array( 11 ) );
+	expect( $by_pool['|storie'][0]['is_algehele_wenner'] )->toBeTrue();
 
 	// Across both categories there are TWO algehele wenners, not one (non-vacuous).
 	$algehele = array_merge(
 		array_filter( $by_pool['goud|gedig'], static fn ( array $r ): bool => $r['is_algehele_wenner'] ),
-		array_filter( $by_pool['goud|storie'], static fn ( array $r ): bool => $r['is_algehele_wenner'] )
+		array_filter( $by_pool['|storie'], static fn ( array $r ): bool => $r['is_algehele_wenner'] )
 	);
 	expect( $algehele )->toHaveCount( 2 );
 } );
@@ -160,4 +160,19 @@ test( 'arrange keeps a tie inside one (Gradering x category) pool, ordered by id
 	$pool = Placements::arrange( $placed )['goud|gedig'];
 
 	expect( array_column( $pool, 'id' ) )->toBe( array( 20, 30, 40 ) );
+} );
+
+test( 'arrange puts a Storie or Artikel placement in one pool whatever the writer grade is (D7)', function (): void {
+	$placed = array(
+		array( 'id' => 20, 'gradering' => 'brons', 'category' => 'storie', 'rank' => 2 ),
+		array( 'id' => 21, 'gradering' => 'goud', 'category' => 'storie', 'rank' => 1 ),
+		array( 'id' => 22, 'gradering' => '', 'category' => 'artikel', 'rank' => 1 ),
+		array( 'id' => 23, 'gradering' => '', 'category' => 'gedig', 'rank' => 1 ), // an ungraded Gedig is dropped
+	);
+
+	$by_pool = Placements::arrange( $placed );
+
+	expect( array_keys( $by_pool ) )->toBe( array( '|storie', '|artikel' ) );
+	expect( array_column( $by_pool['|storie'], 'id' ) )->toBe( array( 21, 20 ) );
+	expect( array_column( $by_pool['|artikel'], 'id' ) )->toBe( array( 22 ) );
 } );
