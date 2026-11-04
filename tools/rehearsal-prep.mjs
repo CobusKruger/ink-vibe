@@ -11,7 +11,8 @@
  *
  * Usage:
  *   node tools/rehearsal-prep.mjs --sql <prod.sql|prod.sql.gz> [--uploads <dir|.zip|.tar.gz>]
- *        [--plugins <dir>] [--mail-sink sink@nuwe-ink.local] [--old-url https://ink.org.za]
+ *        [--wp-content <dir>]  (prod's whole wp-content: fills uploads, plugins, mu-plugins, themes)
+ *        [--plugins <dir>] [--mu-plugins <dir>] [--themes <dir>] [--mail-sink sink@nuwe-ink.local] [--old-url https://ink.org.za]
  *        [--migration-data <dir>] [--apply]
  *
  * Without --apply it is a DRY RUN: it checks the inputs and the Local site and
@@ -57,15 +58,18 @@ const RETIRED_PLUGINS = [
 ];
 
 // --- Arguments -------------------------------------------------------------
-const opts = { sql: '', uploads: '', plugins: '', oldUrl: '', mailSink: '', migrationData: '', apply: false };
+const opts = { sql: '', wpContent: '', uploads: '', plugins: '', muPlugins: '', themes: '', oldUrl: '', mailSink: '', migrationData: '', apply: false };
 const argv = process.argv.slice(2);
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
   const value = () => argv[++i] ?? die(`${a} needs a value.`);
   switch (a) {
     case '--sql': opts.sql = value(); break;
+    case '--wp-content': opts.wpContent = value(); break;
     case '--uploads': opts.uploads = value(); break;
     case '--plugins': opts.plugins = value(); break;
+    case '--mu-plugins': opts.muPlugins = value(); break;
+    case '--themes': opts.themes = value(); break;
     case '--old-url': opts.oldUrl = value(); break;
     case '--mail-sink': opts.mailSink = value(); break;
     case '--migration-data': opts.migrationData = value(); break;
@@ -75,6 +79,14 @@ for (let i = 0; i < argv.length; i++) {
 }
 
 if (!opts.sql || !existsSync(opts.sql) || !statSync(opts.sql).isFile()) die('--sql <file> is required and must exist.');
+// --wp-content is a copy of prod's whole wp-content: its folders fill whatever is not given.
+if (opts.wpContent) {
+  if (!(existsSync(opts.wpContent) && statSync(opts.wpContent).isDirectory())) die(`--wp-content must be a folder: ${opts.wpContent}`);
+  for (const [key, name] of [['uploads', 'uploads'], ['plugins', 'plugins'], ['muPlugins', 'mu-plugins'], ['themes', 'themes']]) {
+    const dir = path.join(opts.wpContent, name);
+    if (!opts[key] && existsSync(dir)) opts[key] = dir;
+  }
+}
 if (opts.uploads && !existsSync(opts.uploads)) die(`--uploads path does not exist: ${opts.uploads}`);
 if (opts.plugins && !(existsSync(opts.plugins) && statSync(opts.plugins).isDirectory())) {
   die(`--plugins must be a folder: ${opts.plugins}`);
@@ -117,6 +129,8 @@ console.log(`  database:       ${site.db.name} via ${conn}`);
 console.log(`  prod dump:      ${opts.sql}`);
 console.log(`  uploads:        ${opts.uploads || '(none given: keeping the uploads already on the site)'}`);
 console.log(`  plugins:        ${opts.plugins || '(none given: keeping the plugins already on the site)'}`);
+console.log(`  mu-plugins:     ${opts.muPlugins || '(none given: keeping what is on the site)'}`);
+console.log(`  themes:         ${opts.themes || '(none given: keeping the themes already on the site)'}`);
 console.log(`  old URL:        ${opts.oldUrl || '(read from the imported database)'}`);
 console.log(`  new URL:        ${targetUrl}`);
 console.log(`  mail sink:      ${mailSink}`);
@@ -190,15 +204,17 @@ if (!opts.uploads) {
   console.log(`  ${r.copied.length} file(s) copied`);
 }
 
-// Third-party plugins the prod database expects; ink-core comes from this repo (step 4).
-// Each plugin folder is mirrored; plugins already on the site and not in --plugins stay.
-if (opts.plugins) {
-  console.log('  plugins:');
-  const pluginsDest = path.join(site.webRoot, 'wp-content', 'plugins');
-  for (const e of readdirSync(opts.plugins, { withFileTypes: true })) {
-    if (e.name === 'ink-core' || e.name === 'index.php' || e.name.startsWith('.')) continue;
-    const from = path.join(opts.plugins, e.name);
-    const to = path.join(pluginsDest, e.name);
+// Prod's code folders. ink-core and ink-foundation come from this repo (step 4), so they are
+// skipped. Each folder is mirrored; anything already on the site and not in the source stays.
+function copyCode(label, srcDir, destName) {
+  if (!srcDir) return;
+  console.log(`  ${label}:`);
+  const dest = path.join(site.webRoot, 'wp-content', destName);
+  mkdirSync(dest, { recursive: true });
+  for (const e of readdirSync(srcDir, { withFileTypes: true })) {
+    if (['ink-core', 'ink-foundation', 'index.php'].includes(e.name) || e.name.startsWith('.')) continue;
+    const from = path.join(srcDir, e.name);
+    const to = path.join(dest, e.name);
     if (e.isDirectory()) {
       const r = mirror(from, to, { deleteExtra: true, log: () => {} });
       console.log(`    ${e.name}: ${r.copied.length} copied, ${r.deleted.length} removed`);
@@ -208,6 +224,9 @@ if (opts.plugins) {
     }
   }
 }
+copyCode('plugins', opts.plugins, 'plugins');
+copyCode('mu-plugins', opts.muPlugins, 'mu-plugins');
+copyCode('themes', opts.themes, 'themes');
 
 // --- 4. Code --------------------------------------------------------------------
 say("4/5 Deploying this repo's code to the site");
