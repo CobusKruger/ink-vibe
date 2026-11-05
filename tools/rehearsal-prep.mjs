@@ -54,7 +54,7 @@ const RETIRED_PLUGINS = [
   'cbxuseronline', 'classic-widgets', 'joinup-core', 'ultimate-social-media-icons', 'woocommerce-legacy-rest-api',
   'wpcustom-category-image', 'wps-bidouille', 'automatic-translator-addon-for-loco-translate', 'document-emberdder',
   'maintenance', 'pdf-embedder', 'string-locator', 'advanced-cron-manager', 'comments-plus', 'report-content',
-  'invite-anyone', 'redirect-redirection', 'simple-css', 'fluent-smtp',
+  'invite-anyone', 'redirect-redirection', 'simple-css', 'fluent-smtp', 'code-snippets', 'wp-migrate-db',
 ];
 
 // --- Arguments -------------------------------------------------------------

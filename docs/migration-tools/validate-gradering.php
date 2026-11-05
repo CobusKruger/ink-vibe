@@ -7,9 +7,18 @@
 
 $plugin = dirname( __DIR__, 2 ) . '/wp-content/plugins/ink-core/src/';
 
-foreach ( array( 'Kernel/Tier.php', 'Kernel/Scalar.php', 'Kernel/MigrationData.php', 'Tiers/Api.php', 'Tiers/PromotionEngine.php', 'Content/ChallengeResultTitle.php', 'Content/ResultPostAuthors.php', 'Migration/LegacyResultsParser.php', 'Migration/WriterResolver.php', 'Migration/TierDeriver.php' ) as $file ) {
-	require_once $plugin . $file;
-}
+// Load any Ink\ class from the repo on demand (a hand-kept file list went stale when TextKey was added).
+spl_autoload_register(
+	static function ( string $class ) use ( $plugin ): void {
+		if ( 0 !== strpos( $class, 'Ink\\' ) ) {
+			return;
+		}
+		$file = $plugin . str_replace( '\\', '/', substr( $class, 4 ) ) . '.php';
+		if ( is_file( $file ) ) {
+			require_once $file;
+		}
+	}
+);
 
 $report = ( new Ink\Migration\TierDeriver() )->derive();
 

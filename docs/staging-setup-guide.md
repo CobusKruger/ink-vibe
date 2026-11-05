@@ -223,7 +223,8 @@ wp plugin deactivate wordpress-seo loginizer js_composer qode-framework \
   ultimate-social-media-icons woocommerce-legacy-rest-api wpcustom-category-image \
   wps-bidouille automatic-translator-addon-for-loco-translate document-emberdder \
   maintenance pdf-embedder string-locator \
-  advanced-cron-manager comments-plus report-content invite-anyone redirect-redirection simple-css
+  advanced-cron-manager comments-plus report-content invite-anyone redirect-redirection simple-css \
+  code-snippets wp-migrate-db
 wp plugin delete wordpress-seo loginizer js_composer qode-framework ...   # same list
 wp theme delete ink-v2   # legacy theme; keep a default theme installed as fallback
 ```
@@ -232,6 +233,7 @@ wp theme delete ink-v2   # legacy theme; keep a default theme installed as fallb
 - **Loginizer** — retired; Cloudflare edge login rule + origin lock replace it.
 - **WPBakery (`js_composer`) / Qode / Youzify / revslider / etc.** — legacy page-builder & profile stack; the block theme + `ink-core` + BuddyPress replace them. Their shortcodes are stripped later by `wp ink clean-shortcodes`.
 - **LocoAI addon** — forbidden (no AI Afrikaans translation).
+- **Code Snippets, WP Migrate** — retired (owner, 2026-11-05). Prod's snippets must not run beside `ink-core`; the prep script imports the dump, so WP Migrate has no job.
 - **Comments Plus / Disable Comments** — `ink-core` already closes comments via filters. Retired (owner, 2026-10-29).
 - **Advanced Cron Manager, Report Content, Invite Anyone, Redirect Redirection** — retired (owner, 2026-10-29). Report Content is replaced by the `ink-core` form; Invite Anyone only served BuddyPress Groups (off); `redirect-redirection` is **not** the "Redirection" plugin of 4b.
 
@@ -270,8 +272,8 @@ wp theme delete ink-v2   # legacy theme; keep a default theme installed as fallb
 | Plugin | Purpose on staging |
 |--------|--------------------|
 | **Loco Translate** | Author Afrikaans `.po/.mo`, then commit to `wp-content/languages/`. **Never AI-translate.** |
-| **WP Migrate (Lite)** | The DB import tool from Phase 2; uninstall right after use |
-| **Code Snippets** | Holds snippets in transit → migrate into `ink-core`, then retire |
+| **WP Migrate (Lite)** | Not needed: `tools/rehearsal-prep.mjs` imports the dump. Retired (4a) |
+| **Code Snippets** | Prod's snippets must not run on the new site. Retired (4a); any logic still needed lives in `ink-core` |
 
 ### 4e. Not a plugin — edge/DNS
 
