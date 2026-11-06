@@ -78,6 +78,7 @@ class MigrateAll {
 			array( 'challenge-entries', 'ink sync-challenge-entries' ),
 			array( 'result-posts', 'ink link-result-posts' ),
 			array( 'winners', 'ink import-winners' ),
+			array( 'tier-history', 'ink import-tier-history' ),
 			array( 'inkpols', 'ink migrate-inkpols' ),
 			array( 'kompetisies', 'ink migrate-kompetisies' ),
 			array( 'clean-shortcodes', 'ink clean-shortcodes' ),

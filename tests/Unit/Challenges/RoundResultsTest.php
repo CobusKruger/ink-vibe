@@ -307,6 +307,8 @@ test( 'the lifetime count is a writer win rows over all rounds, found by the acc
 	expect( WinRecords::userLike( '"user_id":50,' ) )->toBe( '%"user_id":50,%' );
 
 	expect( WinRecords::lifetimeCountFor( 0 ) )->toBe( 0 );
+	expect( WinRecords::countThroughRound( 0, 5 ) )->toBe( 0 );
+	expect( WinRecords::roundOfWin( 0, 5 ) )->toBe( 0 );
 	expect( WinRecords::clearSource( '' ) )->toBe( 0 );
 } );
 

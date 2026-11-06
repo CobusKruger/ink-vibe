@@ -157,10 +157,10 @@ class WinnersPost {
 	}
 
 	/**
-	 * The four home winner slots from a round's rows, in display order. Pure.
+	 * The five home winner slots from a round's rows, in display order. Pure.
 	 *
-	 * DIVERGENCE (accepted, D10, handoff permitted #1): four cards, not Lovable's two: Goud
-	 * Gedig + Storie, then Silwer Gedig + Artikel. Each slot takes position 1, ties by lowest
+	 * DIVERGENCE (accepted, D10, handoff permitted #1): five cards, not Lovable's two: Goud
+	 * Gedig + Storie, Silwer Gedig + Artikel, then Brons Gedig (owner, 2026-11-06). Each slot takes position 1, ties by lowest
 	 * post id as the home feed always has. Meester counts as Goud (D11). A slot with no winner
 	 * is left out. Storie and Artikel ignore the tier, so the Gradering fix changes nothing here.
 	 *
@@ -173,6 +173,7 @@ class WinnersPost {
 			'storie'       => array( PostTypes::STORIE, '' ),
 			'silwer-gedig' => array( PostTypes::GEDIG, 'silwer' ),
 			'artikel'      => array( PostTypes::ARTIKEL, '' ),
+			'brons-gedig'  => array( PostTypes::GEDIG, 'brons' ),
 		);
 		$slots  = array();
 
@@ -294,7 +295,12 @@ class WinnersPost {
 			'author'     => (string) ( $row['author'] ?? '' ),
 			'quote'      => (string) ( $row['excerpt'] ?? '' ),
 			'avatar_url' => (string) get_avatar_url( $user_id, array( 'size' => 96 ) ),
-			'win_label'  => FeaturedWinners::winLabel( WinRecords::lifetimeCountFor( $user_id ) ),
+			'win_label'  => FeaturedWinners::winLabel(
+				WinRecords::countThroughRound(
+					$user_id,
+					(int) ( $row['round_id'] ?? 0 ) > 0 ? (int) $row['round_id'] : WinRecords::roundOfWin( $post_id, $user_id )
+				)
+			),
 		);
 	}
 

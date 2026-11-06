@@ -128,6 +128,41 @@ final class PromotionEngine {
 	}
 
 	/**
+	 * The promotions a writer's wins would have triggered, in order. Walks the same
+	 * {@see self::THRESHOLDS} as {@see self::standingForTotalWins()}, so the last `to`
+	 * is always that method's grade. The migration uses it to rebuild the history
+	 * of promotions from the dated old wins. Pure.
+	 *
+	 * @param int $total Lifetime top-3 wins.
+	 * @return list<array{from: Tier, to: Tier, win: int}> `win` is the 1-based win that triggered it.
+	 */
+	public static function promotionsForTotalWins( int $total ): array {
+		$remaining = max( 0, $total );
+		$tier      = Tier::default();
+		$counted   = 0;
+		$out       = array();
+
+		while ( isset( self::THRESHOLDS[ $tier->value ] ) ) {
+			$rule = self::THRESHOLDS[ $tier->value ];
+
+			if ( $remaining < $rule['wins'] ) {
+				break;
+			}
+
+			$remaining -= $rule['wins'];
+			$counted   += $rule['wins'];
+			$out[]      = array(
+				'from' => $tier,
+				'to'   => $rule['next'],
+				'win'  => $counted,
+			);
+			$tier       = $rule['next'];
+		}
+
+		return $out;
+	}
+
+	/**
 	 * The progress toward the next Gradering for a grade + current win count
 	 * (Story 5.9) — reads the SAME single-source threshold map as {@see self::award()}.
 	 *

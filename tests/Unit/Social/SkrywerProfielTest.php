@@ -181,7 +181,7 @@ test( 'toHtml renders the accomplishments rail from real Gradering-history rows'
 	expect( $html )->toContain( '12 Januarie 2026' );
 } );
 
-test( 'toHtml keeps the empty Prestasies shell when there is no Gradering history', function (): void {
+test( 'toHtml omits the Prestasies heading when there is nothing to show', function (): void {
 	$html = SkrywerProfiel::toHtml(
 		array(
 			'name'      => 'Anja Brand',
@@ -193,7 +193,7 @@ test( 'toHtml keeps the empty Prestasies shell when there is no Gradering histor
 		)
 	);
 
-	expect( $html )->toContain( 'ink-skrywerprofiel__prestasies-titel' );
+	expect( $html )->not->toContain( 'ink-skrywerprofiel__prestasies-titel' );
 	expect( $html )->not->toContain( 'ink-skrywerprofiel__prestasies-lys' );
 } );
 

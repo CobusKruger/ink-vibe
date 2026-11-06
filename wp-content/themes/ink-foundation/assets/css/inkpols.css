@@ -111,7 +111,13 @@
 }
 
 /* --- featured items: default, home, compact --- */
+/* Three columns shared by every row (subgrid): the kind column is as wide as the widest kind
+   ("Reisjoernaal", "Kortverhaal"), so it can't run into the title; the title column wraps, so a
+   long title can't run into the author; the author column is as wide as the longest name. */
 .ink-inkpols__lys {
+	display: grid;
+	grid-template-columns: max-content minmax(0, 1fr) minmax(0, max-content);
+	column-gap: var(--wp--preset--spacing--s-12);
 	padding: 0;
 	list-style: none;
 	border-top: 1px solid var(--wp--preset--color--border);
@@ -119,10 +125,26 @@
 }
 
 .ink-inkpols__ry {
-	display: flex;
+	display: grid;
+	grid-column: 1 / -1;
+	grid-template-columns: subgrid;
 	align-items: baseline;
-	gap: var(--wp--preset--spacing--s-12);
 	padding: var(--wp--preset--spacing--s-12) 0;
+}
+
+@supports not (grid-template-columns: subgrid) {
+	.ink-inkpols__ry {
+		display: flex;
+		gap: var(--wp--preset--spacing--s-12);
+	}
+
+	.ink-inkpols__soort {
+		width: 7rem;
+	}
+
+	.ink-inkpols__ry-titel {
+		min-width: 0;
+	}
 }
 
 .ink-inkpols__ry + .ink-inkpols__ry {
@@ -131,16 +153,18 @@
 
 .ink-inkpols__soort {
 	flex-shrink: 0;
-	width: 3.5rem;
 }
 
 .ink-inkpols__ry-titel {
+	min-width: 0;
+	overflow-wrap: anywhere;
 	color: var(--wp--preset--color--ink-text);
 	font-family: var(--wp--preset--font-family--display);
 }
 
 .ink-inkpols__ry-skrywer {
 	margin-left: auto;
+	overflow-wrap: anywhere;
 	color: var(--wp--preset--color--muted-text);
 	font-size: var(--wp--preset--font-size--xs);
 	line-height: 1rem;
@@ -151,12 +175,14 @@
 	margin-bottom: var(--wp--preset--spacing--s-32);
 }
 
-.ink-inkpols__lys--home .ink-inkpols__ry {
-	gap: var(--wp--preset--spacing--s-16);
+.ink-inkpols__lys--home {
+	column-gap: var(--wp--preset--spacing--s-16);
 }
 
-.ink-inkpols__lys--home .ink-inkpols__soort {
-	width: 4rem;
+@supports not (grid-template-columns: subgrid) {
+	.ink-inkpols__lys--home .ink-inkpols__ry {
+		gap: var(--wp--preset--spacing--s-16);
+	}
 }
 
 .ink-inkpols__lys--home .ink-inkpols__ry-skrywer {

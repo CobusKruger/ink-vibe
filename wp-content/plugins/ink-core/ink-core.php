@@ -53,6 +53,13 @@ Kernel\Schema::register( Engagement\ReadingListStore::TABLE, array( Engagement\R
 Kernel\Schema::register( Social\FollowStore::TABLE, array( Social\FollowStore::class, 'schemaSql' ) ); // Story 9.2: asymmetric follow graph.
 Kernel\Schema::register( Forms\ReportStore::TABLE, array( Forms\ReportStore::class, 'schemaSql' ) ); // Story 18.4: content-report moderation table.
 
+// INK-content caps persist in the role records, so Content grants/revokes them on the
+// Kernel's activation/deactivation actions. Hooked at INCLUDE time for the same reason
+// as the schema providers above: on the activation request plugins_loaded and init have
+// already passed. Composition root, so Kernel keeps no dependency on Content.
+add_action( Kernel\Activation::HOOK_GRANT_CONTENT_CAPS, array( Content\PostTypes::class, 'grantContentCaps' ) );
+add_action( Kernel\Activation::HOOK_REVOKE_CONTENT_CAPS, array( Content\PostTypes::class, 'revokeContentCaps' ) );
+
 // Activation / deactivation: versioned-DB-option, schema registry install,
 // rewrite-rule flush, and PHP/WP minimum-version guard.
 register_activation_hook( INK_CORE_FILE, array( Kernel\Activation::class, 'activate' ) );

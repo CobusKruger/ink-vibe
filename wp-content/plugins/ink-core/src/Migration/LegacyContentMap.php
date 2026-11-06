@@ -326,6 +326,24 @@ final class LegacyContentMap {
 	}
 
 	/**
+	 * Whether an item has an explicit ruling (a root rule or a per-item override). Pure.
+	 *
+	 * A SKIP without a ruling is an unknown root (reported, left untouched); a SKIP with one
+	 * is a deliberate retirement.
+	 *
+	 * @param string       $legacy_type `bibliotekon` or `opleiding`.
+	 * @param list<string> $slugs       The slug chain from the root to the item itself.
+	 */
+	public static function hasRuling( string $legacy_type, array $slugs ): bool {
+		$slugs = array_values( array_map( static fn ( $s ): string => strtolower( trim( (string) $s ) ), $slugs ) );
+		$root  = $slugs[0] ?? '';
+		$self  = $slugs[ count( $slugs ) - 1 ] ?? '';
+		$table = self::LEGACY_LIBRARY === $legacy_type ? self::LIBRARY_ROOTS : self::TRAINING_ROOTS;
+
+		return isset( self::ITEM_OVERRIDES[ $self ] ) || isset( $table[ $root ] );
+	}
+
+	/**
 	 * The pre-migration URL of a legacy item (the 301 source), from its slug chain. Pure.
 	 *
 	 * @param string       $legacy_type `bibliotekon` or `opleiding`.

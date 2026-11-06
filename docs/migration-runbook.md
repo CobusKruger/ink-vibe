@@ -77,7 +77,7 @@ Known risks to look for: the Pages `biblioteek`, `opleiding` and `inkpols` share
 | --- | --- | --- |
 | Every step ran and did something | `migrate-all` summary; `ink_migrate_all_state` | no `failed`, no unexplained `silent` / `all-zero` |
 | Post counts by type, drafts, leftovers | `docs/migration-tools/post-counts.php` | thousands of `gedig`; `storie` and `artikel` in the thousands; `skryfwerk` roughly 150 or fewer; drafts stay drafts |
-| Legacy content moved | same script | `biblioteek_item` about 312, `opleiding_artikel` about 179; `bibliotekon` / `opleiding` left only for the skipped winners pages and dropped placeholders |
+| Legacy content moved | same script | `biblioteek_item` about 312, `opleiding_artikel` about 179; no `bibliotekon` / `opleiding` rows left except unknown roots (gaps to rule on); the skipped winners pages and dropped placeholders become post type `retired` (meta `ink_retired_from`, `ink_retired_reason`) |
 | Collections and skills | same script | Gedigte shelf 91; Vrystaatstories 68; Oom Pine 65; Liegstories 29; Kinderrympies one collection; Woordeboeke 7; Digkuns about 168 |
 | Challenges | same script | one Uitdaging per category under `projekte`, except competitions (a `kompetisie` in the category name), which are not challenges: **128 expected** (the 2026-11-02 copy had 136 because the filter was not applied to the round list; fixed 2026-11-03); entries counted per round (6,707 on the first rehearsal copy: result posts and announcements are not entries); each Uitdaging dated from its announcement, so the October 2026 round lists first |
 | Announcements | `migrate-posts` summary | one per round (133 of 140 on the first rehearsal copy), kept as core posts marked `ink_challenge_announcement` |

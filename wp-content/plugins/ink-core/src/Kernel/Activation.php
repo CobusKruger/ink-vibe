@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Ink\Kernel;
 
-use Ink\Content\PostTypes;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -35,6 +33,20 @@ final class Activation {
 	 * whether to upgrade.
 	 */
 	public const DB_VERSION_OPTION = 'ink_core_db_version';
+
+	/**
+	 * Action fired on activation so modules can grant their persistent caps.
+	 *
+	 * Kernel depends on no module; Content hooks its grant here from the
+	 * composition root (`ink-core.php`) at include time, because on the activation
+	 * request `plugins_loaded` and `init` have already passed.
+	 */
+	public const HOOK_GRANT_CONTENT_CAPS = 'ink_grant_content_caps';
+
+	/**
+	 * Action fired on deactivation so modules can revoke the caps they granted.
+	 */
+	public const HOOK_REVOKE_CONTENT_CAPS = 'ink_revoke_content_caps';
 
 	/**
 	 * Minimum supported PHP version.
@@ -70,7 +82,7 @@ final class Activation {
 		// activation — NOT on every `init`. Idempotent + fail-safe; the caps that
 		// gate live paths ARE granted to real roles (no deny-everyone stub).
 		Capabilities::grantToEditor();
-		PostTypes::grantContentCaps();
+		do_action( self::HOOK_GRANT_CONTENT_CAPS );
 
 		// Flush the rewrite rules the Epic 2 CPTs/taxonomies introduce.
 		flush_rewrite_rules();
@@ -111,7 +123,7 @@ final class Activation {
 	 */
 	public static function deactivate(): void {
 		Capabilities::revokeFromEditor();
-		PostTypes::revokeContentCaps();
+		do_action( self::HOOK_REVOKE_CONTENT_CAPS );
 
 		flush_rewrite_rules();
 	}

@@ -87,6 +87,7 @@ final class PromotionLog {
 	 * @param int    $actor_id     The staff user id, or 0 for the automatic engine.
 	 * @param string $reason       The staff-entered (or system) reason.
 	 * @param int    $challenge_id Optional linked challenge id (0 = none).
+	 * @param string $created_at   Optional GMT `Y-m-d H:i:s` for a backfilled row; '' = now.
 	 * @return bool True when the row was inserted.
 	 */
 	public static function record(
@@ -95,7 +96,8 @@ final class PromotionLog {
 		Tier $to,
 		int $actor_id = 0,
 		string $reason = '',
-		int $challenge_id = 0
+		int $challenge_id = 0,
+		string $created_at = ''
 	): bool {
 		global $wpdb;
 
@@ -111,13 +113,30 @@ final class PromotionLog {
 				'actor_id'     => $actor_id,
 				'reason'       => $reason,
 				'challenge_id' => $challenge_id,
-				'created_at'   => current_time( 'mysql', true ),
+				'created_at'   => '' !== $created_at ? $created_at : current_time( 'mysql', true ),
 			),
 			array( '%d', '%s', '%s', '%d', '%s', '%d', '%s' )
 		);
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return false !== $inserted;
+	}
+
+	/**
+	 * Delete the rows one migration run wrote (identified by their reason), for a rehearsal re-run.
+	 *
+	 * @param string $reason The exact reason the rows were written with.
+	 * @return int How many rows went.
+	 */
+	public static function clearByReason( string $reason ): int {
+		global $wpdb;
+
+		if ( '' === $reason || ! $wpdb instanceof \wpdb ) {
+			return 0;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- a once-off rehearsal clean-up of this module's own table.
+		return (int) $wpdb->delete( self::tableName(), array( 'reason' => $reason ), array( '%s' ) );
 	}
 
 	/**

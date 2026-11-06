@@ -236,6 +236,14 @@ function ink_foundation_enqueue_ontdek_assets(): void {
 
 	$theme = wp_get_theme();
 
+	// The Wenners view shows the home winner cards, so it needs their stylesheet.
+	wp_enqueue_style(
+		'ink-foundation-wenners',
+		get_theme_file_uri( 'assets/css/wenners.css' ),
+		array(),
+		(string) $theme->get( 'Version' )
+	);
+
 	wp_enqueue_script(
 		'ink-foundation-ontdek-tabs',
 		get_theme_file_uri( 'assets/js/ontdek-tabs.js' ),
@@ -556,34 +564,6 @@ function ink_foundation_audit_id_uitdaging( string $block_content, array $block 
 }
 add_filter( 'render_block_core/post-title', 'ink_foundation_audit_id_uitdaging', 10, 2 );
 add_filter( 'render_block_core/post-content', 'ink_foundation_audit_id_uitdaging', 10, 2 );
-
-/**
- * Stamp the site-wide header/footer wordmark with its fidelity-audit join key
- * (docs/fidelity-remediation/maps/tuisblad.csv). `wp:site-title` is a dynamic
- * core block, so — like the reading-page filters above — the id cannot be
- * hand-written in the pattern. The header and footer instances are told apart
- * by their authored `fontSize` preset (`xl` in header-main.php, `lg` in
- * footer-main.php), the one attribute that differs between them.
- *
- * @param string              $block_content The rendered block.
- * @param array<string,mixed> $block         The parsed block.
- */
-function ink_foundation_audit_id_site_title( string $block_content, array $block ): string {
-	$audit_ids = array(
-		'xl' => 'header-logo-text',
-		'lg' => 'footer-logo-text',
-	);
-	$size      = $block['attrs']['fontSize'] ?? '';
-
-	if ( ! is_string( $size ) || ! isset( $audit_ids[ $size ] ) ) {
-		return $block_content;
-	}
-
-	$with_audit_id = preg_replace( '/<(p|h[1-6])\b/', '<$1 data-audit-id="' . $audit_ids[ $size ] . '"', $block_content, 1 );
-
-	return null !== $with_audit_id ? $with_audit_id : $block_content;
-}
-add_filter( 'render_block_core/site-title', 'ink_foundation_audit_id_site_title', 10, 2 );
 
 /**
  * Stamp the header `<nav>` with its fidelity-audit join key (maps/tuisblad.csv).
@@ -1270,6 +1250,14 @@ function ink_foundation_enqueue_home_assets(): void {
 		array(),
 		(string) $theme->get( 'Version' )
 	);
+
+	// The winner cards (ink/wenner-kollig) share their stylesheet with the Ontdek Wenners view.
+	wp_enqueue_style(
+		'ink-foundation-wenners',
+		get_theme_file_uri( 'assets/css/wenners.css' ),
+		array(),
+		(string) $theme->get( 'Version' )
+	);
 }
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_home_assets' );
 
@@ -1716,21 +1704,25 @@ function ink_foundation_register_block_styles(): void {
 				. '.wp-block-group.is-style-ink-header .ink-header-brand{'
 				. 'display:flex;'
 				. 'align-items:center;'
-				. 'gap:var(--wp--preset--spacing--s-8);'
+				. 'gap:.625rem;'
 				. 'color:var(--wp--preset--color--ink-text);'
 				. 'text-decoration:none;'
 				. '}'
 				// Stage 4 (fidelity): Lovable's `<main>` starts flush under the sticky
 				// header; WP's root blockGap put 24px between them on every page.
 				. '.wp-site-blocks > header.wp-block-template-part + *{margin-block-start:0;}'
-				// Wordmark: Lovable `font-serif text-xl font-semibold text-foreground`.
-				. '.ink-header-logo-text{'
+				// Wordmark: Lovable Wordmark.tsx two-line lockup, fixed sizes (0.7rem / 1.3rem)
+				// whatever the wrapper's font-size. Shared with the footer (both render on every page).
+				. '.ink-wordmark{display:inline-flex;flex-direction:column;}'
+				. '.ink-wordmark__small,.ink-wordmark__big{'
+				. 'display:block;'
 				. 'color:var(--wp--preset--color--ink-text);'
 				. 'font-family:var(--wp--preset--font-family--display);'
-				. 'font-size:var(--wp--preset--font-size--xl);'
 				. 'font-weight:600;'
-				. 'line-height:1.75rem;'
+				. 'line-height:1.05;'
 				. '}'
+				. '.ink-wordmark__small{font-size:.7rem;}'
+				. '.ink-wordmark__big{font-size:1.3rem;}'
 				// Below 1024 the row is the logo and the menu toggle (Header.tsx:40,65,112;
 				// 06-chrome H1, H2). ACCEPTED DIVERGENCE (owner, 2026-11-02): the design
 				// switches at 768; INK's longer link list needs one clean row at every
@@ -1802,7 +1794,7 @@ function ink_foundation_register_block_styles(): void {
 				// 2–4 down 24px; Lovable's columns are top-aligned.
 				. '.wp-block-group.is-style-ink-footer .ink-footer-kolomme > *{margin-block-start:0;}'
 				// Wordmark: Lovable `text-lg` is 18/28; 14px text is 14/20 (`text-sm`).
-				. '.wp-block-group.is-style-ink-footer .wp-block-site-title{line-height:1.75rem;}'
+				. '.wp-block-group.is-style-ink-footer .ink-footer-logo-link{display:flex;align-items:center;gap:.625rem;color:var(--wp--preset--color--ink-text);text-decoration:none;}'
 				. '.wp-block-group.is-style-ink-footer .has-sm-font-size{line-height:1.25rem;}'
 				. '.wp-block-group.is-style-ink-footer .ink-footer-handelsmerk{'
 				. 'display:flex;'

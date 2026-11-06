@@ -56,6 +56,11 @@ final class SkrywerProfiel {
 	 */
 	private const FALLBACK_WORKS = 6;
 
+	/**
+	 * Filter other modules hook to add profile accomplishments (`ink_home_featured_winner` style).
+	 * Receives and returns `list<array{at:int,label:string,detail:string}>`; second arg is the skrywer id.
+	 */
+	public const ACCOMPLISHMENTS_FILTER = 'ink_skrywerprofiel_accomplishments';
 
 
 	/**
@@ -375,29 +380,43 @@ final class SkrywerProfiel {
 	 * @return list<array{label:string, detail:string}>
 	 */
 	private static function accomplishments( int $author_id ): array {
-		if ( ! class_exists( TiersApi::class ) ) {
-			return array();
-		}
+		$items = array();
 
-		$rows = array();
+		// Promotions since go-live (the Tiers audit log). Migrated members have none: their
+		// baseline grade is written without an audit row, so their history is their wins.
+		if ( class_exists( TiersApi::class ) ) {
+			foreach ( array_slice( TiersApi::historyFor( $author_id ), 0, 3 ) as $entry ) {
+				$detail    = '';
+				$timestamp = '' !== $entry->createdAt ? strtotime( $entry->createdAt . ' UTC' ) : false;
 
-		foreach ( array_slice( TiersApi::historyFor( $author_id ), 0, 3 ) as $entry ) {
-			$detail = '';
+				if ( $entry->isChallengeLinked() && 'publish' === get_post_status( $entry->challengeId ) ) {
+					$detail = get_the_title( $entry->challengeId );
+				} elseif ( false !== $timestamp ) {
+					$detail = date_i18n( 'j F Y', $timestamp );
+				}
 
-			if ( $entry->isChallengeLinked() && 'publish' === get_post_status( $entry->challengeId ) ) {
-				$detail = get_the_title( $entry->challengeId );
-			} elseif ( '' !== $entry->createdAt ) {
-				$timestamp = strtotime( $entry->createdAt . ' UTC' );
-				$detail    = false !== $timestamp ? date_i18n( 'j F Y', $timestamp ) : '';
+				$items[] = array(
+					'at'     => false !== $timestamp ? $timestamp : 0,
+					'label'  => Terms::label( $entry->to->value ),
+					'detail' => $detail,
+				);
 			}
-
-			$rows[] = array(
-				'label'  => Terms::label( $entry->to->value ),
-				'detail' => $detail,
-			);
 		}
 
-		return $rows;
+		// Other modules add theirs (Challenges: the recorded wins) — a filter, since Social may not
+		// depend on them. Each item: `at` (unix time), `label`, `detail`.
+		$filtered = apply_filters( self::ACCOMPLISHMENTS_FILTER, $items, $author_id );
+		$items    = is_array( $filtered ) ? $filtered : $items;
+
+		usort( $items, static fn ( array $a, array $b ): int => (int) $b['at'] <=> (int) $a['at'] );
+
+		return array_map(
+			static fn ( array $item ): array => array(
+				'label'  => $item['label'],
+				'detail' => $item['detail'],
+			),
+			array_slice( $items, 0, 3 )
+		);
 	}
 
 	/**
@@ -599,10 +618,8 @@ final class SkrywerProfiel {
 			}
 
 			$html .= '</div></aside>';
-		} else {
-			// No Gradering history yet — keep the empty shell (pre-existing behaviour).
-			$html .= '<aside class="ink-skrywerprofiel__prestasies" data-audit-id="skrywer-prestasies"><h3 class="ink-eyebrow ink-eyebrow--muted ink-skrywerprofiel__prestasies-titel" data-audit-id="skrywer-prestasies-title">' . esc_html__( 'Prestasies', 'ink-core' ) . '</h3></aside>';
 		}
+		// Nothing to show: no aside, so no orphan "Prestasies" heading.
 
 		$html .= '</section>'; // .ink-skrywerprofiel__oor-prestasies
 

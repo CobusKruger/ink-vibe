@@ -4,7 +4,7 @@
 
 ## Read first: what changed
 
-The Gradering fix, the competition-round exclusion and the winner importer were built on 2026-11-03 (`docs/handoffs/winner-cleanup.md` §2) and run once on the existing dev copy. A real refresh is their first full proof. The refresh now has **21 `migrate-all` steps**; the new one is `winners` (`wp ink import-winners`, after `result-posts`). Wins come from the old result posts; no winner list is an input (owner, 2026-11-03).
+The Gradering fix, the competition-round exclusion and the winner importer were built on 2026-11-03 (`docs/handoffs/winner-cleanup.md` §2) and run once on the existing dev copy. A real refresh is their first full proof. The refresh now has **22 `migrate-all` steps**; the new ones are `winners` (`wp ink import-winners`, after `result-posts`) and `tier-history` (`wp ink import-tier-history`, right after `winners`: the Silwer/Goud promotions the old wins imply, for the profile's Prestasies rail; no emails). Wins come from the old result posts; no winner list is an input (owner, 2026-11-03).
 
 **Migration inputs are exactly three files** in `../migration-data/`: `writer-accounts.csv`, `writer-aliases.csv`, `inkpols-uitgawes.csv`. Everything else is in `../backup-data/` and no code reads it (`MigrationDataTest` enforces this).
 

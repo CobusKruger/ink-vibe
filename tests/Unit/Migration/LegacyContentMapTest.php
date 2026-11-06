@@ -90,6 +90,8 @@ test( 'run migrates legacy-CPT rows via the mapping, recording the rebuilt URL a
 		public array $named = array();
 		/** @var list<int> */
 		public array $detached = array();
+		/** @var array<int,string> */
+		public array $retired = array();
 
 		public function hasRun(): bool {
 			return false;
@@ -112,6 +114,9 @@ test( 'run migrates legacy-CPT rows via the mapping, recording the rebuilt URL a
 		protected function recordSourceUrlFor( int $post_id, string $url ): void {
 			$this->urls[ $post_id ] = $url;
 		}
+		protected function retire( int $post_id, string $legacy_type, array $slugs, string $reason ): void {
+			$this->retired[ $post_id ] = $reason;
+		}
 		protected function setPostType( int $post_id, string $type ): void {
 			$this->set[] = array( $post_id, $type );
 		}
@@ -133,6 +138,9 @@ test( 'run migrates legacy-CPT rows via the mapping, recording the rebuilt URL a
 	expect( $summary['legacy_skipped'] )->toBe( 2 ); // winners 12 + unknown root 15
 	expect( $summary['containers'] )->toBe( 2 );     // empty placeholders 13 and 17 are dropped
 	expect( $summary['unmapped_roots'] )->toBe( array( 'onbekend' ) );
+	// Deliberate skips and dropped placeholders are retired; the unknown root (15) is left as a visible gap.
+	expect( $summary['retired'] )->toBe( 3 );
+	expect( $migration->retired )->toBe( array( 12 => 'not-migrated', 13 => 'section-placeholder', 17 => 'section-placeholder' ) );
 	expect( $migration->urls[11] )->toBe( '/biblioteek/flipvis-se-verhale/deel-1/' );
 	expect( $migration->urls[14] )->toBe( '/opleiding/gedigte/dignet-woordeboek/' );
 	// 11 keeps its real parent 10; items under a dropped placeholder (14, 16) are detached.

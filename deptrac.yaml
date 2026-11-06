@@ -195,6 +195,11 @@ deptrac:
             # (THE conflation rule is untouched: Discovery sorts/filters on form +
             # read/recency, never on tier).
             - Tiers
+            # Ontdek "Wenners" view (owner, 2026-11-06): lists the placed works and
+            # renders them as the Tuis winner cards, through the Challenges Api
+            # facade only (`Api::winnerMetaQuery()`, `Api::winnerCardHtml()`).
+            # Non-circular: Challenges never depends on Discovery. Display only.
+            - Challenges
         Library:
             - Kernel
             # Story 10.1: the Biblioteek archive reads the migration-load-bearing
@@ -277,6 +282,10 @@ deptrac:
             # meta keys from the single sources, as InkPols does. Competitions are not
             # challenges (owner), so there is deliberately no Challenges edge.
             - Content
+            # The gala migration stores retired Page paths under
+            # `Ink\Migration\StaticRedirects::OPTION_GALA_PATHS` (the option the redirect
+            # table reads). Constant only; Migration does not depend on Competitions.
+            - Migration
         Notifications:
             - Kernel
             # Story 9.9: the in-app kennisgewing sources fan out to the work

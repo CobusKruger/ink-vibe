@@ -64,12 +64,12 @@ final class FeaturedStream {
 	public const DATA_FILTER = 'ink_home_featured_stream';
 
 	/**
-	 * How many bydraes the stream shows (1 featured spanning card + 3 standard) —
-	 * the Lovable design's four-card layout.
+	 * How many bydraes the stream shows: eight cards in two columns (owner, 2026-11-06).
+	 * DIVERGENCE (accepted): Lovable shows four, the first spanning both columns.
 	 *
 	 * @var int
 	 */
-	public const MAX_ITEMS = 4;
+	public const MAX_ITEMS = 8;
 
 	/**
 	 * How many of the newest published bydraes to scan for the first {@see MAX_ITEMS}
@@ -311,10 +311,10 @@ final class FeaturedStream {
 
 		// Fidelity-audit join keys: the featured (spanning) card and the first standard
 		// card only, mirroring Lovable's `FeaturedWorks.tsx` (maps/tuisblad.csv).
-		$audit_prefixes = array( 'featured-lead', 'featured-card' );
+		$audit_prefixes = array( 'featured-lead', 'featured-card' ); // Both are standard cards now; see MAX_ITEMS.
 
 		foreach ( $rows as $index => $item ) {
-			$cards .= self::cardHtml( $item, 0 === $index, $audit_prefixes[ $index ] ?? '' );
+			$cards .= self::cardHtml( $item, false, $audit_prefixes[ $index ] ?? '' );
 		}
 
 		return '<section class="' . esc_attr( $base . ' alignfull ink-band' ) . '" data-audit-id="featured" aria-labelledby="' . esc_attr( $title_id ) . '">'
@@ -323,6 +323,9 @@ final class FeaturedStream {
 			. '<div class="' . esc_attr( $base . '__rooster' ) . '" data-audit-id="featured-grid">' . $cards . '</div>'
 			. '<a class="' . esc_attr( $base . '__alles-mobiel ink-link' ) . '" data-audit-id="featured-all-link-mobile" href="' . esc_url( self::allWorksUrl() ) . '">'
 			. esc_html( Terms::label( 'sien_alle_werke' ) ) . ' →</a>'
+			. '<div class="' . esc_attr( $base . '__verder' ) . '">'
+			. '<a class="ink-link ink-link--slide" href="' . esc_url( self::trainingUrl() ) . '">' . esc_html__( 'Leer verder', 'ink-core' ) . ' →</a>'
+			. '</div>'
 			. '</div></section>';
 	}
 
@@ -536,6 +539,15 @@ final class FeaturedStream {
 	 */
 	private static function allWorksUrl(): string {
 		return home_url( '/ontdek' );
+	}
+
+	/**
+	 * The "Leer verder" target: the Opleiding hub. Impure (URL builder).
+	 *
+	 * @return string
+	 */
+	private static function trainingUrl(): string {
+		return home_url( '/opleiding/' );
 	}
 
 	/**

@@ -63,6 +63,8 @@ Required order: owner, 2026-10-30.
 | Pair 1, right | Storie | `winner-*` |
 | Pair 2, left | Silwer Gedig | No ids: repeats the recipe, no Lovable reference |
 | Pair 2, right | Artikel | No ids: same |
+| Row 3, left | Brons Gedig | No ids: same (owner, 2026-11-06) |
+| Row 3, right | Link tile "Lees vorige wenners →" | Not a card; links to `/ontdek/?werke_sorteer=wenners` |
 
 - Lovable's `winner-card` is the prose card and sits left; `winner-gedig-card` is the poem and sits right. **Pair by type.** INK's left/right order comes from D10, so horizontal position drift on these ids is expected.
 - Duplicate ids make `run.sh diff` exit 2, so pair 2 carries none. It is checked by class list and, if wanted, a `--scope` capture.
@@ -209,7 +211,8 @@ Measure at 390, 768, 1440, and the mobile menu state for the `mobile-menu` captu
 
 | Divergence | Handoff list |
 |---|---|
-| Four winner cards, two pairs, Gedig left | Item 1 (D10) |
+| Five winner cards in pairs, Gedig left, then a "Lees vorige wenners" link tile | Item 1 (D10; Brons and link tile owner, 2026-11-06) |
+| In die kollig: eight cards in two equal columns, first card not spanning, "Leer verder" link to Opleiding | Owner, 2026-11-06 (see `owner-rulings.md`) |
 | Afrikaans copy | Item 3 |
 | Real images only: no `magazine-cover.jpg` | Item 4 |
 | CTA bottom padding; featured pill tones | Item 5 |

@@ -111,10 +111,36 @@ test( 'primitive classes: card, caps-gold pill, gold button, gold-ring avatar', 
 		->toContain( 'Lees storie' );
 } );
 
+test( 'the Brons Gedig card follows the four, and the grid ends with the link to previous winners', function (): void {
+	$html = FeaturedWinners::toHtml(
+		array(
+			'slots' => array(
+				'brons-gedig' => ink_winner_view( 'B' ),
+				'storie'      => ink_winner_view( 'P' ),
+			),
+		)
+	);
+
+	expect( substr_count( $html, '<article' ) )->toBe( 2 );
+	expect( strpos( $html, '"P"' ) )->toBeLessThan( strpos( $html, '"B"' ) );
+	expect( $html )->toContain( 'Brons Gedig' )
+		->toContain( 'Lees vorige wenners' )
+		->toContain( '/ontdek/?werke_sorteer=wenners' );
+	expect( strpos( $html, 'Lees vorige wenners' ) )->toBeGreaterThan( strpos( $html, '"B"' ) );
+} );
+
+test( 'slotFor: a Gedig is labelled by its Gradering (Meester is Goud), prose by its type, others have none', function (): void {
+	expect( FeaturedWinners::slotFor( 'gedig', 'meester' )['label'] )->toBe( 'Goud Gedig' );
+	expect( FeaturedWinners::slotFor( 'gedig', 'silwer' )['label'] )->toBe( 'Silwer Gedig' );
+	expect( FeaturedWinners::slotFor( 'gedig', '' )['label'] )->toBe( 'Gedig' );
+	expect( FeaturedWinners::slotFor( 'storie', 'goud' )['poem'] )->toBeFalse();
+	expect( FeaturedWinners::slotFor( 'skryfwerk', '' ) )->toBeNull();
+} );
+
 test( 'a slot with no post, count or avatar drops the button, wins and image', function (): void {
 	$html = FeaturedWinners::toHtml( array( 'slots' => array( 'storie' => array( 'title' => 'T', 'author' => 'S' ) ) ) );
 
-	expect( $html )->not->toContain( '<a ' )
+	expect( $html )->not->toContain( 'class="ink-btn' )
 		->and( $html )->not->toContain( '<img' )
 		->and( $html )->not->toContain( 'winner-author-wins' );
 } );

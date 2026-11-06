@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Challenges;
 
 use Ink\I18n\Terms;
+use Ink\Kernel\Scalar;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -19,8 +20,9 @@ defined( 'ABSPATH' ) || exit;
  * Its payload comes from {@see self::FEATURED_FILTER}, which {@see WinnersPost::featured()}
  * hooks; a round with no placed winner collapses the section.
  *
- * DIVERGENCE (accepted, D10, handoff permitted #1): four cards in two pairs, not Lovable's two:
- * Goud Gedig + Storie, then Silwer Gedig + Artikel. **Pair by type, not position:** Lovable's
+ * DIVERGENCE (accepted, D10, handoff permitted #1): five cards in pairs, not Lovable's two:
+ * Goud Gedig + Storie, Silwer Gedig + Artikel, then Brons Gedig and a "Lees vorige wenners" link
+ * to the Ontdek Wenners view (owner, 2026-11-06). **Pair by type, not position:** Lovable's
  * `winner-card` is the prose card and `winner-gedig-card` the poem, and Lovable puts prose left
  * where D10 puts Gedig left, so horizontal position drift on those ids is expected. The second
  * pair repeats the recipes with no ids: Lovable has no node for it, and a repeated id stops the
@@ -132,7 +134,91 @@ final class FeaturedWinners {
 				'label'  => Terms::label( 'artikel' ),
 				'button' => __( '[NEEDS HUMAN AFRIKAANS] TUIS-WENNER-LEES-ARTIKEL', 'ink-core' ),
 			),
+			'brons-gedig'  => array(
+				'prefix' => '',
+				'poem'   => true,
+				'icon'   => self::ICON_FEATHER,
+				'label'  => Terms::label( 'brons' ) . ' ' . Terms::label( 'gedig' ),
+				'button' => $lees_gedig,
+			),
 		);
+	}
+
+	/**
+	 * The winner card for a placed work of any round (the Ontdek Wenners view). Impure (post reads).
+	 * '' for a missing post or a type with no card.
+	 *
+	 * @param int $post_id The winning work.
+	 * @return string
+	 */
+	public static function cardForPost( int $post_id ): string {
+		$post = $post_id > 0 ? get_post( $post_id ) : null;
+
+		if ( ! $post instanceof \WP_Post ) {
+			return '';
+		}
+
+		$slot = self::slotFor( $post->post_type, Scalar::asString( get_post_meta( $post_id, Entry::GRADERING_META_KEY, true ) ) );
+
+		if ( null === $slot ) {
+			return '';
+		}
+
+		$user_id = (int) $post->post_author;
+
+		return self::cardHtml(
+			array(
+				'title'      => (string) get_the_title( $post ),
+				'url'        => (string) get_permalink( $post ),
+				'author'     => (string) get_the_author_meta( 'display_name', $user_id ),
+				'quote'      => RoundResults::excerptFor( $post ),
+				'avatar_url' => (string) get_avatar_url( $user_id, array( 'size' => 96 ) ),
+				'win_label'  => self::winLabel( WinRecords::countThroughRound( $user_id, WinRecords::roundOfWin( $post_id, $user_id ) ) ),
+			),
+			$slot
+		);
+	}
+
+	/**
+	 * The card definition for a winning work of any round, for the Ontdek Wenners view. Pure (Terms).
+	 * A Gedig carries its Gradering in the label (Meester counts as Goud, D11); anything else its type.
+	 * No audit ids: those belong to the home cards.
+	 *
+	 * @param string $category The work's post type.
+	 * @param string $tier     The entry-time Gradering, or ''.
+	 * @return array{prefix:string, poem:bool, icon:string, label:string, button:string}|null Null for a type with no card.
+	 */
+	public static function slotFor( string $category, string $tier ): ?array {
+		$tier = 'meester' === $tier ? 'goud' : $tier;
+
+		switch ( $category ) {
+			case 'gedig':
+				return array(
+					'prefix' => '',
+					'poem'   => true,
+					'icon'   => self::ICON_FEATHER,
+					'label'  => ( in_array( $tier, array( 'brons', 'silwer', 'goud' ), true ) ? Terms::label( $tier ) . ' ' : '' ) . Terms::label( 'gedig' ),
+					'button' => __( 'Lees gedig', 'ink-core' ),
+				);
+			case 'storie':
+				return array(
+					'prefix' => '',
+					'poem'   => false,
+					'icon'   => self::ICON_BOOK,
+					'label'  => Terms::label( 'storie' ),
+					'button' => __( 'Lees storie', 'ink-core' ),
+				);
+			case 'artikel':
+				return array(
+					'prefix' => '',
+					'poem'   => false,
+					'icon'   => self::ICON_BOOK,
+					'label'  => Terms::label( 'artikel' ),
+					'button' => __( '[NEEDS HUMAN AFRIKAANS] TUIS-WENNER-LEES-ARTIKEL', 'ink-core' ),
+				);
+			default:
+				return null;
+		}
 	}
 
 	/**
@@ -160,6 +246,11 @@ final class FeaturedWinners {
 		/* translators: %s: the round's month, e.g. "Oktober". */
 		$eyebrow = ( '' !== $month ? sprintf( __( '%s-uitdaging', 'ink-core' ), $month ) . ' · ' : '' ) . '"' . $theme . '"';
 
+		// The grid's last cell: previous winners are the Ontdek page's Wenners view.
+		$vorige = '<div class="ink-wenners__vorige">'
+			. '<a class="ink-link ink-link--slide" href="' . esc_url( self::previousWinnersUrl() ) . '">' . esc_html__( 'Lees vorige wenners', 'ink-core' ) . ' →</a>'
+			. '</div>';
+
 		return '<section class="ink-band alignfull" data-audit-id="challenge">'
 			. '<div class="ink-container" data-audit-id="challenge-container">'
 			. '<div class="ink-wenners__kop" data-audit-id="challenge-head">'
@@ -167,7 +258,7 @@ final class FeaturedWinners {
 			. '<span class="ink-eyebrow ink-eyebrow--card ink-eyebrow--gold" data-audit-id="challenge-eyebrow">' . esc_html( $eyebrow ) . '</span>'
 			. '</div>'
 			. '<h2 class="ink-heading-h2-section ink-wenners__titel" data-audit-id="challenge-h2">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] TUIS-WENNERS-H2', 'ink-core' ) . '</h2>'
-			. '<div class="ink-wenners__rooster" data-audit-id="challenge-grid">' . $cards . '</div>'
+			. '<div class="ink-wenners__rooster" data-audit-id="challenge-grid">' . $cards . $vorige . '</div>'
 			. '</div></section>';
 	}
 
@@ -175,7 +266,7 @@ final class FeaturedWinners {
 	 * The "Nth wen" label; '' for no count. `ui-copy-translations.md` gives "3de wen"; the
 	 * ordinal follows Afrikaans spelling: 1ste, 8ste and 20ste on, -de otherwise. Pure.
 	 *
-	 * @param int $count The lifetime win count.
+	 * @param int $count The writer's win count as of this win ({@see WinRecords::countThroughRound()}).
 	 * @return string
 	 */
 	public static function winLabel( int $count ): string {
@@ -196,7 +287,7 @@ final class FeaturedWinners {
 	 * @param array{prefix:string, poem:bool, icon:string, label:string, button:string} $slot   The slot's definition.
 	 * @return string
 	 */
-	private static function cardHtml( array $winner, array $slot ): string {
+	public static function cardHtml( array $winner, array $slot ): string {
 		$prefix = $slot['prefix'];
 		$aid    = static fn ( string $suffix ): string => self::aid( '' === $prefix ? '' : $prefix . $suffix );
 		$icon   = static fn ( string $suffix ): string => '' === $prefix ? '' : $prefix . $suffix;
@@ -232,6 +323,17 @@ final class FeaturedWinners {
 			. '</div></div>'
 			. $button
 			. '</div></article>';
+	}
+
+	/**
+	 * The Ontdek page with its Wenners view selected. Impure (URL builder).
+	 *
+	 * @return string
+	 */
+	private static function previousWinnersUrl(): string {
+		$base = function_exists( 'home_url' ) ? (string) home_url( '/ontdek/' ) : '/ontdek/';
+
+		return $base . '?werke_sorteer=wenners';
 	}
 
 	/**

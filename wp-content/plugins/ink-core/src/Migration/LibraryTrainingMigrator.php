@@ -56,6 +56,29 @@ class LibraryTrainingMigrator {
 	public const CLI_COMMAND = 'ink migrate-library-training';
 
 	/**
+	 * Post type given to legacy rows that were deliberately not migrated (winners pages, dropped
+	 * section placeholders). Unregistered on purpose: the rows stay in the DB, out of every
+	 * query and URL, and clearly labelled.
+	 *
+	 * @var string
+	 */
+	public const RETIRED_TYPE = 'retired';
+
+	/**
+	 * Meta recording the legacy post type a retired row came from.
+	 *
+	 * @var string
+	 */
+	public const RETIRED_FROM_META = 'ink_retired_from';
+
+	/**
+	 * Meta recording why a row was retired (`section-placeholder` or `not-migrated`).
+	 *
+	 * @var string
+	 */
+	public const RETIRED_REASON_META = 'ink_retired_reason';
+
+	/**
 	 * Register the once-off WP-CLI trigger — ONLY under WP-CLI (never a web request).
 	 */
 	public function register(): void {
@@ -73,10 +96,11 @@ class LibraryTrainingMigrator {
 				$summary = $this->run( isset( $assoc['force'] ) );
 				\WP_CLI::success(
 					sprintf(
-						'Biblioteek/Opleiding gemigreer: %d biblioteek-items, %d opleiding-artikels, %d terme toegeken%s.',
+						'Biblioteek/Opleiding gemigreer: %d biblioteek-items, %d opleiding-artikels, %d terme toegeken, %d afgetree (retired)%s.',
 						(int) $summary['biblioteek'],
 						(int) $summary['opleiding'],
 						(int) $summary['terms_assigned'],
+						(int) $summary['retired'],
 						! empty( $summary['skipped'] ) ? ' (oorgeslaan — reeds gedoen)' : ''
 					)
 				);
@@ -156,7 +180,7 @@ class LibraryTrainingMigrator {
 	 * Run the once-off migration. Idempotent unless `$force`.
 	 *
 	 * @param bool $force Re-run even when already completed.
-	 * @return array{skipped:bool, biblioteek:int, opleiding:int, terms_assigned:int, legacy_skipped:int, containers:int, unmapped_roots:list<string>}
+	 * @return array{skipped:bool, biblioteek:int, opleiding:int, terms_assigned:int, legacy_skipped:int, containers:int, retired:int, unmapped_roots:list<string>}
 	 */
 	public function run( bool $force = false ): array {
 		if ( $this->hasRun() && ! $force ) {
@@ -167,6 +191,7 @@ class LibraryTrainingMigrator {
 				'terms_assigned' => 0,
 				'legacy_skipped' => 0,
 				'containers'     => 0,
+				'retired'        => 0,
 				'unmapped_roots' => array(),
 			);
 		}
@@ -176,6 +201,7 @@ class LibraryTrainingMigrator {
 		$terms_assigned = 0;
 		$legacy_skipped = 0;
 		$containers     = 0;
+		$retired        = 0;
 		$roots_seen     = array();
 
 		foreach ( $this->legacyContent() as $item ) {
@@ -237,11 +263,20 @@ class LibraryTrainingMigrator {
 			// term is the new tab. They are dropped and their children detached.
 			if ( LegacyContentMap::CONTAINER === $decision['action'] ) {
 				++$containers;
+				$this->retire( $post_id, $row['type'], $row['slugs'], 'section-placeholder' );
+				++$retired;
 				continue;
 			}
 
 			if ( LegacyContentMap::MIGRATE !== $decision['action'] ) {
 				++$legacy_skipped;
+
+				// Deliberate skips are retired; an unknown root stays untouched so it keeps showing as a gap.
+				if ( LegacyContentMap::hasRuling( $row['type'], $row['slugs'] ) ) {
+					$this->retire( $post_id, $row['type'], $row['slugs'], 'not-migrated' );
+					++$retired;
+				}
+
 				continue;
 			}
 
@@ -292,6 +327,7 @@ class LibraryTrainingMigrator {
 			'terms_assigned' => $terms_assigned,
 			'legacy_skipped' => $legacy_skipped,
 			'containers'     => $containers,
+			'retired'        => $retired,
 			'unmapped_roots' => array_values( array_unique( $unmapped ) ),
 		);
 	}
@@ -451,6 +487,22 @@ class LibraryTrainingMigrator {
 		if ( '' !== $url ) {
 			update_post_meta( $post_id, PostReclassifier::SOURCE_URL_META, $url );
 		}
+	}
+
+	/**
+	 * Retire a legacy row that is deliberately not migrated: keep its old URL for the 301s, record
+	 * where it came from and why, and give it the `retired` post type. Overridable seam.
+	 *
+	 * @param int          $post_id     The post id.
+	 * @param string       $legacy_type `bibliotekon` or `opleiding`.
+	 * @param list<string> $slugs       The slug chain from the root to the item.
+	 * @param string       $reason      `section-placeholder` or `not-migrated`.
+	 */
+	protected function retire( int $post_id, string $legacy_type, array $slugs, string $reason ): void {
+		$this->recordSourceUrlFor( $post_id, LegacyContentMap::legacyPath( $legacy_type, $slugs ) );
+		update_post_meta( $post_id, self::RETIRED_FROM_META, $legacy_type );
+		update_post_meta( $post_id, self::RETIRED_REASON_META, $reason );
+		$this->setPostType( $post_id, self::RETIRED_TYPE );
 	}
 
 	/**

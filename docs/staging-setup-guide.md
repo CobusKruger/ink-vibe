@@ -420,6 +420,7 @@ The steps `wp ink migrate-all` runs, in order. Each can also be run on its own; 
 | 9 | `ink sync-challenge-entries` | Attach posts filed under a challenge's source category to its round |
 | 10 | `ink link-result-posts` | Link each result post to its uitdaging (by month and year) |
 | 10b | `ink import-winners` | Every win on the old result posts → a record on its round (all categories, with or without a post or an account); placements and entry-Gradering snapshots on the winning posts found |
+| 10c | `ink import-tier-history` | Replays each writer's dated Gedigte wins through the live thresholds and writes the Silwer/Goud promotions into the Gradering history (dated by the winning result post, linked to its round; no event, no email) |
 | 11 | `ink migrate-inkpols` | `inkpols-uitgawes.csv` → one `inkpols_uitgawe` per row (draft until the row is complete); link existing PDF + cover; record 301 sources; trash the old Pages |
 | 11b | `ink migrate-kompetisies` | Old galas and the 2022 competition (found by the tags from `tag-old-competitions.sql`) → `kompetisie` posts; photos linked; old Pages trashed and 301ed. Must run before `clean-shortcodes` |
 | 12 | `ink clean-shortcodes` | Strip legacy WPBakery `[vc_*]`, keep inner content |

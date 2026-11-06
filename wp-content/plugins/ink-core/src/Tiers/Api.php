@@ -186,6 +186,36 @@ final class Api {
 	}
 
 	/**
+	 * Backfill ONE historical promotion into the audit log during the once-off migration.
+	 *
+	 * Like {@see self::importBaselineStanding()} this is not a live promotion: it changes no
+	 * grade or counter (the baseline already set them), stamps the date the win happened, and
+	 * fires NO `ink/tier_promoted` event, so no congratulation email goes out. It only gives
+	 * the profile's history the rows the live engine would have written.
+	 *
+	 * @param int    $user_id      The writer.
+	 * @param Tier   $from         The grade before.
+	 * @param Tier   $to           The grade after.
+	 * @param string $created_at   GMT `Y-m-d H:i:s` of the win that triggered it.
+	 * @param string $reason       The marker reason (the importer clears its own rows by it).
+	 * @param int    $challenge_id Optional linked challenge round (0 = none).
+	 * @return bool True when the row was written.
+	 */
+	public static function importHistoricalPromotion( int $user_id, Tier $from, Tier $to, string $created_at, string $reason, int $challenge_id = 0 ): bool {
+		return PromotionLog::record( $user_id, $from, $to, 0, $reason, $challenge_id, $created_at );
+	}
+
+	/**
+	 * Remove the rows a migration run backfilled (rehearsal re-runs only).
+	 *
+	 * @param string $reason The reason they were written with.
+	 * @return int How many rows went.
+	 */
+	public static function clearHistoricalPromotions( string $reason ): int {
+		return PromotionLog::clearByReason( $reason );
+	}
+
+	/**
 	 * The writer's current accumulated top-3 win count toward the next Gradering.
 	 *
 	 * Reads `ink_tier_win_count` (Story 5.7), defaulting to 0 for an unset/junk

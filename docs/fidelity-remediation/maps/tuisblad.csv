@@ -2,8 +2,8 @@ audit_id,lovable_file,lovable_line,ink_file,ink_line,element_role,status,note
 header,src/components/layout/Header.tsx,28,wp-content/themes/ink-foundation/patterns/header-main.php,59,sticky header bar,paired,INK: the is-style-ink-header group inside the template-part <header>
 header-row,src/components/layout/Header.tsx,30,wp-content/themes/ink-foundation/patterns/header-main.php,61,64px flex row,paired,
 header-logo,src/components/layout/Header.tsx,32,wp-content/themes/ink-foundation/patterns/header-main.php,63,logo link / brand group,paired,Lovable <a>; INK <div> (site-title owns the link)
-header-logo-icon,src/components/layout/Header.tsx,33,wp-content/themes/ink-foundation/patterns/header-main.php,65,feather svg,paired,
-header-logo-text,src/components/layout/Header.tsx,34,wp-content/themes/ink-foundation/functions.php,289,wordmark,paired,INK: core/site-title <p>; stamped by render filter (fontSize xl)
+header-logo-icon,src/components/layout/Header.tsx,33,wp-content/themes/ink-foundation/patterns/header-main.php,65,ink-splat svg (InkSplatLogo),paired,
+header-logo-text,src/components/layout/Header.tsx,34,wp-content/themes/ink-foundation/functions.php,289,wordmark,paired,INK: two-line .ink-wordmark span (Wordmark.tsx)
 header-nav,src/components/layout/Header.tsx,40,wp-content/themes/ink-foundation/functions.php,312,primary nav,paired,INK: core/navigation <nav>; stamped by render filter
 header-nav-home,src/components/layout/Header.tsx,41,wp-content/themes/ink-foundation/functions.php,332,nav link Home / Tuis,paired,render filter keyed on url /
 header-nav-browse,src/components/layout/Header.tsx,44,wp-content/themes/ink-foundation/functions.php,333,nav link Browse / Ontdek,paired,keyed on /ontdek
@@ -131,7 +131,7 @@ footer,src/components/layout/Footer.tsx,6,wp-content/themes/ink-foundation/patte
 footer-grid,src/components/layout/Footer.tsx,8,wp-content/themes/ink-foundation/patterns/footer-main.php,25,4-col grid,paired,
 footer-brand,src/components/layout/Footer.tsx,10,wp-content/themes/ink-foundation/patterns/footer-main.php,28,brand column,paired,
 footer-logo,src/components/layout/Footer.tsx,11,wp-content/themes/ink-foundation/patterns/footer-main.php,30,logo row,paired,
-footer-logo-icon,src/components/layout/Footer.tsx,12,wp-content/themes/ink-foundation/patterns/footer-main.php,32,feather svg,paired,
+footer-logo-icon,src/components/layout/Footer.tsx,12,wp-content/themes/ink-foundation/patterns/footer-main.php,32,ink-splat svg (InkSplatLogo),paired,
 footer-blurb,src/components/layout/Footer.tsx,15,wp-content/themes/ink-foundation/patterns/footer-main.php,40,blurb,paired,
 footer-col,src/components/layout/Footer.tsx,21,wp-content/themes/ink-foundation/patterns/footer-main.php,58,first link column,paired,
 footer-col-heading,src/components/layout/Footer.tsx,22,wp-content/themes/ink-foundation/patterns/footer-main.php,60,column heading,paired,Lovable <h4> vs INK <h3>
@@ -142,5 +142,5 @@ footer-bottom,src/components/layout/Footer.tsx,54,wp-content/themes/ink-foundati
 footer-copyright,src/components/layout/Footer.tsx,55,wp-content/themes/ink-foundation/patterns/footer-main.php,116,copyright,paired,
 footer-made-with,src/components/layout/Footer.tsx,58,wp-content/themes/ink-foundation/patterns/footer-main.php,124,made-with line,paired,
 footer-heart-icon,src/components/layout/Footer.tsx,59,wp-content/themes/ink-foundation/patterns/footer-main.php,121,heart svg,paired,
-footer-logo-text,src/components/layout/Footer.tsx,13,wp-content/themes/ink-foundation/functions.php,290,wordmark,paired,INK: core/site-title <p>; render filter (fontSize lg)
+footer-logo-text,src/components/layout/Footer.tsx,13,wp-content/themes/ink-foundation/functions.php,290,wordmark,paired,INK: two-line .ink-wordmark span (Wordmark.tsx)
 footer-social,,,wp-content/themes/ink-foundation/patterns/footer-main.php,45,social links,missing-lovable,F3

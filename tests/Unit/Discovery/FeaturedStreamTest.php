@@ -65,7 +65,7 @@ function ink_featured_item( array $overrides = array() ): array {
 test( 'the block name + seam + size constants are the single-source values', function (): void {
 	expect( FeaturedStream::BLOCK )->toBe( 'ink/uitgesoekte-bydraes' );
 	expect( FeaturedStream::DATA_FILTER )->toBe( 'ink_home_featured_stream' );
-	expect( FeaturedStream::MAX_ITEMS )->toBe( 4 );
+	expect( FeaturedStream::MAX_ITEMS )->toBe( 8 );
 } );
 
 // --- queryArgs(): newest published bydraes, bounded ---
@@ -129,9 +129,9 @@ test( 'toHtml renders the eyebrow + serif title + focusable "Sien alle skrywes" 
 	expect( $html )->not->toContain( '[skrywer]' );
 } );
 
-// --- toHtml(): the asymmetric grid — first card featured (spans two) ---
+// --- toHtml(): two columns throughout, no spanning card; "Leer verder" under the grid ---
 
-test( 'toHtml marks the FIRST card featured (spans two columns) and the rest standard', function (): void {
+test( 'toHtml has no spanning card: every card is standard, and the grid is followed by "Leer verder" to Opleiding', function (): void {
 	$html = FeaturedStream::toHtml(
 		array(
 			ink_featured_item( array( 'title' => 'Eerste' ) ),
@@ -139,16 +139,11 @@ test( 'toHtml marks the FIRST card featured (spans two columns) and the rest sta
 		)
 	);
 
-	// The grid container + exactly one featured (spanning) card.
 	expect( $html )->toContain( 'ink-uitgesoekte-bydraes__rooster' );
-	expect( substr_count( $html, 'ink-uitgesoekte-bydraes__kaart--uitgesoek' ) )->toBe( 1 );
-
-	// The featured modifier attaches to the first card, before the second title.
-	$featured_pos = strpos( $html, '--uitgesoek' );
-	$eerste_pos   = strpos( $html, 'Eerste' );
-	$tweede_pos   = strpos( $html, 'Tweede' );
-	expect( $featured_pos )->toBeLessThan( $eerste_pos );
-	expect( $eerste_pos )->toBeLessThan( $tweede_pos );
+	expect( $html )->not->toContain( '--uitgesoek' );
+	expect( substr_count( $html, '<article' ) )->toBe( 2 );
+	expect( $html )->toContain( 'Leer verder' )->toContain( 'href="/opleiding/"' );
+	expect( strpos( $html, 'Leer verder' ) )->toBeGreaterThan( strpos( $html, 'Tweede' ) );
 } );
 
 // --- toHtml(): card content (§6) ---
@@ -165,8 +160,8 @@ test( 'toHtml renders the card: pill, read-time, h3 title link, excerpt, avatar 
 	expect( $html )->toContain( '8 min' );
 
 	// Title is an h3 (correct order under the section h2), linked to the work.
-	// The featured (first) card carries the featured-lead fidelity-audit join key.
-	expect( $html )->toContain( '<h3 class="ink-uitgesoekte-bydraes__werk ink-heading-h2-block" data-audit-id="featured-lead-title"><a href="https://ink.test/storie/fluister">Fluister in die tuin</a></h3>' );
+	// The first card keeps the featured-lead fidelity-audit join key.
+	expect( $html )->toContain( '<h3 class="ink-uitgesoekte-bydraes__werk ink-heading-h3" data-audit-id="featured-lead-title"><a href="https://ink.test/storie/fluister">Fluister in die tuin</a></h3>' );
 
 	// Excerpt.
 	expect( $html )->toContain( 'Sy het die briewe' );

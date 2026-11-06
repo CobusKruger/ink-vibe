@@ -201,7 +201,7 @@ test( 'featured builds the four slots from the latest announcement\'s round', fu
 	expect( array_keys( $payload['slots'] ) )->toBe( array( 'goud-gedig', 'storie' ) );
 } );
 
-test( 'slotsFrom gives Goud Gedig, Storie, Silwer Gedig, Artikel: position 1 only, by type', function (): void {
+test( 'slotsFrom gives Goud Gedig, Storie, Silwer Gedig, Artikel, Brons Gedig: position 1 only, by type', function (): void {
 	$slots = WinnersPost::slotsFrom(
 		array(
 			array( 'category' => 'artikel', 'tier' => 'goud', 'position' => 1, 'post_id' => 40 ),
@@ -213,9 +213,9 @@ test( 'slotsFrom gives Goud Gedig, Storie, Silwer Gedig, Artikel: position 1 onl
 		)
 	);
 
-	expect( array_keys( $slots ) )->toBe( array( 'goud-gedig', 'storie', 'silwer-gedig', 'artikel' ) );
+	expect( array_keys( $slots ) )->toBe( array( 'goud-gedig', 'storie', 'silwer-gedig', 'artikel', 'brons-gedig' ) );
 	expect( array_map( static fn ( array $row ): int => $row['post_id'], $slots ) )->toBe(
-		array( 'goud-gedig' => 20, 'storie' => 10, 'silwer-gedig' => 30, 'artikel' => 40 )
+		array( 'goud-gedig' => 20, 'storie' => 10, 'silwer-gedig' => 30, 'artikel' => 40, 'brons-gedig' => 50 )
 	);
 } );
 

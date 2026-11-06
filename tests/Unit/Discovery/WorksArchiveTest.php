@@ -127,6 +127,16 @@ test( 'the opspraakwekkend sort orders by the stored trending-score meta, desc, 
 	expect( $args['orderby'] )->toBe( array( 'meta_value_num' => 'DESC', 'date' => 'DESC' ) );
 } );
 
+test( 'the wenners view selects placement rank 1, newest first', function (): void {
+	$args = WorksArchive::queryArgs( 1, 12, null, null, null, WorksArchive::SORT_WENNERS );
+
+	expect( $args['meta_query'][0]['key'] )->toBe( 'ink_entry_placement' );
+	expect( $args['meta_query'][0]['value'] )->toBe( 1 );
+	expect( $args['orderby'] )->toBe( 'date' );
+	expect( $args['order'] )->toBe( 'DESC' );
+	expect( WorksArchive::allowedSorts() )->toBe( array( 'nuut', 'opspraakwekkend', 'mees_geliefd', 'wenners' ) );
+} );
+
 test( 'an unknown sort degrades to nuut (plain date desc, no meta_key)', function (): void {
 	$args = WorksArchive::queryArgs( 1, 12, null, null, null, 'gewildste' );
 

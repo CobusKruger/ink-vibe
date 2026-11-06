@@ -357,6 +357,10 @@
 	letter-spacing: 0.025em;
 }
 
+/* DIVERGENCE (accepted, owner 2026-11-06): the line's hover background is `muted` at 80%
+   (theme.json .ink-gedig__line:hover); Lovable's hover:bg-muted/40 was too faint to notice.
+   Recorded in maps/lees-gedig.csv, gedig-stanza-line. */
+
 /* The line's heart (Lovable: a 14px svg in the text span). Ours is a real button, reset to
    the same box: no type of its own, no centring, clipped like an svg root. */
 .ink-reading-main .ink-gedig__react {
@@ -367,4 +371,12 @@
 	font: inherit;
 	text-align: left;
 	white-space: normal;
+}
+
+/* Lovable's heart is h-3.5 w-3.5 (14px). The shared .ink-icon-btn svg rule forces 20px, which
+   overflowed this 14px clipped box and cut the heart off. */
+.ink-reading-main .ink-gedig__react svg {
+	display: block;
+	width: 100%;
+	height: 100%;
 }

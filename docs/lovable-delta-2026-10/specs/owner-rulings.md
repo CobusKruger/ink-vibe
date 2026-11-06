@@ -71,3 +71,11 @@ All four recommendations approved: **build the response upvote**; **keep the "Se
 ## InkPols featured items (owner, 2026-11-03)
 
 The three featured items are no longer exactly one Gedig, one Storie and one Artikel: they are a variety of items from the magazine, called **glans-1, glans-2, glans-3**. Each takes `titel`, `skrywer` and a new free-text **`tipe`** that replaces the hardcoded Gedig/Storie/Artikel labels. Display order is glans-1, 2, 3. Still plain text, not linked; all nine fields required to publish. Supersedes the "Storie, Gedig, Artikel" order and the item rules in `inkpols.md`. (The owner typed "gland-3": read as glans-3.)
+
+## Tuis (owner, 2026-11-06)
+
+Accepted divergences from the design, disclosed in code (R6) and in `maps/tuis.csv`:
+
+- **In die kollig:** eight cards in two equal columns at every width from 768. The first card no longer spans both columns, so it is a standard card (`h3` title, clamped excerpt). Below the grid, a centred **"Leer verder →"** link goes to `/opleiding/`. The design has four cards, the first spanning, and no such link. The ids `featured-lead*` stay on the first card; all drift on them is accepted. Code: `FeaturedStream::MAX_ITEMS`, `home.css`.
+- **Wenners:** a fifth card, **Brons Gedig** (rank 1 in the Brons pool), after Silwer Gedig and Artikel. The sixth grid cell is a link tile, **"Lees vorige wenners →"**, to `/ontdek/?werke_sorteer=wenners`. The design has two cards and no link. The new card carries no ids (it repeats the recipe). Code: `FeaturedWinners`, `WinnersPost::slotsFrom()`, `wenners.css`.
+- **Ontdek, "Wenners" view:** a fourth control after "Mees geliefd" shows only the algehele wenners (placement rank 1), newest first, as the Tuis winner cards. The design's Browse page has no such control. Code: `WorksArchive::SORT_WENNERS`, `Challenges\Api`.

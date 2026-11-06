@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Discovery;
 
+use Ink\Challenges\Api as WinnersApi;
 use Ink\Content\PostTypes;
 use Ink\Engagement\Api as EngagementApi;
 use Ink\Kernel\ArchiveRender;
@@ -109,6 +110,15 @@ final class WorksArchive {
 	public const SORT_GELIEFD = 'mees_geliefd';
 
 	/**
+	 * View: only the algehele wenners (placement rank 1), newest first, as the Tuis winner cards.
+	 * DIVERGENCE (accepted, owner, 2026-11-06): Lovable's Browse page has no such control
+	 * (`docs/lovable-delta-2026-10/specs/owner-rulings.md`, "Tuis").
+	 *
+	 * @var string
+	 */
+	public const SORT_WENNERS = 'wenners';
+
+	/**
 	 * Overridable data seam: turns the default QA-fixture exclusion back ON for
 	 * the QA gallery page only (Epic-19 theme-fidelity rework finding — the
 	 * `/ontdek/` Bydraes archive had no exclusion at all, so seeded
@@ -125,7 +135,7 @@ final class WorksArchive {
 	 * @return list<string>
 	 */
 	public static function allowedSorts(): array {
-		return array( self::SORT_NUUT, self::SORT_OPSPRAAK, self::SORT_GELIEFD );
+		return array( self::SORT_NUUT, self::SORT_OPSPRAAK, self::SORT_GELIEFD, self::SORT_WENNERS );
 	}
 
 	/**
@@ -238,6 +248,13 @@ final class WorksArchive {
 						'date'           => 'DESC',
 					),
 				);
+			case self::SORT_WENNERS:
+				return array(
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- the stored placement rank, one indexed meta key.
+					'meta_query' => array( WinnersApi::winnerMetaQuery() ),
+					'orderby'    => 'date',
+					'order'      => 'DESC',
+				);
 			case self::SORT_NUUT:
 			default:
 				return array(
@@ -305,6 +322,7 @@ final class WorksArchive {
 			$post_id = (int) $post->ID;
 
 			$cards[] = array(
+				'post_id'        => $post_id,
 				'title'          => get_the_title( $post ),
 				'permalink'      => (string) get_permalink( $post ),
 				'type'           => $post->post_type,
@@ -336,7 +354,7 @@ final class WorksArchive {
 	/**
 	 * Build the archive HTML. Pure — Terms + escaping only.
 	 *
-	 * @param list<array{title:string, permalink:string, type:string, author:string, avatar_url:string, excerpt:string, read_minutes:int, hart_count:int, response_count:int}> $cards The works.
+	 * @param list<array{post_id?:int, title:string, permalink:string, type:string, author:string, avatar_url:string, excerpt:string, read_minutes:int, hart_count:int, response_count:int}> $cards The works.
 	 * @param array{paged:int, max_pages:int, type?:string|null, sort?:string, year?:int|null, years?:list<int>}                                                               $nav Render context.
 	 * @return string
 	 */
@@ -362,19 +380,24 @@ final class WorksArchive {
 				. '<p class="ink-ontdek-werke__leeg">' . esc_html( $empty ) . '</p></section>';
 		}
 
-		$html = '<section class="ink-ontdek-werke" data-audit-id="stories-archive">' . $heading . $controls . '<ul class="ink-ontdek-werke__list" data-audit-id="stories-grid">';
+		$winners = self::SORT_WENNERS === ( $nav['sort'] ?? '' );
+		$html    = '<section class="ink-ontdek-werke" data-audit-id="stories-archive">' . $heading . $controls
+			. ( $winners
+				? '<div class="ink-wenners__rooster" data-audit-id="stories-grid">'
+				: '<ul class="ink-ontdek-werke__list" data-audit-id="stories-grid">' );
 
 		$first = true;
 
 		foreach ( $cards as $card ) {
-			$html .= self::cardHtml( $card, $first );
+			// The Wenners view shows the Tuis winner cards, not the archive cards.
+			$html .= $winners ? WinnersApi::winnerCardHtml( (int) ( $card['post_id'] ?? 0 ) ) : self::cardHtml( $card, $first );
 			$first = false;
 		}
 
 		$paged     = isset( $nav['paged'] ) ? (int) $nav['paged'] : 1;
 		$max_pages = isset( $nav['max_pages'] ) ? (int) $nav['max_pages'] : 0;
 
-		$html .= '</ul>' . self::withAuditId( ArchiveRender::pagination( $paged, $max_pages, 'ink-ontdek-werke', self::PAGED_VAR ), 'stories-pagination' ) . '</section>';
+		$html .= ( $winners ? '</div>' : '</ul>' ) . self::withAuditId( ArchiveRender::pagination( $paged, $max_pages, 'ink-ontdek-werke', self::PAGED_VAR ), 'stories-pagination' ) . '</section>';
 
 		return $html;
 	}
@@ -801,6 +824,8 @@ final class WorksArchive {
 				return __( 'Opspraakwekkend', 'ink-core' );
 			case self::SORT_GELIEFD:
 				return __( 'Mees geliefd', 'ink-core' );
+			case self::SORT_WENNERS:
+				return __( 'Wenners', 'ink-core' );
 			case self::SORT_NUUT:
 			default:
 				return __( 'Nuut', 'ink-core' );

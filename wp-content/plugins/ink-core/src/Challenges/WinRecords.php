@@ -159,7 +159,111 @@ final class WinRecords {
 	}
 
 	/**
-	 * The LIKE pattern that finds a writer's rows: `"user_id":<id>,` anywhere in the JSON. Pure.
+	 * A writer's recorded wins, newest round first (by the round's post date, then id).
+	 *
+	 * Imported and live wins alike: this is the history the public profile shows. Each item is the
+	 * stored row plus the round's `round_date` (post date, site time).
+	 *
+	 * @param int $user_id The writer.
+	 * @param int $limit   How many to return at most.
+	 * @return list<array<string, mixed>>
+	 */
+	public static function forUser( int $user_id, int $limit = 3 ): array {
+		global $wpdb;
+
+		if ( $user_id <= 0 || $limit <= 0 || ! $wpdb instanceof \wpdb ) {
+			return array();
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one lookup over this module's own meta; the rows are JSON in meta.
+		$found = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT m.meta_value, p.post_date FROM {$wpdb->postmeta} m INNER JOIN {$wpdb->posts} p ON p.ID = m.post_id
+				WHERE m.meta_key = %s AND m.meta_value LIKE %s
+				ORDER BY p.post_date DESC, p.ID DESC, m.meta_id DESC LIMIT %d",
+				self::META,
+				self::userLike( $wpdb->esc_like( '"user_id":' . $user_id . ',' ) ),
+				$limit
+			)
+		);
+
+		$rows = array();
+
+		foreach ( is_array( $found ) ? $found : array() as $item ) {
+			$row = json_decode( Scalar::asString( $item->meta_value ), true );
+
+			if ( is_array( $row ) && (int) ( $row['user_id'] ?? 0 ) === $user_id ) {
+				$row['round_date'] = (string) $item->post_date;
+				$rows[]            = $row;
+			}
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * The writer's win count as of a round: their wins on that round and every earlier one (by the
+	 * round's post date, then id). This is what "Nth wen" on a card means, not the lifetime total.
+	 * 0 when the round or account is unknown, so the card shows no label rather than a wrong one.
+	 *
+	 * @param int $user_id      The writer.
+	 * @param int $uitdaging_id The round the win belongs to.
+	 * @return int
+	 */
+	public static function countThroughRound( int $user_id, int $uitdaging_id ): int {
+		global $wpdb;
+
+		if ( $user_id <= 0 || $uitdaging_id <= 0 || ! $wpdb instanceof \wpdb ) {
+			return 0;
+		}
+
+		$round = get_post( $uitdaging_id );
+
+		if ( ! $round instanceof \WP_Post ) {
+			return 0;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one count over a few thousand rows; the rows are JSON in meta.
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$wpdb->postmeta} m INNER JOIN {$wpdb->posts} p ON p.ID = m.post_id
+				WHERE m.meta_key = %s AND m.meta_value LIKE %s
+				AND ( p.post_date < %s OR ( p.post_date = %s AND p.ID <= %d ) )",
+				self::META,
+				self::userLike( $wpdb->esc_like( '"user_id":' . $user_id . ',' ) ),
+				$round->post_date,
+				$round->post_date,
+				$uitdaging_id
+			)
+		);
+	}
+
+	/**
+	 * The round a winning post won in, or 0 when no win record names it.
+	 *
+	 * @param int $post_id  The winning work.
+	 * @param int $user_id  Its writer.
+	 * @return int
+	 */
+	public static function roundOfWin( int $post_id, int $user_id ): int {
+		global $wpdb;
+
+		if ( $post_id <= 0 || $user_id <= 0 || ! $wpdb instanceof \wpdb ) {
+			return 0;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one lookup by key in this module's own meta.
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value LIKE %s ORDER BY meta_id DESC LIMIT 1",
+				self::META,
+				self::userLike( $wpdb->esc_like( '"post_id":' . $post_id . ',"user_id":' . $user_id . ',' ) )
+			)
+		);
+	}
+
+	/**
+	 * The LIKE pattern that finds a writer's rows:`"user_id":<id>,` anywhere in the JSON. Pure.
 	 *
 	 * @param string $escaped The escaped needle.
 	 * @return string

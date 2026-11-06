@@ -21,7 +21,7 @@ Project instructions for Claude Code. These apply to all sessions in this repo.
 
 - Before stating what the design or the site does, read the code: `../verse-haven` for the design, this repo and the rendered page for the site.
 - Handover and planning docs are unverified leads, not facts; `docs/lovable-delta-2026-10/HANDOVER.md` has been wrong about the design. The owner's description outranks any inference.
-- **Tuis order** (owner, 2026-10-30, matches `verse-haven/src/pages/Index.tsx`): hero (intro left, active challenge right) → results banner → magazine (InkPols) → winner cards (four, not Lovable's two) → featured writing (recent posts for now) → sponsors (hand-made Borge posts) → CTA → footer. Where the dev page differs, the dev page is wrong.
+- **Tuis order** (owner, 2026-10-30, matches `verse-haven/src/pages/Index.tsx`): hero (intro left, active challenge right) → results banner → magazine (InkPols) → winner cards (five and a link tile, not Lovable's two) → featured writing (recent posts for now) → sponsors (hand-made Borge posts) → CTA → footer. Where the dev page differs, the dev page is wrong.
 - The footer is known to be a mess and is deferred.
 
 ## Fidelity — do not repeat the rework

@@ -1,0 +1,113 @@
+/* Winner cards (ink/wenner-kollig + the Ontdek Wenners view). Loaded on the front page, the QA gallery and Ontdek. Primitives live in primitives.css. */
+/* ── §5 Winners (ink/wenner-kollig, Lovable ChallengeSection.tsx) ─────────────────
+   Surface = `card winner`; pill = `pill caps` + `caps-gold`; poem = `accent-block poem`;
+   avatar = `gold-ring`; button = `button-outline gold`. Here: layout and page text.
+   DIVERGENCE (accepted, D10): five cards, then a link tile; disclosed in FeaturedWinners.php. */
+.ink-wenners__kop {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	margin-bottom: var(--wp--preset--spacing--s-8);
+}
+
+.ink-wenners__kop-ikoon {
+	width: 20px;
+	height: 20px;
+	color: var(--wp--preset--color--gold);
+}
+
+.ink-wenners__titel {
+	margin: 0 0 var(--wp--preset--spacing--s-32);
+}
+
+.ink-wenners__rooster {
+	display: grid;
+	gap: var(--wp--preset--spacing--s-32);
+}
+
+@media (min-width: 768px) {
+	.ink-wenners__rooster {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.ink-wenners__kaart {
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.ink-wenners__watermerk {
+	position: absolute;
+	top: calc(-1 * var(--wp--preset--spacing--s-16));
+	right: calc(-1 * var(--wp--preset--spacing--s-16));
+	width: var(--wp--preset--spacing--s-96);
+	height: var(--wp--preset--spacing--s-96);
+	color: color-mix(in srgb, var(--wp--preset--color--gold) 20%, transparent);
+}
+
+.ink-wenners__kategorie {
+	width: fit-content;
+	margin-bottom: var(--wp--preset--spacing--s-16);
+}
+
+.ink-wenners__werk {
+	margin: 0 0 var(--wp--preset--spacing--s-16);
+}
+
+.ink-wenners__aanhaling {
+	flex: 1;
+	margin: 0 0 var(--wp--preset--spacing--s-24);
+	color: var(--wp--preset--color--muted-text);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--md);
+	line-height: 1.625;
+}
+
+.ink-wenners__aanhaling--prosa {
+	font-style: italic;
+}
+
+.ink-wenners__voet {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+.ink-wenners__skrywer {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-12);
+}
+
+.ink-wenners__skrywer-naam,
+.ink-wenners__wenne {
+	margin: 0;
+}
+
+.ink-wenners__skrywer-naam {
+	font-size: var(--wp--preset--font-size--md);
+	font-weight: var(--wp--custom--font-weight--medium);
+	line-height: 1.5rem;
+}
+
+.ink-wenners__wenne {
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
+	line-height: 1.25rem;
+}
+
+.ink-wenners__knoppie-ikoon {
+	margin-left: var(--wp--preset--spacing--s-8);
+}
+
+/* The sixth cell of the grid: "Lees vorige wenners" to the Ontdek Wenners view. */
+.ink-wenners__vorige {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--wp--preset--spacing--s-96);
+}

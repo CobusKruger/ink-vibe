@@ -55,6 +55,7 @@ final class Module implements ModuleContract {
 		( new UserReclassifier() )->register();
 		( new TierDeriver() )->register();
 		( new WinnerImporter() )->register();
+		( new TierHistoryImporter() )->register();
 		( new SubscriptionVerifier() )->register();
 		( new PostReclassifier() )->register();
 		( new LibraryTrainingMigrator() )->register();
