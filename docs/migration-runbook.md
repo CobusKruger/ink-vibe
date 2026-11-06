@@ -112,7 +112,7 @@ The agent cannot judge how pages look or read, whether Afrikaans copy is right, 
 wp ink migrate-all
 ```
 
-It runs, in order: sanitise, pages (creates the Pages the theme's page templates need: `Ink\Kernel\SystemPages`, also `wp ink ensure-pages`), users, tiers (derived from the result posts), verify-subscriptions, library-training, posts, challenges, challenge-entries, result-posts, **winners** (`wp ink import-winners`: every old win as a record, placements and entry-Gradering snapshots; below), inkpols, kompetisies, clean-shortcodes, rebuild-navigation, follows, options, term recount, generate-redirects, verify-redirects --fix, verify-media.
+It runs, in order: sanitise, pages (creates the Pages the theme's page templates need: `Ink\Kernel\SystemPages`, also `wp ink ensure-pages`), users, tiers (derived from the result posts), verify-subscriptions, library-training, posts, challenges, challenge-entries, result-posts, **winners** (`wp ink import-winners`: every old win as a record, placements and entry-Gradering snapshots; below), **tier-history** (`wp ink import-tier-history`: the Silwer/Goud promotions the old wins imply, no emails), inkpols, kompetisies, search-index, **counts** (`wp ink migrate-counts`: prod's views and likes; library and training views too), clean-shortcodes, rebuild-navigation, follows, options, term recount, generate-redirects, verify-redirects --fix, verify-media.
 
 - It stops at the first failing step. Fix the cause and run the same command: steps that succeeded are skipped.
 - `--from=<step>` re-runs from that step on. `--reset` forgets all stored outcomes.

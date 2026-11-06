@@ -48,6 +48,7 @@ test( 'maybeCount counts a single readable-bydrae view (post + author)', functio
 	Functions\when( 'get_post_meta' )->justReturn( '0' );
 	Functions\when( 'get_user_meta' )->justReturn( '0' );
 	Functions\when( 'get_post_field' )->justReturn( 7 );
+	Functions\when( 'get_post_type' )->justReturn( 'gedig' );
 	// Story 18.9: a human, anonymous viewer, no analytics provider wired → the
 	// ink-core fallback counter records (Analytics::recordView → incrementPost/Author).
 	Functions\when( 'get_current_user_id' )->justReturn( 0 );
@@ -70,11 +71,34 @@ test( 'maybeCount does NOT count an obvious bot view (18.9 hardening, non-vacuou
 	Functions\when( 'is_singular' )->justReturn( true );
 	Functions\when( 'get_queried_object_id' )->justReturn( 42 );
 	Functions\when( 'get_post_field' )->justReturn( 7 );
+	Functions\when( 'get_post_type' )->justReturn( 'gedig' );
 	Functions\when( 'get_current_user_id' )->justReturn( 0 );
 	Functions\when( 'wp_unslash' )->returnArg( 1 );
 	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
 	$_SERVER['HTTP_USER_AGENT'] = 'Googlebot/2.1 (+http://www.google.com/bot.html)';
 	Functions\expect( 'update_post_meta' )->never();
+	Functions\expect( 'update_user_meta' )->never();
+
+	( new ReadCount() )->maybeCount();
+
+	unset( $_SERVER['HTTP_USER_AGENT'] );
+} );
+
+test( 'maybeCount counts a library item view but moves no writer total', function (): void {
+	Functions\when( 'is_admin' )->justReturn( false );
+	Functions\when( 'is_feed' )->justReturn( false );
+	Functions\when( 'is_preview' )->justReturn( false );
+	Functions\when( 'is_singular' )->justReturn( true );
+	Functions\when( 'get_queried_object_id' )->justReturn( 42 );
+	Functions\when( 'get_post_meta' )->justReturn( '0' );
+	Functions\when( 'get_post_field' )->justReturn( 7 );
+	Functions\when( 'get_post_type' )->justReturn( 'biblioteek_item' );
+	Functions\when( 'get_current_user_id' )->justReturn( 0 );
+	Functions\when( 'apply_filters' )->returnArg( 2 );
+	Functions\when( 'wp_unslash' )->returnArg( 1 );
+	Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+	$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (human browser)';
+	Functions\expect( 'update_post_meta' )->once()->with( 42, ReadCount::READ_COUNT_META, 1 );
 	Functions\expect( 'update_user_meta' )->never();
 
 	( new ReadCount() )->maybeCount();

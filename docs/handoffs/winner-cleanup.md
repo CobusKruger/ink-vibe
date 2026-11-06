@@ -26,7 +26,7 @@
 **Result on the 2026-11-02 dev copy (run 2026-11-03):** 1,573 wins from 123 result posts; 1,571 recorded (two have position 4); about 1,420 winning posts found; 14 wins with no account; none without a round; 23 result posts got their round from their winners. Against the old hand-curated list (now in `../backup-data/`): 1,556 of 1,571 wins identical, and where that list had a winning post, the importer found the same post in 1,401 of 1,413 cases. About 27 of 142 writers have a different lifetime count, mostly by 1 or 2. The two writers printed as "Francois Meyer" (`#46`, `#66`) were mixed up by 7 wins; see the rulings below for the fix.
 
 **Open:**
-- Prove it on a real refresh (`docs/refresh-worklist.md`). The dev copy it ran on still had the 8 competition rounds and the old test data.
+- Prove it on a real refresh (`docs/fresh-rebuild-worklist.md`). The dev copy it ran on still had the 8 competition rounds and the old test data.
 - Known gaps, accepted as best effort: result posts the parser reads only partly (the first Amakeia round, lines with two winners).
 - `Ingestion::commit` and the live results flow were only changed for the Gedigte-only rule; they are covered by unit tests, not exercised on a real round.
 - The two `not-results` apology posts (January and February 2019) still link to their rounds; they hold no winners.

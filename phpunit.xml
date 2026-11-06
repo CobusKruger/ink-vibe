@@ -2,13 +2,13 @@
 <!--
     PHPUnit / Pest configuration for ink-vibe (NFR-9, Story 1.11).
 
-    Two testsuites mirroring the architecture's test pyramid (architecture.md
-    line 851, repo layout 963-966):
-      - Unit:        WP fully mocked (Brain Monkey). Bootstrap = tests/bootstrap.php.
-      - Integration: real WP+DB via the wp-env WP test library (Story 18.8 buildout).
+    This config is the UNIT suite only (WP fully mocked with Brain Monkey,
+    bootstrap = tests/bootstrap.php). It runs anywhere `composer install` succeeds.
 
-    Unit tests run anywhere `composer install` succeeds; integration tests run
-    inside the wp-env Docker stack (`npx @wordpress/env start`).
+    The Integration suite (real WP+DB via the wp-env WP test library) needs a
+    different bootstrap and lives in phpunit.integration.xml:
+    `npx @wordpress/env start`, then `composer test:integration`. It is kept out of
+    here on purpose: under this mocked bootstrap it can only fail.
 -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
@@ -21,9 +21,6 @@
     <testsuites>
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
-        </testsuite>
-        <testsuite name="Integration">
-            <directory>tests/Integration</directory>
         </testsuite>
     </testsuites>
     <source>

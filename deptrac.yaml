@@ -335,6 +335,13 @@ deptrac:
             # snapshot key). Challenges depends on Kernel/Engagement/Content/Tiers/
             # Notifications and never back on Migration.
             - Challenges
+            # `wp ink migrate-counts` (LegacyCountsImporter) carries the prod view and like
+            # counts into the live fields: it reads the meta-key and slug constants from
+            # `Discovery\ReadCount` / `Discovery\SkrywerIndex` and `Engagement\ReactionStore`.
+            # Constants only, once-off and WP-CLI only. Discovery and Engagement never depend
+            # back on Migration. No Entitlement/Tiers edge.
+            - Discovery
+            - Engagement
         Seo:
             - Kernel
             # Story 18.1: the Rank Math schema seo seam maps each reader-facing

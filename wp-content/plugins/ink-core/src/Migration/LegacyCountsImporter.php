@@ -27,6 +27,10 @@ defined( 'ABSPATH' ) || exit;
  *  - likes → `ink_reaksie_telling` itself (the work's hartjie count, {@see LikeStore}): primed
  *    with the old figure, then moved +1 / -1 by real members' hearts. No separate legacy field.
  *
+ *  - library and training items (`biblioteek_item`, `opleiding_artikel`): `_post_views` →
+ *    `_ink_read_count` (owner, 2026-11-06: tracked for featured-content rotation). They have
+ *    no writer, so no writer total moves.
+ *
  * Idempotent and never lowers a live count, so a re-run cannot clobber views gained since.
  * Once-off, pre-cutover, WP-CLI only.
  *
@@ -45,6 +49,11 @@ class LegacyCountsImporter {
 	 * Prod's like counter.
 	 */
 	public const LEGACY_LIKES_META = '_qodef-like';
+
+	/**
+	 * Prod's view counter on the old library and training pages (a different key from the theme's).
+	 */
+	public const LEGACY_LIBRARY_VIEWS_META = '_post_views';
 
 	/**
 	 * Register the WP-CLI trigger — ONLY under WP-CLI.
@@ -121,6 +130,27 @@ class LegacyCountsImporter {
 			if ( $like_base > 0 ) {
 				++$likes;
 			}
+
+			$views += $read;
+			++$works;
+		}
+
+		$library = get_posts(
+			array(
+				'post_type'        => ReadCount::libraryTypes(),
+				'post_status'      => 'publish',
+				'posts_per_page'   => -1,
+				'fields'           => 'ids',
+				'no_found_rows'    => true,
+				'suppress_filters' => true,
+			)
+		);
+
+		foreach ( $library as $id ) {
+			$id   = (int) $id;
+			$read = self::merged( (int) get_post_meta( $id, self::LEGACY_LIBRARY_VIEWS_META, true ), (int) get_post_meta( $id, ReadCount::READ_COUNT_META, true ) );
+
+			update_post_meta( $id, ReadCount::READ_COUNT_META, $read );
 
 			$views += $read;
 			++$works;

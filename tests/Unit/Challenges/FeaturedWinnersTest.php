@@ -23,6 +23,7 @@ beforeEach( function (): void {
 	Functions\when( 'esc_html' )->returnArg( 1 );
 	Functions\when( 'esc_attr' )->returnArg( 1 );
 	Functions\when( 'esc_url' )->returnArg( 1 );
+	Functions\when( 'home_url' )->alias( static fn ( string $path = '' ): string => 'https://ink.test' . $path );
 } );
 
 afterEach( function (): void {

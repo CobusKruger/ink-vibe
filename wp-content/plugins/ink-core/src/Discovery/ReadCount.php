@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ink\Discovery;
 
+use Ink\Content\PostTypes;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -49,7 +51,7 @@ final class ReadCount {
 			return;
 		}
 
-		if ( ! is_singular( SkrywerIndex::readableTypes() ) ) {
+		if ( ! is_singular( self::countableTypes() ) ) {
 			return;
 		}
 
@@ -68,7 +70,29 @@ final class ReadCount {
 			return;
 		}
 
-		Analytics::recordView( $post_id, $author );
+		// Library and training items are counted (they feed featured-content rotation) but
+		// have no writer behind them, so no writer's read total moves.
+		$is_library = in_array( get_post_type( $post_id ), self::libraryTypes(), true );
+
+		Analytics::recordView( $post_id, $is_library ? 0 : $author );
+	}
+
+	/**
+	 * The library and training types: viewed and counted, with no writer behind them. Pure.
+	 *
+	 * @return list<string>
+	 */
+	public static function libraryTypes(): array {
+		return array( PostTypes::BIBLIOTEEK_ITEM, PostTypes::OPLEIDING_ARTIKEL );
+	}
+
+	/**
+	 * Every type whose single view is counted. Pure.
+	 *
+	 * @return list<string>
+	 */
+	public static function countableTypes(): array {
+		return array_merge( SkrywerIndex::readableTypes(), self::libraryTypes() );
 	}
 
 	/**

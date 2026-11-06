@@ -65,14 +65,8 @@ test( 'daysAgoLabelForPost returns \'\' when the timestamp can\'t be resolved', 
 } );
 
 test( 'engagement resolves the hartjie count/label and gemeenskap count via Engagement\\Api', function (): void {
-	$wpdb            = \Mockery::mock();
-	$wpdb->prefix    = 'wp_';
-	$GLOBALS['wpdb'] = $wpdb;
-	$wpdb->shouldReceive( 'prepare' )->andReturn( 'PREPARED' );
-	$wpdb->shouldReceive( 'get_results' )->andReturn(
-		array( (object) array( 'reaction' => 'hartjie', 'total' => '5' ) )
-	);
-
+	// The hartjie count is the denormalized LikeStore post-meta total.
+	Functions\when( 'get_post_meta' )->justReturn( '5' );
 	Functions\when( 'get_comments' )->justReturn( 7 );
 
 	$facts = WorkCardFacts::engagement( 99 );
