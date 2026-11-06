@@ -13,7 +13,14 @@
  *   node tools/rehearsal-prep.mjs --sql <prod.sql|prod.sql.gz> [--uploads <dir|.zip|.tar.gz>]
  *        [--wp-content <dir>]  (prod's whole wp-content: fills uploads, plugins, mu-plugins, themes)
  *        [--plugins <dir>] [--mu-plugins <dir>] [--themes <dir>] [--mail-sink sink@nuwe-ink.local] [--old-url https://ink.org.za]
- *        [--migration-data <dir>] [--apply]
+ *        [--migration-data <dir>] [--stop-at prod] [--apply]
+ *   node tools/rehearsal-prep.mjs --from prod [--mail-sink …] [--migration-data <dir>] [--apply]
+ *
+ * Two stages, so the prod copy can be checked on its own before the new code goes in:
+ *   --stop-at prod  stops after the prod copy (steps 1-4 below). Prod's own theme and
+ *                   plugins run, made safe (step 4).
+ *   --from prod     continues from that copy (steps 5-6). Nothing is imported or copied.
+ * Neither flag: both stages in one go.
  *
  * Without --apply it is a DRY RUN: it checks the inputs and the Local site and
  * prints what it would do. With --apply it DESTROYS the current nuwe-ink
@@ -26,12 +33,19 @@
  *      (serialization-safe; editing the SQL text would corrupt serialized data).
  *      Only URLs are replaced, never the bare domain, so addresses such as
  *      moderator@ink.org.za in the data are left alone.
- *   4. copies the uploads and plugins in, deploys ink-core + ink-foundation (deploy-to-local.mjs)
- *   5. activates them, deactivates the retired plugins and FluentSMTP (the prod database
- *      arrives with prod's plugin state), sets WP_ENVIRONMENT_TYPE, INK_MAIL_SINK and
- *      INK_MIGRATION_DATA_DIR, flushes rewrites and caches
+ *   4. copies the uploads, plugins and themes in, then makes the prod copy safe:
+ *      deactivates FluentSMTP (it would send through prod's mail server), sets
+ *      WP_ENVIRONMENT_TYPE=local, INK_MAIL_SINK and DISABLE_WP_CRON (no membership,
+ *      renewal or scheduled mail fires), and puts PayFast in sandbox mode.
+ *      [--stop-at prod ends here]
+ *   5. deploys ink-core + ink-foundation (deploy-to-local.mjs)
+ *   6. activates them, deactivates the retired plugins (the prod database arrives with
+ *      prod's plugin state), sets INK_MIGRATION_DATA_DIR, removes DISABLE_WP_CRON,
+ *      flushes rewrites and caches
  *
- * Mail: Local runs Mailpit for this site. With INK_MAIL_SINK set, ink-core
+ * Mail: Local runs Mailpit for this site, and Local's php.ini sends PHP mail there. On the
+ * prod copy (no ink-core yet) mail reaches Mailpit still addressed to the real recipients;
+ * with FluentSMTP off, nothing reaches a real mail server. With INK_MAIL_SINK set, ink-core
  * rewrites every outgoing message to that address instead of the real one, and
  * Mailpit catches it (open it from the Local app). With no sink set, ink-core
  * sends nothing at all.
@@ -58,7 +72,7 @@ const RETIRED_PLUGINS = [
 ];
 
 // --- Arguments -------------------------------------------------------------
-const opts = { sql: '', wpContent: '', uploads: '', plugins: '', muPlugins: '', themes: '', oldUrl: '', mailSink: '', migrationData: '', apply: false };
+const opts = { sql: '', wpContent: '', uploads: '', plugins: '', muPlugins: '', themes: '', oldUrl: '', mailSink: '', migrationData: '', stopAt: '', from: '', apply: false };
 const argv = process.argv.slice(2);
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
@@ -73,12 +87,22 @@ for (let i = 0; i < argv.length; i++) {
     case '--old-url': opts.oldUrl = value(); break;
     case '--mail-sink': opts.mailSink = value(); break;
     case '--migration-data': opts.migrationData = value(); break;
+    case '--stop-at': opts.stopAt = value(); break;
+    case '--from': opts.from = value(); break;
     case '--apply': opts.apply = true; break;
     default: die(`Unknown argument: ${a}`);
   }
 }
 
-if (!opts.sql || !existsSync(opts.sql) || !statSync(opts.sql).isFile()) die('--sql <file> is required and must exist.');
+if (opts.stopAt && opts.stopAt !== 'prod') die('--stop-at takes only: prod');
+if (opts.from && opts.from !== 'prod') die('--from takes only: prod');
+if (opts.stopAt && opts.from) die('--stop-at and --from cannot be combined.');
+const fromProd = opts.from === 'prod';
+const stopAtProd = opts.stopAt === 'prod';
+if (fromProd && [opts.sql, opts.wpContent, opts.uploads, opts.plugins, opts.muPlugins, opts.themes, opts.oldUrl].some(Boolean)) {
+  die('--from prod continues from the prod copy already on the site: leave out --sql, --wp-content, --uploads, --plugins, --mu-plugins, --themes and --old-url.');
+}
+if (!fromProd && (!opts.sql || !existsSync(opts.sql) || !statSync(opts.sql).isFile())) die('--sql <file> is required and must exist.');
 // --wp-content is a copy of prod's whole wp-content: its folders fill whatever is not given.
 if (opts.wpContent) {
   if (!(existsSync(opts.wpContent) && statSync(opts.wpContent).isDirectory())) die(`--wp-content must be a folder: ${opts.wpContent}`);
@@ -124,16 +148,27 @@ if (!currentHome.includes(site.domain)) {
 const env = wp(site, ['config', 'get', 'WP_ENVIRONMENT_TYPE'], { bare: true, capture: true, allowFail: true });
 if (env === 'production') die('WP_ENVIRONMENT_TYPE is production.');
 
+// Marks a site left by --stop-at prod, so --from prod knows it continues from a prod copy.
+const STAGE_OPTION = 'ink_rehearsal_stage';
+if (fromProd && wp(site, ['option', 'get', STAGE_OPTION], { bare: true, capture: true, allowFail: true }) !== 'prod-copy') {
+  die('This site is not a prod copy left by --stop-at prod. Run that first.');
+}
+
 const conn = site.db.socket ?? `127.0.0.1:${site.db.port}`;
+const stage = fromProd ? 'new code on the prod copy already on the site'
+  : stopAtProd ? 'prod copy only (stops before the new code)' : 'prod copy, then new code';
 say('Plan');
+console.log(`  stage:          ${stage}`);
 console.log(`  site:           ${site.webRoot}`);
 console.log(`  database:       ${site.db.name} via ${conn}`);
-console.log(`  prod dump:      ${opts.sql}`);
-console.log(`  uploads:        ${opts.uploads || '(none given: keeping the uploads already on the site)'}`);
-console.log(`  plugins:        ${opts.plugins || '(none given: keeping the plugins already on the site)'}`);
-console.log(`  mu-plugins:     ${opts.muPlugins || '(none given: keeping what is on the site)'}`);
-console.log(`  themes:         ${opts.themes || '(none given: keeping the themes already on the site)'}`);
-console.log(`  old URL:        ${opts.oldUrl || '(read from the imported database)'}`);
+if (!fromProd) {
+  console.log(`  prod dump:      ${opts.sql}`);
+  console.log(`  uploads:        ${opts.uploads || '(none given: keeping the uploads already on the site)'}`);
+  console.log(`  plugins:        ${opts.plugins || '(none given: keeping the plugins already on the site)'}`);
+  console.log(`  mu-plugins:     ${opts.muPlugins || '(none given: keeping what is on the site)'}`);
+  console.log(`  themes:         ${opts.themes || '(none given: keeping the themes already on the site)'}`);
+  console.log(`  old URL:        ${opts.oldUrl || '(read from the imported database)'}`);
+}
 console.log(`  new URL:        ${targetUrl}`);
 console.log(`  mail sink:      ${mailSink}`);
 console.log(`  migration data: ${migrationData}`);
@@ -144,98 +179,138 @@ if (!opts.apply) {
 }
 
 mkdirSync(tmpDir, { recursive: true });
-
-// --- 1. Database --------------------------------------------------------------
-say('1/5 Resetting the database and importing the prod dump');
 const dbName = site.db.name.replace(/`/g, '');
-mysql(site, ['-e', `DROP DATABASE IF EXISTS \`${dbName}\`; CREATE DATABASE \`${dbName}\` CHARACTER SET utf8mb4;`]);
-await mysqlImport(site, dbName, opts.sql).catch((e) => die(e.message));
 
-// A new Local site's wp-config.php says `wp_`; prod uses its own prefix (`wpjj_`). Take it
-// from the dump: the prefix whose options and users tables both exist.
-let prefix = wp(site, ['config', 'get', 'table_prefix'], { bare: true, capture: true });
-const tables = (mysql(site, ['-N', '-e', `SELECT table_name FROM information_schema.tables WHERE table_schema='${dbName}'`]) ?? '')
-  .split(/\r?\n/).filter(Boolean);
-if (!tables.includes(`${prefix}options`)) {
-  const candidates = tables.filter((t) => t.endsWith('options')).map((t) => t.slice(0, -'options'.length))
-    .filter((p) => p && tables.includes(`${p}users`));
-  if (candidates.length !== 1) {
-    die(`Imported database has no '${prefix}options' table, and the prefix is ambiguous (${candidates.join(', ') || 'none found'}). Set $table_prefix in wp-config.php.`);
+if (!fromProd) {
+  // --- 1. Database --------------------------------------------------------------
+  say('1/6 Resetting the database and importing the prod dump');
+  mysql(site, ['-e', `DROP DATABASE IF EXISTS \`${dbName}\`; CREATE DATABASE \`${dbName}\` CHARACTER SET utf8mb4;`]);
+  await mysqlImport(site, dbName, opts.sql).catch((e) => die(e.message));
+
+  // A new Local site's wp-config.php says `wp_`; prod uses its own prefix (`wpjj_`). Take it
+  // from the dump: the prefix whose options and users tables both exist.
+  let prefix = wp(site, ['config', 'get', 'table_prefix'], { bare: true, capture: true });
+  const tables = (mysql(site, ['-N', '-e', `SELECT table_name FROM information_schema.tables WHERE table_schema='${dbName}'`]) ?? '')
+    .split(/\r?\n/).filter(Boolean);
+  if (!tables.includes(`${prefix}options`)) {
+    const candidates = tables.filter((t) => t.endsWith('options')).map((t) => t.slice(0, -'options'.length))
+      .filter((p) => p && tables.includes(`${p}users`));
+    if (candidates.length !== 1) {
+      die(`Imported database has no '${prefix}options' table, and the prefix is ambiguous (${candidates.join(', ') || 'none found'}). Set $table_prefix in wp-config.php.`);
+    }
+    console.log(`  table prefix: ${prefix} -> ${candidates[0]} (from the dump)`);
+    prefix = candidates[0];
+    wp(site, ['config', 'set', 'table_prefix', prefix, '--type=variable', '--quiet'], { bare: true });
   }
-  console.log(`  table prefix: ${prefix} -> ${candidates[0]} (from the dump)`);
-  prefix = candidates[0];
-  wp(site, ['config', 'set', 'table_prefix', prefix, '--type=variable', '--quiet'], { bare: true });
-}
 
-// Prod may run an older WordPress than the Local site; bring its schema forward.
-wp(site, ['core', 'update-db'], { bare: true });
+  // Prod may run an older WordPress than the Local site; bring its schema forward.
+  wp(site, ['core', 'update-db'], { bare: true });
 
-// --- 2. URLs --------------------------------------------------------------------
-say(`2/5 Pointing the site at ${targetUrl}`);
-let oldUrl = opts.oldUrl;
-if (!oldUrl) {
-  oldUrl = (mysql(site, ['-N', '-e', `SELECT option_value FROM \`${dbName}\`.\`${prefix}options\` WHERE option_name='home'`]) ?? '').trim();
-}
-const oldHost = oldUrl.replace(/^[a-z]+:\/\//i, '').split('/')[0];
-if (!oldHost) die('Could not work out the old site URL. Pass --old-url.');
-console.log(`  replacing URLs on host: ${oldHost}`);
-const bareHost = oldHost.replace(/^www\./, '');
-for (const from of [`https://${oldHost}`, `http://${oldHost}`, `https://www.${bareHost}`, `http://www.${bareHost}`]) {
-  wp(site, ['search-replace', from, targetUrl, '--all-tables', '--skip-columns=guid', '--quiet'], { bare: true, allowFail: true });
-}
-
-// --- 3. Uploads -----------------------------------------------------------------
-say('3/5 Copying the uploads and plugins');
-const uploadsDest = path.join(site.webRoot, 'wp-content', 'uploads');
-mkdirSync(uploadsDest, { recursive: true });
-if (!opts.uploads) {
-  console.log('  skipped: keeping the existing uploads');
-} else {
-  let from = opts.uploads;
-  if (!statSync(from).isDirectory()) {
-    if (!/\.(zip|tar\.gz|tgz)$/i.test(from)) die(`Unsupported uploads archive: ${from}`);
-    const extract = mkdtempSync(path.join(tmpDir, 'uploads-'));
-    const r = spawnSync(systemTar(), ['-xf', from, '-C', extract], { stdio: 'inherit' });
-    if (r.status !== 0) die(`Could not extract ${from}`);
-    from = extract;
-    // An archive may contain the folder itself ("uploads/") or its content.
-    if (existsSync(path.join(from, 'uploads'))) from = path.join(from, 'uploads');
-    if (existsSync(path.join(from, 'wp-content', 'uploads'))) from = path.join(from, 'wp-content', 'uploads');
+  // --- 2. URLs --------------------------------------------------------------------
+  say(`2/6 Pointing the site at ${targetUrl}`);
+  let oldUrl = opts.oldUrl;
+  if (!oldUrl) {
+    oldUrl = (mysql(site, ['-N', '-e', `SELECT option_value FROM \`${dbName}\`.\`${prefix}options\` WHERE option_name='home'`]) ?? '').trim();
   }
-  const r = mirror(from, uploadsDest, { log: () => {} });
-  console.log(`  ${r.copied.length} file(s) copied`);
-}
+  const oldHost = oldUrl.replace(/^[a-z]+:\/\//i, '').split('/')[0];
+  if (!oldHost) die('Could not work out the old site URL. Pass --old-url.');
+  console.log(`  replacing URLs on host: ${oldHost}`);
+  const bareHost = oldHost.replace(/^www\./, '');
+  for (const from of [`https://${oldHost}`, `http://${oldHost}`, `https://www.${bareHost}`, `http://www.${bareHost}`]) {
+    wp(site, ['search-replace', from, targetUrl, '--all-tables', '--skip-columns=guid', '--quiet'], { bare: true, allowFail: true });
+  }
 
-// Prod's code folders. ink-core and ink-foundation come from this repo (step 4), so they are
-// skipped. Each folder is mirrored; anything already on the site and not in the source stays.
-function copyCode(label, srcDir, destName) {
-  if (!srcDir) return;
-  console.log(`  ${label}:`);
-  const dest = path.join(site.webRoot, 'wp-content', destName);
-  mkdirSync(dest, { recursive: true });
-  for (const e of readdirSync(srcDir, { withFileTypes: true })) {
-    if (['ink-core', 'ink-foundation', 'index.php'].includes(e.name) || e.name.startsWith('.')) continue;
-    const from = path.join(srcDir, e.name);
-    const to = path.join(dest, e.name);
-    if (e.isDirectory()) {
-      const r = mirror(from, to, { deleteExtra: true, log: () => {} });
-      console.log(`    ${e.name}: ${r.copied.length} copied, ${r.deleted.length} removed`);
-    } else if (e.isFile() && e.name.endsWith('.php')) {
-      copyFileSync(from, to);
-      console.log(`    ${e.name}`);
+  // --- 3. Uploads -----------------------------------------------------------------
+  say('3/6 Copying the uploads, plugins and themes');
+  const uploadsDest = path.join(site.webRoot, 'wp-content', 'uploads');
+  mkdirSync(uploadsDest, { recursive: true });
+  if (!opts.uploads) {
+    console.log('  skipped: keeping the existing uploads');
+  } else {
+    let from = opts.uploads;
+    if (!statSync(from).isDirectory()) {
+      if (!/\.(zip|tar\.gz|tgz)$/i.test(from)) die(`Unsupported uploads archive: ${from}`);
+      const extract = mkdtempSync(path.join(tmpDir, 'uploads-'));
+      const r = spawnSync(systemTar(), ['-xf', from, '-C', extract], { stdio: 'inherit' });
+      if (r.status !== 0) die(`Could not extract ${from}`);
+      from = extract;
+      // An archive may contain the folder itself ("uploads/") or its content.
+      if (existsSync(path.join(from, 'uploads'))) from = path.join(from, 'uploads');
+      if (existsSync(path.join(from, 'wp-content', 'uploads'))) from = path.join(from, 'wp-content', 'uploads');
+    }
+    const r = mirror(from, uploadsDest, { log: () => {} });
+    console.log(`  ${r.copied.length} file(s) copied`);
+  }
+
+  // Prod's code folders. ink-core and ink-foundation come from this repo (step 5), so they are
+  // skipped. Each folder is mirrored; anything already on the site and not in the source stays.
+  function copyCode(label, srcDir, destName) {
+    if (!srcDir) return;
+    console.log(`  ${label}:`);
+    const dest = path.join(site.webRoot, 'wp-content', destName);
+    mkdirSync(dest, { recursive: true });
+    for (const e of readdirSync(srcDir, { withFileTypes: true })) {
+      if (['ink-core', 'ink-foundation', 'index.php'].includes(e.name) || e.name.startsWith('.')) continue;
+      const from = path.join(srcDir, e.name);
+      const to = path.join(dest, e.name);
+      if (e.isDirectory()) {
+        const r = mirror(from, to, { deleteExtra: true, log: () => {} });
+        console.log(`    ${e.name}: ${r.copied.length} copied, ${r.deleted.length} removed`);
+      } else if (e.isFile() && e.name.endsWith('.php')) {
+        copyFileSync(from, to);
+        console.log(`    ${e.name}`);
+      }
     }
   }
-}
-copyCode('plugins', opts.plugins, 'plugins');
-copyCode('mu-plugins', opts.muPlugins, 'mu-plugins');
-copyCode('themes', opts.themes, 'themes');
+  copyCode('plugins', opts.plugins, 'plugins');
+  copyCode('mu-plugins', opts.muPlugins, 'mu-plugins');
+  copyCode('themes', opts.themes, 'themes');
 
-// --- 4. Code --------------------------------------------------------------------
-say("4/5 Deploying this repo's code to the site");
+  // --- 4. Prod copy safety -----------------------------------------------------------
+  // From here prod's own plugins can run (a page load, WP-CLI), and ink-core's mail sink is
+  // not there yet. Nothing may reach a real member or take a real payment.
+  say('4/6 Making the prod copy safe');
+  const prodActive = (wp(site, ['plugin', 'list', '--status=active', '--field=name'], { bare: true, capture: true, allowFail: true }) ?? '')
+    .split('\n').map((name) => name.trim());
+  if (prodActive.includes('fluent-smtp')) {
+    wp(site, ['plugin', 'deactivate', 'fluent-smtp'], { bare: true });
+    console.log('  deactivated fluent-smtp (mail now goes to Mailpit)');
+  }
+  wp(site, ['config', 'set', 'WP_ENVIRONMENT_TYPE', 'local', '--type=constant', '--quiet'], { bare: true });
+  wp(site, ['config', 'set', 'INK_MAIL_SINK', mailSink, '--type=constant', '--quiet'], { bare: true });
+  wp(site, ['config', 'set', 'DISABLE_WP_CRON', 'true', '--raw', '--type=constant', '--quiet'], { bare: true });
+  console.log('  WP_ENVIRONMENT_TYPE=local, INK_MAIL_SINK set, DISABLE_WP_CRON=true');
+  if (wp(site, ['option', 'patch', 'update', 'woocommerce_payfast_settings', 'testmode', 'yes'], { bare: true, capture: true, allowFail: true }) !== null) {
+    console.log('  PayFast: sandbox mode');
+  }
+  wp(site, ['option', 'update', STAGE_OPTION, 'prod-copy', '--autoload=no', '--quiet'], { bare: true });
+  wp(site, ['cache', 'flush', '--quiet'], { bare: true, allowFail: true });
+}
+
+const get = (args) => wp(site, args, { bare: true, capture: true, allowFail: true }) ?? '?';
+const activePlugins = () => get(['plugin', 'list', '--status=active', '--field=name']).split('\n').map((name) => name.trim());
+const publishedPosts = () => get(['eval', 'global $wpdb; echo $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_status=\'publish\'");']);
+
+if (stopAtProd) {
+  say('Prod copy ready. Checks');
+  console.log(`  home:        ${get(['option', 'get', 'home'])}`);
+  console.log(`  environment: ${get(['config', 'get', 'WP_ENVIRONMENT_TYPE'])}`);
+  console.log(`  theme:       ${get(['theme', 'list', '--status=active', '--field=name'])}`);
+  console.log(`  fluent-smtp: ${activePlugins().includes('fluent-smtp') ? 'ACTIVE (stop: it sends real mail)' : 'off'}`);
+  console.log(`  wp-cron:     ${['1', 'true'].includes(get(['config', 'get', 'DISABLE_WP_CRON'])) ? 'disabled' : 'ENABLED'}`);
+  console.log(`  payfast:     ${get(['option', 'pluck', 'woocommerce_payfast_settings', 'testmode']) === 'yes' ? 'sandbox' : 'not in sandbox mode (or not set up)'}`);
+  console.log(`  posts:       ${publishedPosts()}`);
+  console.log();
+  console.log(`Next: check the prod copy at ${targetUrl}, then run: node tools/rehearsal-prep.mjs --from prod --apply`);
+  process.exit(0);
+}
+
+// --- 5. Code --------------------------------------------------------------------
+say("5/6 Deploying this repo's code to the site");
 deploy(site, { apply: true });
 
-// --- 5. Activate and configure ----------------------------------------------------
-say('5/5 Activating, constants, rewrite rules');
+// --- 6. Activate and configure ----------------------------------------------------
+say('6/6 Activating, constants, rewrite rules');
 wp(site, ['plugin', 'activate', 'ink-core'], { bare: true });
 wp(site, ['theme', 'activate', 'ink-foundation'], { bare: true });
 const activeNames = (wp(site, ['plugin', 'list', '--status=active', '--field=name'], { bare: true, capture: true, allowFail: true }) ?? '')
@@ -248,17 +323,19 @@ if (retired.length > 0) {
 wp(site, ['config', 'set', 'WP_ENVIRONMENT_TYPE', 'local', '--type=constant', '--quiet'], { bare: true });
 wp(site, ['config', 'set', 'INK_MAIL_SINK', mailSink, '--type=constant', '--quiet'], { bare: true });
 wp(site, ['config', 'set', 'INK_MIGRATION_DATA_DIR', migrationData.split(path.sep).join('/'), '--type=constant', '--quiet'], { bare: true });
+// ink-core's mail sink is in place now; WordPress cron runs as it will on the new site.
+wp(site, ['config', 'delete', 'DISABLE_WP_CRON', '--type=constant', '--quiet'], { bare: true, allowFail: true });
+wp(site, ['option', 'delete', STAGE_OPTION, '--quiet'], { bare: true, allowFail: true });
 wp(site, ['rewrite', 'flush', '--quiet'], { bare: true, allowFail: true });
 wp(site, ['cache', 'flush', '--quiet'], { bare: true, allowFail: true });
 
 say('Done. Checks');
-const get = (args) => wp(site, args, { bare: true, capture: true, allowFail: true }) ?? '?';
 console.log(`  home:        ${get(['option', 'get', 'home'])}`);
 console.log(`  environment: ${get(['eval', 'echo wp_get_environment_type();'])}`);
 console.log(`  ink-core:    ${get(['plugin', 'get', 'ink-core', '--field=status'])}`);
 console.log(`  theme:       ${get(['theme', 'get', 'ink-foundation', '--field=status'])}`);
-const stillActive = get(['plugin', 'list', '--status=active', '--field=name']).split('\n').map((name) => name.trim());
+const stillActive = activePlugins();
 console.log(`  retired plugins still active: ${RETIRED_PLUGINS.filter((name) => stillActive.includes(name)).join(', ') || 'none'}`);
-console.log(`  posts:       ${get(['eval', 'global $wpdb; echo $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_status=\'publish\'");'])}`);
+console.log(`  posts:       ${publishedPosts()}`);
 console.log();
 console.log(`Next: log in at ${targetUrl}/wp-admin/, then run: node tools/local.mjs wp ink migrate-all`);

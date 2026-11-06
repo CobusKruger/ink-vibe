@@ -78,18 +78,19 @@ Expected:
 
 ---
 
-## Part B. Turn it into prod
+## Part B. Prod copy, then the new code
 
 ### 5. Dry run
 
 ```cmd
-node tools/rehearsal-prep.mjs --sql ../live-import/inkorgza_wp821.sql --plugins ../live-import/plugins --themes ../live-import/themes
+node tools/rehearsal-prep.mjs --sql ../live-import/inkorgza_wp821.sql --plugins ../live-import/plugins --themes ../live-import/themes --stop-at prod
 ```
 
 Expected:
 
 ```
 == Plan ==
+  stage:          prod copy only (stops before the new code)
   site:           C:\Users\cobus\Local Sites\nuwe-ink\app\public
   database:       local via 127.0.0.1:<port>
   prod dump:      ../live-import/inkorgza_wp821.sql
@@ -106,10 +107,10 @@ Expected:
 
 If it stops on a missing migration-data file, fix that first.
 
-### 6. Apply
+### 6a. Prod copy
 
 ```cmd
-node tools/rehearsal-prep.mjs --sql ../live-import/inkorgza_wp821.sql --plugins ../live-import/plugins --themes ../live-import/themes --apply
+node tools/rehearsal-prep.mjs --sql ../live-import/inkorgza_wp821.sql --plugins ../live-import/plugins --themes ../live-import/themes --stop-at prod --apply
 ```
 
 Expected (a few minutes), among the output:
@@ -117,7 +118,51 @@ Expected (a few minutes), among the output:
 - `table prefix: ... -> wpjj_ (from the dump)`
 - `replacing URLs on host: ink.org.za`
 - `skipped: keeping the existing uploads`
-- `deactivated N retired plugin(s): ...` (includes `code-snippets`, `wp-migrate-db`, `fluent-smtp`, `simple-css`)
+- `deactivated fluent-smtp (mail now goes to Mailpit)`
+- At the end:
+
+```
+  home:        https://nuwe-ink.local
+  environment: local
+  theme:       <prod's theme>
+  fluent-smtp: off
+  wp-cron:     disabled
+  payfast:     sandbox
+  posts:       <number>
+```
+
+If `fluent-smtp` is not `off`, stop: it sends real mail through prod's server.
+
+Made safe, so it differs from prod in only these ways: FluentSMTP off (mail goes to Mailpit, still addressed to the real people), WordPress cron off (no membership, renewal or scheduled mail), PayFast in sandbox mode. Prod's mu-plugins are not there.
+
+### 6b. Check the prod copy
+
+Prod's own theme and plugins are running. Check at `https://nuwe-ink.local`:
+
+- Home page loads and looks like ink.org.za
+- A post with images: text and images show
+- Log in at `/wp-admin/` with a prod account
+- Shop and a membership page load (do not check out)
+- `%USERPROFILE%\Local Sites\nuwe-ink\logs\php\error.log`: no `PHP Fatal`
+
+Optional snapshot, to redo 6c without importing again:
+
+```cmd
+node tools/local.mjs mysqldump --single-transaction --result-file=tmp/nuwe-ink-prod-copy.sql
+```
+
+(Restore: `node tools/local.mjs mysql -e "source tmp/nuwe-ink-prod-copy.sql"`.)
+
+### 6c. New code
+
+```cmd
+node tools/rehearsal-prep.mjs --from prod
+node tools/rehearsal-prep.mjs --from prod --apply
+```
+
+Expected: the dry run shows `stage: new code on the prod copy already on the site`. With `--apply`, among the output:
+
+- `deactivated N retired plugin(s): ...` (includes `code-snippets`, `wp-migrate-db`, `simple-css`)
 - At the end:
 
 ```
