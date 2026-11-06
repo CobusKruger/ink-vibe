@@ -239,6 +239,22 @@ export function wpCli(config = loadConfig()) {
   return { php, phar };
 }
 
+/**
+ * Local's own PHP builds ship without a php.ini, so mysqli is off and WordPress refuses
+ * to load. Unless there is a php.ini next to the binary, use the per-site php.ini Local
+ * writes under run/<site id>/conf/php (it enables mysqli etc.). PHPRC is ignored on
+ * purpose: a site shell opened for an earlier, deleted copy of the site points it at a
+ * run folder that no longer exists. `-c` takes precedence over PHPRC.
+ */
+function phpIniArgs(php, site, config) {
+  if (existsSync(path.join(path.dirname(php), 'php.ini'))) return [];
+  const siteIni = path.join(localHome(config), 'run', site.id, 'conf', 'php', 'php.ini');
+  if (!existsSync(siteIni)) {
+    die(`${php} has no php.ini (mysqli is off) and ${siteIni} does not exist. Start the site in Local, or set "php" in tools/local.config.json to a PHP with mysqli enabled.`);
+  }
+  return ['-c', siteIni, '-d', 'memory_limit=1G'];
+}
+
 function phpDbArgs(db) {
   const args = [];
   if (db.port) args.push('-d', `mysqli.default_port=${db.port}`, '-d', `pdo_mysql.default_port=${db.port}`);
@@ -253,6 +269,7 @@ function phpDbArgs(db) {
 export function wp(site, args, { bare = false, capture = false, allowFail = false, config = loadConfig() } = {}) {
   const { php, phar } = wpCli(config);
   const argv = [
+    ...phpIniArgs(php, site, config),
     '-d', 'error_reporting=0',
     ...phpDbArgs(site.db),
     phar,
@@ -260,7 +277,11 @@ export function wp(site, args, { bare = false, capture = false, allowFail = fals
     ...(bare ? ['--skip-plugins', '--skip-themes'] : []),
     ...args,
   ];
+  // Local's Imagick extension loads DLLs from its ImageMagick folder next to php.exe.
+  const magick = path.join(path.dirname(php), 'ImageMagick');
+  const env = existsSync(magick) ? { ...process.env, PATH: `${magick}${path.delimiter}${process.env.PATH ?? ''}` } : process.env;
   const r = spawnSync(php, argv, {
+    env,
     stdio: capture ? ['ignore', 'pipe', 'pipe'] : 'inherit',
     encoding: 'utf8',
     maxBuffer: 256 * 1024 * 1024,

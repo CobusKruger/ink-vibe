@@ -111,12 +111,14 @@ requireConnection(site);
 // --- Safety: this must be the Local copy, never anything pointing at prod. ----
 mysql(site, ['-e', 'SELECT 1'], { allowFail: true }) !== null
   || die('Cannot reach the site database. Start the site in the Local app first.');
-// WP-CLI must work before anything is dropped: an empty `home` below would otherwise pass.
+// WP-CLI must reach the database through PHP before anything is dropped. `core version`
+// alone is not enough: it reads version.php and passes even when PHP has no mysqli.
 wp(site, ['core', 'version'], { bare: true, capture: true, allowFail: true }) !== null
   || die('WP-CLI cannot load this site. Check: node tools/local.mjs wp core version');
 
-const currentHome = wp(site, ['option', 'get', 'home'], { bare: true, capture: true, allowFail: true }) ?? '';
-if (currentHome && !currentHome.includes(site.domain)) {
+const currentHome = wp(site, ['option', 'get', 'home'], { bare: true, capture: true, allowFail: true })
+  || die('WP-CLI cannot read the site database (is mysqli enabled for the PHP WP-CLI uses?). Check: node tools/local.mjs wp option get home');
+if (!currentHome.includes(site.domain)) {
   die(`The current site URL is '${currentHome}', not ${site.domain}. Refusing to continue.`);
 }
 const env = wp(site, ['config', 'get', 'WP_ENVIRONMENT_TYPE'], { bare: true, capture: true, allowFail: true });
