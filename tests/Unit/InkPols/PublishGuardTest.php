@@ -189,7 +189,7 @@ test( 'the notice shows once, with a copy-debt marker and the labels', function 
 	( new PublishGuard() )->renderNotice();
 	$html = (string) ob_get_clean();
 
-	expect( $html )->toContain( '[NEEDS HUMAN AFRIKAANS] INKPOLS-ADMIN-ONVOLLEDIG' );
+	expect( $html )->toContain( 'Hierdie uitgawe is nie geplaas nie. Van die velde is steeds leeg.' );
 	expect( $html )->toContain( 'Titel, PDF (heg-ID)' );
 } );
 

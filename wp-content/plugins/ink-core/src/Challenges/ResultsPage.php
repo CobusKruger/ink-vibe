@@ -180,7 +180,7 @@ final class ResultsPage {
 
 		/* translators: %d: the number of entries (inskrywings) submitted to the challenge. */
 		$meta[] = sprintf( _n( '%d inskrywing', '%d inskrywings', $entries, 'ink-core' ), $entries );
-		$meta[] = __( '[NEEDS HUMAN AFRIKAANS] UITSLAE-META-KATEGORIE', 'ink-core' );
+		$meta[] = __( 'Gedigte, stories en artikels', 'ink-core' );
 
 		return '<section class="ink-band ink-band--step ink-band--intro alignfull" data-audit-id="results-hero">'
 			. '<div class="ink-container ink-uitslae__kolom ink-uitslae__kolom--3xl" data-audit-id="results-hero-inner">'
@@ -188,7 +188,7 @@ final class ResultsPage {
 			. self::icon( self::ICON_CROWN, 'results-hero-eyebrow-icon' )
 			. esc_html( $eyebrow )
 			. '</div>'
-			. '<h1 class="ink-heading-h1-index ink-uitslae__titel" data-audit-id="results-hero-h1">“' . esc_html( $theme ) . '” — ' . esc_html__( '[NEEDS HUMAN AFRIKAANS] UITSLAE-H1', 'ink-core' ) . '</h1>'
+			. '<h1 class="ink-heading-h1-index ink-uitslae__titel" data-audit-id="results-hero-h1">“' . esc_html( $theme ) . '” — ' . esc_html__( 'Uitslae', 'ink-core' ) . '</h1>'
 			. '<p class="ink-uitslae__meta" data-audit-id="results-hero-meta">' . esc_html( implode( ' · ', $meta ) ) . '</p>'
 			. '</div></section>';
 	}
@@ -215,9 +215,9 @@ final class ResultsPage {
 		return '<section class="ink-band ink-band--step alignfull" data-audit-id="results-letter">'
 			. '<div class="ink-container ink-uitslae__kolom--2xl" data-audit-id="results-letter-inner">'
 			. self::icon( self::ICON_QUOTE, 'results-letter-icon', 'ink-uitslae__brief-ikoon' )
-			. '<h2 class="ink-heading-h2-section ink-uitslae__brief-titel" data-audit-id="results-letter-h2">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] UITSLAE-BRIEF-H2', 'ink-core' ) . '</h2>'
+			. '<h2 class="ink-heading-h2-section ink-uitslae__brief-titel" data-audit-id="results-letter-h2">' . esc_html__( '\'n Nota van die moderator', 'ink-core' ) . '</h2>'
 			. $html
-			. '<p class="ink-uitslae__brief-nota" data-audit-id="results-letter-note">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] UITSLAE-BRIEF-NOTA', 'ink-core' ) . '</p>'
+			. '<p class="ink-uitslae__brief-nota" data-audit-id="results-letter-note">' . esc_html__( 'Alle inskrywings word anoniem beoordeel. Die moderator sien nie skrywers se name nie.', 'ink-core' ) . '</p>'
 			. '</div></section>';
 	}
 
@@ -251,7 +251,7 @@ final class ResultsPage {
 		return '<section class="ink-band ink-band--step ink-band--border-t alignfull" data-audit-id="results-podium">'
 			. '<div class="ink-container ink-uitslae__kolom--5xl" data-audit-id="results-podium-inner">'
 			. '<div class="ink-uitslae__podium-kop" data-audit-id="results-podium-head">'
-			. '<h2 class="ink-heading-h2-section" data-audit-id="results-podium-h2">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] UITSLAE-PODIUM-H2', 'ink-core' ) . '</h2>'
+			. '<h2 class="ink-heading-h2-section" data-audit-id="results-podium-h2">' . esc_html__( 'Die podium', 'ink-core' ) . '</h2>'
 			. '<div class="ink-segmented ink-segmented--pill" role="tablist" data-audit-id="results-tabs">' . $tabs . '</div>'
 			. '</div>'
 			. $panels
@@ -276,7 +276,7 @@ final class ResultsPage {
 			$html .= '<div data-audit-id="results-tier-' . esc_attr( $slot ) . '">'
 				. '<h3 class="ink-heading-h2-block ink-uitslae__afdeling" data-audit-id="results-tier-' . esc_attr( $slot ) . '-h3">'
 				. '<span class="ink-status-dot ink-status-dot--tier ink-status-dot--' . esc_attr( $tier ) . '" data-audit-id="results-tier-' . esc_attr( $slot ) . '-dot"></span> '
-				. esc_html( Terms::label( $tier ) . ' ' . __( '[NEEDS HUMAN AFRIKAANS] UITSLAE-AFDELING', 'ink-core' ) )
+				. esc_html( Terms::label( $tier ) )
 				. '</h3>'
 				. self::podiumListHtml( $list, $slot )
 				. '</div>';
@@ -368,7 +368,7 @@ final class ResultsPage {
 		$action = $post_id > 0
 			? '<a class="ink-btn ink-btn--sm ink-btn--outline"' . $aid( '-btn' ) . ' href="' . esc_url( (string) get_permalink( $post_id ) ) . '">'
 				. esc_html__( 'Lees', 'ink-core' ) . self::icon( self::ICON_ARROW, '' === $prefix ? '' : $prefix . '-btn-icon', 'ink-uitslae__knoppie-ikoon' ) . '</a>'
-			: '<span class="ink-uitslae__binnekort"' . $aid( '-soon' ) . '>' . esc_html__( '[NEEDS HUMAN AFRIKAANS] UITSLAE-GEEN-SKAKEL', 'ink-core' ) . '</span>';
+			: '';
 
 		return '<article class="ink-card--award' . ( $lead ? ' ink-card--award-lead' : '' ) . '"' . $aid( '' ) . '>'
 			. '<span class="ink-pill ink-pill--place ink-pill--place-' . esc_attr( (string) max( 1, min( 3, $position ) ) ) . '"' . $aid( '-pill' ) . '>'
@@ -402,7 +402,7 @@ final class ResultsPage {
 
 		if ( array() !== $mentions ) {
 			$lines = array_map(
-				static fn ( array $m ): string => '“' . $m['title'] . '” ' . __( '[NEEDS HUMAN AFRIKAANS] UITSLAE-VERMELDING-REEL', 'ink-core' ) . ' ' . $m['author'],
+				static fn ( array $m ): string => '“' . $m['title'] . '” ' . __( 'deur', 'ink-core' ) . ' ' . $m['author'],
 				$mentions
 			);
 
@@ -415,7 +415,7 @@ final class ResultsPage {
 		return '<section class="ink-band ink-band--step ink-band--cream ink-band--border-t alignfull" data-audit-id="results-mentions">'
 			. '<div class="ink-container ink-uitslae__kolom ink-uitslae__kolom--3xl" data-audit-id="results-mentions-inner">'
 			. $list
-			. '<p class="ink-uitslae__dankie" data-audit-id="results-mentions-thanks">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] UITSLAE-DANKIE', 'ink-core' ) . '</p>'
+			. '<p class="ink-uitslae__dankie" data-audit-id="results-mentions-thanks">' . esc_html__( 'Baie dankie aan almal wat aan hierdie uitdaging deelgeneem het.', 'ink-core' ) . '</p>'
 			. $button
 			. '</div></section>';
 	}

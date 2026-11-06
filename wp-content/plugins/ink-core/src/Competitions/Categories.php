@@ -51,7 +51,7 @@ final class Categories {
 	 * @return string
 	 */
 	public static function toHtml( Edition $edition, string $enter ): string {
-		$intro = trim( __( '[NEEDS HUMAN AFRIKAANS] KOMP-KAT-INTRO', 'ink-core' ) . ' ' . $edition->field( 'naaswenner_nota' ) );
+		$intro = trim( __( 'Ons kompetisie word anoniem beoordeel.', 'ink-core' ) . ' ' . $edition->field( 'naaswenner_nota' ) );
 		$cards = '';
 
 		foreach ( $edition->categories() as $i => $category ) {
@@ -61,7 +61,7 @@ final class Categories {
 		return '<section class="ink-container ink-band--poem"' . Markup::aid( 'competitions-categories' ) . '>'
 			. '<div class="ink-komp-kat__kop"' . Markup::aid( 'competitions-categories-head' ) . '>'
 			. '<div' . Markup::aid( 'competitions-categories-head-text' ) . '>'
-			. '<h2 class="ink-heading-h2-section"' . Markup::aid( 'competitions-categories-h2' ) . '>' . esc_html__( '[NEEDS HUMAN AFRIKAANS] KOMP-KAT-H2', 'ink-core' ) . '</h2>'
+			. '<h2 class="ink-heading-h2-section"' . Markup::aid( 'competitions-categories-h2' ) . '>' . esc_html__( 'Gedigte en kortverhale, vir volwassenes en skoliere', 'ink-core' ) . '</h2>'
 			. '<p class="ink-komp-kat__inlei"' . Markup::aid( 'competitions-categories-intro' ) . '>' . esc_html( $intro ) . '</p>'
 			. '</div></div>'
 			. '<div class="ink-komp-kat__rooster"' . Markup::aid( 'competitions-categories-grid' ) . '>' . $cards . '</div>'
@@ -100,7 +100,7 @@ final class Categories {
 				. Markup::icon( Markup::BOOK, "{$id}-limit-icon" ) . esc_html( $category['woordlimiet'] ) . '</div>' )
 			. ( '' === $lines ? '' : '<ul class="ink-komp-kat__riglyne"' . Markup::aid( "{$id}-guidelines" ) . '>' . $lines . '</ul>' )
 			. '<a class="ink-btn ink-btn--outline ink-btn--block"' . Markup::aid( "{$id}-btn" ) . ' href="' . esc_url( $enter ) . '">'
-			. esc_html( __( '[NEEDS HUMAN AFRIKAANS] KOMP-KAT-INSKRYF', 'ink-core' ) . ' ' . $category['naam'] )
+			. esc_html__( 'Skryf in', 'ink-core' )
 			. '</a></div></div>';
 	}
 }

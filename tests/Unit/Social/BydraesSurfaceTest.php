@@ -109,11 +109,11 @@ test( 'toHtml renders the unpinned toggle state correctly', function (): void {
 	expect( $html )->not->toContain( '>Wysig<' );
 } );
 
-test( 'toHtml renders the flagged copy-debt placeholder when the writer has no published works, never a bare list', function (): void {
+test( 'toHtml renders the empty-state copy when the writer has no published works, never a bare list', function (): void {
 	$html = BydraesSurface::toHtml( array() );
 
 	expect( $html )->toContain( 'ink-bydraes__leeg' );
-	expect( $html )->toContain( 'NEEDS HUMAN AFRIKAANS' );
+	expect( $html )->toContain( 'Jy het nog geen bydraes geplaas nie.' );
 	expect( $html )->not->toContain( '<ul' );
 } );
 

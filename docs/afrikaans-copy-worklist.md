@@ -1,5 +1,7 @@
 # Afrikaans copy — ID crosswalk (reference, not for editing)
 
+> **2026-11-06:** all are now authored: see `ui-copy-translations.md` › "Kopieskuld ingevul (2026-11-06)". Entries below are history.
+
 Maps each `ID` in **`docs/afrikaans-translation-sheet.md`** (the sheet Cobus fills)
 to where its approved Afrikaans gets wired: a row in `docs/ui-copy-translations.md`
 and/or `docs/afrikaans-terms.md`, plus the live-code `file:line` whose placeholder

@@ -280,16 +280,14 @@ final class FollowingFeed {
 			$html .= '<span class="ink-volg-voer__outeur-skakel"' . $audit( 'author-link' ) . '>' . $author_html . '</span>';
 		}
 
-		// The connecting "published a new [type]" action-phrase has no ratified
-		// Afrikaans yet (no Lovable-sheet equivalent — a brand-new microcopy
-		// line) — flagged per the standard [[afrikaans-copy-debt-process]]
-		// rather than invented; see docs/afrikaans-translation-sheet.md
-		// VOLG-VOER-AKSIE / docs/afrikaans-copy-worklist.md. The type label and
-		// days-ago timing either side of it ARE already-ratified/established
-		// sources (Terms::label() / WorkCardFacts::daysAgoLabel()), not new copy.
+		// The connecting phrase ("het 'n [type] geplaas") is owner-authored copy; the type label and
+		// the days-ago timing come from Terms::label() / WorkCardFacts::daysAgoLabel().
 		$html .= '<span class="ink-volg-voer__aksie"' . $audit( 'action' ) . '>'
-			. esc_html__( '[NEEDS HUMAN AFRIKAANS] — Aktiwiteitsvoer se "published a new [type]" aksiefrase nog nie outeur in ui-copy-translations.md nie.', 'ink-core' )
-			. ' <span class="ink-volg-voer__tipe">' . esc_html( Terms::label( $card['type'] ) ) . '</span>';
+			. sprintf(
+				/* translators: %s: the type of work, e.g. "gedig" (in its own span). */
+				esc_html__( 'het \'n %s geplaas', 'ink-core' ),
+				'<span class="ink-volg-voer__tipe">' . esc_html( Terms::label( $card['type'] ) ) . '</span>'
+			);
 
 		if ( '' !== $days_ago ) {
 			$html .= ' &middot; <span class="ink-volg-voer__tyd"' . $audit( 'time' ) . '>' . esc_html( $days_ago ) . '</span>';

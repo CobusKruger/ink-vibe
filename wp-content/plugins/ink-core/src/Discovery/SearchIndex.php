@@ -53,6 +53,73 @@ final class SearchIndex {
 		add_action( 'user_register', array( self::class, 'onProfileChange' ) );
 		// A new publication can add a form ("genre") to the writer's index.
 		add_action( 'transition_post_status', array( self::class, 'onTransition' ), 20, 3 );
+
+		if ( defined( 'WP_CLI' ) && constant( 'WP_CLI' ) && class_exists( '\WP_CLI' ) ) {
+			\WP_CLI::add_command(
+				self::CLI_COMMAND,
+				function (): void {
+					$done = self::rebuildAll();
+					\WP_CLI::success( sprintf( 'Soekindeks gebou: %d werke, %d skrywers.', $done['works'], $done['skrywers'] ) );
+				}
+			);
+		}
+	}
+
+	/**
+	 * The WP-CLI command name (`wp ink rebuild-search-index`) — the `search-index` step of `migrate-all`.
+	 *
+	 * @var string
+	 */
+	public const CLI_COMMAND = 'ink rebuild-search-index';
+
+	/**
+	 * Build the folded index for everything that already exists. Migrated content
+	 * never fires the save hooks, so without this the search finds nothing.
+	 *
+	 * @return array{works:int, skrywers:int}
+	 */
+	public static function rebuildAll(): array {
+		$works = 0;
+
+		$ids = get_posts(
+			array(
+				'post_type'        => self::readableTypes(),
+				'post_status'      => 'publish',
+				'posts_per_page'   => -1,
+				'fields'           => 'ids',
+				'no_found_rows'    => true,
+				'suppress_filters' => true,
+				// Oldest first: SkrywerIndex sets "first publication" once and refreshes "last" each time.
+				'orderby'          => 'date',
+				'order'            => 'ASC',
+			)
+		);
+
+		foreach ( $ids as $id ) {
+			$post = get_post( (int) $id );
+
+			if ( $post instanceof \WP_Post ) {
+				update_post_meta( $post->ID, self::WORKS_META, self::worksIndexFor( $post->post_title, $post->post_content ) );
+
+				// The publish-transition denormalisations migrated posts never got
+				// (Skrywers tab flags/dates/read seed; "Mees geliefd" reaction seed).
+				SkrywerIndex::onTransition( 'publish', 'new', $post );
+				\Ink\Engagement\ReactionTotalInit::onTransition( 'publish', 'new', $post );
+				++$works;
+			}
+		}
+
+		$skrywers = 0;
+
+		foreach ( (array) get_users( array( 'fields' => 'ID' ) ) as $uid ) {
+			self::rebuildSkrywer( (int) $uid );
+			++$skrywers;
+		}
+
+		return array(
+			'works'    => $works,
+			'skrywers' => $skrywers,
+		);
 	}
 
 	/**

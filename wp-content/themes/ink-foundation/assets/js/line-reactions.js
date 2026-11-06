@@ -2,6 +2,11 @@
  * Line resonance (Story 7.3, FR-26) + the floating single-heart toggle
  * (Story 7.8, extended 2026-09-06).
  *
+ * The floating heart is the member's ONE hartjie on the whole work (`ink/v1/hartjie`),
+ * counted once per member. A line heart is tracked per line (for the poet) AND also hearts
+ * the work, shown on screen at the same moment; taking a line heart back leaves the work's
+ * hartjie as it is.
+ *
  * Attaches a single heart-toggle control to each content line of a poem (the
  * `[data-ink-line]` anchors emitted by the ink/gedig-body server block, Story 7.2)
  * AND, on gedig/storie alike, to the floating "enkel" heart button
@@ -64,6 +69,24 @@
 		} );
 	}
 
+	// The work's own hartjie (one per member): POST hearts it, DELETE takes it back.
+	function likeRequest( method ) {
+		return window.fetch( cfg.likeUrl, {
+			method: method,
+			credentials: 'same-origin',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-WP-Nonce': cfg.nonce
+			},
+			body: JSON.stringify( { post_id: cfg.postId } )
+		} ).then( function ( res ) {
+			return res.ok ? res.json() : Promise.reject( res );
+		} );
+	}
+
+	// The bottom heart's on-screen state, shared so a line heart can move it too.
+	var floating = null;
+
 	function setResonant( lineEl, btn, resonant ) {
 		btn.classList.toggle( 'is-active', resonant );
 		btn.setAttribute( 'aria-pressed', resonant ? 'true' : 'false' );
@@ -113,16 +136,31 @@
 			setResonant( lineEl, btn, ! wasActive );
 			btn.blur();
 
+			// A line hartjie is also a hartjie for the work — shown at the same moment.
+			// (Taking a line heart back leaves the work's hartjie as it is.)
+			var floatingWas = floating ? floating.isLiked() : false;
+			if ( ! wasActive && floating ) {
+				floating.show( true );
+			}
+
 			request( method, line ).then( function ( data ) {
 				// Reconcile with the server's actual state — normally a no-op
 				// against the optimistic guess above, but keeps the UI honest
 				// if it ever disagrees.
 				var resonant = !! ( data && ! data.removed && data.reaction );
 				setResonant( lineEl, btn, resonant );
+
+				if ( floating && data && 'undefined' !== typeof data.count ) {
+					floating.sync( !! data.liked, data.count );
+				}
 			} ).catch( function () {
 				// The write failed — undo the optimistic guess; the server is
 				// the source of truth.
 				setResonant( lineEl, btn, wasActive );
+
+				if ( floating && ! wasActive ) {
+					floating.show( floatingWas );
+				}
 			} );
 		} );
 
@@ -130,11 +168,10 @@
 	}
 
 	/**
-	 * Wire the floating "enkel" heart (the reading page's action-bar total),
-	 * when one is present with a real click anchor
-	 * ({@see \Ink\Engagement\ReactionTotals::firstAnchorFor()} — a `<div>`
-	 * without `data-ink-post` means the work had no valid anchor at all, so
-	 * there is nothing to wire up). A logged-out visitor is sent to sign in
+	 * Wire the floating "enkel" heart (the reading page's action-bar total): the
+	 * member's single hartjie on the WORK, through `ink/v1/hartjie`. A `<div>`
+	 * without `data-ink-post` means the work had no content at all, so there is
+	 * nothing to wire up. A logged-out visitor is sent to sign in
 	 * instead of posting to the REST endpoint (which would 403 anyway),
 	 * mirroring `leeslys.js`'s guest handling.
 	 */
@@ -153,16 +190,15 @@
 			return;
 		}
 
-		var line = parseInt( btn.getAttribute( 'data-ink-line' ), 10 );
-		if ( isNaN( line ) ) {
-			return;
-		}
-
 		var countEl = btn.querySelector( '.ink-reaksie-tellers__telling' );
+
+		function count() {
+			return countEl ? ( parseInt( countEl.textContent, 10 ) || 0 ) : 0;
+		}
 
 		function setCount( n ) {
 			if ( countEl ) {
-				countEl.textContent = String( n );
+				countEl.textContent = String( Math.max( 0, n ) );
 			}
 		}
 
@@ -171,27 +207,37 @@
 			btn.setAttribute( 'aria-pressed', active ? 'true' : 'false' );
 		}
 
-		// Seed the initial state from the SAME aggregate `reactedLines` list the
-		// per-line hearts use — this anchor is just another index in it, not a
-		// second read.
-		var reacted = cfg.reactedLines || [];
-		if ( -1 !== reacted.indexOf( line ) ) {
-			setActive( true );
-		}
+		// The initial state (liked or not, and the count) is server-rendered: it is the
+		// member's own hartjie on the work, however they gave it (this heart or a line).
+
+		floating = {
+			isLiked: function () {
+				return btn.classList.contains( 'is-active' );
+			},
+			// Show the work as liked / not, moving the count by one only when that changes.
+			show: function ( liked ) {
+				if ( liked === floating.isLiked() ) {
+					return;
+				}
+				setActive( liked );
+				setCount( count() + ( liked ? 1 : -1 ) );
+			},
+			// Take the server's answer as the truth.
+			sync: function ( liked, total ) {
+				setActive( liked );
+				setCount( parseInt( total, 10 ) || 0 );
+			}
+		};
 
 		btn.addEventListener( 'click', function () {
-			var wasActive = btn.classList.contains( 'is-active' );
-			var method    = wasActive ? 'DELETE' : 'POST';
-			var current   = countEl ? ( parseInt( countEl.textContent, 10 ) || 0 ) : 0;
+			var wasActive = floating.isLiked();
+			var current   = count();
 
-			// Optimistic: flip the active state AND move the total by one —
-			// same "don't wait on the network" fix as the per-line hearts.
-			setActive( ! wasActive );
-			setCount( wasActive ? current - 1 : current + 1 );
+			// Optimistic: flip the heart AND move the total by one — don't wait on the network.
+			floating.show( ! wasActive );
 
-			request( method, line ).then( function ( data ) {
-				var resonant = !! ( data && ! data.removed && data.reaction );
-				setActive( resonant );
+			likeRequest( wasActive ? 'DELETE' : 'POST' ).then( function ( data ) {
+				floating.sync( !! ( data && data.liked ), data ? data.count : count() );
 				btn.blur();
 			} ).catch( function () {
 				// Roll back both the active state and the count on failure.

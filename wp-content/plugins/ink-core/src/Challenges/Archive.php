@@ -478,8 +478,8 @@ final class Archive {
 		$hero = '<section class="ink-band ink-band--step ink-band--border-b" data-audit-id="uitdagings-hero">'
 			. '<div class="ink-uitdagings__houer ink-container" data-audit-id="uitdagings-hero-container">'
 			. '<p class="ink-uitdagings__boskrif ink-eyebrow" data-audit-id="uitdagings-eyebrow">' . esc_html__( 'Maandelikse uitdagings', 'ink-core' ) . '</p>'
-			. '<h1 class="ink-uitdagings__heading ink-heading-h1-index" data-audit-id="uitdagings-title">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] UITDAGINGS-H1', 'ink-core' ) . '</h1>'
-			. '<p class="ink-uitdagings__inleiding" data-audit-id="uitdagings-intro">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] UITDAGINGS-INTRO', 'ink-core' ) . '</p>'
+			. '<h1 class="ink-uitdagings__heading ink-heading-h1-index" data-audit-id="uitdagings-title">' . esc_html__( '\'n Nuwe uitdaging, elke maand', 'ink-core' ) . '</h1>'
+			. '<p class="ink-uitdagings__inleiding" data-audit-id="uitdagings-intro">' . esc_html__( 'Elke maand kies ons \'n opdrag vir gedigte, stories en artikels. Alle inskrywings word anoniem beoordeel en die top drie in elke kategorie word spoedig aangekondig.', 'ink-core' ) . '</p>'
 			. '</div></section>';
 
 		return '<div class="ink-uitdagings alignfull">' . $hero . $current . self::pastHtml( $cards, $nav, '' !== $current ) . '</div>';
@@ -515,7 +515,7 @@ final class Archive {
 			// standard cards (DIVERGENCE, decided 2026-11-02; maps/uitdagings.csv). The design's
 			// narrow column stays on the two bands above.
 			. '<div class="ink-container" data-audit-id="uitdagings-past-container">'
-			. '<h2 class="ink-uitdagings__vorige-titel ink-heading-h2-section" data-audit-id="uitdagings-past-title">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] UITDAGINGS-VORIGE-H2', 'ink-core' ) . '</h2>'
+			. '<h2 class="ink-uitdagings__vorige-titel ink-heading-h2-section" data-audit-id="uitdagings-past-title">' . esc_html__( 'Vorige uitdaging', 'ink-core' ) . '</h2>'
 			. '<ul class="ink-uitdagings__list">' . implode( '', $cards ) . '</ul>'
 			. ArchiveRender::pagination( $paged, $max_pages, 'ink-uitdagings', self::PAGED_VAR )
 			. '</div></section>';

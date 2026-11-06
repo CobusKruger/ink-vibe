@@ -62,6 +62,15 @@ test( 'the hero: dark recipes, Enter goes to /skryf/, Guidelines has no target',
 	expect( $html )->not->toContain( 'competitions-hero-meta-entry' ); // Blank note, no pill.
 } );
 
+test( 'the hero with no current edition: the page name as the heading, nothing that needs a competition', function (): void {
+	$html = Hero::toHtml( null, '/skryf/' );
+
+	expect( $html )->toContain( 'competitions-hero-h1' );
+	expect( $html )->toContain( 'Kompetisies' );
+	expect( $html )->not->toContain( 'competitions-hero-btn-primary' );
+	expect( $html )->not->toContain( 'competitions-hero-badge' );
+} );
+
 test( 'categories: a blank slot does not render; ids follow Lovable; Enter goes to /skryf/', function (): void {
 	$html = Categories::toHtml(
 		ink_komp_edition(
@@ -116,18 +125,11 @@ test( 'gala: each column hides alone, and the band with both empty', function ()
 	expect( $details_only )->not->toContain( 'competitions-gala-past' );
 } );
 
-test( 'the mailto string is the ruled one', function (): void {
-	expect( Directory::mailto() )->toBe( 'mailto:skryfafrikaans@ink.org.za?subject=Nuwe%20kompetisie%20kennisgewing' );
-	expect( Directory::toHtml( array() ) )->toContain( 'href="mailto:skryfafrikaans@ink.org.za?subject=Nuwe%20kompetisie%20kennisgewing"' );
-} );
-
-test( 'directory: blank fee is free, external link attributes, optional note', function (): void {
+test( 'directory: external link attributes, optional note', function (): void {
 	$html = Directory::toHtml( array( ink_komp_listing(), ink_komp_listing( array( 'fooi' => 'R50', 'nota' => 'N' ) ) ) );
 
 	expect( $html )->toContain( 'data-audit-id="competitions-external"' );
 	expect( $html )->toContain( 'data-audit-id="competitions-external-1"' );
-	expect( $html )->toContain( 'data-fooi="gratis"' );
-	expect( $html )->toContain( 'data-fooi="betaal"' );
 	expect( $html )->toContain( 'target="_blank" rel="noopener noreferrer"' );
 	expect( $html )->not->toContain( 'competitions-external-0-note' );
 	expect( $html )->toContain( 'competitions-external-1-note' );

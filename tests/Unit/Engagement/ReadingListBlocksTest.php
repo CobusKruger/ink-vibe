@@ -82,7 +82,7 @@ test( 'the profile list renders an authored empty state, not a bare list', funct
 	expect( $html )->not->toContain( '<ul' ); // no more bare empty <ul>
 	expect( $html )->toContain( 'ink-leeslys__leeg' );
 	expect( $html )->toContain( 'Nog niks gestoor nie.' ); // ratified heading
-	expect( $html )->toContain( '[NEEDS HUMAN AFRIKAANS]' ); // body line still copy-debt
+	expect( $html )->toContain( 'Klik die boekmerk op enige gedig, storie of artikel' );
 } );
 
 test( 'a non-empty profile list is unaffected by the empty-state copy', function (): void {

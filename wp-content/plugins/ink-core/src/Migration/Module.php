@@ -65,6 +65,7 @@ final class Module implements ModuleContract {
 		( new FollowGraphMigration() )->register();
 		( new MediaVerifier() )->register();
 		( new OptionsCarryForward() )->register();
+		( new LegacyCountsImporter() )->register();
 		( new ShortcodeCleanup() )->register();
 		( new MigrateAll() )->register();
 	}

@@ -48,6 +48,7 @@ require_once INK_CORE_PATH . 'src/autoload.php';
 // root, outside deptrac's src/ scan, so no tracked edge is created.
 Kernel\Schema::register( Tiers\PromotionLog::TABLE, array( Tiers\PromotionLog::class, 'schemaSql' ) ); // Story 5.3: graderingsgeskiedenis audit log.
 Kernel\Schema::register( Engagement\ReactionStore::TABLE, array( Engagement\ReactionStore::class, 'schemaSql' ) ); // Story 7.3: line-reaction table.
+Kernel\Schema::register( Engagement\LikeStore::TABLE, array( Engagement\LikeStore::class, 'schemaSql' ) ); // Poem hartjies: one per member per work.
 Kernel\Schema::register( Engagement\HighlightStore::TABLE, array( Engagement\HighlightStore::class, 'schemaSql' ) ); // Saved text highlights on stories and articles.
 Kernel\Schema::register( Engagement\ReadingListStore::TABLE, array( Engagement\ReadingListStore::class, 'schemaSql' ) ); // Story 7.7: leeslys table.
 Kernel\Schema::register( Social\FollowStore::TABLE, array( Social\FollowStore::class, 'schemaSql' ) ); // Story 9.2: asymmetric follow graph.

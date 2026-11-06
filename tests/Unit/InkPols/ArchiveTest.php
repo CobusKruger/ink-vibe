@@ -65,7 +65,7 @@ test( 'the archive context: ids, a linked cover, copy debt and no download', fun
 		expect( $html )->toContain( 'data-audit-id="' . $id . '"' );
 	}
 
-	expect( $html )->toContain( '[NEEDS HUMAN AFRIKAANS] INKPOLS-HUIDIGE · Naam 1' );
+	expect( $html )->toContain( 'Nuutste uitgawe · Naam 1' );
 	expect( $html )->toContain( 'Lees aanlyn' );
 	expect( $html )->not->toContain( 'pdf' );
 	expect( $html )->not->toContain( 'download' );
@@ -117,7 +117,7 @@ test( 'the production path: Api sorts by datum, so an older issue published late
 	$sorted = Api::newestFirst( array( ink_inkpols_full_issue( 1, '2025-11-01' ), ink_inkpols_full_issue( 2, '2026-07-01' ) ) );
 
 	expect( $sorted[0]->postId )->toBe( 2 );
-	expect( Archive::toHtml( $sorted ) )->toContain( 'INKPOLS-HUIDIGE · Naam 2' );
+	expect( Archive::toHtml( $sorted ) )->toContain( 'Nuutste uitgawe · Naam 2' );
 } );
 
 test( 'one issue: the feature shows and past issues are hidden', function (): void {

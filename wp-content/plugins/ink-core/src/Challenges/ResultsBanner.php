@@ -125,9 +125,9 @@ final class ResultsBanner {
 			. '<span class="ink-icon-tile--circle-md ink-icon-tile--gold" data-audit-id="' . esc_attr( $prefix . '-icon' ) . '">' . self::icon( self::ICON_CROWN, $prefix . '-icon-svg' ) . '</span>'
 			. '<div class="ink-card--banner__body" data-audit-id="' . esc_attr( $prefix . '-body' ) . '">'
 			. $eyebrow
-			. '<p class="ink-heading-banner" data-audit-id="' . esc_attr( $prefix . '-title' ) . '">“' . esc_html( $theme ) . '” — ' . esc_html__( '[NEEDS HUMAN AFRIKAANS] TUIS-UITSLAE-TITEL', 'ink-core' ) . '</p>'
+			. '<p class="ink-heading-banner" data-audit-id="' . esc_attr( $prefix . '-title' ) . '">“' . esc_html( $theme ) . '” — ' . esc_html__( 'sien die wenners in gedigte, stories en artikels', 'ink-core' ) . '</p>'
 			. '</div>'
-			. '<span class="ink-link--ink" data-audit-id="' . esc_attr( $prefix . '-cta' ) . '">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] TUIS-UITSLAE-CTA', 'ink-core' ) . ' ' . self::icon( self::ICON_ARROW, $prefix . '-cta-icon' ) . '</span>'
+			. '<span class="ink-link--ink" data-audit-id="' . esc_attr( $prefix . '-cta' ) . '">' . esc_html__( 'Lees die aankondiging', 'ink-core' ) . ' ' . self::icon( self::ICON_ARROW, $prefix . '-cta-icon' ) . '</span>'
 			. '</a></div></section>';
 	}
 

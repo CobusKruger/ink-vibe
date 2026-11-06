@@ -100,7 +100,7 @@ test( 'toHtml renders the days-ago timing and the (flagged) action phrase around
 
 	expect( $html )->toContain( 'ink-volg-voer__aksie' );
 	expect( $html )->toContain( '3 dae gelede' );
-	expect( $html )->toContain( 'NEEDS HUMAN AFRIKAANS' ); // no ratified copy yet — see afrikaans-copy-worklist.md
+	expect( $html )->toContain( "het 'n <span class=\"ink-volg-voer__tipe\">" );
 } );
 
 test( 'toHtml renders the italic excerpt only when present', function (): void {

@@ -85,7 +85,7 @@ final class SingleIssue {
 			. '<div class="ink-inkpols__balk ink-container" data-audit-id="magazine-issue-bar-inner">'
 			. '<a class="ink-inkpols__terug ink-nav-link--footer" data-audit-id="magazine-issue-back" href="' . esc_url( CurrentIssue::archiveUrl() ) . '">'
 			. CurrentIssue::icon( self::ICON_ARROW_LEFT, 'magazine-issue-back-icon' )
-			. esc_html__( '[NEEDS HUMAN AFRIKAANS] INKPOLS-TERUG', 'ink-core' )
+			. esc_html__( 'Terug na die argief', 'ink-core' )
 			. '</a>'
 			. '<div class="ink-inkpols__balk-titel" data-audit-id="magazine-issue-title-col">'
 			. '<span class="ink-eyebrow ink-eyebrow--card-xs" data-audit-id="magazine-issue-eyebrow">' . esc_html( $issue->title ) . '</span>'

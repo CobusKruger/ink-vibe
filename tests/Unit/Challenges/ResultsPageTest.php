@@ -61,8 +61,8 @@ test( 'the hero states period, theme, date and count, with debt for what has no 
 	$html = ResultsPage::heroHtml( 'Oktober 2026', 'Tema', '4 November 2026', 12 );
 
 	expect( $html )->toContain( 'Uitslae · Oktober 2026-uitdaging' )
-		->toContain( '“Tema” — [NEEDS HUMAN AFRIKAANS] UITSLAE-H1' )
-		->toContain( 'Aangekondig 4 November 2026 · 12 inskrywings · [NEEDS HUMAN AFRIKAANS] UITSLAE-META-KATEGORIE' )
+		->toContain( '“Tema” — Uitslae' )
+		->toContain( 'Aangekondig 4 November 2026 · 12 inskrywings · Gedigte, stories en artikels' )
 		->toContain( 'ink-band ink-band--step ink-band--intro' )
 		->toContain( 'ink-heading-h1-index' );
 } );
@@ -127,10 +127,10 @@ test( 'a Gedig win with no grade shows below the tiers, with no ids (D13)', func
 	expect( $html )->not->toContain( 'results-award-' );
 } );
 
-test( 'a win with no post has the -soon state, not a button', function (): void {
+test( 'a win with no post has no button and no placeholder', function (): void {
 	$html = ResultsPage::podiumHtml( array( ink_row( array( 'post_id' => 0 ) ) ) );
 
-	expect( $html )->toContain( 'results-award-gold-1-soon' )->not->toContain( 'results-award-gold-1-btn' );
+	expect( $html )->not->toContain( 'results-award-gold-1-soon' )->not->toContain( 'results-award-gold-1-btn' );
 
 	$html = ResultsPage::podiumHtml( array( ink_row( array() ) ) );
 
@@ -183,10 +183,10 @@ test( 'the aside: the link always, citation and attribution only with opt-in (D6
 } );
 
 test( 'the aside label: placement, type with the Gedig grade, Meester as Goud, and the period', function (): void {
-	expect( ReadingAward::label( 1, 'gedig', 'goud', 'Oktober 2026' ) )->toBe( 'algehele wenner · Goud gedigte · Oktober 2026-uitdaging' );
-	expect( ReadingAward::label( 2, 'gedig', 'meester', 'Oktober 2026' ) )->toBe( 'wenner · Goud gedigte · Oktober 2026-uitdaging' );
-	expect( ReadingAward::label( 1, 'storie', 'goud', 'Oktober 2026' ) )->toBe( 'algehele wenner · Stories · Oktober 2026-uitdaging' );
-	expect( ReadingAward::label( 3, 'artikel', '', '' ) )->toBe( 'wenner · Artikels' );
+	expect( ReadingAward::label( 1, 'gedig', 'goud', 'Oktober 2026' ) )->toBe( 'Algehele wenner · Goud gedigte · Oktober 2026-uitdaging' );
+	expect( ReadingAward::label( 2, 'gedig', 'meester', 'Oktober 2026' ) )->toBe( 'Wenner · Goud gedigte · Oktober 2026-uitdaging' );
+	expect( ReadingAward::label( 1, 'storie', 'goud', 'Oktober 2026' ) )->toBe( 'Algehele wenner · Stories · Oktober 2026-uitdaging' );
+	expect( ReadingAward::label( 3, 'artikel', '', '' ) )->toBe( 'Wenner · Artikels' );
 } );
 
 test( 'production path: render gives nothing for a work with no placement', function (): void {

@@ -53,6 +53,7 @@ final class FeaturedWinners {
 	public const FEATURED_FILTER = 'ink_home_featured_winner';
 
 	private const ICON_CROWN   = '<path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/>';
+	private const ICON_AWARD   = '<path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>';
 	private const ICON_BOOK    = '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>';
 	private const ICON_FEATHER = '<path d="M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1 1z"/><path d="M16 8 2 22"/><path d="M17.5 15H9"/>';
 	private const ICON_ARROW   = '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>';
@@ -109,37 +110,41 @@ final class FeaturedWinners {
 			'goud-gedig'   => array(
 				'prefix' => 'winner-gedig',
 				'poem'   => true,
-				'icon'   => self::ICON_FEATHER,
+				'icon'   => self::ICON_CROWN,
 				'label'  => Terms::label( 'goud' ) . ' ' . Terms::label( 'gedig' ),
 				'button' => $lees_gedig,
 			),
 			'storie'       => array(
 				'prefix' => 'winner',
 				'poem'   => false,
-				'icon'   => self::ICON_BOOK,
+				'icon'   => self::ICON_CROWN,
 				'label'  => Terms::label( 'storie' ),
 				'button' => $lees_storie,
 			),
 			'silwer-gedig' => array(
 				'prefix' => '',
 				'poem'   => true,
-				'icon'   => self::ICON_FEATHER,
+				'icon'   => self::ICON_AWARD,
 				'label'  => Terms::label( 'silwer' ) . ' ' . Terms::label( 'gedig' ),
 				'button' => $lees_gedig,
+				'tier'   => 'silwer',
+				'small'  => true,
 			),
 			'artikel'      => array(
 				'prefix' => '',
 				'poem'   => false,
-				'icon'   => self::ICON_BOOK,
+				'icon'   => self::ICON_CROWN,
 				'label'  => Terms::label( 'artikel' ),
-				'button' => __( '[NEEDS HUMAN AFRIKAANS] TUIS-WENNER-LEES-ARTIKEL', 'ink-core' ),
+				'button' => __( 'Lees artikel', 'ink-core' ),
 			),
 			'brons-gedig'  => array(
 				'prefix' => '',
 				'poem'   => true,
-				'icon'   => self::ICON_FEATHER,
+				'icon'   => self::ICON_AWARD,
 				'label'  => Terms::label( 'brons' ) . ' ' . Terms::label( 'gedig' ),
 				'button' => $lees_gedig,
+				'tier'   => 'brons',
+				'small'  => true,
 			),
 		);
 	}
@@ -186,7 +191,7 @@ final class FeaturedWinners {
 	 *
 	 * @param string $category The work's post type.
 	 * @param string $tier     The entry-time Gradering, or ''.
-	 * @return array{prefix:string, poem:bool, icon:string, label:string, button:string}|null Null for a type with no card.
+	 * @return array{prefix:string, poem:bool, icon:string, label:string, button:string, tier?:string}|null Null for a type with no card.
 	 */
 	public static function slotFor( string $category, string $tier ): ?array {
 		$tier = 'meester' === $tier ? 'goud' : $tier;
@@ -196,15 +201,16 @@ final class FeaturedWinners {
 				return array(
 					'prefix' => '',
 					'poem'   => true,
-					'icon'   => self::ICON_FEATHER,
+					'icon'   => in_array( $tier, array( 'brons', 'silwer' ), true ) ? self::ICON_AWARD : ( 'goud' === $tier ? self::ICON_CROWN : self::ICON_FEATHER ),
 					'label'  => ( in_array( $tier, array( 'brons', 'silwer', 'goud' ), true ) ? Terms::label( $tier ) . ' ' : '' ) . Terms::label( 'gedig' ),
 					'button' => __( 'Lees gedig', 'ink-core' ),
+					'tier'   => in_array( $tier, array( 'brons', 'silwer' ), true ) ? $tier : 'goud',
 				);
 			case 'storie':
 				return array(
 					'prefix' => '',
 					'poem'   => false,
-					'icon'   => self::ICON_BOOK,
+					'icon'   => self::ICON_CROWN,
 					'label'  => Terms::label( 'storie' ),
 					'button' => __( 'Lees storie', 'ink-core' ),
 				);
@@ -212,9 +218,9 @@ final class FeaturedWinners {
 				return array(
 					'prefix' => '',
 					'poem'   => false,
-					'icon'   => self::ICON_BOOK,
+					'icon'   => self::ICON_CROWN,
 					'label'  => Terms::label( 'artikel' ),
-					'button' => __( '[NEEDS HUMAN AFRIKAANS] TUIS-WENNER-LEES-ARTIKEL', 'ink-core' ),
+					'button' => __( 'Lees artikel', 'ink-core' ),
 				);
 			default:
 				return null;
@@ -257,7 +263,7 @@ final class FeaturedWinners {
 			. self::icon( self::ICON_CROWN, 'challenge-head-icon', 'ink-wenners__kop-ikoon' )
 			. '<span class="ink-eyebrow ink-eyebrow--card ink-eyebrow--gold" data-audit-id="challenge-eyebrow">' . esc_html( $eyebrow ) . '</span>'
 			. '</div>'
-			. '<h2 class="ink-heading-h2-section ink-wenners__titel" data-audit-id="challenge-h2">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] TUIS-WENNERS-H2', 'ink-core' ) . '</h2>'
+			. '<h2 class="ink-heading-h2-section ink-wenners__titel" data-audit-id="challenge-h2">' . esc_html__( 'Onlangse wenners', 'ink-core' ) . '</h2>'
 			. '<div class="ink-wenners__rooster" data-audit-id="challenge-grid">' . $cards . $vorige . '</div>'
 			. '</div></section>';
 	}
@@ -284,11 +290,17 @@ final class FeaturedWinners {
 	 * One winner card. Only the two slots with a Lovable counterpart carry audit ids. Pure.
 	 *
 	 * @param array<string, mixed>                                                      $winner The slot's view.
-	 * @param array{prefix:string, poem:bool, icon:string, label:string, button:string} $slot   The slot's definition.
+	 * @param array{prefix:string, poem:bool, icon:string, label:string, button:string, tier?:string, small?:bool} $slot   The slot's definition.
 	 * @return string
 	 */
 	public static function cardHtml( array $winner, array $slot ): string {
 		$prefix = $slot['prefix'];
+		// Lovable's treatment per Gradering (ChallengeSection.tsx `treatmentClasses`): Goud is the base recipe;
+		// Silwer and Brons swap the surface and the pill, and the lower-tier home cards run smaller (`compact`).
+		$tier    = (string) ( $slot['tier'] ?? 'goud' );
+		$variant = in_array( $tier, array( 'silwer', 'brons' ), true ) ? $tier : '';
+		$card_cl = 'ink-card--winner' . ( '' === $variant ? '' : ' ink-card--winner-' . $variant ) . ( empty( $slot['small'] ) ? '' : ' ink-card--winner-compact' );
+		$pill_cl = 'ink-pill ink-pill--caps ' . ( '' === $variant ? 'ink-pill--caps-gold' : 'ink-pill--caps-' . $variant );
 		$aid    = static fn ( string $suffix ): string => self::aid( '' === $prefix ? '' : $prefix . $suffix );
 		$icon   = static fn ( string $suffix ): string => '' === $prefix ? '' : $prefix . $suffix;
 
@@ -307,9 +319,9 @@ final class FeaturedWinners {
 		$button = '' === $url ? '' : '<a class="ink-btn ink-btn--gold"' . $aid( '-btn' ) . ' href="' . esc_url( $url ) . '">'
 			. esc_html( $slot['button'] ) . self::icon( self::ICON_ARROW, $icon( '-btn-icon' ), 'ink-wenners__knoppie-ikoon' ) . '</a>';
 
-		return '<article class="ink-card--winner ink-wenners__kaart"' . $aid( '-card' ) . '>'
+		return '<article class="' . $card_cl . ' ink-wenners__kaart"' . $aid( '-card' ) . '>'
 			. self::icon( self::ICON_CROWN, $icon( '-watermark' ), 'ink-wenners__watermerk' )
-			. '<span class="ink-pill ink-pill--caps ink-pill--caps-gold ink-wenners__kategorie"' . $aid( '-eyebrow' ) . '>'
+			. '<span class="' . $pill_cl . ' ink-wenners__kategorie"' . $aid( '-eyebrow' ) . '>'
 			. self::icon( $slot['icon'], $icon( '-eyebrow-icon' ) ) . esc_html( $slot['label'] )
 			. '</span>'
 			. '<h3 class="ink-heading-h2-block ink-wenners__werk"' . $aid( '-title' ) . '>"' . esc_html( (string) ( $winner['title'] ?? '' ) ) . '"</h3>'

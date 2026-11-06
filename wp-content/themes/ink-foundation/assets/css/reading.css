@@ -380,3 +380,10 @@
 	width: 100%;
 	height: 100%;
 }
+
+/* The reading page's like heart fills when hearted, as the bookmark does when saved
+   (theme.json .ink-leeslys-knoppie.is-saved svg{fill:currentColor}). Owner request 2026-11-06:
+   it only turned red-outlined. Scoped to this heart: other .ink-icon-label buttons keep their look. */
+.ink-reaksie-tellers--enkel.is-active svg {
+	fill: currentColor;
+}

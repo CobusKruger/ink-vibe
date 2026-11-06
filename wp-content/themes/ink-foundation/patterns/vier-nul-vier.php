@@ -29,11 +29,11 @@
 	<!-- /wp:heading -->
 
 	<!-- wp:paragraph {"align":"center","style":{"typography":{"lineHeight":"1.75rem"}},"fontSize":"xl","textColor":"muted-text"} -->
-	<p data-audit-id="vier-nul-vier-message" class="has-text-align-center has-muted-text-color has-text-color has-xl-font-size" style="line-height:1.75rem"><?php echo esc_html__( '[NEEDS HUMAN AFRIKAANS] — 404 message ("page not found") not yet authored in ui-copy-translations.md.', 'ink-foundation' ); ?></p>
+	<p data-audit-id="vier-nul-vier-message" class="has-text-align-center has-muted-text-color has-text-color has-xl-font-size" style="line-height:1.75rem"><?php echo esc_html__( 'Gits! Daardie bladsy bestaan nie.', 'ink-foundation' ); ?></p>
 	<!-- /wp:paragraph -->
 
 	<!-- wp:paragraph {"align":"center","fontSize":"md"} -->
-	<p data-audit-id="vier-nul-vier-home" class="has-text-align-center has-md-font-size"><a data-audit-id="vier-nul-vier-home-link" class="ink-link" style="text-decoration-line:underline" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html__( '[NEEDS HUMAN AFRIKAANS] — 404 link-home label not yet authored in ui-copy-translations.md.', 'ink-foundation' ); ?></a></p>
+	<p data-audit-id="vier-nul-vier-home" class="has-text-align-center has-md-font-size"><a data-audit-id="vier-nul-vier-home-link" class="ink-link" style="text-decoration-line:underline" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html__( 'Begin gerus op ons tuisblad en vind iets om te lees.', 'ink-foundation' ); ?></a></p>
 	<!-- /wp:paragraph -->
 </section>
 <!-- /wp:group -->

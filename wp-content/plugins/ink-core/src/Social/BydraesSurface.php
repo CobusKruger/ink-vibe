@@ -193,7 +193,7 @@ final class BydraesSurface {
 			// standard [[afrikaans-copy-debt-process]] rather than invented (see
 			// docs/afrikaans-translation-sheet.md BYDRAES-LEEG /
 			// docs/afrikaans-copy-worklist.md).
-			$empty = __( '[NEEDS HUMAN AFRIKAANS] — Bydraes-tab empty-state copy not yet authored in ui-copy-translations.md.', 'ink-core' );
+			$empty = __( 'Jy het nog geen bydraes geplaas nie. Klik "Begin skryf" regs bo.', 'ink-core' );
 
 			return $html . '<p class="ink-card ink-card--empty ink-bydraes__leeg" data-audit-id="profiel-posts-empty">' . esc_html( $empty ) . '</p></section>';
 		}

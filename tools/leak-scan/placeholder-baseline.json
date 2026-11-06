@@ -1,31 +1,8 @@
 {
     "_comment": "Per-file Afrikaans copy-placeholder counts. Ratchet baseline: the scan FAILS if any file exceeds its count here or a new file appears. When you author copy and remove markers, lower these numbers (or rerun --update-baseline) so the gate keeps tightening. Launch target: empty.",
-    "_generated_total": 111,
+    "_generated_total": 2,
     "files": {
-        "wp-content/plugins/ink-core/src/Challenges/Archive.php": 3,
-        "wp-content/plugins/ink-core/src/Challenges/FeaturedWinners.php": 2,
-        "wp-content/plugins/ink-core/src/Challenges/ResultsBanner.php": 2,
-        "wp-content/plugins/ink-core/src/Challenges/ResultsPage.php": 9,
-        "wp-content/plugins/ink-core/src/Competitions/Categories.php": 3,
-        "wp-content/plugins/ink-core/src/Competitions/Directory.php": 20,
-        "wp-content/plugins/ink-core/src/Competitions/Gala.php": 6,
-        "wp-content/plugins/ink-core/src/Competitions/GalaPage.php": 1,
-        "wp-content/plugins/ink-core/src/Competitions/Hero.php": 4,
-        "wp-content/plugins/ink-core/src/Content/FieldSets.php": 40,
-        "wp-content/plugins/ink-core/src/Engagement/ReadingList.php": 1,
-        "wp-content/plugins/ink-core/src/Engagement/ResponseUpvoteController.php": 1,
-        "wp-content/plugins/ink-core/src/Engagement/ResponsesList.php": 1,
-        "wp-content/plugins/ink-core/src/InkPols/CurrentIssue.php": 1,
-        "wp-content/plugins/ink-core/src/InkPols/PublishGuard.php": 1,
-        "wp-content/plugins/ink-core/src/InkPols/SingleIssue.php": 1,
-        "wp-content/plugins/ink-core/src/Notifications/KennisgewingsSurface.php": 2,
-        "wp-content/plugins/ink-core/src/Social/BydraesSurface.php": 1,
-        "wp-content/plugins/ink-core/src/Social/FollowingFeed.php": 1,
-        "wp-content/plugins/ink-core/src/Social/ProfileEditor.php": 3,
-        "wp-content/themes/ink-foundation/functions.php": 2,
-        "wp-content/themes/ink-foundation/patterns/header-main.php": 1,
-        "wp-content/themes/ink-foundation/patterns/my-profiel.php": 2,
-        "wp-content/themes/ink-foundation/patterns/skryf.php": 1,
-        "wp-content/themes/ink-foundation/patterns/vier-nul-vier.php": 2
+        "wp-content/plugins/ink-core/src/Notifications/KennisgewingsSurface.php": 1,
+        "wp-content/themes/ink-foundation/patterns/my-profiel.php": 1
     }
 }

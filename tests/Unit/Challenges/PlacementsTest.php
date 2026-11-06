@@ -41,9 +41,9 @@ test( 'isAlgeheleWenner is true only for the 1st placement', function (): void {
 } );
 
 test( 'placementLabel distinguishes algehele wenner (1) from wenner (2/3)', function (): void {
-	expect( Placements::placementLabel( 1 ) )->toBe( 'algehele wenner' );
-	expect( Placements::placementLabel( 2 ) )->toBe( 'wenner' );
-	expect( Placements::placementLabel( 3 ) )->toBe( 'wenner' );
+	expect( Placements::placementLabel( 1 ) )->toBe( 'Algehele wenner' );
+	expect( Placements::placementLabel( 2 ) )->toBe( 'Wenner' );
+	expect( Placements::placementLabel( 3 ) )->toBe( 'Wenner' );
 	expect( Placements::placementLabel( 0 ) )->toBe( '' );
 } );
 

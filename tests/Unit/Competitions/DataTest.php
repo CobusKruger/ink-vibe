@@ -178,11 +178,11 @@ test( 'the media script ships with the plugin', function (): void {
 	expect( is_file( dirname( __DIR__, 3 ) . '/wp-content/plugins/ink-core/assets/js/admin-media-field.js' ) )->toBeTrue();
 } );
 
-test( 'the field labels are copy-debt markers or existing strings, and the price label is D4 key', function (): void {
-	expect( FieldSets::labelFor( 'ink_kompetisie_jaar' ) )->toBe( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-JAAR' );
-	expect( FieldSets::labelFor( 'ink_kompetisie_kaartjie2_prys' ) )->toContain( 'KOMP-ADMIN-PRYS' );
+test( 'the field labels are the approved strings, and the price label is D4 key', function (): void {
+	expect( FieldSets::labelFor( 'ink_kompetisie_jaar' ) )->toBe( 'jaar' );
+	expect( FieldSets::labelFor( 'ink_kompetisie_kaartjie2_prys' ) )->toContain( 'Kaartjieprys' );
 	expect( FieldSets::labelFor( 'ink_eksterne_url' ) )->toBe( 'Skakel' );
-	expect( FieldSets::labelFor( 'ink_uitdaging_brief' ) )->toBe( '[NEEDS HUMAN AFRIKAANS] UITSLAE-ADMIN-BRIEF' );
+	expect( FieldSets::labelFor( 'ink_uitdaging_brief' ) )->toBe( 'Skei paragrawe met \'n blanko reël.' );
 	expect( FieldSets::labelFor( 'nie-n-veld' ) )->toBe( 'nie-n-veld' );
 } );
 

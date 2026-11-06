@@ -744,6 +744,24 @@ function ink_foundation_enqueue_wp_login_brand(): void {
 add_action( 'login_enqueue_scripts', 'ink_foundation_enqueue_wp_login_brand' );
 
 /**
+ * Favicon: the ink-splat logo (assets/img/favicon.svg, primary colour), on the
+ * front end, wp-login and wp-admin. A site icon set in Customizer/Settings wins.
+ */
+function ink_foundation_favicon(): void {
+	if ( function_exists( 'has_site_icon' ) && has_site_icon() ) {
+		return;
+	}
+	printf(
+		'<link rel="icon" href="%s" type="image/svg+xml" />' . "
+",
+		esc_url( get_theme_file_uri( 'assets/img/favicon.svg' ) )
+	);
+}
+add_action( 'wp_head', 'ink_foundation_favicon', 99 );
+add_action( 'login_head', 'ink_foundation_favicon', 99 );
+add_action( 'admin_head', 'ink_foundation_favicon', 99 );
+
+/**
  * Swap WordPress core's own logo link/title on `wp-login.php` for INK's
  * (same screen as above) — `login_headerurl`/`login_headertext` are core's
  * own, documented seam for exactly this, no core markup touched.
@@ -812,6 +830,8 @@ function ink_foundation_enqueue_line_reactions(): void {
 		'inkLineReactions',
 		array(
 			'restUrl'      => esc_url_raw( rest_url( 'ink/v1/reaksie' ) ),
+			// The work's own hartjie (one per member): the bottom heart, and implied by any line heart.
+			'likeUrl'      => esc_url_raw( rest_url( 'ink/v1/hartjie' ) ),
 			'nonce'        => wp_create_nonce( 'wp_rest' ),
 			'postId'       => $post_id,
 			'label'        => __( 'Merk hierdie reël', 'ink-foundation' ),
@@ -1087,8 +1107,8 @@ function ink_foundation_enqueue_profiel_edit(): void {
 			// (docs/afrikaans-translation-sheet.md PROFIEL-REDIGEER-BESIG /
 			// PROFIEL-REDIGEER-FOUT, docs/afrikaans-copy-worklist.md) rather than
 			// invented here.
-			'savingText' => __( '[NEEDS HUMAN AFRIKAANS] — saving-status text not yet authored in ui-copy-translations.md.', 'ink-foundation' ),
-			'errorText'  => __( '[NEEDS HUMAN AFRIKAANS] — save-error status text not yet authored in ui-copy-translations.md.', 'ink-foundation' ),
+			'savingText' => __( 'Aan die werk...', 'ink-foundation' ),
+			'errorText'  => __( 'Dit het nie gewerk nie. Probeer weer.', 'ink-foundation' ),
 		)
 	);
 }
@@ -1747,11 +1767,13 @@ function ink_foundation_register_block_styles(): void {
 				// site-title's own <a>, so there is no single link to hover; target
 				// the shared `.ink-header-brand` lockup group instead (hovering
 				// anywhere in the lockup, icon or text, rotates the icon).
+				// DELIBERATE DIVERGENCE (owner, 2026-11-06): the logo tilts the other
+				// way, anticlockwise (-12deg); Lovable tilts clockwise (rotate-12).
 				. '.wp-block-group.is-style-ink-header .ink-header-feather{'
 				. 'transition:transform .2s ease;'
 				. '}'
 				. '.wp-block-group.is-style-ink-header .ink-header-brand:hover .ink-header-feather{'
-				. 'transform:rotate(12deg);'
+				. 'transform:rotate(-12deg);'
 				. '}'
 				// The nav links' muted colour, hover/focus colour, underline-slide and
 				// focus ring are the primitives `nav-link` recipe (primitives.css binds

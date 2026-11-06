@@ -165,7 +165,7 @@ test( 'a signed-in member gets a pressable upvote showing the count and their vo
 	expect( $html )->toContain( '<button type="button" class="ink-reaksies__upvote' );
 	expect( $html )->toContain( 'data-ink-opstem="9"' );
 	expect( $html )->toContain( 'aria-pressed="true"' );
-	expect( $html )->toContain( 'aria-label="[NEEDS HUMAN AFRIKAANS] REAKSIE-OPSTEM"' );
+	expect( $html )->toContain( 'aria-label="Like"' );
 	expect( $html )->toContain( '<span data-ink-opstem-telling aria-live="polite">3</span>' );
 	expect( $html )->not->toContain( ' disabled ' );
 } );

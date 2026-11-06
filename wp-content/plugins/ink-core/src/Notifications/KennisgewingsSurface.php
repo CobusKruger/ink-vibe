@@ -303,7 +303,7 @@ final class KennisgewingsSurface {
 			// No ratified copy exists yet for this empty state (ui-copy-translations.md's
 			// "Kennisgewings-blad" section only carries the heading/button/templates) —
 			// flagged per the standard [[afrikaans-copy-debt-process]] rather than invented.
-			$empty = __( '[NEEDS HUMAN AFRIKAANS] — Kennisgewings empty-state copy not yet authored in ui-copy-translations.md.', 'ink-core' );
+			$empty = __( 'Daar is tans geen kennisgewings nie.', 'ink-core' );
 
 			return '<section class="ink-kennisgewings">' . $kop
 				. '<p class="ink-card ink-card--empty ink-kennisgewings__leeg" data-audit-id="profiel-notif-empty">' . esc_html( $empty ) . '</p></section>';

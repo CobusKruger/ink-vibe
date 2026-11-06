@@ -210,7 +210,7 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 		// types (and the server ignores it for them). Lovable's Write.tsx has no such field.
 		?>
 		<p class="ink-skryf-field ink-skryf-field--toewyding" data-audit-id="skryf-dedication-field"<?php echo 'gedig' === $ink_skryf_first_slug ? '' : ' hidden'; ?>>
-			<label class="ink-label" for="ink-skryf-toewyding" data-audit-id="skryf-dedication-label"><?php echo esc_html__( '[NEEDS HUMAN AFRIKAANS] GEDIG-TOEWYDING-LABEL', 'ink-foundation' ); ?></label>
+			<label class="ink-label" for="ink-skryf-toewyding" data-audit-id="skryf-dedication-label"><?php echo esc_html__( 'Opgedra aan', 'ink-foundation' ); ?></label>
 			<input type="text" class="ink-field" id="ink-skryf-toewyding" name="<?php echo esc_attr( $ink_skryf['field_dedication'] ?? 'ink_submission_toewyding' ); ?>" maxlength="200" data-audit-id="skryf-dedication-input" />
 		</p>
 

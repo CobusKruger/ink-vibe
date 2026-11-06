@@ -81,7 +81,7 @@ final class Placements {
 	}
 
 	/**
-	 * The placement label: "algehele wenner" (1st) vs "wenner" (2nd/3rd); '' if not
+	 * The placement label: "Algehele wenner" (1st) vs "Wenner" (2nd/3rd); '' if not
 	 * a placement. Pure — Terms only.
 	 *
 	 * @param int $rank The placement rank.
@@ -92,9 +92,13 @@ final class Placements {
 			return '';
 		}
 
-		return self::isAlgeheleWenner( $rank )
-			? Terms::label( 'algehele_wenner' )
-			: Terms::label( 'wenner' );
+		// The pill stands alone, so it opens with a capital ("Algehele wenner" / "Wenner");
+		// the Terms entries stay lowercase for use inside sentences.
+		return ucfirst(
+			self::isAlgeheleWenner( $rank )
+				? Terms::label( 'algehele_wenner' )
+				: Terms::label( 'wenner' )
+		);
 	}
 
 	/**

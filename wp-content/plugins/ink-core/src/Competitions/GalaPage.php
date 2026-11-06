@@ -325,7 +325,11 @@ final class GalaPage {
 			. Markup::icon( '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>' )
 			. esc_html( Terms::label( 'kompetisie_plural' ) ) . '</a>'
 			. '<p class="ink-komp-gala-fotos__jaar ink-eyebrow ink-eyebrow--card">' . esc_html( (string) $year ) . '</p>'
-			. '<h1 class="ink-komp-gala-fotos__titel ink-heading-h1-index">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] KOMP-GALA-ALLES-H1', 'ink-core' ) . '</h1>'
+			. '<h1 class="ink-komp-gala-fotos__titel ink-heading-h1-index">' . esc_html( sprintf(
+				/* translators: %d: the gala year. */
+				__( 'Ink se Presige Gala-aand %d', 'ink-core' ),
+				$year
+			) ) . '</h1>'
 			. '<div class="ink-komp-gala-fotos__rooster" data-ink-gala-fotos>' . $figs . '</div>'
 			. $pager
 			. '</div></section>';

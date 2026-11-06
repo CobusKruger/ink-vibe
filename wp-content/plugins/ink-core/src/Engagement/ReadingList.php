@@ -119,7 +119,7 @@ final class ReadingList {
 			// human ratifies it; `composer copy:scan` tracks it as debt.
 			$html .= '<div class="ink-leeslys__leeg ink-card--empty" data-audit-id="profiel-reading-empty">'
 				. '<p class="ink-leeslys__leeg-titel ink-heading-h3" data-audit-id="profiel-reading-empty-title">' . esc_html__( 'Nog niks gestoor nie.', 'ink-core' ) . '</p>'
-				. '<p class="ink-leeslys__leeg-beskrywing" data-audit-id="profiel-reading-empty-body">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — Leeslys empty-state body copy not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</p>'
+				. '<p class="ink-leeslys__leeg-beskrywing" data-audit-id="profiel-reading-empty-body">' . esc_html__( 'Klik die boekmerk op enige gedig, storie of artikel om \'n leeslys uit te bou.', 'ink-core' ) . '</p>'
 				. '</div></section>';
 
 			return $html;

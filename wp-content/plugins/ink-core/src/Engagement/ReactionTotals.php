@@ -87,7 +87,11 @@ final class ReactionTotals {
 
 		$variant = isset( $attributes['variant'] ) && is_string( $attributes['variant'] ) ? $attributes['variant'] : 'volledig';
 
-		return self::toHtml( ReactionStore::countsForPost( $post_id ), $variant, $post_id );
+		// The heart count is the work's hartjies: one per member, not the number of line reactions.
+		$counts                             = ReactionStore::countsForPost( $post_id );
+		$counts[ Reaction::Hartjie->value ] = LikeStore::count( $post_id );
+
+		return self::toHtml( $counts, $variant, $post_id, LikeStore::has( $post_id, get_current_user_id() ) );
 	}
 
 	/**
@@ -103,14 +107,15 @@ final class ReactionTotals {
 	 *                                    Lovable's single heart+count floating-bar
 	 *                                    button; theme-fidelity re-audit, page 3,
 	 *                                    product-owner decision).
+	 * @param bool               $liked   Whether the current member has hearted the work.
 	 * @param int                $post_id The work (0 outside a real render, e.g.
 	 *                                    unit tests) — needed only by the 'enkel'
 	 *                                    variant to compute its click anchor.
 	 * @return string
 	 */
-	public static function toHtml( array $counts, string $variant = 'volledig', int $post_id = 0 ): string {
+	public static function toHtml( array $counts, string $variant = 'volledig', int $post_id = 0, bool $liked = false ): string {
 		if ( 'enkel' === $variant ) {
-			return self::toHtmlEnkel( $counts, $post_id );
+			return self::toHtmlEnkel( $counts, $post_id, $liked );
 		}
 
 		$glyphs = self::glyphs();
@@ -158,19 +163,19 @@ final class ReactionTotals {
 	 * @param int                $post_id The work (0 = render the passive display).
 	 * @return string
 	 */
-	private static function toHtmlEnkel( array $counts, int $post_id = 0 ): string {
+	private static function toHtmlEnkel( array $counts, int $post_id = 0, bool $liked = false ): string {
 		$n = isset( $counts[ Reaction::Hartjie->value ] ) ? (int) $counts[ Reaction::Hartjie->value ] : 0;
 
 		$audit_id = self::enkelAuditId();
 		$anchor   = $post_id > 0 ? self::firstAnchorFor( $post_id ) : null;
 		$tag      = null !== $anchor ? 'button' : 'div';
 
-		$attrs = ' class="ink-reaksie-tellers ink-reaksie-tellers--enkel ink-icon-label"'
+		$attrs = ' class="ink-reaksie-tellers ink-reaksie-tellers--enkel ink-icon-label' . ( $liked ? ' is-active' : '' ) . '"'
 			. ( null !== $audit_id ? ' data-audit-id="' . esc_attr( $audit_id ) . '"' : '' )
 			. ' aria-label="' . esc_attr( ReactionCounts::label( Reaction::Hartjie, $n ) ) . '"';
 
 		if ( null !== $anchor ) {
-			$attrs .= ' type="button" aria-pressed="false"'
+			$attrs .= ' type="button" aria-pressed="' . ( $liked ? 'true' : 'false' ) . '"'
 				. ' data-ink-post="' . esc_attr( (string) $post_id ) . '"'
 				. ' data-ink-line="' . esc_attr( (string) $anchor ) . '"';
 

@@ -146,6 +146,6 @@ final class ResponseUpvoteController {
 	 * @return string
 	 */
 	private static function errorMessage(): string {
-		return __( '[NEEDS HUMAN AFRIKAANS] REAKSIE-OPSTEM-FOUT', 'ink-core' );
+		return __( 'Jammer, dit het nie gewerk nie', 'ink-core' );
 	}
 }

@@ -215,10 +215,10 @@ test( 'toHtml renders the heading, the mark-all-read button and each row with it
 	expect( $html )->toContain( 'Piet het terugvoer gelewer' );
 } );
 
-test( 'toHtml renders a flagged empty state (no ratified copy yet) rather than a bare empty list', function (): void {
+test( 'toHtml renders the empty state rather than a bare empty list', function (): void {
 	$html = KennisgewingsSurface::toHtml( array() );
 
-	expect( $html )->toContain( 'NEEDS HUMAN AFRIKAANS' );
+	expect( $html )->toContain( 'Daar is tans geen kennisgewings nie.' );
 	expect( $html )->not->toContain( '<ul' );
 	// The button still renders — logged-out-of-content is not logged-out-of-the-affordance.
 	expect( $html )->toContain( 'data-ink-kennisgewings-merk-alles' );

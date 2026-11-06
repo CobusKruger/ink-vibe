@@ -41,7 +41,7 @@ test( 'the bar has naam, titel, the debt back link and no download', function ()
 
 	expect( $html )->toContain( 'data-audit-id="magazine-issue-h1">Titel 1' );
 	expect( $html )->toContain( 'data-audit-id="magazine-issue-eyebrow">Naam 1' );
-	expect( $html )->toContain( '[NEEDS HUMAN AFRIKAANS] INKPOLS-TERUG' );
+	expect( $html )->toContain( 'Terug na die argief' );
 	expect( $html )->toContain( 'href="/inkpols/"' );
 	expect( $html )->not->toContain( 'btn-pdf' );
 } );

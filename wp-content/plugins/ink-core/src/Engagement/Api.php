@@ -48,9 +48,8 @@ final class Api {
 	 * @return int The hartjie count (0 when none).
 	 */
 	public static function hartjieCountForPost( int $post_id ): int {
-		$counts = ReactionStore::countsForPost( $post_id );
-
-		return (int) ( $counts[ Reaction::Hartjie->value ] ?? 0 );
+		// One hartjie per member per work (line hearts imply it) — the denormalized field.
+		return LikeStore::count( $post_id );
 	}
 
 	/**

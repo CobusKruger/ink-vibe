@@ -254,7 +254,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 							// per the standard [[afrikaans-copy-debt-process]] rather than
 							// invented (see docs/afrikaans-translation-sheet.md OORSIG-BIO-LEEG /
 							// docs/afrikaans-copy-worklist.md).
-							: esc_html__( '[NEEDS HUMAN AFRIKAANS] — "no bio yet" fallback copy not yet authored in ui-copy-translations.md.', 'ink-foundation' );
+							: esc_html__( 'Oor my', 'ink-foundation' );
 						?>
 						</p>
 						<!-- /wp:paragraph -->

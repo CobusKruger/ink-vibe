@@ -81,6 +81,8 @@ class MigrateAll {
 			array( 'tier-history', 'ink import-tier-history' ),
 			array( 'inkpols', 'ink migrate-inkpols' ),
 			array( 'kompetisies', 'ink migrate-kompetisies' ),
+			array( 'search-index', 'ink rebuild-search-index' ),
+			array( 'counts', 'ink migrate-counts' ),
 			array( 'clean-shortcodes', 'ink clean-shortcodes' ),
 			array( 'rebuild-navigation', 'ink rebuild-navigation' ),
 			array( 'follows', 'ink migrate-follows' ),

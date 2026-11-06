@@ -120,19 +120,19 @@ final class Gala {
 		return '<div' . Markup::aid( 'competitions-gala-details' ) . '>'
 			. '<span class="ink-komp-gala__kicker ink-eyebrow ink-eyebrow--kicker"' . Markup::aid( 'competitions-gala-eyebrow' ) . '>'
 			. Markup::icon( Markup::TICKET, 'competitions-gala-eyebrow-icon' )
-			. '<span' . Markup::aid( 'competitions-gala-eyebrow-text' ) . '>' . esc_html__( '[NEEDS HUMAN AFRIKAANS] KOMP-GALA-KICKER', 'ink-core' ) . '</span>'
+			. '<span' . Markup::aid( 'competitions-gala-eyebrow-text' ) . '>' . esc_html__( 'Een spesiale aand per jaar', 'ink-core' ) . '</span>'
 			. '</span>'
 			. '<h2 class="ink-komp-gala__titel ink-heading-h2-section"' . Markup::aid( 'competitions-gala-h2' ) . '>' . esc_html( $edition->field( 'gala_naam' ) ) . '</h2>'
 			. '<p class="ink-komp-gala__teks"' . Markup::aid( 'competitions-gala-text' ) . '>' . esc_html( $edition->field( 'gala_beskrywing' ) ) . '</p>'
 			. '<div class="ink-komp-gala__info"' . Markup::aid( 'competitions-gala-info' ) . '>' . $info . '</div>'
 			. ( '' === $programme ? '' : '<div class="ink-komp-gala__program ink-card--feature ink-card--static"' . Markup::aid( 'competitions-gala-programme' ) . '>'
-				. '<p class="ink-komp-gala__program-etiket ink-eyebrow ink-eyebrow--caps ink-eyebrow--muted"' . Markup::aid( 'competitions-gala-programme-label' ) . '>' . esc_html__( '[NEEDS HUMAN AFRIKAANS] KOMP-GALA-PROGRAM', 'ink-core' ) . '</p>'
+				. '<p class="ink-komp-gala__program-etiket ink-eyebrow ink-eyebrow--caps ink-eyebrow--muted"' . Markup::aid( 'competitions-gala-programme-label' ) . '>' . esc_html__( 'Die Program', 'ink-core' ) . '</p>'
 				. '<ul class="ink-komp-gala__program-lys"' . Markup::aid( 'competitions-gala-programme-list' ) . '>' . $programme . '</ul>'
 				. '</div>' )
 			. ( '' === $tickets ? '' : '<div class="ink-komp-gala__kaartjies"' . Markup::aid( 'competitions-gala-tickets' ) . '>' . $tickets . '</div>' )
 			. '<button type="button" class="ink-btn ink-btn--lg ink-btn--primary"' . Markup::aid( 'competitions-gala-btn-reserve' ) . '>'
 			. Markup::icon( Markup::TICKET, 'competitions-gala-btn-reserve-icon', 'ink-btn__icon--start' )
-			. esc_html__( '[NEEDS HUMAN AFRIKAANS] KOMP-GALA-BESPREEK', 'ink-core' )
+			. esc_html__( 'Bespreek nou', 'ink-core' )
 			. '</button>'
 			. '</div>';
 	}
@@ -156,7 +156,7 @@ final class Gala {
 		return '<div class="ink-meta ink-meta--sm ink-meta--ink ink-meta--gap-12"' . Markup::aid( $id ) . '>'
 			. Markup::icon( $icon, "{$id}-icon" )
 			. '<span class="ink-komp-gala__info-teks"' . Markup::aid( "{$id}-text" ) . '>' . esc_html( $text ) . '</span>'
-			. ( '' === $doors ? '' : '<span class="ink-komp-gala__deure"' . Markup::aid( 'competitions-gala-info-doors' ) . '>' . esc_html( '· ' . __( '[NEEDS HUMAN AFRIKAANS] KOMP-GALA-DEURE', 'ink-core' ) . ' ' . $doors ) . '</span>' )
+			. ( '' === $doors ? '' : '<span class="ink-komp-gala__deure"' . Markup::aid( 'competitions-gala-info-doors' ) . '>' . esc_html( '· ' . __( 'deure open', 'ink-core' ) . ' ' . $doors ) . '</span>' )
 			. '</div>';
 	}
 
@@ -218,8 +218,8 @@ final class Gala {
 
 		return '<div' . Markup::aid( 'competitions-gala-past' ) . '>'
 			. '<div class="ink-card--feature-hero ink-card--static" data-ink-gala' . Markup::aid( 'competitions-gala-past-card' ) . '>'
-			. '<h3 class="ink-komp-gala__verlede-titel ink-heading-h2-block"' . Markup::aid( 'competitions-gala-past-h3' ) . '>' . esc_html__( '[NEEDS HUMAN AFRIKAANS] KOMP-GALA-VERLEDE-H3', 'ink-core' ) . '</h3>'
-			. '<p class="ink-komp-gala__verlede-teks"' . Markup::aid( 'competitions-gala-past-text' ) . '>' . esc_html__( '[NEEDS HUMAN AFRIKAANS] KOMP-GALA-VERLEDE-TEKS', 'ink-core' ) . '</p>'
+			. '<h3 class="ink-komp-gala__verlede-titel ink-heading-h2-block"' . Markup::aid( 'competitions-gala-past-h3' ) . '>' . esc_html__( 'Vorige Gala-aande', 'ink-core' ) . '</h3>'
+			. '<p class="ink-komp-gala__verlede-teks"' . Markup::aid( 'competitions-gala-past-text' ) . '>' . esc_html__( '\'n Blik terug na vorige gala-aande', 'ink-core' ) . '</p>'
 			. '<div class="ink-komp-gala__jare"' . Markup::aid( 'competitions-gala-past-years' ) . '>' . $chips . '</div>'
 			. $panels
 			. '</div></div>';

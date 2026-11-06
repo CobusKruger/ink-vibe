@@ -149,7 +149,7 @@ final class ProfileEditor {
 				// Afrikaans label yet — flagged per the standard
 				// afrikaans-copy-debt-process (see docs/afrikaans-translation-sheet.md
 				// PROFIEL-REDIGEER-LEUSE-LABEL / docs/afrikaans-copy-worklist.md).
-				. '<label class="ink-label ink-label--caps" for="ink-profiel-redigeer-leuse">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — tagline field label not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</label>'
+				. '<label class="ink-label ink-label--caps" for="ink-profiel-redigeer-leuse">' . esc_html__( 'Leuse', 'ink-core' ) . '</label>'
 				. '<input type="text" class="ink-field" id="ink-profiel-redigeer-leuse" name="tagline" maxlength="' . esc_attr( (string) Tagline::MAX_LENGTH ) . '" value="' . esc_attr( $tagline ) . '" /></p>'
 			. '<p class="ink-profiel-redigeer__veld">'
 				// "Oor my" — the already-ratified Oorsig-tab card heading for this
@@ -159,8 +159,8 @@ final class ProfileEditor {
 			. '<div class="ink-profiel-redigeer__aksies" data-audit-id="profiel-edit-actions">'
 				// Copy-debt: Save/Cancel have no ratified Afrikaans yet either —
 				// flagged the same way (PROFIEL-REDIGEER-KANSELLEER / -STOOR).
-				. '<button type="button" class="ink-btn ink-btn--subtle ink-profiel-redigeer__kanselleer" data-ink-profiel-redigeer-sluit data-audit-id="profiel-edit-cancel-btn">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — cancel button label not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</button>'
-				. '<button type="submit" class="ink-btn ink-btn--primary ink-profiel-redigeer__stoor" data-audit-id="profiel-edit-save-btn">' . esc_html__( '[NEEDS HUMAN AFRIKAANS] — save button label not yet authored in ui-copy-translations.md.', 'ink-core' ) . '</button>'
+				. '<button type="button" class="ink-btn ink-btn--subtle ink-profiel-redigeer__kanselleer" data-ink-profiel-redigeer-sluit data-audit-id="profiel-edit-cancel-btn">' . esc_html__( 'Kanselleer', 'ink-core' ) . '</button>'
+				. '<button type="submit" class="ink-btn ink-btn--primary ink-profiel-redigeer__stoor" data-audit-id="profiel-edit-save-btn">' . esc_html__( 'Stoor', 'ink-core' ) . '</button>'
 			. '</div>'
 			. '<p class="ink-profiel-redigeer__status" role="status" data-ink-profiel-redigeer-status></p>'
 			. '</form>';

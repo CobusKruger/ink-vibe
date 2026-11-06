@@ -1,5 +1,7 @@
 # Afrikaans translation sheet
 
+> **2026-11-06:** all are now authored: see `ui-copy-translations.md` › "Kopieskuld ingevul (2026-11-06)". Entries below are history.
+
 Fill in the `AF:` lines. That's the only thing you do here.
 
 - The `EN:` text is a **sample to translate** — adjust the wording freely; your

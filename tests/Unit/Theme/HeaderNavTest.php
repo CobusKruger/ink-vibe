@@ -123,7 +123,7 @@ test( 'the pattern uses our toggle and keeps the logged-in avatar menu', functio
 
 	expect( $pattern )->toContain( '"overlayMenu":"never"' );
 	expect( $pattern )->toContain( 'data-audit-id="header-menu-toggle" class="ink-icon-btn ink-icon-btn--menu" aria-expanded="false" aria-controls="ink-mobile-menu"' );
-	expect( $pattern )->toContain( '[NEEDS HUMAN AFRIKAANS] CHROME-MENU' );
+	expect( $pattern )->toContain( "esc_attr__( 'Menu', 'ink-foundation' )" );
 	expect( $pattern )->toContain( 'data-ink-user-menu-trigger' );
 	expect( $pattern )->not->toContain( 'overlayBackgroundColor' );
 	// The logged-out actions need the class the block style hides below 1024.

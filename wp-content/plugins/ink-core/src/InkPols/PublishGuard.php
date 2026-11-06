@@ -173,7 +173,7 @@ class PublishGuard {
 		delete_transient( $key );
 
 		echo '<div class="notice notice-error"><p>'
-			. esc_html__( '[NEEDS HUMAN AFRIKAANS] INKPOLS-ADMIN-ONVOLLEDIG', 'ink-core' )
+			. esc_html__( 'Hierdie uitgawe is nie geplaas nie. Van die velde is steeds leeg.', 'ink-core' )
 			. ': ' . esc_html( implode( ', ', array_map( 'strval', $labels ) ) )
 			. '</p></div>';
 	}

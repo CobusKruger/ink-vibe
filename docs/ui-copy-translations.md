@@ -865,3 +865,112 @@ Reeds in die kode as Afrikaans (nie kopieskuld nie): "Uitslae", "Uitslae aangeko
 |---|---|---|
 | Competitions (header) | Kompetisies | Kopbalk-item tussen Uitdagings en Gemeenskap (D1); die ontwerp se "Magazine"-item word nie bygevoeg nie |
 | Submit a listing (mailto) | — | Onderwerpreël: "Nuwe kompetisie kennisgewing"; adres `skryfafrikaans@ink.org.za` (eienaar) |
+
+
+### Kopieskuld ingevul (2026-11-06)
+
+Eienaar-geskrewe Afrikaans vir die plekhouers uit `copy-debt-fill-in.md`; almal is in die kode ingeskakel. Skrap-items (geen teks): die elemente is uit die kode verwyder. Almal ingevul.
+
+| ID | Afrikaans | Notas |
+|---|---|---|
+| UITSLAE-H1 | Uitslae |  |
+| UITSLAE-META-KATEGORIE | Gedigte, stories en artikels |  |
+| UITSLAE-BRIEF-H2 | 'n Nota van die moderator |  |
+| UITSLAE-BRIEF-NOTA | Alle inskrywings word anoniem beoordeel. Die moderator sien nie skrywers se name nie. |  |
+| UITSLAE-PODIUM-H2 | Die podium |  |
+| UITSLAE-AFDELING | — | verwyder (geen teks) |
+| UITSLAE-GEEN-SKAKEL | — | verwyder (wen sonder pos bestaan nie) |
+| UITSLAE-VERMELDING-REEL | deur |  |
+| UITSLAE-DANKIE | Baie dankie aan almal wat aan hierdie uitdaging deelgeneem het. |  |
+| TUIS-UITSLAE-TITEL | sien die wenners in gedigte, stories en artikels |  |
+| TUIS-UITSLAE-CTA | Lees die aankondiging |  |
+| TUIS-WENNERS-H2 | Onlangse wenners |  |
+| TUIS-WENNER-LEES-ARTIKEL | Lees artikel |  |
+| KOMP-HERO-BADGE | Ons flagskip-kompetisie |  |
+| KOMP-HERO-SLUIT | Sluit |  |
+| KOMP-HERO-INSKRYF | Skryf nou in |  |
+| KOMP-HERO-RIGLYNE | Lees die reëls |  |
+| KOMP-KAT-H2 | Gedigte en kortverhale, vir volwassenes en skoliere |  |
+| KOMP-KAT-INTRO | Ons kompetisie word anoniem beoordeel. |  |
+| KOMP-KAT-INSKRYF | Skryf in |  |
+| KOMP-GALA-KICKER | Een spesiale aand per jaar |  |
+| KOMP-GALA-DEURE | deure open |  |
+| KOMP-GALA-PROGRAM | Die Program |  |
+| KOMP-GALA-BESPREEK | Bespreek nou |  |
+| KOMP-GALA-VERLEDE-H3 | Vorige Gala-aande |  |
+| KOMP-GALA-VERLEDE-TEKS | 'n Blik terug na vorige gala-aande |  |
+| KOMP-GALA-ALLES-H1 | Ink se Presige Gala-aand %d (jaar bly in die titel) |  |
+| KOMP-GIDS-KICKER | Skryf in Afrikaans |  |
+| KOMP-GIDS-H2 | Ander Kompetisies |  |
+| KOMP-GIDS-TEKS | Ink onderhou hierdie lys van ander skryfkompetisies, maar is nie self met hierdie kompetisies geassosieer nie. Kontak die instansies wat die onderskeie kompetisies aanbied direk vir die reëls en enige ander navrae. | Tikfout "the" reggestel na "die" |
+| KOMP-GIDS-SOEK | Soek vir kompetisies |  |
+| KOMP-FOOI-ALL | — | verwyder (eksterne fooie word nie gewys nie) |
+| KOMP-FOOI-FREE | — | verwyder |
+| KOMP-FOOI-PAID | — | verwyder |
+| KOMP-TELLING | kompetisies |  |
+| KOMP-EKS-SLUIT | Sluit |  |
+| KOMP-EKS-SKAKEL | Besoek die organiseerder | |
+| KOMP-LEEG-TITEL | Geen kompetisies gevind nie. |  |
+| KOMP-LEEG-TEKS | Vee die filters uit om vir iets meer algemeen te soek. |  |
+| KOMP-INDIEN-H3 | — | verwyder (geen ongevraagde indienings) |
+| KOMP-INDIEN-TEKS | — | verwyder |
+| KOMP-INDIEN-KNOP | — | verwyder |
+| KOMP-GENRE-POETRY | Poësie |  |
+| KOMP-GENRE-FICTION | Fiksie |  |
+| KOMP-GENRE-NON-FICTION | Nie-fiksie |  |
+| KOMP-GENRE-MIXED | Gemeng |  |
+| INKPOLS-HUIDIGE | Nuutste uitgawe |  |
+| INKPOLS-TERUG | Terug na die argief |  |
+| UITDAGINGS-H1 | 'n Nuwe uitdaging, elke maand |  |
+| UITDAGINGS-INTRO | Elke maand kies ons 'n opdrag vir gedigte, stories en artikels. Alle inskrywings word anoniem beoordeel en die top drie in elke kategorie word spoedig aangekondig. |  |
+| UITDAGINGS-VORIGE-H2 | Vorige uitdaging |  |
+| CHROME-MENU | Menu (aria-label; geen sigbare teks, net die ikoon) |  |
+| 404-BOODSKAP | Gits! Daardie bladsy bestaan nie. |  |
+| 404-TUIS-SKAKEL | Begin gerus op ons tuisblad en vind iets om te lees. |  |
+| REAKSIE-OPSTEM | Like | `aria-label` van die opstem-knoppie in die reaksielys |
+| REAKSIE-OPSTEM-FOUT | Jammer, dit het nie gewerk nie |  |
+| GEDIG-TOEWYDING-LABEL | Opgedra aan |  |
+| LEESLYS-LEEG-BODY | Klik die boekmerk op enige gedig, storie of artikel om 'n leeslys uit te bou. |  |
+| KENNIS-LEEG | Daar is tans geen kennisgewings nie. |  |
+| PROFIEL-REDIGEER-LEUSE-LABEL | Leuse |  |
+| PROFIEL-REDIGEER-STOOR | Stoor |  |
+| PROFIEL-REDIGEER-KANSELLEER | Kanselleer |  |
+| PROFIEL-REDIGEER-BESIG | Aan die werk... |  |
+| PROFIEL-REDIGEER-FOUT | Dit het nie gewerk nie. Probeer weer. |  |
+| OORSIG-BIO-LEEG | Oor my |  |
+| BYDRAES-LEEG | Jy het nog geen bydraes geplaas nie. Klik "Begin skryf" regs bo. |  |
+| VOLG-VOER-AKSIE | het 'n %s geplaas (hele sin herstruktureer) |  |
+| INKPOLS-ADMIN-ONVOLLEDIG | Hierdie uitgawe is nie geplaas nie. Van die velde is steeds leeg. |  |
+| UITSLAE-ADMIN-BRIEF | Skei paragrawe met 'n blanko reël. |  |
+| UITSLAE-ADMIN-VERMELDINGS | Eervolle vermelding |  |
+| GEDIG-TOEWYDING-ADMIN | Opgedra aan |  |
+| KOMP-ADMIN-JAAR | jaar |  |
+| KOMP-ADMIN-UITGAWE | Edisie |  |
+| KOMP-ADMIN-BESKRYWING | Beskrywing |  |
+| KOMP-ADMIN-INSKRYWING | Inskrywing |  |
+| KOMP-ADMIN-NAASWENNER | Naaswenner |  |
+| KOMP-ADMIN-KAT | Kategorie |  |
+| KOMP-ADMIN-IKOON | Ikoon |  |
+| KOMP-ADMIN-IKOON-FEATHER | Veertjie-ikoon |  |
+| KOMP-ADMIN-IKOON-BOOK | Boek-ikoon |  |
+| KOMP-ADMIN-IKOON-PEN | Pen-ikoon |  |
+| KOMP-ADMIN-WOORDLIMIET | Woordbeperking |  |
+| KOMP-ADMIN-RIGLYNE | Riglyne |  |
+| KOMP-ADMIN-GALA-NAAM | Naam |  |
+| KOMP-ADMIN-GALA-DATUM | Datum |  |
+| KOMP-ADMIN-GALA-DEURE | Deure open |  |
+| KOMP-ADMIN-GALA-PLEK | Venue |  |
+| KOMP-ADMIN-GALA-DRAG | Drag |  |
+| KOMP-ADMIN-GALA-PROGRAM | Program |  |
+| KOMP-ADMIN-KAARTJIE | Kaartjie |  |
+| KOMP-ADMIN-PRYS | Kaartjieprys |  |
+| KOMP-ADMIN-HOOGTEPUNT | Hoogtepunt |  |
+| KOMP-ADMIN-FOTOS | Foto's |  |
+| KOMP-ADMIN-ORGANISEERDER | Organiseerder |  |
+| KOMP-ADMIN-STREEK | Streek |  |
+| KOMP-ADMIN-PRYS-EKSTERN | Prys |  |
+| KOMP-ADMIN-FOOI | Inskrywingsfooi |  |
+| KOMP-ADMIN-GENRE | Genre |  |
+| KOMP-ADMIN-NOTA | Nota |  |
+| KOMP-ADMIN-MEDIA-KIES | Kies |  |
+| KOMP-ADMIN-MEDIA-VERWYDER | Verwyder |  |

@@ -148,11 +148,18 @@ final class ReactionController {
 
 		ReactionStore::set( $post_id, $line, $user_id, $requested );
 
+		// A line hartjie is also a hartjie for the work (once per member; idempotent).
+		if ( Reaction::Hartjie === $requested ) {
+			LikeStore::add( $post_id, $user_id );
+		}
+
 		return new WP_REST_Response(
 			array(
 				'line'     => $line,
 				'reaction' => $requested->value,
 				'removed'  => false,
+				'liked'    => LikeStore::has( $post_id, $user_id ),
+				'count'    => LikeStore::count( $post_id ),
 			)
 		);
 	}

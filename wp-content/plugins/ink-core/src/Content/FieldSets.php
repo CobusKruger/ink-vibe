@@ -343,8 +343,8 @@ final class FieldSets {
 					esc_attr( $key ),
 					esc_attr( (string) $value ),
 					esc_attr( $field['input'] ),
-					esc_attr__( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-MEDIA-KIES', 'ink-core' ),
-					esc_attr__( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-MEDIA-VERWYDER', 'ink-core' )
+					esc_attr__( 'Kies', 'ink-core' ),
+					esc_attr__( 'Verwyder', 'ink-core' )
 				);
 			} else {
 				printf(
@@ -517,14 +517,14 @@ final class FieldSets {
 					),
 					array(
 						'key'      => self::UITDAGING_BRIEF,
-						'label'    => __( '[NEEDS HUMAN AFRIKAANS] UITSLAE-ADMIN-BRIEF', 'ink-core' ),
+						'label'    => __( 'Skei paragrawe met \'n blanko reël.', 'ink-core' ),
 						'type'     => 'string',
 						'input'    => 'textarea',
 						'sanitize' => 'sanitize_textarea_field',
 					),
 					array(
 						'key'      => self::UITDAGING_VERMELDINGS,
-						'label'    => __( '[NEEDS HUMAN AFRIKAANS] UITSLAE-ADMIN-VERMELDINGS', 'ink-core' ),
+						'label'    => __( 'Eervolle vermelding', 'ink-core' ),
 						'type'     => 'string',
 						'input'    => 'textarea',
 						'sanitize' => 'sanitize_textarea_field',
@@ -578,7 +578,7 @@ final class FieldSets {
 				'fields' => array(
 					array(
 						'key'      => self::GEDIG_TOEWYDING,
-						'label'    => __( '[NEEDS HUMAN AFRIKAANS] GEDIG-TOEWYDING-ADMIN', 'ink-core' ),
+						'label'    => __( 'Opgedra aan', 'ink-core' ),
 						'type'     => 'string',
 						'input'    => 'text',
 						'sanitize' => array( self::class, 'sanitizeToewyding' ),
@@ -690,63 +690,63 @@ final class FieldSets {
 	 * @return list<array<string, mixed>>
 	 */
 	private static function kompetisieFields(): array {
-		$category = __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-KAT', 'ink-core' );
+		$category = __( 'Kategorie', 'ink-core' );
 		$slot     = static fn ( string $noun, int $n, string $what ): string => sprintf( '%1$s %2$d: %3$s', $noun, $n, $what );
 
 		$fields = array(
 			array(
 				'key'      => self::kompetisieKey( 'jaar' ),
-				'label'    => __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-JAAR', 'ink-core' ),
+				'label'    => __( 'jaar', 'ink-core' ),
 				'type'     => 'integer',
 				'input'    => 'number',
 				'sanitize' => 'absint',
 			),
-			self::textField( self::kompetisieKey( 'uitgawe' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-UITGAWE', 'ink-core' ) ),
-			self::textField( self::kompetisieKey( 'beskrywing' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-BESKRYWING', 'ink-core' ), 'textarea' ),
+			self::textField( self::kompetisieKey( 'uitgawe' ), __( 'Edisie', 'ink-core' ) ),
+			self::textField( self::kompetisieKey( 'beskrywing' ), __( 'Beskrywing', 'ink-core' ), 'textarea' ),
 			self::textField( self::kompetisieKey( 'sluitingsdatum' ), __( 'Sluitingsdatum', 'ink-core' ), 'date' ),
-			self::textField( self::kompetisieKey( 'inskrywing_nota' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-INSKRYWING', 'ink-core' ) ),
-			self::textField( self::kompetisieKey( 'naaswenner_nota' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-NAASWENNER', 'ink-core' ) ),
+			self::textField( self::kompetisieKey( 'inskrywing_nota' ), __( 'Inskrywing', 'ink-core' ) ),
+			self::textField( self::kompetisieKey( 'naaswenner_nota' ), __( 'Naaswenner', 'ink-core' ) ),
 		);
 
 		for ( $n = 1; $n <= self::KOMPETISIE_SLOTS; $n++ ) {
 			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_naam" ), $slot( $category, $n, __( 'naam', 'ink-core' ) ) );
 			$fields[] = array(
 				'key'      => self::kompetisieKey( "kat{$n}_ikoon" ),
-				'label'    => $slot( $category, $n, __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-IKOON', 'ink-core' ) ),
+				'label'    => $slot( $category, $n, __( 'Ikoon', 'ink-core' ) ),
 				'type'     => 'string',
 				'input'    => 'select',
 				'options'  => array(
-					'feather' => __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-IKOON-FEATHER', 'ink-core' ),
-					'book'    => __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-IKOON-BOOK', 'ink-core' ),
-					'pen'     => __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-IKOON-PEN', 'ink-core' ),
+					'feather' => __( 'Veertjie-ikoon', 'ink-core' ),
+					'book'    => __( 'Boek-ikoon', 'ink-core' ),
+					'pen'     => __( 'Pen-ikoon', 'ink-core' ),
 				),
 				'sanitize' => array( self::class, 'sanitizeIcon' ),
 				'default'  => self::KOMPETISIE_IKONE[0],
 			);
 			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_tema" ), $slot( $category, $n, __( 'Tema', 'ink-core' ) ) );
-			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_beskrywing" ), $slot( $category, $n, __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-BESKRYWING', 'ink-core' ) ), 'textarea' );
-			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_woordlimiet" ), $slot( $category, $n, __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-WOORDLIMIET', 'ink-core' ) ) );
-			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_riglyne" ), $slot( $category, $n, __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-RIGLYNE', 'ink-core' ) ), 'textarea' );
+			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_beskrywing" ), $slot( $category, $n, __( 'Beskrywing', 'ink-core' ) ), 'textarea' );
+			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_woordlimiet" ), $slot( $category, $n, __( 'Woordbeperking', 'ink-core' ) ) );
+			$fields[] = self::textField( self::kompetisieKey( "kat{$n}_riglyne" ), $slot( $category, $n, __( 'Riglyne', 'ink-core' ) ), 'textarea' );
 		}
 
-		$fields[] = self::textField( self::kompetisieKey( 'gala_naam' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GALA-NAAM', 'ink-core' ) );
-		$fields[] = self::textField( self::kompetisieKey( 'gala_beskrywing' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-BESKRYWING', 'ink-core' ), 'textarea' );
-		$fields[] = self::textField( self::kompetisieKey( 'gala_datum' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GALA-DATUM', 'ink-core' ), 'date' );
-		$fields[] = self::textField( self::kompetisieKey( 'gala_deure' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GALA-DEURE', 'ink-core' ) );
-		$fields[] = self::textField( self::kompetisieKey( 'gala_plek' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GALA-PLEK', 'ink-core' ) );
-		$fields[] = self::textField( self::kompetisieKey( 'gala_drag' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GALA-DRAG', 'ink-core' ) );
-		$fields[] = self::textField( self::kompetisieKey( 'gala_program' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GALA-PROGRAM', 'ink-core' ), 'textarea' );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_naam' ), __( 'Naam', 'ink-core' ) );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_beskrywing' ), __( 'Beskrywing', 'ink-core' ), 'textarea' );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_datum' ), __( 'Datum', 'ink-core' ), 'date' );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_deure' ), __( 'Deure open', 'ink-core' ) );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_plek' ), __( 'Venue', 'ink-core' ) );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_drag' ), __( 'Drag', 'ink-core' ) );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_program' ), __( 'Program', 'ink-core' ), 'textarea' );
 
 		for ( $n = 1; $n <= self::KOMPETISIE_SLOTS; $n++ ) {
-			$fields[] = self::textField( self::kompetisieKey( "kaartjie{$n}_etiket" ), $slot( __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-KAARTJIE', 'ink-core' ), $n, __( 'naam', 'ink-core' ) ) );
+			$fields[] = self::textField( self::kompetisieKey( "kaartjie{$n}_etiket" ), $slot( __( 'Kaartjie', 'ink-core' ), $n, __( 'naam', 'ink-core' ) ) );
 			// D4: the price is fictional until payments exist. This label is where that is said.
-			$fields[] = self::textField( self::kompetisieKey( "kaartjie{$n}_prys" ), $slot( __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-KAARTJIE', 'ink-core' ), $n, __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-PRYS', 'ink-core' ) ) );
+			$fields[] = self::textField( self::kompetisieKey( "kaartjie{$n}_prys" ), $slot( __( 'Kaartjie', 'ink-core' ), $n, __( 'Kaartjieprys', 'ink-core' ) ) );
 		}
 
-		$fields[] = self::textField( self::kompetisieKey( 'gala_hoogtepunt' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-HOOGTEPUNT', 'ink-core' ) );
+		$fields[] = self::textField( self::kompetisieKey( 'gala_hoogtepunt' ), __( 'Hoogtepunt', 'ink-core' ) );
 		$fields[] = array(
 			'key'      => self::kompetisieKey( 'gala_fotos' ),
-			'label'    => __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-FOTOS', 'ink-core' ),
+			'label'    => __( 'Foto\'s', 'ink-core' ),
 			'type'     => 'string',
 			'input'    => 'gallery',
 			'sanitize' => array( self::class, 'sanitizeIdList' ),
@@ -762,28 +762,28 @@ final class FieldSets {
 	 */
 	private static function eksterneFields(): array {
 		return array(
-			self::textField( self::eksterneKey( 'organiseerder' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-ORGANISEERDER', 'ink-core' ) ),
-			self::textField( self::eksterneKey( 'streek' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-STREEK', 'ink-core' ) ),
+			self::textField( self::eksterneKey( 'organiseerder' ), __( 'Organiseerder', 'ink-core' ) ),
+			self::textField( self::eksterneKey( 'streek' ), __( 'Streek', 'ink-core' ) ),
 			// Plain text, because a recurring closing date carries no year.
 			self::textField( self::eksterneKey( 'sluitingsdatum' ), __( 'Sluitingsdatum', 'ink-core' ) ),
-			self::textField( self::eksterneKey( 'prys' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-PRYS-EKSTERN', 'ink-core' ) ),
-			self::textField( self::eksterneKey( 'fooi' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-FOOI', 'ink-core' ) ),
+			self::textField( self::eksterneKey( 'prys' ), __( 'Prys', 'ink-core' ) ),
+			self::textField( self::eksterneKey( 'fooi' ), __( 'Inskrywingsfooi', 'ink-core' ) ),
 			array(
 				'key'      => self::eksterneKey( 'genre' ),
-				'label'    => __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-GENRE', 'ink-core' ),
+				'label'    => __( 'Genre', 'ink-core' ),
 				'type'     => 'string',
 				'input'    => 'select',
 				'options'  => array(
-					'gedigte'   => __( '[NEEDS HUMAN AFRIKAANS] KOMP-GENRE-POETRY', 'ink-core' ),
-					'fiksie'    => __( '[NEEDS HUMAN AFRIKAANS] KOMP-GENRE-FICTION', 'ink-core' ),
-					'niefiksie' => __( '[NEEDS HUMAN AFRIKAANS] KOMP-GENRE-NON-FICTION', 'ink-core' ),
-					'gemeng'    => __( '[NEEDS HUMAN AFRIKAANS] KOMP-GENRE-MIXED', 'ink-core' ),
+					'gedigte'   => __( 'Poësie', 'ink-core' ),
+					'fiksie'    => __( 'Fiksie', 'ink-core' ),
+					'niefiksie' => __( 'Nie-fiksie', 'ink-core' ),
+					'gemeng'    => __( 'Gemeng', 'ink-core' ),
 				),
 				'sanitize' => array( self::class, 'sanitizeGenre' ),
 				'default'  => self::EKSTERNE_GENRES[0],
 			),
 			self::textField( self::eksterneKey( 'url' ), __( 'Skakel', 'ink-core' ), 'url' ),
-			self::textField( self::eksterneKey( 'nota' ), __( '[NEEDS HUMAN AFRIKAANS] KOMP-ADMIN-NOTA', 'ink-core' ), 'textarea' ),
+			self::textField( self::eksterneKey( 'nota' ), __( 'Nota', 'ink-core' ), 'textarea' ),
 		);
 	}
 

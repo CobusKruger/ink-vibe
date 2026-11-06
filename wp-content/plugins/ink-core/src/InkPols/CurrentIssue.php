@@ -55,7 +55,7 @@ final class CurrentIssue {
 
 		$eyebrow = $home
 			? Terms::label( 'inkpols' )
-			: __( '[NEEDS HUMAN AFRIKAANS] INKPOLS-HUIDIGE', 'ink-core' );
+			: __( 'Nuutste uitgawe', 'ink-core' );
 
 		$list = $home
 			? '<p class="ink-inkpols__binne-etiket ink-eyebrow ink-eyebrow--caps ink-eyebrow--muted" data-audit-id="magazine-inside-label">' . esc_html( Terms::label( 'in_hierdie_uitgawe' ) ) . '</p>'

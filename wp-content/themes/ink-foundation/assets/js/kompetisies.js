@@ -1,6 +1,6 @@
 /**
- * /kompetisies/ client side (`05-kompetisies` §4): the gala year chips, and search + genre +
- * fee filters over the directory, AND-ed. Without JS: all listings, the first gala year.
+ * /kompetisies/ client side (`05-kompetisies` §4): the gala year chips, and search + genre
+ * filters over the directory, AND-ed. Without JS: all listings, the first gala year.
  *
  * `syncAudit` keeps `data-audit-id` on visible nodes only (a hidden node keeps it as
  * `data-ink-aid`): ids stay unique and a captured state pairs what shows.
@@ -131,13 +131,11 @@
 		function apply() {
 			var query = search.value.trim().toLowerCase();
 			var genre = pressed( 'genre' );
-			var fee = pressed( 'fooi' );
 			var shown = 0;
 			var parts = [];
 
 			cards.forEach( function ( card ) {
 				var match = ( 'alles' === genre.getAttribute( 'data-ink-waarde' ) || card.getAttribute( 'data-genre' ) === genre.getAttribute( 'data-ink-waarde' ) )
-					&& ( 'alles' === fee.getAttribute( 'data-ink-waarde' ) || card.getAttribute( 'data-fooi' ) === fee.getAttribute( 'data-ink-waarde' ) )
 					&& ( '' === query || -1 !== card.getAttribute( 'data-soek' ).indexOf( query ) );
 
 				card.hidden = ! match;
@@ -145,11 +143,9 @@
 			} );
 
 			parts.push( shown + ' ' + count.getAttribute( 'data-ink-telling' ) );
-			[ genre, fee ].forEach( function ( chip ) {
-				if ( 'alles' !== chip.getAttribute( 'data-ink-waarde' ) ) {
-					parts.push( chip.textContent );
-				}
-			} );
+			if ( 'alles' !== genre.getAttribute( 'data-ink-waarde' ) ) {
+				parts.push( genre.textContent );
+			}
 			count.textContent = parts.join( ' · ' );
 
 			count.hidden = 0 === shown;
@@ -173,10 +169,8 @@
 		if ( clear ) {
 			clear.addEventListener( 'click', function () {
 				search.value = '';
-				[ 'genre', 'fooi' ].forEach( function ( group ) {
-					root.querySelectorAll( '[data-ink-filter="' + group + '"]' ).forEach( function ( chip ) {
-						chip.setAttribute( 'aria-pressed', 'alles' === chip.getAttribute( 'data-ink-waarde' ) ? 'true' : 'false' );
-					} );
+				root.querySelectorAll( '[data-ink-filter="genre"]' ).forEach( function ( chip ) {
+					chip.setAttribute( 'aria-pressed', 'alles' === chip.getAttribute( 'data-ink-waarde' ) ? 'true' : 'false' );
 				} );
 				apply();
 			} );

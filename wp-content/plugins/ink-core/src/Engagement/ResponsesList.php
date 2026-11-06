@@ -220,7 +220,7 @@ final class ResponsesList {
 			: ' disabled';
 
 		return '<button type="button" class="ink-reaksies__upvote ink-icon-label ink-icon-label--sm"' . $attrs
-			. ' aria-label="' . esc_attr__( '[NEEDS HUMAN AFRIKAANS] REAKSIE-OPSTEM', 'ink-core' ) . '"' . $audit . '>'
+			. ' aria-label="' . esc_attr__( 'Like', 'ink-core' ) . '"' . $audit . '>'
 			. '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m18 15-6-6-6 6"/></svg>'
 			. '<span data-ink-opstem-telling aria-live="polite">' . esc_html( (string) $summary['count'] ) . '</span></button>';
 	}

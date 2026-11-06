@@ -623,6 +623,25 @@
 	padding: var(--wp--preset--spacing--s-32);
 }
 
+/* winner, Silwer (Lovable ChallengeSection `treatmentClasses.silver`): secondary/30 fill, border token */
+.ink-card--winner-silwer {
+	background-image: none;
+	background-color: color-mix(in srgb, var(--wp--preset--color--secondary) 30%, transparent);
+	border-color: var(--wp--preset--color--border);
+}
+
+/* winner, Brons (`treatmentClasses.bronze`): terracotta/5 fill, terracotta/25 border */
+.ink-card--winner-brons {
+	background-image: none;
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 5%, transparent);
+	border-color: color-mix(in srgb, var(--wp--preset--color--primary) 25%, transparent);
+}
+
+/* winner, compact (the lower-tier cards): p-6 */
+.ink-card--winner-compact {
+	padding: var(--wp--preset--spacing--s-24);
+}
+
 /* sheet: the side panel (highlights) */
 .ink-sheet {
 	box-sizing: border-box;
@@ -2734,6 +2753,17 @@ textarea.ink-field,
 /* caps-gold (GAP-03-08): on `ink-pill--caps`: gold/20 fill, ink text. */
 .ink-pill--caps-gold {
 	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 20%, transparent);
+	color: var(--wp--preset--color--ink-text);
+}
+
+/* caps-silwer / caps-brons (Lovable `badgeClasses`): on `ink-pill--caps`; muted fill / primary/10 fill, ink text. */
+.ink-pill--caps-silwer {
+	background-color: var(--wp--preset--color--muted);
+	color: var(--wp--preset--color--ink-text);
+}
+
+.ink-pill--caps-brons {
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
 	color: var(--wp--preset--color--ink-text);
 }
 

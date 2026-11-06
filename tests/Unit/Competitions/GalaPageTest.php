@@ -75,12 +75,12 @@ test( 'an unknown year, or a year without photos, has no gala page', function ()
 	expect( Data::pickGalaYear( $galas, 1999 ) )->toBeNull();
 } );
 
-test( 'the page: recipes only, lazy images with a size, copy-debt heading, real paged links', function (): void {
+test( 'the page: recipes only, lazy images with a size, year heading, real paged links', function (): void {
 	$pager = ArchiveRender::pagination( 2, 3, 'ink-komp-gala-fotos', GalaPage::PAGED_VAR );
 	$html  = GalaPage::toHtml( 2025, array( ink_gala_photo( 'Onder' ), ink_gala_photo() ), $pager, '/kompetisies/' );
 
 	expect( $html )->toContain( 'ink-heading-h1-index' );
-	expect( $html )->toContain( '[NEEDS HUMAN AFRIKAANS] KOMP-GALA-ALLES-H1' );
+	expect( $html )->toContain( 'Ink se Presige Gala-aand 2025' );
 	expect( $html )->toContain( 'ink-nav-link--footer" href="/kompetisies/"' );
 	expect( substr_count( $html, 'class="ink-photo"' ) )->toBe( 2 );
 	expect( substr_count( $html, 'loading="lazy"' ) )->toBe( 2 );
