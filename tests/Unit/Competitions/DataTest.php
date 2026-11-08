@@ -54,6 +54,69 @@ test( 'current ignores an imported post: no description, however high its year',
 	expect( Data::pickCurrent( array() ) )->toBeNull();
 } );
 
+test( 'the default announcement is never the current edition, and is shown only when there is none', function (): void {
+	$default = ink_edition( 1, array( 'standaard' => 'ja', 'beskrywing' => 'Binnekort', 'jaar' => '2030' ) );
+	$real    = ink_edition( 2, array( 'jaar' => '2026', 'beskrywing' => 'Hierdie jaar' ) );
+
+	expect( $default->isDefault() )->toBeTrue();
+	expect( $default->acceptsEntries() )->toBeFalse();
+	expect( $real->acceptsEntries() )->toBeTrue();
+	expect( Data::pickCurrent( array( $default ) ) )->toBeNull();
+	expect( Data::pickCurrent( array( $default, $real ) ) )->toBe( $real );
+
+	expect( Data::pickShown( array( $default, $real ) ) )->toBe( $real ); // A real competition replaces it.
+	expect( Data::pickShown( array( $real->isDefault() ? $real : $default ) ) )->toBe( $default );
+	expect( Data::pickShown( array() )->isDefault() )->toBeTrue(); // Never no hero: the built-in text.
+	expect( Data::pickShown( array() )->title )->not->toBe( '' );
+} );
+
+test( 'photos uploaded to a gala post become its gallery; a gallery list wins', function (): void {
+	$new    = ink_edition( 1, array( 'jaar' => '2026', 'gala_fotos' => '' ) );
+	$listed = ink_edition( 2, array( 'jaar' => '2025', 'gala_fotos' => '7,8' ) );
+	$bare   = ink_edition( 3, array( 'jaar' => '2024' ) );
+
+	$out = Data::withAttached( array( $new, $listed, $bare ), array( 1 => array( 30, 10, 20 ), 2 => array( 99 ) ) );
+
+	expect( $out[0]->photoIds() )->toBe( array( 30, 10, 20 ) ); // Query order kept: by filename.
+	expect( $out[0]->year() )->toBe( 2026 );
+	expect( $out[1]->photoIds() )->toBe( array( 7, 8 ) );
+	expect( $out[2] )->toBe( $bare );
+
+	$galas = Data::pickPastGalas( $out );
+	expect( $galas[0]->year )->toBe( 2026 );
+	expect( $galas[0]->featured )->toHaveCount( 3 ); // No picks yet: the first photos stand in.
+} );
+
+test( 'the default announcement is never a past gala', function (): void {
+	expect( Data::pickPastGalas( array( ink_edition( 1, array( 'standaard' => 'ja', 'gala_hoogtepunt' => 'X' ) ) ) ) )->toBe( array() );
+} );
+
+test( 'feature photos: the editor\'s five in slot order with their captions; else the first five of the gallery', function (): void {
+	$picked = ink_edition(
+		1,
+		array(
+			'gala_foto1'            => '10',
+			'gala_foto1_onderskrif' => 'Breed',
+			'gala_foto2'            => '',
+			'gala_foto3'            => '30',
+			'gala_foto5'            => '50',
+			'gala_fotos'            => '1,2,3,4,5,6,7',
+		)
+	);
+	$none   = ink_edition( 2, array( 'gala_fotos' => '1,2,3,4,5,6,7' ) );
+
+	expect( $picked->featuredPhotos() )->toBe(
+		array(
+			array( 'id' => 10, 'caption' => 'Breed' ),
+			array( 'id' => 30, 'caption' => '' ),
+			array( 'id' => 50, 'caption' => '' ),
+		)
+	);
+	expect( array_column( $none->featuredPhotos(), 'id' ) )->toBe( array( 1, 2, 3, 4, 5 ) );
+	expect( ink_edition( 3, array() )->featuredPhotos() )->toBe( array() );
+	expect( ink_edition( 4, array( 'gala_foto2' => '9' ) )->hasPastGala() )->toBeTrue(); // Picks alone make a gala.
+} );
+
 test( 'pastGalas: posts with a highlight or photos, highest year first', function (): void {
 	$galas = Data::pickPastGalas(
 		array(
@@ -217,6 +280,70 @@ function ink_save_through_fieldsets( string $cpt, array $form ): array {
 
 	return $written;
 }
+
+test( 'the feature photos and the default flag save through FieldSets', function (): void {
+	$written = ink_save_through_fieldsets(
+		PostTypes::KOMPETISIE,
+		array(
+			'ink_kompetisie_standaard'            => 'ja',
+			'ink_kompetisie_gala_foto1'           => '12',
+			'ink_kompetisie_gala_foto1_onderskrif' => 'Wenner',
+			'ink_kompetisie_gala_foto2'           => 'x',
+			'ink_kompetisie_kat_titel'            => 'Drie kategorieë',
+		)
+	);
+
+	expect( $written )->toBe(
+		array(
+			'ink_kompetisie_standaard'             => 'ja',
+			'ink_kompetisie_kat_titel'             => 'Drie kategorieë',
+			'ink_kompetisie_gala_foto1'            => 12,
+			'ink_kompetisie_gala_foto1_onderskrif' => 'Wenner',
+			'ink_kompetisie_gala_foto2'            => 0,
+		)
+	);
+	expect( FieldSets::sanitizeDefaultFlag( 'iets' ) )->toBe( 'nee' );
+	expect( FieldSets::sanitizeDefaultFlag( 'ja' ) )->toBe( 'ja' );
+} );
+
+test( 'ensureDefault creates the announcement once, from the built-in text', function (): void {
+	$created = array();
+
+	Functions\when( 'get_option' )->justReturn( false );
+	Functions\when( 'get_posts' )->justReturn( array() );
+	Functions\when( 'wp_slash' )->returnArg( 1 );
+	Functions\when( 'is_wp_error' )->justReturn( false );
+	Functions\when( 'wp_insert_post' )->alias(
+		function ( array $post ) use ( &$created ): int {
+			$created['post'] = $post;
+			return 77;
+		}
+	);
+	Functions\when( 'update_post_meta' )->alias(
+		function ( int $id, string $key, $value ) use ( &$created ): void {
+			$created['meta'][ $key ] = $value;
+		}
+	);
+	Functions\expect( 'update_option' )->once()->with( Module::OPTION_DEFAULT_MADE, true, false );
+
+	Module::ensureDefault();
+
+	expect( $created['post']['post_type'] )->toBe( PostTypes::KOMPETISIE );
+	expect( $created['post']['post_status'] )->toBe( 'publish' );
+	expect( $created['meta']['ink_kompetisie_standaard'] )->toBe( 'ja' );
+	expect( $created['meta'] )->toHaveKey( 'ink_kompetisie_beskrywing' );
+} );
+
+test( 'ensureDefault does nothing once made, and does not duplicate an existing one', function (): void {
+	Functions\when( 'get_option' )->justReturn( true );
+	Functions\expect( 'wp_insert_post' )->never();
+	Module::ensureDefault();
+
+	Functions\when( 'get_option' )->justReturn( false );
+	Functions\when( 'get_posts' )->justReturn( array( 5 ) );
+	Functions\expect( 'update_option' )->once();
+	Module::ensureDefault();
+} );
 
 test( 'a kompetisie saves through FieldSets: number, date, select, gallery', function (): void {
 	$written = ink_save_through_fieldsets(

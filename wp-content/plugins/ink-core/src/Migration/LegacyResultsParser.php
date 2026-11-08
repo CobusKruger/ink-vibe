@@ -81,6 +81,7 @@ final class LegacyResultsParser {
 		$explicit = 0; // The last explicit position in this block (ties inherit it).
 		$seen     = array(); // Headings that already produced rows.
 		$mentions = false;   // Inside an honourable-mention list.
+		$done     = array(); // Categories that already gave winners.
 		$current  = '';
 		$all      = self::lines( $html );
 
@@ -132,6 +133,12 @@ final class LegacyResultsParser {
 					$key = $header['category'] . '|' . $header['grading'] . '|' . ( '' === $header['category'] ? $category : '' );
 
 					if ( isset( $seen[ $key ] ) ) {
+						break 2;
+					}
+
+					// Winners are listed once per category: a bare category heading again, after that
+					// category already gave winners, starts the commentary, never a second set.
+					if ( '' !== $header['category'] && '' === $header['grading'] && isset( $done[ $header['category'] ] ) ) {
 						break 2;
 					}
 
@@ -188,7 +195,8 @@ final class LegacyResultsParser {
 					}
 
 					$rows[]           = self::row( $entry, $category, $grading, $explicit, $counter, 0 === $index );
-					$seen[ $current ] = true;
+					$seen[ $current ]  = true;
+					$done[ $category ] = true;
 				}
 
 				continue;
@@ -424,8 +432,13 @@ final class LegacyResultsParser {
 			return null; // Prose (commentary), never a winner line.
 		}
 
+		// "metDolosse" / "metSlenter": a "met" glued to a capitalised title. Case-sensitive on purpose.
+		$line     = (string) preg_replace( '/(\s)met(?=\p{Lu})/u', '$1met ', $line );
 		$rest     = preg_replace( '/^gesamentlik\s+/iu', '', $line ) ?? $line;
 		$position = null;
+
+		// "Plek: No. 2 (61%) - Writer met Title": the "Plek:" label carries no position; the order does.
+		$rest = (string) preg_replace( '/^plek\s*[:;.\-–]\s*/iu', '', $rest );
 
 		if ( $paren_is_entry ) {
 			$rest = (string) preg_replace( '/^\(\d+\)\s*(?=(?!no\b|nr\b)\p{L})/iu', '', $rest );
@@ -452,7 +465,7 @@ final class LegacyResultsParser {
 				// Position prefix: bracketed digit, "1ste", "2de plek", "3 DE PLEK :".
 				$position = (int) $m[1];
 				$rest     = substr( $rest, strlen( $m[0] ) );
-			} elseif ( 1 === preg_match( '/^(?:wenner|w)\b\s*[:;.\-–]?\s*/iu', $rest, $m ) ) {
+			} elseif ( 1 === preg_match( '/^(?:wenner|w)\b\s*[:;.\-–]?\s*|^[\(\[]\s*w\s*[\)\]]\s*[:;.\-–]?\s*/iu', $rest, $m ) ) {
 				$position = 1;
 				$rest     = substr( $rest, strlen( $m[0] ) );
 			}
@@ -479,15 +492,21 @@ final class LegacyResultsParser {
 		}
 
 		// January 2021 layout: "no 28 / Title Writer", no separator between the two.
+		// "NO. 1 / Writer met Title" (writer first, with "met") is the ordinary layout behind a slash.
 		if ( 1 === preg_match( '/^\/\s*(.+)$/u', $rest, $m ) ) {
-			return self::splitByTrailingWriter( $m[1], $position, $known_keys );
+			if ( 1 !== preg_match( '/\smet\s/iu', $m[1] ) ) {
+				return self::splitByTrailingWriter( $m[1], $position, $known_keys );
+			}
+
+			$rest       = $m[1];
+			$had_marker = true;
 		}
 
 		// More than one "met": either two winners on a line (ambiguous: never guess) or a title that
 		// contains "met" ("Husse met lang ore"). The known-writer list settles it: accept only when
 		// the text before the FIRST "met" is a known writer and no second winner follows a connector.
 		if ( preg_match_all( '/\smet\s/iu', $rest ) > 1 ) {
-			return self::splitAtFirstMet( $rest, $position, $known_keys );
+			return self::splitAtFirstMet( $rest, $position, $known_keys, $had_marker );
 		}
 
 		// 2018 layout: title, dash, percentage mark, then the writer.
@@ -512,12 +531,12 @@ final class LegacyResultsParser {
 		if ( null !== $position ) {
 			$rest = (string) preg_replace( '/\s*[–-]?\s*\d+\s*%\s*$/u', '', $rest );
 
-			return self::splitByKnownWriter( $rest, $position, $known_keys );
+			return self::splitByKnownWriter( $rest, $position, $known_keys ) ?? self::splitByLeadingWriter( $rest, $known_keys, false, $position );
 		}
 
 		// "NO 8 Andries Fourie Musiek oor my": no separator at all; accept only when exactly
 		// one leading run of words is a known writer.
-		return self::splitByLeadingWriter( $rest, $known_keys );
+		return self::splitByLeadingWriter( $rest, $known_keys, $had_marker );
 	}
 
 	/**
@@ -528,15 +547,25 @@ final class LegacyResultsParser {
 	 * @param array<string, true> $known_keys Known writers by nameKey.
 	 * @return array{writer:string,title:string,position:?int}|null
 	 */
-	private static function splitAtFirstMet( string $text, ?int $position, array $known_keys ): ?array {
-		if ( 1 !== preg_match( '/^(.+?)\s+met\s+(.+)$/iu', $text, $m ) || ! isset( $known_keys[ self::nameKey( $m[1] ) ] ) ) {
+	private static function splitAtFirstMet( string $text, ?int $position, array $known_keys, bool $marked = false ): ?array {
+		if ( 1 !== preg_match( '/^(.+?)\s+met\s+(.+)$/iu', $text, $m ) ) {
+			return null;
+		}
+
+		// More than one "met": the first one splits writer from title (the title holds the others). A
+		// writer who is not a known name needs a position/entry marker and a name-shaped by-line.
+		if ( ! isset( $known_keys[ self::nameKey( $m[1] ) ] ) && ! ( $marked && self::looksLikeName( $m[1] ) ) ) {
 			return null;
 		}
 
 		// A second winner after a connector ("... & B met Y") means this is a tie line.
 		foreach ( self::splitOn( '/\s+(?:&|EN|ASOOK)\s+/u', $m[2] ) as $i => $segment ) {
-			if ( $i > 0 && 1 === preg_match( '/^(.+?)\s+met\s+/iu', $segment, $n ) && isset( $known_keys[ self::nameKey( $n[1] ) ] ) ) {
-				return null;
+			if ( $i > 0 && 1 === preg_match( '/^(.+?)\s+met\s+/iu', $segment, $n ) ) {
+				$other = trim( (string) preg_replace( '/^(?:\(\s*\w{1,2}\s*\)|(?:no|nr)\.?\s*\d+\s*[:;.\-–]?\s*|[–-]\s*)+/iu', '', $n[1] ) );
+
+				if ( isset( $known_keys[ self::nameKey( $other ) ] ) || self::looksLikeName( $other ) ) {
+					return null;
+				}
 			}
 		}
 
@@ -559,7 +588,7 @@ final class LegacyResultsParser {
 	 * @param array<string, true> $known_keys Known writers by nameKey.
 	 * @return array{writer:string,title:string,position:?int}|null
 	 */
-	private static function splitByLeadingWriter( string $text, array $known_keys ): ?array {
+	private static function splitByLeadingWriter( string $text, array $known_keys, bool $marked = false, ?int $position = null ): ?array {
 		if ( array() === $known_keys ) {
 			return null;
 		}
@@ -579,7 +608,12 @@ final class LegacyResultsParser {
 			}
 		}
 
-		return null === $hit ? null : self::build( implode( ' ', array_slice( $words, 0, $hit ) ), implode( ' ', array_slice( $words, $hit ) ), null );
+		// A one-word writer ("NO 1 Ano ...") only behind a marker, and only when no longer name matched.
+		if ( null === $hit && $marked && $count > 1 && isset( $known_keys[ self::nameKey( $words[0] ) ] ) ) {
+			$hit = 1;
+		}
+
+		return null === $hit ? null : self::build( implode( ' ', array_slice( $words, 0, $hit ) ), implode( ' ', array_slice( $words, $hit ) ), $position );
 	}
 
 	/**
@@ -650,6 +684,11 @@ final class LegacyResultsParser {
 			}
 		}
 
+		// "“Title” Writer": a quoted title with a known writer after it.
+		if ( null === $found && 1 === preg_match( '/^[“"‘]\s*(.+?)\s*[”"’]\s+(.+)$/u', $text, $q ) && isset( $known_keys[ self::nameKey( $q[2] ) ] ) ) {
+			return self::build( $q[2], $q[1], $position );
+		}
+
 		return $found;
 	}
 
@@ -665,6 +704,7 @@ final class LegacyResultsParser {
 		$writer = trim( $writer, " \t–-:;,+*" );
 		$title  = trim( $title, " \t" );
 		$title  = trim( preg_replace( '/^[–-]\s*/u', '', $title ) ?? $title );
+		$title  = trim( (string) preg_replace( '/\s*\(\s*gesamentlik\s*\)\s*$/iu', '', $title ) );
 
 		if ( 1 === preg_match( '/^["“”\'‘’]\s*(.+?)\s*["“”\'‘’]$/u', $title, $q ) ) {
 			$title = $q[1];

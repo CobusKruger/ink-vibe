@@ -191,9 +191,10 @@ final class WorksArchive {
 	 * @param int|null    $month    Optional archive month (1–12; ignored without a year).
 	 * @param string|null $type     Optional single readable type (else all three).
 	 * @param string      $sort     One of {@see self::allowedSorts()} (else nuut).
+	 * @param list<int>|null $only_ids Search mode: restrict to these posts (empty = no results); null = no restriction.
 	 * @return array<string, mixed>
 	 */
-	public static function queryArgs( int $paged, int $per_page, ?int $year, ?int $month, ?string $type = null, string $sort = self::SORT_NUUT ): array {
+	public static function queryArgs( int $paged, int $per_page, ?int $year, ?int $month, ?string $type = null, string $sort = self::SORT_NUUT, ?array $only_ids = null ): array {
 		$types = ( null !== $type && in_array( $type, self::readableTypes(), true ) )
 			? array( $type )
 			: self::readableTypes();
@@ -207,6 +208,10 @@ final class WorksArchive {
 			'paged'               => max( 1, $paged ),
 			'ignore_sticky_posts' => true,
 		);
+
+		if ( null !== $only_ids ) {
+			$args['post__in'] = array() === $only_ids ? array( 0 ) : array_values( $only_ids );
+		}
 
 		$args = array_merge( $args, self::sortArgs( $sort ) );
 
@@ -301,6 +306,17 @@ final class WorksArchive {
 		$active_type = in_array( $type_raw, self::readableTypes(), true ) ? $type_raw : null;
 		$active_sort = in_array( $sort_raw, self::allowedSorts(), true ) ? $sort_raw : self::SORT_NUUT;
 
+		// Search mode: this panel shows the matching bydraes (full cards + the filters that apply to them).
+		$found = Search::isActive() ? Search::matchingWorkIds() : null;
+
+		if ( null !== $found ) {
+			$present = self::presentInSearch( $found );
+
+			// A type/year that has no match is not offered; a stale link to one shows everything found.
+			$active_type = ( null !== $active_type && in_array( $active_type, $present['types'], true ) ) ? $active_type : null;
+			$year        = in_array( $year, $present['years'], true ) ? $year : 0;
+		}
+
 		$query = self::runQuery(
 			self::queryArgs(
 				$paged,
@@ -308,7 +324,8 @@ final class WorksArchive {
 				$year > 0 ? $year : null,
 				$month > 0 ? $month : null,
 				$active_type,
-				$active_sort
+				$active_sort,
+				$found
 			)
 		);
 
@@ -337,6 +354,13 @@ final class WorksArchive {
 		}
 
 		$current_year = (int) current_time( 'Y' );
+		$years        = range( $current_year, $current_year - 5 );
+		$types        = self::readableTypes();
+
+		if ( null !== $found ) {
+			$years = $present['years'];
+			$types = $present['types'];
+		}
 
 		return self::toHtml(
 			$cards,
@@ -346,8 +370,38 @@ final class WorksArchive {
 				'type'      => $active_type,
 				'sort'      => $active_sort,
 				'year'      => $year > 0 ? $year : null,
-				'years'     => range( $current_year, $current_year - 5 ),
+				'years'     => $years,
+				'types'     => $types,
 			)
+		);
+	}
+
+	/**
+	 * The types and years (newest first) found among the given posts. Impure (post reads).
+	 *
+	 * @param list<int> $ids Post ids.
+	 * @return array{types:list<string>, years:list<int>}
+	 */
+	private static function presentInSearch( array $ids ): array {
+		$types = array();
+		$years = array();
+
+		foreach ( $ids as $id ) {
+			$post = get_post( $id );
+
+			if ( ! $post instanceof \WP_Post ) {
+				continue;
+			}
+
+			$types[ $post->post_type ] = true;
+			$years[ (int) mysql2date( 'Y', $post->post_date, false ) ] = true;
+		}
+
+		krsort( $years );
+
+		return array(
+			'types' => array_values( array_filter( self::readableTypes(), static fn ( string $t ): bool => isset( $types[ $t ] ) ) ),
+			'years' => array_keys( $years ),
 		);
 	}
 
@@ -365,7 +419,8 @@ final class WorksArchive {
 		$heading   = '<h2 class="ink-ontdek-werke__heading ink-heading-h2-block screen-reader-text" data-audit-id="stories-heading">' . esc_html( Terms::label( 'bydrae_plural' ) ) . '</h2>';
 		$controls  = self::controlsHtml(
 			$nav['type'] ?? null,
-			isset( $nav['sort'] ) ? (string) $nav['sort'] : self::SORT_NUUT
+			isset( $nav['sort'] ) ? (string) $nav['sort'] : self::SORT_NUUT,
+			isset( $nav['types'] ) && is_array( $nav['types'] ) ? $nav['types'] : null
 		);
 		$controls .= self::dateBrowseHtml(
 			$nav['year'] ?? null,
@@ -698,9 +753,10 @@ final class WorksArchive {
 	 *
 	 * @param string|null $active_type The active single type, or null for "Alles".
 	 * @param string      $active_sort The active sort key.
+	 * @param list<string>|null $types The type pills to offer (search mode: only those found); null = all readable types.
 	 * @return string
 	 */
-	public static function controlsHtml( ?string $active_type, string $active_sort ): string {
+	public static function controlsHtml( ?string $active_type, string $active_sort, ?array $types = null ): string {
 		$html = '<div class="ink-ontdek-werke__kontroles" data-audit-id="stories-controls">';
 
 		// Type filter: Alles + one pill per readable type.
@@ -721,7 +777,7 @@ final class WorksArchive {
 
 		$type_index = 0;
 
-		foreach ( self::readableTypes() as $type ) {
+		foreach ( $types ?? self::readableTypes() as $type ) {
 			$url  = (string) add_query_arg( self::TYPE_VAR, $type, remove_query_arg( self::PAGED_VAR ) );
 			$pill = self::withTypeIcon(
 				ArchiveRender::pill(

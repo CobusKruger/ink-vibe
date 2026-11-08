@@ -22,6 +22,13 @@ defined( 'ABSPATH' ) || exit;
 final class Edition {
 
 	/**
+	 * The value of the `standaard` field that marks the default announcement.
+	 *
+	 * @var string
+	 */
+	public const DEFAULT_YES = 'ja';
+
+	/**
 	 * Build an edition.
 	 *
 	 * @param int                   $postId The post.
@@ -55,13 +62,98 @@ final class Edition {
 	}
 
 	/**
+	 * Whether this post is the default announcement (owner, 2026-11-08): the text the hero and
+	 * the categories show while no competition is open. It is edited on the site like any
+	 * edition, and a real edition replaces it on the page.
+	 *
+	 * @return bool
+	 */
+	public function isDefault(): bool {
+		return self::DEFAULT_YES === $this->field( 'standaard' );
+	}
+
+	/**
+	 * Whether entries can be made: a real edition, not the announcement. The default has no
+	 * rules, dates or way to enter yet.
+	 *
+	 * @return bool
+	 */
+	public function acceptsEntries(): bool {
+		return ! $this->isDefault();
+	}
+
+	/**
 	 * Whether this post is a current edition. Imported old competitions have no
-	 * description, so one never becomes current (`05-kompetisies` §3.5).
+	 * description, so one never becomes current (`05-kompetisies` §3.5), and the default
+	 * announcement never is one.
 	 *
 	 * @return bool
 	 */
 	public function isCurrentEdition(): bool {
-		return '' !== $this->field( 'beskrywing' );
+		return '' !== $this->field( 'beskrywing' ) && ! $this->isDefault();
+	}
+
+	/**
+	 * The announcement built into the code, for when no default post exists (an editor
+	 * deleted it). {@see Module::ensureDefault()} creates the post from the same values, so
+	 * the page and the admin screen start identical.
+	 *
+	 * @return self
+	 */
+	public static function builtIn(): self {
+		return new self(
+			0,
+			__( 'Ons jaarlikse kompetisie', 'ink-core' ),
+			array(
+				'standaard'  => self::DEFAULT_YES,
+				'uitgawe'    => __( 'Binnekort', 'ink-core' ),
+				'beskrywing' => __( 'Elke jaar hou INK \'n groot skryfkompetisie. Hou hierdie bladsy dop: sodra die volgende kompetisie bekend gemaak word, verskyn die reëls, kategorieë en sluitingsdatum hier.', 'ink-core' ),
+			)
+		);
+	}
+
+	/**
+	 * Every field value, for writing the built-in announcement as a post.
+	 *
+	 * @return array<string, string>
+	 */
+	public function values(): array {
+		return $this->values;
+	}
+
+	/**
+	 * The five gala photos an editor picked for the page, in slot order, with their own
+	 * captions. With none picked, the first five of the gallery stand in (their captions come
+	 * from the media library). A slot with no photo is skipped; slot 1 is the wide one.
+	 *
+	 * @return list<array{id:int, caption:string}>
+	 */
+	public function featuredPhotos(): array {
+		$out = array();
+
+		for ( $n = 1; $n <= FieldSets::GALA_FOTO_SLOTS; $n++ ) {
+			$id = (int) $this->field( "gala_foto{$n}" );
+
+			if ( $id > 0 ) {
+				$out[] = array(
+					'id'      => $id,
+					'caption' => $this->field( "gala_foto{$n}_onderskrif" ),
+				);
+			}
+		}
+
+		if ( array() !== $out ) {
+			return $out;
+		}
+
+		foreach ( array_slice( $this->photoIds(), 0, FieldSets::GALA_FOTO_SLOTS ) as $id ) {
+			$out[] = array(
+				'id'      => $id,
+				'caption' => '',
+			);
+		}
+
+		return $out;
 	}
 
 	/**
@@ -70,7 +162,16 @@ final class Edition {
 	 * @return bool
 	 */
 	public function hasPastGala(): bool {
-		return '' !== $this->field( 'gala_hoogtepunt' ) || array() !== $this->photoIds();
+		return '' !== $this->field( 'gala_hoogtepunt' ) || array() !== $this->featuredPhotos();
+	}
+
+	/**
+	 * Whether the post has a gala of its own to describe (a name filled in).
+	 *
+	 * @return bool
+	 */
+	public function hasGala(): bool {
+		return '' !== $this->field( 'gala_naam' );
 	}
 
 	/**

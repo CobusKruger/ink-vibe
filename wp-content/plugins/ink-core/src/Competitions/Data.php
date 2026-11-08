@@ -47,6 +47,39 @@ final class Data {
 	}
 
 	/**
+	 * What the hero and the categories show: the current edition, else the default
+	 * announcement an editor wrote, else the one built into the code. Never null, so the page
+	 * always has a hero (owner, 2026-11-08).
+	 *
+	 * @return Edition
+	 */
+	public static function shown(): Edition {
+		return self::pickShown( self::editions() );
+	}
+
+	/**
+	 * The edition to show among these. Pure.
+	 *
+	 * @param list<Edition> $editions The editions.
+	 * @return Edition
+	 */
+	public static function pickShown( array $editions ): Edition {
+		$current = self::pickCurrent( $editions );
+
+		if ( null !== $current ) {
+			return $current;
+		}
+
+		foreach ( $editions as $edition ) {
+			if ( $edition->isDefault() ) {
+				return $edition;
+			}
+		}
+
+		return Edition::builtIn();
+	}
+
+	/**
 	 * The past galas, newest first.
 	 *
 	 * @return list<GalaYear>
@@ -126,7 +159,7 @@ final class Data {
 		$galas = array();
 
 		foreach ( $editions as $edition ) {
-			if ( $edition->hasPastGala() ) {
+			if ( ! $edition->isDefault() && $edition->hasPastGala() ) {
 				$galas[] = GalaYear::fromEdition( $edition );
 			}
 		}
@@ -141,11 +174,76 @@ final class Data {
 	 *
 	 * @return list<Edition>
 	 */
-	private static function editions(): array {
+	public static function editions(): array {
 		$out = array();
 
 		foreach ( self::publishedPosts( PostTypes::KOMPETISIE, self::MAX_EDITIONS ) as $post ) {
 			$out[] = new Edition( (int) $post->ID, (string) get_the_title( $post ), self::valuesOf( (int) $post->ID, FieldSets::KOMPETISIE_PREFIX ) );
+		}
+
+		$lacking = array();
+
+		foreach ( $out as $edition ) {
+			if ( array() === $edition->photoIds() ) {
+				$lacking[] = $edition->postId;
+			}
+		}
+
+		return array() === $lacking ? $out : self::withAttached( $out, self::attachedTo( $lacking ) );
+	}
+
+	/**
+	 * Editions with no gallery list take the photos uploaded to their own post (owner,
+	 * 2026-11-08): an editor uploads on the edit screen and nothing else is needed. A gallery
+	 * list, as the imported galas have, wins. Pure.
+	 *
+	 * @param list<Edition>          $editions The editions.
+	 * @param array<int, list<int>>  $attached Attachment ids by post, in display order.
+	 * @return list<Edition>
+	 */
+	public static function withAttached( array $editions, array $attached ): array {
+		$out = array();
+
+		foreach ( $editions as $edition ) {
+			$ids   = $attached[ $edition->postId ] ?? array();
+			$out[] = array() !== $edition->photoIds() || array() === $ids
+				? $edition
+				: new Edition( $edition->postId, $edition->title, array( 'gala_fotos' => implode( ',', $ids ) ) + $edition->values() );
+		}
+
+		return $out;
+	}
+
+	/**
+	 * The images and clips uploaded to these posts, by filename (the attachment title), one query.
+	 *
+	 * @param list<int> $post_ids The posts.
+	 * @return array<int, list<int>>
+	 */
+	private static function attachedTo( array $post_ids ): array {
+		$rows = get_posts(
+			array(
+				'post_type'        => 'attachment',
+				'post_status'      => 'inherit',
+				'post_parent__in'  => $post_ids,
+				'post_mime_type'   => array( 'image', 'video' ),
+				'posts_per_page'   => -1,
+				'orderby'          => array(
+					'title' => 'ASC',
+					'ID'    => 'ASC',
+				),
+				'fields'           => 'id=>parent',
+				'no_found_rows'    => true,
+				'suppress_filters' => false,
+			)
+		);
+		$out  = array();
+
+		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
+			// `id=>parent` rows are bare objects with ID and post_parent, not WP_Post.
+			if ( is_object( $row ) && isset( $row->ID, $row->post_parent ) ) {
+				$out[ (int) $row->post_parent ][] = (int) $row->ID;
+			}
 		}
 
 		return $out;

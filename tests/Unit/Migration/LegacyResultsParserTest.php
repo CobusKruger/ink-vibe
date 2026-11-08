@@ -160,7 +160,32 @@ test( 'a title that contains "met" is accepted only when the writer before the f
 	$html = "GEDIGTE\nGOUD\n(1) NO 19 Marlene Erasmus met Husse met lang ore";
 
 	expect( parsed( $html, array( 'Marlene Erasmus' ) ) )->toBe( array( 'Gedigte/Goud/1 Marlene Erasmus - Husse met lang ore' ) );
-	expect( parsed( $html ) )->toBe( array() );
+	// No marker and no known writer: prose, not a winner.
+	expect( parsed( "GEDIGTE\nGOUD\nMarlene Erasmus met Husse met lang ore" ) )->toBe( array() );
+	expect( parsed( "GEDIGTE
+GOUD
+(1) NO 19 Yvonne de Kock met Husse met lang ore" ) )->toBe( array( 'Gedigte/Goud/1 Yvonne de Kock - Husse met lang ore' ) );
+} );
+
+test( 'winners are read once per category: a bare category heading again starts the commentary', function (): void {
+	$html = "*GEDIGTE
+Brons: 1. Aalmoes kardoes – Palet
+2. Bruin kardoes – Barbara Smit
+*VERHALE
+Brons: 1. Kaptein – Riaan Palmar
+"
+		. "GEDIGTE
+1. Tong in die kies kardoes - Amanda de Meillon
+2. Aalmoes kardoes - Palet";
+	$known = array( 'Palet', 'Barbara Smit', 'Riaan Palmar', 'Amanda de Meillon' );
+
+	expect( parsed( $html, $known ) )->toBe(
+		array(
+			'Gedigte/Brons/1 Palet - Aalmoes kardoes',
+			'Gedigte/Brons/2 Barbara Smit - Bruin kardoes',
+			'Verhale//1 Riaan Palmar - Kaptein',
+		)
+	);
 } );
 
 test( 'two winners sharing a position on one line produce one row each', function (): void {
@@ -219,4 +244,57 @@ test( 'January 2021 layout: a writer with no account still keeps their place in 
 			'Gedigte/Brons/3 Helena Mellet - Reen',
 		)
 	);
+} );
+
+test( 'real result-post layouts that used to land in unparsed (Nov 2026 audit)', function (): void {
+	$known = array( 'L. Lexow', 'L Lexow', 'Anzé Besuidenhout', 'Anzé Bexuidenhout', 'Lynne Lexow', 'Lynne Luxow', 'Ronel J van Vuuren', 'Chantelle Holder', 'Marieta McGraff', 'Amanda De meillon', 'Retha van Deventer', 'Marthie Joubert', 'Ano', 'Elmarie van kapmphen', 'Annamarie vd Merwe', 'Marsofine Krynauw' );
+	$cases = array(
+		// 2018 title: writer – percentage, behind a "pos: Title:" prefix.
+		array( '1ste: Netbal en maskara: L. Lexow – 69%', 'Verhale//1 L. Lexow - Netbal en maskara' ),
+		// Position, writer first, dash.
+		array( '2de: Anzé Besuidenhout - Roete kodes', 'Verhale//2 Anzé Besuidenhout - Roete kodes' ),
+		// Position, title first, dash.
+		array( '1ste. ‘n Vrou van formaat – Lynne Luxow', 'Verhale//1 Lynne Luxow - ‘n Vrou van formaat' ),
+		// Several "met": the first splits writer from title, the others belong to the title.
+		array( '3 de No 8 Yvonne de Kock met Botseltjies met bekkies getuit', 'Verhale//3 Yvonne de Kock - Botseltjies met bekkies getuit' ),
+		// "Plek:" label, entry number, mark in brackets.
+		array( 'Plek: No. 2 (61%) - Chantelle Holder met Goddelike liefde', 'Verhale//1 Chantelle Holder - Goddelike liefde' ),
+		// "(W)" is the winner.
+		array( '(W) No 1 – Amanda De meillon met Ouma Stienie en die lockdownbier', 'Verhale//1 Amanda De meillon - Ouma Stienie en die lockdownbier' ),
+		// Glued "met".
+		array( '(1) No 33 Retha van Deventer metSlenter-smagting', 'Verhale//1 Retha van Deventer - Slenter-smagting' ),
+		array( 'NO 1 Ano metDolosse, trots Suid-Afrikaans', 'Verhale//1 Ano - Dolosse, trots Suid-Afrikaans' ),
+		// Slash layout with the writer first and "met".
+		array( '1ste - NO. 1 / Marthie Joubert met Dollarnoot', 'Verhale//1 Marthie Joubert - Dollarnoot' ),
+		// One-word writer behind an entry-number marker, no separator.
+		array( 'No. 2 – Ano wanneer geloof ’n slagveld word', 'Verhale//1 Ano - wanneer geloof ’n slagveld word' ),
+		// Quoted title, writer after it, mark last.
+		array( '3de Plek “Finale verblinding” Anze Bezuidenhout 72%', 'Verhale//3 Anze Bezuidenhout - Finale verblinding' ),
+		// Position, then writer and title with no separator at all.
+		array( '3. Lynne Lexow Dik sus praat', 'Verhale//3 Lynne Lexow - Dik sus praat' ),
+	);
+
+	foreach ( $cases as [ $line, $expected ] ) {
+		$rows = parsed( "VERHALE\n{$line}", array_merge( $known, array( 'Anze Bezuidenhout' ) ) );
+
+		expect( $rows[0] ?? "(no row) {$line}" )->toBe( $expected );
+	}
+} );
+
+test( 'a tie with a bracketed "(gesamentlik)" and entry numbers gives one row each, without the remark', function (): void {
+	$html  = "GEDIGTE\nBRONS\n2 DE PLEK: No 2 ; No 15 – Annamarie vd Merwe met Hartsdief EN No 17 – Elmarie van kapmphen met Hok (gesamentlik )";
+	$known = array( 'Annamarie vd Merwe', 'Elmarie van kapmphen' );
+
+	expect( parsed( $html, $known ) )->toBe(
+		array(
+			'Gedigte/Brons/2 Annamarie vd Merwe - Hartsdief',
+			'Gedigte/Brons/2 Elmarie van kapmphen - Hok',
+		)
+	);
+} );
+
+test( 'commentary and verse lines still do not become winners', function (): void {
+	$html = "GEDIGTE\nBRONS\n1. Waarom het jy besluit om “Traan” in daardie konteks met ‘n hoofletter te skryf?\nmet die stilte van hierdie skor geraas\n2. Rymskema: 25 punte";
+
+	expect( parsed( $html, array( 'Ano' ) ) )->toBe( array() );
 } );

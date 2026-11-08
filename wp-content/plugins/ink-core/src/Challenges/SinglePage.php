@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ink\Challenges;
 
 use Ink\Content\ChallengeRound;
+use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
 use Ink\Content\Taxonomies;
 use Ink\I18n\Terms;
@@ -95,6 +96,15 @@ final class SinglePage {
 	 * @var string
 	 */
 	public const VARIANT_INSKRYWINGS = 'inskrywings';
+
+	/**
+	 * The "Nuttig vir hierdie uitdaging" variant (owner, 2026-11-08) — up to two Opleiding
+	 * entries the editor picked on the uitdaging ({@see \Ink\Content\FieldSets::UITDAGING_OPLEIDING_1}),
+	 * side by side, with a link to the opleidings-afdeling. Renders nothing when none is chosen.
+	 *
+	 * @var string
+	 */
+	public const VARIANT_OPLEIDING = 'opleiding';
 
 	/**
 	 * Lucide `calendar` icon path data (Post-Epic-19 fidelity pass, workstream 6) —
@@ -540,6 +550,104 @@ final class SinglePage {
 	}
 
 	/**
+	 * The Opleiding entries picked on a uitdaging, in slot order (at most two). A slot that is
+	 * empty, unpublished, deleted or not an `opleiding_artikel` is skipped. Impure (post reads).
+	 *
+	 * @param int $uitdaging_id The uitdaging post id.
+	 * @return list<array{title:string, permalink:string, excerpt:string, category:string, author:string}>
+	 */
+	private static function resolveOpleiding( int $uitdaging_id ): array {
+		$cards = array();
+		$seen  = array();
+
+		foreach ( array( FieldSets::UITDAGING_OPLEIDING_1, FieldSets::UITDAGING_OPLEIDING_2 ) as $key ) {
+			$id = (int) get_post_meta( $uitdaging_id, $key, true );
+
+			if ( $id <= 0 || isset( $seen[ $id ] ) ) {
+				continue;
+			}
+
+			$seen[ $id ] = true;
+			$post        = get_post( $id );
+
+			if ( ! $post instanceof \WP_Post || PostTypes::OPLEIDING_ARTIKEL !== $post->post_type || 'publish' !== $post->post_status ) {
+				continue;
+			}
+
+			$category = '';
+			$terms    = get_the_terms( $post, Taxonomies::VAARDIGHEID );
+
+			if ( is_array( $terms ) ) {
+				foreach ( $terms as $term ) {
+					if ( $term instanceof \WP_Term && '' !== $term->name ) {
+						$category = $term->name;
+						break;
+					}
+				}
+			}
+
+			$cards[] = array(
+				'title'     => get_the_title( $post ),
+				'permalink' => (string) get_permalink( $post ),
+				'excerpt'   => self::excerptFor( $post ),
+				'category'  => $category,
+				'author'    => (string) get_the_author_meta( 'display_name', (int) $post->post_author ),
+			);
+		}
+
+		return $cards;
+	}
+
+	/**
+	 * The "Nuttig vir hierdie uitdaging" section. Pure — escaping only. Empty without cards.
+	 *
+	 * Cards reuse the Opleiding archive card classes (`ink-opleiding__item …`, styled
+	 * globally), laid out side by side by `ink-uitdaging__opleiding-lys`.
+	 *
+	 * @param list<array{title:string, permalink:string, excerpt:string, category:string, author:string}> $cards       The picked entries.
+	 * @param string                                                                                       $archive_url The opleidings-afdeling URL ('' = no link).
+	 * @return string
+	 */
+	public static function opleidingHtml( array $cards, string $archive_url ): string {
+		if ( array() === $cards ) {
+			return '';
+		}
+
+		$items = '';
+
+		foreach ( $cards as $card ) {
+			$pill = '' !== $card['category']
+				? '<div class="ink-opleiding__item-meta"><span class="ink-opleiding__item-pil ink-pill ink-pill--outline">' . esc_html( $card['category'] ) . '</span></div>'
+				: '';
+
+			$excerpt = '' !== $card['excerpt']
+				? '<p class="ink-opleiding__item-uittreksel">' . esc_html( $card['excerpt'] ) . '</p>'
+				: '';
+
+			$items .= '<li class="ink-opleiding__item ink-card">'
+				. '<div class="ink-opleiding__item-inhoud">'
+				. $pill
+				. '<a class="ink-opleiding__titel ink-heading-h3-card" href="' . esc_url( $card['permalink'] ) . '">' . esc_html( $card['title'] ) . '</a>'
+				. $excerpt
+				. '<div class="ink-opleiding__item-voet">'
+				. '<span class="ink-opleiding__outeur">' . esc_html( $card['author'] ) . '</span>'
+				. '</div></div></li>';
+		}
+
+		$link = '' !== $archive_url
+			? '<p class="ink-uitdaging__opleiding-meer"><a class="ink-opleiding__lees-meer" href="' . esc_url( $archive_url ) . '">'
+				. esc_html__( 'Lees meer in die opleidings-afdeling', 'ink-core' ) . '</a></p>'
+			: '';
+
+		return '<section class="ink-band ink-uitdaging__opleiding-seksie" data-audit-id="uitdaging-opleiding">'
+			. '<div class="ink-container">'
+			. '<h2 class="ink-uitdaging__opleiding-titel ink-heading-h2-section">' . esc_html__( 'Nuttig vir hierdie uitdaging', 'ink-core' ) . '</h2>'
+			. '<ul class="ink-uitdaging__opleiding-lys">' . $items . '</ul>'
+			. $link
+			. '</div></section>';
+	}
+
+	/**
 	 * Block render callback. Resolves the current uitdaging, reads the deadline, and
 	 * composes ONE of: the hero meta row (`VARIANT_KOP`), the entries section
 	 * (`VARIANT_INSKRYWINGS`), or — with no `variant` attribute — the original
@@ -558,6 +666,12 @@ final class SinglePage {
 		}
 
 		$variant = (string) ( $attributes['variant'] ?? '' );
+
+		if ( self::VARIANT_OPLEIDING === $variant ) {
+			$archive = get_post_type_archive_link( PostTypes::OPLEIDING_ARTIKEL );
+
+			return self::opleidingHtml( self::resolveOpleiding( $uitdaging_id ), is_string( $archive ) ? $archive : '' );
+		}
 
 		if ( self::VARIANT_INSKRYWINGS === $variant ) {
 			return self::inskrywingsSectionHtml( self::entriesHtml( self::resolveEntries( $uitdaging_id ) ) );

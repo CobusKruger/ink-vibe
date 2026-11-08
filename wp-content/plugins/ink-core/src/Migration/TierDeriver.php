@@ -112,7 +112,7 @@ class TierDeriver {
 	 * Read the result posts and work out every writer's standing. Writes nothing.
 	 *
 	 * @return array{
-	 *   posts:int, unparsed:int,
+	 *   posts:int, unparsed:int, unparsed_lines:list<array{post:int, line:string}>,
 	 *   wins:array<int,int>,
 	 *   win_rows:list<array{result_post:int, result_date:string, writer:string, user:int, title:string, position:int, category:string, grading:string}>,
 	 *   standings:array<int, array{tier:Tier, count:int}>,
@@ -130,9 +130,18 @@ class TierDeriver {
 		$fuzzy      = array();
 		$unparsed   = 0;
 
+		$unparsed_lines = array();
+
 		foreach ( $posts as $post ) {
 			$parsed    = LegacyResultsParser::parse( (string) $post->html, $directory['names'] );
 			$unparsed += count( $parsed['unparsed'] );
+
+			foreach ( $parsed['unparsed'] as $missed ) {
+				$unparsed_lines[] = array(
+					'post' => (int) $post->id,
+					'line' => (string) $missed,
+				);
+			}
 
 			foreach ( $parsed['rows'] as $row ) {
 				$hit = $resolver->resolve( $row['writer'] );
@@ -186,7 +195,8 @@ class TierDeriver {
 		return array(
 			'posts'      => count( $posts ),
 			'unparsed'   => $unparsed,
-			'wins'       => $wins,
+			'unparsed_lines' => $unparsed_lines,
+			'wins'      => $wins,
 			'win_rows'   => $win_rows,
 			'standings'  => $standings,
 			'by_tier'    => $by_tier,
@@ -256,6 +266,15 @@ class TierDeriver {
 			if ( false !== $account && '' !== $key ) {
 				$users[ $key ] = (int) $account->ID;
 				$names[]       = (string) $row['name'];
+			}
+		}
+
+		// Alias variants are names a result post may use: known to the parser, resolved to the account later.
+		foreach ( $this->readCsv( 'writer-aliases.csv' ) as $row ) {
+			$variant = (string) ( $row['variant'] ?? '' );
+
+			if ( '' !== LegacyResultsParser::nameKey( $variant ) ) {
+				$names[] = $variant;
 			}
 		}
 

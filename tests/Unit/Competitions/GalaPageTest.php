@@ -97,17 +97,17 @@ test( 'a clip from an old Fotos Page stays reachable, in the same framed box', f
 	expect( $html )->toContain( '<video class="ink-photo" src="/v.mp4" controls preload="none" playsinline></video>' );
 } );
 
-test( '/kompetisies/: four photos a year, then "Sien alles" only when there are more', function (): void {
-	$four = array_fill( 0, 6, array( 'url' => '/a.jpg', 'caption' => '' ) );
+test( '/kompetisies/: five photos a year, then "Sien alles" only when there are more', function (): void {
+	$six  = array_fill( 0, 6, array( 'url' => '/a.jpg', 'caption' => '' ) );
 	$html = Gala::toHtml(
 		null,
-		array( new GalaYear( 2025, 'H', range( 1, 6 ) ), new GalaYear( 2024, 'H', range( 1, 4 ) ) ),
-		array( 2025 => $four, 2024 => array_slice( $four, 0, 4 ) ),
+		array( new GalaYear( 2025, 'H', range( 1, 6 ) ), new GalaYear( 2024, 'H', range( 1, 5 ) ) ),
+		array( 2025 => $six, 2024 => array_slice( $six, 0, 5 ) ),
 		'https://x.test/'
 	);
 
-	expect( substr_count( $html, 'class="ink-photo"' ) )->toBe( 8 );
-	expect( $html )->not->toContain( 'competitions-gala-past-photo-4' );
+	expect( substr_count( $html, 'class="ink-photo"' ) )->toBe( 10 );
+	expect( $html )->not->toContain( 'competitions-gala-past-photo-5' );
 	expect( substr_count( $html, 'Sien alles' ) )->toBe( 1 );
 	expect( $html )->toContain( 'class="ink-komp-gala__alles ink-link--ink" href="https://x.test/kompetisies/gala/2025/" data-audit-id="competitions-gala-past-all"' );
 } );

@@ -143,7 +143,7 @@ Delta recipes (Lovable `3e75fb8`, `primitives.css` §19; gap ids in `docs/lovabl
 | card | callout | `ink-card--callout` | RG-KO-21; dashed, filled, radius 12, p 32 → 40, centred |
 | pill | place | `ink-pill ink-pill--place ink-pill--place-{1,2,3}` | GAP-01-06; 4/12, bordered, icon 14 |
 | pill | caps-gold | on `ink-pill--caps`: `ink-pill--caps-gold` | GAP-03-08; gold/20, ink text |
-| badge | gold-caps | on `ink-pill--tint-lg`: `ink-pill--gold-caps` | RG-KO-05; gold/15, gold text, 600 uppercase, icon 16 |
+| badge | gold | on `ink-pill--tint-lg`: `ink-pill--gold` | RG-KO-05; gold/15, gold text, 600, icon 16. **Divergence (owner, 2026-11-08):** Lovable's uppercase + 0.025em tracking is not applied; sentence case. Renamed from `gold-caps` |
 | pill | on-ink | on `ink-pill--hint`: `ink-pill--on-ink` | RG-KO-06; surface/10, cream, gold icon |
 | pill | ticket | on `ink-pill--hint`: `ink-pill--ticket` | RG-KO-12; surface fill, border, primary icon 14 |
 | icon-tile | circle-md | `ink-icon-tile--circle-md` (+ `ink-icon-tile--gold`) | GAP-03-03; 44, 20px glyph |

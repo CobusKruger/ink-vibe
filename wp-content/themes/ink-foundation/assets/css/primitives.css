@@ -2867,27 +2867,27 @@ textarea.ink-field,
 	color: var(--wp--preset--color--ink-text);
 }
 
-/* gold-caps (RG-KO-05): on `ink-pill--tint-lg` (6/16, 14/20). Gold/15, gold text, icon row.
-   Weight 600 and uppercase at this size are Lovable's; reported as nonstandard. */
-.ink-pill--gold-caps {
+/* gold (RG-KO-05, was `gold-caps`): on `ink-pill--tint-lg` (6/16, 14/20). Gold/15, gold text, icon row.
+   Weight 600 is Lovable's; reported as nonstandard.
+   DIVERGENCE (owner, 2026-11-08): Lovable sets this badge in tracked capitals (uppercase,
+   0.025em). INK writes sentence case everywhere, so neither is applied. */
+.ink-pill--gold {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--wp--preset--spacing--s-8);
 	background-color: color-mix(in srgb, var(--wp--preset--color--gold) 15%, transparent);
 	color: var(--wp--preset--color--gold);
 	font-weight: 600;
-	letter-spacing: 0.025em;
-	text-transform: uppercase;
 }
 
-.ink-pill--gold-caps svg {
+.ink-pill--gold svg {
 	width: 16px;
 	height: 16px;
 }
 
 /* Lovable's icons in these two recipes may shrink when the text wraps (measured 14.9 and
    14.5px at 390, competitions-hero-badge-icon / -meta-entry-icon); the pill base pins 0. */
-.ink-pill--gold-caps svg,
+.ink-pill--gold svg,
 .ink-pill--on-ink svg {
 	flex-shrink: 1;
 }

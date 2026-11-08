@@ -212,11 +212,11 @@ test( 'the uitdaging deadline field renders a date input (no time-of-day)', func
 } );
 
 /**
- * AC-5: the facade exposes the full field meta-key surface (72 keys: 19 existing less InkPols volume, with the six Gedig/Storie/Artikel item keys swapped for nine glans keys, plus the two results fields, 39 kompetisie, 8 eksterne, 1 gedig dedication).
+ * AC-5: the facade exposes the full field meta-key surface (85 keys: 19 existing less InkPols volume, with the six Gedig/Storie/Artikel item keys swapped for nine glans keys, plus the two results fields, 52 kompetisie [39 + default flag, category heading and intro, five feature photos with captions], 8 eksterne, 1 gedig dedication).
  */
 test( 'Api facade exposes the field meta-key surface', function (): void {
 	expect( Api::fieldMetaKeys() )->toBe( FieldSets::metaKeys() );
-	expect( FieldSets::metaKeys() )->toHaveCount( 72 );
+	expect( FieldSets::metaKeys() )->toHaveCount( 87 );
 } );
 
 /**

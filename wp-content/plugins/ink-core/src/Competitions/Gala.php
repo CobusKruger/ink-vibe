@@ -12,12 +12,23 @@ namespace Ink\Competitions;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * `ink/kompetisies-gala`, from `Competitions.tsx:167`. The two columns hide separately, and
- * the band hides when both are empty (§4).
+ * `ink/kompetisies-gala`, from `Competitions.tsx:167`. Details on the left, "Evenings past" on
+ * the right half (owner, 2026-11-08). The band shows whenever there is a gala to talk about:
+ *
+ *  - **A gala is planned** (the current edition has a gala name and no photos yet): its details,
+ *    tickets and Reserve button.
+ *  - **Otherwise** the latest past gala's details, labelled "Die vorige gala" with its year, and
+ *    no tickets or Reserve button. So the section stays up with no open competition and no new
+ *    gala booked.
+ *
+ * The band hides only when there is neither (§4).
  *
  * DIVERGENCE (accepted, owner 2026-11-01, `owner-rulings.md`): all gala years show, in a chip
  * row that slides sideways and never wraps; Lovable has three years. Real gala photos only
  * (permitted #4). Reserve has no target and ticket prices are fictional (D3, D4).
+ *
+ * DIVERGENCE (owner, 2026-11-08): the grid is one wide photo and four small ones (five, picked
+ * and captioned by an editor); Lovable's three small ones leave a gap.
  *
  * @package Ink\Core
  */
@@ -31,11 +42,12 @@ final class Gala {
 	public const BLOCK = 'ink/kompetisies-gala';
 
 	/**
-	 * Photos a year shows here; the rest are on its {@see GalaPage} (owner ruling 2026-11-02).
+	 * Photos a year shows here: one wide and four small, the editor's five feature photos. The
+	 * rest are on its {@see GalaPage} (owner ruling 2026-11-02).
 	 *
 	 * @var int
 	 */
-	public const PREVIEW = 4;
+	public const PREVIEW = 5;
 
 	/**
 	 * Block render callback.
@@ -43,23 +55,24 @@ final class Gala {
 	 * @return string
 	 */
 	public static function render(): string {
-		$photos = array();
-		$galas  = Data::pastGalas();
+		$editions = Data::editions();
+		$galas    = Data::pickPastGalas( $editions );
+		$photos   = array();
 
 		foreach ( $galas as $gala ) {
-			foreach ( array_slice( $gala->photoIds, 0, self::PREVIEW ) as $id ) {
-				$url = wp_get_attachment_image_url( $id, 'large' );
+			foreach ( array_slice( $gala->featured, 0, self::PREVIEW ) as $pick ) {
+				$url = wp_get_attachment_image_url( $pick['id'], 'large' );
 
 				if ( is_string( $url ) ) {
 					$photos[ $gala->year ][] = array(
 						'url'     => $url,
-						'caption' => (string) wp_get_attachment_caption( $id ),
+						'caption' => '' !== $pick['caption'] ? $pick['caption'] : (string) wp_get_attachment_caption( $pick['id'] ),
 					);
 				}
 			}
 		}
 
-		return self::toHtml( Data::current(), $galas, $photos, home_url( '/' ) );
+		return self::toHtml( Data::pickCurrent( $editions ), $galas, $photos, home_url( '/' ) );
 	}
 
 	/**
@@ -72,8 +85,15 @@ final class Gala {
 	 * @return string
 	 */
 	public static function toHtml( ?Edition $edition, array $galas, array $photos, string $home = '/' ): string {
-		$details = null !== $edition && '' !== $edition->field( 'gala_naam' ) ? self::details( $edition ) : '';
-		$past    = array() === $galas ? '' : self::past( $galas, $photos, $home );
+		if ( null !== $edition && $edition->hasGala() && ! $edition->hasPastGala() ) {
+			$details = self::details( $edition, 0 );
+		} elseif ( array() !== $galas ) {
+			$details = self::details( $galas[0]->edition ?? new Edition( 0, '', array() ), $galas[0]->year );
+		} else {
+			$details = '';
+		}
+
+		$past = array() === $galas ? '' : self::past( $galas, $photos, $home );
 
 		if ( '' === $details && '' === $past ) {
 			return '';
@@ -88,10 +108,18 @@ final class Gala {
 	/**
 	 * The details column. Pure.
 	 *
-	 * @param Edition $edition The current edition.
+	 * @param Edition $edition  The edition the gala belongs to.
+	 * @param int     $pastYear The year of a gala that already happened, or 0 for a planned one:
+	 *                          a past gala is labelled as such and has no tickets or Reserve button.
 	 * @return string
 	 */
-	private static function details( Edition $edition ): string {
+	private static function details( Edition $edition, int $pastYear ): string {
+		$name  = $edition->field( 'gala_naam' );
+		$name  = '' !== $name ? $name : ( '' !== $edition->title ? $edition->title : sprintf(
+			/* translators: %d: the gala year. */
+			__( 'Ink se Presige Gala-aand %d', 'ink-core' ),
+			$pastYear
+		) );
 		$info  = self::infoRow( 'date', Markup::CALENDAR, Markup::date( $edition->field( 'gala_datum' ) ), $edition->field( 'gala_deure' ) );
 		$info .= self::infoRow( 'venue', Markup::MAP_PIN, $edition->field( 'gala_plek' ) );
 		$info .= self::infoRow( 'dress', Markup::SHIRT, $edition->field( 'gala_drag' ) );
@@ -108,7 +136,8 @@ final class Gala {
 
 		$tickets = '';
 
-		foreach ( $edition->tickets() as $n => $ticket ) {
+		// A gala that already happened sells nothing.
+		foreach ( $pastYear > 0 ? array() : $edition->tickets() as $n => $ticket ) {
 			$id       = "competitions-gala-ticket-{$n}";
 			$tickets .= '<span class="ink-pill ink-pill--hint ink-pill--ticket"' . Markup::aid( $id ) . '>'
 				. Markup::icon( Markup::TICKET, "{$id}-icon" )
@@ -117,23 +146,29 @@ final class Gala {
 				. '</span>';
 		}
 
+		$kicker = $pastYear > 0
+			/* translators: %d: the year of the gala that already happened. */
+			? sprintf( __( 'Die vorige gala · %d', 'ink-core' ), $pastYear )
+			: __( 'Een spesiale aand per jaar', 'ink-core' );
+		$about  = $edition->field( 'gala_beskrywing' );
+
 		return '<div' . Markup::aid( 'competitions-gala-details' ) . '>'
 			. '<span class="ink-komp-gala__kicker ink-eyebrow ink-eyebrow--kicker"' . Markup::aid( 'competitions-gala-eyebrow' ) . '>'
 			. Markup::icon( Markup::TICKET, 'competitions-gala-eyebrow-icon' )
-			. '<span' . Markup::aid( 'competitions-gala-eyebrow-text' ) . '>' . esc_html__( 'Een spesiale aand per jaar', 'ink-core' ) . '</span>'
+			. '<span' . Markup::aid( 'competitions-gala-eyebrow-text' ) . '>' . esc_html( $kicker ) . '</span>'
 			. '</span>'
-			. '<h2 class="ink-komp-gala__titel ink-heading-h2-section"' . Markup::aid( 'competitions-gala-h2' ) . '>' . esc_html( $edition->field( 'gala_naam' ) ) . '</h2>'
-			. '<p class="ink-komp-gala__teks"' . Markup::aid( 'competitions-gala-text' ) . '>' . esc_html( $edition->field( 'gala_beskrywing' ) ) . '</p>'
-			. '<div class="ink-komp-gala__info"' . Markup::aid( 'competitions-gala-info' ) . '>' . $info . '</div>'
+			. '<h2 class="ink-komp-gala__titel ink-heading-h2-section"' . Markup::aid( 'competitions-gala-h2' ) . '>' . esc_html( $name ) . '</h2>'
+			. ( '' === $about ? '' : '<p class="ink-komp-gala__teks"' . Markup::aid( 'competitions-gala-text' ) . '>' . esc_html( $about ) . '</p>' )
+			. ( '' === $info ? '' : '<div class="ink-komp-gala__info"' . Markup::aid( 'competitions-gala-info' ) . '>' . $info . '</div>' )
 			. ( '' === $programme ? '' : '<div class="ink-komp-gala__program ink-card--feature ink-card--static"' . Markup::aid( 'competitions-gala-programme' ) . '>'
 				. '<p class="ink-komp-gala__program-etiket ink-eyebrow ink-eyebrow--caps ink-eyebrow--muted"' . Markup::aid( 'competitions-gala-programme-label' ) . '>' . esc_html__( 'Die Program', 'ink-core' ) . '</p>'
 				. '<ul class="ink-komp-gala__program-lys"' . Markup::aid( 'competitions-gala-programme-list' ) . '>' . $programme . '</ul>'
 				. '</div>' )
 			. ( '' === $tickets ? '' : '<div class="ink-komp-gala__kaartjies"' . Markup::aid( 'competitions-gala-tickets' ) . '>' . $tickets . '</div>' )
-			. '<button type="button" class="ink-btn ink-btn--lg ink-btn--primary"' . Markup::aid( 'competitions-gala-btn-reserve' ) . '>'
-			. Markup::icon( Markup::TICKET, 'competitions-gala-btn-reserve-icon', 'ink-btn__icon--start' )
-			. esc_html__( 'Bespreek nou', 'ink-core' )
-			. '</button>'
+			. ( $pastYear > 0 ? '' : '<button type="button" class="ink-btn ink-btn--lg ink-btn--primary"' . Markup::aid( 'competitions-gala-btn-reserve' ) . '>'
+				. Markup::icon( Markup::TICKET, 'competitions-gala-btn-reserve-icon', 'ink-btn__icon--start' )
+				. esc_html__( 'Bespreek nou', 'ink-core' )
+				. '</button>' )
 			. '</div>';
 	}
 
@@ -198,10 +233,11 @@ final class Gala {
 			$active = 0 === $index;
 			$stamp  = static fn ( string $id ): string => $active ? Markup::aid( $id ) : Markup::stashedAid( $id );
 			$figs   = '';
+			$shown  = array_slice( $photos[ $gala->year ] ?? array(), 0, self::PREVIEW );
 
 			$chips .= '<button type="button" class="ink-chip ink-chip--plain" aria-pressed="' . ( $active ? 'true' : 'false' ) . '" data-ink-gala-jaar="' . esc_attr( (string) $gala->year ) . '"' . Markup::aid( "competitions-gala-past-year-{$gala->year}" ) . '>' . esc_html( (string) $gala->year ) . '</button>';
 
-			foreach ( array_slice( $photos[ $gala->year ] ?? array(), 0, self::PREVIEW ) as $n => $photo ) {
+			foreach ( $shown as $n => $photo ) {
 				$id    = "competitions-gala-past-photo-{$n}";
 				$figs .= '<figure class="ink-komp-gala__foto' . ( 0 === $n ? ' ink-komp-gala__foto--breed' : '' ) . '"' . $stamp( $id ) . '>'
 					. '<img class="ink-photo"' . $stamp( "{$id}-img" ) . ' src="' . esc_url( $photo['url'] ) . '" alt="' . esc_attr( $photo['caption'] ) . '" loading="lazy" />'
@@ -212,7 +248,7 @@ final class Gala {
 			$panels .= '<div class="ink-komp-gala__jaar" data-ink-gala-paneel="' . esc_attr( (string) $gala->year ) . '"' . ( $active ? '' : ' hidden' ) . '>'
 				. ( '' === $gala->highlight ? '' : '<p class="ink-komp-gala__hoogtepunt"' . $stamp( 'competitions-gala-past-highlight' ) . '>' . esc_html( '"' . $gala->highlight . '"' ) . '</p>' )
 				. ( '' === $figs ? '' : '<div class="ink-komp-gala__fotos"' . $stamp( 'competitions-gala-past-grid' ) . '>' . $figs . '</div>' )
-				. ( count( $gala->photoIds ) > self::PREVIEW ? self::seeAll( $gala->year, $home, $stamp( 'competitions-gala-past-all' ) ) : '' )
+				. ( count( $gala->photoIds ) > count( $shown ) ? self::seeAll( $gala->year, $home, $stamp( 'competitions-gala-past-all' ) ) : '' )
 				. '</div>';
 		}
 

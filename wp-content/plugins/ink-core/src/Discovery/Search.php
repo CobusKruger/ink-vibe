@@ -9,10 +9,7 @@ declare(strict_types=1);
 
 namespace Ink\Discovery;
 
-use Ink\I18n\Terms;
-use Ink\Kernel\QaFixture;
 use Ink\Migration\TextKey;
-use Ink\Tiers\Api as TiersApi;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -37,9 +34,9 @@ final class Search {
 
 	public const QUERY_VAR = 'soek';
 
-	private const LIMIT = 12;
+	private const LIMIT = 48;
 
-	private const WORKS_LIMIT = 24;
+	private const WORKS_LIMIT = 120;
 
 	/**
 	 * Shortest key that also searches work bodies. One or two letters sit in nearly every
@@ -168,60 +165,67 @@ final class Search {
 	public static function render(): string {
 		$raw = self::requestQuery();
 
-		if ( '' === $raw ) {
-			return self::toHtml( '', array(), array() );
-		}
+		return self::toHtml( $raw, array(), array() );
+	}
 
-		$key = self::queryKey( $raw );
+	/**
+	 * Whether a searchable query is active (the Ontdek page is then in search mode:
+	 * the Bydraes and Skrywers panels show only the matches).
+	 *
+	 * @return bool
+	 */
+	public static function isActive(): bool {
+		return '' !== self::queryKey( self::requestQuery() );
+	}
+
+	/**
+	 * Ids of the bydraes matching the active query, best match first. Empty without
+	 * a query. Impure (DB). Memoised per request; the Bydraes panel re-sorts/pages them.
+	 *
+	 * @return list<int>
+	 */
+	public static function matchingWorkIds(): array {
+		static $memo = array();
+
+		$key = self::queryKey( self::requestQuery() );
 
 		if ( '' === $key ) {
-			return self::toHtml( $raw, array(), array() );
+			return array();
 		}
 
-		global $wpdb;
+		if ( ! isset( $memo[ $key ] ) ) {
+			global $wpdb;
 
-		$works = array();
-
-		foreach ( array_map( 'intval', (array) $wpdb->get_col( self::worksSql( $wpdb, $key, self::WORKS_LIMIT ) ) ) as $post_id ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- ranked LIKE over the search index; bounded by LIMIT.
-			$post = get_post( $post_id );
-
-			if ( ! $post instanceof \WP_Post ) {
-				continue;
-			}
-
-			// Skip seeded `QA FIXTURE — ` titled works (Epic-19 theme-fidelity
-			// rework finding — a real match would otherwise surface fixture
-			// content in real search results). Filtered post-query (not at the
-			// SQL layer) — search has a flat LIMIT and no pagination, so an
-			// occasionally-short result list is the correct trade-off here.
-			if ( QaFixture::isFixtureTitle( get_the_title( $post ) ) ) {
-				continue;
-			}
-
-			$works[] = array(
-				'title'     => get_the_title( $post ),
-				'permalink' => (string) get_permalink( $post ),
-				'type'      => $post->post_type,
-				'author'    => (string) get_the_author_meta( 'display_name', (int) $post->post_author ),
-			);
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- ranked LIKE over the search index; bounded by LIMIT.
+			$memo[ $key ] = array_values( array_filter( array_map( 'intval', (array) $wpdb->get_col( self::worksSql( $wpdb, $key, self::WORKS_LIMIT ) ) ) ) );
 		}
 
-		$skrywers = array();
+		return $memo[ $key ];
+	}
 
-		foreach ( array_map( 'intval', (array) $wpdb->get_col( self::skrywersSql( $wpdb, $key, self::LIMIT ) ) ) as $uid ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- as above.
-			if ( $uid <= 0 ) {
-				continue;
-			}
+	/**
+	 * Ids of the writers matching the active query, best match first. Empty without
+	 * a query. Impure (DB). Memoised per request.
+	 *
+	 * @return list<int>
+	 */
+	public static function matchingSkrywerIds(): array {
+		static $memo = array();
 
-			$skrywers[] = array(
-				'name'        => (string) get_the_author_meta( 'display_name', $uid ),
-				'profile_url' => (string) get_author_posts_url( $uid ),
-				'gradering'   => Terms::label( TiersApi::forUser( $uid )->value ),
-				'tier'        => TiersApi::forUser( $uid )->value,
-			);
+		$key = self::queryKey( self::requestQuery() );
+
+		if ( '' === $key ) {
+			return array();
 		}
 
-		return self::toHtml( $raw, $works, $skrywers );
+		if ( ! isset( $memo[ $key ] ) ) {
+			global $wpdb;
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- as above.
+			$memo[ $key ] = array_values( array_filter( array_map( 'intval', (array) $wpdb->get_col( self::skrywersSql( $wpdb, $key, self::LIMIT ) ) ) ) );
+		}
+
+		return $memo[ $key ];
 	}
 
 	/**
@@ -240,14 +244,14 @@ final class Search {
 	}
 
 	/**
-	 * Build the search form + result groups. Pure — escaping + Terms only.
+	 * Build the search form. Pure — escaping only. While a query is active it also carries the
+	 * "Keer terug" link that clears the search; the results themselves are the Bydraes and
+	 * Skrywers panels, filtered to the matches ({@see self::matchingWorkIds()}).
 	 *
-	 * @param string                                                                       $raw_query The raw (unfolded) query, for the input value + heading.
-	 * @param list<array{title:string, permalink:string, type:string, author:string}>      $works     Work results.
-	 * @param list<array{name:string, profile_url:string, gradering:string, tier?:string}> $skrywers  Skrywer results.
+	 * @param string $raw_query The raw (unfolded) query, for the input value.
 	 * @return string
 	 */
-	public static function toHtml( string $raw_query, array $works, array $skrywers ): string {
+	public static function toHtml( string $raw_query ): string {
 		$icon = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" '
 			. 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '
 			. 'class="ink-ontdek-soek__ikoon" data-audit-id="search-icon" aria-hidden="true" focusable="false">'
@@ -267,65 +271,12 @@ final class Search {
 			. ' placeholder="' . esc_attr__( 'Vind stories, gedigte of skrywers...', 'ink-core' ) . '"'
 			. ' aria-label="' . esc_attr__( 'Vind stories, gedigte of skrywers...', 'ink-core' ) . '" />'
 			. '</div>'
-			. '<button type="submit" class="ink-ontdek-soek__knoppie ink-btn ink-btn--primary" data-audit-id="search-btn">' . esc_html__( 'Soek', 'ink-core' ) . '</button>'
-			. '</form>';
+			. '<button type="submit" class="ink-ontdek-soek__knoppie ink-btn ink-btn--primary" data-audit-id="search-btn">' . esc_html__( 'Soek', 'ink-core' ) . '</button>';
 
-		if ( '' === $raw_query ) {
-			return $html . '</section>';
+		if ( '' !== $raw_query ) {
+			$html .= '<a class="ink-ontdek-soek__terug ink-btn ink-btn--outline" href="' . esc_url( '' !== $action ? $action : '?' ) . '">' . esc_html__( 'Keer terug', 'ink-core' ) . '</a>';
 		}
 
-		if ( array() === $works && array() === $skrywers ) {
-			$html .= '<p class="ink-ontdek-soek__leeg">' . esc_html__( "Probeer 'n ander soekterm of blaai deur alle artikels.", 'ink-core' ) . '</p>';
-
-			return $html . '</section>';
-		}
-
-		// Author matches rank first, so the Skrywers group comes before the Bydraes.
-		if ( array() !== $skrywers ) {
-			$html .= '<h2 class="ink-ontdek-soek__groep ink-heading-h3">' . esc_html( Terms::label( 'skrywer_plural' ) ) . '</h2><ul class="ink-ontdek-soek__skrywers">';
-
-			foreach ( $skrywers as $skrywer ) {
-				$html .= '<li class="ink-ontdek-soek__skrywer ink-card">'
-					. '<a class="ink-ontdek-soek__naam ink-heading-h3-card" href="' . esc_url( $skrywer['profile_url'] ) . '">' . esc_html( $skrywer['name'] ) . '</a>'
-					. '<span class="' . esc_attr( 'ink-ontdek-soek__gradering ' . SkrywersTab::tierLabelClasses( (string) ( $skrywer['tier'] ?? '' ) ) ) . '">' . esc_html( $skrywer['gradering'] ) . '</span>'
-					. '</li>';
-			}
-
-			$html .= '</ul>';
-		}
-
-		if ( array() !== $works ) {
-			$html .= '<h2 class="ink-ontdek-soek__groep ink-heading-h3">' . esc_html( Terms::label( 'bydrae_plural' ) ) . '</h2><ul class="ink-ontdek-soek__werke">';
-
-			foreach ( $works as $work ) {
-				$html .= '<li class="ink-ontdek-soek__werk ink-card">'
-					. '<span class="' . esc_attr( 'ink-ontdek-soek__tipe ink-pill ink-pill--tint-sm ' . self::typeTone( (string) $work['type'] ) ) . '">' . esc_html( Terms::label( $work['type'] ) ) . '</span>'
-					. '<a class="ink-ontdek-soek__titel ink-heading-h3-card" href="' . esc_url( $work['permalink'] ) . '">' . esc_html( $work['title'] ) . '</a>'
-					. '<span class="ink-ontdek-soek__outeur ink-meta ink-meta--sm">' . esc_html( $work['author'] ) . '</span>'
-					. '</li>';
-			}
-
-			$html .= '</ul>';
-		}
-
-		return $html . '</section>';
-	}
-
-	/**
-	 * The pill tone for a work type — the same per-type tones as the Ontdek works
-	 * card (sage gedig / brand storie / muted artikel). Pure.
-	 *
-	 * @param string $type The bydrae post type.
-	 * @return string
-	 */
-	private static function typeTone( string $type ): string {
-		switch ( $type ) {
-			case \Ink\Content\PostTypes::GEDIG:
-				return 'ink-tone-accent';
-			case \Ink\Content\PostTypes::STORIE:
-				return 'ink-tone-primary';
-			default:
-				return 'ink-tone-muted';
-		}
+		return $html . '</form></section>';
 	}
 }

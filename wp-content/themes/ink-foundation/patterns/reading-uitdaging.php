@@ -132,6 +132,8 @@ if ( class_exists( '\Ink\Challenges\CurrentChallenge' ) && class_exists( '\Ink\C
 </section>
 <!-- /wp:group -->
 
+<!-- wp:ink/uitdaging-besonderhede {"variant":"opleiding"} /-->
+
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-band","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
 <section data-audit-id="uitdaging-entries" class="wp-block-group alignfull ink-band" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
 	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true},"layout":{"type":"default"}} -->

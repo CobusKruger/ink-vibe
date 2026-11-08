@@ -128,9 +128,10 @@ final class SkrywersTab {
 	 * @param int         $paged    The page (clamped to >= 1).
 	 * @param int         $per_page Writers per page.
 	 * @param list<int>   $recent_ids For SORT_AKTIEF: the writers behind the most recent submissions, most recent first.
+	 * @param list<int>|null $only_ids Search mode: restrict to these writers (empty = none); null = no restriction.
 	 * @return array<string, mixed>
 	 */
-	public static function queryArgs( ?string $genre, string $sort, int $paged, int $per_page, array $recent_ids = array() ): array {
+	public static function queryArgs( ?string $genre, string $sort, int $paged, int $per_page, array $recent_ids = array(), ?array $only_ids = null ): array {
 		$sort = in_array( $sort, self::allowedSorts(), true ) ? $sort : self::SORT_NUWE;
 
 		$meta_query = array(
@@ -148,6 +149,10 @@ final class SkrywersTab {
 				'key'   => SkrywerIndex::formFlagKey( $type ),
 				'value' => '1',
 			);
+		}
+
+		if ( null !== $only_ids && self::SORT_AKTIEF === $sort ) {
+			$recent_ids = array_values( array_intersect( $recent_ids, $only_ids ) );
 		}
 
 		if ( self::SORT_AKTIEF === $sort ) {
@@ -173,7 +178,7 @@ final class SkrywersTab {
 			'compare' => 'EXISTS',
 		);
 
-		return array(
+		$args = array(
 			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- discovery-scoped, paged WP_User_Query on indexed denorm meta (AD-7).
 			'meta_query' => $meta_query,
 			'orderby'    => array( 'sorteer' => 'DESC' ),
@@ -181,6 +186,12 @@ final class SkrywersTab {
 			'paged'      => max( 1, $paged ),
 			'fields'     => 'ID',
 		);
+
+		if ( null !== $only_ids ) {
+			$args['include'] = array() === $only_ids ? array( 0 ) : array_values( $only_ids );
+		}
+
+		return $args;
 	}
 
 	/**
@@ -196,8 +207,11 @@ final class SkrywersTab {
 		$active_genre = in_array( $genre_raw, self::allowedGenres(), true ) ? $genre_raw : null;
 		$active_sort  = in_array( $sort_raw, self::allowedSorts(), true ) ? $sort_raw : self::SORT_NUWE;
 
+		// Search mode: only the matching writers, with no filter bar.
+		$found = Search::isActive() ? Search::matchingSkrywerIds() : null;
+
 		$recent = ( self::SORT_AKTIEF === $active_sort ) ? self::recentSubmissionAuthors( $active_genre ) : array();
-		$query  = new \WP_User_Query( self::queryArgs( $active_genre, $active_sort, $paged, self::PER_PAGE, $recent ) );
+		$query  = new \WP_User_Query( self::queryArgs( $active_genre, $active_sort, $paged, self::PER_PAGE, $recent, $found ) );
 
 		$cards = array();
 
@@ -239,6 +253,7 @@ final class SkrywersTab {
 				'max_pages' => $max_pages,
 				'genre'     => $active_genre,
 				'sort'      => $active_sort,
+				'search'    => null !== $found,
 			)
 		);
 	}
@@ -314,14 +329,14 @@ final class SkrywersTab {
 	 * Build the skrywers HTML. Pure — Terms + escaping only.
 	 *
 	 * @param list<array{name:string, profile_url:string, gradering:string, tier?:string, bio:string, avatar_url:string, genres:list<string>}> $cards The writers.
-	 * @param array{paged:int, max_pages:int, genre?:string|null, sort?:string}                                                                $nav   Render context.
+	 * @param array{paged:int, max_pages:int, genre?:string|null, sort?:string, search?:bool}                                                                $nav   Render context.
 	 * @return string
 	 */
 	public static function toHtml( array $cards, array $nav ): string {
 		// Fidelity Stage 4 (rows 03/18, spine S10): Lovable's writers panel has no
 		// visible heading (Browse.tsx:514-516); the name stays for assistive tech.
 		$heading  = '<h2 class="ink-ontdek-skrywers__heading ink-heading-h2-block screen-reader-text" data-audit-id="writers-heading">' . esc_html( Terms::label( 'skrywer_plural' ) ) . '</h2>';
-		$controls = self::controlsHtml(
+		$controls = ! empty( $nav['search'] ) ? '' : self::controlsHtml(
 			$nav['genre'] ?? null,
 			isset( $nav['sort'] ) ? (string) $nav['sort'] : self::SORT_NUWE
 		);

@@ -250,7 +250,7 @@ function ink_archive_round( array $over = array() ): array {
 	);
 }
 
-test( 'the open current card shows Oop, the countdown in the date slot, and Skryf in', function (): void {
+test( 'the open current card shows Oop, the countdown in the date slot, and Lees meer', function (): void {
 	$html = Archive::currentHtml( ink_archive_round(), 'Nog 5 dae' );
 
 	expect( $html )->toContain( 'Oop · November 2026' )
@@ -260,7 +260,8 @@ test( 'the open current card shows Oop, the countdown in the date slot, and Skry
 		->and( $html )->toContain( 'ink-pill--solid' )
 		->and( $html )->toContain( 'ink-meta-row--wide' )
 		->and( $html )->toMatch( '/data-audit-id="uitdagings-current-meta-close">.*Nog 5 dae/' )
-		->and( $html )->toContain( 'Skryf in' )
+		->and( $html )->toContain( 'Lees meer' )
+		->and( $html )->not->toContain( 'Skryf in' )
 		->and( $html )->toContain( 'https://ink.test/uitdaging/nov' );
 } );
 

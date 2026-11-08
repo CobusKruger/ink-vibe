@@ -24,6 +24,11 @@ $report = ( new Ink\Migration\TierDeriver() )->derive();
 
 printf( "result posts read: %d | writers graded: %d (brons %d / silwer %d / goud %d) | unparsed lines: %d\n", $report['posts'], count( $report['standings'] ), $report['by_tier']['brons'], $report['by_tier']['silwer'], $report['by_tier']['goud'], $report['unparsed'] );
 
+echo "\nUNPARSED lines (look like entries, skipped; their wins are NOT counted):\n";
+foreach ( $report['unparsed_lines'] as $missed ) {
+	echo "  [post {$missed['post']}] {$missed['line']}\n";
+}
+
 echo "\nFUZZY matches (check these by eye):\n";
 foreach ( $report['fuzzy'] as $writer => $matched ) {
 	echo "  $writer -> $matched\n";

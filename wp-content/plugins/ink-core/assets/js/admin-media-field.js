@@ -21,9 +21,19 @@
 	}
 
 	function drawPreview( preview, input ) {
+		var all = ids( input );
+		var LIMIT = 12;
+
 		preview.textContent = '';
 
-		ids( input ).forEach( function ( id ) {
+		// A gala can hold hundreds: preview the first few, count the rest.
+		if ( all.length > LIMIT ) {
+			var more = document.createElement( 'span' );
+			more.textContent = '+' + ( all.length - LIMIT );
+			preview.appendChild( more );
+		}
+
+		all.slice( 0, LIMIT ).forEach( function ( id ) {
 			var attachment = window.wp.media.attachment( id );
 
 			attachment.fetch().then( function () {

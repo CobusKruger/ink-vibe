@@ -55,6 +55,10 @@ test( 'the pipeline order puts posts before challenges and the redirects last-bu
 	$ids = array_map( static fn ( array $s ): string => $s[0], MigrateAll::steps() );
 
 	expect( array_search( 'library-training', $ids, true ) )->toBeLessThan( array_search( 'posts', $ids, true ) );
+	// Hand-sorted posts get their category before the reclassifier reads categories, and so
+	// before winners, Gradering history, entry Gradering and counts see the post types.
+	expect( array_search( 'link-categories', $ids, true ) )->toBeLessThan( array_search( 'posts', $ids, true ) );
+	expect( array_search( 'posts', $ids, true ) )->toBeLessThan( array_search( 'winners', $ids, true ) );
 	expect( array_search( 'posts', $ids, true ) )->toBeLessThan( array_search( 'challenges', $ids, true ) );
 	expect( array_search( 'challenges', $ids, true ) )->toBeLessThan( array_search( 'challenge-entries', $ids, true ) );
 	expect( array_search( 'recount', $ids, true ) )->toBeLessThan( array_search( 'generate-redirects', $ids, true ) );

@@ -58,6 +58,7 @@ final class Module implements ModuleContract {
 		( new TierHistoryImporter() )->register();
 		( new EntryGraderingImporter() )->register();
 		( new SubscriptionVerifier() )->register();
+		( new PostCategoryLinker() )->register();
 		( new PostReclassifier() )->register();
 		( new LibraryTrainingMigrator() )->register();
 		( new RedirectGenerator() )->register();

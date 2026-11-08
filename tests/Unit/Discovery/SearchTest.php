@@ -115,42 +115,33 @@ test( 'skrywersSql matches the name index, exact names first', function (): void
 	expect( $sql )->toEndWith( 'LIMIT 12' );
 } );
 
-test( 'toHtml with no query renders the search form only (no results section)', function (): void {
+test( 'toHtml with no query renders the search form only (no Keer terug)', function (): void {
 	ink_search_render_stubs();
 
-	$html = Search::toHtml( '', array(), array() );
+	$html = Search::toHtml( '' );
 
 	expect( $html )->toContain( 'ink-ontdek-soek__form' );
 	expect( $html )->toContain( 'Vind stories, gedigte of skrywers...' ); // placeholder
-	expect( $html )->not->toContain( 'ink-ontdek-soek__groep' );
-	expect( $html )->not->toContain( 'ink-ontdek-soek__leeg' );
+	expect( $html )->not->toContain( 'Keer terug' );
 } );
 
-test( 'toHtml renders both result groups and keeps the raw query in the input', function (): void {
+test( 'toHtml with a query keeps the raw query in the input and offers Keer terug; results live in the panels', function (): void {
 	ink_search_render_stubs();
 
-	$works    = array( array( 'title' => 'Reën', 'permalink' => '/gedig/reen', 'type' => 'gedig', 'author' => 'Anna' ) );
-	$skrywers = array( array( 'name' => 'Anna Visser', 'profile_url' => '/skrywer/anna', 'gradering' => 'Silwer' ) );
-
-	$html = Search::toHtml( 'reën', $works, $skrywers );
+	$html = Search::toHtml( 'reën' );
 
 	expect( $html )->toContain( 'value="reën"' ); // raw (unfolded) query echoed back
-	expect( strpos( $html, 'Skrywers' ) )->toBeLessThan( strpos( $html, 'Bydraes' ) ); // author matches first
-	expect( $html )->toContain( 'Bydraes' );       // works group heading
-	expect( $html )->toContain( 'Reën' );
-	expect( $html )->toContain( '/gedig/reen' );
-	expect( $html )->toContain( 'Skrywers' );      // skrywers group heading
-	expect( $html )->toContain( 'Anna Visser' );
-	expect( $html )->toContain( 'Silwer' );
-	expect( $html )->not->toContain( 'ink-ontdek-soek__leeg' );
+	expect( $html )->toContain( 'ink-ontdek-soek__terug' );
+	expect( $html )->toContain( 'Keer terug' );
+	expect( $html )->not->toContain( 'ink-ontdek-soek__werke' ); // no bespoke result lists any more
 } );
 
-test( 'toHtml renders the empty-state line when a query matches nothing', function (): void {
-	ink_search_render_stubs();
+test( 'search mode restricts the Bydraes and Skrywers panels to the matching ids (none = no results)', function (): void {
+	expect( \Ink\Discovery\WorksArchive::queryArgs( 1, 12, null, null, null, 'nuut', array( 5, 9 ) )['post__in'] )->toBe( array( 5, 9 ) );
+	expect( \Ink\Discovery\WorksArchive::queryArgs( 1, 12, null, null, null, 'nuut', array() )['post__in'] )->toBe( array( 0 ) );
+	expect( \Ink\Discovery\WorksArchive::queryArgs( 1, 12, null, null )  )->not->toHaveKey( 'post__in' );
 
-	$html = Search::toHtml( 'xyzzy', array(), array() );
-
-	expect( $html )->toContain( 'ink-ontdek-soek__form' );          // form still shows
-	expect( $html )->toContain( "Probeer 'n ander soekterm" );      // empty-state
-	expect( $html )->not->toContain( 'ink-ontdek-soek__groep' );
+	expect( \Ink\Discovery\SkrywersTab::queryArgs( null, 'nuwe_stemme', 1, 12, array(), array( 3 ) )['include'] )->toBe( array( 3 ) );
+	expect( \Ink\Discovery\SkrywersTab::queryArgs( null, 'nuwe_stemme', 1, 12, array(), array() )['include'] )->toBe( array( 0 ) );
+	expect( \Ink\Discovery\SkrywersTab::queryArgs( null, 'onlangs_aktief', 1, 12, array( 7, 3, 4 ), array( 3, 4 ) )['include'] )->toBe( array( 3, 4 ) );
 } );

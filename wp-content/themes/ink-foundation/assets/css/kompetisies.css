@@ -55,6 +55,11 @@
 	line-height: 1.625;
 }
 
+/* the default announcement has no pills or buttons: nothing follows the text */
+.ink-kompetisies .ink-komp-held__teks:last-child {
+	margin-bottom: 0;
+}
+
 .ink-komp-held__meta {
 	display: flex;
 	flex-wrap: wrap;
@@ -164,12 +169,6 @@
 
 .ink-komp-gala > * {
 	min-width: 0;
-}
-
-/* DIVERGENCE (owner, 2026-11-06): with no current competition the details column hides, and
-   the "Evenings past" card alone takes the full width, as the design's card does. */
-.ink-komp-gala > :only-child {
-	grid-column: 1 / -1;
 }
 
 .ink-komp-gala__kicker,

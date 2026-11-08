@@ -328,7 +328,8 @@ final class Archive {
 		$excerpt     = (string) ( $round['excerpt'] ?? '' );
 		$type_counts = is_array( $round['type_counts'] ?? null ) ? CurrentChallenge::typeCountsLabel( $round['type_counts'] ) : '';
 		$status      = Terms::label( $is_open ? 'uitdaging_oop' : 'uitdaging_gesluit' );
-		$action      = $is_open ? __( 'Skryf in', 'ink-core' ) : __( 'Lees meer', 'ink-core' );
+		// Open or closed the card links to the round page, so it always reads "Lees meer" (owner, 2026-11-08).
+		$action      = __( 'Lees meer', 'ink-core' );
 
 		$items = '';
 

@@ -32,8 +32,9 @@ defined( 'ABSPATH' ) || exit;
  *  - the winning post is the writer's own post with that title, through {@see TextKey}
  *    ({@see WinnerMatcher}); when found it gets its placement and, for a Gedig under a grade
  *    heading, its entry-Gradering snapshot (the grade the writer held then);
- *  - a record is stored on the round ({@see WinRecords}), **whether or not a post or an account was
- *    found**: a win with no post still counts, and a win with no account promotes nobody.
+ *  - a record is stored on the round ({@see WinRecords}) **whether or not the post was found**: a win
+ *    with no post still counts. A win by a writer with no account (a deleted prod user) is not
+ *    recorded: it is shown nowhere and counts toward nothing.
  *
  * Gradering itself (Gedigte only) is `derive-tiers`, from the same rows. Result posts about
  * competitions are never read: competitions are not challenges. Someone who has posted nothing in a
@@ -94,7 +95,7 @@ class WinnerImporter {
 	 */
 	public static function summaryLine( array $summary ): string {
 		return sprintf(
-			'Wenners ingevoer: %d wenne uit %d uitslagplasings, %d aangeteken, %d met die wenpos gevind, %d sonder rekening, %d sonder ronde (nie ingevoer nie), %d uitslagplasings aan ’n ronde gekoppel%s.',
+			'Wenners ingevoer: %d wenne uit %d uitslagplasings, %d aangeteken, %d met die wenpos gevind, %d sonder rekening (nie aangeteken nie), %d sonder ronde (nie ingevoer nie), %d uitslagplasings aan ’n ronde gekoppel%s.',
 			(int) $summary['rows'],
 			(int) $summary['result_posts'],
 			(int) $summary['recorded'],
@@ -211,8 +212,11 @@ class WinnerImporter {
 		$grade   = self::gradeValue( $row['grading'] );
 		$post_id = (int) WinnerMatcher::pick( $matches, $round, $row['result_date'] );
 
+		// A writer with no account (a deleted prod user) is shown nowhere and counts toward nothing:
+		// the win is not recorded.
 		if ( $row['user'] <= 0 ) {
 			++$summary['no_account'];
+			return;
 		}
 
 		if ( $post_id > 0 ) {

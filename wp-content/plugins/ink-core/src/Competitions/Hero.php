@@ -9,16 +9,15 @@ declare(strict_types=1);
 
 namespace Ink\Competitions;
 
-use Ink\I18n\Terms;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
  * `ink/kompetisies-hero`, from `Competitions.tsx:73`. Dark is the only difference from the
- * standard elements (owner). Always shown: with no current edition (owner, 2026-11-06) it is the
- * band with the page's name as its heading, and the badge, text, pills and buttons, which need a
- * competition, are left out. The Enter button goes to
- * `/skryf/` (ruled); the guidelines button has no target, as Lovable's.
+ * standard elements (owner). Always a full hero (owner, 2026-11-08): with no competition open it
+ * shows the default announcement (an editor-written `kompetisie` post marked `standaard`, else
+ * {@see Edition::builtIn()}), with no pills and no buttons, because there is nothing to enter
+ * yet. A real edition replaces it. The Enter button goes to `/skryf/` (ruled); the guidelines
+ * button has no target, as Lovable's.
  *
  * @package Ink\Core
  */
@@ -37,21 +36,17 @@ final class Hero {
 	 * @return string
 	 */
 	public static function render(): string {
-		return self::toHtml( Data::current(), (string) home_url( '/skryf/' ) );
+		return self::toHtml( Data::shown(), (string) home_url( '/skryf/' ) );
 	}
 
 	/**
 	 * The hero. Pure.
 	 *
-	 * @param Edition|null $edition The current edition, or null.
-	 * @param string       $enter   The Enter button's URL.
+	 * @param Edition $edition The edition to show: the current one, or the default announcement.
+	 * @param string  $enter   The Enter button's URL.
 	 * @return string
 	 */
-	public static function toHtml( ?Edition $edition, string $enter ): string {
-		if ( null === $edition ) {
-			return self::band( esc_html( Terms::label( 'kompetisie_plural' ) ), '' );
-		}
-
+	public static function toHtml( Edition $edition, string $enter ): string {
 		$badge = __( 'Ons flagskip-kompetisie', 'ink-core' );
 		$uit   = $edition->field( 'uitgawe' );
 		$close = $edition->field( 'sluitingsdatum' );
@@ -73,14 +68,15 @@ final class Hero {
 				. '</span>';
 		}
 
-		$badge_html = '<span class="ink-komp-held__kenteken ink-pill ink-pill--tint-lg ink-pill--gold-caps"' . Markup::aid( 'competitions-hero-badge' ) . '>'
+		// DIVERGENCE (owner, 2026-11-08): Lovable's badge is all caps; INK writes sentence case
+		// everywhere, so `ink-pill--gold` has no text-transform.
+		$badge_html = '<span class="ink-komp-held__kenteken ink-pill ink-pill--tint-lg ink-pill--gold"' . Markup::aid( 'competitions-hero-badge' ) . '>'
 			. Markup::icon( Markup::TROPHY, 'competitions-hero-badge-icon' )
 			. esc_html( ( '' === $uit ? '' : $uit . ' · ' ) . $badge )
 			. '</span>';
 
-		$rest = '<p class="ink-komp-held__teks ink-text--on-ink"' . Markup::aid( 'competitions-hero-text' ) . '>' . esc_html( $edition->field( 'beskrywing' ) ) . '</p>'
-			. '<div class="ink-komp-held__meta"' . Markup::aid( 'competitions-hero-meta' ) . '>' . $pills . '</div>'
-			. '<div class="ink-komp-held__aksies"' . Markup::aid( 'competitions-hero-actions' ) . '>'
+		// The default announcement has no rules and no way to enter yet: no buttons.
+		$actions = ! $edition->acceptsEntries() ? '' : '<div class="ink-komp-held__aksies"' . Markup::aid( 'competitions-hero-actions' ) . '>'
 			. '<a class="ink-btn ink-btn--lg ink-btn--primary"' . Markup::aid( 'competitions-hero-btn-primary' ) . ' href="' . esc_url( $enter ) . '">'
 			. esc_html__( 'Skryf nou in', 'ink-core' )
 			. Markup::icon( Markup::ARROW_RIGHT, 'competitions-hero-btn-primary-icon', 'ink-btn__icon--end' )
@@ -89,6 +85,10 @@ final class Hero {
 			. esc_html__( 'Lees die reëls', 'ink-core' )
 			. '</button>'
 			. '</div>';
+
+		$rest = '<p class="ink-komp-held__teks ink-text--on-ink"' . Markup::aid( 'competitions-hero-text' ) . '>' . esc_html( $edition->field( 'beskrywing' ) ) . '</p>'
+			. ( '' === $pills ? '' : '<div class="ink-komp-held__meta"' . Markup::aid( 'competitions-hero-meta' ) . '>' . $pills . '</div>' )
+			. $actions;
 
 		return self::band( esc_html( $edition->title ), $badge_html, $rest );
 	}

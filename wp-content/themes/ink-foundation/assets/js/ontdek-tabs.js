@@ -20,6 +20,25 @@
 		return;
 	}
 
+	// Search mode (`?soek=`): the server filtered both panels to the matches, so they
+	// show stacked (writers' matches and bydraes) with no tab bar; "Keer terug" leaves it.
+	if ( /(^|[?&])soek=[^&]/.test( window.location.search || '' ) ) {
+		document.body.classList.add( 'ink-ontdek-soek-modus' );
+		Array.prototype.forEach.call( document.querySelectorAll( '[data-ink-ontdek-panel]' ), function ( panel ) {
+			panel.hidden = false;
+		} );
+
+		// Writers first, then their bydraes.
+		var writers = document.querySelector( '[data-ink-ontdek-panel="skrywers"]' );
+		var works = document.querySelector( '[data-ink-ontdek-panel="bydraes"]' );
+
+		if ( writers && works && works.parentNode ) {
+			works.parentNode.insertBefore( writers, works );
+		}
+
+		return;
+	}
+
 	var tabs = Array.prototype.slice.call( nav.querySelectorAll( '[data-ink-ontdek-tab]' ) );
 	var panels = Array.prototype.slice.call( document.querySelectorAll( '[data-ink-ontdek-panel]' ) );
 

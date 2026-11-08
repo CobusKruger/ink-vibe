@@ -130,7 +130,7 @@ test( 'a win is recorded with its post, placement and grade; a Gedig carries the
 	);
 } );
 
-test( 'a win with no post and no account is still recorded, with the by-line', function (): void {
+test( 'a win by a writer with no account (a deleted user) is counted but not recorded', function (): void {
 	$importer = winner_importer(
 		array( winner_row( 100, 'Agie', 0, 'Verlore woorde', 2, 'Verhale', '' ) ),
 		array(),
@@ -139,17 +139,29 @@ test( 'a win with no post and no account is still recorded, with the by-line', f
 
 	$summary = $importer->run();
 
-	expect( $summary['recorded'] )->toBe( 1 );
+	expect( $summary['recorded'] )->toBe( 0 );
 	expect( $summary['matched'] )->toBe( 0 );
 	expect( $summary['no_account'] )->toBe( 1 );
 	expect( $importer->placements )->toBe( array() );
+	expect( $importer->records )->toBe( array() );
+} );
+
+test( 'a win with an account but no post is still recorded', function (): void {
+	$importer = winner_importer(
+		array( winner_row( 100, 'Carma Shaw', 3, 'Verlore woorde', 2, 'Verhale', '' ) ),
+		array(),
+		array( 100 => 5 )
+	);
+
+	$summary = $importer->run();
+
+	expect( $summary['recorded'] )->toBe( 1 );
+	expect( $summary['matched'] )->toBe( 0 );
 	expect( $importer->records[0] )->toMatchArray(
 		array(
 			'post_id'  => 0,
-			'user_id'  => 0,
+			'user_id'  => 3,
 			'category' => 'storie',
-			'grade'    => '',
-			'byline'   => 'Agie',
 		)
 	);
 } );

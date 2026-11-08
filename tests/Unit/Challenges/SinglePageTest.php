@@ -232,3 +232,17 @@ test( 'the variant constants are the single-source values (Post-Epic-19 third pa
 	expect( SinglePage::VARIANT_KOP )->toBe( 'kop' );
 	expect( SinglePage::VARIANT_INSKRYWINGS )->toBe( 'inskrywings' );
 } );
+
+test( 'opleidingHtml shows nothing without picked entries', function (): void {
+	expect( SinglePage::opleidingHtml( array(), 'https://ink.test/opleiding/' ) )->toBe( '' );
+} );
+
+test( 'opleidingHtml shows the heading, the cards side by side and the link to the opleidings-afdeling', function (): void {
+	$card = array( 'title' => 'Beeldspraak', 'permalink' => 'https://ink.test/o/1', 'excerpt' => 'Kort.', 'category' => 'Poësie', 'author' => 'Anna' );
+	$html = SinglePage::opleidingHtml( array( $card, array_merge( $card, array( 'title' => 'Ritme' ) ) ), 'https://ink.test/opleiding/' );
+
+	expect( $html )->toContain( 'Nuttig vir hierdie uitdaging' )
+		->and( substr_count( $html, 'ink-opleiding__item ink-card' ) )->toBe( 2 )
+		->and( $html )->toContain( 'Lees meer in die opleidings-afdeling' )
+		->and( $html )->toContain( 'href="https://ink.test/opleiding/"' );
+} );

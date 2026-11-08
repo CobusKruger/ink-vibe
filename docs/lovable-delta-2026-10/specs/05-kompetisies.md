@@ -189,8 +189,8 @@ Page 49428 isn't one of the ruled redirects: it stays published.
 
 | State | Result |
 |---|---|
-| No current edition (the state straight after `migrate-all`) | Hero and categories hide; the gala details column hides |
-| Current edition without `gala_naam` | Gala details column hides |
+| No current edition (the state straight after `migrate-all`) | **Superseded 2026-11-08 (§12b):** the hero and categories show the default announcement; the gala details column shows the last gala, labelled as past |
+| Current edition without `gala_naam` | Gala details column shows the last gala (§12b), or hides if there is none |
 | Blank category or ticket slot; blank `riglyne`, `gala_program`, `nota` | That item doesn't render |
 | No past gala | `competitions-gala-past` hides. Both gala columns empty: `competitions-gala` hides |
 | Past gala without highlight, or without photos | That element hides; the chip stays |
@@ -369,7 +369,7 @@ Rows are in `recipe-gaps.csv`. RG-IP-08 and -10 from `04-inkpols`, GAP-03-03 and
 | RG-KO-01 | dark band without top border | `ink-band--dark ink-band--no-border` |
 | RG-KO-03 | plus-pattern layer on dark, as a real element | `ink-texture (+ --on-ink)` |
 | RG-KO-04 | on-ink colour for h1 role and lede | `ink-heading--on-ink (generalised)` |
-| RG-KO-05 | gold caps hero badge with icon | `ink-pill--gold-caps` |
+| RG-KO-05 | gold hero badge with icon (Lovable's caps dropped: sentence case, owner 2026-11-08) | `ink-pill--gold` |
 | RG-KO-06 | meta pill on ink | `ink-pill--on-ink` |
 | RG-KO-07 | lg ghost button with border on ink | `ink-btn--ghost-on-ink` |
 | RG-KO-08 | base card with feature hover lift | `ink-card--lift` |
@@ -466,6 +466,20 @@ Fictional prices are D4 and match the design's structure. The LET WEL disclaimer
 ## 12a. Every photo of a gala year (owner, 2026-11-02)
 
 `/kompetisies/` shows four photos a year, then **Sien alles** (`ink-link--ink`, audit-id `competitions-gala-past-all`, map `divergence`) to `/kompetisies/gala/<jaar>/`. That page is code: rewrite rule and route in `Competitions/GalaPage.php` (the `kompetisies` Page with `ink_gala_jaar`; template `kompetisies-gala.html`, registered in `SystemPages::ENDPOINT_TEMPLATES`), pattern `kompetisies-gala.php`, block `ink/kompetisies-gala-fotos`. Recipes only: band, container, eyebrow, `ink-heading-h1-index` (copy debt `KOMP-GALA-ALLES-H1`), back link `ink-nav-link--footer`, `ink-photo`, `ink-pager`. 24 per `?bladsy=N`; real pager links without JS; `kompetisies.js` loads the next batch near the end. Lazy images in the fixed 3/2 box, so nothing moves. A year without photos, or a page past the last, is a 404. The 2025 Fotos Page also holds two video clips; they render as `<video>` in the same box.
+
+## 12b. Default announcement, last gala, five feature photos (owner, 2026-11-08)
+
+**Hero and categories never go missing.** A `kompetisie` post with `ink_kompetisie_standaard` = `ja` is the **default announcement**. `Data::shown()` returns the current edition, else that post, else `Edition::builtIn()` (same text; `Module::ensureDefault()` creates the post once, on `init`, remembered in `ink_kompetisie_standaard_gemaak`, so an editor who deletes it is not fought). The default never counts as current, never as a past gala, and has no way to enter: no Enter or guidelines buttons in the hero, none on the category cards. Its date and entry-note pills show only if the editor fills them. A real edition (with `beskrywing`) replaces it on the page, no step needed.
+
+**Categories section** has an editable heading (`kat_titel`) and intro (`kat_inleiding`); blank falls back to the standard words. It hides only when the edition shown has no category, so the default post needs its three columns filled in to show the section.
+
+**Hero badge is sentence case** (`ink-pill--gold`, was `gold-caps`): Lovable's uppercase and tracking are a disclosed divergence, `primitives.css`.
+
+**Gala band** always shows while any gala exists. Left: the planned gala (current edition has `gala_naam` and no photos yet: tickets and Reserve), else the **latest past gala**, kicker "Die vorige gala · <jaar>", name from `gala_naam` else the post title, no tickets or Reserve. Right: Evenings past, back to the right half of the grid (the full-width `:only-child` rule is gone).
+
+**Feature photos.** Five slots per `kompetisie` (`gala_foto1..5` media + `gala_foto1..5_onderskrif`): slot 1 is the wide photo, 2 to 5 the 2 x 2 grid. A pick's own caption wins over the media-library caption. With none picked, the first five of the gallery stand in. `gala_fotos` stays the **whole gallery**, behind "Sien alles".
+
+**How photos are linked:** `wp ink migrate-kompetisies` reads the attachment ids from each old Fotos Page's gallery shortcodes (§3.6) and stores them as a comma list in `ink_kompetisie_gala_fotos` on that year's `kompetisie`. A new gala's photos are chosen in the media modal on the same field.
 
 ## 13. Questions for owner
 

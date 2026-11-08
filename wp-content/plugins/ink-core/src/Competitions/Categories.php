@@ -12,8 +12,10 @@ namespace Ink\Competitions;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * `ink/kompetisies-kategoriee`, from `Competitions.tsx:115`. Hidden with no current edition;
- * a blank slot simply doesn't come back from {@see Edition::categories()}.
+ * `ink/kompetisies-kategoriee`, from `Competitions.tsx:115`. Shows the current edition, else the
+ * default announcement (owner, 2026-11-08), so its heading, intro and three columns are edited
+ * on the site. Hidden when the edition shown has no category. A blank slot simply doesn't come
+ * back from {@see Edition::categories()}; the Enter buttons only show for a real edition.
  *
  * @package Ink\Core
  */
@@ -38,30 +40,43 @@ final class Categories {
 	 * @return string
 	 */
 	public static function render(): string {
-		$edition = Data::current();
-
-		return null === $edition ? '' : self::toHtml( $edition, (string) home_url( '/skryf/' ) );
+		return self::toHtml( Data::shown(), (string) home_url( '/skryf/' ) );
 	}
 
 	/**
-	 * The categories. Pure.
+	 * The categories, or '' when the edition has none. Pure.
 	 *
-	 * @param Edition $edition The current edition.
+	 * @param Edition $edition The edition to show: the current one, or the default announcement.
 	 * @param string  $enter   The Enter buttons' URL.
 	 * @return string
 	 */
 	public static function toHtml( Edition $edition, string $enter ): string {
-		$intro = trim( __( 'Ons kompetisie word anoniem beoordeel.', 'ink-core' ) . ' ' . $edition->field( 'naaswenner_nota' ) );
 		$cards = '';
 
 		foreach ( $edition->categories() as $i => $category ) {
-			$cards .= self::card( $i, $category, $enter );
+			$cards .= self::card( $i, $category, $edition->acceptsEntries() ? $enter : '' );
+		}
+
+		if ( '' === $cards ) {
+			return '';
+		}
+
+		// The editor's heading and intro win; blank falls back to the standard words.
+		$heading = $edition->field( 'kat_titel' );
+		$intro   = $edition->field( 'kat_inleiding' );
+
+		if ( '' === $heading ) {
+			$heading = __( 'Gedigte en kortverhale, vir volwassenes en skoliere', 'ink-core' );
+		}
+
+		if ( '' === $intro ) {
+			$intro = trim( __( 'Ons kompetisie word anoniem beoordeel.', 'ink-core' ) . ' ' . $edition->field( 'naaswenner_nota' ) );
 		}
 
 		return '<section class="ink-container ink-band--poem"' . Markup::aid( 'competitions-categories' ) . '>'
 			. '<div class="ink-komp-kat__kop"' . Markup::aid( 'competitions-categories-head' ) . '>'
 			. '<div' . Markup::aid( 'competitions-categories-head-text' ) . '>'
-			. '<h2 class="ink-heading-h2-section"' . Markup::aid( 'competitions-categories-h2' ) . '>' . esc_html__( 'Gedigte en kortverhale, vir volwassenes en skoliere', 'ink-core' ) . '</h2>'
+			. '<h2 class="ink-heading-h2-section"' . Markup::aid( 'competitions-categories-h2' ) . '>' . esc_html( $heading ) . '</h2>'
 			. '<p class="ink-komp-kat__inlei"' . Markup::aid( 'competitions-categories-intro' ) . '>' . esc_html( $intro ) . '</p>'
 			. '</div></div>'
 			. '<div class="ink-komp-kat__rooster"' . Markup::aid( 'competitions-categories-grid' ) . '>' . $cards . '</div>'
@@ -73,7 +88,7 @@ final class Categories {
 	 *
 	 * @param int                                                                                                        $i        Its position.
 	 * @param array{naam:string, ikoon:string, tema:string, beskrywing:string, woordlimiet:string, riglyne:list<string>} $category The category.
-	 * @param string                                                                                                     $enter    The Enter button's URL.
+	 * @param string                                                                                                     $enter    The Enter button's URL, or '' for no button.
 	 * @return string
 	 */
 	private static function card( int $i, array $category, string $enter ): string {
@@ -99,8 +114,9 @@ final class Categories {
 			. ( '' === $category['woordlimiet'] ? '' : '<div class="ink-komp-kat__limiet ink-meta ink-meta--sm ink-meta--ink"' . Markup::aid( "{$id}-limit" ) . '>'
 				. Markup::icon( Markup::BOOK, "{$id}-limit-icon" ) . esc_html( $category['woordlimiet'] ) . '</div>' )
 			. ( '' === $lines ? '' : '<ul class="ink-komp-kat__riglyne"' . Markup::aid( "{$id}-guidelines" ) . '>' . $lines . '</ul>' )
-			. '<a class="ink-btn ink-btn--outline ink-btn--block"' . Markup::aid( "{$id}-btn" ) . ' href="' . esc_url( $enter ) . '">'
-			. esc_html__( 'Skryf in', 'ink-core' )
-			. '</a></div></div>';
+			. ( '' === $enter ? '' : '<a class="ink-btn ink-btn--outline ink-btn--block"' . Markup::aid( "{$id}-btn" ) . ' href="' . esc_url( $enter ) . '">'
+				. esc_html__( 'Skryf in', 'ink-core' )
+				. '</a>' )
+			. '</div></div>';
 	}
 }

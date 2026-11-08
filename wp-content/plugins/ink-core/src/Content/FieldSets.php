@@ -98,6 +98,12 @@ final class FieldSets {
 	public const UITDAGING_BRIEF       = 'ink_uitdaging_brief';
 	public const UITDAGING_VERMELDINGS = 'ink_uitdaging_vermeldings';
 
+	// Up to two Opleiding entries an editor picks as "Nuttig vir hierdie uitdaging" (owner,
+	// 2026-11-08). Post ids of `opleiding_artikel`; 0 = none chosen, and with none chosen the
+	// section does not show.
+	public const UITDAGING_OPLEIDING_1 = 'ink_uitdaging_opleiding_1';
+	public const UITDAGING_OPLEIDING_2 = 'ink_uitdaging_opleiding_2';
+
 	// A gedig's optional dedication (owner-approved 2026-11-02, spec 02 section 8). One line of
 	// plain text, shown as "— text —" above the poem; empty means none, so old poems need
 	// no migration. Writers enter it on /skryf/ (SubmissionForm), editors in this box.
@@ -114,6 +120,9 @@ final class FieldSets {
 
 	// The category and ticket slots on a `kompetisie`.
 	public const KOMPETISIE_SLOTS = 3;
+
+	// The feature-photo slots on a `kompetisie`'s gala: one wide, four small (owner, 2026-11-08).
+	public const GALA_FOTO_SLOTS = 5;
 
 	// Sponsor meta keys.
 	public const BORG_LINK       = 'ink_borg_link';
@@ -335,6 +344,35 @@ final class FieldSets {
 				}
 
 				echo '</select>';
+			} elseif ( 'opleiding' === $field['input'] ) {
+				// A pick-list of published Opleiding entries, so editors choose rather than type an id.
+				$chosen = (int) $value;
+				$items  = get_posts(
+					array(
+						'post_type'      => PostTypes::OPLEIDING_ARTIKEL,
+						'post_status'    => 'publish',
+						'posts_per_page' => -1,
+						'orderby'        => 'title',
+						'order'          => 'ASC',
+						'no_found_rows'  => true,
+					)
+				);
+
+				printf( '<select id="%1$s" name="%2$s">', esc_attr( $id ), esc_attr( $key ) );
+				printf( '<option value="0">%s</option>', esc_html__( '— Geen —', 'ink-core' ) );
+
+				foreach ( is_array( $items ) ? $items : array() as $item ) {
+					if ( $item instanceof WP_Post ) {
+						printf(
+							'<option value="%1$d"%2$s>%3$s</option>',
+							(int) $item->ID,
+							selected( $chosen, (int) $item->ID, false ),
+							esc_html( get_the_title( $item ) )
+						);
+					}
+				}
+
+				echo '</select>';
 			} elseif ( 'media' === $field['input'] || 'gallery' === $field['input'] ) {
 				printf(
 					'<input type="%1$s" id="%2$s" name="%3$s" value="%4$s" class="regular-text" data-ink-media="%5$s" data-ink-media-kies="%6$s" data-ink-media-verwyder="%7$s" />',
@@ -353,6 +391,31 @@ final class FieldSets {
 					esc_attr( $id ),
 					esc_attr( $key ),
 					esc_attr( (string) $value )
+				);
+			}
+
+			if ( PostTypes::KOMPETISIE === $cpt && self::kompetisieKey( 'gala_fotos' ) === $key && $post->ID > 0 ) {
+				$attached = get_posts(
+					array(
+						'post_type'      => 'attachment',
+						'post_status'    => 'inherit',
+						'post_parent'    => $post->ID,
+						'post_mime_type' => array( 'image', 'video' ),
+						'posts_per_page' => -1,
+						'fields'         => 'ids',
+						'no_found_rows'  => true,
+					)
+				);
+
+				printf(
+					'<br /><em>%s</em>',
+					esc_html(
+						sprintf(
+							/* translators: %d: how many photos were uploaded to this post. */
+							__( '%d foto\'s en video\'s is op hierdie bladsy opgelaai. Sonder \'n lys hierbo word almal gewys, volgens lêernaam.', 'ink-core' ),
+							is_array( $attached ) ? count( $attached ) : 0
+						)
+					)
 				);
 			}
 
@@ -529,6 +592,20 @@ final class FieldSets {
 						'input'    => 'textarea',
 						'sanitize' => 'sanitize_textarea_field',
 					),
+					array(
+						'key'      => self::UITDAGING_OPLEIDING_1,
+						'label'    => __( 'Nuttige opleiding 1', 'ink-core' ),
+						'type'     => 'integer',
+						'input'    => 'opleiding',
+						'sanitize' => 'absint',
+					),
+					array(
+						'key'      => self::UITDAGING_OPLEIDING_2,
+						'label'    => __( 'Nuttige opleiding 2', 'ink-core' ),
+						'type'     => 'integer',
+						'input'    => 'opleiding',
+						'sanitize' => 'absint',
+					),
 				),
 			),
 			PostTypes::BORG                => array(
@@ -695,6 +772,18 @@ final class FieldSets {
 
 		$fields = array(
 			array(
+				'key'      => self::kompetisieKey( 'standaard' ),
+				'label'    => __( 'Verstek-aankondiging (wys dit tot daar \'n kompetisie oop is; geen inskrywing nie)', 'ink-core' ),
+				'type'     => 'string',
+				'input'    => 'select',
+				'options'  => array(
+					'nee' => __( 'Nee, dis \'n gewone kompetisie', 'ink-core' ),
+					'ja'  => __( 'Ja, dis die verstek-aankondiging', 'ink-core' ),
+				),
+				'sanitize' => array( self::class, 'sanitizeDefaultFlag' ),
+				'default'  => 'nee',
+			),
+			array(
 				'key'      => self::kompetisieKey( 'jaar' ),
 				'label'    => __( 'jaar', 'ink-core' ),
 				'type'     => 'integer',
@@ -706,6 +795,8 @@ final class FieldSets {
 			self::textField( self::kompetisieKey( 'sluitingsdatum' ), __( 'Sluitingsdatum', 'ink-core' ), 'date' ),
 			self::textField( self::kompetisieKey( 'inskrywing_nota' ), __( 'Inskrywing', 'ink-core' ) ),
 			self::textField( self::kompetisieKey( 'naaswenner_nota' ), __( 'Naaswenner', 'ink-core' ) ),
+			self::textField( self::kompetisieKey( 'kat_titel' ), __( 'Kategorieë: opskrif (leeg = die standaardopskrif)', 'ink-core' ) ),
+			self::textField( self::kompetisieKey( 'kat_inleiding' ), __( 'Kategorieë: inleiding (leeg = die standaardteks)', 'ink-core' ), 'textarea' ),
 		);
 
 		for ( $n = 1; $n <= self::KOMPETISIE_SLOTS; $n++ ) {
@@ -744,9 +835,23 @@ final class FieldSets {
 		}
 
 		$fields[] = self::textField( self::kompetisieKey( 'gala_hoogtepunt' ), __( 'Hoogtepunt', 'ink-core' ) );
+
+		// The five photos the page shows, picked and captioned here. Slot 1 is the wide one.
+		for ( $n = 1; $n <= self::GALA_FOTO_SLOTS; $n++ ) {
+			$fields[] = array(
+				'key'      => self::kompetisieKey( "gala_foto{$n}" ),
+				'label'    => sprintf( '%1$s %2$d: %3$s', __( 'Uitgesoekte foto', 'ink-core' ), $n, 1 === $n ? __( 'die breë foto bo-aan', 'ink-core' ) : __( 'foto', 'ink-core' ) ),
+				'type'     => 'integer',
+				'input'    => 'media',
+				'sanitize' => 'absint',
+			);
+			$fields[] = self::textField( self::kompetisieKey( "gala_foto{$n}_onderskrif" ), sprintf( '%1$s %2$d: %3$s', __( 'Uitgesoekte foto', 'ink-core' ), $n, __( 'onderskrif', 'ink-core' ) ) );
+		}
+
+		// Every photo of the gala, for "Sien alles". The imported galas have theirs from the old Fotos Pages.
 		$fields[] = array(
 			'key'      => self::kompetisieKey( 'gala_fotos' ),
-			'label'    => __( 'Foto\'s', 'ink-core' ),
+			'label'    => __( 'Alle foto\'s van die gala: laat leeg en laai die foto\'s op hierdie bladsy op (Voeg media by), of kies uit die biblioteek', 'ink-core' ),
 			'type'     => 'string',
 			'input'    => 'gallery',
 			'sanitize' => array( self::class, 'sanitizeIdList' ),
@@ -798,6 +903,16 @@ final class FieldSets {
 		$ids = array_filter( array_map( 'absint', explode( ',', is_scalar( $value ) ? (string) $value : '' ) ) );
 
 		return implode( ',', array_unique( $ids ) );
+	}
+
+	/**
+	 * Sanitise the default-announcement flag: `ja`, or anything else is `nee`.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return string
+	 */
+	public static function sanitizeDefaultFlag( $value ): string {
+		return 'ja' === $value ? 'ja' : 'nee';
 	}
 
 	/**

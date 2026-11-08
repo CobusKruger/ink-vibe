@@ -235,6 +235,9 @@ dir tmp\nuwe-ink-pre-migrate.sql
 
 Expected: no output from the dump; `dir` shows the file (several hundred MB).
 
+(Restore: node tools/local.mjs mysql -e "source tmp/nuwe-ink-pre-migrate.sql".)
+
+
 ---
 
 ## Part C. Migrate
@@ -264,7 +267,6 @@ node tools/local.mjs wp --skip-plugins --skip-themes eval-file C:/dev/ink/ink-vi
 node tools/local.mjs wp --skip-plugins --skip-themes eval-file C:/dev/ink/ink-vibe/docs/migration-tools/validate-gradering.php
 node tools/local.mjs wp ink report-result-posts --file=tmp/result-posts.csv
 node tools/local.mjs mysql -e "SELECT meta_value AS reason, COUNT(*) FROM wpjj_posts p JOIN wpjj_postmeta m ON m.post_id=p.ID AND m.meta_key='ink_retired_reason' WHERE p.post_type='retired' GROUP BY reason"
-node tools/local.mjs mysql -e "SELECT ID, post_title, (SELECT meta_value FROM wpjj_postmeta WHERE post_id=p.ID AND meta_key='_ink_read_count') AS views, (SELECT meta_value FROM wpjj_postmeta WHERE post_id=p.ID AND meta_key='ink_reaksie_telling') AS likes FROM wpjj_posts p WHERE ID IN (3752,19614,59011)"
 node tools/local.mjs mysql -e "SELECT p.post_type, COUNT(*) AS items, SUM(m.meta_value > 0) AS with_views, SUM(m.meta_value) AS total_views FROM wpjj_posts p LEFT JOIN wpjj_postmeta m ON m.post_id=p.ID AND m.meta_key='_ink_read_count' WHERE p.post_type IN ('biblioteek_item','opleiding_artikel') AND p.post_status='publish' GROUP BY p.post_type"
 ```
 

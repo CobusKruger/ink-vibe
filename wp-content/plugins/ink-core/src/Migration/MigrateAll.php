@@ -73,6 +73,7 @@ class MigrateAll {
 			array( 'tiers', 'ink derive-tiers' ),
 			array( 'verify-subscriptions', 'ink verify-subscriptions' ),
 			array( 'library-training', 'ink migrate-library-training' ),
+			array( 'link-categories', 'ink link-categories' ),
 			array( 'posts', 'ink migrate-posts' ),
 			array( 'challenges', 'ink migrate-challenges' ),
 			array( 'challenge-entries', 'ink sync-challenge-entries' ),
