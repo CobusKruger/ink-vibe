@@ -103,4 +103,24 @@ final class Api {
 	public static function bioFor( int $user_id ): string {
 		return ProfileBio::for( $user_id );
 	}
+
+	/**
+	 * A writer's published-work count (fixture-excluded) — the skrywer card "Werke" stat.
+	 *
+	 * @param int $user_id The writer.
+	 * @return int
+	 */
+	public static function workCountFor( int $user_id ): int {
+		return SkrywerProfiel::worksBreakdown( $user_id )['total'];
+	}
+
+	/**
+	 * A writer's total hartjies across their published work — the skrywer card "Hartjies" stat.
+	 *
+	 * @param int $user_id The writer.
+	 * @return int
+	 */
+	public static function hartjieTotalFor( int $user_id ): int {
+		return SkrywerProfiel::hartjieTotal( $user_id );
+	}
 }

@@ -124,15 +124,16 @@ test( 'the Brons Gedig card follows the four, and the grid ends with the link to
 
 	expect( substr_count( $html, '<article' ) )->toBe( 2 );
 	expect( strpos( $html, '"P"' ) )->toBeLessThan( strpos( $html, '"B"' ) );
-	expect( $html )->toContain( 'Brons Gedig' )
+	expect( $html )->toContain( 'ink-card--winner-brons' )
+		->not->toContain( 'Brons Gedig' )
 		->toContain( 'Lees vorige wenners' )
 		->toContain( '/ontdek/?werke_sorteer=wenners' );
 	expect( strpos( $html, 'Lees vorige wenners' ) )->toBeGreaterThan( strpos( $html, '"B"' ) );
 } );
 
-test( 'slotFor: a Gedig is labelled by its Gradering (Meester is Goud), prose by its type, others have none', function (): void {
-	expect( FeaturedWinners::slotFor( 'gedig', 'meester' )['label'] )->toBe( 'Goud Gedig' );
-	expect( FeaturedWinners::slotFor( 'gedig', 'silwer' )['label'] )->toBe( 'Silwer Gedig' );
+test( 'slotFor: the pill names the category only, never the Gradering, others have none', function (): void {
+	expect( FeaturedWinners::slotFor( 'gedig', 'meester' )['label'] )->toBe( 'Gedig' );
+	expect( FeaturedWinners::slotFor( 'gedig', 'silwer' )['label'] )->toBe( 'Gedig' );
 	expect( FeaturedWinners::slotFor( 'gedig', '' )['label'] )->toBe( 'Gedig' );
 	expect( FeaturedWinners::slotFor( 'storie', 'goud' )['poem'] )->toBeFalse();
 	expect( FeaturedWinners::slotFor( 'skryfwerk', '' ) )->toBeNull();

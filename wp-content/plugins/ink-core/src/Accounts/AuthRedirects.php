@@ -66,6 +66,30 @@ class AuthRedirects {
 		// which points at its `/register/` signup page — a page INK never
 		// publishes ("Page not found"). See {@see registrationUrl()}.
 		add_filter( 'register_url', array( $this, 'registrationUrl' ), 20 );
+		add_filter( 'gettext', array( $this, 'signInLabel' ), 10, 3 );
+	}
+
+	/**
+	 * Core `wp-login.php` screens translate "Log In" / "Log in" as "Meld aan",
+	 * the label retired sitewide for `teken_in` ({@see \Ink\I18n\Terms}). Swap
+	 * the two core msgids on those screens only (button + nav link).
+	 *
+	 * @param string $translation Translated text so far.
+	 * @param string $text        Original (English) msgid.
+	 * @param string $domain      Text domain.
+	 */
+	public function signInLabel( string $translation, string $text, string $domain ): string {
+		global $pagenow;
+
+		if ( 'default' !== $domain || 'wp-login.php' !== $pagenow ) {
+			return $translation;
+		}
+
+		if ( 'Log In' === $text || 'Log in' === $text ) {
+			return \Ink\I18n\Terms::label( 'teken_in' );
+		}
+
+		return $translation;
 	}
 
 	/**

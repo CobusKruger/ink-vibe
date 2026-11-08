@@ -42,6 +42,15 @@ defined( 'ABSPATH' ) || exit;
 final class Collation {
 
 	/**
+	 * The divider line between the brief and the entries, and between entries, in the preview.
+	 * A line of its own in the editable text; it becomes a horizontal rule in the HTML email.
+	 * Box-drawing characters, so no poem's own "---oOo---" line can be mistaken for it.
+	 *
+	 * @var string
+	 */
+	public const DIVIDER = '────────────────────────────';
+
+	/**
 	 * The entry-type assignment order (gedig, storie, artikel). Pure.
 	 *
 	 * @return list<string>
@@ -177,6 +186,79 @@ final class Collation {
 	}
 
 	/**
+	 * Turn stored post HTML into the plain text of a plain-text judge email. Pure.
+	 *
+	 * The email goes out as `text/plain`, so markup would reach the judges as markup. Block
+	 * comments and tags are dropped, `<br>` becomes a line break, closing block tags a blank
+	 * line, entities (including `&nbsp;`) are decoded and each line is trimmed.
+	 *
+	 * Migrated poems come in three shapes: `<p>` with `<br>` per line, plain lines in one
+	 * paragraph, and (the awkward one) every line its own paragraph with a `&nbsp;`-only
+	 * paragraph between stanzas. For a gedig in the last shape, paragraph breaks collapse to
+	 * line breaks and the `&nbsp;` paragraphs become the stanza breaks. Everything else keeps
+	 * its blank lines as the paragraph breaks.
+	 *
+	 * @param string $html  The stored content (HTML).
+	 * @param string $type  The entry's post type (gedig/storie/artikel), or '' for a brief.
+	 * @return string
+	 */
+	public static function htmlToText( string $html, string $type = '' ): string {
+		$text = (string) preg_replace( '/<!--.*?-->/s', '', $html );
+		$text = (string) preg_replace( '/<br\s*\/?>\s*/i', "\n", $text );
+		$text = (string) preg_replace( '#</(?:p|div|h[1-6]|li|blockquote|ul|ol|pre)>\s*#i', "\n\n", $text );
+		$text = (string) preg_replace( '#<li[^>]*>#i', '- ', $text );
+		$text = html_entity_decode( wp_strip_all_tags( $text ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+
+		// Walk the lines: text lines, plain blank lines, and "spacer" lines (only nbsp).
+		$items = array();
+		$blank = 0;
+		$space = false;
+
+		foreach ( (array) preg_split( '/\R/u', $text ) as $raw ) {
+			$raw  = (string) $raw;
+			$line = trim( (string) preg_replace( '/^[\s\x{00A0}]+|[\s\x{00A0}]+$/u', '', $raw ) );
+
+			if ( '' === $line ) {
+				++$blank;
+				$space = $space || str_contains( $raw, "\u{00A0}" );
+				continue;
+			}
+
+			$items[] = array(
+				'text'  => (string) preg_replace( '/[ \t\x{00A0}]+/u', ' ', $line ),
+				'blank' => $blank,
+				'space' => $space,
+			);
+			$blank   = 0;
+			$space   = false;
+		}
+
+		// A gedig is "tight" when every line is its own paragraph (no two lines share a break).
+		$tight = PostTypes::GEDIG === $type && count( $items ) > 1;
+
+		foreach ( array_slice( $items, 1 ) as $item ) {
+			if ( $item['blank'] < 1 ) {
+				$tight = false;
+				break;
+			}
+		}
+
+		$out = '';
+
+		foreach ( $items as $index => $item ) {
+			if ( 0 === $index ) {
+				$out = $item['text'];
+				continue;
+			}
+
+			$break = $tight ? ( $item['space'] ? "\n\n" : "\n" ) : ( $item['blank'] >= 1 ? "\n\n" : "\n" );
+			$out  .= $break . $item['text'];
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Strip the writer's identity from an entry's text for the anonymized judge email.
 	 * Pure.
 	 *
@@ -247,6 +329,7 @@ final class Collation {
 			$blocks[] = $body;
 		}
 
+
 		foreach ( $entries as $entry ) {
 			$entry_id = trim( Scalar::asString( $entry['entry_id'] ?? '' ) );
 			$title    = trim( Scalar::asString( $entry['title'] ?? '' ) );
@@ -257,7 +340,47 @@ final class Collation {
 			$blocks[] = $heading . "\n\n" . $text;
 		}
 
-		return implode( "\n\n", $blocks );
+		return implode( "\n\n" . self::DIVIDER . "\n\n", $blocks );
+	}
+
+	/**
+	 * Turn the (possibly edited) plain-text preview into the HTML email body. Pure.
+	 *
+	 * Everything is escaped: blank lines become paragraphs, single line breaks `<br>` (so poems
+	 * keep their lines), each {@see self::DIVIDER} line a horizontal rule, and an entry heading
+	 * ("Gedig 3: Titel") is bold.
+	 *
+	 * @param string $text The preview text.
+	 * @return string
+	 */
+	public static function toHtml( string $text ): string {
+		$sections = preg_split( '/^[ \t]*' . preg_quote( self::DIVIDER, '/' ) . '[ \t]*$/mu', str_replace( "\r\n", "\n", $text ) );
+		$html     = '';
+
+		foreach ( (array) $sections as $section ) {
+			$section = trim( (string) $section );
+
+			if ( '' === $section ) {
+				continue;
+			}
+
+			if ( '' !== $html ) {
+				$html .= '<hr style="border:0;border-top:1px solid #999;margin:24px 0">';
+			}
+
+			foreach ( (array) preg_split( '/\n{2,}/', $section ) as $n => $paragraph ) {
+				$paragraph = trim( (string) $paragraph );
+				$inner     = nl2br( esc_html( $paragraph ), false );
+
+				if ( 0 === $n && 1 === preg_match( '/^\p{L}+ \d+:/u', $paragraph ) ) {
+					$inner = '<strong>' . $inner . '</strong>';
+				}
+
+				$html .= '<p style="margin:0 0 14px">' . $inner . '</p>';
+			}
+		}
+
+		return '<div style="font-family:Georgia,serif;font-size:16px;line-height:1.5;color:#222">' . $html . '</div>';
 	}
 
 	/**
@@ -340,13 +463,13 @@ final class Collation {
 			$preview_rows[] = array(
 				'entry_id' => $entry_id,
 				'title'    => $title,
-				'text'     => self::stripIdentity( $content, $author ),
+				'text'     => self::stripIdentity( self::htmlToText( $content, $type ), $author ),
 			);
 		}
 
 		return array(
 			'empty'       => array() === $ordered,
-			'preview'     => self::buildPreviewBody( $challenge_body, $preview_rows ),
+			'preview'     => self::buildPreviewBody( self::htmlToText( $challenge_body ), $preview_rows ),
 			'ordered'     => $ordered,
 			'assignments' => $assignments,
 		);

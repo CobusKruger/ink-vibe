@@ -96,8 +96,8 @@ test( 'the first by position leads and the rest follow, whatever order the rows 
 		)
 	);
 
-	expect( $html )->toContain( 'class="ink-card--award ink-card--award-lead" data-audit-id="results-award-gold-1"' );
-	expect( $html )->toContain( 'class="ink-card--award" data-audit-id="results-award-gold-2"' );
+	expect( $html )->toContain( 'class="ink-card--winner ink-card--winner-podium ink-wenners__kaart ink-card--winner-elevated" data-audit-id="results-award-gold-1"' );
+	expect( $html )->toContain( 'class="ink-card--winner ink-card--winner-podium ink-wenners__kaart ink-card--winner-elevated ink-card--winner-compact" data-audit-id="results-award-gold-2"' );
 	expect( strpos( $html, 'Eerste' ) )->toBeLessThan( strpos( $html, 'results-podium-gold-rest' ) );
 	expect( strpos( $html, 'results-podium-gold-rest' ) )->toBeLessThan( strpos( $html, 'Tweede' ) );
 	expect( $html )->toContain( 'ink-pill--place-3' );
@@ -134,7 +134,7 @@ test( 'a win with no post has no button and no placeholder', function (): void {
 
 	$html = ResultsPage::podiumHtml( array( ink_row( array() ) ) );
 
-	expect( $html )->toContain( 'results-award-gold-1-btn"' )->toContain( 'href="https://ink.test/5"' )->toContain( 'ink-btn ink-btn--sm ink-btn--outline' );
+	expect( $html )->toContain( 'results-award-gold-1-btn"' )->toContain( 'href="https://ink.test/5"' )->toContain( 'ink-btn ink-btn--sm ink-btn--gold' );
 } );
 
 test( 'the citation block is absent with no opted-in citation (D6)', function (): void {
@@ -152,7 +152,7 @@ test( 'mentions: heading and list hide without rows; thanks stay; the button nee
 
 	$full = ResultsPage::mentionsHtml( array( array( 'title' => 'T', 'author' => 'S' ) ), 'https://ink.test/oop' );
 
-	expect( $full )->toContain( 'Eervolle vermeldings' )->toContain( '“T”' )->toContain( 'href="https://ink.test/oop"' )->toContain( 'Skryf in' );
+	expect( $full )->toContain( 'Eervolle vermeldings' )->toContain( '“T”' )->toContain( 'href="https://ink.test/oop"' )->toContain( 'Skryf in vir ons nuutste uitdaging' );
 } );
 
 test( 'the banner: home has the eyebrow and results-banner ids; the round page neither', function (): void {
@@ -255,4 +255,14 @@ test( 'the round page embeds the banner between the hero and the prompt', functi
 
 	expect( strpos( $src, 'wp:ink/uitslae-banier {"konteks":"rondte"}' ) )->toBeGreaterThan( strpos( $src, 'uitdaging-hero' ) );
 	expect( strpos( $src, 'wp:ink/uitslae-banier {"konteks":"rondte"}' ) )->toBeLessThan( strpos( $src, 'data-audit-id="uitdaging-prompt"' ) );
+} );
+
+test( 'podium cards take the winner-card metal from the Gradering; prose is always Goud', function (): void {
+	$gedig = ResultsPage::podiumHtml( array( ink_row( array( 'tier' => 'silwer' ) ) ) );
+
+	expect( $gedig )->toContain( 'ink-card--winner-silwer' )->not->toContain( 'ink-card--winner-elevated' );
+
+	$prose = ResultsPage::podiumHtml( array( ink_row( array( 'category' => 'storie', 'tier' => '', 'position' => 3 ) ) ) );
+
+	expect( $prose )->not->toContain( 'ink-card--winner-brons' )->toContain( 'ink-pill--place-1' );
 } );

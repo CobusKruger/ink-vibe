@@ -44,7 +44,8 @@
 	right: calc(-1 * var(--wp--preset--spacing--s-16));
 	width: var(--wp--preset--spacing--s-96);
 	height: var(--wp--preset--spacing--s-96);
-	color: color-mix(in srgb, var(--wp--preset--color--gold) 20%, transparent);
+	color: color-mix(in srgb, var(--wp--preset--color--gold) 15%, transparent);
+	pointer-events: none;
 }
 
 .ink-wenners__kategorie {

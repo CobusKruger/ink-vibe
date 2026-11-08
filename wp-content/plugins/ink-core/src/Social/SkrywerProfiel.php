@@ -212,7 +212,7 @@ final class SkrywerProfiel {
 	 * @param int $author_id The skrywer.
 	 * @return array{total:int, items:list<array{label:string,count:int}>}
 	 */
-	private static function worksBreakdown( int $author_id ): array {
+	public static function worksBreakdown( int $author_id ): array {
 		$counts = self::publishedWorkCountsByType( $author_id );
 		$items  = array();
 		$total  = 0;
@@ -295,7 +295,7 @@ final class SkrywerProfiel {
 	 * @param int $author_id The skrywer.
 	 * @return int
 	 */
-	private static function hartjieTotal( int $author_id ): int {
+	public static function hartjieTotal( int $author_id ): int {
 		if ( ! class_exists( EngagementApi::class ) ) {
 			return 0;
 		}

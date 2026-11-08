@@ -4,7 +4,7 @@
  * Slug: ink-foundation/ontdek
  * Categories: ink-foundation, page
  * Block Types: core/post-content
- * Description: Die Ontdek-skanderaal: konteks-inleiding, soek, ontdek-vlakke, Bydraes/Skrywers-oortjies en die werke-/skrywers-argief.
+ * Description: Die Ontdek-skanderaal: konteks-inleiding, soek, Bydraes/Skrywers-oortjies en die werke-/skrywers-argief.
  *
  * The hub shell (Story 8.1). The tab labels read from the ink-core terminology
  * registry via the `ink_foundation_term()` bridge (single-source, never a bare
@@ -23,7 +23,7 @@
  * below (unlike Lovable's `top-16`), so this sticks to the viewport top
  * directly (`top:0`).
  *
- * The five inner `wp:group {"align":"wide"}` wrappers (soek / vlakke / tabbalk
+ * The four inner `wp:group {"align":"wide"}` wrappers (soek / tabbalk
  * nav / bydraes / skrywers) deliberately carry NO `layout` attribute of their
  * own (Theme-Fidelity fourth-pass re-audit, page 11, 2026-09-05 — PO item #6,
  * "everything from the search box down [was] weirdly constrained to a narrow
@@ -54,16 +54,6 @@ $ink_skrywers_label = function_exists( 'ink_foundation_term' )
 	<!-- wp:group {"align":"wide","className":"ink-ontdek-soekband__inner","lock":{"move":true,"remove":true}} -->
 	<div class="wp-block-group alignwide ink-ontdek-soekband__inner">
 		<!-- wp:ink/ontdek-soek /-->
-	</div>
-	<!-- /wp:group -->
-</section>
-<!-- /wp:group -->
-
-<!-- wp:group {"tagName":"section","align":"full","className":"ink-ontdek-vlakband","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
-<section data-audit-id="surfaces" class="wp-block-group alignfull ink-ontdek-vlakband" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
-	<!-- wp:group {"align":"wide","lock":{"move":true,"remove":true}} -->
-	<div class="wp-block-group alignwide">
-		<!-- wp:ink/ontdek-vlakke /-->
 	</div>
 	<!-- /wp:group -->
 </section>

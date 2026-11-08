@@ -79,6 +79,17 @@ final class TextKey {
 	}
 
 	/**
+	 * As {@see text()}, but words stay apart: single spaces between them, nothing at the ends.
+	 * For searching, where "an na" must not match "anna".
+	 *
+	 * @param string $text The typed text.
+	 * @return string The key, words separated by one space.
+	 */
+	public static function spaced( string $text ): string {
+		return implode( ' ', self::words( $text ) );
+	}
+
+	/**
 	 * A title's key: as {@see text()}, without a leading 'n, which writers add and drop.
 	 *
 	 * @param string $title The typed title.

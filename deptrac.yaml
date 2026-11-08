@@ -175,6 +175,10 @@ deptrac:
             - Discovery
         Discovery:
             - Kernel
+            # Ontdek search keys the query and its indexes through `Ink\Migration\TextKey` (CLAUDE.md:
+            # the one place that decides two typed strings are the same). Pure helper only; same accepted
+            # cycle as Challenges->Migration (Migration's CLI steps call Discovery).
+            - Migration
             # Story 8.1: the Ontdek works archive queries the bydrae CPT slugs from
             # the migration-load-bearing single source `Ink\Content\PostTypes`
             # (GEDIG/STORIE/ARTIKEL). A real, non-circular cross-module dependency
@@ -254,6 +258,11 @@ deptrac:
             # Kernel, never back on Challenges). Mirrors the Tiers->Notifications (5.10) and
             # Entitlement->Notifications (4.8) edges. Conflation-clean: no Entitlement.
             - Notifications
+            # Results ingestion compares the title a judge typed with the stored one through
+            # `Ink\Migration\TextKey`, the one place that decides two typed titles are the same
+            # (CLAUDE.md). Pure comparison key only; Migration's own edge back to Challenges
+            # (the winner importer) is the reason this is a cycle, accepted for one pure helper.
+            - Migration
         Sponsors:
             - Kernel
             # Story 14.1: the Sponsors read-model (Sponsor) + facade (Api) read the

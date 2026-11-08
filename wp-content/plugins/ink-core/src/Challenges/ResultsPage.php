@@ -95,7 +95,8 @@ final class ResultsPage {
 	private const ICON_CROWN = '<path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/>';
 	private const ICON_QUOTE = '<path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/>';
 	private const ICON_AWARD = '<path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>';
-	private const ICON_ARROW = '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>';
+	private const ICON_FEATHER = '<path d="M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1 1z"/><path d="M16 8 2 22"/><path d="M17.5 15H9"/>';
+	private const ICON_ARROW ='<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>';
 
 	/**
 	 * Register the block. Runs inside the module's `init` dispatch.
@@ -358,7 +359,8 @@ final class ResultsPage {
 		$excerpt  = (string) ( $row['excerpt'] ?? '' );
 		$citation = (string) ( $row['citation'] ?? '' );
 		$is_gedig = PostTypes::GEDIG === ( $row['category'] ?? '' );
-		$avatar   = (string) get_avatar_url( $user_id, array( 'size' => 56 ) );
+		$avatar   = (string) get_avatar_url( $user_id, array( 'size' => 80 ) );
+		$variant  = self::toneFor( $row );
 
 		$citation_html = '' === $citation ? '' : '<blockquote class="ink-accent-block ink-accent-block--citation ink-uitslae__kritiek"' . $aid( '-citation' ) . '>'
 			. '<p class="ink-uitslae__kritiek-teks"' . $aid( '-citation-text' ) . '>' . esc_html( $citation ) . '</p>'
@@ -366,27 +368,52 @@ final class ResultsPage {
 			. '</blockquote>';
 
 		$action = $post_id > 0
-			? '<a class="ink-btn ink-btn--sm ink-btn--outline"' . $aid( '-btn' ) . ' href="' . esc_url( (string) get_permalink( $post_id ) ) . '">'
+			? '<a class="ink-btn ink-btn--sm ink-btn--gold"' . $aid( '-btn' ) . ' href="' . esc_url( (string) get_permalink( $post_id ) ) . '">'
 				. esc_html__( 'Lees', 'ink-core' ) . self::icon( self::ICON_ARROW, '' === $prefix ? '' : $prefix . '-btn-icon', 'ink-uitslae__knoppie-ikoon' ) . '</a>'
 			: '';
 
-		return '<article class="ink-card--award' . ( $lead ? ' ink-card--award-lead' : '' ) . '"' . $aid( '' ) . '>'
-			. '<span class="ink-pill ink-pill--place ink-pill--place-' . esc_attr( (string) max( 1, min( 3, $position ) ) ) . '"' . $aid( '-pill' ) . '>'
-			. self::icon( self::ICON_AWARD, '' === $prefix ? '' : $prefix . '-pill-icon' ) . ' ' . esc_html( Placements::placementLabel( $position ) )
+		// The winner-card treatment of the home page and Ontdek (Lovable `ChallengeResults.tsx`): the metal
+		// follows the Gradering (a Gedig only); Stories, Artikels and ungraded work are Goud, the base recipe and the elevated one.
+		$card_cl = 'ink-card--winner ink-card--winner-podium ink-wenners__kaart'
+			. ( '' === $variant ? ' ink-card--winner-elevated' : ' ink-card--winner-' . $variant )
+			. ( $lead ? '' : ' ink-card--winner-compact' );
+
+		return '<article class="' . $card_cl . '"' . $aid( '' ) . '>'
+			. FeaturedWinners::watermark( $variant )
+			. '<span class="ink-pill ink-pill--place ink-pill--place-' . ( 'silwer' === $variant ? '2' : ( 'brons' === $variant ? '3' : '1' ) ) . '"' . $aid( '-pill' ) . '>'
+			. self::icon( 'brons' === $variant ? self::ICON_FEATHER : ( '' === $variant ? self::ICON_CROWN : self::ICON_AWARD ), '' === $prefix ? '' : $prefix . '-pill-icon' ) . ' ' . esc_html( Terms::label( (string) ( $row['category'] ?? '' ) ) )
 			. '</span>'
 			. '<div class="' . ( $lead ? 'ink-uitslae__toekenning-rooster' : '' ) . '"' . $aid( '-grid' ) . '>'
 			. '<div' . $aid( '-main' ) . '>'
 			. '<h3 class="' . ( $lead ? 'ink-heading-h2-sub' : 'ink-heading-h3' ) . ' ink-uitslae__werk"' . $aid( '-title' ) . '>' . esc_html( (string) ( $row['title'] ?? '' ) ) . '</h3>'
 			. '<div class="ink-uitslae__skrywer"' . $aid( '-author' ) . '>'
-			. '<img class="ink-avatar ink-avatar--28"' . $aid( '-avatar' ) . ' src="' . esc_url( $avatar ) . '" alt="' . esc_attr( $author ) . '" width="28" height="28" loading="lazy" decoding="async" />'
+			. '<img class="ink-avatar ink-avatar--gold-ring ink-avatar--ring-40"' . $aid( '-avatar' ) . ' src="' . esc_url( $avatar ) . '" alt="' . esc_attr( $author ) . '" width="40" height="40" loading="lazy" decoding="async" />'
 			. esc_html( $author )
 			. '</div>'
-			. '<p class="ink-uitslae__uittreksel' . ( $is_gedig ? ' ink-uitslae__uittreksel--gedig' : '' ) . '"' . $aid( '-excerpt' ) . '>' . esc_html( $excerpt ) . '</p>'
+			. '<p class="' . ( $is_gedig ? 'ink-accent-block ink-accent-block--poem ' : '' ) . 'ink-uitslae__uittreksel' . ( $is_gedig ? ' ink-uitslae__uittreksel--gedig' : '' ) . '"' . $aid( '-excerpt' ) . '>' . esc_html( $excerpt ) . '</p>'
 			. '</div>'
 			. $citation_html
 			. '</div>'
 			. '<div class="ink-uitslae__aksie"' . $aid( '-action' ) . '>' . $action . '</div>'
 			. '</article>';
+	}
+
+	/**
+	 * The winner-card variant for a row: '' (Goud), 'silwer' or 'brons'. A graded Gedig follows its
+	 * Gradering (Meester counts as Goud, D11); anything else is Goud. Pure.
+	 *
+	 * @param array<string, mixed> $row The row.
+	 * @return string
+	 */
+	private static function toneFor( array $row ): string {
+		$tier = self::displayTier( $row );
+
+		if ( PostTypes::GEDIG === ( $row['category'] ?? '' ) && isset( self::TIER_SLOTS[ $tier ] ) ) {
+			return 'goud' === $tier ? '' : $tier;
+		}
+
+		// Stories and Artikels have no Gradering: Goud throughout. A Gedig with no grade (D13) too.
+		return '';
 	}
 
 	/**
@@ -410,7 +437,7 @@ final class ResultsPage {
 				. '<p class="ink-uitslae__vermeldings" data-audit-id="results-mentions-list">' . esc_html( implode( ' · ', $lines ) ) . '</p>';
 		}
 
-		$button = '' === $open_url ? '' : '<a class="ink-btn ink-btn--primary ink-uitslae__skryf-in" data-audit-id="results-mentions-btn" href="' . esc_url( $open_url ) . '">' . esc_html__( 'Skryf in', 'ink-core' ) . '</a>';
+		$button = '' === $open_url ? '' : '<a class="ink-btn ink-btn--primary ink-uitslae__skryf-in" data-audit-id="results-mentions-btn" href="' . esc_url( $open_url ) . '">' . esc_html__( 'Skryf in vir ons nuutste uitdaging', 'ink-core' ) . '</a>';
 
 		return '<section class="ink-band ink-band--step ink-band--cream ink-band--border-t alignfull" data-audit-id="results-mentions">'
 			. '<div class="ink-container ink-uitslae__kolom ink-uitslae__kolom--3xl" data-audit-id="results-mentions-inner">'

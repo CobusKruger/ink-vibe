@@ -20,7 +20,7 @@ Columns: `slug` and `naam` (the months, e.g. `Julie/Augustus 2026`, shown as the
 
 - **Who publishes the result posts:** the authors of posts with a result title (`Ink\Content\ResultPostAuthors`), plus anyone who can edit others' posts. There is no list.
 - **Old galas and the 2022 competition:** the `ink_old_gala`, `ink_old_gala_fotos` and `ink_old_competition` meta the owner sets on production with `docs/migration-tools/tag-old-competitions.sql` before the export. Untagged galas are found by title with a "found by title; tag it" warning; an untagged competition is not found. Highlights and captions are edited on the site.
-- **Winners, wins and Gradering:** the old challenge result posts, read by `LegacyResultsParser`: `derive-tiers` sets each writer's grade from the Gedigte wins, `import-winners` records every win (`WinnerImporter`), and `import-tier-history` writes the promotions those wins imply into the Gradering history (`TierHistoryImporter`). Competition result posts are never read. Deleted accounts and unresolved by-lines are reported, never guessed.
+- **Winners, wins and Gradering:** the old challenge result posts, read by `LegacyResultsParser`: `derive-tiers` sets each writer's grade from the Gedigte wins, `import-winners` records every win (`WinnerImporter`), and `import-tier-history` writes the promotions those wins imply into the Gradering history (`TierHistoryImporter`); `import-entry-gradering` then stamps every old round entry with the grade its writer held on the entry's post date (`EntryGraderingImporter`). Competition result posts are never read. Deleted accounts and unresolved by-lines are reported, never guessed.
 
 ## Comparing text
 

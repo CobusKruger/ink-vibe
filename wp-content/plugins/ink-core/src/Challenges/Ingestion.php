@@ -98,6 +98,11 @@ class Ingestion {
 			return $result;
 		}
 
+		// A round whose wins were imported from the old result post already holds them. This commit
+		// replaces them (the judges' document is the authority), and counts for promotion only the
+		// wins the writers do not already have, so an imported round is never counted twice.
+		$counted = $this->takeOverImported( $uitdaging_id );
+
 		// AC-5 order. (1) winners post, (2) moderator feedback (reserved seams → 0).
 		$result['post_id']  = $this->commitWinnersPost( $uitdaging_id, $winners );
 		$result['feedback'] = $this->commitModeratorFeedback( $uitdaging_id, $commentary );
@@ -120,7 +125,7 @@ class Ingestion {
 		$result['mentions'] = $this->commitMentions( $uitdaging_id, $mentions );
 
 		// (6) Trigger auto-promotion (a win = any top-3 placement at current grade).
-		$result['promoted'] = $this->awardPromotions( $uitdaging_id, $winners );
+		$result['promoted'] = $this->awardPromotions( $uitdaging_id, $winners, $counted );
 
 		$this->markCommitted( $uitdaging_id );
 
@@ -193,9 +198,10 @@ class Ingestion {
 	 *
 	 * @param int                                               $uitdaging_id The round (recorded as the win's challenge id).
 	 * @param list<array{post_id:int, rank:int, author_id:int}> $winners      The winners.
+	 * @param array<int, int>                                   $counted      Wins per writer already counted for this round (an imported round); only wins beyond them are awarded.
 	 * @return int The number of authors who were promoted by this commit.
 	 */
-	protected function awardPromotions( int $uitdaging_id, array $winners ): int {
+	protected function awardPromotions( int $uitdaging_id, array $winners, array $counted = array() ): int {
 		$wins_by_author = array();
 
 		foreach ( $winners as $winner ) {
@@ -210,7 +216,9 @@ class Ingestion {
 		$promoted = 0;
 
 		foreach ( $wins_by_author as $author => $count ) {
-			if ( null !== $this->awardWins( (int) $author, (int) $count, $uitdaging_id ) ) {
+			$new = (int) $count - (int) ( $counted[ $author ] ?? 0 );
+
+			if ( $new > 0 && null !== $this->awardWins( (int) $author, $new, $uitdaging_id ) ) {
 				++$promoted;
 			}
 		}
@@ -219,6 +227,43 @@ class Ingestion {
 	}
 
 	// --- Overridable side-effect seams (the Brain-Monkey isolation rule) ---------------
+
+	/**
+	 * Hand a round's imported results over to this commit: clear its placements and win records,
+	 * and report the Gedig wins per writer they stood for (already counted in the writer's Gradering).
+	 * A round with nothing imported returns nothing. Overridable seam.
+	 *
+	 * @param int $uitdaging_id The round.
+	 * @return array<int, int> Writer → Gedig wins already counted for this round.
+	 */
+	protected function takeOverImported( int $uitdaging_id ): array {
+		$counted = array();
+
+		foreach ( WinRecords::forRound( $uitdaging_id ) as $row ) {
+			$user = (int) ( $row['user_id'] ?? 0 );
+			$post = (int) ( $row['post_id'] ?? 0 );
+
+			if ( $user > 0 && Pools::isGraded( (string) ( $row['category'] ?? '' ) ) ) {
+				$counted[ $user ] = ( $counted[ $user ] ?? 0 ) + 1;
+			}
+
+			if ( $post > 0 ) {
+				Placements::clear( $post );
+			}
+		}
+
+		foreach ( Placements::forRound( $uitdaging_id ) as $placed ) {
+			foreach ( $placed as $entry ) {
+				if ( $entry['rank'] > 0 ) {
+					Placements::clear( $entry['id'] );
+				}
+			}
+		}
+
+		WinRecords::clearRound( $uitdaging_id );
+
+		return $counted;
+	}
 
 	/**
 	 * Whether a win on this post counts toward promotion: only a Gedig does (D7). Overridable seam.

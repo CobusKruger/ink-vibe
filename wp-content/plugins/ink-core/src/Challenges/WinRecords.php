@@ -115,6 +115,17 @@ final class WinRecords {
 	}
 
 	/**
+	 * Remove a round's win rows: the results commit replaces what the import stored.
+	 *
+	 * @param int $uitdaging_id The round.
+	 */
+	public static function clearRound( int $uitdaging_id ): void {
+		if ( $uitdaging_id > 0 ) {
+			delete_post_meta( $uitdaging_id, self::META );
+		}
+	}
+
+	/**
 	 * A round's stored win rows.
 	 *
 	 * @param int $uitdaging_id The round.

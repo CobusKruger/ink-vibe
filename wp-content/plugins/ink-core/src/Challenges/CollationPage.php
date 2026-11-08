@@ -95,6 +95,7 @@ class CollationPage {
 		$preview  = '';
 		$is_empty = false;
 		$collated = false;
+		$skipped  = 0;
 
 		if ( 'send' === $action && $this->verify( self::NONCE_SEND ) && $selected > 0 ) {
 			$this->handleSend( $selected );
@@ -104,12 +105,18 @@ class CollationPage {
 			$result   = $this->collateRound( $selected );
 			$preview  = (string) $result['preview'];
 			$is_empty = (bool) $result['empty'];
+			$skipped  = (int) $result['skipped'];
 			$collated = true;
 		}
 
 		$this->renderSelectForm( $selected );
 
 		if ( $collated ) {
+			if ( $skipped > 0 ) {
+				/* translators: %d: number of entries left out. */
+				echo '<div class="notice notice-warning"><p>' . esc_html( sprintf( __( '%d inskrywing(s) is weggelaat omdat hulle geen gradering-momentopname het nie.', 'ink-core' ), $skipped ) ) . '</p></div>';
+			}
+
 			if ( $is_empty ) {
 				echo '<p class="ink-kollasie__leeg">' . esc_html__( 'Hierdie uitdaging het geen mededingende inskrywings nie.', 'ink-core' ) . '</p>';
 			} else {
@@ -130,7 +137,7 @@ class CollationPage {
 	 * persists nothing new (EntryId::assign is first-wins).
 	 *
 	 * @param int $uitdaging_id The round.
-	 * @return array{empty:bool, preview:string, ordered:list<array<string,mixed>>, assignments:array<int,int>}
+	 * @return array{empty:bool, preview:string, ordered:list<array<string,mixed>>, assignments:array<int,int>, skipped:int}
 	 */
 	public function collateRound( int $uitdaging_id ): array {
 		$entries  = $this->entriesFor( $uitdaging_id );
@@ -158,6 +165,9 @@ class CollationPage {
 		}
 
 		Collation::assignRound( $rows );
+
+		// Entries with no Gradering snapshot (or an unknown type) form no judge pool and are left out.
+		$result['skipped'] = max( 0, count( $entries ) - count( $result['ordered'] ) );
 
 		return $result;
 	}
@@ -193,7 +203,7 @@ class CollationPage {
 				'id'          => $id,
 				'type'        => (string) $post->post_type,
 				'gradering'   => Scalar::asString( get_post_meta( $id, Entry::GRADERING_META_KEY, true ) ),
-				'title'       => (string) get_the_title( $post ),
+				'title'       => html_entity_decode( (string) get_the_title( $post ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ), // plain text: get_the_title texturizes quotes/dashes into entities.
 				'content'     => Scalar::asString( $post->post_content ),
 				'author_name' => $author_name,
 			);
@@ -255,7 +265,16 @@ class CollationPage {
 		/* translators: %s: the uitdaging title. */
 		$subject = sprintf( __( 'INK uitdaging — inskrywings vir beoordeling: %s', 'ink-core' ), get_the_title( $uitdaging_id ) );
 
-		$ok = wp_mail( $recipients, $subject, $body );
+		// HTML email, with the plain text as the alternative part for clients that want it.
+		$alt = static function ( $mailer ) use ( $body ): void {
+			if ( $mailer instanceof \PHPMailer\PHPMailer\PHPMailer ) {
+				$mailer->AltBody = $body;
+			}
+		};
+
+		add_action( 'phpmailer_init', $alt );
+		$ok = wp_mail( $recipients, $subject, Collation::toHtml( $body ), array( 'Content-Type: text/html; charset=UTF-8' ) );
+		remove_action( 'phpmailer_init', $alt );
 
 		if ( $ok ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Die beoordelaar-e-pos is gestuur.', 'ink-core' ) . '</p></div>';

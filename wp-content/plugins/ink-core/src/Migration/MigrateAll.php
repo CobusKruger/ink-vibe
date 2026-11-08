@@ -79,6 +79,7 @@ class MigrateAll {
 			array( 'result-posts', 'ink link-result-posts' ),
 			array( 'winners', 'ink import-winners' ),
 			array( 'tier-history', 'ink import-tier-history' ),
+			array( 'entry-gradering', 'ink import-entry-gradering' ),
 			array( 'inkpols', 'ink migrate-inkpols' ),
 			array( 'kompetisies', 'ink migrate-kompetisies' ),
 			array( 'search-index', 'ink rebuild-search-index' ),

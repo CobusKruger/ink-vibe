@@ -68,6 +68,17 @@ $ink_type_label = function_exists( 'ink_foundation_term' )
 $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 	? get_post_type_archive_link( 'uitdaging' )
 	: '';
+
+// A closed round takes no more entries, so its header carries no "Skryf in" button (owner, 2026-11-07).
+$ink_uitdaging_is_open = true;
+if ( class_exists( '\Ink\Challenges\CurrentChallenge' ) && class_exists( '\Ink\Challenges\Cadence' ) ) {
+	$ink_uitdaging_id      = (int) get_the_ID();
+	$ink_uitdaging_is_open = \Ink\Challenges\CurrentChallenge::isOpen(
+		\Ink\Challenges\Cadence::closeFor( $ink_uitdaging_id ),
+		\Ink\Challenges\Cadence::forUitdaging( $ink_uitdaging_id ),
+		\Ink\Kernel\Sast::now()
+	);
+}
 ?>
 <!-- wp:group {"tagName":"section","align":"full","className":"ink-uitdaging__hero ink-band ink-band--hero ink-band--border-b","lock":{"move":true,"remove":true},"style":{"spacing":{"padding":{"left":"var:preset|spacing|s-16","right":"var:preset|spacing|s-16"}}},"layout":{"type":"constrained"}} -->
 <section data-audit-id="uitdaging-hero" class="wp-block-group alignfull ink-uitdaging__hero ink-band ink-band--hero ink-band--border-b" style="padding-right:var(--wp--preset--spacing--s-16);padding-left:var(--wp--preset--spacing--s-16)">
@@ -93,9 +104,11 @@ $ink_uitdaging_archive = function_exists( 'get_post_type_archive_link' )
 
 		<!-- wp:buttons {"lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-12"}}} -->
 		<div data-audit-id="uitdaging-actions" class="wp-block-buttons">
+			<?php if ( $ink_uitdaging_is_open ) : ?>
 			<!-- wp:button {"className":"is-style-ink-primary ink-btn-lg"} -->
 			<div class="wp-block-button is-style-ink-primary ink-btn-lg"><a data-audit-id="uitdaging-btn-primary" class="wp-block-button__link wp-element-button" href="/skryf"><?php echo ink_foundation_icon( '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>' ) . esc_html__( 'Skryf in', 'ink-foundation' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ink_foundation_icon() returns trusted, self-escaped inline SVG; the label is esc_html__(). ?></a></div>
 			<!-- /wp:button -->
+			<?php endif; ?>
 
 			<!-- wp:button {"className":"is-style-ink-outline ink-btn-lg"} -->
 			<div class="wp-block-button is-style-ink-outline ink-btn-lg"><a data-audit-id="uitdaging-btn-outline" class="wp-block-button__link wp-element-button" href="#inskrywings"><?php echo esc_html__( 'Lees inskrywings', 'ink-foundation' ) . ink_foundation_icon( '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the label is esc_html__(); ink_foundation_icon() returns trusted, self-escaped inline SVG. ?></a></div>

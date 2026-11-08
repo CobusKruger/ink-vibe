@@ -10,35 +10,44 @@ declare(strict_types=1);
 namespace Ink\Discovery;
 
 use Ink\Content\PostTypes;
-use Ink\I18n\Terms;
+use Ink\Migration\TextKey;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Maintains the accent-folded search indexes the {@see Search} block matches on.
+ * Maintains the comparison-key indexes the {@see Search} block matches on.
  *
- * AD-7's normalized-index fallback: a work's title + body and a writer's name +
- * bio + published-form labels are folded ({@see Diacritics::fold()}) on save into
- * `_ink_soek_indeks` (post) / `ink_skrywer_soek_indeks` (user). Search folds the
- * query the same way and matches `LIKE`, so accents never matter. The assembly is
- * pure (testable); the hooks are thin glue.
+ * Every index value is a {@see TextKey::spaced()} key: lowercase, no accents, no
+ * punctuation, and any run of spaces or line breaks as one space (words stay apart).
+ * Search keys the query the same way and matches `LIKE`. A work has two indexes, its
+ * title and its body, so title and content matches can be ranked apart. A writer has
+ * one: display name, nice name and user name, each wrapped in `|` so an exact name
+ * can be told from a partial one. The assembly is pure (testable); the hooks are
+ * thin glue.
  *
- * Conflation-clean: `PostTypes` + the 8.3 `SkrywerIndex` flags + WP core only;
- * zero `Ink\Tiers`/`Ink\Entitlement`.
+ * Conflation-clean: `PostTypes` + WP core + the pure `TextKey` only; zero
+ * `Ink\Tiers`/`Ink\Entitlement`.
  *
  * @package Ink\Core
  */
 final class SearchIndex {
 
 	/**
-	 * Post-meta: a work's folded search index (title + body).
+	 * Post-meta: a work's title key.
 	 *
 	 * @var string
 	 */
-	public const WORKS_META = '_ink_soek_indeks';
+	public const TITLE_META = '_ink_soek_titel';
 
 	/**
-	 * User-meta: a writer's folded search index (name + bio + genre labels).
+	 * Post-meta: a work's body key (tags stripped).
+	 *
+	 * @var string
+	 */
+	public const BODY_META = '_ink_soek_inhoud';
+
+	/**
+	 * User-meta: a writer's name keys (display name, nice name, user name), each wrapped in `|`.
 	 *
 	 * @var string
 	 */
@@ -51,8 +60,6 @@ final class SearchIndex {
 		add_action( 'save_post', array( self::class, 'onSavePost' ), 20, 2 );
 		add_action( 'profile_update', array( self::class, 'onProfileChange' ) );
 		add_action( 'user_register', array( self::class, 'onProfileChange' ) );
-		// A new publication can add a form ("genre") to the writer's index.
-		add_action( 'transition_post_status', array( self::class, 'onTransition' ), 20, 3 );
 
 		if ( defined( 'WP_CLI' ) && constant( 'WP_CLI' ) && class_exists( '\WP_CLI' ) ) {
 			\WP_CLI::add_command(
@@ -99,7 +106,7 @@ final class SearchIndex {
 			$post = get_post( (int) $id );
 
 			if ( $post instanceof \WP_Post ) {
-				update_post_meta( $post->ID, self::WORKS_META, self::worksIndexFor( $post->post_title, $post->post_content ) );
+				self::indexWork( $post->ID, $post->post_title, $post->post_content );
 
 				// The publish-transition denormalisations migrated posts never got
 				// (Skrywers tab flags/dates/read seed; "Mees geliefd" reaction seed).
@@ -132,26 +139,54 @@ final class SearchIndex {
 	}
 
 	/**
-	 * Assemble a work's folded search index. Pure.
+	 * A work's title key. Pure.
 	 *
 	 * @param string $title The work title.
-	 * @param string $body  The work body (HTML — tags are stripped).
 	 * @return string
 	 */
-	public static function worksIndexFor( string $title, string $body ): string {
-		return Diacritics::fold( $title . ' ' . wp_strip_all_tags( $body ) );
+	public static function titleKey( string $title ): string {
+		return TextKey::spaced( $title );
 	}
 
 	/**
-	 * Assemble a writer's folded search index from its parts. Pure.
+	 * A work's body key: the text only, never the HTML. Block tags and `<br>` count as a space (so
+	 * lines and paragraphs don't run together), all other tags, comments, scripts and styles go,
+	 * and entities are decoded. Pure.
 	 *
-	 * @param string       $name         Display name.
-	 * @param string       $bio          Profile bio/description.
-	 * @param list<string> $genre_labels The Afrikaans labels of the writer's forms.
+	 * @param string $body The work body (HTML).
 	 * @return string
 	 */
-	public static function skrywerIndexValue( string $name, string $bio, array $genre_labels ): string {
-		return Diacritics::fold( $name . ' ' . $bio . ' ' . implode( ' ', $genre_labels ) );
+	public static function bodyKey( string $body ): string {
+		$spaced = (string) preg_replace( '#</?(?:br|p|div|li|ul|ol|h[1-6]|blockquote|pre|tr|td|th|figure|figcaption|hr)\b[^>]*>#i', ' ', $body );
+
+		return TextKey::spaced( wp_strip_all_tags( $spaced ) );
+	}
+
+	/**
+	 * A writer's name index: the distinct non-empty keys of display name, nice name and user name,
+	 * each wrapped in `|` (`|anna visser|anna|`). Pure.
+	 *
+	 * @param string $display_name The display name.
+	 * @param string $nicename     The nice name (`user_nicename`).
+	 * @param string $login        The user name (`user_login`).
+	 * @return string
+	 */
+	public static function skrywerIndexValue( string $display_name, string $nicename, string $login ): string {
+		$keys = array_values( array_unique( array_filter( array( TextKey::spaced( $display_name ), TextKey::spaced( $nicename ), TextKey::spaced( $login ) ), static fn ( string $k ): bool => '' !== $k ) ) );
+
+		return array() === $keys ? '' : '|' . implode( '|', $keys ) . '|';
+	}
+
+	/**
+	 * Persist a work's title and body keys.
+	 *
+	 * @param int    $post_id The post id.
+	 * @param string $title   The title.
+	 * @param string $body    The body.
+	 */
+	private static function indexWork( int $post_id, string $title, string $body ): void {
+		update_post_meta( $post_id, self::TITLE_META, self::titleKey( $title ) );
+		update_post_meta( $post_id, self::BODY_META, self::bodyKey( $body ) );
 	}
 
 	/**
@@ -172,7 +207,7 @@ final class SearchIndex {
 		$title = isset( $post->post_title ) ? (string) $post->post_title : '';
 		$body  = isset( $post->post_content ) ? (string) $post->post_content : '';
 
-		update_post_meta( $post_id, self::WORKS_META, self::worksIndexFor( $title, $body ) );
+		self::indexWork( $post_id, $title, $body );
 	}
 
 	/**
@@ -185,26 +220,7 @@ final class SearchIndex {
 	}
 
 	/**
-	 * Rebuild the author's index when a publication adds/refreshes a form.
-	 *
-	 * @param string $new_status The new post status.
-	 * @param string $old_status The previous post status.
-	 * @param object $post       The post (a `WP_Post` at runtime).
-	 */
-	public static function onTransition( string $new_status, string $old_status, $post ): void {
-		if ( 'publish' !== $new_status || ! is_object( $post ) || ! isset( $post->post_type, $post->post_author ) ) {
-			return;
-		}
-
-		if ( ! in_array( (string) $post->post_type, self::readableTypes(), true ) ) {
-			return;
-		}
-
-		self::rebuildSkrywer( (int) $post->post_author );
-	}
-
-	/**
-	 * Rebuild + persist a writer's folded search index.
+	 * Rebuild + persist a writer's name index.
 	 *
 	 * @param int $user_id The writer.
 	 */
@@ -213,29 +229,12 @@ final class SearchIndex {
 			return;
 		}
 
-		$name = (string) get_the_author_meta( 'display_name', $user_id );
-		$bio  = (string) get_the_author_meta( 'description', $user_id );
+		$user = get_userdata( $user_id );
 
-		$genre_labels = array();
-
-		foreach ( self::readableTypes() as $type ) {
-			if ( '1' === (string) get_user_meta( $user_id, SkrywerIndex::formFlagKey( $type ), true ) ) {
-				$genre = array_search(
-					$type,
-					array(
-						'digkuns'  => PostTypes::GEDIG,
-						'prosa'    => PostTypes::STORIE,
-						'artikels' => PostTypes::ARTIKEL,
-					),
-					true
-				);
-
-				if ( is_string( $genre ) ) {
-					$genre_labels[] = Terms::label( 'skrywer_genre_' . $genre );
-				}
-			}
+		if ( ! $user instanceof \WP_User ) {
+			return;
 		}
 
-		update_user_meta( $user_id, self::SKRYWER_META, self::skrywerIndexValue( $name, $bio, $genre_labels ) );
+		update_user_meta( $user_id, self::SKRYWER_META, self::skrywerIndexValue( (string) $user->display_name, (string) $user->user_nicename, (string) $user->user_login ) );
 	}
 }

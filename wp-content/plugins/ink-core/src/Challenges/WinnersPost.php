@@ -360,8 +360,10 @@ class WinnersPost {
 	}
 
 	/**
-	 * The most-recent announcement post id (0 if none). The public read behind the results
-	 * banner and the home winners. Overridable seam.
+	 * The announcement post id of the latest round (0 if none): the round that closed last, not the
+	 * announcement written last, so publishing an older round's results later (August after
+	 * September) never replaces the newer round on the home page. The public read behind the
+	 * results banner and the home winners. Overridable seam.
 	 *
 	 * @return int
 	 */
@@ -370,7 +372,7 @@ class WinnersPost {
 			array(
 				'post_type'        => 'post',
 				'post_status'      => 'publish',
-				'numberposts'      => 1,
+				'numberposts'      => 60,
 				'orderby'          => 'date',
 				'order'            => 'DESC',
 				'fields'           => 'ids',
@@ -379,7 +381,32 @@ class WinnersPost {
 			)
 		);
 
-		return is_array( $ids ) && isset( $ids[0] ) ? (int) $ids[0] : 0;
+		$best       = 0;
+		$best_close = '';
+
+		// Newest announcement first, so a round with no close date (or a tie) keeps the newest.
+		foreach ( is_array( $ids ) ? $ids : array() as $id ) {
+			$close = $this->closeOf( (int) get_post_meta( (int) $id, self::UITDAGING_META, true ) );
+
+			if ( 0 === $best || strcmp( $close, $best_close ) > 0 ) {
+				$best       = (int) $id;
+				$best_close = $close;
+			}
+		}
+
+		return $best;
+	}
+
+	/**
+	 * When a round closes, `Y-m-d`, or '' with no close date. Overridable seam.
+	 *
+	 * @param int $uitdaging_id The round.
+	 * @return string
+	 */
+	protected function closeOf( int $uitdaging_id ): string {
+		$close = $uitdaging_id > 0 ? Cadence::closeFor( $uitdaging_id ) : null;
+
+		return null === $close ? '' : $close->format( 'Y-m-d' );
 	}
 
 	/**

@@ -240,3 +240,34 @@ test( 'featured collapses (returns the incoming value) when there is no announce
 
 	expect( $wp->featured( null ) )->toBeNull();
 } );
+
+test( 'latestAnnouncement is the round that closed last, not the announcement written last', function (): void {
+	// Announcements newest-written first: August (written today), then September.
+	Functions\when( 'get_posts' )->justReturn( array( 901, 902 ) );
+	Functions\when( 'get_post_meta' )->alias( static fn ( int $id ): int => 901 === $id ? 1 : 2 );
+
+	$post = new class() extends WinnersPost {
+		protected function closeOf( int $uitdaging_id ): string {
+			return 1 === $uitdaging_id ? '2026-08-31' : '2026-09-30';
+		}
+	};
+
+	expect( $post->latestAnnouncement() )->toBe( 902 );
+} );
+
+test( 'latestAnnouncement keeps the newest announcement when the rounds close alike or have no close', function (): void {
+	Functions\when( 'get_posts' )->justReturn( array( 901, 902 ) );
+	Functions\when( 'get_post_meta' )->alias( static fn ( int $id ): int => 901 === $id ? 1 : 2 );
+
+	$post = new class() extends WinnersPost {
+		protected function closeOf( int $uitdaging_id ): string {
+			return '';
+		}
+	};
+
+	expect( $post->latestAnnouncement() )->toBe( 901 );
+
+	Functions\when( 'get_posts' )->justReturn( array() );
+
+	expect( $post->latestAnnouncement() )->toBe( 0 );
+} );

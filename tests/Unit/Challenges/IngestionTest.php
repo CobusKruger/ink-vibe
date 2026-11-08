@@ -20,6 +20,7 @@ use Brain\Monkey\Functions;
 beforeEach( function (): void {
 	Monkey\setUp();
 	Functions\when( '__' )->returnArg( 1 );
+	Functions\when( 'get_the_author_meta' )->justReturn( '' );
 } );
 
 afterEach( function (): void {
@@ -45,6 +46,14 @@ function ink_test_ingestion(): Ingestion {
 		public array $biblioteek_ids     = array();
 		public int $winners_post_calls   = 0;
 		public int $feedback_calls       = 0;
+		/** @var array<int,int> Gedig wins per writer an earlier import already counted for the round. */
+		public array $imported           = array();
+		public int $taken_over_calls     = 0;
+
+		protected function takeOverImported( int $uitdaging_id ): array {
+			++$this->taken_over_calls;
+			return $this->imported;
+		}
 
 		public function isCommitted( int $uitdaging_id ): bool {
 			return $this->committed_flag;
@@ -321,4 +330,208 @@ test( 'only Gedigte wins reach the promotion engine', function (): void {
 	);
 
 	expect( $ing->awarded )->toBe( array( 100 => 1 ) );
+} );
+
+/**
+ * An IngestionPage over a fixed round: three poems (two Brons, one Silwer) and two articles.
+ * Only two poems carry an EntryID, and the numbers are NOT the judges' (a round judged from an older list).
+ */
+function ink_test_page(): IngestionPage {
+	return new class() extends IngestionPage {
+		protected function entriesFor( int $uitdaging_id ): array {
+			return array(
+				array( 'id' => 10, 'entry_id' => 'Gedig 1', 'type' => 'gedig', 'author_id' => 100, 'title' => 'Maanlig', 'gradering' => 'brons' ),
+				array( 'id' => 11, 'entry_id' => 'Gedig 2', 'type' => 'gedig', 'author_id' => 200, 'title' => '’n Wêreld in ’n sandkorrel', 'gradering' => 'brons' ),
+				array( 'id' => 12, 'entry_id' => '', 'type' => 'gedig', 'author_id' => 300, 'title' => 'Quo Vadis', 'gradering' => 'silwer' ),
+				array( 'id' => 20, 'entry_id' => '', 'type' => 'artikel', 'author_id' => 400, 'title' => 'Halfvol in Italië', 'gradering' => 'brons' ),
+				array( 'id' => 21, 'entry_id' => '', 'type' => 'artikel', 'author_id' => 500, 'title' => 'Padkos vir die hart', 'gradering' => 'goud' ),
+			);
+		}
+
+		protected function authorName( int $author_id ): string {
+			return 'Skrywer ' . $author_id;
+		}
+	};
+}
+
+/** The judges' own layout, numbered differently from the site. */
+const INK_TEST_JUDGES = "INK SIA 2026 KOMMENTAAR EN UITSLAE\nWENNERS\nBRONS: (1) No 5 (2) No 3 (3) Geen\nSILWER: (1) No 9\nPROSA: (1) No 2 (2) No 1\n\nBRONS\n3. Maanlig\nMooi.\n5. Die wêreld is ’n sandkorrel\nSterk.\n\nSILWER\n9. Que Vadis\nGoed.\n\nPROSA\nHalfvol Italie\nTe kort.\nPadkos vir die hart\nUitstaande.\n";
+
+test( 'analyse matches the judges\' entries by title, not by their numbers', function (): void {
+	$analysis = ink_test_page()->analyse( 7, INK_TEST_JUDGES );
+
+	// No 3 is "Maanlig" on the judges' list, which the site numbers Gedig 1; the title decides.
+	expect( array_column( $analysis['doc_rows'], 'post_id' ) )->toBe( array( 10, 11, 12, 20, 21 ) );
+	expect( array_column( $analysis['doc_rows'], 'status' ) )->toBe( array( 'gepas', 'ooreenkoms', 'ooreenkoms', 'ooreenkoms', 'gepas' ) );
+	// Winners follow their entry: Brons 1st No 5 = the Wêreld poem, 2nd No 3 = Maanlig; Prosa 1st No 2 = Padkos.
+	expect( $analysis['winners'] )->toBe(
+		array(
+			array( 'post_id' => 11, 'rank' => 1, 'author_id' => 200 ),
+			array( 'post_id' => 10, 'rank' => 2, 'author_id' => 100 ),
+			array( 'post_id' => 12, 'rank' => 1, 'author_id' => 300 ),
+			array( 'post_id' => 21, 'rank' => 1, 'author_id' => 500 ),
+			array( 'post_id' => 20, 'rank' => 2, 'author_id' => 400 ),
+		)
+	);
+	expect( \Ink\Challenges\Coverage::blocksCommit( $analysis['report'] ) )->toBeFalse();
+	expect( array_column( $analysis['commentary'], 'post_id' ) )->toBe( array( 10, 11, 12, 20, 21 ) );
+	expect( $analysis['without'] )->toBe( array() );
+	// The dropdown lists every entry, numbered or not, by type, pool and title.
+	expect( array_values( $analysis['options'] ) )->toBe(
+		array(
+			'Artikel — Halfvol in Italië (Skrywer 400)',
+			'Artikel — Padkos vir die hart (Skrywer 500)',
+			'Gedig Brons — Maanlig (Skrywer 100)',
+			'Gedig Brons — ’n Wêreld in ’n sandkorrel (Skrywer 200)',
+			'Gedig Silwer — Quo Vadis (Skrywer 300)',
+		)
+	);
+} );
+
+test( 'an entry nothing matches blocks the commit until the editor picks one', function (): void {
+	$text = "WENNERS\nBRONS: (1) No 7\n\nBRONS\n7. Iets heeltemal anders\nGoed.\n";
+
+	$analysis = ink_test_page()->analyse( 7, $text );
+
+	expect( $analysis['doc_rows'][0]['status'] )->toBe( 'ongepas' );
+	expect( $analysis['winner_rows'][0]['status'] )->toBe( 'ongepas' );
+	expect( $analysis['winners'] )->toBe( array() );
+	expect( \Ink\Challenges\Coverage::blocksCommit( $analysis['report'] ) )->toBeTrue();
+
+	$fixed = ink_test_page()->analyse( 7, $text, array( 0 => 10 ) );
+
+	expect( $fixed['doc_rows'][0]['status'] )->toBe( 'gewysig' );
+	expect( $fixed['winners'] )->toBe( array( array( 'post_id' => 10, 'rank' => 1, 'author_id' => 100 ) ) );
+	expect( array_column( $fixed['commentary'], 'post_id' ) )->toBe( array( 10 ) );
+	expect( \Ink\Challenges\Coverage::blocksCommit( $fixed['report'] ) )->toBeFalse();
+} );
+
+test( 'a stale EntryID on the site never stands in for a title: the same number, another poem, is no match', function (): void {
+	// The site\'s Gedig 1 is "Maanlig"; the judges\' No 1 is a poem the round does not hold.
+	$analysis = ink_test_page()->analyse( 7, "WENNERS\nBRONS: (1) No 1\n\nBRONS\n1. Nag oor die dorp\nGoed.\n" );
+
+	expect( $analysis['doc_rows'][0]['status'] )->toBe( 'ongepas' );
+	expect( $analysis['winners'] )->toBe( array() );
+} );
+
+test( 'a correction can leave an entry out, or move a match onto an entry already placed (blocked)', function (): void {
+	$left_out = ink_test_page()->analyse( 7, INK_TEST_JUDGES, array( 3 => -1 ) );
+	expect( $left_out['doc_rows'][3]['status'] )->toBe( 'uitgelaat' );
+	expect( array_column( $left_out['winners'], 'post_id' ) )->not->toContain( 20 );
+	expect( \Ink\Challenges\Coverage::blocksCommit( $left_out['report'] ) )->toBeFalse();
+
+	// Both prosa winners now point at the same article.
+	$twice = ink_test_page()->analyse( 7, INK_TEST_JUDGES, array( 3 => 21 ) );
+	expect( \Ink\Challenges\Coverage::blocksCommit( $twice['report'] ) )->toBeTrue();
+	expect( $twice['doc_rows'][3]['shared'] )->toBeTrue();
+
+	// A post id outside the round is never accepted: it counts as nothing chosen.
+	$foreign = ink_test_page()->analyse( 7, INK_TEST_JUDGES, array( 3 => 999 ) );
+	expect( $foreign['doc_rows'][3]['status'] )->toBe( 'ongepas' );
+	expect( \Ink\Challenges\Coverage::blocksCommit( $foreign['report'] ) )->toBeTrue();
+} );
+
+test( 'entries without a comment are listed, and a winner with no comment is matched on its number', function (): void {
+	$page = new class() extends IngestionPage {
+		protected function entriesFor( int $uitdaging_id ): array {
+			return array(
+				array( 'id' => 10, 'entry_id' => 'Gedig 1', 'author_id' => 100, 'title' => 'Maanlig', 'gradering' => 'brons' ),
+				array( 'id' => 11, 'entry_id' => 'Gedig 2', 'author_id' => 200, 'title' => 'Nag', 'gradering' => 'brons' ),
+			);
+		}
+	};
+
+	$analysis = $page->analyse( 7, "WENNERS\nBrons Gedigte\n1ste: Gedig 1" );
+
+	expect( $analysis['doc_rows'][0]['status'] )->toBe( 'nommer' );
+	expect( $analysis['winners'] )->toBe( array( array( 'post_id' => 10, 'rank' => 1, 'author_id' => 100 ) ) );
+	// No comment was read at all, so "every entry lacks one" is left to the problems, not listed.
+	expect( $analysis['without'] )->toBe( array() );
+
+	$with = $page->analyse( 7, "WENNERS
+Brons Gedigte
+1ste: Gedig 1
+KOMMENTAAR
+Gedig 1: Maanlig
+Mooi." );
+
+	expect( $with['without'] )->toBe( array( 'Nag' ) );
+} );
+
+test( 'a file with nothing readable returns the problems and no rows', function (): void {
+	$analysis = ink_test_page()->analyse( 7, "Gedig 3 was mooi
+" );
+
+	expect( $analysis['winner_rows'] )->toBe( array() );
+	expect( $analysis['doc_rows'] )->toBe( array() );
+	expect( $analysis['without'] )->toBe( array() );
+	expect( $analysis['problems'][0] )->toContain( 'WENNERS' );
+} );
+
+test( 'rounds are ordered by close date, newest first, and the default is the newest closed round without results', function (): void {
+	$rounds = IngestionPage::sortByClose(
+		array(
+			array( 'id' => 1, 'title' => 'Aug', 'close' => '2026-08-31', 'committed' => true ),
+			array( 'id' => 2, 'title' => 'Nov', 'close' => '2026-11-30', 'committed' => false ),
+			array( 'id' => 3, 'title' => 'Jaar', 'close' => '', 'committed' => false ),
+			array( 'id' => 4, 'title' => 'Okt', 'close' => '2026-10-31', 'committed' => false ),
+			array( 'id' => 5, 'title' => 'Sep', 'close' => '2026-09-30', 'committed' => true ),
+		)
+	);
+
+	expect( array_column( $rounds, 'id' ) )->toBe( array( 2, 4, 5, 1, 3 ) );
+	expect( IngestionPage::defaultRound( $rounds, '2026-11-07' ) )->toBe( 4 );  // Nov has not closed.
+	expect( IngestionPage::defaultRound( $rounds, '2026-05-01' ) )->toBe( 2 );  // None closed: the newest.
+	expect( IngestionPage::defaultRound( array(), '2026-11-07' ) )->toBe( 0 );
+} );
+
+test( 'a round whose wins were imported is taken over: only wins the writers do not already have are awarded', function (): void {
+	$ing           = ink_test_ingestion();
+	$ing->imported = array( 100 => 1, 200 => 1 ); // The import already counted one Gedig win each.
+
+	$result = $ing->commit(
+		7,
+		array(
+			array( 'post_id' => 10, 'rank' => 1, 'author_id' => 100 ), // Same win as imported: not awarded again.
+			array( 'post_id' => 11, 'rank' => 2, 'author_id' => 300 ), // A writer the import did not have: awarded.
+		),
+		array()
+	);
+
+	expect( $ing->taken_over_calls )->toBe( 1 );
+	expect( $ing->awarded )->toBe( array( 300 => 1 ) );
+	expect( $result['placed'] )->toBe( 2 );
+} );
+
+test( 'a writer with more wins this round than the import counted is awarded the difference', function (): void {
+	$ing           = ink_test_ingestion();
+	$ing->imported = array( 100 => 1 );
+
+	$ing->commit(
+		7,
+		array(
+			array( 'post_id' => 10, 'rank' => 1, 'author_id' => 100 ),
+			array( 'post_id' => 11, 'rank' => 2, 'author_id' => 100 ),
+		),
+		array()
+	);
+
+	expect( $ing->awarded )->toBe( array( 100 => 1 ) );
+} );
+
+test( 'an unclassified entry (skryfwerk) can be matched by title and is flagged, so a winner is not stranded', function (): void {
+	$page = new class() extends IngestionPage {
+		protected function entriesFor( int $uitdaging_id ): array {
+			return array(
+				array( 'id' => 10, 'entry_id' => '', 'type' => 'skryfwerk', 'author_id' => 100, 'title' => 'Lente in die skoolgange', 'gradering' => 'brons' ),
+			);
+		}
+	};
+
+	$analysis = $page->analyse( 7, "WENNERS\nBRONS: (1) No 14\n\nBRONS\n14. Lente in die skoolgange\nMooi.\n" );
+
+	expect( $analysis['doc_rows'][0]['post_id'] )->toBe( 10 );
+	expect( $analysis['doc_rows'][0]['unsorted'] )->toBeTrue();
+	expect( $analysis['winners'] )->toBe( array( array( 'post_id' => 10, 'rank' => 1, 'author_id' => 100 ) ) );
+	expect( array_values( $analysis['options'] ) )->toBe( array( 'Skryfwerk Brons — Lente in die skoolgange' ) );
 } );

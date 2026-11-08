@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace Ink\Discovery;
 
 use Ink\I18n\Terms;
+use Ink\Social\Api as SocialApi;
+use Ink\Social\FollowToggle;
 use Ink\Tiers\Api as TiersApi;
 
 defined( 'ABSPATH' ) || exit;
@@ -19,9 +21,9 @@ defined( 'ABSPATH' ) || exit;
  *
  * A SERVER-RENDERED `WP_User_Query` (AD-7 — core Query Loop cannot query users)
  * over the writers (members with a first-publication), filterable by genre
- * (Digkuns/Prosa/Artikels — the FORM of their published work, via the
+ * (Gedigte/Stories/Artikels — the FORM of their published work, via the
  * {@see SkrywerIndex} denormalized flags) and sortable by Meeste gelees (read
- * total) / Nuwe stemme (first-publish recency). Each card shows the writer's
+ * total) / Nuwe stemme (first-publish recency) / Onlangs aktief (last-publish recency). Each card shows the writer's
  * Gradering (read via the {@see TiersApi} facade — display only).
  *
  * Conflation-clean: reads the Tiers Api for DISPLAY, never gates discovery on a
@@ -34,6 +36,13 @@ final class SkrywersTab {
 	public const BLOCK = 'ink/ontdek-skrywers';
 
 	public const PER_PAGE = 12;
+
+	/**
+	 * How many of the most recent submissions "Onlangs aktief" looks at.
+	 *
+	 * @var int
+	 */
+	public const AKTIEF_WINDOW = 60;
 
 	public const GENRE_VAR = 'skrywer_genre';
 	public const SORT_VAR  = 'skrywer_sorteer';
@@ -52,6 +61,14 @@ final class SkrywersTab {
 	 * @var string
 	 */
 	public const SORT_NUWE = 'nuwe_stemme';
+
+	/**
+	 * Sort: recently active — the writers behind the most recent submissions, in the
+	 * order those submissions were made (each writer once).
+	 *
+	 * @var string
+	 */
+	public const SORT_AKTIEF = 'onlangs_aktief';
 
 	/**
 	 * Register the server-rendered block.
@@ -95,7 +112,7 @@ final class SkrywersTab {
 	 * @return list<string>
 	 */
 	public static function allowedSorts(): array {
-		return array( self::SORT_NUWE, self::SORT_GELEES );
+		return array( self::SORT_NUWE, self::SORT_AKTIEF, self::SORT_GELEES );
 	}
 
 	/**
@@ -110,9 +127,10 @@ final class SkrywersTab {
 	 * @param string      $sort     One of {@see self::allowedSorts()}.
 	 * @param int         $paged    The page (clamped to >= 1).
 	 * @param int         $per_page Writers per page.
+	 * @param list<int>   $recent_ids For SORT_AKTIEF: the writers behind the most recent submissions, most recent first.
 	 * @return array<string, mixed>
 	 */
-	public static function queryArgs( ?string $genre, string $sort, int $paged, int $per_page ): array {
+	public static function queryArgs( ?string $genre, string $sort, int $paged, int $per_page, array $recent_ids = array() ): array {
 		$sort = in_array( $sort, self::allowedSorts(), true ) ? $sort : self::SORT_NUWE;
 
 		$meta_query = array(
@@ -129,6 +147,19 @@ final class SkrywersTab {
 			$meta_query['vorm'] = array(
 				'key'   => SkrywerIndex::formFlagKey( $type ),
 				'value' => '1',
+			);
+		}
+
+		if ( self::SORT_AKTIEF === $sort ) {
+			// Only the writers behind the latest submissions, in submission order (none ⇒ id 0 matches nobody).
+			return array(
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- discovery-scoped, paged WP_User_Query on indexed denorm meta (AD-7).
+				'meta_query' => $meta_query,
+				'include'    => array() === $recent_ids ? array( 0 ) : array_values( $recent_ids ),
+				'orderby'    => 'include',
+				'number'     => $per_page,
+				'paged'      => max( 1, $paged ),
+				'fields'     => 'ID',
 			);
 		}
 
@@ -165,7 +196,8 @@ final class SkrywersTab {
 		$active_genre = in_array( $genre_raw, self::allowedGenres(), true ) ? $genre_raw : null;
 		$active_sort  = in_array( $sort_raw, self::allowedSorts(), true ) ? $sort_raw : self::SORT_NUWE;
 
-		$query = new \WP_User_Query( self::queryArgs( $active_genre, $active_sort, $paged, self::PER_PAGE ) );
+		$recent = ( self::SORT_AKTIEF === $active_sort ) ? self::recentSubmissionAuthors( $active_genre ) : array();
+		$query  = new \WP_User_Query( self::queryArgs( $active_genre, $active_sort, $paged, self::PER_PAGE, $recent ) );
 
 		$cards = array();
 
@@ -174,14 +206,26 @@ final class SkrywersTab {
 				continue;
 			}
 
+			$viewer = get_current_user_id();
+
 			$cards[] = array(
+				'id'          => $uid,
 				'name'        => (string) get_the_author_meta( 'display_name', $uid ),
 				'profile_url' => (string) get_author_posts_url( $uid ),
 				'gradering'   => Terms::label( TiersApi::forUser( $uid )->value ),
 				'tier'        => TiersApi::forUser( $uid )->value,
-				'bio'         => (string) get_the_author_meta( 'description', $uid ),
+				// The profile's bio source (description, else the prod BuddyPress "Biografie").
+				'bio'         => SocialApi::bioFor( $uid ),
 				'avatar_url'  => (string) get_avatar_url( $uid, array( 'size' => 128 ) ),
 				'genres'      => self::genreLabelsFor( $uid ),
+				'stats'       => array(
+					'works'     => SocialApi::workCountFor( $uid ),
+					'followers' => SocialApi::followerCount( $uid ),
+					'hartjies'  => SocialApi::hartjieTotalFor( $uid ),
+				),
+				// null = no Follow action (the viewer is this writer); false/true = viewer follows.
+				'following'   => ( $viewer === $uid ) ? null : ( $viewer > 0 && SocialApi::isFollowing( $viewer, $uid ) ),
+				'logged_in'   => $viewer > 0,
 			);
 		}
 
@@ -197,6 +241,40 @@ final class SkrywersTab {
 				'sort'      => $active_sort,
 			)
 		);
+	}
+
+	/**
+	 * The writers behind the most recent submissions (published bydraes, optionally of
+	 * one genre's form), most recent first, each writer once. Impure (DB).
+	 *
+	 * @param string|null $genre A genre filter, or null for every form.
+	 * @return list<int>
+	 */
+	private static function recentSubmissionAuthors( ?string $genre ): array {
+		$type  = ( null !== $genre ) ? SkrywerIndex::genreToType( $genre ) : null;
+		$posts = get_posts(
+			array(
+				'post_type'      => null !== $type ? $type : SkrywerIndex::readableTypes(),
+				'post_status'    => 'publish',
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+				'posts_per_page' => self::AKTIEF_WINDOW,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+			)
+		);
+
+		$authors = array();
+
+		foreach ( $posts as $post_id ) {
+			$author = (int) get_post_field( 'post_author', (int) $post_id );
+
+			if ( $author > 0 ) {
+				$authors[ $author ] = $author;
+			}
+		}
+
+		return array_values( $authors );
 	}
 
 	/**
@@ -272,11 +350,10 @@ final class SkrywersTab {
 
 	/**
 	 * A writer's genre labels — the Afrikaans labels of their published forms.
-	 * Impure (user-meta reads). Mirrors {@see \Ink\Discovery\SearchIndex::rebuildSkrywer()}'s
-	 * type→genre reverse-map.
+	 * Impure (user-meta reads). Uses the type→genre reverse-map.
 	 *
 	 * @param int $user_id The writer.
-	 * @return list<string>
+	 * @return array<string, string> Genre slug → label.
 	 */
 	private static function genreLabelsFor( int $user_id ): array {
 		$type_to_genre = array(
@@ -289,7 +366,7 @@ final class SkrywersTab {
 
 		foreach ( $type_to_genre as $type => $genre ) {
 			if ( '1' === (string) get_user_meta( $user_id, SkrywerIndex::formFlagKey( $type ), true ) ) {
-				$labels[] = Terms::label( 'skrywer_genre_' . $genre );
+				$labels[ $genre ] = Terms::label( 'skrywer_genre_' . $genre );
 			}
 		}
 
@@ -320,16 +397,18 @@ final class SkrywersTab {
 		// text-lg` (18/28, regular — Browse.tsx:724) and the genre badges sit inside
 		// the head text column under the name (Browse.tsx:723-738), not below the head.
 		$html .= '<div class="ink-ontdek-skrywers__kop-teks"' . $aid( 'writers-card-head-text' ) . '>'
-			. '<a class="ink-ontdek-skrywers__naam ink-heading-h4 ink-heading-h4-regular"' . $aid( 'writers-card-name' ) . ' href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>'
-			. '<span class="' . esc_attr( 'ink-ontdek-skrywers__gradering ' . self::tierLabelClasses( (string) ( $card['tier'] ?? '' ) ) ) . '"' . $aid( 'writers-card-grade' ) . '>' . esc_html( $card['gradering'] ) . '</span>';
+			. '<a class="ink-ontdek-skrywers__naam ink-heading-h4 ink-heading-h4-regular"' . $aid( 'writers-card-name' ) . ' href="' . esc_url( $card['profile_url'] ) . '">' . esc_html( $card['name'] ) . '</a>';
 
 		if ( array() !== $genres ) {
 			$html .= '<div class="ink-ontdek-skrywers__genres"' . $aid( 'writers-card-genres' ) . '>';
 
 			$first_genre = true;
 
-			foreach ( $genres as $genre_label ) {
-				$html       .= '<span class="ink-ontdek-skrywers__genre-pil ink-pill ink-pill--outline"' . $aid( 'writers-card-genre', $first_genre ) . '>' . esc_html( $genre_label ) . '</span>';
+			foreach ( $genres as $genre_key => $genre_label ) {
+				// The Gedigte pill carries the writer's Gradering (winner-card colours);
+				// a writer who writes no poetry has no Gedigte pill, so no Gradering shows.
+				$pill_class = 'ink-ontdek-skrywers__genre-pil ink-pill ' . ( 'digkuns' === $genre_key ? self::gradingPillClasses( (string) ( $card['tier'] ?? '' ) ) : 'ink-pill--outline' );
+				$html      .= '<span class="' . esc_attr( $pill_class ) . '"' . $aid( 'writers-card-genre', $first_genre ) . '>' . esc_html( $genre_label ) . '</span>';
 				$first_genre = false;
 			}
 
@@ -340,9 +419,91 @@ final class SkrywersTab {
 
 		if ( '' !== $card['bio'] ) {
 			$html .= '<p class="ink-ontdek-skrywers__bio"' . $aid( 'writers-card-bio' ) . '>' . esc_html( $card['bio'] ) . '</p>';
+		} else {
+			// Keep the stats row and Follow button bottom-aligned across a row of cards.
+			$html .= '<span class="ink-ontdek-skrywers__bio-spasie" aria-hidden="true"></span>';
 		}
 
-		return $html . '</li>';
+		return $html . self::statsHtml( $card, $aid ) . self::followHtml( $card, $aid, $audit ) . '</li>';
+	}
+
+	/**
+	 * The pill classes for a Gradering: the winner-card colours (gold/silwer/brons;
+	 * Meester counts as Goud) on the sentence-case outline pill, so it matches the
+	 * Prosa/Artikels pills beside it. Pure. An unknown or empty tier gets the plain outline pill.
+	 *
+	 * @param string $tier The Gradering value.
+	 * @return string
+	 */
+	private static function gradingPillClasses( string $tier ): string {
+		$tier = 'meester' === $tier ? 'goud' : $tier;
+		$map  = array(
+			'goud'   => 'gold',
+			'silwer' => 'silwer',
+			'brons'  => 'brons',
+		);
+
+		return 'ink-pill--outline' . ( isset( $map[ $tier ] ) ? ' ink-pill--tier-' . $map[ $tier ] : '' );
+	}
+
+	/**
+	 * The Werke / Volgelinge / Hartjies strip (Lovable Browse.tsx:743-747). Pure.
+	 *
+	 * @param array<string, mixed> $card The card row.
+	 * @param callable             $aid  The audit-id stamper.
+	 * @return string
+	 */
+	private static function statsHtml( array $card, callable $aid ): string {
+		if ( ! isset( $card['stats'] ) || ! is_array( $card['stats'] ) ) {
+			return '';
+		}
+
+		$stats = array(
+			array( __( 'Werke', 'ink-core' ), (int) ( $card['stats']['works'] ?? 0 ) ),
+			array( __( 'Volgelinge', 'ink-core' ), (int) ( $card['stats']['followers'] ?? 0 ) ),
+			array( __( 'Hartjies', 'ink-core' ), (int) ( $card['stats']['hartjies'] ?? 0 ) ),
+		);
+
+		$html = '<div class="ink-ontdek-skrywers__stats"' . $aid( 'writers-card-stats' ) . '>';
+
+		foreach ( $stats as $stat ) {
+			$html .= '<div class="ink-ontdek-skrywers__stat">'
+				. '<div class="ink-ontdek-skrywers__stat-waarde ink-heading-h4 ink-heading-h4-regular">' . esc_html( number_format_i18n( $stat[1] ) ) . '</div>'
+				. '<div class="ink-stat-label">' . esc_html( $stat[0] ) . '</div>'
+				. '</div>';
+		}
+
+		return $html . '</div>';
+	}
+
+	/**
+	 * The Sien Profiel + Volg / Volg tans button row (Volg: Lovable Browse.tsx:748-755). Pure.
+	 *
+	 * Logged-in viewers get the shared follow toggle (flipped by volg.js); a logged-out
+	 * reader gets the same-looking Volg link to sign in. Nothing on the viewer's own card but Sien Profiel.
+	 *
+	 * @param array<string, mixed> $card The card row.
+	 * @param callable             $aid  The audit-id stamper.
+	 * @return string
+	 */
+	private static function followHtml( array $card, callable $aid, bool $audit ): string {
+		$profile = '<a class="ink-ontdek-skrywers__profiel ink-btn ink-btn--sm ink-btn--outline" href="' . esc_url( (string) $card['profile_url'] ) . '">'
+			. esc_html__( 'Sien Profiel', 'ink-core' ) . '</a>';
+
+		if ( ! array_key_exists( 'following', $card ) || null === $card['following'] || empty( $card['id'] ) ) {
+			return '<div class="ink-ontdek-skrywers__aksies">' . $profile . '</div>';
+		}
+
+		if ( empty( $card['logged_in'] ) ) {
+			$volg = '<a class="ink-ontdek-skrywers__volg ink-btn ink-btn--sm ink-btn--block ink-btn--primary"' . $aid( 'writers-card-btn' )
+				. ' href="' . esc_url( home_url( '/teken-in/' ) ) . '">' . esc_html( Terms::label( 'volg' ) ) . '</a>';
+		} else {
+			$volg = '<div class="ink-ontdek-skrywers__volg">'
+				. FollowToggle::toHtml( (int) $card['id'], (bool) $card['following'], 'sm', $audit ? 'writers-card-btn' : '' )
+				. '</div>';
+		}
+
+		return '<div class="ink-ontdek-skrywers__aksies">' . $profile . $volg . '</div>';
 	}
 
 	/**
@@ -439,9 +600,14 @@ final class SkrywersTab {
 	 * @return string
 	 */
 	private static function sortLabel( string $sort ): string {
-		return ( self::SORT_GELEES === $sort )
-			? __( 'Meeste gelees', 'ink-core' )
-			: __( 'Nuwe stemme', 'ink-core' );
+		switch ( $sort ) {
+			case self::SORT_GELEES:
+				return __( 'Meeste gelees', 'ink-core' );
+			case self::SORT_AKTIEF:
+				return __( 'Onlangs aktief', 'ink-core' );
+			default:
+				return __( 'Nuwe stemme', 'ink-core' );
+		}
 	}
 
 	/**

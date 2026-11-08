@@ -11,17 +11,20 @@ namespace Ink\Discovery;
 
 use Ink\I18n\Terms;
 use Ink\Kernel\QaFixture;
+use Ink\Migration\TextKey;
 use Ink\Tiers\Api as TiersApi;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Renders the `ink/ontdek-soek` block: diacritic-insensitive search of works + skrywers.
+ * Renders the `ink/ontdek-soek` block: ranked search of works + skrywers.
  *
- * The query term is folded ({@see Diacritics::fold()}) and matched `LIKE` against
- * the folded indexes maintained by {@see SearchIndex} — so accents never matter
- * (AD-7). Works = published bydraes (title/theme); skrywers = writers (name/bio/
- * genre). Server-rendered (`WP_Query`/`WP_User_Query`, no REST). Not gated.
+ * The query and the indexes kept by {@see SearchIndex} are both {@see TextKey::text()}
+ * keys, so case, accents, punctuation, spacing and line endings never matter. Matches on
+ * a writer's display name / nice name / user name, a work's title, and a work's body.
+ * Ranking (best first): exact author name, exact title, partial author name, partial
+ * title, body. A work counts as an author match when its author's name matches.
+ * Server-rendered, direct `$wpdb`, no REST. Not gated.
  *
  * Conflation-clean: reads the Tiers Api for the skrywer Gradering label (display
  * only); zero `Ink\Entitlement`.
@@ -35,6 +38,14 @@ final class Search {
 	public const QUERY_VAR = 'soek';
 
 	private const LIMIT = 12;
+
+	private const WORKS_LIMIT = 24;
+
+	/**
+	 * Shortest key that also searches work bodies. One or two letters sit in nearly every
+	 * poem; names and titles are still matched at any length.
+	 */
+	private const MIN_BODY_KEY = 3;
 
 	/**
 	 * Register the server-rendered block.
@@ -73,54 +84,80 @@ final class Search {
 	}
 
 	/**
-	 * `WP_Query` args matching works whose folded index contains the folded term. Pure.
+	 * SQL for the ranked work ids. Pure given a `$wpdb`-like object (prefix/table names, `prepare`, `esc_like`).
 	 *
-	 * @param string $folded The folded query term.
-	 * @param int    $limit  Max results.
-	 * @return array<string, mixed>
+	 * Tier per work: 0 exact author name, 1 exact title, 2 partial author name, 3 partial title,
+	 * 4 body. Newest first within a tier.
+	 *
+	 * @param object $db    The `$wpdb`.
+	 * @param string $key   The query key ({@see TextKey::spaced()}); non-empty.
+	 * @param int    $limit Max results.
+	 * @return string
 	 */
-	public static function worksQueryArgs( string $folded, int $limit ): array {
-		return array(
-			'post_type'           => self::readableTypes(),
-			'post_status'         => 'publish',
-			'posts_per_page'      => $limit,
-			'ignore_sticky_posts' => true,
-			'no_found_rows'       => true,
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- bounded, folded-index LIKE; the AD-7 search substrate, no search plugin.
-			'meta_query'          => array(
-				array(
-					'key'     => SearchIndex::WORKS_META,
-					// Bare term: WP_Meta_Query wraps a LIKE value as `'%' . esc_like($v) . '%'`
-					// itself — pre-wrapping here would double-wrap (the `%` become literal,
-					// matching nothing) and esc_like neutralises any `%`/`_` in the term.
-					'value'   => $folded,
-					'compare' => 'LIKE',
-				),
-			),
+	public static function worksSql( $db, string $key, int $limit ): string {
+		$part   = '%' . $db->esc_like( $key ) . '%';
+		$exact  = '%|' . $db->esc_like( $key ) . '|%';
+		$types  = self::readableTypes();
+		$in     = implode( ',', array_fill( 0, count( $types ), '%s' ) );
+		$body   = mb_strlen( $key ) >= self::MIN_BODY_KEY ? ' OR b.meta_value LIKE %s' : '';
+		$params = array_merge(
+			array( $exact, $key, $part, $part, SearchIndex::SKRYWER_META, SearchIndex::TITLE_META, SearchIndex::BODY_META ),
+			$types,
+			array( $part, $part ),
+			'' !== $body ? array( $part ) : array(),
+			array( $limit )
+		);
+
+		return $db->prepare(
+			"SELECT p.ID, CASE
+					WHEN a.meta_value LIKE %s THEN 0
+					WHEN t.meta_value = %s THEN 1
+					WHEN a.meta_value LIKE %s THEN 2
+					WHEN t.meta_value LIKE %s THEN 3
+					ELSE 4 END AS tier
+				FROM {$db->posts} p
+				LEFT JOIN {$db->usermeta} a ON a.user_id = p.post_author AND a.meta_key = %s
+				LEFT JOIN {$db->postmeta} t ON t.post_id = p.ID AND t.meta_key = %s
+				LEFT JOIN {$db->postmeta} b ON b.post_id = p.ID AND b.meta_key = %s
+				WHERE p.post_status = 'publish' AND p.post_type IN ({$in})
+					AND (a.meta_value LIKE %s OR t.meta_value LIKE %s{$body})
+				ORDER BY tier ASC, p.post_date DESC, p.ID DESC
+				LIMIT %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- table names and placeholder list only; every value is a placeholder.
+			$params
 		);
 	}
 
 	/**
-	 * `WP_User_Query` args matching writers whose folded index contains the term. Pure.
+	 * SQL for the ranked writer ids: exact name first, then partial, by display name. Pure given a `$wpdb`-like object.
 	 *
-	 * @param string $folded The folded query term.
-	 * @param int    $limit  Max results.
-	 * @return array<string, mixed>
+	 * @param object $db    The `$wpdb`.
+	 * @param string $key   The query key; non-empty.
+	 * @param int    $limit Max results.
+	 * @return string
 	 */
-	public static function skrywersQueryArgs( string $folded, int $limit ): array {
-		return array(
-			'number'     => $limit,
-			'fields'     => 'ID',
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- bounded, folded-index LIKE; the AD-7 search substrate, no search plugin.
-			'meta_query' => array(
-				array(
-					'key'     => SearchIndex::SKRYWER_META,
-					// Bare term — WP_Meta_Query adds the `%…%` + esc_like (see worksQueryArgs).
-					'value'   => $folded,
-					'compare' => 'LIKE',
-				),
-			),
+	public static function skrywersSql( $db, string $key, int $limit ): string {
+		return $db->prepare(
+			"SELECT u.ID, CASE WHEN m.meta_value LIKE %s THEN 0 ELSE 1 END AS tier
+				FROM {$db->users} u
+				INNER JOIN {$db->usermeta} m ON m.user_id = u.ID AND m.meta_key = %s
+				WHERE m.meta_value LIKE %s
+				ORDER BY tier ASC, u.display_name ASC, u.ID ASC
+				LIMIT %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names only.
+			'%|' . $db->esc_like( $key ) . '|%',
+			SearchIndex::SKRYWER_META,
+			'%' . $db->esc_like( $key ) . '%',
+			$limit
 		);
+	}
+
+	/**
+	 * The comparison key for a typed query: the same key the indexes hold. Pure.
+	 *
+	 * @param string $raw The typed query.
+	 * @return string Empty when nothing searchable was typed.
+	 */
+	public static function queryKey( string $raw ): string {
+		return str_replace( '|', '', TextKey::spaced( $raw ) );
 	}
 
 	/**
@@ -135,12 +172,19 @@ final class Search {
 			return self::toHtml( '', array(), array() );
 		}
 
-		$folded = Diacritics::fold( $raw );
+		$key = self::queryKey( $raw );
+
+		if ( '' === $key ) {
+			return self::toHtml( $raw, array(), array() );
+		}
+
+		global $wpdb;
 
 		$works = array();
-		$query = new \WP_Query( self::worksQueryArgs( $folded, self::LIMIT ) );
 
-		foreach ( $query->posts as $post ) {
+		foreach ( array_map( 'intval', (array) $wpdb->get_col( self::worksSql( $wpdb, $key, self::WORKS_LIMIT ) ) ) as $post_id ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- ranked LIKE over the search index; bounded by LIMIT.
+			$post = get_post( $post_id );
+
 			if ( ! $post instanceof \WP_Post ) {
 				continue;
 			}
@@ -162,10 +206,9 @@ final class Search {
 			);
 		}
 
-		$skrywers   = array();
-		$user_query = new \WP_User_Query( self::skrywersQueryArgs( $folded, self::LIMIT ) );
+		$skrywers = array();
 
-		foreach ( array_map( 'intval', (array) $user_query->get_results() ) as $uid ) {
+		foreach ( array_map( 'intval', (array) $wpdb->get_col( self::skrywersSql( $wpdb, $key, self::LIMIT ) ) ) as $uid ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- as above.
 			if ( $uid <= 0 ) {
 				continue;
 			}
@@ -210,7 +253,14 @@ final class Search {
 			. 'class="ink-ontdek-soek__ikoon" data-audit-id="search-icon" aria-hidden="true" focusable="false">'
 			. '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>';
 
-		$html = '<section class="ink-ontdek-soek" data-audit-id="search"><form class="ink-ontdek-soek__form" data-audit-id="search-form" role="search" method="get">'
+		// An explicit action: a form without one keeps the page's #bydraes/#skrywers hash
+		// (set by the tab toggle), which scrolls the results out of view on submit.
+		$action = ( function_exists( 'get_queried_object_id' ) && function_exists( 'get_permalink' ) && (int) get_queried_object_id() > 0 )
+			? (string) get_permalink( (int) get_queried_object_id() )
+			: '';
+
+		$html = '<section class="ink-ontdek-soek" data-audit-id="search"><form class="ink-ontdek-soek__form" data-audit-id="search-form" role="search" method="get"'
+			. ( '' !== $action ? ' action="' . esc_url( $action ) . '"' : '' ) . '>'
 			. '<div class="ink-ontdek-soek__veld-houer" data-audit-id="search-field-wrap">' . $icon
 			. '<input type="search" class="ink-ontdek-soek__veld ink-search-field ink-search-field--with-button" data-audit-id="search-input" name="' . esc_attr( self::QUERY_VAR ) . '"'
 			. ' value="' . esc_attr( $raw_query ) . '"'
@@ -230,6 +280,20 @@ final class Search {
 			return $html . '</section>';
 		}
 
+		// Author matches rank first, so the Skrywers group comes before the Bydraes.
+		if ( array() !== $skrywers ) {
+			$html .= '<h2 class="ink-ontdek-soek__groep ink-heading-h3">' . esc_html( Terms::label( 'skrywer_plural' ) ) . '</h2><ul class="ink-ontdek-soek__skrywers">';
+
+			foreach ( $skrywers as $skrywer ) {
+				$html .= '<li class="ink-ontdek-soek__skrywer ink-card">'
+					. '<a class="ink-ontdek-soek__naam ink-heading-h3-card" href="' . esc_url( $skrywer['profile_url'] ) . '">' . esc_html( $skrywer['name'] ) . '</a>'
+					. '<span class="' . esc_attr( 'ink-ontdek-soek__gradering ' . SkrywersTab::tierLabelClasses( (string) ( $skrywer['tier'] ?? '' ) ) ) . '">' . esc_html( $skrywer['gradering'] ) . '</span>'
+					. '</li>';
+			}
+
+			$html .= '</ul>';
+		}
+
 		if ( array() !== $works ) {
 			$html .= '<h2 class="ink-ontdek-soek__groep ink-heading-h3">' . esc_html( Terms::label( 'bydrae_plural' ) ) . '</h2><ul class="ink-ontdek-soek__werke">';
 
@@ -238,19 +302,6 @@ final class Search {
 					. '<span class="' . esc_attr( 'ink-ontdek-soek__tipe ink-pill ink-pill--tint-sm ' . self::typeTone( (string) $work['type'] ) ) . '">' . esc_html( Terms::label( $work['type'] ) ) . '</span>'
 					. '<a class="ink-ontdek-soek__titel ink-heading-h3-card" href="' . esc_url( $work['permalink'] ) . '">' . esc_html( $work['title'] ) . '</a>'
 					. '<span class="ink-ontdek-soek__outeur ink-meta ink-meta--sm">' . esc_html( $work['author'] ) . '</span>'
-					. '</li>';
-			}
-
-			$html .= '</ul>';
-		}
-
-		if ( array() !== $skrywers ) {
-			$html .= '<h2 class="ink-ontdek-soek__groep ink-heading-h3">' . esc_html( Terms::label( 'skrywer_plural' ) ) . '</h2><ul class="ink-ontdek-soek__skrywers">';
-
-			foreach ( $skrywers as $skrywer ) {
-				$html .= '<li class="ink-ontdek-soek__skrywer ink-card">'
-					. '<a class="ink-ontdek-soek__naam ink-heading-h3-card" href="' . esc_url( $skrywer['profile_url'] ) . '">' . esc_html( $skrywer['name'] ) . '</a>'
-					. '<span class="' . esc_attr( 'ink-ontdek-soek__gradering ' . SkrywersTab::tierLabelClasses( (string) ( $skrywer['tier'] ?? '' ) ) ) . '">' . esc_html( $skrywer['gradering'] ) . '</span>'
 					. '</li>';
 			}
 

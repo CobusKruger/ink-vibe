@@ -105,7 +105,7 @@ final class FollowToggle {
 	 * @param int    $skrywer_id The target skrywer.
 	 * @param bool   $following  Whether the viewer already follows them.
 	 * @param string $size       Optional button size modifier: '', 'sm' or 'lg'.
-	 * @param string $audit_id   The fidelity join key: the skrywer page's by default, the
+	 * @param string $audit_id   The fidelity join key ('' = none): the skrywer page's by default, the
 	 *                           reading author card's (`reading-author-follow`) there.
 	 * @return string
 	 */
@@ -116,7 +116,7 @@ final class FollowToggle {
 
 		return '<button type="button" class="' . esc_attr( $classes ) . '"'
 			. ' data-ink-skrywer="' . esc_attr( (string) $skrywer_id ) . '"'
-			. ' data-audit-id="' . esc_attr( $audit_id ) . '"'
+			. ( '' !== $audit_id ? ' data-audit-id="' . esc_attr( $audit_id ) . '"' : '' )
 			. ' aria-pressed="' . ( $following ? 'true' : 'false' ) . '">'
 			. esc_html( $label )
 			. '</button>';

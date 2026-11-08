@@ -36,26 +36,83 @@ function ink_search_render_stubs(): void {
 	Functions\when( 'esc_url' )->returnArg( 1 );
 }
 
-test( 'worksQueryArgs matches the folded term LIKE against the works index, published bydraes only', function (): void {
-	$args = Search::worksQueryArgs( 'reen', 12 );
+/**
+ * A `$wpdb` stand-in: table names, `esc_like` and a `prepare` that quotes and substitutes in order.
+ */
+function ink_search_fake_db(): object {
+	return new class() {
+		public string $posts    = 'wp_posts';
+		public string $postmeta = 'wp_postmeta';
+		public string $users    = 'wp_users';
+		public string $usermeta = 'wp_usermeta';
 
-	expect( $args['post_type'] )->toBe( array( PostTypes::GEDIG, PostTypes::STORIE, PostTypes::ARTIKEL ) );
-	expect( $args['post_status'] )->toBe( 'publish' );
-	expect( $args['posts_per_page'] )->toBe( 12 );
-	// Bare term — WP_Meta_Query wraps the LIKE value with `%…%` + esc_like itself.
-	expect( $args['meta_query'][0] )->toBe(
-		array( 'key' => SearchIndex::WORKS_META, 'value' => 'reen', 'compare' => 'LIKE' )
-	);
+		public function esc_like( string $text ): string {
+			return addcslashes( $text, '_%\\' );
+		}
+
+		/** @param mixed ...$args */
+		public function prepare( string $query, ...$args ): string {
+			$args = ( 1 === count( $args ) && is_array( $args[0] ) ) ? $args[0] : $args;
+			$i    = 0;
+
+			return (string) preg_replace_callback(
+				'/%[sd]/',
+				static function ( array $m ) use ( &$i, $args ): string {
+					$v = $args[ $i++ ];
+
+					return '%d' === $m[0] ? (string) (int) $v : "'" . str_replace( "'", "''", (string) $v ) . "'";
+				},
+				$query
+			);
+		}
+	};
+}
+
+test( 'queryKey ignores case, accents, spacing, line endings and the index separator', function (): void {
+	expect( Search::queryKey( "  Die\r\nREËN | " ) )->toBe( 'die reen' );
+	expect( Search::queryKey( 'an na' ) )->not->toBe( Search::queryKey( 'anna' ) ); // words never run together
+	expect( Search::queryKey( 'Môre' ) )->toBe( Search::queryKey( 'more' ) );
+	expect( Search::queryKey( '  ' ) )->toBe( '' );
 } );
 
-test( 'skrywersQueryArgs matches the folded term LIKE against the skrywer index (ids only)', function (): void {
-	$args = Search::skrywersQueryArgs( 'anna', 12 );
+test( 'worksSql ranks exact author, exact title, partial author, partial title, then body', function (): void {
+	$sql = Search::worksSql( ink_search_fake_db(), 'anna visser', 24 );
 
-	expect( $args['fields'] )->toBe( 'ID' );
-	expect( $args['number'] )->toBe( 12 );
-	expect( $args['meta_query'][0] )->toBe(
-		array( 'key' => SearchIndex::SKRYWER_META, 'value' => 'anna', 'compare' => 'LIKE' )
-	);
+	$exact_author = strpos( $sql, "a.meta_value LIKE '%|anna visser|%' THEN 0" );
+	$exact_title  = strpos( $sql, "t.meta_value = 'anna visser' THEN 1" );
+	$part_author  = strpos( $sql, "a.meta_value LIKE '%anna visser%' THEN 2" );
+	$part_title   = strpos( $sql, "t.meta_value LIKE '%anna visser%' THEN 3" );
+
+	expect( $exact_author )->toBeInt();
+	expect( $exact_author )->toBeLessThan( $exact_title );
+	expect( $exact_title )->toBeLessThan( $part_author );
+	expect( $part_author )->toBeLessThan( $part_title );
+	expect( $sql )->toContain( 'ELSE 4 END AS tier' );
+	expect( $sql )->toContain( 'ORDER BY tier ASC' );
+	expect( $sql )->toContain( "p.post_status = 'publish'" );
+	expect( $sql )->toContain( "p.post_type IN ('gedig','storie','artikel')" );
+	expect( $sql )->toContain( "b.meta_key = '" . SearchIndex::BODY_META . "'" );
+	expect( $sql )->toContain( 'OR b.meta_value LIKE' );
+	expect( $sql )->toEndWith( 'LIMIT 24' );
+} );
+
+test( 'worksSql leaves the body out for keys shorter than three characters', function (): void {
+	expect( Search::worksSql( ink_search_fake_db(), 'an', 24 ) )->not->toContain( 'OR b.meta_value LIKE' );
+	expect( Search::worksSql( ink_search_fake_db(), 'ann', 24 ) )->toContain( 'OR b.meta_value LIKE' );
+} );
+
+test( 'worksSql escapes LIKE wildcards in the key', function (): void {
+	expect( Search::worksSql( ink_search_fake_db(), '100%_', 5 ) )->toContain( '100\\%\\_' );
+} );
+
+test( 'skrywersSql matches the name index, exact names first', function (): void {
+	$sql = Search::skrywersSql( ink_search_fake_db(), 'anna', 12 );
+
+	expect( $sql )->toContain( "m.meta_key = '" . SearchIndex::SKRYWER_META . "'" );
+	expect( $sql )->toContain( "m.meta_value LIKE '%|anna|%' THEN 0" );
+	expect( $sql )->toContain( "WHERE m.meta_value LIKE '%anna%'" );
+	expect( $sql )->toContain( 'ORDER BY tier ASC' );
+	expect( $sql )->toEndWith( 'LIMIT 12' );
 } );
 
 test( 'toHtml with no query renders the search form only (no results section)', function (): void {
@@ -78,6 +135,7 @@ test( 'toHtml renders both result groups and keeps the raw query in the input', 
 	$html = Search::toHtml( 'reën', $works, $skrywers );
 
 	expect( $html )->toContain( 'value="reën"' ); // raw (unfolded) query echoed back
+	expect( strpos( $html, 'Skrywers' ) )->toBeLessThan( strpos( $html, 'Bydraes' ) ); // author matches first
 	expect( $html )->toContain( 'Bydraes' );       // works group heading
 	expect( $html )->toContain( 'Reën' );
 	expect( $html )->toContain( '/gedig/reen' );

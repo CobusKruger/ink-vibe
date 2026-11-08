@@ -110,7 +110,7 @@ final class FeaturedWinners {
 				'prefix' => 'winner-gedig',
 				'poem'   => true,
 				'icon'   => self::ICON_CROWN,
-				'label'  => Terms::label( 'goud' ) . ' ' . Terms::label( 'gedig' ),
+				'label'  => Terms::label( 'gedig' ),
 				'button' => $lees_gedig,
 			),
 			'storie'       => array(
@@ -124,7 +124,7 @@ final class FeaturedWinners {
 				'prefix' => '',
 				'poem'   => true,
 				'icon'   => self::ICON_AWARD,
-				'label'  => Terms::label( 'silwer' ) . ' ' . Terms::label( 'gedig' ),
+				'label'  => Terms::label( 'gedig' ),
 				'button' => $lees_gedig,
 				'tier'   => 'silwer',
 				'small'  => true,
@@ -140,7 +140,7 @@ final class FeaturedWinners {
 				'prefix' => '',
 				'poem'   => true,
 				'icon'   => self::ICON_AWARD,
-				'label'  => Terms::label( 'brons' ) . ' ' . Terms::label( 'gedig' ),
+				'label'  => Terms::label( 'gedig' ),
 				'button' => $lees_gedig,
 				'tier'   => 'brons',
 				'small'  => true,
@@ -201,7 +201,7 @@ final class FeaturedWinners {
 					'prefix' => '',
 					'poem'   => true,
 					'icon'   => in_array( $tier, array( 'brons', 'silwer' ), true ) ? self::ICON_AWARD : ( 'goud' === $tier ? self::ICON_CROWN : self::ICON_FEATHER ),
-					'label'  => ( in_array( $tier, array( 'brons', 'silwer', 'goud' ), true ) ? Terms::label( $tier ) . ' ' : '' ) . Terms::label( 'gedig' ),
+					'label'  => Terms::label( 'gedig' ),
 					'button' => __( 'Lees gedig', 'ink-core' ),
 					'tier'   => in_array( $tier, array( 'brons', 'silwer' ), true ) ? $tier : 'goud',
 				);
@@ -319,7 +319,7 @@ final class FeaturedWinners {
 			. esc_html( $slot['button'] ) . self::icon( self::ICON_ARROW, $icon( '-btn-icon' ), 'ink-wenners__knoppie-ikoon' ) . '</a>';
 
 		return '<article class="' . $card_cl . ' ink-wenners__kaart"' . $aid( '-card' ) . '>'
-			. self::icon( self::ICON_CROWN, $icon( '-watermark' ), 'ink-wenners__watermerk' )
+			. self::watermark( $variant, $icon( '-watermark' ) )
 			. '<span class="' . $pill_cl . ' ink-wenners__kategorie"' . $aid( '-eyebrow' ) . '>'
 			. self::icon( $slot['icon'], $icon( '-eyebrow-icon' ) ) . esc_html( $slot['label'] )
 			. '</span>'
@@ -334,6 +334,19 @@ final class FeaturedWinners {
 			. '</div></div>'
 			. $button
 			. '</div></article>';
+	}
+
+	/**
+	 * The card's top-right watermark, harmonised per Gradering (owner, 2026-11-07):
+	 * a crown for every tier; only the tone differs, from the card variant's CSS. Pure.
+	 * Shared with the results page podium cards.
+	 *
+	 * @param string $variant '' (Goud), 'silwer' or 'brons'.
+	 * @param string $id      The audit id, or ''.
+	 * @return string
+	 */
+	public static function watermark( string $variant, string $id = '' ): string {
+		return self::icon( self::ICON_CROWN, $id, 'ink-wenners__watermerk' );
 	}
 
 	/**

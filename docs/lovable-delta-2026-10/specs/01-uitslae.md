@@ -66,7 +66,7 @@ Repeater slots: `{slot}` = `gold`, `silver`, `bronze`, `short-story`, `article`;
 | `results-mentions-h2` | heading h2-section; absent with no mentions | | `UITSLAE-VERMELDINGS-H2` |
 | `results-mentions-list` | Page text | New field `ink_uitdaging_vermeldings` | `UITSLAE-VERMELDING-REEL` (debt) |
 | `results-mentions-thanks` | Page text | `SinglePage::entryCount()` | `UITSLAE-DANKIE` (debt) |
-| `results-mentions-btn` | button-primary: `ink-btn ink-btn--primary` | `CurrentChallenge::current()['url']`; absent if no round is open | `Skryf in` (`afrikaans-terms.md` Deel 2) |
+| `results-mentions-btn` | button-primary: `ink-btn ink-btn--primary` | `CurrentChallenge::current()['url']`; absent if no round is open | `Skryf in vir ons nuutste uitdaging` (owner, 2026-11-07: the plain "Skryf in" read as if the closed round were still open) |
 
 **Tier mapping:** a Meester row shows under Goud (D11). A Gedig win with no grade is possible on old rounds (D13): show it under Gedigte with the non-tier `Podium` shape, below the three tiers.
 

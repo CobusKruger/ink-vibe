@@ -77,6 +77,26 @@ test( 'meeste-gelees sorts by the read total, nuwe-stemme by first publication, 
 
 	$nuwe = SkrywersTab::queryArgs( null, SkrywersTab::SORT_NUWE, 1, 12 );
 	expect( $nuwe['meta_query']['sorteer']['key'] )->toBe( SkrywerIndex::FIRST_PUBLISH_META );
+
+	$aktief = SkrywersTab::queryArgs( null, SkrywersTab::SORT_AKTIEF, 1, 12, array( 7, 3, 9 ) );
+	expect( $aktief['include'] )->toBe( array( 7, 3, 9 ) );
+	expect( $aktief['orderby'] )->toBe( 'include' );
+	expect( SkrywersTab::queryArgs( null, SkrywersTab::SORT_AKTIEF, 1, 12 )['include'] )->toBe( array( 0 ) );
+} );
+
+test( 'card: Sien Profiel link, tiered Gedigte pill, no standalone gradering', function (): void {
+	ink_skrywers_render_stubs();
+
+	$card = array( 'name' => 'Anna', 'profile_url' => '/lede/anna', 'gradering' => 'Goud', 'tier' => 'goud', 'bio' => '', 'genres' => array( 'digkuns' => 'Gedigte', 'prosa' => 'Stories' ) );
+	$html = SkrywersTab::toHtml( array( $card ), array( 'paged' => 1, 'max_pages' => 1, 'genre' => null, 'sort' => SkrywersTab::SORT_NUWE ) );
+
+	expect( $html )->toContain( 'Sien Profiel' );
+	expect( $html )->toContain( 'ink-pill--tier-gold' );
+	expect( $html )->not->toContain( 'ink-ontdek-skrywers__gradering' );
+
+	$card['genres'] = array( 'prosa' => 'Stories' );
+	$html           = SkrywersTab::toHtml( array( $card ), array( 'paged' => 1, 'max_pages' => 1, 'genre' => null, 'sort' => SkrywersTab::SORT_NUWE ) );
+	expect( $html )->not->toContain( 'ink-pill--tier' );
 } );
 
 test( 'an unknown sort degrades to nuwe stemme (first publication)', function (): void {
@@ -90,8 +110,8 @@ test( 'controlsHtml renders the genre pills + both sorts and marks the active on
 	$html = SkrywersTab::controlsHtml( 'digkuns', SkrywersTab::SORT_GELEES );
 
 	expect( $html )->toContain( 'Almal' );
-	expect( $html )->toContain( 'Digkuns' );
-	expect( $html )->toContain( 'Prosa' );
+	expect( $html )->toContain( 'Gedigte' );
+	expect( $html )->toContain( 'Stories' );
 	expect( $html )->toContain( 'Artikels' );
 	expect( $html )->toContain( 'Meeste gelees' );
 	expect( $html )->toContain( 'Nuwe stemme' );
@@ -111,7 +131,6 @@ test( 'toHtml renders a card per skrywer (name, gradering, bio) and escapes', fu
 	expect( $html )->toContain( 'Skrywers' );          // heading
 	expect( $html )->toContain( 'Anna Visser' );
 	expect( $html )->toContain( '/skrywer/anna' );
-	expect( $html )->toContain( 'Silwer' );            // gradering
 	expect( $html )->toContain( 'Digter uit die Karoo.' );
 	expect( $html )->toContain( 'ink-ontdek-skrywers__kontroles' );
 } );

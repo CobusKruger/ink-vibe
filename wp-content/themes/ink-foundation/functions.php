@@ -415,6 +415,14 @@ function ink_foundation_enqueue_uitslae_assets(): void {
 
 	$theme = wp_get_theme();
 
+	// The podium cards are the winner cards (watermark + tier layout), so they need their stylesheet.
+	wp_enqueue_style(
+		'ink-foundation-wenners',
+		get_theme_file_uri( 'assets/css/wenners.css' ),
+		array(),
+		(string) $theme->get( 'Version' )
+	);
+
 	wp_enqueue_style(
 		'ink-foundation-uitslae',
 		get_theme_file_uri( 'assets/css/uitslae.css' ),
@@ -1042,8 +1050,10 @@ add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_vasgespel' );
 function ink_foundation_enqueue_volg(): void {
 	$on_my_profiel     = function_exists( 'is_page' ) && is_page( 'my-profiel' );
 	$on_skrywerprofiel = function_exists( 'is_author' ) && is_author();
+	// The writer cards (Ontdek skrywers tab, Ledegids) carry a Volg toggle.
+	$on_skrywer_cards = function_exists( 'is_page' ) && is_page( array( 'ontdek', 'ledegids' ) );
 
-	if ( ! $on_my_profiel && ! $on_skrywerprofiel ) {
+	if ( ! $on_my_profiel && ! $on_skrywerprofiel && ! $on_skrywer_cards ) {
 		return;
 	}
 
