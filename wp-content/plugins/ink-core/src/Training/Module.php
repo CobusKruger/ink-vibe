@@ -20,10 +20,10 @@ defined( 'ABSPATH' ) || exit;
  * migration-load-bearing `/opleiding/` URL prefix (FR-54). A resource hub, NOT an
  * LMS: no course/lesson/progress mechanics. Live at 11.1: the {@see Hub} block
  * (featured strip + search + card grid); the `vaardigheid` faceted filter (11.2)
- * + redakteur-se-rak entry points (11.3) on the same block; at 11.4 the
- * {@see RelatedTraining} cross-surfacing block (training beside works, solely by
- * shared `genre`/`vaardigheid` terms). The 11.5 contribution call to action
- * was removed after the first rehearsal: Opleiding is not a place to contribute.
+ * + redakteur-se-rak entry points (11.3) on the same block. The 11.4 related-training
+ * cross-surfacing block was removed (owner): nothing tagged works with training terms.
+ * The 11.5 contribution call to action was removed after the first rehearsal:
+ * Opleiding is not a place to contribute.
  *
  * Conflation-clean: browsing published Opleiding work is open — the module reads
  * only `Ink\Content` (CPT/taxonomy slugs) + the `Terms` registry + WP core, never
@@ -41,6 +41,5 @@ final class Module implements ModuleContract {
 	 */
 	public function register(): void {
 		( new Hub() )->register();
-		( new RelatedTraining() )->register();
 	}
 }

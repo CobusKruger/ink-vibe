@@ -24,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
  * Lists published bydraes (`gedig`/`storie`/`artikel` — the `skryfwerk` migration
  * bucket is never reader-facing), newest-first, paginated, with optional
  * year/month date-archive browse. Reads stay SERVER-RENDERED via `WP_Query`
- * (AD-7 — no REST for discovery listings), mirroring the {@see \Ink\Engagement\SuggestedReads}
+ * (AD-7 — no REST for discovery listings), in the
  * house style: pure {@see self::queryArgs()} + pure {@see self::toHtml()} + a thin
  * {@see self::render()}.
  *

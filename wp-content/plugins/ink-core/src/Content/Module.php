@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
  * 2.1: registration of the nine INK CPTs (`gedig`, `storie`, `artikel`,
  * `skryfwerk`, `biblioteek_item`, `opleiding_artikel`, `uitdaging`,
  * `inkpols_uitgawe`, `borg`) via {@see PostTypes}. Live at 2.2: the four INK
- * taxonomies (`genre`, `vaardigheid`, `uitdagingsrondte`, `ster_gradering`) via
+ * taxonomies (`genre`, `vaardigheid`, `uitdagingsrondte`) via
  * {@see Taxonomies}. Live at 2.3: the writer-tier user meta (`ink_writer_tier`,
  * `ink_tier_promoted_at`) via {@see UserMeta}. Live at 2.4: the per-CPT admin
  * field sets (InkPols / challenge / sponsor editorial meta + meta boxes) via

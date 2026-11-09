@@ -68,12 +68,11 @@ afterEach( function (): void {
  * AC-1: the registrar declares exactly the nine migration-load-bearing slugs as
  * class constants, single-sourced through `PostTypes::all()`.
  */
-test( 'all() exposes exactly the eleven INK CPT slugs with exact code IDs', function (): void {
+test( 'all() exposes exactly the ten INK CPT slugs with exact code IDs', function (): void {
 	expect( PostTypes::all() )->toBe( array(
 		'gedig',
 		'storie',
 		'artikel',
-		'skryfwerk',
 		'biblioteek_item',
 		'opleiding_artikel',
 		'uitdaging',
@@ -103,11 +102,12 @@ test( 'the slug constants are the exact migration-load-bearing code IDs', functi
 /**
  * AC-1: `register()` registers exactly the nine CPTs, once each.
  */
-test( 'register() registers exactly the eleven expected post types', function (): void {
+test( 'register() registers exactly the ten expected post types', function (): void {
 	$registered = ink_capture_registered_post_types();
 
 	expect( array_keys( $registered ) )->toBe( PostTypes::all() );
-	expect( $registered )->toHaveCount( 11 );
+	expect( $registered )->toHaveCount( 10 );
+	expect( $registered )->not->toHaveKey( 'skryfwerk' );
 } );
 
 /**
@@ -235,7 +235,7 @@ test( 'an unregistered CPT label key trips _doing_it_wrong', function (): void {
  */
 test( 'Api facade exposes the slug surface', function (): void {
 	expect( Api::all() )->toBe( PostTypes::all() );
-	expect( Api::bydraeTypes() )->toBe( array( 'gedig', 'storie', 'artikel', 'skryfwerk' ) );
+	expect( Api::bydraeTypes() )->toBe( array( 'gedig', 'storie', 'artikel' ) );
 } );
 
 /**
@@ -275,4 +275,16 @@ test( 'a kompetisie edits on the classic screen; other types keep the incoming d
 
 test( 'an InkPols issue has no editor or excerpt: the single has no body section', function (): void {
 	expect( ink_capture_registered_post_types()['inkpols_uitgawe']['supports'] )->toBe( array( 'title', 'thumbnail' ) );
+} );
+
+/**
+ * Owner: the top-level admin menu for the magazine reads "InkPols"; the submenus
+ * ("Alle Uitgawes", "Voeg nuwe Uitgawe") keep the Uitgawe nouns.
+ */
+test( 'inkpols_uitgawe shows InkPols as its admin menu name and keeps Uitgawe in the submenus', function (): void {
+	$labels = ink_capture_registered_post_types()['inkpols_uitgawe']['labels'];
+
+	expect( $labels['menu_name'] )->toBe( 'InkPols' );
+	expect( $labels['all_items'] )->toBe( 'Uitgawes' );
+	expect( $labels['singular_name'] )->toBe( 'Uitgawe' );
 } );

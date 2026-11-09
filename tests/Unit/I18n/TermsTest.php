@@ -83,7 +83,7 @@ test( 'label returns the authored recognition-section copy', function (): void {
  */
 test( 'label returns taxonomy labels', function (): void {
 	expect( Terms::label( 'vaardigheid' ) )->toBe( 'Vaardigheidsarea' );
-	expect( Terms::label( 'ster_gradering' ) )->toBe( 'Ster gradering' );
+	expect( Terms::label( 'uitdagingsrondte' ) )->toBe( 'Uitdagingsrondte' );
 } );
 
 /**
@@ -190,7 +190,7 @@ test( 'all returns the full registry as the inspectable surface', function (): v
 
 	expect( $all )->toBeArray();
 	expect( $all )->toHaveKey( 'membership' );
-	expect( $all )->toHaveKey( 'ster_gradering_plural' );
+	expect( $all )->toHaveKey( 'uitdagingsrondte_plural' );
 
 	foreach ( $all as $key => $value ) {
 		expect( $value )->toBeString();

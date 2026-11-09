@@ -55,6 +55,8 @@ final class PostTypes {
 	public const GEDIG             = 'gedig';
 	public const STORIE            = 'storie';
 	public const ARTIKEL           = 'artikel';
+	// NOT a registered post type: the migration's temporary fall-through value for posts it cannot
+	// classify (`set_post_type()` does not require registration). No admin screen, URL or REST route.
 	public const SKRYFWERK         = 'skryfwerk';
 	public const BIBLIOTEEK_ITEM   = 'biblioteek_item';
 	public const OPLEIDING_ARTIKEL = 'opleiding_artikel';
@@ -76,7 +78,6 @@ final class PostTypes {
 			self::GEDIG,
 			self::STORIE,
 			self::ARTIKEL,
-			self::SKRYFWERK,
 			self::BIBLIOTEEK_ITEM,
 			self::OPLEIDING_ARTIKEL,
 			self::UITDAGING,
@@ -97,7 +98,6 @@ final class PostTypes {
 			self::GEDIG,
 			self::STORIE,
 			self::ARTIKEL,
-			self::SKRYFWERK,
 		);
 	}
 
@@ -181,15 +181,6 @@ final class PostTypes {
 				'icon'     => 'dashicons-media-document',
 				'rewrite'  => self::ARTIKEL,
 			),
-			self::SKRYFWERK           => array(
-				'singular' => 'skryfwerk',
-				'plural'   => 'skryfwerk_plural',
-				'supports' => $bydrae_supports,
-				'public'   => true,
-				'archive'  => self::SKRYFWERK,
-				'icon'     => 'dashicons-welcome-write-blog',
-				'rewrite'  => self::SKRYFWERK,
-			),
 			self::BIBLIOTEEK_ITEM     => array(
 				'singular'     => 'biblioteek_item',
 				'plural'       => 'biblioteek_item_plural',
@@ -222,6 +213,7 @@ final class PostTypes {
 			self::INKPOLS_UITGAWE     => array(
 				'singular' => 'inkpols_uitgawe',
 				'plural'   => 'inkpols_uitgawe_plural',
+				'menu'     => 'inkpols', // Top-level admin menu reads "InkPols" (owner); submenus keep "Uitgawe(s)".
 				// No editor or excerpt: the single has no body section, and without `editor` WordPress
 				// gives the classic screen, so one save request carries the field box (`04-inkpols` §4a).
 				'supports' => array( 'title', 'thumbnail' ),
@@ -270,7 +262,7 @@ final class PostTypes {
 	 */
 	private static function args( array $def ): array {
 		return array(
-			'labels'          => self::labels( (string) $def['singular'], (string) $def['plural'] ),
+			'labels'          => self::labels( (string) $def['singular'], (string) $def['plural'], isset( $def['menu'] ) ? (string) $def['menu'] : null ),
 			'public'          => (bool) $def['public'],
 			'show_ui'         => (bool) ( $def['show_ui'] ?? $def['public'] ),
 			'show_in_rest'    => true, // Block editor + REST (AD-6).
@@ -385,19 +377,25 @@ final class PostTypes {
 	 *
 	 * @param string $singularKey Terms key for the singular label.
 	 * @param string $pluralKey   Terms key for the plural label.
+	 * @param string|null $menuKey Optional Terms key for the top-level admin menu label (defaults to the plural).
 	 * @return array<string, string>
 	 */
-	private static function labels( string $singularKey, string $pluralKey ): array {
+	private static function labels( string $singularKey, string $pluralKey, ?string $menuKey = null ): array {
 		self::assertTermKey( $singularKey );
 		self::assertTermKey( $pluralKey );
 
+		if ( null !== $menuKey ) {
+			self::assertTermKey( $menuKey );
+		}
+
 		$singular = Terms::label( $singularKey );
 		$plural   = Terms::label( $pluralKey );
+		$menu     = null === $menuKey ? $plural : Terms::label( $menuKey );
 
 		return array(
 			'name'                  => $plural,
 			'singular_name'         => $singular,
-			'menu_name'             => $plural,
+			'menu_name'             => $menu,
 			'name_admin_bar'        => $singular,
 			'all_items'             => $plural,
 			/* translators: %s: the singular content-type label (e.g. Gedig). */

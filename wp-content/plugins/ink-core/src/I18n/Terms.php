@@ -261,8 +261,6 @@ final class Terms {
 			'vaardigheid_plural'            => __( 'Vaardigheidsareas', 'ink-core' ),
 			'uitdagingsrondte'              => __( 'Uitdagingsrondte', 'ink-core' ),
 			'uitdagingsrondte_plural'       => __( 'Uitdagingsrondtes', 'ink-core' ),
-			'ster_gradering'                => __( 'Ster gradering', 'ink-core' ),
-			'ster_gradering_plural'         => __( 'Ster graderings', 'ink-core' ),
 		);
 	}
 

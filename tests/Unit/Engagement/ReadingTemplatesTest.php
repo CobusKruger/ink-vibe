@@ -111,9 +111,9 @@ test( 'every reading pattern embeds the Gemeenskapsreaksies block (the only feed
 	}
 } );
 
-test( 'every reading pattern embeds the suggested-reads (Verwante stukke) block', function () use ( $ink_read ): void {
+test( 'no reading pattern embeds the removed Verwante stukke block', function () use ( $ink_read ): void {
 	foreach ( array( 'reading-storie.php', 'reading-artikel.php', 'reading-gedig.php' ) as $pattern ) {
-		expect( $ink_read( 'patterns/' . $pattern ) )->toContain( 'wp:ink/verwante-stukke' );
+		expect( $ink_read( 'patterns/' . $pattern ) )->not->toContain( 'verwante-stukke' );
 	}
 } );
 

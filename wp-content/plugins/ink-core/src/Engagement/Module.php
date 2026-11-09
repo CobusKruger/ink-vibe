@@ -46,7 +46,6 @@ final class Module implements ModuleContract {
 		( new ResponseUpvoteController() )->register();
 		( new ResponsesList() )->register();
 		( new ResponseCount() )->register();
-		( new SuggestedReads() )->register();
 		( new ReadingListController() )->register();
 		( new ReadingListToggle() )->register();
 		( new ReadingList() )->register();

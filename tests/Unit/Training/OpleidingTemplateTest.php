@@ -63,12 +63,12 @@ test( 'the reading pattern carries the eyebrow label via the bridge plus title/a
 	expect( $markup )->toContain( 'wp:post-content' );
 } );
 
-test( 'the four work reading patterns embed the cross-surfacing block (Story 11.4)', function () use ( $ink_read ): void {
+test( 'the four work reading patterns no longer embed the related-training block', function () use ( $ink_read ): void {
 	foreach ( array( 'reading-gedig.php', 'reading-storie.php', 'reading-artikel.php', 'reading-biblioteek.php' ) as $pattern ) {
 		$markup = $ink_read( 'patterns/' . $pattern );
 		// Non-vacuous: the reading shell is real (a core block is present)...
 		expect( $markup )->toContain( 'wp:post-' );
-		// ...and the cross-surfacing block is embedded so training surfaces in context.
-		expect( $markup )->toContain( 'wp:ink/opleiding-verwant' );
+		// ...and the removed block is gone (an unregistered block would render as a stray placeholder).
+		expect( $markup )->not->toContain( 'opleiding-verwant' );
 	}
 } );

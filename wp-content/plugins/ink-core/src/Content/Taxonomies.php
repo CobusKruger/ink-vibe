@@ -15,7 +15,7 @@ use Ink\Kernel\Capabilities;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers the four INK taxonomies (Story 2.2).
+ * Registers the three INK taxonomies (Story 2.2; `ster_gradering` removed — Gradering is not a taxonomy).
  *
  * The taxonomy keys are the migration-load-bearing CODE IDs (WordPress
  * categories/tags remap onto them; `uitdagingsrondte` terms are referenced from
@@ -24,13 +24,9 @@ defined( 'ABSPATH' ) || exit;
  * holds only the display labels). All labels are sourced from that registry
  * (AC-3) — no controlled-vocabulary noun is inlined as a literal.
  *
- * `genre` and `vaardigheid` are SHARED across the bydrae CPTs and `opleiding_artikel`
- * (AC-2): a training resource and a contribution can carry the SAME term, so
- * discovery/training surfaces (Epics 8/11) query by shared term with no per-item
- * manual editorial linking (Principle 8 — the FR-55 editorial-low-friction
- * coupling, intentional). All four are `hierarchical` (controlled checkbox
- * vocabulary) so a free-text typo cannot fork a term and silently break that
- * shared-term matching.
+ * `genre` classifies `biblioteek_item` only and `vaardigheid` `opleiding_artikel` only (owner: the two
+ * vocabularies differ, and nothing shares terms between them). All are `hierarchical` (controlled
+ * checkbox vocabulary) so a free-text typo cannot fork a term.
  *
  * Registered inside the `Ink\Content` module (AD-1) on `init`, AFTER the CPTs
  * ({@see Module::register()}) so every `object_type` target exists. No
@@ -44,7 +40,6 @@ final class Taxonomies {
 	public const GENRE            = 'genre';
 	public const VAARDIGHEID      = 'vaardigheid';
 	public const UITDAGINGSRONDTE = 'uitdagingsrondte';
-	public const STER_GRADERING   = 'ster_gradering';
 
 	/**
 	 * Every INK taxonomy slug, registration order preserved.
@@ -56,7 +51,6 @@ final class Taxonomies {
 			self::GENRE,
 			self::VAARDIGHEID,
 			self::UITDAGINGSRONDTE,
-			self::STER_GRADERING,
 		);
 	}
 
@@ -74,7 +68,7 @@ final class Taxonomies {
 	 * The public rewrite slug for a taxonomy, derived from its code-id constant.
 	 *
 	 * The single source for the URL: underscores in a code id become hyphens for
-	 * readability (`ster_gradering` → `ster-gradering`), so the constant is the
+	 * readability (a code id such as `foo_bar` → `foo-bar`), so the constant is the
 	 * ONLY place a slug is declared and a constant edit propagates to the URL
 	 * automatically. The other three ids have no underscore, so the transform is a
 	 * no-op for them — every rewrite slug now reads identically from the constant
@@ -93,40 +87,26 @@ final class Taxonomies {
 	 * Each entry: the singular/plural {@see Terms} keys and the `object_types` it
 	 * attaches to (sourced from {@see PostTypes} constants — never re-typed CPT
 	 * literals). The rewrite slug is NOT declared here — it is derived from the
-	 * code-id constant in {@see self::rewriteSlug()} (single source). `genre`/
-	 * `vaardigheid` span the bydrae CPTs AND `opleiding_artikel` (the auto-
-	 * surfacing overlap). All are hierarchical.
+	 * code-id constant in {@see self::rewriteSlug()} (single source). All are hierarchical.
 	 *
 	 * @return array<string, array<string, mixed>>
 	 */
 	private static function definitions(): array {
-		$bydraes = PostTypes::bydraeTypes();
-
-		// Bydraes + training: the shared-term auto-surfacing surface (+ library
-		// for winning works).
-		$bydraes_and_training = array_merge(
-			$bydraes,
-			array( PostTypes::OPLEIDING_ARTIKEL, PostTypes::BIBLIOTEEK_ITEM )
-		);
-
-		// Bydraes + library (winning works) — competition/rating classification.
-		$works = array_merge( $bydraes, array( PostTypes::BIBLIOTEEK_ITEM ) );
+		// Bydraes + library (winning works): the only holders of a challenge round.
+		$works = array_merge( PostTypes::bydraeTypes(), array( PostTypes::BIBLIOTEEK_ITEM ) );
 
 		return array(
+			// Genre classifies Biblioteek items only; Opleiding has its own vocabulary (vaardigheid).
 			self::GENRE            => array(
 				'singular'     => 'genre',
 				'plural'       => 'genre_plural',
-				'object_types' => $bydraes_and_training,
+				'object_types' => array( PostTypes::BIBLIOTEEK_ITEM ),
 			),
+			// Vaardigheid classifies Opleiding articles only.
 			self::VAARDIGHEID      => array(
 				'singular'     => 'vaardigheid',
 				'plural'       => 'vaardigheid_plural',
-				// Training is its primary home; shared with bydraes (+ library) so
-				// contributions surface against the same skill areas.
-				'object_types' => array_merge(
-					array( PostTypes::OPLEIDING_ARTIKEL ),
-					$works
-				),
+				'object_types' => array( PostTypes::OPLEIDING_ARTIKEL ),
 			),
 			self::UITDAGINGSRONDTE => array(
 				'singular'     => 'uitdagingsrondte',
@@ -134,11 +114,10 @@ final class Taxonomies {
 				// Entered works + winning works. The term stays for discovery; the
 				// `ink_entries` table (Epic 12/12A) is the authoritative record.
 				'object_types' => $works,
-			),
-			self::STER_GRADERING   => array(
-				'singular'     => 'ster_gradering',
-				'plural'       => 'ster_gradering_plural',
-				'object_types' => $works,
+				// Code-managed join key (owner): terms are created on the fly by the submission
+				// and migration paths, never captured by an admin, so no submenu, no column and
+				// no editor panel.
+				'show_ui'      => false,
 			),
 		);
 	}
@@ -156,8 +135,8 @@ final class Taxonomies {
 			'public'            => true,
 			'hierarchical'      => true, // Controlled checkbox vocabulary — no free-text term forks.
 			'show_in_rest'      => true, // Block editor + REST (AD-6).
-			'show_admin_column' => true,
-			'show_ui'           => true,
+			'show_admin_column' => (bool) ( $def['show_ui'] ?? true ),
+			'show_ui'           => (bool) ( $def['show_ui'] ?? true ),
 			'rewrite'           => array( 'slug' => self::rewriteSlug( $slug ) ),
 			'capabilities'      => self::termCapabilities(),
 		);
@@ -170,7 +149,7 @@ final class Taxonomies {
 	 * the registrar set NO `capabilities` arg, so `manage_terms`/`edit_terms`/
 	 * `delete_terms` defaulted to `manage_categories`, but `assign_terms`
 	 * defaulted to `edit_posts`. INK's controlled vocabulary (`genre`,
-	 * `vaardigheid`, `uitdagingsrondte`, `ster_gradering`) must NOT be forkable by a
+	 * `vaardigheid`, `uitdagingsrondte`) must NOT be forkable by a
 	 * gratis lid / member: add/edit/delete is restricted to staff (the INK
 	 * `ink_moderate` editorial cap, granted to `editor` at activation — closing the
 	 * gap with a cap that IS granted to a real role, not a deny-everyone stub).

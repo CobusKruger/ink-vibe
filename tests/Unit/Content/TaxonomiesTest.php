@@ -69,15 +69,14 @@ afterEach( function (): void {
 } );
 
 /**
- * AC-1: the registrar declares exactly the four migration-load-bearing slugs,
+ * AC-1: the registrar declares exactly the three migration-load-bearing slugs,
  * single-sourced through `Taxonomies::all()`.
  */
-test( 'all() exposes exactly the four INK taxonomy slugs with exact code IDs', function (): void {
+test( 'all() exposes exactly the three INK taxonomy slugs with exact code IDs', function (): void {
 	expect( Taxonomies::all() )->toBe( array(
 		'genre',
 		'vaardigheid',
 		'uitdagingsrondte',
-		'ster_gradering',
 	) );
 } );
 
@@ -88,49 +87,42 @@ test( 'the slug constants are the exact migration-load-bearing code IDs', functi
 	expect( Taxonomies::GENRE )->toBe( 'genre' );
 	expect( Taxonomies::VAARDIGHEID )->toBe( 'vaardigheid' );
 	expect( Taxonomies::UITDAGINGSRONDTE )->toBe( 'uitdagingsrondte' );
-	expect( Taxonomies::STER_GRADERING )->toBe( 'ster_gradering' );
 } );
 
 /**
- * AC-1: `register()` registers exactly the four taxonomies, once each.
+ * AC-1: `register()` registers exactly the three taxonomies, once each.
  */
-test( 'register() registers exactly the four expected taxonomies', function (): void {
+test( 'register() registers exactly the three expected taxonomies', function (): void {
 	$registered = ink_capture_registered_taxonomies();
 
 	expect( array_keys( $registered ) )->toBe( Taxonomies::all() );
-	expect( $registered )->toHaveCount( 4 );
+	expect( $registered )->toHaveCount( 3 );
 } );
 
 /**
- * AC-2: `genre` and `vaardigheid` are shared across the bydrae CPTs AND
- * `opleiding_artikel` (training) — the auto-surfacing overlap.
+ * Owner: genre classifies Biblioteek items only and vaardigheid Opleiding articles only — the two
+ * vocabularies differ and nothing shares terms between them. The bydraes carry neither.
  */
-test( 'genre and vaardigheid are shared across bydraes and training', function (): void {
+test( 'genre is library-only and vaardigheid is training-only', function (): void {
 	$registered = ink_capture_registered_taxonomies();
 
-	foreach ( array( 'genre', 'vaardigheid' ) as $shared ) {
-		$object_types = $registered[ $shared ]['object_types'];
-
-		foreach ( PostTypes::bydraeTypes() as $bydrae ) {
-			expect( $object_types )->toContain( $bydrae );
-		}
-		expect( $object_types )->toContain( PostTypes::OPLEIDING_ARTIKEL );
-	}
+	expect( $registered['genre']['object_types'] )->toBe( array( PostTypes::BIBLIOTEEK_ITEM ) );
+	expect( $registered['vaardigheid']['object_types'] )->toBe( array( PostTypes::OPLEIDING_ARTIKEL ) );
 } );
 
 /**
- * AD-5 (Story 12.4, deferred from Epic 2 review): `uitdagingsrondte` and
- * `ster_gradering` attach to the ENTRY / works object types (the bydraes + the
+ * AD-5 (Story 12.4, deferred from Epic 2 review): `uitdagingsrondte` attaches
+ * to the ENTRY / works object types (the bydraes + the
  * winning-works library item), NOT to the `uitdaging` CPT — the entry record is
  * authoritative, the uitdaging is the round container. A regression that attached
  * either taxonomy to `uitdaging` (or dropped a bydrae) fails here loudly.
  */
-test( 'uitdagingsrondte and ster_gradering attach to entries/works, never the uitdaging CPT', function (): void {
+test( 'uitdagingsrondte attaches to entries/works, never the uitdaging CPT', function (): void {
 	$registered = ink_capture_registered_taxonomies();
 
 	$works = array_merge( PostTypes::bydraeTypes(), array( PostTypes::BIBLIOTEEK_ITEM ) );
 
-	foreach ( array( 'uitdagingsrondte', 'ster_gradering' ) as $tax ) {
+	foreach ( array( 'uitdagingsrondte' ) as $tax ) {
 		$object_types = $registered[ $tax ]['object_types'];
 
 		foreach ( $works as $work ) {
@@ -168,7 +160,8 @@ test( 'every taxonomy is show_in_rest, hierarchical, show_admin_column', functio
 	foreach ( $registered as $slug => $entry ) {
 		expect( $entry['args']['show_in_rest'] )->toBeTrue();
 		expect( $entry['args']['hierarchical'] )->toBeTrue();
-		expect( $entry['args']['show_admin_column'] )->toBeTrue();
+		// uitdagingsrondte is code-managed (no admin UI, no column); see its own test below.
+		expect( $entry['args']['show_admin_column'] )->toBe( 'uitdagingsrondte' !== $slug );
 		expect( $entry['args']['public'] )->toBeTrue();
 	}
 } );
@@ -183,7 +176,6 @@ test( 'labels are sourced from the Terms registry', function (): void {
 	expect( $registered['genre']['args']['labels']['name'] )->toBe( 'Genres' );
 	expect( $registered['genre']['args']['labels']['singular_name'] )->toBe( 'Genre' );
 	expect( $registered['vaardigheid']['args']['labels']['singular_name'] )->toBe( 'Vaardigheidsarea' );
-	expect( $registered['ster_gradering']['args']['labels']['name'] )->toBe( 'Ster graderings' );
 } );
 
 /**
@@ -267,13 +259,26 @@ test( 'rewrite slugs are derived from the code-id constant (single source)', fun
 		'genre'            => 'genre',
 		'vaardigheid'      => 'vaardigheid',
 		'uitdagingsrondte' => 'uitdagingsrondte',
-		'ster_gradering'   => 'ster-gradering', // underscore → hyphen, URL preserved.
 	);
 
 	foreach ( $expected as $slug => $rewrite ) {
 		expect( $registered[ $slug ]['args']['rewrite']['slug'] )->toBe( $rewrite );
 	}
 
-	// The ster_gradering URL must NOT leak the underscore code id.
-	expect( $registered['ster_gradering']['args']['rewrite']['slug'] )->not->toContain( '_' );
+	// No rewrite slug may leak an underscore code id.
+	foreach ( $registered as $entry ) {
+		expect( $entry['args']['rewrite']['slug'] )->not->toContain( '_' );
+	}
+} );
+
+/**
+ * Owner: uitdagingsrondte terms are created on the fly (submission, migration), never captured
+ * by an admin — so the taxonomy has no admin submenu, column or editor panel. Other taxonomies keep theirs.
+ */
+test( 'uitdagingsrondte has no admin UI while the other taxonomies keep theirs', function (): void {
+	$registered = ink_capture_registered_taxonomies();
+
+	expect( $registered['uitdagingsrondte']['args']['show_ui'] )->toBeFalse();
+	expect( $registered['uitdagingsrondte']['args']['show_admin_column'] )->toBeFalse();
+	expect( $registered['genre']['args']['show_ui'] )->toBeTrue();
 } );

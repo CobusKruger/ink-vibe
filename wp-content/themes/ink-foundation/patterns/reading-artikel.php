@@ -82,10 +82,6 @@ require_once get_theme_file_path( 'inc/reading-parts.php' );
 <div class="ink-lees-kolom">
 <!-- /wp:html -->
 
-<!-- wp:ink/verwante-stukke /-->
-
-<!-- wp:ink/opleiding-verwant /-->
-
 <!-- wp:html -->
 </div></div></section>
 <!-- /wp:html -->

@@ -34,7 +34,7 @@ final class Api {
 	}
 
 	/**
-	 * The member-submission CPTs ("bydraes"): gedig, storie, artikel, skryfwerk.
+	 * The member-submission CPTs ("bydraes"): gedig, storie, artikel.
 	 *
 	 * @return list<string>
 	 */
@@ -43,7 +43,7 @@ final class Api {
 	}
 
 	/**
-	 * Every INK taxonomy slug: genre, vaardigheid, uitdagingsrondte, ster_gradering.
+	 * Every INK taxonomy slug: genre, vaardigheid, uitdagingsrondte.
 	 *
 	 * @return list<string>
 	 */
