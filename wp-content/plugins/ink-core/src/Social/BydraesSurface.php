@@ -172,12 +172,79 @@ final class BydraesSurface {
 	}
 
 	/**
+	 * Whether the user has at least one published, non-fixture work of a type.
+	 *
+	 * Drives the My Profiel "writer" gates (owner, 2026-11-09): a member with no
+	 * bydrae is a reader; the Gradering pill + wins-needed line need a Gedig.
+	 *
+	 * @param int    $user_id The member.
+	 * @param string $type    A {@see PostTypes} slug.
+	 */
+	public static function hasPublishedType( int $user_id, string $type ): bool {
+		if ( $user_id <= 0 ) {
+			return false;
+		}
+
+		$query = new \WP_Query(
+			array(
+				'post_type'           => $type,
+				'post_status'         => 'publish',
+				'author'              => $user_id,
+				'posts_per_page'      => self::PER_PAGE,
+				'orderby'             => 'date',
+				'order'               => 'DESC',
+				'ignore_sticky_posts' => true,
+				'no_found_rows'       => true,
+			)
+		);
+
+		foreach ( $query->posts as $post ) {
+			if ( $post instanceof \WP_Post && ! QaFixture::isFixtureTitle( get_the_title( $post ) ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * The reader state of the Bydraes tab: a member with no bydrae yet is invited
+	 * to start writing. Copy supplied by the owner (2026-11-09).
+	 *
+	 * @return string
+	 */
+	private static function readerHtml(): string {
+		$buttons = array(
+			array( 'begin-skryf', __( 'Begin skryf', 'ink-core' ), '/skryf/', 'ink-btn--primary' ),
+			array( 'uitdagings', __( 'Uitdagings', 'ink-core' ), '/uitdaging/', 'ink-btn--outline' ),
+			array( 'opleiding', __( 'Opleiding', 'ink-core' ), '/opleiding/', 'ink-btn--outline' ),
+		);
+
+		$html = '<section class="ink-bydraes ink-bydraes--leser">'
+			. '<div class="ink-card ink-card--empty ink-bydraes__leeg" data-audit-id="profiel-posts-empty">'
+			. '<p class="ink-bydraes__leeg-teks">'
+			. esc_html__( 'Wil jy graag van jou eie skryfwerk op Ink publiseer? Begin hier, of kyk na ons maandelikse uitdagings. En as jy nog nie gereed is nie, besoek gerus ons opleiding-afdeling.', 'ink-core' )
+			. '</p>'
+			. '<div class="ink-bydraes__leeg-aksies">';
+
+		foreach ( $buttons as $button ) {
+			$html .= '<a class="ink-btn ' . esc_attr( $button[3] ) . '" data-audit-id="profiel-posts-empty-' . esc_attr( $button[0] ) . '" href="' . esc_url( home_url( $button[2] ) ) . '">' . esc_html( $button[1] ) . '</a>';
+		}
+
+		return $html . '</div></div></section>';
+	}
+
+	/**
 	 * Build the Bydraes-tab list HTML. Pure — escaping only.
 	 *
 	 * @param list<array{id:int, title:string, type:string, type_label:string, date:string, read_count:int, read_label:string, is_pinned:bool, edit_url:string, view_url:string}> $rows The writer's own works.
 	 * @return string
 	 */
 	public static function toHtml( array $rows ): string {
+		if ( array() === $rows ) {
+			return self::readerHtml();
+		}
+
 		// "Jou bydraes" H2 + a second "Nuwe bydrae" button matching the identity
 		// strip's — Lovable shows one per H2-row context; same ratified copy/link
 		// (`ui-copy-translations.md` "Bydraes-blad" / "Identiteitsstrook"), no new
@@ -187,16 +254,6 @@ final class BydraesSurface {
 			. '<h2 class="ink-heading-h2-block ink-bydraes__titel" data-audit-id="profiel-posts-title">' . esc_html__( 'Jou bydraes', 'ink-core' ) . '</h2>'
 			. '<a class="ink-btn ink-btn--primary ink-bydraes__nuwe" data-audit-id="profiel-posts-new-btn" href="' . esc_url( home_url( '/skryf/' ) ) . '">' . esc_html__( 'Nuwe bydrae', 'ink-core' ) . '</a>'
 			. '</div>';
-
-		if ( array() === $rows ) {
-			// No ratified copy exists yet for this empty state — flagged per the
-			// standard [[afrikaans-copy-debt-process]] rather than invented (see
-			// docs/afrikaans-translation-sheet.md BYDRAES-LEEG /
-			// docs/afrikaans-copy-worklist.md).
-			$empty = __( 'Jy het nog geen bydraes geplaas nie. Klik "Begin skryf" regs bo.', 'ink-core' );
-
-			return $html . '<p class="ink-card ink-card--empty ink-bydraes__leeg" data-audit-id="profiel-posts-empty">' . esc_html( $empty ) . '</p></section>';
-		}
 
 		$html .= '<ul class="ink-bydraes__lys" data-audit-id="profiel-posts-list">';
 

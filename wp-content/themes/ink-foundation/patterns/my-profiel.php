@@ -54,7 +54,7 @@
  * Sentence case; structural wrappers locked (move/remove) per Storie 1.6.
  */
 
-$ink_user_id      = get_current_user_id();
+$ink_user_id = get_current_user_id();
 
 // Reader vs writer (owner, 2026-11-09). A reader is a member with no published
 // bydrae yet; everything public-profile related is writer-only; the Gradering
@@ -249,7 +249,8 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</nav>
 		<!-- /wp:group -->
 
-<?php $ink_panels = array(); ob_start(); // Panels are buffered, then echoed in tab order (writer vs reader) below. ?>
+<?php $ink_panels = array(); // Panels are buffered, then echoed in tab order (writer vs reader) below. ?>
+<?php ob_start(); ?>
 		<?php // Oorsig (§5.3): "Oor my" (2/3) + "In 'n oogopslag" (1/3) + "Onlangse aktiwiteit". ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}}} -->
 		<section class="wp-block-group ink-profiel-panel" id="oorsig" data-ink-profiel-panel="oorsig" data-audit-id="profiel-overview">
@@ -359,7 +360,8 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</section>
 		<!-- /wp:group -->
 
-<?php $ink_panels['oorsig'] = ob_get_clean(); ob_start(); ?>
+<?php $ink_panels['oorsig'] = ob_get_clean(); ?>
+<?php ob_start(); ?>
 		<?php // Bydraes (§5.4): the unified per-post render (title+type+date+read-count+pin+edit/view in one row), replacing the two previously separate blocks (Story 9.5 pin-management, Story 9.12 read-counts) — same underlying data, one render. ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true}} -->
 		<section class="wp-block-group ink-profiel-panel" id="bydraes" data-ink-profiel-panel="bydraes" data-audit-id="profiel-posts">
@@ -367,7 +369,8 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</section>
 		<!-- /wp:group -->
 
-<?php $ink_panels['bydraes'] = ob_get_clean(); ob_start(); ?>
+<?php $ink_panels['bydraes'] = ob_get_clean(); ?>
+<?php ob_start(); ?>
 		<?php // Leeslys — Story 7.7's block moved as-is (§5.5 says "move it as-is into this tab"; the empty-state copy fix is a separate later change). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true}} -->
 		<section class="wp-block-group ink-profiel-panel" id="leeslys" data-ink-profiel-panel="leeslys" data-audit-id="profiel-reading">
@@ -375,7 +378,8 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</section>
 		<!-- /wp:group -->
 
-<?php $ink_panels['leeslys'] = ob_get_clean(); ob_start(); ?>
+<?php $ink_panels['leeslys'] = ob_get_clean(); ?>
+<?php ob_start(); ?>
 		<?php // Wie ek volg (§5.6) — the following-list block (Api::followeeIdsFor() resolved to writer cards + reused FollowToggle unfollow control). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true}} -->
 		<section class="wp-block-group ink-profiel-panel" id="wie-ek-volg" data-ink-profiel-panel="wie-ek-volg" data-audit-id="profiel-following">
@@ -383,7 +387,8 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</section>
 		<!-- /wp:group -->
 
-<?php $ink_panels['wie-ek-volg'] = ob_get_clean(); ob_start(); ?>
+<?php $ink_panels['wie-ek-volg'] = ob_get_clean(); ?>
+<?php ob_start(); ?>
 		<?php // Aktiwiteit — Story 9.3's following-feed moved as-is (§5.7 says "move it into this tab as-is structurally"; the richer card restyle is later). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true}} -->
 		<section class="wp-block-group ink-profiel-panel" id="aktiwiteit" data-ink-profiel-panel="aktiwiteit" data-audit-id="profiel-activity">
@@ -391,7 +396,8 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</section>
 		<!-- /wp:group -->
 
-<?php $ink_panels['aktiwiteit'] = ob_get_clean(); ob_start(); ?>
+<?php $ink_panels['aktiwiteit'] = ob_get_clean(); ?>
+<?php ob_start(); ?>
 		<?php // Kennisgewings (§5.8) — the read-model's rendered list + "Merk alles as gelees" button; $ink_kennisgewings_html computed above (guarded ink-core bridge). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true}} -->
 		<section class="wp-block-group ink-profiel-panel" id="kennisgewings" data-ink-profiel-panel="kennisgewings" data-audit-id="profiel-notifications">
@@ -402,7 +408,8 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</section>
 		<!-- /wp:group -->
 
-<?php $ink_panels['kennisgewings'] = ob_get_clean(); ob_start(); ?>
+<?php $ink_panels['kennisgewings'] = ob_get_clean(); ?>
+<?php ob_start(); ?>
 		<?php // Lidmaatskap — Story 4.5's renewal pattern (data plumbing untouched per strategy §2) + the left-hand status card (§5.9). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true}} -->
 		<section class="wp-block-group ink-profiel-panel" id="lidmaatskap" data-ink-profiel-panel="lidmaatskap" data-audit-id="profiel-membership">

@@ -39,7 +39,22 @@ afterEach( function (): void {
 // --- toHtml (pure) ---
 
 test( 'toHtml renders the H2 + a matching "Nuwe bydrae" button', function (): void {
-	$html = BydraesSurface::toHtml( array() );
+	$html = BydraesSurface::toHtml(
+		array(
+			array(
+				'id'         => 7,
+				'title'      => 'Vlerke',
+				'type'       => 'gedig',
+				'type_label' => 'Gedig',
+				'date'       => '3 September 2026',
+				'read_count' => 0,
+				'read_label' => '0 lesers',
+				'is_pinned'  => false,
+				'edit_url'   => '',
+				'view_url'   => 'https://ink.test/vlerke/',
+			),
+		)
+	);
 
 	expect( $html )->toContain( 'Jou bydraes' );
 	expect( $html )->toContain( 'ink-bydraes__nuwe' );
@@ -109,11 +124,14 @@ test( 'toHtml renders the unpinned toggle state correctly', function (): void {
 	expect( $html )->not->toContain( '>Wysig<' );
 } );
 
-test( 'toHtml renders the empty-state copy when the writer has no published works, never a bare list', function (): void {
+test( 'toHtml renders the reader invitation with three buttons when the member has no published works, never a bare list', function (): void {
 	$html = BydraesSurface::toHtml( array() );
 
 	expect( $html )->toContain( 'ink-bydraes__leeg' );
-	expect( $html )->toContain( 'Jy het nog geen bydraes geplaas nie.' );
+	expect( $html )->toContain( 'Wil jy graag van jou eie skryfwerk op Ink publiseer?' );
+	expect( $html )->toContain( '>Begin skryf<' );
+	expect( $html )->toContain( '>Uitdagings<' );
+	expect( $html )->toContain( '>Opleiding<' );
 	expect( $html )->not->toContain( '<ul' );
 } );
 
