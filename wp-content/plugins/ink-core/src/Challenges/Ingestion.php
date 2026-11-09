@@ -44,6 +44,14 @@ defined( 'ABSPATH' ) || exit;
 class Ingestion {
 
 	/**
+	 * Post ids whose wins were imported from the old result post before this commit
+	 * (they already know their result, so no win email goes to them).
+	 *
+	 * @var list<int>
+	 */
+	private array $imported_post_ids = array();
+
+	/**
 	 * The per-round commit-done marker (post meta on the uitdaging). Its presence makes
 	 * the whole commit a no-op (idempotent re-run guard).
 	 *
@@ -101,7 +109,8 @@ class Ingestion {
 		// A round whose wins were imported from the old result post already holds them. This commit
 		// replaces them (the judges' document is the authority), and counts for promotion only the
 		// wins the writers do not already have, so an imported round is never counted twice.
-		$counted = $this->takeOverImported( $uitdaging_id );
+		$this->imported_post_ids = array();
+		$counted               = $this->takeOverImported( $uitdaging_id );
 
 		// AC-5 order. (1) winners post, (2) moderator feedback (reserved seams → 0).
 		$result['post_id']  = $this->commitWinnersPost( $uitdaging_id, $winners );
@@ -118,6 +127,13 @@ class Ingestion {
 				// Every new win gets a record, or the lifetime count freezes at go-live (`03-tuis` §6).
 				if ( $this->recordWin( $uitdaging_id, $winner ) ) {
 					++$result['wins'];
+
+					// Win email (WinEmail listens). Not for a win that was already imported
+					// from the old result post: that writer was told when the round ran.
+					if ( ! in_array( (int) ( $winner['post_id'] ?? 0 ), $this->imported_post_ids, true ) ) {
+						// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- INK ink/... event-surface convention.
+						do_action( WinEmail::HOOK, $uitdaging_id, $winner );
+					}
 				}
 			}
 		}
@@ -248,6 +264,7 @@ class Ingestion {
 			}
 
 			if ( $post > 0 ) {
+				$this->imported_post_ids[] = $post;
 				Placements::clear( $post );
 			}
 		}

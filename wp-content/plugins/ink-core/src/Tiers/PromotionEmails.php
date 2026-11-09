@@ -76,7 +76,9 @@ final class PromotionEmails {
 				self::SILWER_TEMPLATE_KEY,
 				__( 'Baie geluk! Jy is na Silwer bevorder.', 'ink-core' ),
 				__( 'Hallo {skrywer}! Baie geluk! Jy is na Silwer bevorder.', 'ink-core' ),
-				false
+				false,
+				group: __( 'Gradering', 'ink-core' ),
+				label: __( 'Bevordering na Silwer', 'ink-core' )
 			)
 		);
 
@@ -85,7 +87,9 @@ final class PromotionEmails {
 				self::GOUD_TEMPLATE_KEY,
 				__( 'Baie geluk! Jy is na Goud bevorder.', 'ink-core' ),
 				__( 'Hallo {skrywer}! Baie geluk! Jy is na Goud bevorder.', 'ink-core' ),
-				false
+				false,
+				group: __( 'Gradering', 'ink-core' ),
+				label: __( 'Bevordering na Goud', 'ink-core' )
 			)
 		);
 	}

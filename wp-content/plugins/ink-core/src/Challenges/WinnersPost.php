@@ -67,7 +67,9 @@ class WinnersPost {
 				self::TEMPLATE_KEY,
 				__( 'Wenners aangekondig', 'ink-core' ),
 				__( 'Baie geluk aan al ons wenners! Hier is die uitslae van die uitdaging.', 'ink-core' ),
-				false
+				false,
+				group: __( 'Uitdagings', 'ink-core' ),
+				label: __( 'Wenneraankondiging (blogplasing, nie e-pos nie)', 'ink-core' )
 			)
 		);
 	}

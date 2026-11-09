@@ -470,7 +470,9 @@ final class Approval {
 				self::APPROVED_TEMPLATE_KEY,
 				__( 'Jou INK rekening is goedgekeur', 'ink-core' ),
 				__( 'Hallo {skrywer}. Jou rekening is goedgekeur. Jy kan nou inteken en begin skryf.', 'ink-core' ),
-				false
+				false,
+				group: __( 'Rekeninge', 'ink-core' ),
+				label: __( 'Rekening goedgekeur', 'ink-core' )
 			)
 		);
 
@@ -479,7 +481,9 @@ final class Approval {
 				self::REJECTED_TEMPLATE_KEY,
 				__( 'Aangaande jou INK rekeningaansoek', 'ink-core' ),
 				__( 'Hallo {skrywer}. Jou rekeningaansoek is ongelukkig afgekeur.', 'ink-core' ),
-				false
+				false,
+				group: __( 'Rekeninge', 'ink-core' ),
+				label: __( 'Rekening afgekeur', 'ink-core' )
 			)
 		);
 	}

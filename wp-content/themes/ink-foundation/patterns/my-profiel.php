@@ -365,6 +365,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		<section class="wp-block-group ink-profiel-panel" id="kennisgewings" data-ink-profiel-panel="kennisgewings" data-audit-id="profiel-notifications">
 			<!-- wp:html -->
 			<?php echo $ink_kennisgewings_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- KennisgewingsSurface::toHtml() escapes internally. ?>
+			<?php echo class_exists( '\Ink\Notifications\Api' ) ? \Ink\Notifications\Api::preferencesHtml( $ink_user_id ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Preferences::formHtml() escapes internally. ?>
 			<!-- /wp:html -->
 		</section>
 		<!-- /wp:group -->

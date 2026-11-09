@@ -57,9 +57,37 @@ final class Events {
 	 * Subscribe the sources on `init`.
 	 */
 	public function register(): void {
+		$this->registerTemplates();
+
 		add_action( 'wp_insert_comment', array( $this, 'onComment' ), 10, 2 );
 		add_action( 'transition_post_status', array( $this, 'onTransition' ), 10, 3 );
 		add_action( LifecycleEmails::EVENT_EXPIRY_WARNED, array( $this, 'onExpiryWarning' ), 10, 3 ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- INK ink/... event-surface convention (AD-6).
+	}
+
+	/**
+	 * Email event key: someone reacted to a member's work.
+	 */
+	public const REAKSIE_EMAIL_KEY = 'ink_reaksie_ontvang_email';
+
+	/**
+	 * Register the email events this module owns (copy edited on Instellings → INK e-posse).
+	 */
+	public function registerTemplates(): void {
+		Api::registerTemplate(
+			new Template(
+				self::REAKSIE_EMAIL_KEY,
+				__( 'Iemand het op jou werk gereageer', 'ink-core' ),
+				__( '<p>Hallo {skrywer},</p><p>{kommentator} het op jou werk "{werk}" gereageer.</p><p><a href="{skakel}">Lees die reaksie</a></p>', 'ink-core' ),
+				false,
+				array(),
+				Template::KIND_SOCIAL,
+				__( 'Sosiaal', 'ink-core' ),
+				__( 'Reaksie op my werk', 'ink-core' ),
+				array( 'skrywer', 'kommentator', 'werk', 'skakel' ),
+				'reaksies',
+				__( 'reaksies op my werk', 'ink-core' )
+			)
+		);
 	}
 
 	/**
@@ -86,6 +114,21 @@ final class Events {
 		// The work's author gets the "new reaksie" kennisgewing (never self).
 		$author_id = (int) get_post_field( 'post_author', $post_id );
 		Kennisgewings::add( $author_id, NotificationType::Reaksie, $comment_id, $actor_id );
+
+		// The same event by email (never to yourself; honours the author's opt-out).
+		if ( $author_id > 0 && $author_id !== $actor_id ) {
+			$actor = $actor_id > 0 ? get_userdata( $actor_id ) : false;
+
+			Api::fire(
+				self::REAKSIE_EMAIL_KEY,
+				$author_id,
+				array(
+					'kommentator' => $actor instanceof \WP_User && '' !== (string) $actor->display_name ? (string) $actor->display_name : __( 'Iemand', 'ink-core' ),
+					'werk'        => wp_strip_all_tags( get_the_title( $post_id ) ),
+					'skakel'      => (string) get_permalink( $post_id ),
+				)
+			);
+		}
 
 		// Each @mentioned lid gets a "mention" kennisgewing.
 		foreach ( self::mentionedLogins( (string) ( $comment->comment_content ?? '' ) ) as $login ) {

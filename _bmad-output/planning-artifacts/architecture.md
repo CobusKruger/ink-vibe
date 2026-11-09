@@ -619,6 +619,30 @@ greeting line", e.g. `Beste {skrywer}, …`).
 - **Consumed by:** R2 (winners post body), R3 (congratulation email), R5 (lifecycle
   emails), R7 (receipt messages + randomized list). One store, four consumers.
 
+**Amendment 2026-11-09 — email notification system (owner-approved).** The constraint
+above is relaxed in three bounded ways; everything else in this AD stands.
+
+- **Several merge tokens, declared per event** (e.g. `{skrywer}`, `{werk}`, `{kommentator}`,
+  `{plek}`, `{uitdaging}`, `{skakel}`), supplied by the sending code. Still plain
+  `{token}` substitution: **no** conditionals, loops, nesting or template language. Values
+  are HTML-escaped; a token the caller does not supply is left literal.
+- **Basic HTML bodies** (`p, br, a, strong, b, em, i, ul, ol, li`), sanitised with
+  `wp_kses` on save; legacy plain-text bodies still render. Edited in a plain textarea —
+  **still no WYSIWYG / template builder**.
+- **Events are defined in code; the admin edits their copy.** A `Template` record carries
+  `kind` (`system` | `social`), group/label, tokens, opt-out category and per-term switches.
+  An admin screen (Settings → "INK e-posse") edits subject, body, on/off, per-term
+  toggles, test-send and reset-to-default; it can neither add nor remove events. Entry
+  point for a new event: `Notifications\Api::registerTemplate()` + `Api::fire()`
+  (see `docs/notifications-adding-an-event.md`).
+- **Member opt-out for `social` events only**, per category (user meta + signed
+  one-click unsubscribe link); `system` events always send. Social mail is queued via
+  Action Scheduler, one email per event (no digest at launch). A capped send log
+  (last 100) is kept in an option for debugging.
+
+Storage remains the single `ink_notifications_templates` options row (no custom table),
+and the NFR-1 leak-scan extension below still applies to the stored copy.
+
 **Consequences:**
 - **(NFR-1 leak-scan extension — item 6.)** Admin-authored template text is a **new
   Afrikaans-leak vector not covered today**: the build-time `.mo` + page-crawl scan (AD-8)
@@ -815,8 +839,9 @@ build-time items.
   denormalized sort counts; collation-based diacritic search (no search plugin).
 - **AD-8** — CI-built artifact deploy (no composer-on-host); host LiteSpeed object cache;
   English-leak scan as a standing CI + cron gate.
-- **AD-9** — Form-letter/notification template store (WP options, name-merge only — not a
-  template engine), owned by Notifications (now also transactional email); leak-scan
+- **AD-9** — Form-letter/notification template store (WP options, plain token-merge only — not a
+  template engine; amended 2026-11-09: per-event tokens, basic HTML, code-defined events with an
+  admin copy editor, social opt-outs), owned by Notifications (now also transactional email); leak-scan
   extended to the template store; `.docx`/PhpWord parser explicitly out of scope (paste-only);
   R5/R7/R8/R6 integration seams; conflation rule reconfirmed for the new services.
 

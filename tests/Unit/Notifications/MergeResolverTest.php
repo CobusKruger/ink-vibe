@@ -23,6 +23,13 @@ test( 'resolves the {skrywer} greeting token', function (): void {
 		->toBe( 'Beste Jan, welkom by INK.' );
 } );
 
+test( 'substitutes any token the caller supplies, not just {skrywer}', function (): void {
+	$resolver = new MergeResolver();
+
+	expect( $resolver->resolve( '{kommentator} reageer op {werk}.', array( 'kommentator' => 'Piet', 'werk' => 'Lente' ) ) )
+		->toBe( 'Piet reageer op Lente.' );
+} );
+
 test( 'leaves unknown or unprovided tokens literal (signals a misconfigured caller)', function (): void {
 	$resolver = new MergeResolver();
 

@@ -661,7 +661,10 @@ class LifecycleEmails {
 				// Body — human-authored Afrikaans; send toggle stays OFF until staff enable sending.
 				__( 'Hallo {skrywer}. Jou lidmaatskap verval oor een week.', 'ink-core' ),
 				// Send toggle OFF by default — copy is ready; enable deliberately to start sending.
-				false
+				false,
+				group: __( 'Lidmaatskap', 'ink-core' ),
+				label: __( 'Lidmaatskap verval oor een week', 'ink-core' ),
+				terms: array( 1, 6, 12 )
 			)
 		);
 
@@ -670,7 +673,10 @@ class LifecycleEmails {
 				self::WARN_1MONTH_TEMPLATE_KEY,
 				__( 'Jou lidmaatskap verval binnekort', 'ink-core' ),
 				__( 'Hallo {skrywer}. Jou lidmaatskap verval oor een maand.', 'ink-core' ),
-				false
+				false,
+				group: __( 'Lidmaatskap', 'ink-core' ),
+				label: __( 'Lidmaatskap verval oor een maand', 'ink-core' ),
+				terms: array( 6, 12 )
 			)
 		);
 	}

@@ -53,7 +53,12 @@ test( 'sends the merged Afrikaans subject + body via wp_mail when enabled', func
 	Functions\when( 'get_option' )->justReturn( array() );
 	Functions\expect( 'wp_mail' )
 		->once()
-		->with( 'jan@voorbeeld.test', 'Baie geluk', 'Beste Jan, jy is na Silwer bevorder.' )
+		->with(
+			'jan@voorbeeld.test',
+			'Baie geluk',
+			\Mockery::on( static fn ( $html ): bool => str_contains( (string) $html, '<p>Beste Jan, jy is na Silwer bevorder.</p>' ) && str_starts_with( (string) $html, '<!doctype html>' ) ),
+			array( 'Content-Type: text/html; charset=UTF-8' )
+		)
 		->andReturn( true );
 
 	$store = new TemplateStore();

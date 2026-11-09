@@ -116,7 +116,9 @@ final class Registration {
 				// Body — human-authored Afrikaans; send toggle stays OFF until staff enable sending.
 				__( 'Hallo {skrywer}, en welkom by INK! Jou rekening is pas geskep.', 'ink-core' ),
 				// Send toggle OFF by default — copy is ready; enable deliberately to start sending.
-				false
+				false,
+				group: __( 'Rekeninge', 'ink-core' ),
+				label: __( 'Welkom (nuwe rekening)', 'ink-core' )
 			)
 		);
 	}

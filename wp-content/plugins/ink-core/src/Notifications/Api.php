@@ -52,6 +52,28 @@ final class Api {
 	}
 
 	/**
+	 * Rebuild the shared notifier over the shared store with the send log attached
+	 * (called by {@see Module::register()}; the lazy default notifier has no log).
+	 */
+	public static function enableLogging( SendLog $log ): void {
+		self::$notifier = new Notifier( self::store(), new MergeResolver(), $log );
+	}
+
+	/**
+	 * The shared store (admin screen / preferences read the same registry consumers write).
+	 */
+	public static function sharedStore(): TemplateStore {
+		return self::store();
+	}
+
+	/**
+	 * The shared notifier.
+	 */
+	public static function sharedNotifier(): Notifier {
+		return self::notifier();
+	}
+
+	/**
 	 * Register a consumer's Afrikaans-source template/event definition.
 	 *
 	 * Gettext contract (Story 1.12, decision 5a): the consumer passes the Afrikaans
@@ -74,6 +96,44 @@ final class Api {
 	 */
 	public static function send( string $key, string $to, array $context = array() ): bool {
 		return self::notifier()->send( $key, $to, $context );
+	}
+
+	/**
+	 * Fire a registered event for a member (the "add an event" entry point).
+	 *
+	 * Resolves the recipient's address and name, applies the event's on/off
+	 * toggle and — for `social` events — the member's opt-out, then sends
+	 * (social mail is queued through Action Scheduler). `skrywer` defaults to
+	 * the member's display name; pass the event's other tokens in $context.
+	 *
+	 * @param string                    $key     Event key (registered via {@see registerTemplate()}).
+	 * @param int                       $user_id The recipient.
+	 * @param array<string, int|string> $context Merge values (scalars only).
+	 * @return bool True if sent or queued; false if suppressed.
+	 */
+	public static function fire( string $key, int $user_id, array $context = array() ): bool {
+		return self::notifier()->fire( $key, $user_id, $context );
+	}
+
+	/**
+	 * Perform a queued delivery (Action Scheduler callback for {@see Notifier::DELIVER_HOOK}).
+	 *
+	 * @param string                    $key     Event key.
+	 * @param int                       $user_id The recipient.
+	 * @param array<string, int|string> $context Merge values.
+	 */
+	public static function deliver( string $key, int $user_id, array $context = array() ): void {
+		self::notifier()->deliver( $key, $user_id, $context );
+	}
+
+	/**
+	 * The member's "E-poskennisgewings" preferences form (My Profiel → Kennisgewings).
+	 *
+	 * @param int $user_id The logged-in member.
+	 * @return string Escaped HTML.
+	 */
+	public static function preferencesHtml( int $user_id ): string {
+		return ( new Preferences( self::store() ) )->formHtml( $user_id );
 	}
 
 	/**

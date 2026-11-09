@@ -44,10 +44,23 @@ final class Module implements ModuleContract {
 	 * modules reach Notifications only through that single public surface (AD-1).
 	 */
 	public function register(): void {
-		$store    = new TemplateStore();
-		$notifier = new Notifier( $store );
+		$store = new TemplateStore();
 
-		Api::bootstrap( $store, $notifier );
+		Api::bootstrap( $store, new Notifier( $store ) );
+
+		// Use the facade's winning store/notifier (a consumer may have built them lazily
+		// on `plugins_loaded`), so the admin screen sees every registered event.
+		$log = new SendLog();
+		Api::enableLogging( $log );
+
+		$store    = Api::sharedStore();
+		$notifier = Api::sharedNotifier();
+
+		// Email events: queued social deliveries, member opt-outs (profile form +
+		// signed unsubscribe link), and the admin screen that edits every event's copy.
+		add_action( Notifier::DELIVER_HOOK, array( Api::class, 'deliver' ), 10, 3 );
+		( new Preferences( $store ) )->register();
+		( new AdminPage( $store, $notifier, $log ) )->register();
 
 		// Story 9.9: in-app kennisgewings (BP notifications store). The source
 		// subscriptions route reaksie/@mention, followed-writer new work and the

@@ -43,6 +43,7 @@ final class Module implements ModuleContract {
 		( new Archive() )->register();
 		( new Entry() )->register();
 		( new PromotionHistory() )->register();
+		( new WinEmail() )->register();
 		( new ProfileAccomplishments() )->register();
 		( new Migration() )->register();
 		( new SourceCategorySync() )->register();

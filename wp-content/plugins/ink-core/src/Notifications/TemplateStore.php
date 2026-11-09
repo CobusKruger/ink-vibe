@@ -158,6 +158,68 @@ final class TemplateStore {
 	/**
 	 * The registered definition for $key, or null.
 	 */
+	public function get( string $key ): ?Template {
+		return $this->definition( $key );
+	}
+
+	/**
+	 * All registered definitions, keyed by key.
+	 *
+	 * @return array<string, Template>
+	 */
+	public function all(): array {
+		return $this->templates;
+	}
+
+	/**
+	 * Opt-out categories offered to members: slug => label, from the social events.
+	 *
+	 * @return array<string, string>
+	 */
+	public function socialCategories(): array {
+		$categories = array();
+
+		foreach ( $this->templates as $template ) {
+			if ( $template->isSocial() ) {
+				$categories[ $template->category ] = '' !== $template->categoryLabel ? $template->categoryLabel : $template->category;
+			}
+		}
+
+		return $categories;
+	}
+
+	/**
+	 * Drop every admin override for $key (back to the code defaults), including
+	 * its per-term toggles. MUST be capability-gated at the call site.
+	 */
+	public function reset( string $key ): void {
+		$all = get_option( self::OPTION, array() );
+
+		if ( ! is_array( $all ) ) {
+			return;
+		}
+
+		$prefix = $key . '_';
+
+		foreach ( array_keys( $all ) as $stored ) {
+			if ( (string) $stored === $key || ( str_starts_with( (string) $stored, $prefix ) && ctype_digit( substr( (string) $stored, strlen( $prefix ) ) ) ) ) {
+				unset( $all[ $stored ] );
+			}
+		}
+
+		update_option( self::OPTION, $all );
+	}
+
+	/**
+	 * Whether the per-term toggle `{key}_{months}` is on (fail-safe OFF when unset).
+	 */
+	public function isTermEnabled( string $key, int $months ): bool {
+		return $this->isEnabled( $key . '_' . $months );
+	}
+
+	/**
+	 * The registered definition for $key, or null.
+	 */
 	private function definition( string $key ): ?Template {
 		return $this->templates[ $key ] ?? null;
 	}

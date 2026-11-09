@@ -92,6 +92,19 @@ class PurchaseActivation {
 	public const STATUS_ACTIVE = 'active';
 
 	/**
+	 * Statuses that END an active lidmaatskap (a member loses access): the
+	 * deactivation email fires on `active → one of these`.
+	 *
+	 * @var list<string>
+	 */
+	public const ENDED_STATUSES = array( 'expired', 'cancelled' );
+
+	/**
+	 * Notifications template/event key for the deactivation email.
+	 */
+	public const DEACTIVATED_TEMPLATE_KEY = 'ink_membership_deactivated_email';
+
+	/**
 	 * The Notifications template/event key for the thank-you / activation email.
 	 *
 	 * Story 4.2 registers this Afrikaans-source template (send toggle OFF) and
@@ -114,6 +127,7 @@ class PurchaseActivation {
 		add_action( self::HOOK_STATUS_CHANGED, array( $this, 'onMembershipStatusChanged' ), 10, 3 );
 
 		$this->registerEmailTemplate();
+		$this->registerDeactivationTemplate();
 	}
 
 	/**
@@ -148,6 +162,17 @@ class PurchaseActivation {
 	 * @param string $new_status      The new status; we react only to `active`.
 	 */
 	public function onMembershipStatusChanged( mixed $user_membership, string $old_status, string $new_status ): void {
+		// A lidmaatskap that ENDS (active → expired/cancelled) sends the deactivation email.
+		if ( self::STATUS_ACTIVE === $old_status && in_array( $new_status, self::ENDED_STATUSES, true ) ) {
+			$ended_user_id = $this->membershipOwnerId( $user_membership );
+
+			if ( $ended_user_id > 0 ) {
+				Notifications::fire( self::DEACTIVATED_TEMPLATE_KEY, $ended_user_id );
+			}
+
+			return;
+		}
+
 		// Fire only on a genuine transition INTO active: the new status must be
 		// active AND the old status must NOT already be active. This makes the
 		// handler idempotent — a no-op save (active → active) or any non-active
@@ -214,6 +239,22 @@ class PurchaseActivation {
 	}
 
 	/**
+	 * Register the deactivation email (system event, toggle OFF until staff enable it).
+	 */
+	public function registerDeactivationTemplate(): void {
+		Notifications::registerTemplate(
+			new Template(
+				self::DEACTIVATED_TEMPLATE_KEY,
+				__( 'Jou lidmaatskap het verstryk', 'ink-core' ),
+				__( 'Hallo {skrywer}. Jou lidmaatskap is nie meer aktief nie. Jy kan enige tyd weer hernu op My Profiel.', 'ink-core' ),
+				false,
+				group: __( 'Lidmaatskap', 'ink-core' ),
+				label: __( 'Lidmaatskap gedeaktiveer', 'ink-core' )
+			)
+		);
+	}
+
+	/**
 	 * Register the Afrikaans-source thank-you / activation email template (toggle OFF).
 	 *
 	 * Mirrors {@see \Ink\Accounts\Registration::registerWelcomeTemplate()}: the
@@ -234,7 +275,10 @@ class PurchaseActivation {
 				// Body — human-authored Afrikaans; send toggle stays OFF until staff enable sending.
 				__( 'Hallo {skrywer}! Jou lidmaatskap is nou aktief. Dankie dat jy vir INK ondersteun.', 'ink-core' ),
 				// Send toggle OFF by default — copy is ready; enable deliberately to start sending.
-				false
+				false,
+				group: __( 'Lidmaatskap', 'ink-core' ),
+				label: __( 'Lidmaatskap geaktiveer', 'ink-core' ),
+				terms: array( 1, 6, 12 )
 			)
 		);
 	}
