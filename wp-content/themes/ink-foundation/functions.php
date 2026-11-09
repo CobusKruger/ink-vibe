@@ -683,15 +683,33 @@ function ink_foundation_autolink_prose_urls( string $block_content ): string {
 			continue;
 		}
 
-		$linked = preg_replace_callback(
-			'/\bhttps?:\/\/[^\s<>"\']+/i',
-			'ink_foundation_prose_link_markup',
-			$segment
-		);
+		// Only linkify text nodes. Tags (`<img src="https://…" srcset="…">`,
+		// `<figure>`, `<iframe src>`, …) are split off and left untouched;
+		// otherwise a URL inside an attribute gets wrapped in `<a>` and the
+		// tag (e.g. every page-builder image block) renders as broken markup.
+		$parts = preg_split( '/(<[^>]*>)/', $segment, -1, PREG_SPLIT_DELIM_CAPTURE );
 
-		if ( null !== $linked ) {
-			$segments[ $index ] = $linked;
+		if ( ! is_array( $parts ) ) {
+			continue;
 		}
+
+		foreach ( $parts as $part_index => $part ) {
+			if ( '' === $part || '<' === $part[0] ) {
+				continue;
+			}
+
+			$linked = preg_replace_callback(
+				'/\bhttps?:\/\/[^\s<>"\']+/i',
+				'ink_foundation_prose_link_markup',
+				$part
+			);
+
+			if ( null !== $linked ) {
+				$parts[ $part_index ] = $linked;
+			}
+		}
+
+		$segments[ $index ] = implode( '', $parts );
 	}
 
 	return implode( '', $segments );
