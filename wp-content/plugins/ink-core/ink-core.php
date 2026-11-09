@@ -91,6 +91,8 @@ add_action(
 		Kernel\Plugin::instance()->addModule( 'engagement', new Engagement\Module() );
 		Kernel\Plugin::instance()->addModule( 'notifications', new Notifications\Module() );
 		Kernel\Plugin::instance()->addModule( 'accounts', new Accounts\Module() );
+		// Before BuddyPress fires `bp_init` (init:10): see AuthRedirects::releaseWpSignup().
+		add_action( 'init', array( new Accounts\AuthRedirects(), 'releaseWpSignup' ), 9 );
 		Kernel\Plugin::instance()->addModule( 'entitlement', new Entitlement\Module() );
 		Kernel\Plugin::instance()->addModule( 'tiers', new Tiers\Module() );
 			Kernel\Plugin::instance()->addModule( 'submission', new Submission\Module() );

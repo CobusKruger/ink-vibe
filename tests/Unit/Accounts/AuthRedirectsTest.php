@@ -85,6 +85,14 @@ test( 'register hooks registrationUrl onto register_url after BuddyPress (priori
 	expect( has_filter( 'register_url', array( $sut, 'registrationUrl' ) ) )->toBe( 20 );
 } );
 
+test( 'releaseWpSignup unhooks BuddyPress\'s wp-signup redirect from bp_init', function (): void {
+	add_action( 'bp_init', 'bp_core_wpsignup_redirect', 10 );
+
+	( new AuthRedirects() )->releaseWpSignup();
+
+	expect( has_action( 'bp_init', 'bp_core_wpsignup_redirect' ) )->toBeFalse();
+} );
+
 // --- lostPasswordFailed() ---
 
 test( 'lostPasswordFailed redirects to wagwoord-herstel with the failed notice when there are real errors', function (): void {

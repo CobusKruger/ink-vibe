@@ -53,6 +53,11 @@ final class AuthPageRelease {
 	private const TARGET_SLUG = 'registreer';
 
 	/**
+	 * Option row used as an atomic repair lock.
+	 */
+	private const LOCK_OPTION = 'ink_auth_page_release_lock';
+
+	/**
 	 * Register this class's hooks.
 	 *
 	 * Runs late on `init` (after BuddyPress's own `init`-time `buddypress` CPT
@@ -81,13 +86,24 @@ final class AuthPageRelease {
 			return;
 		}
 
-		$this->renameStrayBuddyPressPost();
-		$this->createRegisterPage();
+		// Atomic lock (add_option fails if the row exists): two concurrent first
+		// requests both saw "no page" and each created one (duplicate `registreer`
+		// pages on dev). Only the request that wins the lock repairs.
+		if ( ! add_option( self::LOCK_OPTION, time(), '', false ) ) {
+			return;
+		}
 
-		// Soft flush: the stray post's rename only takes effect for BuddyPress's
-		// OWN `registreer`-slug permastruct once the compiled rewrite_rules
-		// option is regenerated — see the class-level rationale above.
-		flush_rewrite_rules( false );
+		try {
+			$this->renameStrayBuddyPressPost();
+			$this->createRegisterPage();
+
+			// Soft flush: the stray post's rename only takes effect for BuddyPress's
+			// OWN `registreer`-slug permastruct once the compiled rewrite_rules
+			// option is regenerated — see the class-level rationale above.
+			flush_rewrite_rules( false );
+		} finally {
+			delete_option( self::LOCK_OPTION );
+		}
 	}
 
 	/**

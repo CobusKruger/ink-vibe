@@ -70,6 +70,23 @@ class AuthRedirects {
 	}
 
 	/**
+	 * Stop BuddyPress hijacking `wp-login.php?action=register`.
+	 *
+	 * `bp_core_wpsignup_redirect()` (hooked on `bp_init`, priority 10) sends the
+	 * request to `bp_get_signup_page()` — the legacy BuddyPress Register post —
+	 * so INK's form submit landed on an unstyled English page. Removing it lets
+	 * core's own `register_new_user()` run via {@see registerSubmission()}.
+	 *
+	 * MUST run before `bp_init` fires. BuddyPress hooks `bp_init` on `init`
+	 * priority 10 and loads before ink-core, so Module::register() (also `init`
+	 * 10, queued later) is too late. `ink-core.php` therefore wires this on `init`
+	 * priority 9 at `plugins_loaded` time.
+	 */
+	public function releaseWpSignup(): void {
+		remove_action( 'bp_init', 'bp_core_wpsignup_redirect', 10 );
+	}
+
+	/**
 	 * Core `wp-login.php` screens translate "Log In" / "Log in" as "Meld aan",
 	 * the label retired sitewide for `teken_in` ({@see \Ink\I18n\Terms}). Swap
 	 * the two core msgids on those screens only (button + nav link).

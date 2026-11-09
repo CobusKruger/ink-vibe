@@ -23,6 +23,19 @@ use Mockery;
 beforeEach( function (): void {
 	Monkey\setUp();
 	Functions\when( '__' )->returnArg( 1 );
+	Functions\when( 'add_option' )->justReturn( true );
+	Functions\when( 'delete_option' )->justReturn( true );
+} );
+
+test( 'ensureTargetSlugIsFree does nothing when another request holds the repair lock', function (): void {
+	Functions\when( 'get_page_by_path' )->justReturn( null );
+	Functions\when( 'add_option' )->justReturn( false );
+
+	Functions\expect( 'wp_update_post' )->never();
+	Functions\expect( 'wp_insert_post' )->never();
+	Functions\expect( 'flush_rewrite_rules' )->never();
+
+	( new AuthPageRelease() )->ensureTargetSlugIsFree();
 } );
 
 afterEach( function (): void {
