@@ -55,10 +55,19 @@
  */
 
 $ink_user_id      = get_current_user_id();
-$ink_wins_needed  = function_exists( 'ink_foundation_gradering_wins_needed' )
+
+// Reader vs writer (owner, 2026-11-09). A reader is a member with no published
+// bydrae yet; everything public-profile related is writer-only; the Gradering
+// pill + wins-needed line need at least one published Gedig. One template, no
+// role check — the data decides.
+$ink_bydraes    = class_exists( '\Ink\Social\BydraesSurface' ) ? \Ink\Social\BydraesSurface::rows( $ink_user_id ) : array();
+$ink_has_bydrae = array() !== $ink_bydraes;
+$ink_has_gedig  = $ink_has_bydrae && \Ink\Social\BydraesSurface::hasPublishedType( $ink_user_id, 'gedig' );
+
+$ink_wins_needed  = ( $ink_has_gedig && function_exists( 'ink_foundation_gradering_wins_needed' ) )
 	? ink_foundation_gradering_wins_needed()
 	: '';
-$ink_badge        = function_exists( 'ink_foundation_gradering_badge' )
+$ink_badge        = ( $ink_has_gedig && function_exists( 'ink_foundation_gradering_badge' ) )
 	? ink_foundation_gradering_badge()
 	: '';
 $ink_tagline      = class_exists( '\Ink\Social\Tagline' )
@@ -97,7 +106,6 @@ $ink_icons = array(
 // (§7 item 5): Gradering lives in the identity strip above, Leesgetalle moved
 // to the Bydraes tab — Oorsig hosts neither directly any more.
 $ink_bio         = class_exists( '\Ink\Social\Api' ) ? \Ink\Social\Api::bioFor( $ink_user_id ) : trim( (string) get_the_author_meta( 'description', $ink_user_id ) );
-$ink_bydraes     = class_exists( '\Ink\Social\BydraesSurface' ) ? \Ink\Social\BydraesSurface::rows( $ink_user_id ) : array();
 $ink_volg_getal  = class_exists( '\Ink\Social\Api' ) ? \Ink\Social\Api::followingCount( $ink_user_id ) : 0;
 $ink_ongelees    = class_exists( '\Ink\Notifications\KennisgewingsSurface' ) ? \Ink\Notifications\KennisgewingsSurface::unreadCount( $ink_user_id ) : 0;
 $ink_hernu_datum = class_exists( '\Ink\Entitlement\Api' ) ? \Ink\Entitlement\Api::renewalDateFor( $ink_user_id ) : null;
@@ -138,7 +146,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 
 <?php if ( '' !== $ink_avatar ) : ?>
 				<!-- wp:html -->
-				<div class="ink-profiel-identiteit__avatar" data-audit-id="profiel-identity-avatar-wrap"><?php echo $ink_avatar; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_avatar() returns a fully-escaped <img>. ?></div>
+				<div class="ink-profiel-identiteit__avatar" data-audit-id="profiel-identity-avatar-wrap"><?php echo $ink_avatar; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_avatar() returns a fully-escaped <img>. ?><?php // Profile-picture upload: pencil bottom-right of the picture, always visible (no need to open "Wysig profiel"). profiel-foto.js posts the file to ink/v1/profiel/foto and swaps the <img>. ?><button type="button" class="ink-profiel-identiteit__foto-knoppie" data-ink-profiel-foto-trigger aria-label="<?php echo esc_attr__( 'Verander profielfoto', 'ink-foundation' ); ?>" title="<?php echo esc_attr__( 'Verander profielfoto', 'ink-foundation' ); ?>"><?php echo $ink_icon( $ink_icons['pencil'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline svg. ?></button><input type="file" class="screen-reader-text" accept="image/jpeg,image/png,image/gif,image/webp" data-ink-profiel-foto-input tabindex="-1" aria-hidden="true" /><span class="screen-reader-text" role="status" data-ink-profiel-foto-status></span></div>
 				<!-- /wp:html -->
 <?php endif; ?>
 				<!-- wp:group {"className":"ink-profiel-identiteit__inhoud"} -->
@@ -186,9 +194,11 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 					<div class="wp-block-button is-style-ink-primary"><a class="wp-block-button__link wp-element-button" data-audit-id="profiel-identity-new-btn" href="<?php echo esc_url( home_url( '/skryf/' ) ); ?>"><?php echo $ink_icon( $ink_icons['pen-line'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline svg. ?><?php echo esc_html__( 'Nuwe bydrae', 'ink-foundation' ); ?></a></div>
 					<!-- /wp:button -->
 
+<?php if ( $ink_has_bydrae ) : // The public Skrywerprofiel exists only for writers. ?>
 					<!-- wp:button {"className":"is-style-subtle"} -->
 					<div class="wp-block-button is-style-subtle"><a class="wp-block-button__link wp-element-button" data-audit-id="profiel-identity-public-btn" href="<?php echo esc_url( $ink_public_url ); ?>"><?php echo esc_html__( 'Sien openbare bladsy', 'ink-foundation' ); ?><?php echo $ink_icon( $ink_icons['arrow'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline svg. ?></a></div>
 					<!-- /wp:button -->
+<?php endif; ?>
 				</div>
 				<!-- /wp:buttons -->
 			</div>
@@ -215,16 +225,31 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		<?php // Tab shell (My Profiel rebuild §5.2): 7 ratified tabs, mirroring ontdek-tabs.js's progressive-enhancement mechanics (data-ink-profiel-tab/-panel, [hidden], #hash). ?>
 		<!-- wp:group {"tagName":"nav","className":"ink-segmented ink-profiel-tabs","lock":{"move":true,"remove":true},"layout":{"type":"flex","flexWrap":"wrap"}} -->
 		<nav class="wp-block-group ink-segmented ink-profiel-tabs" data-audit-id="profiel-tablist" aria-label="<?php esc_attr_e( 'My profiel-oortjies', 'ink-foundation' ); ?>">
-			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie is-active" data-ink-profiel-tab="oorsig" data-audit-id="profiel-tab-overview" aria-selected="true"><?php echo esc_html__( 'Oorsig', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="bydraes" data-audit-id="profiel-tab-posts" aria-selected="false"><?php echo $ink_icon( $ink_icons['book-open'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline svg. ?><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="leeslys" data-audit-id="profiel-tab-reading" aria-selected="false"><?php echo $ink_icon( $ink_icons['bookmark'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline svg. ?><?php echo esc_html__( 'Leeslys', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="wie-ek-volg" data-audit-id="profiel-tab-following" aria-selected="false"><?php echo $ink_icon( $ink_icons['users'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline svg. ?><?php echo esc_html__( 'Wie ek volg', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="aktiwiteit" data-audit-id="profiel-tab-activity" aria-selected="false"><?php echo $ink_icon( $ink_icons['activity'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline svg. ?><?php echo esc_html__( 'Aktiwiteit', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="kennisgewings" data-audit-id="profiel-tab-notifications" aria-selected="false"><?php echo $ink_icon( $ink_icons['bell'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline svg. ?><?php echo esc_html__( 'Kennisgewings', 'ink-foundation' ); ?></button>
-			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie" data-ink-profiel-tab="lidmaatskap" data-audit-id="profiel-tab-membership" aria-selected="false"><?php echo $ink_icon( $ink_icons['crown'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline svg. ?><?php echo esc_html__( 'Lidmaatskap', 'ink-foundation' ); ?></button>
+<?php
+			// Writer order = Oorsig first (Lovable). Reader order (owner, 2026-11-09):
+			// Leeslys first, Oorsig + Bydraes just left of Lidmaatskap. Same tabs, same
+			// panels — only the order differs, so the data decides, not a role check.
+			$ink_tab_defs  = array(
+				'oorsig'        => array( __( 'Oorsig', 'ink-foundation' ), 'profiel-tab-overview', '' ),
+				'bydraes'       => array( __( 'Bydraes', 'ink-foundation' ), 'profiel-tab-posts', 'book-open' ),
+				'leeslys'       => array( __( 'Leeslys', 'ink-foundation' ), 'profiel-tab-reading', 'bookmark' ),
+				'wie-ek-volg'   => array( __( 'Wie ek volg', 'ink-foundation' ), 'profiel-tab-following', 'users' ),
+				'aktiwiteit'    => array( __( 'Aktiwiteit', 'ink-foundation' ), 'profiel-tab-activity', 'activity' ),
+				'kennisgewings' => array( __( 'Kennisgewings', 'ink-foundation' ), 'profiel-tab-notifications', 'bell' ),
+				'lidmaatskap'   => array( __( 'Lidmaatskap', 'ink-foundation' ), 'profiel-tab-membership', 'crown' ),
+			);
+			$ink_tab_order = $ink_has_bydrae
+				? array( 'oorsig', 'bydraes', 'leeslys', 'wie-ek-volg', 'aktiwiteit', 'kennisgewings', 'lidmaatskap' )
+				: array( 'leeslys', 'wie-ek-volg', 'aktiwiteit', 'kennisgewings', 'oorsig', 'bydraes', 'lidmaatskap' );
+			foreach ( $ink_tab_order as $ink_tab_i => $ink_tab_key ) :
+				$ink_tab = $ink_tab_defs[ $ink_tab_key ];
+				?>
+			<button type="button" class="ink-segmented__tab ink-profiel-tabs__knoppie<?php echo 0 === $ink_tab_i ? ' is-active' : ''; ?>" data-ink-profiel-tab="<?php echo esc_attr( $ink_tab_key ); ?>" data-audit-id="<?php echo esc_attr( $ink_tab[1] ); ?>" aria-selected="<?php echo 0 === $ink_tab_i ? 'true' : 'false'; ?>"><?php echo '' !== $ink_tab[2] ? $ink_icon( $ink_icons[ $ink_tab[2] ] ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline svg. ?><?php echo esc_html( $ink_tab[0] ); ?></button>
+<?php endforeach; ?>
 		</nav>
 		<!-- /wp:group -->
 
+<?php $ink_panels = array(); ob_start(); // Panels are buffered, then echoed in tab order (writer vs reader) below. ?>
 		<?php // Oorsig (§5.3): "Oor my" (2/3) + "In 'n oogopslag" (1/3) + "Onlangse aktiwiteit". ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true},"style":{"spacing":{"blockGap":"var:preset|spacing|s-24"}}} -->
 		<section class="wp-block-group ink-profiel-panel" id="oorsig" data-ink-profiel-panel="oorsig" data-audit-id="profiel-overview">
@@ -274,10 +299,12 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 
 						<!-- wp:html -->
 						<dl class="ink-profiel-oogopslag__lys" data-audit-id="profiel-glance-stats">
+<?php if ( count( $ink_bydraes ) > 0 ) : // Count shown only once there is a bydrae. ?>
 							<div class="ink-profiel-oogopslag__stat" data-audit-id="profiel-glance-stat">
 								<dt class="ink-stat-label" data-audit-id="profiel-glance-stat-label"><?php echo esc_html__( 'Bydraes', 'ink-foundation' ); ?></dt>
 								<dd data-audit-id="profiel-glance-stat-value"><?php echo esc_html( number_format_i18n( count( $ink_bydraes ) ) ); ?></dd>
 							</div>
+<?php endif; ?>
 							<div class="ink-profiel-oogopslag__stat">
 								<dt class="ink-stat-label"><?php echo esc_html__( 'Wie ek volg', 'ink-foundation' ); ?></dt>
 								<dd><?php echo esc_html( number_format_i18n( $ink_volg_getal ) ); ?></dd>
@@ -332,6 +359,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</section>
 		<!-- /wp:group -->
 
+<?php $ink_panels['oorsig'] = ob_get_clean(); ob_start(); ?>
 		<?php // Bydraes (§5.4): the unified per-post render (title+type+date+read-count+pin+edit/view in one row), replacing the two previously separate blocks (Story 9.5 pin-management, Story 9.12 read-counts) — same underlying data, one render. ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true}} -->
 		<section class="wp-block-group ink-profiel-panel" id="bydraes" data-ink-profiel-panel="bydraes" data-audit-id="profiel-posts">
@@ -339,6 +367,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</section>
 		<!-- /wp:group -->
 
+<?php $ink_panels['bydraes'] = ob_get_clean(); ob_start(); ?>
 		<?php // Leeslys — Story 7.7's block moved as-is (§5.5 says "move it as-is into this tab"; the empty-state copy fix is a separate later change). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true}} -->
 		<section class="wp-block-group ink-profiel-panel" id="leeslys" data-ink-profiel-panel="leeslys" data-audit-id="profiel-reading">
@@ -346,6 +375,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</section>
 		<!-- /wp:group -->
 
+<?php $ink_panels['leeslys'] = ob_get_clean(); ob_start(); ?>
 		<?php // Wie ek volg (§5.6) — the following-list block (Api::followeeIdsFor() resolved to writer cards + reused FollowToggle unfollow control). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true}} -->
 		<section class="wp-block-group ink-profiel-panel" id="wie-ek-volg" data-ink-profiel-panel="wie-ek-volg" data-audit-id="profiel-following">
@@ -353,6 +383,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</section>
 		<!-- /wp:group -->
 
+<?php $ink_panels['wie-ek-volg'] = ob_get_clean(); ob_start(); ?>
 		<?php // Aktiwiteit — Story 9.3's following-feed moved as-is (§5.7 says "move it into this tab as-is structurally"; the richer card restyle is later). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true}} -->
 		<section class="wp-block-group ink-profiel-panel" id="aktiwiteit" data-ink-profiel-panel="aktiwiteit" data-audit-id="profiel-activity">
@@ -360,6 +391,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</section>
 		<!-- /wp:group -->
 
+<?php $ink_panels['aktiwiteit'] = ob_get_clean(); ob_start(); ?>
 		<?php // Kennisgewings (§5.8) — the read-model's rendered list + "Merk alles as gelees" button; $ink_kennisgewings_html computed above (guarded ink-core bridge). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true}} -->
 		<section class="wp-block-group ink-profiel-panel" id="kennisgewings" data-ink-profiel-panel="kennisgewings" data-audit-id="profiel-notifications">
@@ -370,6 +402,7 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 		</section>
 		<!-- /wp:group -->
 
+<?php $ink_panels['kennisgewings'] = ob_get_clean(); ob_start(); ?>
 		<?php // Lidmaatskap — Story 4.5's renewal pattern (data plumbing untouched per strategy §2) + the left-hand status card (§5.9). ?>
 		<!-- wp:group {"tagName":"section","className":"ink-profiel-panel","lock":{"move":true,"remove":true}} -->
 		<section class="wp-block-group ink-profiel-panel" id="lidmaatskap" data-ink-profiel-panel="lidmaatskap" data-audit-id="profiel-membership">
@@ -428,6 +461,14 @@ $ink_lidmaatskap_aktief = ( null !== $ink_hernu_datum ) || ( null !== $ink_lid_s
 <?php endif; ?>
 		</section>
 		<!-- /wp:group -->
+<?php
+$ink_panels['lidmaatskap'] = ob_get_clean();
+
+// Echo in tab order ($ink_tab_order, set where the tab nav is built).
+foreach ( $ink_tab_order as $ink_panel_key ) {
+	echo $ink_panels[ $ink_panel_key ]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- buffered, already-escaped panel markup from this file.
+}
+?>
 
 	</div>
 	<!-- /wp:group -->

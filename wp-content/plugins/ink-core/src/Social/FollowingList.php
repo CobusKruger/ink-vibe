@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ink\Social;
 
+use Ink\Discovery\SkrywersTab;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -82,32 +84,24 @@ final class FollowingList {
 
 		$followee_ids = Api::followeeIdsFor( get_current_user_id() );
 
-		$writers = array();
+		$cards = array();
 
 		foreach ( $followee_ids as $followee_id ) {
-			$user = get_userdata( $followee_id );
-
-			if ( ! $user instanceof \WP_User ) {
+			if ( ! get_userdata( $followee_id ) instanceof \WP_User ) {
 				continue;
 			}
 
-			$writers[] = array(
-				'id'     => $followee_id,
-				'name'   => (string) get_the_author_meta( 'display_name', $followee_id ),
-				// Same bio source as the public Skrywerprofiel card (SkrywerProfiel::render()),
-				// for consistency between the two writer-card renderings.
-				'bio'    => ProfileBio::for( $followee_id ),
-				'avatar' => function_exists( 'get_avatar' ) ? (string) get_avatar( $followee_id, 48, '', '', array( 'class' => 'ink-avatar ink-avatar--48' ) ) : '',
-			);
+			// The shared writer card (same data + markup as the Ontdek tab).
+			$cards[] = SkrywersTab::cardFor( (int) $followee_id );
 		}
 
-		return self::toHtml( $writers );
+		return self::toHtml( $cards );
 	}
 
 	/**
 	 * Build the following-list HTML. Pure — escaping only.
 	 *
-	 * @param list<array{id:int, name:string, bio:string, avatar:string}> $writers The followed writers.
+	 * @param list<array<string, mixed>> $writers Writer-card rows ({@see SkrywersTab::cardFor()}).
 	 * @return string
 	 */
 	public static function toHtml( array $writers ): string {
@@ -136,31 +130,12 @@ final class FollowingList {
 		// carries; no new string, no new destination.
 		$cta_persistent = '<a class="ink-btn ink-btn--sm ink-btn--subtle ink-volg-lys__ontdek-kop" data-audit-id="profiel-following-discover-btn" href="' . esc_url( home_url( '/ontdek/' ) ) . '">' . esc_html__( 'Ontdek skrywers', 'ink-core' ) . '</a>';
 
-		$html = '<section class="ink-volg-lys"><div class="ink-volg-lys__kop" data-audit-id="profiel-following-head"><div class="ink-volg-lys__kop-teks" data-audit-id="profiel-following-head-text">' . $heading . $intro . '</div>' . $cta_persistent . '</div><ul class="ink-volg-lys__grid" data-audit-id="profiel-following-grid">';
+		$html = '<section class="ink-volg-lys"><div class="ink-volg-lys__kop" data-audit-id="profiel-following-head"><div class="ink-volg-lys__kop-teks" data-audit-id="profiel-following-head-text">' . $heading . $intro . '</div>' . $cta_persistent . '</div><ul class="ink-ontdek-skrywers__list" data-audit-id="profiel-following-grid">';
 
-		foreach ( array_values( $writers ) as $i => $writer ) {
-			// Fidelity join keys on the FIRST card only (maps/my-profiel.csv).
-			$audit  = static fn( string $suffix ): string => 0 === $i ? ' data-audit-id="profiel-following-' . $suffix . '"' : '';
-			$avatar = (string) $writer['avatar'];
-
-			if ( 0 === $i ) {
-				$avatar = (string) preg_replace( '/<img\b/', '<img data-audit-id="profiel-following-avatar"', $avatar, 1 );
-			}
-
-			// name + bio share ONE column beside the avatar/unfollow-button (Tier-2
-			// live finding: without this wrapper both were direct flex children of
-			// the <li> row, so a bio rendered BESIDE the name instead of under it).
-			$html .= '<li class="ink-card ink-volg-lys__item"' . $audit( 'card' ) . ' data-ink-remove-on-unfollow>'
-				. '<div class="ink-volg-lys__foto"' . $audit( 'avatar-wrap' ) . '>' . $avatar . '</div>'
-				. '<div class="ink-volg-lys__inhoud"' . $audit( 'card-text' ) . '>'
-				. '<span class="ink-volg-lys__naam"' . $audit( 'name' ) . '>' . esc_html( (string) $writer['name'] ) . '</span>';
-
-			if ( '' !== trim( (string) $writer['bio'] ) ) {
-				$html .= '<p class="ink-volg-lys__bio"' . $audit( 'bio' ) . '><em>' . esc_html( (string) $writer['bio'] ) . '</em></p>';
-			}
-
-			$html .= '</div>' . FollowToggle::toHtml( (int) $writer['id'], true, 'sm' )
-				. '</li>';
+		// Cards are the shared Ontdek writer card; its Volg / Volg tans toggle (volg.js) stays
+		// on the card, so an unfollowed writer remains listed and can be followed again.
+		foreach ( array_values( $writers ) as $writer ) {
+			$html .= SkrywersTab::cardHtml( $writer );
 		}
 
 		$html .= '</ul></section>';

@@ -91,6 +91,8 @@ class Module implements ModuleContract {
 		// same "build it standalone first" precedent as FollowingList (§5.6) above.
 		( new Tagline() )->register();
 		( new ProfileController() )->register();
+		// Member-uploaded profile picture (pencil on the My Profiel avatar) + site-wide avatar override.
+		( new ProfilePhoto() )->register();
 		( new ProfileEditor() )->register();
 	}
 

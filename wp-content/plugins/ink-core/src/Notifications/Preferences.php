@@ -123,21 +123,26 @@ final class Preferences {
 		$opted_out = self::optOuts( $user_id );
 		$saved     = isset( $_GET['ink_notif_ok'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display-only flag.
 
+		// Same panel recipe as the other My Profiel tabs: h2-block heading + muted intro,
+		// then a card holding the shared `ink-checkbox` rows and the primary button.
 		$html  = '<form class="ink-epos-voorkeure" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" data-audit-id="profiel-epos-voorkeure">';
-		$html .= '<h3>' . esc_html__( 'E-poskennisgewings', 'ink-core' ) . '</h3>';
-		$html .= '<p>' . esc_html__( 'Kies wanneer ons vir jou e-pos stuur. E-posse oor jou rekening, lidmaatskap en uitslae word altyd gestuur.', 'ink-core' ) . '</p>';
+		$html .= '<div class="ink-epos-voorkeure__kop">'
+			. '<h2 class="ink-heading-h2-block ink-epos-voorkeure__titel">' . esc_html__( 'E-poskennisgewings', 'ink-core' ) . '</h2>'
+			. '<p class="ink-epos-voorkeure__intro">' . esc_html__( 'Kies wanneer ons vir jou e-pos stuur. E-posse oor jou rekening, lidmaatskap en uitslae word altyd gestuur.', 'ink-core' ) . '</p>'
+			. '</div>';
 		$html .= '<input type="hidden" name="action" value="' . esc_attr( self::ACTION_SAVE ) . '">';
 		$html .= wp_nonce_field( self::NONCE, '_wpnonce', true, false );
+		$html .= '<div class="ink-card ink-epos-voorkeure__kaart">';
 
 		foreach ( $categories as $slug => $label ) {
-			$html .= '<p><label><input type="checkbox" name="ink_notif[]" value="' . esc_attr( $slug ) . '"'
+			$html .= '<label class="ink-epos-voorkeure__ry"><input class="ink-checkbox" type="checkbox" name="ink_notif[]" value="' . esc_attr( $slug ) . '"'
 				. ( in_array( $slug, $opted_out, true ) ? '' : ' checked' ) . '> '
-				. esc_html( $label ) . '</label></p>';
+				. esc_html( $label ) . '</label>';
 		}
 
-		$html .= '<p><button type="submit">' . esc_html__( 'Stoor voorkeure', 'ink-core' ) . '</button>';
-		$html .= $saved ? ' <span role="status">' . esc_html__( 'Gestoor.', 'ink-core' ) . '</span>' : '';
-		$html .= '</p></form>';
+		$html .= '<div class="ink-epos-voorkeure__aksies"><button type="submit" class="ink-btn ink-btn--primary">' . esc_html__( 'Stoor voorkeure', 'ink-core' ) . '</button>';
+		$html .= $saved ? '<span class="ink-epos-voorkeure__status" role="status">' . esc_html__( 'Gestoor.', 'ink-core' ) . '</span>' : '';
+		$html .= '</div></div></form>';
 
 		return $html;
 	}

@@ -220,27 +220,7 @@ final class SkrywersTab {
 				continue;
 			}
 
-			$viewer = get_current_user_id();
-
-			$cards[] = array(
-				'id'          => $uid,
-				'name'        => (string) get_the_author_meta( 'display_name', $uid ),
-				'profile_url' => (string) get_author_posts_url( $uid ),
-				'gradering'   => Terms::label( TiersApi::forUser( $uid )->value ),
-				'tier'        => TiersApi::forUser( $uid )->value,
-				// The profile's bio source (description, else the prod BuddyPress "Biografie").
-				'bio'         => SocialApi::bioFor( $uid ),
-				'avatar_url'  => (string) get_avatar_url( $uid, array( 'size' => 128 ) ),
-				'genres'      => self::genreLabelsFor( $uid ),
-				'stats'       => array(
-					'works'     => SocialApi::workCountFor( $uid ),
-					'followers' => SocialApi::followerCount( $uid ),
-					'hartjies'  => SocialApi::hartjieTotalFor( $uid ),
-				),
-				// null = no Follow action (the viewer is this writer); false/true = viewer follows.
-				'following'   => ( $viewer === $uid ) ? null : ( $viewer > 0 && SocialApi::isFollowing( $viewer, $uid ) ),
-				'logged_in'   => $viewer > 0,
-			);
+			$cards[] = self::cardFor( $uid );
 		}
 
 		$total     = (int) $query->get_total();
@@ -255,6 +235,40 @@ final class SkrywersTab {
 				'sort'      => $active_sort,
 				'search'    => null !== $found,
 			)
+		);
+	}
+
+	/**
+	 * The card row for one writer, as seen by the current viewer. Impure (DB).
+	 *
+	 * The single source of the writer-card data: the Ontdek tab, the search results
+	 * and My Profiel's "Wie ek volg" all build their cards from this and render them
+	 * with {@see self::cardHtml()}.
+	 *
+	 * @param int $uid The writer.
+	 * @return array<string, mixed>
+	 */
+	public static function cardFor( int $uid ): array {
+		$viewer = get_current_user_id();
+
+		return array(
+			'id'          => $uid,
+			'name'        => (string) get_the_author_meta( 'display_name', $uid ),
+			'profile_url' => (string) get_author_posts_url( $uid ),
+			'gradering'   => Terms::label( TiersApi::forUser( $uid )->value ),
+			'tier'        => TiersApi::forUser( $uid )->value,
+			// The profile's bio source (description, else the prod BuddyPress "Biografie").
+			'bio'         => SocialApi::bioFor( $uid ),
+			'avatar_url'  => (string) get_avatar_url( $uid, array( 'size' => 128 ) ),
+			'genres'      => self::genreLabelsFor( $uid ),
+			'stats'       => array(
+				'works'     => SocialApi::workCountFor( $uid ),
+				'followers' => SocialApi::followerCount( $uid ),
+				'hartjies'  => SocialApi::hartjieTotalFor( $uid ),
+			),
+			// null = no Follow action (the viewer is this writer); false/true = viewer follows.
+			'following'   => ( $viewer === $uid ) ? null : ( $viewer > 0 && SocialApi::isFollowing( $viewer, $uid ) ),
+			'logged_in'   => $viewer > 0,
 		);
 	}
 
@@ -389,13 +403,13 @@ final class SkrywersTab {
 	}
 
 	/**
-	 * One skrywer card. Pure — escaping only.
+	 * One skrywer card (the shared writer card: Ontdek, search, My Profiel "Wie ek volg"). Pure — escaping only.
 	 *
 	 * @param array{name:string, profile_url:string, gradering:string, tier?:string, bio:string, avatar_url?:string, genres?:array<int|string, string>} $card  The card row.
 	 * @param bool                                                                                                                         $audit Stamp the fidelity-audit join keys (first card only).
 	 * @return string
 	 */
-	private static function cardHtml( array $card, bool $audit = false ): string {
+	public static function cardHtml( array $card, bool $audit = false ): string {
 		$avatar = (string) ( $card['avatar_url'] ?? '' );
 		$genres = isset( $card['genres'] ) && is_array( $card['genres'] ) ? $card['genres'] : array();
 		$aid    = static fn ( string $id, bool $on = true ): string => ( $audit && $on ) ? ' data-audit-id="' . esc_attr( $id ) . '"' : '';

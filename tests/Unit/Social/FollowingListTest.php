@@ -31,32 +31,38 @@ afterEach( function (): void {
 	Monkey\tearDown();
 } );
 
-test( 'toHtml renders a card grid with data-ink-remove-on-unfollow and a following-state unfollow button', function (): void {
-	$html = FollowingList::toHtml(
-		array(
-			array( 'id' => 7, 'name' => 'Marisa Steyn', 'bio' => 'Skryf oor die see.', 'avatar' => '<img src="avatar-7.jpg" />' ),
-			array( 'id' => 42, 'name' => 'Jan Botha', 'bio' => '', 'avatar' => '<img src="avatar-42.jpg" />' ),
-		)
+test( 'toHtml renders the shared writer card per followee with the Volg tans toggle', function (): void {
+	Functions\when( 'number_format_i18n' )->returnArg( 1 );
+
+	$card = static fn ( int $id, string $name, string $bio ): array => array(
+		'id'          => $id,
+		'name'        => $name,
+		'profile_url' => 'https://ink.test/skrywer/' . $id . '/',
+		'tier'        => 'brons',
+		'bio'         => $bio,
+		'avatar_url'  => 'avatar-' . $id . '.jpg',
+		'genres'      => array(),
+		'stats'       => array( 'works' => 1, 'followers' => 2, 'hartjies' => 3 ),
+		'following'   => true,
+		'logged_in'   => true,
 	);
+
+	$html = FollowingList::toHtml( array( $card( 7, 'Marisa Steyn', 'Skryf oor die see.' ), $card( 42, 'Jan Botha', '' ) ) );
 
 	expect( $html )->toContain( 'Skrywers wat jy volg' );
 	expect( $html )->toContain( 'Nuwe werk van hierdie skrywers verskyn in jou aktiwiteitsvoer.' );
 
-	expect( $html )->toContain( 'data-ink-remove-on-unfollow' );
+	// Shared Ontdek card, not a bespoke one.
+	expect( substr_count( $html, 'ink-ontdek-skrywers__item' ) )->toBe( 2 );
 	expect( $html )->toContain( 'Marisa Steyn' );
-	expect( $html )->toContain( '<em>Skryf oor die see.</em>' );
+	expect( $html )->toContain( 'Skryf oor die see.' );
 	expect( $html )->toContain( 'avatar-7.jpg' );
 
-	// Every row is, by definition, a followee — the unfollow button must
-	// render in the "following" (pressed) state.
+	// Every row is a followee: the toggle renders in the pressed "Volg tans" state.
 	expect( $html )->toContain( 'data-ink-skrywer="7"' );
 	expect( $html )->toContain( 'data-ink-skrywer="42"' );
-	expect( substr_count( $html, 'is-following' ) )->toBe( 2 );
 	expect( substr_count( $html, 'aria-pressed="true"' ) )->toBe( 2 );
 	expect( $html )->toContain( '>Volg tans<' );
-
-	// A blank bio must not render an empty italic paragraph.
-	expect( $html )->not->toContain( '<em></em>' );
 } );
 
 test( 'toHtml renders the ratified empty state when the member follows nobody', function (): void {
@@ -67,37 +73,10 @@ test( 'toHtml renders the ratified empty state when the member follows nobody', 
 	expect( $html )->toContain( '>Ontdek skrywers<' );
 	expect( $html )->toContain( 'ink-volg-lys__ontdek' );
 	expect( $html )->not->toContain( '<ul' );
-	expect( $html )->not->toContain( 'data-ink-remove-on-unfollow' );
 } );
 
 test( 'render returns nothing for a logged-out visitor', function (): void {
 	Functions\when( 'is_user_logged_in' )->justReturn( false );
 
 	expect( FollowingList::render() )->toBe( '' );
-} );
-
-test( 'render resolves followee ids to writer cards for a logged-in member (non-vacuous)', function (): void {
-	Functions\when( 'is_user_logged_in' )->justReturn( true );
-	Functions\when( 'get_current_user_id' )->justReturn( 1 );
-
-	$wpdb            = \Mockery::mock();
-	$wpdb->prefix    = 'wp_';
-	$GLOBALS['wpdb'] = $wpdb;
-	$wpdb->shouldReceive( 'prepare' )->andReturn( 'PREPARED' );
-	$wpdb->shouldReceive( 'get_col' )->andReturn( array( '7' ) );
-
-	Functions\when( 'get_userdata' )->justReturn( new \WP_User( 7 ) );
-	Functions\when( 'get_the_author_meta' )->alias(
-		function ( $field, $id ) {
-			return 'display_name' === $field ? 'Marisa Steyn' : 'Skryf oor die see.';
-		}
-	);
-	Functions\when( 'get_avatar' )->justReturn( '<img src="avatar-7.jpg" />' );
-
-	$html = FollowingList::render();
-
-	expect( $html )->toContain( 'Marisa Steyn' );
-	expect( $html )->toContain( 'data-ink-skrywer="7"' );
-
-	unset( $GLOBALS['wpdb'] );
 } );

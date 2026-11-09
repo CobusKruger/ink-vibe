@@ -42,6 +42,39 @@
 	flex-shrink: 0;
 }
 
+/* Profile-picture pencil: round chip on the avatar's bottom-right edge. */
+.ink-profiel-identiteit__foto-knoppie {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: 2px solid var(--wp--preset--color--surface);
+	border-radius: 9999px;
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface);
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+}
+
+.ink-profiel-identiteit__foto-knoppie:hover {
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary) 90%, transparent);
+}
+
+.ink-profiel-identiteit__foto-knoppie:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 2px var(--wp--preset--color--surface), 0 0 0 4px var(--wp--preset--color--primary);
+}
+
+.ink-profiel-identiteit__foto-knoppie.is-busy {
+	opacity: 0.6;
+	cursor: progress;
+}
+
 /* `flex-1 min-w-0` */
 .ink-profiel-identiteit__inhoud {
 	flex: 1;
@@ -330,6 +363,22 @@ main > .ink-profiel-oortjies {
 	color: var(--wp--preset--color--muted-text);
 }
 
+/* Reader state (owner copy 2026-11-09): centred message, centred button row below. */
+.ink-bydraes__leeg-teks {
+	max-width: 40rem;
+	margin: 0 auto;
+	padding: 0 var(--wp--preset--spacing--s-16);
+	text-align: center;
+}
+
+.ink-bydraes__leeg-aksies {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: var(--wp--preset--spacing--s-12);
+	margin-top: var(--wp--preset--spacing--s-24);
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
  * Leeslys (`ink-core` Engagement/ReadingList.php — `ink-card` items,
  * `ink-card--empty` leeg, `ink-heading-*` titles, `ink-pill--soft` type).
@@ -380,52 +429,7 @@ main > .ink-profiel-oortjies {
 	font-size: var(--wp--preset--font-size--sm);
 }
 
-.ink-volg-lys__grid {
-	display: grid;
-	/* auto-FIT, not auto-fill: with few items auto-fill reserves empty tracks. */
-	grid-template-columns: repeat( auto-fit, minmax( 240px, 1fr ) );
-	gap: var(--wp--preset--spacing--s-16);
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-
-.ink-volg-lys__item.ink-card {
-	display: flex;
-	align-items: center;
-	gap: var(--wp--preset--spacing--s-16);
-	padding: 20px; /* Lovable CardContent p-5 */
-}
-
-.ink-volg-lys__inhoud {
-	flex: 1;
-	min-width: 0;
-}
-
-.ink-volg-lys__naam {
-	display: block;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	font-weight: 500;
-	color: var(--wp--preset--color--ink-text);
-}
-
-/* Bio: `text-xs text-muted-foreground font-serif italic truncate`. */
-.ink-volg-lys__bio {
-	margin: var(--wp--preset--spacing--s-4) 0 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--wp--preset--font-size--xs);
-	color: var(--wp--preset--color--muted-text);
-}
-
-.ink-volg-lys__item .ink-volg-knoppie {
-	margin-left: auto;
-	flex-shrink: 0;
-}
+/* Cards are the shared Ontdek writer card (`ink-ontdek-skrywers__*`); no card styling lives here. */
 
 .ink-volg-lys__leeg-titel,
 .ink-volg-lys__leeg-teks {
@@ -494,6 +498,52 @@ main > .ink-profiel-oortjies {
 
 .ink-kennisgewings__leeg {
 	color: var(--wp--preset--color--muted-text);
+}
+
+/* E-poskennisgewings form (Preferences::formHtml) under the list: panel heading + card of checkbox rows. */
+.ink-epos-voorkeure {
+	margin-top: var(--wp--preset--spacing--s-48);
+}
+
+.ink-epos-voorkeure__kop {
+	margin-bottom: var(--wp--preset--spacing--s-24);
+}
+
+.ink-epos-voorkeure__titel {
+	margin: 0 0 var(--wp--preset--spacing--s-4);
+}
+
+.ink-epos-voorkeure__intro {
+	margin: 0;
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
+}
+
+.ink-epos-voorkeure__kaart {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--s-16);
+}
+
+/* Same row as "Onthou my" on Teken in: checkbox + label on one line. */
+.ink-epos-voorkeure__ry {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-8);
+	font-size: var(--wp--preset--font-size--sm);
+	cursor: pointer;
+}
+
+.ink-epos-voorkeure__aksies {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--s-16);
+	margin-top: var(--wp--preset--spacing--s-8);
+}
+
+.ink-epos-voorkeure__status {
+	color: var(--wp--preset--color--muted-text);
+	font-size: var(--wp--preset--font-size--sm);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────

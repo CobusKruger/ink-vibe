@@ -1121,6 +1121,27 @@ function ink_foundation_enqueue_profiel_edit(): void {
 			'errorText'  => __( 'Dit het nie gewerk nie. Probeer weer.', 'ink-foundation' ),
 		)
 	);
+
+	// Profile-picture upload (pencil on the avatar; works without opening "Wysig profiel").
+	wp_enqueue_script(
+		'ink-foundation-profiel-foto',
+		get_theme_file_uri( 'assets/js/profiel-foto.js' ),
+		array(),
+		(string) $theme->get( 'Version' ),
+		true
+	);
+
+	wp_localize_script(
+		'ink-foundation-profiel-foto',
+		'inkProfielFoto',
+		array(
+			'restUrl'   => esc_url_raw( rest_url( 'ink/v1/profiel/foto' ) ),
+			'nonce'     => wp_create_nonce( 'wp_rest' ),
+			// Copy-debt: transient status text, not yet ratified Afrikaans.
+			'savingText' => __( 'Aan die werk...', 'ink-foundation' ),
+			'errorText'  => __( 'Dit het nie gewerk nie. Probeer weer.', 'ink-foundation' ),
+		)
+	);
 }
 add_action( 'wp_enqueue_scripts', 'ink_foundation_enqueue_profiel_edit' );
 
