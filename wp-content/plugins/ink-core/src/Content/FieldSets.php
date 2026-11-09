@@ -400,7 +400,7 @@ final class FieldSets {
 						'post_type'      => 'attachment',
 						'post_status'    => 'inherit',
 						'post_parent'    => $post->ID,
-						'post_mime_type' => array( 'image', 'video' ),
+						'post_mime_type' => 'image,video',
 						'posts_per_page' => -1,
 						'fields'         => 'ids',
 						'no_found_rows'  => true,

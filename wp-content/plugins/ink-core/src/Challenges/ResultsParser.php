@@ -76,7 +76,7 @@ final class ResultsParser {
 	 * Parse pasted results text into winners + commentary. Pure.
 	 *
 	 * @param string $text The pasted plain-text results.
-	 * @return array{winners:list<array{grade:string, type:string, rank:int, entry_id:string}>, commentary:list<array{entry_id:string, title:string, text:string, type:string, grade:string, number:int}>, mentions:list<array{entry_id:string, text:string}>, problems:list<string>}
+	 * @return array{winners:list<array{grade:string, type:string, rank:int, entry_id:string}>, commentary:list<array{entry_id:string, title:string, text:string, type?:string, grade?:string, number?:int}>, mentions:list<array{entry_id:string, text:string}>, problems:list<string>}
 	 */
 	public static function parse( string $text ): array {
 		$lines = preg_split( '/\R/', $text );

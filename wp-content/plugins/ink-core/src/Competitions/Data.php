@@ -226,7 +226,7 @@ final class Data {
 				'post_type'        => 'attachment',
 				'post_status'      => 'inherit',
 				'post_parent__in'  => $post_ids,
-				'post_mime_type'   => array( 'image', 'video' ),
+				'post_mime_type'   => 'image,video',
 				'posts_per_page'   => -1,
 				'orderby'          => array(
 					'title' => 'ASC',

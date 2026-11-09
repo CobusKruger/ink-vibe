@@ -165,7 +165,7 @@ final class Search {
 	public static function render(): string {
 		$raw = self::requestQuery();
 
-		return self::toHtml( $raw, array(), array() );
+		return self::toHtml( $raw );
 	}
 
 	/**

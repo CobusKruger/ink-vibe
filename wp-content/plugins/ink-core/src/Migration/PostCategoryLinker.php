@@ -106,7 +106,15 @@ class PostCategoryLinker {
 	 * @return list<int>
 	 */
 	public static function allIds(): array {
-		return array_merge( ...array_values( self::MAP ) );
+		$ids = array();
+
+		foreach ( self::MAP as $slug_ids ) {
+			foreach ( $slug_ids as $id ) {
+				$ids[] = $id;
+			}
+		}
+
+		return $ids;
 	}
 
 	/**
