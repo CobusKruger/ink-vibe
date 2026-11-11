@@ -21,7 +21,8 @@ defined( 'ABSPATH' ) || exit;
  *    no tickets or Reserve button. So the section stays up with no open competition and no new
  *    gala booked.
  *
- * The band hides only when there is neither (§4).
+ * The band hides only when there is neither (§4), and always when the current edition is a
+ * `vennoot` competition, which has no gala (K3).
  *
  * DIVERGENCE (accepted, owner 2026-11-01, `owner-rulings.md`): all gala years show, in a chip
  * row that slides sideways and never wraps; Lovable has three years. Real gala photos only
@@ -85,6 +86,12 @@ final class Gala {
 	 * @return string
 	 */
 	public static function toHtml( ?Edition $edition, array $galas, array $photos, string $home = '/' ): string {
+		// A `vennoot` competition has no gala (K3): no band, no planned gala, no evenings past.
+		if ( null !== $edition && ! $edition->type()->hasGala() ) {
+			return '';
+		}
+
+		// Any state: a closed annual edition keeps its planned gala (tickets, Reserve) until its photos exist.
 		if ( null !== $edition && $edition->hasGala() && ! $edition->hasPastGala() ) {
 			$details = self::details( $edition, 0 );
 		} elseif ( array() !== $galas ) {
@@ -217,6 +224,25 @@ final class Gala {
 	}
 
 	/**
+	 * The link from a year to its results (K5), only for a year with published results. Standard
+	 * link recipe like {@see self::seeAll()}; PROVISIONAL (undesigned, no audit id): see
+	 * {@see UitslaePage}.
+	 *
+	 * @param int    $year The year.
+	 * @param string $home The site's home URL.
+	 * @return string
+	 */
+	private static function resultsLink( int $year, string $home ): string {
+		/* translators: %d: the competition year. */
+		$label = sprintf( __( 'Uitslae %d', 'ink-core' ), $year );
+
+		return '<a class="ink-komp-gala__alles ink-link--ink" href="' . esc_url( rtrim( $home, '/' ) . UitslaePage::path( $year ) ) . '">'
+			. esc_html( $label )
+			. Markup::icon( Markup::ARROW_RIGHT, '', 'ink-link__icon--end' )
+			. '</a>';
+	}
+
+	/**
 	 * The "Evenings past" column. Only the active year's nodes carry audit ids, so they stay
 	 * unique; `kompetisies.js` moves them with the year. Pure.
 	 *
@@ -249,6 +275,7 @@ final class Gala {
 				. ( '' === $gala->highlight ? '' : '<p class="ink-komp-gala__hoogtepunt"' . $stamp( 'competitions-gala-past-highlight' ) . '>' . esc_html( '"' . $gala->highlight . '"' ) . '</p>' )
 				. ( '' === $figs ? '' : '<div class="ink-komp-gala__fotos"' . $stamp( 'competitions-gala-past-grid' ) . '>' . $figs . '</div>' )
 				. ( count( $gala->photoIds ) > count( $shown ) ? self::seeAll( $gala->year, $home, $stamp( 'competitions-gala-past-all' ) ) : '' )
+				. ( $gala->hasResults() ? self::resultsLink( $gala->year, $home ) : '' )
 				. '</div>';
 		}
 

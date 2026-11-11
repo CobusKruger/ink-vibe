@@ -11,6 +11,7 @@ namespace Ink\Content;
 
 use Ink\Kernel\CadenceType;
 use Ink\Kernel\Capabilities;
+use Ink\Kernel\CompetitionType;
 use Ink\I18n\Terms;
 use WP_Post;
 
@@ -22,7 +23,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * Native: each field is `register_post_meta` (typed, REST-aware,
  * sanitised, capability-gated) AND a classic `add_meta_box` field rendered
- * server-side. The `media` and `gallery` inputs are the one progressive enhancement:
+ * server-side. The `media` and `gallery` inputs and the `repeater` (an ordered list of rows stored as one
+ * JSON string, see {@see Repeater}) are the progressive enhancements:
  * `admin-media-field.js` adds the media-library buttons, and without it their real
  * input stays visible and still saves. Gutenberg renders the classic box and posts it back to
  * `post.php`, so {@see FieldSets::save()} is the required save path — the ONLY
@@ -121,6 +123,16 @@ final class FieldSets {
 	// The category and ticket slots on a `kompetisie`.
 	public const KOMPETISIE_SLOTS = 3;
 
+	// How many photos a winner record's pick-list offers, and the transient that carries the
+	// "records left out" count from the save to the next screen (per user).
+	public const PHOTO_CHOICES_MAX  = 500;
+	public const REJECTED_TRANSIENT = 'ink_repeater_verwerp_';
+
+	// The longest a winner record's text cells may be (characters).
+	public const WINNER_AWARD_MAX = 200;
+	public const WINNER_NAME_MAX  = 120;
+	public const WINNER_NOTE_MAX  = 1000;
+
 	// The feature-photo slots on a `kompetisie`'s gala: one wide, four small (owner, 2026-11-08).
 	public const GALA_FOTO_SLOTS = 5;
 
@@ -190,6 +202,7 @@ final class FieldSets {
 		add_action( 'add_meta_boxes', array( $this, 'addMetaBoxes' ) );
 		add_action( 'save_post', array( $this, 'save' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueMediaField' ) );
+		add_action( 'admin_notices', array( $this, 'rejectedNotice' ) );
 	}
 
 	/**
@@ -247,6 +260,22 @@ final class FieldSets {
 	}
 
 	/**
+	 * Whether a post type's box uses a repeater input. Pure.
+	 *
+	 * @param string $cpt The post type.
+	 * @return bool
+	 */
+	public static function usesRepeaterInputs( string $cpt ): bool {
+		foreach ( self::definitions()[ $cpt ]['fields'] ?? array() as $field ) {
+			if ( 'repeater' === $field['input'] ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Load the media library and the field script on the edit screens that need them.
 	 *
 	 * @param string $hook The admin page hook.
@@ -258,7 +287,15 @@ final class FieldSets {
 
 		$screen = get_current_screen();
 
-		if ( null === $screen || ! self::usesMediaInputs( (string) $screen->post_type ) ) {
+		if ( null === $screen ) {
+			return;
+		}
+
+		if ( self::usesRepeaterInputs( (string) $screen->post_type ) ) {
+			wp_enqueue_script( 'ink-admin-repeater-field', plugins_url( 'assets/js/admin-repeater-field.js', INK_CORE_FILE ), array(), INK_CORE_VERSION, true );
+		}
+
+		if ( ! self::usesMediaInputs( (string) $screen->post_type ) ) {
 			return;
 		}
 
@@ -305,6 +342,12 @@ final class FieldSets {
 			$key   = $field['key'];
 			$value = get_post_meta( $post->ID, $key, true );
 			$id    = 'field_' . $key;
+
+			if ( 'repeater' === $field['input'] ) {
+				printf( '<p><strong>%s</strong></p>', esc_html( $field['label'] ) );
+				$this->renderRepeater( $post, $key, (array) ( $field['columns'] ?? array() ), (string) $value );
+				continue;
+			}
 
 			echo '<p>';
 			printf(
@@ -424,6 +467,150 @@ final class FieldSets {
 	}
 
 	/**
+	 * Render a repeater: its rows in order, a blank row to fill, and a hidden template the script
+	 * clones. Works without JS (the rows save in page order); `admin-repeater-field.js` adds the
+	 * add, remove and up/down buttons. Cells are posted as `key[n][column]`.
+	 *
+	 * @param WP_Post                                                      $post    The post.
+	 * @param string                                                       $key     The meta key.
+	 * @param array<int, array{key: string, label: string, input: string}> $columns The columns.
+	 * @param string                                                       $stored  The stored JSON.
+	 */
+	private function renderRepeater( WP_Post $post, string $key, array $columns, string $stored ): void {
+		$rows    = Repeater::decode( $stored );
+		$rows[]  = array();
+		$choices = $this->photoChoices( $post );
+
+		printf(
+			'<div class="ink-repeater" data-ink-repeater="%1$s" data-ink-op="%2$s" data-ink-af="%3$s" data-ink-verwyder="%4$s"><input type="hidden" name="%1$s[%5$s]" value="1" /><div class="ink-repeater__rye">',
+			esc_attr( $key ),
+			esc_attr__( 'Op', 'ink-core' ),
+			esc_attr__( 'Af', 'ink-core' ),
+			esc_attr__( 'Verwyder', 'ink-core' ),
+			esc_attr( Repeater::PRESENT )
+		);
+
+		foreach ( $rows as $n => $row ) {
+			$this->renderRepeaterRow( $key, $columns, (string) $n, $row, $choices );
+		}
+
+		echo '</div><template class="ink-repeater__sjabloon">';
+		$this->renderRepeaterRow( $key, $columns, '__i__', array(), $choices );
+		echo '</template>';
+		printf( '<p><button type="button" class="button" data-ink-repeater-by>%s</button></p></div>', esc_html__( 'Voeg \'n ry by', 'ink-core' ) );
+	}
+
+	/**
+	 * One repeater row.
+	 *
+	 * @param string                                                       $key     The meta key.
+	 * @param array<int, array{key: string, label: string, input: string}> $columns The columns.
+	 * @param string                                                       $index   The row index in the posted name.
+	 * @param array<string, scalar>                                        $row     The row values.
+	 * @param array<int, string>                                           $choices Photo id to label.
+	 */
+	private function renderRepeaterRow( string $key, array $columns, string $index, array $row, array $choices ): void {
+		echo '<fieldset class="ink-repeater__ry" style="border:1px solid #c3c4c7;padding:8px;margin:0 0 8px;">';
+
+		foreach ( $columns as $column ) {
+			$name  = sprintf( '%1$s[%2$s][%3$s]', $key, $index, $column['key'] );
+			$value = isset( $row[ $column['key'] ] ) ? (string) $row[ $column['key'] ] : '';
+
+			printf( '<p style="margin:0 0 6px;"><label><strong>%s</strong><br />', esc_html( $column['label'] ) );
+
+			if ( 'textarea' === $column['input'] ) {
+				printf( '<textarea name="%1$s" rows="2" class="large-text">%2$s</textarea>', esc_attr( $name ), esc_textarea( $value ) );
+			} elseif ( 'photo' === $column['input'] ) {
+				$options = $choices;
+
+				if ( (int) $value > 0 && ! isset( $options[ (int) $value ] ) ) {
+					$options[ (int) $value ] = '#' . (int) $value;
+				}
+
+				printf( '<select name="%s">', esc_attr( $name ) );
+				printf( '<option value="0">%s</option>', esc_html__( '— Geen foto —', 'ink-core' ) );
+
+				foreach ( $options as $id => $label ) {
+					printf( '<option value="%1$d"%2$s>%3$s</option>', (int) $id, selected( (int) $value, (int) $id, false ), esc_html( $label ) );
+				}
+
+				echo '</select>';
+			} else {
+				printf( '<input type="%1$s" name="%2$s" value="%3$s" class="regular-text"%4$s />', esc_attr( $column['input'] ), esc_attr( $name ), esc_attr( $value ), 'number' === $column['input'] ? ' min="0"' : '' );
+			}
+
+			echo '</label></p>';
+		}
+
+		echo '</fieldset>';
+	}
+
+	/**
+	 * The photos a winner record may pick: the edition's gala gallery, its five feature photos,
+	 * and the images uploaded to the post. Labelled by the attachment title.
+	 *
+	 * @param WP_Post $post The post.
+	 * @return array<int, string>
+	 */
+	private function photoChoices( WP_Post $post ): array {
+		$ids = array_map( 'intval', explode( ',', self::sanitizeIdList( get_post_meta( $post->ID, self::kompetisieKey( 'gala_fotos' ), true ) ) ) );
+
+		for ( $n = 1; $n <= self::GALA_FOTO_SLOTS; $n++ ) {
+			$ids[] = (int) get_post_meta( $post->ID, self::kompetisieKey( "gala_foto{$n}" ), true );
+		}
+
+		if ( $post->ID > 0 ) {
+			$attached = get_posts(
+				array(
+					'post_type'      => 'attachment',
+					'post_status'    => 'inherit',
+					'post_parent'    => $post->ID,
+					'post_mime_type' => 'image',
+					'posts_per_page' => self::PHOTO_CHOICES_MAX,
+					'orderby'        => 'title',
+					'order'          => 'ASC',
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+				)
+			);
+			$ids      = array_merge( $ids, is_array( $attached ) ? array_map( 'intval', $attached ) : array() );
+		}
+
+		$out = array();
+
+		foreach ( array_slice( array_values( array_unique( array_filter( $ids ) ) ), 0, self::PHOTO_CHOICES_MAX ) as $id ) {
+			$title      = (string) get_the_title( $id );
+			$out[ $id ] = '' !== $title ? $title : '#' . $id;
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Tell the editor that records were left out on the last save (once).
+	 */
+	public function rejectedNotice(): void {
+		$key  = self::REJECTED_TRANSIENT . get_current_user_id();
+		$left = (int) get_transient( $key );
+
+		if ( $left < 1 ) {
+			return;
+		}
+
+		delete_transient( $key );
+		printf(
+			'<div class="notice notice-warning is-dismissible"><p>%s</p></div>',
+			esc_html(
+				sprintf(
+					/* translators: %d: how many winner records were left out. */
+					_n( '%d wenner is nie gestoor nie: elke wenner het \'n toekenning en \'n gebruiker of \'n naam nodig.', '%d wenners is nie gestoor nie: elke wenner het \'n toekenning en \'n gebruiker of \'n naam nodig.', $left, 'ink-core' ),
+					$left
+				)
+			)
+		);
+	}
+
+	/**
 	 * Persist a CPT's field set on save.
 	 *
 	 * The sanctioned `$_POST` path: nonce verify → autosave/revision guard →
@@ -471,6 +658,11 @@ final class FieldSets {
 		foreach ( $definitions[ $post->post_type ]['fields'] as $field ) {
 			$key = $field['key'];
 
+			if ( 'repeater' === $field['input'] ) {
+				$this->saveRepeater( $post_id, $field );
+				continue;
+			}
+
 			if ( ! isset( $_POST[ $key ] ) || ! is_scalar( $_POST[ $key ] ) ) {
 				continue;
 			}
@@ -487,11 +679,44 @@ final class FieldSets {
 	}
 
 	/**
+	 * Persist one repeater: the posted rows through the field's sanitiser, stored as JSON. Runs
+	 * inside {@see self::save()}, after its nonce and capability checks. Only when the repeater
+	 * was on the screen (its marker was posted), so a save from elsewhere never clears it.
+	 *
+	 * @param int                  $post_id The post.
+	 * @param array<string, mixed> $field   The field definition.
+	 */
+	private function saveRepeater( int $post_id, array $field ): void {
+		$key = (string) $field['key'];
+
+		if ( ! isset( $_POST[ $key ] ) || ! is_array( $_POST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified in save().
+			return;
+		}
+
+		$raw  = wp_unslash( $_POST[ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- verified in save(); sanitised on the next line via $field['sanitize'].
+		$json = (string) call_user_func( $field['sanitize'], $raw );
+		$left = count( Repeater::rows( $raw ) ) - count( Repeater::decode( $json ) );
+
+		if ( $left > 0 ) {
+			set_transient( self::REJECTED_TRANSIENT . get_current_user_id(), $left, MINUTE_IN_SECONDS );
+		}
+
+		if ( '' === $json ) {
+			delete_post_meta( $post_id, $key );
+
+			return;
+		}
+
+		// update_post_meta() strips one level of slashes, which would eat the JSON's own.
+		update_post_meta( $post_id, $key, wp_slash( $json ) );
+	}
+
+	/**
 	 * The declarative per-CPT field-set map: CPT slug → editorial capability,
 	 * Terms key for the box title, and the field list. Keyed by {@see PostTypes}
 	 * slug constants (never re-typed literals).
 	 *
-	 * @return array<string, array{cap: string, term: string, fields: list<array{key: string, label: string, type: string, input: string, sanitize: callable, options?: array<string, string>, rest_schema?: array<string, mixed>, default?: mixed}>}>
+	 * @return array<string, array{cap: string, term: string, fields: list<array{key: string, label: string, type: string, input: string, sanitize: callable, options?: array<string, string>, rest_schema?: array<string, mixed>, default?: mixed, columns?: list<array{key: string, label: string, input: string, sanitize: callable}>}>}>
 	 */
 	private static function definitions(): array {
 		return array(
@@ -784,6 +1009,20 @@ final class FieldSets {
 				'default'  => 'nee',
 			),
 			array(
+				// Copy-debt: admin labels for tipe, vennoot_naam and oopdatum await the owner's Afrikaans.
+				'key'      => self::kompetisieKey( 'tipe' ),
+				'label'    => __( 'Tipe kompetisie', 'ink-core' ),
+				'type'     => 'string',
+				'input'    => 'select',
+				'options'  => array(
+					CompetitionType::Jaarliks->value => __( 'Jaarliks (met gala)', 'ink-core' ),
+					CompetitionType::Vennoot->value  => __( 'Saam met \'n vennoot (geen gala)', 'ink-core' ),
+				),
+				'sanitize' => array( self::class, 'sanitizeCompetitionType' ),
+				'default'  => CompetitionType::default()->value,
+			),
+			self::textField( self::kompetisieKey( 'vennoot_naam' ), __( 'Vennoot-organisasie', 'ink-core' ) ),
+			array(
 				'key'      => self::kompetisieKey( 'jaar' ),
 				'label'    => __( 'jaar', 'ink-core' ),
 				'type'     => 'integer',
@@ -792,6 +1031,7 @@ final class FieldSets {
 			),
 			self::textField( self::kompetisieKey( 'uitgawe' ), __( 'Edisie', 'ink-core' ) ),
 			self::textField( self::kompetisieKey( 'beskrywing' ), __( 'Beskrywing', 'ink-core' ), 'textarea' ),
+			self::textField( self::kompetisieKey( 'oopdatum' ), __( 'Oopdatum', 'ink-core' ), 'date' ),
 			self::textField( self::kompetisieKey( 'sluitingsdatum' ), __( 'Sluitingsdatum', 'ink-core' ), 'date' ),
 			self::textField( self::kompetisieKey( 'inskrywing_nota' ), __( 'Inskrywing', 'ink-core' ) ),
 			self::textField( self::kompetisieKey( 'naaswenner_nota' ), __( 'Naaswenner', 'ink-core' ) ),
@@ -857,7 +1097,158 @@ final class FieldSets {
 			'sanitize' => array( self::class, 'sanitizeIdList' ),
 		);
 
+		// Results (K4, `05-kompetisies` §14.4). Copy-debt: these admin labels await the owner's Afrikaans.
+		// Publishing is one flag, like `standaard`: `ja` makes the edition's state `results` and the
+		// results route exist. The records below it are an ordered list, one award per record.
+		$fields[] = array(
+			'key'      => self::kompetisieKey( 'uitslae_gepubliseer' ),
+			'label'    => __( 'Uitslae', 'ink-core' ),
+			'type'     => 'string',
+			'input'    => 'select',
+			'options'  => array(
+				'nee' => __( 'Nog nie gepubliseer nie', 'ink-core' ),
+				'ja'  => __( 'Gepubliseer: wys die uitslaebladsy', 'ink-core' ),
+			),
+			'sanitize' => array( self::class, 'sanitizeResultsFlag' ),
+			'default'  => 'nee',
+		);
+		$fields[] = self::textField( self::kompetisieKey( 'uitslae_inleiding' ), __( 'Uitslae: inleiding (blanko reël tussen paragrawe)', 'ink-core' ), 'textarea' );
+		// A migrated old results post, reused as it is (not parsed): shown on the results page after the intro.
+		$fields[] = self::textField( self::kompetisieKey( 'uitslae_oud' ), __( 'Uitslae: ou berig (HTML van die ou webwerf; kan gewysig word)', 'ink-core' ), 'textarea', 'wp_kses_post' );
+		$fields[] = array(
+			'key'      => self::kompetisieKey( 'wenners' ),
+			'label'    => __( 'Wenners (in die volgorde waarin hulle gewys word)', 'ink-core' ),
+			'type'     => 'string',
+			'input'    => 'repeater',
+			'sanitize' => array( self::class, 'sanitizeWinners' ),
+			'columns'  => self::winnerColumns(),
+		);
+
 		return $fields;
+	}
+
+	/**
+	 * The columns of one winner record, in form order (K4). `photo` is a pick-list of the
+	 * edition's gala photos. Copy-debt labels.
+	 *
+	 * @return list<array{key: string, label: string, input: string, sanitize: callable}>
+	 */
+	private static function winnerColumns(): array {
+		return array(
+			array(
+				'key'      => 'toekenning',
+				'label'    => __( 'Toekenning (vereis)', 'ink-core' ),
+				'input'    => 'text',
+				'sanitize' => static fn ( $value ): string => self::clipLine( $value, self::WINNER_AWARD_MAX ),
+			),
+			array(
+				'key'      => 'wenner_gebruiker',
+				'label'    => __( 'Wenner se gebruiker-ID (opsioneel)', 'ink-core' ),
+				'input'    => 'number',
+				'sanitize' => 'absint',
+			),
+			array(
+				'key'      => 'wenner_naam',
+				'label'    => __( 'Wenner se naam (vereis sonder gebruiker)', 'ink-core' ),
+				'input'    => 'text',
+				'sanitize' => static fn ( $value ): string => self::clipLine( $value, self::WINNER_NAME_MAX ),
+			),
+			array(
+				'key'      => 'inskrywing',
+				'label'    => __( 'Inskrywing of werk (opsioneel)', 'ink-core' ),
+				'input'    => 'text',
+				'sanitize' => static fn ( $value ): string => self::clipLine( $value, self::WINNER_AWARD_MAX ),
+			),
+			array(
+				'key'      => 'foto',
+				'label'    => __( 'Foto (opsioneel)', 'ink-core' ),
+				'input'    => 'photo',
+				'sanitize' => 'absint',
+			),
+			array(
+				'key'      => 'aantekening',
+				'label'    => __( 'Aantekening (opsioneel)', 'ink-core' ),
+				'input'    => 'textarea',
+				'sanitize' => static fn ( $value ): string => self::clipText( $value, self::WINNER_NOTE_MAX ),
+			),
+		);
+	}
+
+	/**
+	 * Sanitise the winner records to their stored JSON (K4): each column through its own
+	 * callback, a linked user that no longer exists dropped to none, and a record kept only with
+	 * an award and a user or a name ({@see \Ink\Competitions\Winner::fromRow()}). Takes the posted
+	 * array or a JSON string (REST). Order is kept.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return string JSON, or '' for no winners.
+	 */
+	public static function sanitizeWinners( $value ): string {
+		$columns = array();
+
+		foreach ( self::winnerColumns() as $column ) {
+			$columns[ $column['key'] ] = $column['sanitize'];
+		}
+
+		$rows = array();
+
+		foreach ( Repeater::clean( $value, $columns, static fn (): bool => true ) as $row ) {
+			// A user that does not exist must not satisfy "user or name".
+			if ( (int) $row['wenner_gebruiker'] > 0 && ! get_userdata( (int) $row['wenner_gebruiker'] ) ) {
+				$row['wenner_gebruiker'] = 0;
+			}
+
+			if ( self::isWinnerRecord( $row ) ) {
+				$rows[] = $row;
+			}
+		}
+
+		return Repeater::encode( $rows );
+	}
+
+	/**
+	 * Whether a winner record is complete: an award, and a linked user or a name. Pure; the one
+	 * rule, used on save here and on read by {@see \Ink\Competitions\Winner::fromRow()}.
+	 *
+	 * @param array<string, mixed> $row A record with the {@see self::winnerColumns()} keys.
+	 * @return bool
+	 */
+	public static function isWinnerRecord( array $row ): bool {
+		$text = static fn ( string $column ): string => isset( $row[ $column ] ) && is_scalar( $row[ $column ] ) ? trim( (string) $row[ $column ] ) : '';
+
+		return '' !== $text( 'toekenning' ) && ( (int) $text( 'wenner_gebruiker' ) > 0 || '' !== $text( 'wenner_naam' ) );
+	}
+
+	/**
+	 * One line of plain text, cut to a length. Pure.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @param int   $max   The most characters.
+	 * @return string
+	 */
+	public static function clipLine( $value, int $max ): string {
+		return trim( mb_substr( trim( sanitize_text_field( is_scalar( $value ) ? (string) $value : '' ) ), 0, $max ) );
+	}
+
+	/**
+	 * Plain text that may span lines, cut to a length. Pure.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @param int   $max   The most characters.
+	 * @return string
+	 */
+	public static function clipText( $value, int $max ): string {
+		return trim( mb_substr( trim( sanitize_textarea_field( is_scalar( $value ) ? (string) $value : '' ) ), 0, $max ) );
+	}
+
+	/**
+	 * Sanitise the results-published flag: `ja`, or anything else is `nee`.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return string
+	 */
+	public static function sanitizeResultsFlag( $value ): string {
+		return 'ja' === $value ? 'ja' : 'nee';
 	}
 
 	/**
@@ -913,6 +1304,16 @@ final class FieldSets {
 	 */
 	public static function sanitizeDefaultFlag( $value ): string {
 		return 'ja' === $value ? 'ja' : 'nee';
+	}
+
+	/**
+	 * Sanitise the competition type to the closed set; blank or junk is annual.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return string
+	 */
+	public static function sanitizeCompetitionType( $value ): string {
+		return CompetitionType::fromMeta( $value )->value;
 	}
 
 	/**

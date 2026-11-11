@@ -249,7 +249,7 @@ Source: `ux-designs/ux-ink-vibe-2026-06-15/` (EXPERIENCE.md + DESIGN.md). Named-
 | 11 | Training (Opleiding) | 0 |
 | 12 | Challenges (Uitdagings) & winners | 1 |
 | 12A | Challenge adjudication automation (NEW) | 7 |
-| 12B | Annual competition management (NEW, P2) | 0 |
+| 12B | Annual competition management (NEW, P2) — SUPERSEDED by the competition lifecycle (05-kompetisies §14) | 0 |
 | 13 | InkPols | 0 |
 | 14 | Sponsors (Borge) | 0 |
 | 15 | Organisation pages & contact | 1 |
@@ -1699,6 +1699,7 @@ So that the top result leads. (FR-50-R2, R2)
 ---
 
 ## Epic 12B: Annual competition management (NEW, P2)
+> **SUPERSEDED (2026-11-11):** by the competition lifecycle, `docs/lovable-delta-2026-10/specs/05-kompetisies.md` section 14 (stories K1 to K7). A competition is not a challenge and must not reuse the monthly machinery or `CadenceType`. Kept for history only.
 
 Reuse the R1/R2/R3 machinery (Epic 12A + 5.8) on an annual cadence — sequencing/cadence configuration over the existing adjudication pipeline, no new core mechanics. Post-launch.
 

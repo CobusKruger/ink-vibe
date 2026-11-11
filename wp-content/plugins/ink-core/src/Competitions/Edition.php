@@ -9,7 +9,10 @@ declare(strict_types=1);
 
 namespace Ink\Competitions;
 
+use DateTimeImmutable;
 use Ink\Content\FieldSets;
+use Ink\Content\Repeater;
+use Ink\Kernel\CompetitionType;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -59,6 +62,132 @@ final class Edition {
 	 */
 	public function year(): int {
 		return (int) $this->field( 'jaar' );
+	}
+
+	/**
+	 * The competition type; an edition with none stored is annual.
+	 *
+	 * @return CompetitionType
+	 */
+	public function type(): CompetitionType {
+		return CompetitionType::fromMeta( $this->field( 'tipe' ) );
+	}
+
+	/**
+	 * Whether results are published for this edition: the editor set `uitslae_gepubliseer` to
+	 * `ja` on the post (K4). The flag alone decides; an old year may publish just an intro.
+	 *
+	 * @return bool
+	 */
+	public function hasPublishedResults(): bool {
+		return self::DEFAULT_YES === $this->field( 'uitslae_gepubliseer' );
+	}
+
+	/**
+	 * The results intro: the celebration text above the winners, paragraphs split on blank lines.
+	 *
+	 * @return list<string>
+	 */
+	public function resultsIntro(): array {
+		$parts = preg_split( '/\R{2,}/u', $this->field( 'uitslae_inleiding' ) );
+
+		return array_values( array_filter( array_map( 'trim', false === $parts ? array() : $parts ), static fn ( string $p ): bool => '' !== $p ) );
+	}
+
+	/**
+	 * The migrated old results post, as HTML (K6): reused as it is, shown after the intro. '' for a
+	 * new edition. Unsanitised here; {@see UitslaePage::toHtml()} filters it on output.
+	 *
+	 * @return string
+	 */
+	public function resultsBody(): string {
+		return trim( $this->field( 'uitslae_oud' ) );
+	}
+
+	/**
+	 * The winner records in the editor's order. Valid records only (an award and a user or name);
+	 * the records exist whether or not the results are published, so a caller shows them only when
+	 * {@see self::hasPublishedResults()}. Competition wins are not challenge wins.
+	 *
+	 * @return list<Winner>
+	 */
+	public function winners(): array {
+		$out = array();
+
+		foreach ( Repeater::decode( $this->field( 'wenners' ) ) as $row ) {
+			$winner = Winner::fromRow( $row );
+
+			if ( null !== $winner ) {
+				$out[] = $winner;
+			}
+		}
+
+		return $out;
+	}
+
+	/**
+	 * The winners grouped under their award, awards in the order each first appears, winners in
+	 * record order within an award (two joint winners share one heading).
+	 *
+	 * @return list<array{award:string, winners:list<Winner>}>
+	 */
+	public function winnersByAward(): array {
+		$groups = array();
+
+		foreach ( $this->winners() as $winner ) {
+			$groups[ $winner->award ]['award']     = $winner->award;
+			$groups[ $winner->award ]['winners'][] = $winner;
+		}
+
+		return array_values( $groups );
+	}
+
+	/**
+	 * The derived state (`05-kompetisies` §14.2). Pure; never stored.
+	 *
+	 * Order: the default announcement is generic info and always `closed`; a newer edition
+	 * makes this one `archive`; published results make it `results`; then the dates, compared
+	 * as site-local `Y-m-d` days, both ends inclusive. A blank `oopdatum` counts as already
+	 * open; a blank or invalid `sluitingsdatum` means no window, so `closed`.
+	 *
+	 * @param DateTimeImmutable $now         Now, in the site's timezone.
+	 * @param bool              $newerExists Whether a later real edition exists; see {@see Data::hasNewer()}.
+	 * @return EditionState
+	 */
+	public function state( DateTimeImmutable $now, bool $newerExists = false ): EditionState {
+		if ( $this->isDefault() ) {
+			return EditionState::Closed;
+		}
+
+		if ( $newerExists ) {
+			return EditionState::Archive;
+		}
+
+		if ( $this->hasPublishedResults() ) {
+			return EditionState::Results;
+		}
+
+		$today = $now->format( 'Y-m-d' );
+		$open  = $this->day( 'oopdatum' );
+		$close = $this->day( 'sluitingsdatum' );
+
+		if ( '' !== $open && $today < $open ) {
+			return EditionState::Announced;
+		}
+
+		return '' !== $close && $today <= $close ? EditionState::Open : EditionState::Closed;
+	}
+
+	/**
+	 * A date field as `Y-m-d`; '' when blank or not a date.
+	 *
+	 * @param string $suffix The key suffix.
+	 * @return string
+	 */
+	private function day( string $suffix ): string {
+		$value = $this->field( $suffix );
+
+		return 1 === preg_match( '/^\d{4}-\d{2}-\d{2}$/', $value ) ? $value : '';
 	}
 
 	/**

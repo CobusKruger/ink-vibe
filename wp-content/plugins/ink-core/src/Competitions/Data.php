@@ -11,6 +11,7 @@ namespace Ink\Competitions;
 
 use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
+use Ink\Kernel\Sast;
 use Ink\Kernel\Scalar;
 
 defined( 'ABSPATH' ) || exit;
@@ -54,19 +55,23 @@ final class Data {
 	 * @return Edition
 	 */
 	public static function shown(): Edition {
-		return self::pickShown( self::editions() );
+		return self::pickShown( self::editions(), Sast::now() );
 	}
 
 	/**
-	 * The edition to show among these. Pure.
+	 * The edition to show among these. Pure. It follows the state (K3, `05-kompetisies` §14.2):
+	 * the current edition only while it is `announced` or `open`; `closed`, `results` and
+	 * `archive` fall back to the default announcement (the generic annual info), then to
+	 * {@see Edition::builtIn()}. The results line is separate: {@see self::pickResultsHero()}.
 	 *
-	 * @param list<Edition> $editions The editions.
+	 * @param list<Edition>      $editions The editions.
+	 * @param \DateTimeImmutable $now      Now, in the site's timezone.
 	 * @return Edition
 	 */
-	public static function pickShown( array $editions ): Edition {
+	public static function pickShown( array $editions, \DateTimeImmutable $now ): Edition {
 		$current = self::pickCurrent( $editions );
 
-		if ( null !== $current ) {
+		if ( null !== $current && self::stateOf( $current, $editions, $now )->isAnnouncement() ) {
 			return $current;
 		}
 
@@ -77,6 +82,58 @@ final class Data {
 		}
 
 		return Edition::builtIn();
+	}
+
+	/**
+	 * The edition the hero announces as "Nou bekend", or null. Pure. It is the latest real
+	 * edition in state `results` (published results and no newer edition), whichever edition
+	 * {@see self::pickShown()} picked. An `archive` edition's results are reached from its gala
+	 * chip instead (K5).
+	 *
+	 * @param list<Edition>      $editions The editions.
+	 * @param \DateTimeImmutable $now      Now, in the site's timezone.
+	 * @return Edition|null
+	 */
+	public static function pickResultsHero( array $editions, \DateTimeImmutable $now ): ?Edition {
+		$found = null;
+
+		foreach ( $editions as $edition ) {
+			if ( ! $edition->isDefault() && EditionState::Results === self::stateOf( $edition, $editions, $now )
+				&& ( null === $found || $edition->year() > $found->year() ) ) {
+				$found = $edition;
+			}
+		}
+
+		return $found;
+	}
+
+	/**
+	 * Whether a later real edition exists, which makes this one `archive`. Pure.
+	 *
+	 * @param Edition       $edition  The edition.
+	 * @param list<Edition> $editions Every published edition.
+	 * @return bool
+	 */
+	public static function hasNewer( Edition $edition, array $editions ): bool {
+		foreach ( $editions as $other ) {
+			if ( ! $other->isDefault() && $other->postId !== $edition->postId && $other->year() > $edition->year() ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * The state of an edition among these. Pure.
+	 *
+	 * @param Edition            $edition  The edition.
+	 * @param list<Edition>      $editions Every published edition.
+	 * @param \DateTimeImmutable $now      Now, in the site's timezone.
+	 * @return EditionState
+	 */
+	public static function stateOf( Edition $edition, array $editions, \DateTimeImmutable $now ): EditionState {
+		return $edition->state( $now, self::hasNewer( $edition, $editions ) );
 	}
 
 	/**
@@ -109,6 +166,63 @@ final class Data {
 		foreach ( $galas as $gala ) {
 			if ( $year === $gala->year && array() !== $gala->photoIds ) {
 				return $gala;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * The edition whose results `/kompetisies/<jaar>/uitslae/` shows, or null (404).
+	 *
+	 * @param int $year The year.
+	 * @return Edition|null
+	 */
+	public static function resultsEdition( int $year ): ?Edition {
+		return self::pickResultsEdition( self::editions(), $year );
+	}
+
+	/**
+	 * The edition of this year with published results among these. Pure. Editions come newest
+	 * post first, so a second one in a year (route undefined) yields the newest with results.
+	 *
+	 * @param list<Edition> $editions The editions.
+	 * @param int           $year     The year.
+	 * @return Edition|null
+	 */
+	public static function pickResultsEdition( array $editions, int $year ): ?Edition {
+		foreach ( $editions as $edition ) {
+			if ( ! $edition->isDefault() && $year === $edition->year() && $edition->hasPublishedResults() ) {
+				return $edition;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * The edition whose announcement `/kompetisies/<jaar>/` shows, or null (404).
+	 *
+	 * @param int $year The year.
+	 * @return Edition|null
+	 */
+	public static function announcementEdition( int $year ): ?Edition {
+		return self::pickAnnouncementEdition( self::editions(), $year );
+	}
+
+	/**
+	 * The real edition of this year that has a description, among these. Pure. An imported old
+	 * competition has none, and the default announcement is no year's: both give null, because
+	 * the old announcements stay live as they are. Editions come newest post first.
+	 *
+	 * @param list<Edition> $editions The editions.
+	 * @param int           $year     The year.
+	 * @return Edition|null
+	 */
+	public static function pickAnnouncementEdition( array $editions, int $year ): ?Edition {
+		foreach ( $editions as $edition ) {
+			if ( $edition->isCurrentEdition() && $year === $edition->year() ) {
+				return $edition;
 			}
 		}
 
@@ -159,7 +273,8 @@ final class Data {
 		$galas = array();
 
 		foreach ( $editions as $edition ) {
-			if ( ! $edition->isDefault() && $edition->hasPastGala() ) {
+			// A `vennoot` competition has no gala: its photos never apply (K3).
+			if ( ! $edition->isDefault() && $edition->type()->hasGala() && $edition->hasPastGala() ) {
 				$galas[] = GalaYear::fromEdition( $edition );
 			}
 		}

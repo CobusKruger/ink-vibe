@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ink\Competitions;
 
+use Ink\Kernel\Sast;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -36,7 +38,16 @@ final class Hero {
 	 * @return string
 	 */
 	public static function render(): string {
-		return self::toHtml( Data::shown(), (string) home_url( '/skryf/' ) );
+		$editions = Data::editions();
+		$now      = Sast::now();
+		$results  = Data::pickResultsHero( $editions, $now );
+
+		return self::toHtml(
+			Data::pickShown( $editions, $now ),
+			(string) home_url( '/skryf/' ),
+			null === $results ? '' : UitslaePage::urlFor( $results->year() ),
+			null === $results ? 0 : $results->year()
+		);
 	}
 
 	/**
@@ -44,9 +55,11 @@ final class Hero {
 	 *
 	 * @param Edition $edition The edition to show: the current one, or the default announcement.
 	 * @param string  $enter   The Enter button's URL.
+	 * @param string  $results The results route, when the latest edition has published results; else ''.
+	 * @param int     $year    That edition's year, for the "Nou bekend" line.
 	 * @return string
 	 */
-	public static function toHtml( Edition $edition, string $enter ): string {
+	public static function toHtml( Edition $edition, string $enter, string $results = '', int $year = 0 ): string {
 		$badge = __( 'Ons flagskip-kompetisie', 'ink-core' );
 		$uit   = $edition->field( 'uitgawe' );
 		$close = $edition->field( 'sluitingsdatum' );
@@ -85,6 +98,19 @@ final class Hero {
 			. esc_html__( 'Lees die reëls', 'ink-core' )
 			. '</button>'
 			. '</div>';
+
+		// PROVISIONAL (K3, 2026-11-11): Lovable has no "results" hero state. The owner's line is shown
+		// as one existing primary hero button in the existing actions row (no new CSS, no audit-id)
+		// below the generic announcement. The owner must ratify a design before any fidelity claim.
+		if ( '' !== $results && $year > 0 ) {
+			$actions .= '<div class="ink-komp-held__aksies">'
+				. '<a class="ink-btn ink-btn--lg ink-btn--primary" href="' . esc_url( $results ) . '">'
+				/* translators: %d: the competition year. */
+				. esc_html( sprintf( __( 'Nou bekend: Die wenners van die %d Ink Kompetisie', 'ink-core' ), $year ) )
+				. Markup::icon( Markup::ARROW_RIGHT, '', 'ink-btn__icon--end' )
+				. '</a>'
+				. '</div>';
+		}
 
 		$rest = '<p class="ink-komp-held__teks ink-text--on-ink"' . Markup::aid( 'competitions-hero-text' ) . '>' . esc_html( $edition->field( 'beskrywing' ) ) . '</p>'
 			. ( '' === $pills ? '' : '<div class="ink-komp-held__meta"' . Markup::aid( 'competitions-hero-meta' ) . '>' . $pills . '</div>' )

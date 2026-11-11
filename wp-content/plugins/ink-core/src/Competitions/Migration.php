@@ -1,6 +1,6 @@
 <?php
 /**
- * Old galas and competitions, from the old page tree — WP5 (`05-kompetisies` §3.6).
+ * Old competitions, from the old page tree — WP5 and K6 (`05-kompetisies` §3.6, §14).
  *
  * @package Ink\Core
  */
@@ -11,7 +11,9 @@ namespace Ink\Competitions;
 
 use Ink\Content\FieldSets;
 use Ink\Content\PostTypes;
+use Ink\Kernel\CompetitionType;
 use Ink\Kernel\Scalar;
+use Ink\Migration\ShortcodeCleanup;
 use Ink\Migration\StaticRedirects;
 use WP_Post;
 
@@ -19,16 +21,25 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * `wp ink migrate-kompetisies`, the `kompetisies` step of `migrate-all`: one `kompetisie`
- * per old gala, for what existed before the cutover. **After go-live this step is finished**:
+ * per year, for what existed before the cutover. **After go-live this step is finished**:
  * anything new, or any correction, is made on the site. `--force` is for rehearsals only and
  * never runs on the live site, because it would overwrite site edits to imported posts.
  *
- * The galas and the 2022 competition are discovered from the old page tree ({@see discoverGalas()}),
- * **by the meta the owner sets on production first** (`ink_old_gala`, `ink_old_gala_fotos`,
- * `ink_old_competition`, each holding the year; `docs/migration-tools/tag-old-competitions.sql`),
- * then, as a fallback that warns "found by title; tag it", by the Page's title and its "Foto..." child.
- * Name, year and body come from the gala Page, photos from its Fotos Page. No file is read: the
- * highlight and the captions are edited on the site.
+ * **The role model (owner rulings 2026-11-11).** The owner tags the old Pages on production with
+ * post meta, each holding the year (`docs/migration-tools/tag-old-competitions.sql`):
+ *
+ *  - {@see META_UITSLAE}: the results Page (overview of the gala evening and the announced winners).
+ *    Its body is reused AS-IS, not parsed: it becomes the year's `uitslae_oud` field, shown on the
+ *    results page, and the results are marked published. The Page is then trashed.
+ *  - {@see META_FOTOS}: the gala photos Page. Its photos feed `gala_fotos`; then it is trashed.
+ *  - {@see META_KEPT}: competition announcement, gala announcement, closure notice, gala reminder.
+ *    **Never imported, trashed or redirected**: they stay live at their own addresses. This step only
+ *    recognises them so the title fallback never mistakes one for a results Page.
+ *
+ * One `kompetisie` post per year (`gala-<jaar>`), `tipe` = `jaarliks`, built from that year's tagged
+ * results and Fotos Pages. Partner competitions are not migrated. Without the tags, a top-level Page
+ * with "gala" in its title and a "Foto..." child is taken as the year's results Page (warning
+ * "found by title; tag it"). Nothing else is guessed.
  *
  * Photos are the ids in the Fotos Page's `vc_media_grid`, `vc_masonry_media_grid`, `vc_gallery`
  * and `vc_single_image` shortcodes, in page order, without repeats ({@see photoIds()}). A gallery
@@ -36,12 +47,13 @@ defined( 'ABSPATH' ) || exit;
  * too and link the same way; {@see GalaPage} plays them. Nothing the pages cannot give is
  * invented: the highlight and captions stay blank.
  *
- * Once-off (`OPTION_DONE`), get-or-create on {@see SOURCE_KEY_META}. Re-running with `--force`
- * rewrites the same photos (the Pages are read even once trashed). After a gala's photos are
- * linked, its gala Page and Fotos Page go to the trash, with the `/ink-se-gala-aande/` index.
- * Their old paths are stored ({@see StaticRedirects::OPTION_GALA_PATHS}) and 301 to Kompetisies
- * beside the fixed list in {@see StaticRedirects::EXACT}; a row with no Fotos Page keeps its Page
- * (the competition, 49428). Trash, never delete; attachments stay.
+ * **Must run before `clean-shortcodes`** (the Fotos shortcodes are read from the Pages) and cannot be
+ * re-run after it. Once-off (`OPTION_DONE`), get-or-create on {@see SOURCE_KEY_META}.
+ *
+ * **For the redirects (story K7).** Retired Pages are trashed, so each one's old id and path are
+ * stored in the option {@see StaticRedirects::OPTION_OLD_PAGES} with its year and target kind
+ * (`fotos` or `uitslae`); this step builds no redirect from it. `RedirectGenerator` serves the 301s
+ * from it by `?p=<id>` and by path (K7). Trash, never delete; attachments stay.
  *
  * Decisions are pure statics; the I/O sits behind overridable seams.
  *
@@ -79,25 +91,46 @@ class Migration {
 
 	/**
 	 * Page meta (value = year) the owner sets on production with
-	 * `docs/migration-tools/tag-old-competitions.sql`: a gala Page.
+	 * `docs/migration-tools/tag-old-competitions.sql`: a results Page.
 	 *
 	 * @var string
 	 */
-	public const META_GALA = 'ink_old_gala';
+	public const META_UITSLAE = 'ink_old_uitslae';
 
 	/**
-	 * A gala's Fotos Page (value = year).
+	 * A year's gala photos Page (value = year).
 	 *
 	 * @var string
 	 */
 	public const META_FOTOS = 'ink_old_gala_fotos';
 
 	/**
-	 * An old annual competition Page (value = year).
+	 * Roles whose Pages stay live at their own addresses (value = year): marked, never imported,
+	 * trashed or redirected. Replaces the retired `ink_old_competition` (the 2022 announcement is
+	 * now `ink_old_kompetisie_aankondiging`) and the mistaken `ink_old_gala` (those were results Pages).
+	 *
+	 * @var list<string>
+	 */
+	public const META_KEPT = array(
+		'ink_old_kompetisie_aankondiging',
+		'ink_old_gala_aankondiging',
+		'ink_old_kompetisie_sluiting',
+		'ink_old_gala_herinnering',
+	);
+
+	/**
+	 * The kind of retired Page that redirects to the year's results route.
 	 *
 	 * @var string
 	 */
-	public const META_COMPETITION = 'ink_old_competition';
+	public const KIND_UITSLAE = 'uitslae';
+
+	/**
+	 * The kind of retired Page that redirects to the year's gala photos page.
+	 *
+	 * @var string
+	 */
+	public const KIND_FOTOS = 'fotos';
 
 	/**
 	 * Register the WP-CLI trigger, only under WP-CLI.
@@ -148,24 +181,24 @@ class Migration {
 	}
 
 	/**
-	 * The galas and old competitions in the old page tree, as rows. Pure.
+	 * One row per year from the old page tree. Pure.
 	 *
-	 * **Tags first.** The owner tags the Pages on production ({@see META_GALA}, {@see META_FOTOS},
-	 * {@see META_COMPETITION}, each holding the year; `docs/migration-tools/tag-old-competitions.sql`).
-	 * A tagged gala Page is a gala; its Fotos Page is its tagged child, else the tagged Page with the
-	 * same year. A tagged competition Page is a row keyed `kompetisie-<jaar>`.
+	 * **Tags first.** A Page tagged {@see META_UITSLAE} is the year's results Page. Its Fotos Page is its
+	 * tagged child, else the Page tagged {@see META_FOTOS} with the same year. A year with only a tagged
+	 * Fotos Page still gets a row (named after that Page). Pages carrying a {@see META_KEPT} tag are
+	 * never touched. Two results Pages for one year: the lower id wins, the other is reported in `notes`.
 	 *
 	 * **Title fallback, with a warning.** A top-level Page whose title holds "gala" and which has a
-	 * child Page titled "Foto…" is a gala even untagged, and a tagged gala without a tagged Fotos Page
-	 * takes its "Foto…" child; each is reported in `warnings` ("found by title; tag it"). The year is
-	 * the tag, else the first four-digit year in the title, else the date's. The key is `gala-<jaar>`,
-	 * with `-2`, `-3` for a second gala in one year. Pages in any status count, so a re-run still
-	 * finds Pages already in the trash.
+	 * child Page titled "Foto…" is a results Page even untagged, and a tagged results Page without a
+	 * tagged Fotos Page takes its "Foto…" child; each is reported in `warnings` ("found by title; tag
+	 * it"). The year is the first four-digit year in the title, else the date's. If that year already
+	 * has a row (the 2016 duplicate, 7802) the Page is ignored, with a warning. The key is
+	 * `gala-<jaar>`. Pages in any status count, so a re-run still finds Pages already in the trash.
 	 *
-	 * @param list<array{id:int, parent:int, title:string, date:string, gala?:string, fotos?:string, competition?:string}> $pages Pages that are tagged, or whose title holds "gala" or starts with "Foto".
+	 * @param list<array{id:int, parent:int, title:string, date:string, uitslae?:string, fotos?:string, kept?:string}> $pages Pages that are tagged, or whose title holds "gala" or starts with "Foto".
 	 * @return array{galas:list<array<string, string>>, notes:list<string>, warnings:list<string>}
 	 */
-	public static function discoverGalas( array $pages ): array {
+	public static function discover( array $pages ): array {
 		$by_id    = array();
 		$children = array();
 		$tagged   = array();
@@ -189,87 +222,111 @@ class Migration {
 			}
 		}
 
-		$galas    = array();
+		$rows     = array();
+		$claimed  = array();
 		$notes    = array();
 		$warnings = array();
-		$years    = array();
 
+		// The Fotos Page of a results Page: a tagged child, else the tagged Page of the same year, else a "Foto…" child by title.
+		$find_fotos = static function ( array $page, string $year ) use ( $by_id, $children, $tagged, $year_of, &$notes ): array {
+			foreach ( $children[ $page['id'] ] ?? array() as $child ) {
+				if ( '' !== $year_of( $by_id[ $child ], 'fotos' ) ) {
+					return array( $child, false );
+				}
+			}
+
+			if ( '' !== $year && isset( $tagged[ $year ] ) ) {
+				return array( $tagged[ $year ][0], false );
+			}
+
+			if ( isset( $children[ $page['id'] ] ) ) {
+				if ( count( $children[ $page['id'] ] ) > 1 ) {
+					$notes[] = sprintf( 'Results Page %d has %d Fotos Pages; only the first (%d) is read.', $page['id'], count( $children[ $page['id'] ] ), $children[ $page['id'] ][0] );
+				}
+
+				return array( $children[ $page['id'] ][0], true );
+			}
+
+			return array( 0, false );
+		};
+
+		$make = static fn ( string $year, string $name, int $results, int $fotos ): array => array(
+			'sleutel'      => 'gala-' . $year,
+			'naam'         => $name,
+			'jaar'         => $year,
+			'bladsy'       => $results > 0 ? (string) $results : '',
+			'fotos_bladsy' => $fotos > 0 ? (string) $fotos : '',
+		);
+
+		// Pass 1: tagged results Pages.
 		foreach ( $by_id as $page ) {
-			$tag = $year_of( $page, 'gala' );
+			$year = $year_of( $page, 'uitslae' );
 
-			if ( '' === $tag && ( 0 !== $page['parent'] || $is_fotos( $page ) || self::GALA_INDEX_PAGE === $page['id'] || false === mb_stripos( $page['title'], 'gala' ) ) ) {
+			if ( '' === $year ) {
 				continue;
 			}
 
-			// The Fotos Page: a tagged child, else the tagged Page of the same year, else a "Foto…" child by title.
-			$fotos = 0;
-
-			foreach ( $children[ $page['id'] ] ?? array() as $child ) {
-				if ( '' !== $year_of( $by_id[ $child ], 'fotos' ) ) {
-					$fotos = $child;
-					break;
-				}
+			if ( isset( $rows[ $year ] ) ) {
+				$notes[] = sprintf( 'Results Page %d is a second results Page for %s (Page %s is used): not imported.', $page['id'], $year, $rows[ $year ]['bladsy'] );
+				continue;
 			}
 
-			if ( 0 === $fotos && '' !== $tag && isset( $tagged[ $tag ] ) ) {
-				$fotos = $tagged[ $tag ][0];
+			list( $fotos, $by_title ) = $find_fotos( $page, $year );
+
+			if ( $by_title ) {
+				$warnings[] = sprintf( 'Fotos Page %d of results Page %d found by title; tag it (%s).', $fotos, $page['id'], self::META_FOTOS );
 			}
 
-			$by_title = 0 === $fotos;
+			$claimed[ $fotos ] = true;
+			$rows[ $year ]     = $make( $year, $page['title'], $page['id'], $fotos );
+		}
 
-			if ( $by_title && isset( $children[ $page['id'] ] ) ) {
-				$fotos = $children[ $page['id'] ][0];
-
-				if ( count( $children[ $page['id'] ] ) > 1 ) {
-					$notes[] = sprintf( 'Gala Page %d has %d Fotos Pages; only the first (%d) is read.', $page['id'], count( $children[ $page['id'] ] ), $fotos );
-				}
+		// Pass 2: untagged "gala" Pages with a Fotos child. Kept-role Pages and the index are never candidates.
+		foreach ( $by_id as $page ) {
+			if ( '' !== $year_of( $page, 'uitslae' ) || '' !== ( $page['kept'] ?? '' ) || 0 !== $page['parent'] || $is_fotos( $page ) || self::GALA_INDEX_PAGE === $page['id'] || false === mb_stripos( $page['title'], 'gala' ) ) {
+				continue;
 			}
+
+			$year = 1 === preg_match( '/\b(?:19|20)\d{2}\b/u', $page['title'], $found ) ? $found[0] : substr( $page['date'], 0, 4 );
+
+			list( $fotos, $by_title ) = $find_fotos( $page, $year );
 
 			if ( 0 === $fotos ) {
 				$notes[] = sprintf( 'Page %d "%s" looks like a gala but has no Fotos Page: not imported.', $page['id'], $page['title'] );
 				continue;
 			}
 
-			if ( '' === $tag ) {
-				$warnings[] = sprintf( 'Gala Page %d "%s" found by title; tag it (%s).', $page['id'], $page['title'], self::META_GALA );
-			}
-
-			if ( $by_title ) {
-				$warnings[] = sprintf( 'Fotos Page %d of gala Page %d found by title; tag it (%s).', $fotos, $page['id'], self::META_FOTOS );
-			}
-
-			$year           = '' !== $tag ? $tag : ( 1 === preg_match( '/\b(?:19|20)\d{2}\b/u', $page['title'], $found ) ? $found[0] : substr( $page['date'], 0, 4 ) );
-			$years[ $year ] = ( $years[ $year ] ?? 0 ) + 1;
-			$n              = $years[ $year ];
-
-			$galas[] = array(
-				'sleutel'      => 'gala-' . $year . ( $n > 1 ? '-' . $n : '' ),
-				'naam'         => $page['title'],
-				'jaar'         => $year,
-				'bladsy'       => (string) $page['id'],
-				'fotos_bladsy' => (string) $fotos,
-			);
-		}
-
-		usort( $galas, static fn ( array $a, array $b ): int => array( $b['jaar'], $a['sleutel'] ) <=> array( $a['jaar'], $b['sleutel'] ) );
-
-		// Old annual competitions: tagged Pages only, no gala and no photos.
-		foreach ( $by_id as $page ) {
-			if ( '' === $year_of( $page, 'competition' ) ) {
+			if ( isset( $rows[ $year ] ) ) {
+				$warnings[] = sprintf( 'Page %d "%s" looks like a gala Page but %s already has a row (results Page %s); ignored.', $page['id'], $page['title'], $year, $rows[ $year ]['bladsy'] );
 				continue;
 			}
 
-			$galas[] = array(
-				'sleutel'      => 'kompetisie-' . $page['competition'],
-				'naam'         => $page['title'],
-				'jaar'         => $page['competition'],
-				'bladsy'       => (string) $page['id'],
-				'fotos_bladsy' => '',
-			);
+			$warnings[] = sprintf( 'Results Page %d "%s" found by title; tag it (%s).', $page['id'], $page['title'], self::META_UITSLAE );
+
+			if ( $by_title ) {
+				$warnings[] = sprintf( 'Fotos Page %d of results Page %d found by title; tag it (%s).', $fotos, $page['id'], self::META_FOTOS );
+			}
+
+			$claimed[ $fotos ] = true;
+			$rows[ $year ]     = $make( $year, $page['title'], $page['id'], $fotos );
 		}
 
+		// Pass 3: a tagged Fotos Page whose year has no results Page still gets its year.
+		foreach ( $by_id as $page ) {
+			$year = $year_of( $page, 'fotos' );
+
+			if ( '' === $year || isset( $claimed[ $page['id'] ] ) || isset( $rows[ $year ] ) ) {
+				continue;
+			}
+
+			$claimed[ $page['id'] ] = true;
+			$rows[ $year ]          = $make( $year, $page['title'], 0, $page['id'] );
+		}
+
+		krsort( $rows );
+
 		return array(
-			'galas'    => $galas,
+			'galas'    => array_values( $rows ),
 			'notes'    => $notes,
 			'warnings' => $warnings,
 		);
@@ -326,19 +383,16 @@ class Migration {
 	}
 
 	/**
-	 * Which old Pages a row retires: its two Pages, only when it has a Fotos Page. Pure.
+	 * The results Page's body as stored: WPBakery tags stripped, nothing else changed. Pure.
 	 *
-	 * @param array<string, string> $row The row.
-	 * @return list<int>
+	 * @param string $body The old Page's body.
+	 * @return string '' when the Page has no text or image.
 	 */
-	public static function pagesToRetire( array $row ): array {
-		$fotos = (int) ( $row['fotos_bladsy'] ?? 0 );
+	public static function resultsBody( string $body ): string {
+		$clean = trim( ShortcodeCleanup::stripVcShortcodes( $body ) );
+		$text  = preg_replace( '/<[^>]*>|&nbsp;|\s+/u', '', $clean );
 
-		if ( $fotos <= 0 ) {
-			return array();
-		}
-
-		return array_values( array_filter( array( (int) ( $row['bladsy'] ?? 0 ), $fotos ) ) );
+		return ( '' === (string) $text && 1 !== preg_match( '/<img\b/i', $clean ) ) ? '' : $clean;
 	}
 
 	/**
@@ -365,14 +419,17 @@ class Migration {
 			return $summary;
 		}
 
-		$found  = self::discoverGalas( $this->candidatePages() );
-		$retire = array( self::GALA_INDEX_PAGE );
+		$found = self::discover( $this->candidatePages() );
+
+		// Page id => the year and target kind it redirects to later (K7); the index Page has none.
+		$retire = array( self::GALA_INDEX_PAGE => null );
 
 		$summary['problems'] = $found['notes'];
 		$summary['warnings'] = $found['warnings'];
 
 		foreach ( $found['galas'] as $row ) {
 			$key    = $row['sleutel'];
+			$year   = (int) $row['jaar'];
 			$result = $this->ensurePost( $key, $this->postArr( $row ) );
 
 			if ( $result['id'] <= 0 ) {
@@ -381,6 +438,29 @@ class Migration {
 			}
 
 			++$summary[ $result['created'] ? 'created' : 'updated' ];
+
+			$this->setMeta( $result['id'], self::SOURCE_KEY_META, $key );
+			$this->setMeta( $result['id'], FieldSets::kompetisieKey( 'jaar' ), $year );
+			$this->setMeta( $result['id'], FieldSets::kompetisieKey( 'tipe' ), CompetitionType::Jaarliks->value );
+
+			// The results Page: its body, as it is, is the results page; the results are published.
+			$results = (int) $row['bladsy'];
+
+			if ( $results > 0 ) {
+				$html = self::resultsBody( $this->pageBody( $results ) );
+
+				if ( '' === $html ) {
+					$summary['problems'][] = sprintf( 'Competition "%s": results Page %d not found or empty; results not published and the Page is kept.', $key, $results );
+				} else {
+					$this->setMeta( $result['id'], FieldSets::kompetisieKey( 'uitslae_oud' ), $html );
+					$this->setMeta( $result['id'], FieldSets::kompetisieKey( 'uitslae_gepubliseer' ), 'ja' );
+
+					$retire[ $results ] = array(
+						'jaar'  => $year,
+						'soort' => self::KIND_UITSLAE,
+					);
+				}
+			}
 
 			$photo_ids = array();
 			$fotos     = (int) $row['fotos_bladsy'];
@@ -408,7 +488,7 @@ class Migration {
 
 				// Never wipe photos already linked, never trash a Page whose photos were not read.
 				if ( $fotos > 0 && array() === $photo_ids ) {
-					$summary['problems'][] = sprintf( 'Competition "%s": no photos read from Fotos Page %d (shortcodes already cleaned?); nothing linked and the Pages are kept.', $key, $fotos );
+					$summary['problems'][] = sprintf( 'Competition "%s": no photos read from Fotos Page %d (shortcodes already cleaned?); nothing linked and the Page is kept.', $key, $fotos );
 					$fotos                 = 0;
 				}
 			}
@@ -416,24 +496,37 @@ class Migration {
 			$summary['photos']         += count( $photo_ids );
 			$summary['per_row'][ $key ] = count( $photo_ids );
 
-			$this->setMeta( $result['id'], self::SOURCE_KEY_META, $key );
-			$this->setMeta( $result['id'], FieldSets::kompetisieKey( 'jaar' ), (int) $row['jaar'] );
-
 			if ( array() !== $photo_ids ) {
 				$this->setMeta( $result['id'], FieldSets::kompetisieKey( 'gala_fotos' ), implode( ',', $photo_ids ) );
 			}
 
 			if ( $fotos > 0 ) {
-				$retire = array_merge( $retire, self::pagesToRetire( $row ) );
+				$retire[ $fotos ] = array(
+					'jaar'  => $year,
+					'soort' => self::KIND_FOTOS,
+				);
 			}
 		}
 
-		// Old paths first (a trashed Page's permalink is lost), so the redirect can serve them.
-		$paths = array_values( array_filter( array_map( array( $this, 'oldPath' ), array_unique( $retire ) ) ) );
+		// Old paths first (a trashed Page's permalink is lost), so the redirects can serve them.
+		$pages = array();
 
-		$this->storeOldPaths( $paths );
+		foreach ( $retire as $page_id => $target ) {
+			$path = $this->oldPath( $page_id );
 
-		foreach ( array_unique( $retire ) as $page_id ) {
+			if ( null !== $target ) {
+				$pages[] = array(
+					'id'    => $page_id,
+					'path'  => $path,
+					'jaar'  => $target['jaar'],
+					'soort' => $target['soort'],
+				);
+			}
+		}
+
+		$this->storeOldPages( $pages );
+
+		foreach ( array_keys( $retire ) as $page_id ) {
 			if ( $this->trashPage( $page_id ) ) {
 				++$summary['retired'];
 			}
@@ -445,7 +538,8 @@ class Migration {
 	}
 
 	/**
-	 * The post arguments for a row: the old Page's body, verbatim, for reference.
+	 * The post arguments for a row. The old body is not kept here: the results Page's body goes in
+	 * the `uitslae_oud` field, the others are not imported.
 	 *
 	 * @param array<string, string> $row The row.
 	 * @return array<string, mixed>
@@ -455,7 +549,7 @@ class Migration {
 			'post_type'    => PostTypes::KOMPETISIE,
 			'post_status'  => 'publish',
 			'post_title'   => $row['naam'],
-			'post_content' => $this->pageBody( (int) $row['bladsy'] ),
+			'post_content' => '',
 		);
 	}
 
@@ -474,9 +568,9 @@ class Migration {
 	}
 
 	/**
-	 * Every Page that is tagged (the three `ink_old_*` metas) or whose title holds "gala" or starts with "Foto", in any status. Overridable seam.
+	 * Every Page that is tagged (results, Fotos, or a kept role) or whose title holds "gala" or starts with "Foto", in any status. Overridable seam.
 	 *
-	 * @return list<array{id:int, parent:int, title:string, date:string, gala:string, fotos:string, competition:string}>
+	 * @return list<array{id:int, parent:int, title:string, date:string, uitslae:string, fotos:string, kept:string}>
 	 */
 	protected function candidatePages(): array {
 		global $wpdb;
@@ -485,9 +579,11 @@ class Migration {
 			return array();
 		}
 
-		$tags = "'" . self::META_GALA . "','" . self::META_FOTOS . "','" . self::META_COMPETITION . "'";
+		$kept = "'" . implode( "','", self::META_KEPT ) . "'";
+		$tags = "'" . self::META_UITSLAE . "','" . self::META_FOTOS . "'," . $kept;
 		$meta = static fn ( string $key ): string => "( SELECT m.meta_value FROM {$wpdb->postmeta} m WHERE m.post_id = p.ID AND m.meta_key = '{$key}' LIMIT 1 )";
-		$cols = $meta( self::META_GALA ) . ' AS gala, ' . $meta( self::META_FOTOS ) . ' AS fotos, ' . $meta( self::META_COMPETITION ) . ' AS competition';
+		$role = "( SELECT m.meta_key FROM {$wpdb->postmeta} m WHERE m.post_id = p.ID AND m.meta_key IN ( {$kept} ) LIMIT 1 )";
+		$cols = $meta( self::META_UITSLAE ) . ' AS uitslae, ' . $meta( self::META_FOTOS ) . ' AS fotos, ' . $role . ' AS kept';
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- once-off CLI read of the old page tree; every interpolated part is a constant or a table name.
 		$rows = $wpdb->get_results( "SELECT p.ID, p.post_parent, p.post_title, p.post_date, {$cols} FROM {$wpdb->posts} p WHERE p.post_type = 'page' AND p.post_status NOT IN ( 'auto-draft', 'inherit' ) AND ( p.post_title LIKE '%gala%' OR p.post_title LIKE 'foto%' OR p.ID IN ( SELECT t.post_id FROM {$wpdb->postmeta} t WHERE t.meta_key IN ( {$tags} ) ) )" );
@@ -495,13 +591,13 @@ class Migration {
 
 		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
 			$out[] = array(
-				'id'          => (int) $row->ID,
-				'parent'      => (int) $row->post_parent,
-				'title'       => (string) $row->post_title,
-				'date'        => (string) $row->post_date,
-				'gala'        => trim( (string) $row->gala ),
-				'fotos'       => trim( (string) $row->fotos ),
-				'competition' => trim( (string) $row->competition ),
+				'id'      => (int) $row->ID,
+				'parent'  => (int) $row->post_parent,
+				'title'   => (string) $row->post_title,
+				'date'    => (string) $row->post_date,
+				'uitslae' => trim( (string) $row->uitslae ),
+				'fotos'   => trim( (string) $row->fotos ),
+				'kept'    => trim( (string) $row->kept ),
 			);
 		}
 
@@ -521,16 +617,27 @@ class Migration {
 	}
 
 	/**
-	 * Remember the retired Pages' paths so they redirect to Kompetisies, whether or not they are
-	 * in {@see StaticRedirects::EXACT}. Added to what is stored. Overridable seam.
+	 * Remember which retired Page maps to which year and target kind, for the redirects (K7).
+	 * The option is a list of `{id, path, jaar, soort}`; an entry with the same id is replaced.
+	 * Overridable seam.
 	 *
-	 * @param list<string> $paths The paths.
+	 * @param list<array{id:int, path:string, jaar:int, soort:string}> $pages The retired Pages.
 	 */
-	protected function storeOldPaths( array $paths ): void {
-		$stored = get_option( StaticRedirects::OPTION_GALA_PATHS, array() );
-		$stored = is_array( $stored ) ? array_map( 'strval', $stored ) : array();
+	protected function storeOldPages( array $pages ): void {
+		$stored = get_option( StaticRedirects::OPTION_OLD_PAGES, array() );
+		$merged = array();
 
-		update_option( StaticRedirects::OPTION_GALA_PATHS, array_values( array_unique( array_merge( $stored, $paths ) ) ), false );
+		foreach ( is_array( $stored ) ? $stored : array() as $entry ) {
+			if ( is_array( $entry ) && isset( $entry['id'] ) ) {
+				$merged[ (int) $entry['id'] ] = $entry;
+			}
+		}
+
+		foreach ( $pages as $entry ) {
+			$merged[ $entry['id'] ] = $entry;
+		}
+
+		update_option( StaticRedirects::OPTION_OLD_PAGES, array_values( $merged ), false );
 	}
 
 	/**

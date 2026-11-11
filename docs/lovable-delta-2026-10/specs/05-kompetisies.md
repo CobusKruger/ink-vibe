@@ -2,7 +2,7 @@
 
 **Status:** planned, awaiting recipe-gap ratification. **Treatment:** A. No values here: every style value comes from captures (R4/R5). **Map:** `../maps/kompetisies.csv`. **Rulings:** `owner-rulings.md`, D2, D3, D4, and THE FIRST RULE in `CLAUDE.md`.
 
-**Scope:** web pages and their admin screens. No entry or judging pipeline, no payment (D3, D4).
+**Scope:** web pages and their admin screens, plus competition entries on Skryf and a results route (**§14, 2026-11-09, supersedes the earlier "no entry pipeline"**). No judging pipeline, no payment (D3, D4).
 
 **Competitions are not challenges (owner).** They get their own post type. `uitdaging` isn't reused, cadence `jaarliks` isn't used, and nothing here reads `CadenceType`. README N4's old wording, Epic 12B and the `kadens` row in `afrikaans-terms.md` are stale on this.
 
@@ -486,3 +486,119 @@ Fictional prices are D4 and match the design's structure. The LET WEL disclaimer
 **Q1 (resolved 2026-11-02: every photo; see §12a). How many photos per gala year?** The ruling says the old Fotos Pages feed the gallery. They hold up to 656 photos a year; the design shows two to four. Searched `docs/`, `_bmad-output/`, the code and `owner-rulings.md`: no number.
 - **Resolved:** all of them, read from the Fotos Pages by the migration; no number in any file.
 - **Does not block the build.**
+
+## 14. Competition lifecycle: entries, results, partners (owner, 2026-11-09)
+
+**Status:** planned. Supersedes "no entry or judging pipeline" (header) and the flat one-post-per-year reading of §3. Everything here is added and edited on the site (THE FIRST RULE); the migration only imports what existed before cutover.
+
+**A competition is not a challenge.** An Uitdaging is monthly, and its reward is feedback and bragging rights. A competition is usually yearly, with the gala as its finale. It shares the *pattern* of the challenge entry flow, never its code paths: no `CadenceType`, no `ChallengeRound`, no `WinRecords`.
+
+### 14.1 Pages a competition has
+
+| Page | Purpose | Where it lives |
+|---|---|---|
+| Competition announcement | Tell people it exists, give rules and categories, open entries | Hero + categories on `/kompetisies/` (§12b), entries on `/skryf/` |
+| Gala announcement | Promote the gala, reservations | Gala band on `/kompetisies/` (reservation hook only; payment is separate work) |
+| Results | Announce winners and awards | **New route** `/kompetisies/<jaar>/uitslae/` |
+| Gala photos | Past galas | Evenings past (§12a/12b), linking to that year's results |
+
+**Types** (`ink_kompetisie_tipe`): `jaarliks` (all four pages; the big annual one) and `vennoot` (run with an outside organisation: announcement and results, **no gala**; the gala fields, band and photos never apply). Default `jaarliks`. A `vennoot` also has `vennoot_naam` (the organisation).
+
+`eksterne_kompetisie` (§3.3) is unchanged: a listing that links out to a competition with nothing to do with INK. It takes no part in anything below.
+
+### 14.2 Dates and state (parameterised, no fixed months)
+
+New field on `kompetisie`: `oopdatum` (entries open), beside the existing `sluitingsdatum` (close). The usual Feb to May is only what an editor types. The gala is optional and added later (`gala_naam`/`gala_datum` already exist). Nothing about the gala is needed to open entries.
+
+`Edition::state()` is derived, never stored:
+
+| State | Rule | Hero shows |
+|---|---|---|
+| `announced` | published, before `oopdatum` | the announcement, "opens <date>" |
+| `open` | `oopdatum` <= now <= `sluitingsdatum` | the announcement + Enter |
+| `closed` | after `sluitingsdatum`, no results | generic annual info (the default announcement, §12b) |
+| `results` | results published (14.4) | "Nou bekend: Die wenners van die <jaar> INK Kompetisie", linking to the results route |
+| `archive` | a later edition exists | generic again; the results stay reachable from the year's gala chip |
+
+Gala band: planned gala when `gala_naam` is set and there are no photos yet; otherwise the last past gala (§12b). Unchanged.
+
+### 14.3 Entries on Skryf (same pattern as Uitdaging)
+
+- A published `kompetisie` in state `open` is **offered on Skryf before any term exists**, in its own group beside the open Uitdagings. The hero Enter buttons keep linking to `/skryf/`.
+- The entry term is **created at the first submission**, as `ChallengeLinking::resolveRoundTerm()` does for a round (get-or-create, keyed to the post). Not on publish.
+- New `Ink\Competitions\EntryLinking` (own class, own term meta, own taxonomy). It must not reuse the round taxonomy, so a competition entry is never counted as a challenge entry.
+- An entry carries the competition term in addition to whatever else it is filed under. Per-writer cap and the closed-window check follow `ChallengeLinking::isOpen()`'s approach but read `oopdatum`/`sluitingsdatum`.
+- A closed competition is not offered. An entry already linked stays linked.
+
+### 14.4 Results (separate route)
+
+**Route:** `/kompetisies/<jaar>/uitslae/`, a rewrite rule like `/kompetisies/gala/<jaar>/` (no slug of its own). 404 for a year with no published results. A second competition in one year uses the post's key (`-2`) as for galas.
+
+**Results are published by an editor** on the `kompetisie` post: a results intro/body (the celebration text) and the winner records below. Publishing results flips the state to `results`.
+
+**Winner records** (new, **not** `WinRecords`, which needs a user and a post and is keyed to an Uitdaging): stored on the `kompetisie`, in order.
+
+| Field | Notes |
+|---|---|
+| `toekenning` | the award name: a category win, "Uitstaande bydrae op die Facebook-groep", a book prize, anything |
+| `wenner_gebruiker` | optional user link (the profile shows the win) |
+| `wenner_naam` | free text, used when there is no account. Required if no user |
+| `inskrywing` | optional link to the winning entry post |
+| `foto` | optional attachment: the winner receiving the award, taken from the gala photos |
+| `aantekening` | optional citation |
+
+Rules: a user-linked winner shows the profile name and link; a free-text winner shows the name only. A blank `foto` shows no photo. Records are an ordered repeater. `FieldSets` has only scalars today, so this needs the repeater input §3.1 avoided; the cost is now justified.
+
+**Links to results** (so no list of old competitions is needed):
+- the hero in state `results` (14.2);
+- the year chip / photos in Evenings past, for any year that has results;
+- the gala page `/kompetisies/gala/<jaar>/`.
+
+The results page shows: header, intro, winners grouped by award with photos, then a link to that year's gala photos if there are any.
+
+### 14.5 Migration (old competitions, pre-cutover only)
+
+`wp ink migrate-kompetisies` extends the tag model so each old page has a **role**. New meta, same safe-to-repeat SQL pattern:
+
+| Meta key | Value | On |
+|---|---|---|
+| `ink_old_competition` | year (exists) | the competition announcement Page |
+| `ink_old_gala` | year (exists) | the gala announcement Page |
+| `ink_old_gala_fotos` | year (exists) | the gala photos Page |
+| `ink_old_uitslae` | year (**new**) | the results / winners announcement Page |
+
+- All pages with the same year are grouped into **one** `kompetisie`. The announcement body is kept as the post body (for reference; nothing renders it). Gala details come from the gala Page, as today. Photos as today.
+- The **results Page body is reused as-is** as the results body (14.4). It is not parsed into winner records; those are for new galas only (owner, 2026-11-09). Winner records on an old year are empty, and the page shows the old text.
+- The results Page gets a 301 to `/kompetisies/<jaar>/uitslae/`, stored in `ink_gala_old_paths` like the others. The gala and Fotos redirects (`/kompetisies/`) are unchanged.
+- **Old partner competitions are not migrated** (owner). Untagged pages are not found; there is no title fallback for the new role.
+- `tag-old-competitions.sql` gets the `ink_old_uitslae` rows and the announcement rows once the owner supplies the page ids. **No ids are guessed.**
+- Same constraint as before: runs before `clean-shortcodes`.
+
+### 14.6 Out of scope here
+
+- Promotion and reminders: at most a homepage banner or social posts later. Not built now.
+- Payment for gala reservations and memberships: separate unit of work. The Reserve button stays a hook (§4).
+- Judging and collation for competitions: not part of this work.
+
+### 14.7 Stories
+
+| # | Story | Depends on |
+|---|---|---|
+| K1 | `kompetisie` type, dates and derived state (`tipe`, `vennoot_naam`, `oopdatum`, `Edition::state()`), admin fields, tests | none |
+| K2 | `EntryLinking`: offer an open competition on Skryf; create its term at the first submission; own taxonomy; window and cap checks | K1 |
+| K3 | Hero and gala band follow the state (14.2); `vennoot` hides the gala | K1 |
+| K4 | Winner-record repeater on `kompetisie` (user or free text, entry, photo, note) | K1 |
+| K5 | Results route `/kompetisies/<jaar>/uitslae/`, page, links from hero, chips and gala page | K3, K4 |
+| K6 | Migration: `ink_old_uitslae` role, one `kompetisie` per year, results body kept, redirects, tag SQL, runbook and handoff updates | K1, K5 |
+| K8 | Announcement route `/kompetisies/<jaar>/` (14.8), links to results and gala photos | K1, K5 |
+| P1 | Payment (reservations, memberships) | separate |
+
+12B.1 ("annual-cadence competition reusing the monthly machinery") is superseded by this section and should be marked so in `epics.md` (Epic 12B).
+
+### 14.8 Announcement (permanent route per year, owner 2026-11-11)
+
+`/kompetisies/` shows only the current edition, so a competition's announcement would disappear when the next edition replaces it. Every real edition with a `beskrywing` keeps its own page at `/kompetisies/<jaar>/` (`Ink\Competitions\AankondigingPage`, template and pattern `kompetisies-aankondiging`, query var `ink_aankondiging_jaar`), showing the description, dates, categories and guidelines, gala details and tickets from the same fields, with links to the year's results and gala photos when they exist. It is the first link in the chain announcement, gala photos, results.
+
+- **404:** a year with no edition, an edition with no description (every imported old competition), or only the default announcement.
+- **Old announcements** (`ink_old_kompetisie_aankondiging`, `ink_old_gala_aankondiging`, the closure notice, gala reminders) stay live at their own addresses and are not imported (§14.5), so no old search-engine link 404s. The closure notice is not shown anywhere else.
+- **Layout is provisional**, like 14.4: no design, no audit-ids, shared primitives only.

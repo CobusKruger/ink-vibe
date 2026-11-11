@@ -38,6 +38,15 @@ final class GalaYear {
 	}
 
 	/**
+	 * Whether this year's results are published, so its chip and photos page link to them.
+	 *
+	 * @return bool
+	 */
+	public function hasResults(): bool {
+		return null !== $this->edition && $this->edition->hasPublishedResults();
+	}
+
+	/**
 	 * The gala year of an edition. Pure.
 	 *
 	 * @param Edition $edition The edition.

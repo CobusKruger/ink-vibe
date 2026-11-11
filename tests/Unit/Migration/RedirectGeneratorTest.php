@@ -232,6 +232,36 @@ test( 'maybeRedirect is a no-op on a miss, an empty map, or a self-target (loop 
 	expect( $loop->redirected )->toBeFalse();
 } );
 
+test( 'maybeRedirect sends a trashed Fotos Page (?p= and path form) to the year route, before the 404 (K7)', function (): void {
+	Monkey\Functions\when( 'home_url' )->alias( static fn ( string $p = '' ): string => 'https://ink.test' . $p );
+
+	foreach ( array( '/?p=64688', '/15-november-2025-10de-gala/fotos-15-november-2025/' ) as $request ) {
+		$gen = new class( $request ) extends RedirectGenerator {
+			public ?string $redirected = null;
+			public function __construct( private string $request ) {}
+			protected function isMissing(): bool {
+				return true;
+			}
+			protected function loadMap(): array {
+				return array();
+			}
+			protected function oldPages(): array {
+				return array( array( 'id' => 64688, 'path' => '/15-november-2025-10de-gala/fotos-15-november-2025', 'jaar' => 2025, 'soort' => 'fotos' ) );
+			}
+			protected function requestPath(): string {
+				return $this->request;
+			}
+			protected function doRedirect( string $target ): void {
+				$this->redirected = $target;
+			}
+		};
+
+		$gen->maybeRedirect();
+
+		expect( $gen->redirected )->toBe( 'https://ink.test/kompetisies/gala/2025/' );
+	}
+} );
+
 test( 'register hooks the serve handler ahead of the core 404 guess (redirect_canonical, priority 10)', function (): void {
 	Monkey\Actions\expectAdded( 'template_redirect' )->with( \Mockery::type( 'array' ), 5 );
 

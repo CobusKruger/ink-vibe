@@ -3,6 +3,7 @@ baseline_commit: d99cd0c080d291261e7268fd1197d64adee76d51
 ---
 
 # Story 12B.1: Annual competition management
+> **SUPERSEDED (2026-11-11):** by the competition lifecycle, `docs/lovable-delta-2026-10/specs/05-kompetisies.md` section 14 (stories K1 to K7). A competition is not a challenge and must not reuse the monthly machinery or `CadenceType`. Kept for history only.
 
 Status: done
 

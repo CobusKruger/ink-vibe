@@ -76,6 +76,13 @@ class SubmissionForm {
 	public const INTENT_PUBLISH = 'plaas';
 
 	/**
+	 * The Skryf checkbox-array field name for ticked competition ids (K2). The same literal as
+	 * `Ink\Competitions\EntryLinking::FIELD`, which owns it: Submission may not depend on
+	 * Competitions, so the form hands the ids over through the `ink/skryf_link_competitions` action.
+	 */
+	public const FIELD_COMPETITIONS = 'ink_submission_kompetisies';
+
+	/**
 	 * Register the Skryf hooks. Invoked once from {@see Module::register()}.
 	 *
 	 * Logged-in `admin-post` only (no `nopriv`) — an anonymous visitor cannot
@@ -275,6 +282,7 @@ class SubmissionForm {
 		}
 
 		$this->linkChallenges( (int) $post_id );
+		$this->linkCompetitions( (int) $post_id );
 
 		if ( 'publish' === $status ) {
 			$this->redirect( $this->successUrl( (int) $post_id ) );
@@ -340,6 +348,34 @@ class SubmissionForm {
 		}
 
 		( new ChallengeLinking() )->link( $post_id, $ids );
+	}
+
+	/**
+	 * Hand the ticked competition ids to the Competitions module (K2, `05-kompetisies` §14.3).
+	 *
+	 * Submission does not depend on Competitions, so this fires an action; the listener
+	 * (`Ink\Competitions\EntryLinking`) re-checks that each competition is open right now and
+	 * enforces the per-writer cap, so nothing posted here is trusted. A competition entry is not a
+	 * challenge entry: it never touches {@see ChallengeLinking}. Nonce already verified by
+	 * {@see handlePost()}.
+	 *
+	 * @param int $post_id The freshly created bydrae id.
+	 */
+	protected function linkCompetitions( int $post_id ): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified in handlePost() before this runs.
+		if ( ! isset( $_POST[ self::FIELD_COMPETITIONS ] ) || ! is_array( $_POST[ self::FIELD_COMPETITIONS ] ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- each ticked id is absint()-sanitised below; nonce verified in handlePost().
+		$raw = wp_unslash( $_POST[ self::FIELD_COMPETITIONS ] );
+		$ids = array();
+
+		foreach ( (array) $raw as $value ) {
+			$ids[] = absint( $value );
+		}
+
+		do_action( 'ink/skryf_link_competitions', $post_id, $ids ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- INK ink/... event-surface convention (AD).
 	}
 
 	/**

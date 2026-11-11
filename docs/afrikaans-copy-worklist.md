@@ -160,3 +160,5 @@ the durable anchor. Code paths under `wp-content/`.
 | REAKSIE-OPSTEM-FOUT | NEW row: page copy | `plugins/ink-core/src/Engagement/ResponseUpvoteController.php` | REST error only |
 | GEDIG-TOEWYDING-LABEL | NEW row: page copy | `themes/ink-foundation/patterns/skryf.php` | public |
 | GEDIG-TOEWYDING-ADMIN | NEW row: page copy | `plugins/ink-core/src/Content/FieldSets.php` | admin |
+| SKRYF-KOMP-TITEL | NEW row: page copy (K2; legend of the open-competitions group on Skryf) | `themes/ink-foundation/patterns/skryf.php` | public |
+| SKRYF-KOMP-WENK | NEW row: page copy (K2; hint under that legend) | `themes/ink-foundation/patterns/skryf.php` | public |

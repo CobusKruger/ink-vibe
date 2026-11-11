@@ -64,10 +64,14 @@ test( 'the default announcement is never the current edition, and is shown only 
 	expect( Data::pickCurrent( array( $default ) ) )->toBeNull();
 	expect( Data::pickCurrent( array( $default, $real ) ) )->toBe( $real );
 
-	expect( Data::pickShown( array( $default, $real ) ) )->toBe( $real ); // A real competition replaces it.
-	expect( Data::pickShown( array( $real->isDefault() ? $real : $default ) ) )->toBe( $default );
-	expect( Data::pickShown( array() )->isDefault() )->toBeTrue(); // Never no hero: the built-in text.
-	expect( Data::pickShown( array() )->title )->not->toBe( '' );
+	$now  = new \DateTimeImmutable( '2026-03-01' );
+	$open = ink_edition( 4, array( 'jaar' => '2026', 'beskrywing' => 'Hierdie jaar', 'sluitingsdatum' => '2026-05-31' ) );
+
+	expect( Data::pickShown( array( $default, $open ), $now ) )->toBe( $open ); // An open competition replaces it.
+	expect( Data::pickShown( array( $default, $real ), $now ) )->toBe( $default ); // Closed: generic again.
+	expect( Data::pickShown( array( $default ), $now ) )->toBe( $default );
+	expect( Data::pickShown( array(), $now )->isDefault() )->toBeTrue(); // Never no hero: the built-in text.
+	expect( Data::pickShown( array(), $now )->title )->not->toBe( '' );
 } );
 
 test( 'photos uploaded to a gala post become its gallery; a gallery list wins', function (): void {

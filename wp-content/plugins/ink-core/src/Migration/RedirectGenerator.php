@@ -206,7 +206,8 @@ class RedirectGenerator {
 		$target  = self::redirectTargetFor( $request, $this->loadMap() );
 
 		if ( null === $target ) {
-			$section = StaticRedirects::prefixTarget( $request ) ?? StaticRedirects::storedGalaTarget( $request, $this->storedGalaPaths() );
+			// A trashed results or Fotos Page (K7): by `?p=<id>` or by its old path, to the year's route.
+			$section = StaticRedirects::oldPageTarget( $request, $this->oldPages() ) ?? StaticRedirects::prefixTarget( $request );
 			$target  = null === $section ? null : home_url( $section );
 		}
 
@@ -223,14 +224,14 @@ class RedirectGenerator {
 	}
 
 	/**
-	 * The retired gala paths `migrate-kompetisies` stored. Overridable seam.
+	 * The retired results and Fotos Pages `migrate-kompetisies` stored (K6). Overridable seam.
 	 *
 	 * @return array<mixed>
 	 */
-	protected function storedGalaPaths(): array {
-		$paths = get_option( StaticRedirects::OPTION_GALA_PATHS, array() );
+	protected function oldPages(): array {
+		$pages = get_option( StaticRedirects::OPTION_OLD_PAGES, array() );
 
-		return is_array( $paths ) ? $paths : array();
+		return is_array( $pages ) ? $pages : array();
 	}
 
 	/**

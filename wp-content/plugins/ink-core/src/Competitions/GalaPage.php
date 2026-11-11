@@ -293,7 +293,8 @@ final class GalaPage {
 			$year,
 			$photos,
 			ArchiveRender::pagination( $paged, self::pageCount( count( $gala->photoIds ) ), 'ink-komp-gala-fotos', self::PAGED_VAR ),
-			home_url( '/' . Module::PAGE_SLUG . '/' )
+			home_url( '/' . Module::PAGE_SLUG . '/' ),
+			null !== $gala->edition && $gala->edition->hasPublishedResults() ? UitslaePage::urlFor( $year ) : ''
 		);
 	}
 
@@ -304,10 +305,13 @@ final class GalaPage {
 	 * @param list<array{url:string, width:int, height:int, caption:string, video?:bool}> $photos This page's photos and clips.
 	 * @param string                                                                      $pager  The pager links, or ''.
 	 * @param string                                                                      $back   The `/kompetisies/` URL.
+	 * @param string                                                                      $results The year's results URL (K5), or '' when not published. PROVISIONAL placement, see {@see UitslaePage}.
 	 * @return string
 	 */
-	public static function toHtml( int $year, array $photos, string $pager, string $back ): string {
-		$figs = '';
+	public static function toHtml( int $year, array $photos, string $pager, string $back, string $results = '' ): string {
+		/* translators: %d: the competition year. */
+		$results_label = sprintf( __( 'Uitslae %d', 'ink-core' ), $year );
+		$figs          = '';
 
 		foreach ( $photos as $photo ) {
 			$size  = $photo['width'] > 0 && $photo['height'] > 0 ? ' width="' . $photo['width'] . '" height="' . $photo['height'] . '"' : '';
@@ -330,6 +334,10 @@ final class GalaPage {
 				__( 'Ink se Presige Gala-aand %d', 'ink-core' ),
 				$year
 			) ) . '</h1>'
+			. ( '' === $results ? '' : '<p><a class="ink-link--ink" href="' . esc_url( $results ) . '">'
+				. esc_html( $results_label )
+				. Markup::icon( Markup::ARROW_RIGHT, '', 'ink-link__icon--end' )
+				. '</a></p>' )
 			. '<div class="ink-komp-gala-fotos__rooster" data-ink-gala-fotos>' . $figs . '</div>'
 			. $pager
 			. '</div></section>';

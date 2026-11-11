@@ -78,13 +78,17 @@ final class SystemPages {
 
 	/**
 	 * Endpoint views: a template a rewrite endpoint or rule routes to, and its query var.
-	 * `kompetisies-gala` is `/kompetisies/gala/<jaar>/` (`Ink\Competitions\GalaPage`).
+	 * `kompetisies-gala` is `/kompetisies/gala/<jaar>/` (`Ink\Competitions\GalaPage`);
+	 * `kompetisies-uitslae` is `/kompetisies/<jaar>/uitslae/` (`Ink\Competitions\UitslaePage`);
+	 * `kompetisies-aankondiging` is `/kompetisies/<jaar>/` (`Ink\Competitions\AankondigingPage`).
 	 *
 	 * @var array<string, string>
 	 */
 	public const ENDPOINT_TEMPLATES = array(
 		'single-uitdaging-uitslae' => 'uitslae',
 		'kompetisies-gala'         => 'ink_gala_jaar',
+		'kompetisies-uitslae'      => 'ink_uitslae_jaar',
+		'kompetisies-aankondiging' => 'ink_aankondiging_jaar',
 	);
 
 	/**

@@ -12,6 +12,7 @@ namespace Ink\Submission;
 use Ink\Entitlement\Api as EntitlementApi;
 use Ink\Entitlement\MembershipStatus;
 use Ink\I18n\Terms;
+use Ink\Kernel\Scalar;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -40,7 +41,7 @@ final class Api {
 	 * show lines+words for a gedig and words-only for prose without re-defining the
 	 * rule — {@see Counters} / {@see ContentType} remain the single source.
 	 *
-	 * @return array{post_action:string, nonce_action:string, nonce_name:string, field_type:string, field_title:string, field_body:string, field_dedication:string, field_image:string, field_media:string, field_challenges:string, open_challenges:list<array{id:int, title:string}>, intent_field:string, intent_draft:string, intent_publish:string, types:list<array{slug:string, label:string, counter_mode:string}>}
+	 * @return array{post_action:string, nonce_action:string, nonce_name:string, field_type:string, field_title:string, field_body:string, field_dedication:string, field_image:string, field_media:string, field_challenges:string, open_challenges:list<array{id:int, title:string}>, field_competitions:string, open_competitions:list<array{id:int, title:string}>, intent_field:string, intent_draft:string, intent_publish:string, types:list<array{slug:string, label:string, counter_mode:string}>}
 	 */
 	public static function formModel(): array {
 		$types = array();
@@ -54,22 +55,46 @@ final class Api {
 		}
 
 		return array(
-			'post_action'      => SubmissionForm::postAction(),
-			'nonce_action'     => SubmissionForm::nonceAction(),
-			'nonce_name'       => SubmissionForm::nonceName(),
-			'field_type'       => SubmissionForm::FIELD_TYPE,
-			'field_title'      => SubmissionForm::FIELD_TITLE,
-			'field_body'       => SubmissionForm::FIELD_BODY,
-			'field_dedication' => SubmissionForm::FIELD_DEDICATION,
-			'field_image'      => FeaturedImage::FIELD,
-			'field_media'      => MediaAttachment::FIELD,
-			'field_challenges' => ChallengeLinking::FIELD,
-			'open_challenges'  => ( new ChallengeLinking() )->openChallenges(),
-			'intent_field'     => SubmissionForm::INTENT_FIELD,
-			'intent_draft'     => SubmissionForm::INTENT_DRAFT,
-			'intent_publish'   => SubmissionForm::INTENT_PUBLISH,
-			'types'            => $types,
+			'post_action'        => SubmissionForm::postAction(),
+			'nonce_action'       => SubmissionForm::nonceAction(),
+			'nonce_name'         => SubmissionForm::nonceName(),
+			'field_type'         => SubmissionForm::FIELD_TYPE,
+			'field_title'        => SubmissionForm::FIELD_TITLE,
+			'field_body'         => SubmissionForm::FIELD_BODY,
+			'field_dedication'   => SubmissionForm::FIELD_DEDICATION,
+			'field_image'        => FeaturedImage::FIELD,
+			'field_media'        => MediaAttachment::FIELD,
+			'field_challenges'   => ChallengeLinking::FIELD,
+			'open_challenges'    => ( new ChallengeLinking() )->openChallenges(),
+			'field_competitions' => SubmissionForm::FIELD_COMPETITIONS,
+			'open_competitions'  => self::openCompetitions(),
+			'intent_field'       => SubmissionForm::INTENT_FIELD,
+			'intent_draft'       => SubmissionForm::INTENT_DRAFT,
+			'intent_publish'     => SubmissionForm::INTENT_PUBLISH,
+			'types'              => $types,
 		);
+	}
+
+	/**
+	 * The open competitions Skryf offers, from the Competitions module through a filter (Submission
+	 * does not depend on Competitions). Anything malformed from a listener is dropped.
+	 *
+	 * @return list<array{id:int, title:string}>
+	 */
+	private static function openCompetitions(): array {
+		$offered = apply_filters( 'ink/skryf_open_competitions', array() ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- INK ink/... event-surface convention (AD).
+		$out     = array();
+
+		foreach ( is_array( $offered ) ? $offered : array() as $row ) {
+			if ( is_array( $row ) && isset( $row['id'], $row['title'] ) && (int) $row['id'] > 0 ) {
+				$out[] = array(
+					'id'    => (int) $row['id'],
+					'title' => Scalar::asString( $row['title'] ),
+				);
+			}
+		}
+
+		return $out;
 	}
 
 	/**

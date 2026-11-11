@@ -193,6 +193,34 @@ $ink_skryf_success = ( 'geplaas' === $ink_skryf_notice && $ink_skryf_done_id > 0
 		endif;
 		?>
 
+		<?php
+		// K2: open competitions, in their own group beside the challenges. Same primitives and the
+		// same classes as the challenge group (no new CSS); no audit ids, as Lovable has no such group.
+		// Copy is a copy-debt marker until the owner supplies Afrikaans (SKRYF-KOMP-*).
+		$ink_skryf_competitions = isset( $ink_skryf['open_competitions'] ) && is_array( $ink_skryf['open_competitions'] ) ? $ink_skryf['open_competitions'] : array();
+		if ( ! empty( $ink_skryf_competitions ) ) :
+			?>
+		<fieldset class="ink-card ink-card--panel-sm ink-skryf-challenges">
+			<legend class="ink-label"><?php echo esc_html__( '[NEEDS HUMAN AFRIKAANS] SKRYF-KOMP-TITEL', 'ink-foundation' ); ?></legend>
+			<p class="ink-hint ink-skryf-challenges__hint"><?php echo esc_html__( '[NEEDS HUMAN AFRIKAANS] SKRYF-KOMP-WENK', 'ink-foundation' ); ?></p>
+			<?php
+			foreach ( $ink_skryf_competitions as $ink_komp ) :
+				$ink_komp_id    = isset( $ink_komp['id'] ) ? (int) $ink_komp['id'] : 0;
+				$ink_komp_title = isset( $ink_komp['title'] ) ? (string) $ink_komp['title'] : '';
+				if ( $ink_komp_id <= 0 ) {
+					continue;
+				}
+				?>
+				<label class="ink-choice ink-skryf-challenge">
+					<input type="checkbox" class="ink-checkbox" name="<?php echo esc_attr( $ink_skryf['field_competitions'] ?? 'ink_submission_kompetisies' ); ?>[]" value="<?php echo esc_attr( (string) $ink_komp_id ); ?>" />
+					<span><?php echo esc_html( $ink_komp_title ); ?></span>
+				</label>
+			<?php endforeach; ?>
+		</fieldset>
+			<?php
+		endif;
+		?>
+
 		<p class="ink-skryf-field" data-audit-id="skryf-title-field">
 			<label class="ink-label" for="ink-skryf-title" data-audit-id="skryf-title-label"><?php echo esc_html__( 'Titel', 'ink-foundation' ); ?></label>
 			<input type="text" class="ink-field" id="ink-skryf-title" name="<?php echo esc_attr( $ink_skryf['field_title'] ); ?>" placeholder="<?php echo esc_attr__( 'Gee jou werk \'n titel...', 'ink-foundation' ); ?>" data-audit-id="skryf-title-input" required />

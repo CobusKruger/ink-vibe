@@ -48,6 +48,9 @@ final class Module implements ModuleContract {
 	public function register(): void {
 		( new Migration() )->register();
 		( new GalaPage() )->register();
+		( new UitslaePage() )->register();
+		( new AankondigingPage() )->register();
+		( new EntryLinking() )->register();
 
 		if ( function_exists( 'register_block_type' ) ) {
 			register_block_type( Hero::BLOCK, array( 'render_callback' => array( Hero::class, 'render' ) ) );
@@ -117,11 +120,28 @@ final class Module implements ModuleContract {
 	 * Purge the cached Page after an edit: neither type is public, so nothing else would.
 	 * LiteSpeed's own action, inert when the plugin is absent.
 	 */
-	public static function purgePage(): void {
+	public static function purgePage( int $post_id = 0 ): void {
 		$page = get_page_by_path( self::PAGE_SLUG, OBJECT, 'page' );
 
 		if ( $page instanceof \WP_Post ) {
 			do_action( 'litespeed_purge_post', (int) $page->ID );
 		}
+
+		// The year's results and gala photos are the same Page at other URLs (K5): purge by URL.
+		$year = $post_id > 0 ? (int) get_post_meta( $post_id, FieldSets::kompetisieKey( 'jaar' ), true ) : 0;
+
+		foreach ( self::yearPaths( $year ) as $path ) {
+			do_action( 'litespeed_purge_url', home_url( $path ) );
+		}
+	}
+
+	/**
+	 * The paths of a year's own pages. Pure.
+	 *
+	 * @param int $year The edition's year, 0 for none.
+	 * @return list<string>
+	 */
+	public static function yearPaths( int $year ): array {
+		return $year > 0 ? array( UitslaePage::path( $year ), GalaPage::path( $year ), AankondigingPage::path( $year ) ) : array();
 	}
 }
